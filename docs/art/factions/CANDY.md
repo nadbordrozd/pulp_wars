@@ -7,10 +7,14 @@ direction registry and draws the unit sprites, portraits, cities, and
 ships, and the Candy UI bead (`pulp_wars-jdb.6`) draws the icons, the
 Crumbs marker, and the effects (see the
 [wiring list](#wiring-list-for-pulp_wars-jdb6), which is kept as written
-before the wiring). **Still open:** the faction emblem is made and not
-drawn; the Confectioner's portrait still shows the first sprite's white
-apron top and is to be regenerated, and the Classic and LEGACY looks have
-no Candy badge (both `pulp_wars-jdb.9`). The Candy rules are folded into
+before the wiring). **Redesigned** in bead `pulp_wars-2o7.3` (playtest round 6): the basic
+line unit, the Gumball Gunner, the Gummy Bear and the Rock Candy Golem are
+no longer pink, and the prompt fragment below names a whole sweet shop
+(see [the redesign](#redesign-october-2026-the-sweet-shop); the sections
+after it describe the first roster unless they say otherwise).
+**Still open:** the faction emblem is made and not drawn, and the Classic
+and LEGACY looks have no Candy badge (`pulp_wars-jdb.9`; that bead's
+Confectioner portrait was redone here). The Candy rules are folded into
 [Ruleset 7: current rules](../../product/RULESET_7_CURRENT.md#23-candy-faction-rules)
 (`pulp_wars-jdb.8`). The look follows
 [the Candy spec](../../product/RULESET_7_CANDY.md) (sections 2.1 and 15.4):
@@ -56,39 +60,144 @@ for looking like a plush toy bear of a film
 ## Prompt fragment
 
 It names only a mood, materials, colours and small motifs: no figure and no
-place.
-
-```text
-Faction: cheerful sugary confectionery, bright, glossy and silly. Its fixed
+place. Since bead `pulp_wars-2o7.3` it is the sweet-shop fragment of the
+[redesign](#redesign-october-2026-the-sweet-shop): chocolate, toffee,
+jewel-coloured gummy jelly and peppermint are the body materials and the
+cotton-candy pink is a small trim. The first fragment, which every recipe
+before that bead was generated with (their records keep it), read:
+"cheerful sugary confectionery, bright, glossy and silly. Its fixed
 colours: glossy cotton-candy pink sugar glaze and frosting, colour #ffb8d8,
 shaded with a deeper rose pink #e58fb5; matte marshmallow white and cream;
 warm caramel, pale biscuit wafer and dark chocolate brown; one hard pure
 white highlight on every glossy surface; a few tiny pastel sprinkles and a
-little pale mint green trim.
+little pale mint green trim."
+
+```text
+Faction: a cheerful sweet shop of many different sweets, bright, glossy and
+silly. Its fixed colours: glossy milk and dark chocolate brown; golden
+caramel and toffee; pale biscuit wafer; matte marshmallow white and cream;
+clear jewel-coloured gummy jelly and hard candy in apple green, lemon
+yellow and amber orange; white peppermint with mint green stripes; a little
+liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a
+small trim; one hard pure white highlight on every glossy surface.
 ```
 
 ## Negative fragment
 
-Red and crimson are the Humans; magenta and hot pink the Martians; purple
-and violet the Undead; hazard yellow and gold the Goblins; orange the
-Dinosaurs; blue and cyan the Ice Folk; green, lime and jade the Goblins and
-the Dwarf lamp; metal, fur and bone the other factions' materials. The last
+Crimson and red are the Humans and the owner key; magenta and hot pink the
+Martians; purple and violet the Undead; metal, fur and bone the other
+factions' materials. The first list also excluded gold, orange, blue, green
+and lime, which left pink as the only colour a sweet could be; the
+redesign lets the gummies and hard candies have them (the user: "colorful
+gummies"). "All-pink body" and "pink blob" are the user's note. The last
 line is the spec's IP guard, described generically: the root ruled that the
-show's name is not a prompt word (every recipe of this bead but the
-Confectioner's apron edit was generated with the name in the list; an edit
-sends no fragment).
+show's name is not a prompt word. Its gumball entry is now "giant humanoid
+guardian robot with a gumball head", because the user asked for a gumball
+machine as the Gunner: a small squat sweet-shop machine with a face on its
+base, not a guardian.
 
 ```text
-red, crimson, magenta, hot pink, neon pink, purple, violet, hazard yellow,
-gold, bright orange, blue, cyan, bright green, lime, jade, metal armour,
-steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana
-guard, gumball machine guardian statue, pink-haired princess, lab coat with
-a crown, peppermint butler, lemon-headed figure, cartoon show character
+crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body,
+pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary,
+horror, realistic, banana guard, giant humanoid guardian robot with a
+gumball head, pink-haired princess, lab coat with a crown, peppermint
+butler, lemon-headed figure, cartoon show character
 ```
+
+## Redesign (October 2026): the sweet shop
+
+Bead `pulp_wars-2o7.3`. The user (2026-10-05): "candy units - the donut
+racer is great, the confectioner is great, the marshmallow is great. gummy
+bear is too pink so is gum drop. gumball gunner is strange. come up with
+different designs for these. gumball gunner could be a big gumball machine
+spitting gum balls instead of a weird pill guy holding a gumball machine.
+idk. i don't know what to do with the gumdrop. I just don't like that the
+whole faction is so dominated by this pink gum/icing. There is more to
+candy. There's chocolate and colorful gummies and toffee and more — figure
+something out."
+
+![The redesigned Candy roster on Grass, Forest, Mountain and Snow beside the other factions' unit of each role](../../../art/pixellab/reviews/chibi-batch-direction-candy/roster-x4.png)
+
+The roster was 46% pink (opaque pixels with hue 300 to 358, saturation at
+least 0.12, value at least 0.5); it is now 15%. Four units keep their
+frosting (Donut Racer 39%, Pie Launcher 35%, Confectioner 33%, Marshmallow
+24%); the four redrawn ones have 0 to 5%. The faction colour is still the
+cotton-candy pink of the territory border.
+
+| Unit (role)                     | Before                           | Now                                                                                                                                         | Accepted recipe                  |
+| ------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| Basic line unit (`FIGHTER`)     | a squat pink gumdrop dome        | a wrapped toffee: a fat golden cube with two twisted lemon wrapper ends like wings, a determined face, a mint lollipop, a chocolate shield  | `fighter-toffee-a`               |
+| Gumball Gunner (`MARKSMAN`)     | a cream jellybean with a blaster | a walking gumball machine: a clear globe of mixed gumballs, a chocolate lid, a mint base with a happy face, a gumball shooting from a chute | `gunner-machine-mint-a-spit-b`   |
+| Gummy Bear (`KNIGHT`)           | pink jelly                       | the same figure in translucent amber-orange jelly, golden where light shines through                                                        | `gummy-bear-r6-orange`           |
+| Rock Candy Golem (`JUGGERNAUT`) | pink crystals                    | the same golem in mint-green rock candy with a few white chunks                                                                             | `rock-candy-golem-r6-mint`       |
+| Confectioner portrait           | a white apron top                | the pink frosting apron of the map sprite (`pulp_wars-jdb.9`)                                                                               | `portrait-confectioner-r6-apron` |
+
+Kept as they were: Donut Racer, Confectioner, Marshmallow (the user: "great")
+and the Pie Launcher. Asset ids, canvases and anchors are unchanged, so the
+game draws the new masters with no registry change; the four portraits were
+redrawn with their sprites.
+
+**The basic line unit.** Three concepts were generated as first samples in
+the exploration run
+[`art/explorations/candy-redesign-2026-10`](../../../art/explorations/candy-redesign-2026-10/)
+with the sweet-shop fragment:
+
+| Concept                                  | Sprite  | Verdict                                                                                                                                                                                               |
+| ---------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chocolate-bar soldier, pretzel spear     | 48 x 69 | rejected: the tallest, but the darkest (mean L\* 42, 55% dark), its face is lost in the chocolate, and a brown figure with a spear and a wrapper round its hips can be misread as a caricature        |
+| **Wrapped toffee**, lollipop mace        | 54 x 53 | **accepted**: the widest and most distinctive outline at board size (the wrapper wings), golden where the old unit was pink, and its mint lollipop and chocolate shield carry two more of the palette |
+| Peppermint disc, mint-striped candy cane | 50 x 41 | rejected: charming, but half the height of a Human Fighter, and a pale shape like the Marshmallow                                                                                                     |
+
+The rules still call this unit **Gumdrop** (`UNIT_ROLES` label, the AI's
+names, the spec). The sprite is no longer a gumdrop; a display rename (for
+example "Toffee Trooper") is suggested to the root and not made here.
+
+**The Gumball Gunner** is a fresh creation with the `machine` class: three
+samples (a toffee-gold base, twice, and a mint base). The gold ones were
+rejected (a checkerboard drawn inside the globe; no outline); the mint one
+has the faction's face on its base, and one edit made it shoot a gumball
+from its side chute. It is a small squat sweet-shop machine, original and
+generic: no guardian robot, no tall body, no likeness of any show.
+
+**The Gummy Bear** is a recolour edit of the accepted figure by hex values;
+apple green, amber orange and emerald were sampled. Orange reads best on
+Grass, Snow and rock; apple green sat on the Grass and emerald was the
+darkest and near the Dwarf signal green.
+
+**The Rock Candy Golem** was the largest pink sprite left, so it was
+recoloured too (the one piece beyond the user's list): mint green was
+accepted; a version with every limb another colour was a harlequin.
+
+41 PixelLab calls for the whole bead (21 for the Candy, one of which failed
+at PixelLab and was retried under a new id). What worked:
+
+- **A recolour edit with three hex values** (body, the light middle, the
+  edge shade) and "No pink is left" changed the Gummy Bear and the Golem
+  and kept every shape.
+- **"Bar", "cube" and "disc" as the whole figure** drew a sweet with a
+  face, as "dome" did; the `machine` class drew the gumball machine with a
+  thick outline only when its base had a face.
+- **A portrait of a glass globe gets eyes on the glass**, whatever the
+  addendum says; "erase the two big dark eyes … inside the glass globe, and
+  fill their place with more … gumballs" removed them.
+
+Weak spots of the redesign: the toffee unit is small like the Gumdrop was
+(53 px tall, feet 14 px above the canvas bottom) and its name no longer
+fits; it misses the lineup measure against the Goblin and the Yeti, which
+the pink Gumdrop passed (see the lineup); its gold is the caramel of the Confectioner's head (the outline with
+the wrapper wings tells them apart); the Gunner's mint base is in the
+Dwarf signal green's colour family (a small area under a globe of many
+colours; not measured); the amber Gummy Bear is near the Dinosaur orange (the Dinosaurs
+wear it as crests on blue hide, never as a body); the Golem's portrait is a
+deeper green than its sprite; the Gumball Shot effect is still a pink
+gumball; the ships, cities, icons and effects were not touched and still
+carry pink frosting.
 
 ## Palette and value structure
 
-Measured on the eight unit masters
+**Measured on the first roster** (before the redesign above; the review's
+`palette.json` now measures the new masters). Measured on the eight unit
+masters
 ([`palette.json`](../../../art/pixellab/reviews/chibi-batch-direction-candy/palette.json));
 `CANDY_PALETTE_V7` holds the tones for code-drawn pieces.
 
@@ -165,18 +274,24 @@ lightness distance is at least 5.5 or its silhouettes overlap at most 0.65;
 the thresholds are re-calibrated on the six first factions, the redesigned
 Goblins included).
 
-| Pair                    | Palette | Deut. / Prot. | Lightness | Overlap | Verdict                                                         |
-| ----------------------- | ------: | ------------: | --------: | ------: | --------------------------------------------------------------- |
-| Gumdrop / Goblin        |    34.1 |   15.3 / 17.0 |      17.1 |    0.55 | distinct                                                        |
-| Gumdrop / Yeti          |    27.8 |   14.4 / 13.1 |      18.5 |    0.73 | distinct                                                        |
-| Marshmallow / Mammoth   |    20.1 |     9.9 / 8.3 |      15.3 |    0.75 | **fails under colour-vision simulation** (both pale and blocky) |
-| Marshmallow / Ice Witch |    25.2 |   19.0 / 15.8 |      10.8 |    0.62 | distinct                                                        |
-| Gummy Bear / Sabretooth |    46.9 |   24.9 / 30.7 |      17.5 |    0.53 | distinct                                                        |
-| Confectioner / Engineer |    17.8 |     6.4 / 7.3 |      18.1 |    0.60 | **fails in colour** (caramel against ginger and leather)        |
-| Confectioner / Brain    |    23.1 |   16.0 / 12.8 |       5.7 |    0.71 | distinct                                                        |
+| Pair                    | Palette | Deut. / Prot. | Lightness | Overlap | Verdict                                                                             |
+| ----------------------- | ------: | ------------: | --------: | ------: | ----------------------------------------------------------------------------------- |
+| Gumdrop / Goblin        |    17.0 |    9.2 / 11.4 |       5.0 |    0.60 | **fails in colour** since the redesign (toffee gold against sand and hazard yellow) |
+| Gumdrop / Yeti          |    20.7 |   17.5 / 18.4 |       2.5 |    0.71 | **fails in greyscale** since the redesign (the same mean lightness, both squat)     |
+| Marshmallow / Mammoth   |    20.1 |     9.9 / 8.3 |      15.3 |    0.75 | **fails under colour-vision simulation** (both pale and blocky)                     |
+| Marshmallow / Ice Witch |    25.2 |   19.0 / 15.8 |      10.8 |    0.62 | distinct                                                                            |
+| Gummy Bear / Sabretooth |    41.4 |   31.1 / 28.3 |      13.5 |    0.53 | distinct                                                                            |
+| Confectioner / Engineer |    17.8 |     6.4 / 7.3 |      18.1 |    0.60 | **fails in colour** (caramel against ginger and leather)                            |
+| Confectioner / Brain    |    23.1 |   16.0 / 12.8 |       5.7 |    0.71 | distinct                                                                            |
 
-**Verdict: the faction reads at 32 px by eye; two of seven pairs miss the
-conservative measure.** At half size the Candy units are pale pink shapes
+The Gumdrop and Gummy Bear rows are measured on the redesigned sprites of
+bead `pulp_wars-2o7.3` (the pink Gumdrop measured 34.1 and 27.8 and was
+distinct in both pairs; the toffee unit fails both: it is as light as the
+Yeti and its gold is near the Goblin's sand leather and hazard yellow). The
+paragraphs below were written for the first roster.
+
+**Verdict: the faction reads at 32 px by eye; two of seven pairs missed the
+conservative measure, and four do since the redesign.** At half size the Candy units are pale pink shapes
 with white shine, unlike any olive, grey, blue or brown rival. The measure
 is the Dwarf bead's calibrated one and is strict (the Dwarves failed two of
 six pairs). The Marshmallow and the Mammoth share cream and brown in about
@@ -204,25 +319,25 @@ This guides the subject lines; it is not sent to PixelLab.
   whisk, pie.
 - **Glossy things carry one hard white shine**; marshmallow and biscuit
   are matte.
-- **Pink on every piece**, in a different place: the whole body (Gumdrop,
-  Gummy Bear, Golem), a frosting cap (Donut, Confectioner, Marshmallow), a
-  bandana (Gunner), a barrel (Pie Launcher).
+- **Pink is a trim** since the redesign: a frosting cap (Donut,
+  Confectioner, Marshmallow) or a barrel (Pie Launcher), never a whole
+  body. The first roster had pink on every piece.
 
 ## Roster
 
 Batch [`direction-candy`](../../../scripts/art/chibi/batches/batch-direction-candy.json),
 subject lines in [`subjects/CANDY.json`](../../../scripts/art/chibi/subjects/CANDY.json).
 
-| Unit (role)                     | Canvas   | Accepted recipe             | What it shows                                                                                                                       |
-| ------------------------------- | -------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Gumdrop (`FIGHTER`)             | 56 x 80  | `gumdrop-b`                 | a squat sugar-dusted pink dome with its face on it, a mint frill, chocolate feet, a pink candy-cane spear and a waffle shield       |
-| Donut Racer (`RAIDER`)          | 72 x 88  | `donut-racer-a`             | a pink-frosted ring donut on its edge with a candy-corn rider in goggles, a kickstand wheel and speed lines                         |
-| Gumball Gunner (`MARKSMAN`)     | 56 x 80  | `gumball-gunner-a`          | a vanilla-cream jellybean with a pink bandana and a caramel blaster with a clear bubble of pastel gumballs                          |
-| Marshmallow (`GUARD`)           | 56 x 80  | `marshmallow-a`             | a fat square white block with a face and pink cheeks behind a big graham cracker                                                    |
-| Confectioner (`CAPTAIN`)        | 56 x 80  | `confectioner-a-apron`      | a glossy caramel sweet with pink frosting, brass goggles, a puffy baker's hat, a pink frosting apron with a white frill and a whisk |
-| Pie Launcher (`CATAPULT`)       | 72 x 88  | `pie-launcher-a-pie`        | a gingerbread cart on pink peppermint wheels with a fat pink frosting barrel holding a cream pie                                    |
-| Gummy Bear (`KNIGHT`)           | 72 x 88  | `gummy-bear-e-bare-b`       | one piece of glossy pink jelly in the shape of a bear, a fist raised, a face of two dots; nothing worn or carried                   |
-| Rock Candy Golem (`JUGGERNAUT`) | 88 x 104 | `rock-candy-golem-a-edit` 1 | a towering golem of pink crystal chunks with sprinkles, bound with dripping caramel, a caramel face under a crystal crest           |
+| Unit (role)                     | Canvas   | Accepted recipe                | What it shows                                                                                                                       |
+| ------------------------------- | -------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Gumdrop (`FIGHTER`)             | 56 x 80  | `fighter-toffee-a`             | since the redesign a wrapped toffee cube with wrapper wings, a mint lollipop and a chocolate shield (was `gumdrop-b`, a pink dome)  |
+| Donut Racer (`RAIDER`)          | 72 x 88  | `donut-racer-a`                | a pink-frosted ring donut on its edge with a candy-corn rider in goggles, a kickstand wheel and speed lines                         |
+| Gumball Gunner (`MARKSMAN`)     | 56 x 80  | `gunner-machine-mint-a-spit-b` | since the redesign a walking gumball machine on a mint base, shooting a gumball (was `gumball-gunner-a`, a jellybean)               |
+| Marshmallow (`GUARD`)           | 56 x 80  | `marshmallow-a`                | a fat square white block with a face and pink cheeks behind a big graham cracker                                                    |
+| Confectioner (`CAPTAIN`)        | 56 x 80  | `confectioner-a-apron`         | a glossy caramel sweet with pink frosting, brass goggles, a puffy baker's hat, a pink frosting apron with a white frill and a whisk |
+| Pie Launcher (`CATAPULT`)       | 72 x 88  | `pie-launcher-a-pie`           | a gingerbread cart on pink peppermint wheels with a fat pink frosting barrel holding a cream pie                                    |
+| Gummy Bear (`KNIGHT`)           | 72 x 88  | `gummy-bear-r6-orange`         | one piece of glossy amber-orange jelly in the shape of a bear, a fist raised, a face of two dots (pink as `gummy-bear-e-bare-b`)    |
+| Rock Candy Golem (`JUGGERNAUT`) | 88 x 104 | `rock-candy-golem-r6-mint`     | a towering golem of mint-green crystal chunks, bound with dripping caramel (pink as `rock-candy-golem-a-edit` 1)                    |
 
 Each unit has a 48 x 48 portrait (`chibi-direction-portrait-candy-<unit>`):
 close-ups for six (`portrait` class) and the whole machine for the Donut
@@ -451,8 +566,8 @@ Decided in bead `pulp_wars-jdb.5`:
   read apart at 32 px.
 - **The Confectioner** has a brown head and gloves, the Dwarf Engineer's
   colours under a colour-vision deficiency; its goggle lenses are pale ice
-  blue (a few pixels). Its portrait still shows the first sprite's white
-  apron top (a few pixels at the bottom of the bust).
+  blue (a few pixels). (Its portrait's white apron top was redrawn pink in
+  bead `pulp_wars-2o7.3`.)
 - **The Gumdrop is small** (48 px tall beside a 72 px Human Fighter) and
   stands 16 px above its canvas bottom, so it needs its own shadow anchor.
 - **Pink on Shallow Water and Mountain rock under a colour-vision

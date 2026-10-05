@@ -1478,10 +1478,208 @@
         "recipe": "fighter-heraldic-edit"
       },
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "Style anchor, re-accepted from the Human demo: crimson surcoat with a gold cross, heater shield with a gold lion, gold helmet band; silhouette, scale and feet of the production Fighter. No owner area. Superseded by fighter-r6-a.",
+        "reviewedAt": "2026-10-02T08:51:24.329Z"
+      }
+    },
+    "fighter-r6-a": {
+      "id": "fighter-r6-a",
+      "asset": "chibi-direction-fighter",
+      "jobId": "2a5c1eb3-9612-4284-ba06-6719d79d32db",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-fighter",
+        "subject": "UNIT:FIGHTER",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 207301,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make him a plain, lightly equipped basic foot soldier: the big pointed heraldic shield becomes a small plain round wooden shield, half as wide, of pale brown planks with a thin steel rim and a round steel boss, no lion and no paint; no chainmail, only a simple crimson cloth tunic with the gold cross, cream linen sleeves and a brown belt. Keep the helmet with its crimson crest, the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Make him a plain, lightly equipped basic foot soldier: the big pointed heraldic shield becomes a small plain round wooden shield, half as wide, of pale brown planks with a thin steel rim and a round steel boss, no lion and no paint; no chainmail, only a simple crimson cloth tunic with the gold cross, cream linen sleeves and a brown belt. Keep the helmet with its crimson crest, the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make him a plain, lightly equipped basic foot soldier: the big pointed heraldic shield becomes a small plain round wooden shield, half as wide, of pale brown planks with a thin steel rim and a round steel boss, no lion and no paint; no chainmail, only a simple crimson cloth tunic with the gold cross, cream linen sleeves and a brown belt. Keep the helmet with its crimson crest, the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Make him a plain, lightly equipped basic foot soldier: the big pointed heraldic shield becomes a small plain round wooden shield, half as wide, of pale brown planks with a thin steel rim and a round steel boss, no lion and no paint; no chainmail, only a simple crimson cloth tunic with the gold cross, cream linen sleeves and a brown belt. Keep the helmet with its crimson crest, the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "fighter-heraldic-edit",
+          "candidate": 0,
+          "sha256": "18e448198d79c948caa6ac2c7eb7264132ef8bc31dd981b3337d93a8f951ab71"
+        }
+      },
+      "submittedAt": "2026-10-05T12:34:36.471Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/fighter-r6-a.png",
+      "rawSheetSha256": "dff5044ae52994f3fade47e28f7a2df6b6e2fffaed4e3a3f3dcc639220edd671",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.2308,
+          "footprintWidthShare": 0.7547,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.2308,
+          "footprintWidthShare": 0.7547,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:35:08.644Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "Style anchor, re-accepted from the Human demo: crimson surcoat with a gold cross, heater shield with a gold lion, gold helmet band; silhouette, scale and feet of the production Fighter. No owner area.",
-        "reviewedAt": "2026-10-02T08:51:24.329Z"
+        "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the basic soldier. A small plain round wooden shield with a steel rim and boss in place of the heraldic heater shield, a crimson cloth tunic with the gold cross over cream linen sleeves, no mail; helmet, crest, sword, face and stance unchanged (53 x 72 px, feet on row 74). Told from the Guard by the round wooden shield, the crest and the sword.",
+        "reviewedAt": "2026-10-05T12:44:10.595Z"
+      }
+    },
+    "fighter-r6-b": {
+      "id": "fighter-r6-b",
+      "asset": "chibi-direction-fighter",
+      "jobId": "f91b6ad2-4698-4684-917e-778ab0cbae28",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-fighter",
+        "subject": "UNIT:FIGHTER",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 207302,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: the big pointed crimson shield with the gold lion becomes a small plain round wooden buckler, about 16 pixels across, of light brown planks with a steel rim and a round steel boss, held low at his side, so his whole tunic and both legs show; no lion and no paint on it. Do not redraw anything else: keep the helmet, crest, face, sword, surcoat with the gold cross, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: the big pointed crimson shield with the gold lion becomes a small plain round wooden buckler, about 16 pixels across, of light brown planks with a steel rim and a round steel boss, held low at his side, so his whole tunic and both legs show; no lion and no paint on it. Do not redraw anything else: keep the helmet, crest, face, sword, surcoat with the gold cross, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: the big pointed crimson shield with the gold lion becomes a small plain round wooden buckler, about 16 pixels across, of light brown planks with a steel rim and a round steel boss, held low at his side, so his whole tunic and both legs show; no lion and no paint on it. Do not redraw anything else: keep the helmet, crest, face, sword, surcoat with the gold cross, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: the big pointed crimson shield with the gold lion becomes a small plain round wooden buckler, about 16 pixels across, of light brown planks with a steel rim and a round steel boss, held low at his side, so his whole tunic and both legs show; no lion and no paint on it. Do not redraw anything else: keep the helmet, crest, face, sword, surcoat with the gold cross, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "fighter-heraldic-edit",
+          "candidate": 0,
+          "sha256": "18e448198d79c948caa6ac2c7eb7264132ef8bc31dd981b3337d93a8f951ab71"
+        }
+      },
+      "submittedAt": "2026-10-05T12:35:24.537Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/fighter-r6-b.png",
+      "rawSheetSha256": "37ffa1dc92285b3999b679863bd739ab222961415cf3df81b7a46ef4859fdd92",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.205,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.205,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:35:54.475Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The same round wooden shield as fighter-r6-a but the mail sleeves stay and the figure is darker (lit share 38%): less clearly the lighter soldier.",
+        "reviewedAt": "2026-10-05T12:44:11.267Z"
+      }
+    },
+    "fighter-r6-c": {
+      "id": "fighter-r6-c",
+      "asset": "chibi-direction-fighter",
+      "jobId": "f043081d-b10b-4555-9f94-610193345fe2",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-fighter",
+        "subject": "UNIT:FIGHTER",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 207303,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw him as a simple levy swordsman, the lightest soldier of the army: a small plain round wooden shield of light brown planks with a steel boss instead of the big heraldic shield; a padded cream linen jacket under a short crimson tabard with a small gold cross, brown belt and boots; no chainmail and no plate; a simple open steel cap with a small crimson crest. Keep the face, the sword held up, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw him as a simple levy swordsman, the lightest soldier of the army: a small plain round wooden shield of light brown planks with a steel boss instead of the big heraldic shield; a padded cream linen jacket under a short crimson tabard with a small gold cross, brown belt and boots; no chainmail and no plate; a simple open steel cap with a small crimson crest. Keep the face, the sword held up, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw him as a simple levy swordsman, the lightest soldier of the army: a small plain round wooden shield of light brown planks with a steel boss instead of the big heraldic shield; a padded cream linen jacket under a short crimson tabard with a small gold cross, brown belt and boots; no chainmail and no plate; a simple open steel cap with a small crimson crest. Keep the face, the sword held up, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Redraw him as a simple levy swordsman, the lightest soldier of the army: a small plain round wooden shield of light brown planks with a steel boss instead of the big heraldic shield; a padded cream linen jacket under a short crimson tabard with a small gold cross, brown belt and boots; no chainmail and no plate; a simple open steel cap with a small crimson crest. Keep the face, the sword held up, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "fighter-heraldic-edit",
+          "candidate": 0,
+          "sha256": "18e448198d79c948caa6ac2c7eb7264132ef8bc31dd981b3337d93a8f951ab71"
+        }
+      },
+      "submittedAt": "2026-10-05T12:35:54.478Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/fighter-r6-c.png",
+      "rawSheetSha256": "21a82b6df753192820d2fe8f9abf5961148e24b165e052cdc15705181536d967",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.6313,
+          "footprintWidthShare": 0.7407,
+          "suspect": true
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.6313,
+          "footprintWidthShare": 0.7407,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T12:36:32.462Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A good plain levy swordsman, but a different, smaller soldier (54 x 68 px): no crest, no gold band and almost no crimson, so it no longer reads as the Human Fighter of the emblem and the portrait.",
+        "reviewedAt": "2026-10-05T12:44:12.137Z"
       }
     },
     "forge-b-a": {
@@ -1708,10 +1906,340 @@
       ],
       "completedAt": "2026-10-02T08:36:41.409Z",
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "Crimson tower shield with a gold cross and steel border, gold helmet band, crimson surcoat with a gold hem; spear and stance unchanged. The shield stays the signature prop. Superseded by guard-r6-d.",
+        "reviewedAt": "2026-10-02T08:51:28.650Z"
+      }
+    },
+    "guard-r6-a": {
+      "id": "guard-r6-a",
+      "asset": "chibi-direction-guard",
+      "jobId": "24856bf3-3a95-440f-b9d9-a3b1b70240de",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-guard",
+        "subject": "UNIT:GUARD",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 207311,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make him a heavily armoured shield-bearer in full polished steel plate: big round pauldrons, breastplate, gauntlets and leg plates. The shield becomes a much bigger tall wide tower shield covering his body from chin to feet, crimson with a bold gold cross and a thick riveted steel border, planted in front of him; feet wide apart. Keep the face, the kettle helmet with its gold band, the upright spear, proportions, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Make him a heavily armoured shield-bearer in full polished steel plate: big round pauldrons, breastplate, gauntlets and leg plates. The shield becomes a much bigger tall wide tower shield covering his body from chin to feet, crimson with a bold gold cross and a thick riveted steel border, planted in front of him; feet wide apart. Keep the face, the kettle helmet with its gold band, the upright spear, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make him a heavily armoured shield-bearer in full polished steel plate: big round pauldrons, breastplate, gauntlets and leg plates. The shield becomes a much bigger tall wide tower shield covering his body from chin to feet, crimson with a bold gold cross and a thick riveted steel border, planted in front of him; feet wide apart. Keep the face, the kettle helmet with its gold band, the upright spear, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Make him a heavily armoured shield-bearer in full polished steel plate: big round pauldrons, breastplate, gauntlets and leg plates. The shield becomes a much bigger tall wide tower shield covering his body from chin to feet, crimson with a bold gold cross and a thick riveted steel border, planted in front of him; feet wide apart. Keep the face, the kettle helmet with its gold band, the upright spear, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "guard-heraldic-edit",
+          "candidate": 0,
+          "sha256": "82566575a8be192abcfd96c88cc3f92bb66098b30ca14690d5b4f7b3d0574313"
+        }
+      },
+      "submittedAt": "2026-10-05T12:36:32.467Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/guard-r6-a.png",
+      "rawSheetSha256": "cf175e3db947bb3307d58dd43d4682e084bb95d80120da26fcc5e2b68101fdab",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.02,
+          "footprintWidthShare": 0.6471,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.02,
+          "footprintWidthShare": 0.6471,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:37:12.881Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Plate armour and big pauldrons, but the shield is no bigger than before; superseded by its edit guard-r6-d.",
+        "reviewedAt": "2026-10-05T12:44:12.794Z"
+      }
+    },
+    "guard-r6-b": {
+      "id": "guard-r6-b",
+      "asset": "chibi-direction-guard",
+      "jobId": "d3a925c4-a043-442c-abf2-a3f19699577a",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-guard",
+        "subject": "UNIT:GUARD",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 207312,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw him as a heavy armoured guard behind a giant kite-shaped pavise shield, nearly as tall as he is and wider than his body, crimson with a big gold cross and a thick steel border: only his helmeted head, one big steel pauldron and his steel plate boots show round it; heavy polished steel plate armour; a braced, wide, low stance. Keep the face, the kettle helmet with its gold band, the upright spear, proportions, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw him as a heavy armoured guard behind a giant kite-shaped pavise shield, nearly as tall as he is and wider than his body, crimson with a big gold cross and a thick steel border: only his helmeted head, one big steel pauldron and his steel plate boots show round it; heavy polished steel plate armour; a braced, wide, low stance. Keep the face, the kettle helmet with its gold band, the upright spear, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw him as a heavy armoured guard behind a giant kite-shaped pavise shield, nearly as tall as he is and wider than his body, crimson with a big gold cross and a thick steel border: only his helmeted head, one big steel pauldron and his steel plate boots show round it; heavy polished steel plate armour; a braced, wide, low stance. Keep the face, the kettle helmet with its gold band, the upright spear, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Redraw him as a heavy armoured guard behind a giant kite-shaped pavise shield, nearly as tall as he is and wider than his body, crimson with a big gold cross and a thick steel border: only his helmeted head, one big steel pauldron and his steel plate boots show round it; heavy polished steel plate armour; a braced, wide, low stance. Keep the face, the kettle helmet with its gold band, the upright spear, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "guard-heraldic-edit",
+          "candidate": 0,
+          "sha256": "82566575a8be192abcfd96c88cc3f92bb66098b30ca14690d5b4f7b3d0574313"
+        }
+      },
+      "submittedAt": "2026-10-05T12:37:12.888Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/guard-r6-b.png",
+      "rawSheetSha256": "d7b279d249c850822d78f353fed1e1532f0a06ba0f8125e6bf078aabf2cccd61",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.74,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.74,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:37:52.226Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A giant pavise that reads at once as a wall, but it hides the face, the helmet and the spear: no longer the same soldier, and faceless.",
+        "reviewedAt": "2026-10-05T12:44:13.462Z"
+      }
+    },
+    "guard-r6-c": {
+      "id": "guard-r6-c",
+      "asset": "chibi-direction-guard",
+      "jobId": "23cd1a38-79f3-4e6a-a992-7d447886349e",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-guard",
+        "subject": "UNIT:GUARD",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 207313,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change two things only. The shield: twice as big, a huge tower shield with a flat top and rounded bottom from his chin to the ground, as wide as his body, crimson with the bold gold cross and a thick steel border. His armour: polished steel plate with a big round pauldron and plate arms and legs instead of cloth and mail. Do not redraw anything else: keep the face, kettle helmet, spear, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change two things only. The shield: twice as big, a huge tower shield with a flat top and rounded bottom from his chin to the ground, as wide as his body, crimson with the bold gold cross and a thick steel border. His armour: polished steel plate with a big round pauldron and plate arms and legs instead of cloth and mail. Do not redraw anything else: keep the face, kettle helmet, spear, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change two things only. The shield: twice as big, a huge tower shield with a flat top and rounded bottom from his chin to the ground, as wide as his body, crimson with the bold gold cross and a thick steel border. His armour: polished steel plate with a big round pauldron and plate arms and legs instead of cloth and mail. Do not redraw anything else: keep the face, kettle helmet, spear, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change two things only. The shield: twice as big, a huge tower shield with a flat top and rounded bottom from his chin to the ground, as wide as his body, crimson with the bold gold cross and a thick steel border. His armour: polished steel plate with a big round pauldron and plate arms and legs instead of cloth and mail. Do not redraw anything else: keep the face, kettle helmet, spear, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "guard-heraldic-edit",
+          "candidate": 0,
+          "sha256": "82566575a8be192abcfd96c88cc3f92bb66098b30ca14690d5b4f7b3d0574313"
+        }
+      },
+      "submittedAt": "2026-10-05T12:37:52.232Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/guard-r6-c.png",
+      "rawSheetSha256": "77bf4a023d9f2d05f788e5fe4368c8bc841d990e8053ec985faabbf19b9ea86c",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.0202,
+          "footprintWidthShare": 0.7407,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0202,
+          "footprintWidthShare": 0.7407,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:38:35.742Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The shield grew only a little and still ends at the knees; the armour change is small.",
+        "reviewedAt": "2026-10-05T12:44:14.282Z"
+      }
+    },
+    "guard-r6-d": {
+      "id": "guard-r6-d",
+      "asset": "chibi-direction-guard",
+      "jobId": "0bc4afae-f23a-4a0e-be81-f4542144ab60",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-guard",
+        "subject": "UNIT:GUARD",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 207314,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the shield: replace it with a much bigger tall rectangular tower shield with a flat bottom standing on the ground, as wide as his body, reaching from under his chin to the ground, hiding his body and legs; crimson with a bold gold cross and a thick steel border. His head, face, helmet, one big steel pauldron and the upright spear stay fully visible beside and above it. Do not redraw anything else: keep proportions, outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the shield: replace it with a much bigger tall rectangular tower shield with a flat bottom standing on the ground, as wide as his body, reaching from under his chin to the ground, hiding his body and legs; crimson with a bold gold cross and a thick steel border. His head, face, helmet, one big steel pauldron and the upright spear stay fully visible beside and above it. Do not redraw anything else: keep proportions, outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the shield: replace it with a much bigger tall rectangular tower shield with a flat bottom standing on the ground, as wide as his body, reaching from under his chin to the ground, hiding his body and legs; crimson with a bold gold cross and a thick steel border. His head, face, helmet, one big steel pauldron and the upright spear stay fully visible beside and above it. Do not redraw anything else: keep proportions, outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the shield: replace it with a much bigger tall rectangular tower shield with a flat bottom standing on the ground, as wide as his body, reaching from under his chin to the ground, hiding his body and legs; crimson with a bold gold cross and a thick steel border. His head, face, helmet, one big steel pauldron and the upright spear stay fully visible beside and above it. Do not redraw anything else: keep proportions, outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "guard-r6-a",
+          "candidate": 0,
+          "sha256": "1034bb97d22cc38860ed6adc7a4dd2207e8054e34560b0845d0099463f861378"
+        }
+      },
+      "submittedAt": "2026-10-05T12:40:48.897Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/guard-r6-d.png",
+      "rawSheetSha256": "855c45174da37daa2f5f0a625e48b453953d6ccb005b105b85b34b77d0ce1c55",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6863,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6863,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:41:21.828Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "Crimson tower shield with a gold cross and steel border, gold helmet band, crimson surcoat with a gold hem; spear and stance unchanged. The shield stays the signature prop.",
-        "reviewedAt": "2026-10-02T08:51:28.650Z"
+        "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the defensive unit. Full steel plate with a big round pauldron, and a rectangular crimson tower shield with a gold cross and a riveted steel border that stands on the ground and covers him from chin to feet; kettle helmet with its gold band, face and upright spear kept (51 x 73 px, shield on row 75). A rectangle with a head and a spear: told from the Fighter by silhouette.",
+        "reviewedAt": "2026-10-05T12:44:15.940Z"
+      }
+    },
+    "guard-r6-e": {
+      "id": "guard-r6-e",
+      "asset": "chibi-direction-guard",
+      "jobId": "86087753-993c-4cc3-a1e6-a417a27a79f2",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-guard",
+        "subject": "UNIT:GUARD",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 207315,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change two things only. The shield: make it taller and wider, a big tower shield whose flat bottom edge rests on the ground and whose top reaches his chin, hiding his legs completely; same crimson with the gold cross and steel border. His shoulders: one big round steel pauldron on each. Do not redraw anything else: keep the face, kettle helmet with its gold band, upright spear, pose, proportions, outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change two things only. The shield: make it taller and wider, a big tower shield whose flat bottom edge rests on the ground and whose top reaches his chin, hiding his legs completely; same crimson with the gold cross and steel border. His shoulders: one big round steel pauldron on each. Do not redraw anything else: keep the face, kettle helmet with its gold band, upright spear, pose, proportions, outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change two things only. The shield: make it taller and wider, a big tower shield whose flat bottom edge rests on the ground and whose top reaches his chin, hiding his legs completely; same crimson with the gold cross and steel border. His shoulders: one big round steel pauldron on each. Do not redraw anything else: keep the face, kettle helmet with its gold band, upright spear, pose, proportions, outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change two things only. The shield: make it taller and wider, a big tower shield whose flat bottom edge rests on the ground and whose top reaches his chin, hiding his legs completely; same crimson with the gold cross and steel border. His shoulders: one big round steel pauldron on each. Do not redraw anything else: keep the face, kettle helmet with its gold band, upright spear, pose, proportions, outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "guard-r6-c",
+          "candidate": 0,
+          "sha256": "49b15ac3d3abe439c8243ed8bf456662b00835d2cf11bc17afd7bb955d4ae8f0"
+        }
+      },
+      "submittedAt": "2026-10-05T12:41:21.832Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/guard-r6-e.png",
+      "rawSheetSha256": "31d527e3fb12f058a41cf1c0045c9d2eab5c507a99c0b6d2036319f9af3a1a76",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.0107,
+          "footprintWidthShare": 0.8654,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.0107,
+          "footprintWidthShare": 0.8654,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:42:17.581Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A tower shield to the ground with pauldrons, but a grey plate is drawn under the shield and the feet.",
+        "reviewedAt": "2026-10-05T12:44:15.140Z"
       }
     },
     "juggernaut-heraldic-edit": {
@@ -2896,10 +3424,76 @@
       ],
       "completedAt": "2026-10-02T08:34:51.162Z",
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "Gold helmet band, crimson surcoat with a gold cross, heater shield with a gold lion: matches the map Fighter. Superseded by portrait-fighter-r6-a.",
+        "reviewedAt": "2026-10-02T08:51:32.937Z"
+      }
+    },
+    "portrait-fighter-r6-a": {
+      "id": "portrait-fighter-r6-a",
+      "asset": "chibi-direction-portrait-fighter",
+      "jobId": "2d930732-d2f4-4889-8d63-27310ac7abe7",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-portrait-fighter",
+        "subject": "PORTRAIT:FIGHTER",
+        "faction": "ORIGINAL",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 207321,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only his shield and sleeves: the crimson shield with the gold lion becomes a small plain round wooden shield of pale brown planks with a steel rim and a round steel boss, no lion and no paint; his chainmail sleeves become plain cream linen sleeves. Do not redraw anything else: keep the helmet with its gold band and crimson crest, the face, the sword, the crimson tunic with the gold cross, proportions, outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only his shield and sleeves: the crimson shield with the gold lion becomes a small plain round wooden shield of pale brown planks with a steel rim and a round steel boss, no lion and no paint; his chainmail sleeves become plain cream linen sleeves. Do not redraw anything else: keep the helmet with its gold band and crimson crest, the face, the sword, the crimson tunic with the gold cross, proportions, outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only his shield and sleeves: the crimson shield with the gold lion becomes a small plain round wooden shield of pale brown planks with a steel rim and a round steel boss, no lion and no paint; his chainmail sleeves become plain cream linen sleeves. Do not redraw anything else: keep the helmet with its gold band and crimson crest, the face, the sword, the crimson tunic with the gold cross, proportions, outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only his shield and sleeves: the crimson shield with the gold lion becomes a small plain round wooden shield of pale brown planks with a steel rim and a round steel boss, no lion and no paint; his chainmail sleeves become plain cream linen sleeves. Do not redraw anything else: keep the helmet with its gold band and crimson crest, the face, the sword, the crimson tunic with the gold cross, proportions, outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-fighter-heraldic-edit",
+          "candidate": 0,
+          "sha256": "66a22cd78de05ffe307af44300940bdeec3f89a39630694a63cc85211ad85fc8"
+        }
+      },
+      "submittedAt": "2026-10-05T12:46:51.132Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/portrait-fighter-r6-a.png",
+      "rawSheetSha256": "feafe0b797e6d021d3353956e3332b97dad6e90934a7eb2a69cb8ff5220ad1ec",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.1032,
+          "footprintWidthShare": 0.9091,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.1032,
+          "footprintWidthShare": 0.9091,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:47:35.464Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "Gold helmet band, crimson surcoat with a gold cross, heater shield with a gold lion: matches the map Fighter.",
-        "reviewedAt": "2026-10-02T08:51:32.937Z"
+        "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the Fighter's bust with the small round wooden shield and cream linen sleeves of the new map sprite; helmet, crest, face, sword and tunic unchanged. Also the Human setup emblem.",
+        "reviewedAt": "2026-10-05T12:58:31.811Z"
       }
     },
     "portrait-guard-heraldic-edit": {
@@ -2963,10 +3557,76 @@
       ],
       "completedAt": "2026-10-02T08:41:06.769Z",
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "Gold helmet band, crimson shield with a gold cross and steel border; spear kept: matches the map Guard. Superseded by portrait-guard-r6-a.",
+        "reviewedAt": "2026-10-02T08:51:36.937Z"
+      }
+    },
+    "portrait-guard-r6-a": {
+      "id": "portrait-guard-r6-a",
+      "asset": "chibi-direction-portrait-guard",
+      "jobId": "122b43ed-bfb8-4451-961b-f1f0cdeed4ca",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-portrait-guard",
+        "subject": "PORTRAIT:GUARD",
+        "faction": "ORIGINAL",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 207322,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only his shield and armour: the shield becomes a bigger rectangular tower shield with a flat top, as wide as his body, covering him from his chin to the bottom of the image, crimson with a gold cross and a thick steel border; he wears polished steel plate with one big round steel pauldron on his shoulder. Do not redraw anything else: keep the kettle helmet with its gold band, the face, the upright spear, proportions, outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only his shield and armour: the shield becomes a bigger rectangular tower shield with a flat top, as wide as his body, covering him from his chin to the bottom of the image, crimson with a gold cross and a thick steel border; he wears polished steel plate with one big round steel pauldron on his shoulder. Do not redraw anything else: keep the kettle helmet with its gold band, the face, the upright spear, proportions, outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only his shield and armour: the shield becomes a bigger rectangular tower shield with a flat top, as wide as his body, covering him from his chin to the bottom of the image, crimson with a gold cross and a thick steel border; he wears polished steel plate with one big round steel pauldron on his shoulder. Do not redraw anything else: keep the kettle helmet with its gold band, the face, the upright spear, proportions, outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only his shield and armour: the shield becomes a bigger rectangular tower shield with a flat top, as wide as his body, covering him from his chin to the bottom of the image, crimson with a gold cross and a thick steel border; he wears polished steel plate with one big round steel pauldron on his shoulder. Do not redraw anything else: keep the kettle helmet with its gold band, the face, the upright spear, proportions, outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-guard-heraldic-edit",
+          "candidate": 0,
+          "sha256": "e56b042124a278a142228d2f43ed2767727d4ecec2334934f46a7ef7ce61a473"
+        }
+      },
+      "submittedAt": "2026-10-05T12:47:35.472Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/portrait-guard-r6-a.png",
+      "rawSheetSha256": "feb8c10432b94dca9e983afaea138553d00699b11feb4b23137688cdd040e4e7",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.0083,
+          "footprintWidthShare": 0.9143,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.0083,
+          "footprintWidthShare": 0.9143,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:48:09.543Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "Gold helmet band, crimson shield with a gold cross and steel border; spear kept: matches the map Guard.",
-        "reviewedAt": "2026-10-02T08:51:36.937Z"
+        "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the Guard's bust behind the rectangular crimson tower shield with its gold cross and steel border, with a steel pauldron; kettle helmet, face and spear unchanged.",
+        "reviewedAt": "2026-10-05T12:58:32.182Z"
       }
     },
     "portrait-juggernaut-heraldic-edit": {
@@ -4872,13 +5532,13 @@
       "subject": "UNIT:FIGHTER",
       "assetClass": "STANDARD_UNIT",
       "status": "ACCEPTED",
-      "recipe": "fighter-heraldic-edit",
+      "recipe": "fighter-r6-a",
       "candidate": 0,
-      "candidateSha256": "18e448198d79c948caa6ac2c7eb7264132ef8bc31dd981b3337d93a8f951ab71",
+      "candidateSha256": "268caf9457d453f10632ea9d1fd57bb37dcdc9db89ab3b44e5943f29f857a20f",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-fighter.png",
-        "sha256": "18e448198d79c948caa6ac2c7eb7264132ef8bc31dd981b3337d93a8f951ab71",
-        "pixelSha256": "e0091cd5a4702ad4edf6b0fb3dee448f7e16b4d8b0fd18e10d65bbe1da7a946f",
+        "sha256": "268caf9457d453f10632ea9d1fd57bb37dcdc9db89ab3b44e5943f29f857a20f",
+        "pixelSha256": "5e1549405f52b2cbeb1922eb9e4ae191d99d8becb0fb617abf3d72ff3505a2d1",
         "width": 56,
         "height": 80
       },
@@ -4897,8 +5557,8 @@
       },
       "plateCheck": {
         "bandRows": 14,
-        "groundShare": 0.1146,
-        "footprintWidthShare": 0.7308,
+        "groundShare": 0.2308,
+        "footprintWidthShare": 0.7547,
         "suspect": false
       },
       "reviewChecks": {
@@ -4908,8 +5568,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Style anchor, re-accepted from the Human demo: crimson surcoat with a gold cross, heater shield with a gold lion, gold helmet band; silhouette, scale and feet of the production Fighter. No owner area.",
-      "acceptedAt": "2026-10-02T08:51:24.329Z"
+      "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the basic soldier. A small plain round wooden shield with a steel rim and boss in place of the heraldic heater shield, a crimson cloth tunic with the gold cross over cream linen sleeves, no mail; helmet, crest, sword, face and stance unchanged (53 x 72 px, feet on row 74). Told from the Guard by the round wooden shield, the crest and the sword.",
+      "acceptedAt": "2026-10-05T12:44:10.595Z"
     },
     "chibi-direction-forge": {
       "id": "chibi-direction-forge",
@@ -4957,13 +5617,13 @@
       "subject": "UNIT:GUARD",
       "assetClass": "STANDARD_UNIT",
       "status": "ACCEPTED",
-      "recipe": "guard-heraldic-edit",
+      "recipe": "guard-r6-d",
       "candidate": 0,
-      "candidateSha256": "82566575a8be192abcfd96c88cc3f92bb66098b30ca14690d5b4f7b3d0574313",
+      "candidateSha256": "e1347554c0c2d3431ab6188d8ddfe5b1bb41f704782e23e99bbc94b8fb678d65",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-guard.png",
-        "sha256": "82566575a8be192abcfd96c88cc3f92bb66098b30ca14690d5b4f7b3d0574313",
-        "pixelSha256": "382c5ef883de76fc6be9f3739cff6ba5234658ca3949aa7adfd45da0194ccf69",
+        "sha256": "e1347554c0c2d3431ab6188d8ddfe5b1bb41f704782e23e99bbc94b8fb678d65",
+        "pixelSha256": "ef30168b7a9af776a73c6000f4b3af17fa5ccdae4775a4f62e1c330b597d01b3",
         "width": 56,
         "height": 80
       },
@@ -4981,9 +5641,9 @@
         "down": 0
       },
       "plateCheck": {
-        "bandRows": 14,
-        "groundShare": 0.0212,
-        "footprintWidthShare": 0.7547,
+        "bandRows": 15,
+        "groundShare": 0,
+        "footprintWidthShare": 0.6863,
         "suspect": false
       },
       "reviewChecks": {
@@ -4993,8 +5653,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Crimson tower shield with a gold cross and steel border, gold helmet band, crimson surcoat with a gold hem; spear and stance unchanged. The shield stays the signature prop.",
-      "acceptedAt": "2026-10-02T08:51:28.650Z"
+      "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the defensive unit. Full steel plate with a big round pauldron, and a rectangular crimson tower shield with a gold cross and a riveted steel border that stands on the ground and covers him from chin to feet; kettle helmet with its gold band, face and upright spear kept (51 x 73 px, shield on row 75). A rectangle with a head and a spear: told from the Fighter by silhouette.",
+      "acceptedAt": "2026-10-05T12:44:15.940Z"
     },
     "chibi-direction-juggernaut": {
       "id": "chibi-direction-juggernaut",
@@ -5385,13 +6045,13 @@
       "subject": "PORTRAIT:FIGHTER",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "portrait-fighter-heraldic-edit",
+      "recipe": "portrait-fighter-r6-a",
       "candidate": 0,
-      "candidateSha256": "66a22cd78de05ffe307af44300940bdeec3f89a39630694a63cc85211ad85fc8",
+      "candidateSha256": "0aa4df657182e00ca3054381e0630f355b2b80d4d29b0cbe2b0e1db6f29b71c0",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-direction-portrait-fighter.png",
-        "sha256": "66a22cd78de05ffe307af44300940bdeec3f89a39630694a63cc85211ad85fc8",
-        "pixelSha256": "3d2cf4af348af722065ad71bab3fd3a4214273f7b81fa384a10926b1f00b66b8",
+        "sha256": "0aa4df657182e00ca3054381e0630f355b2b80d4d29b0cbe2b0e1db6f29b71c0",
+        "pixelSha256": "b3a97c6e02f5bad2cd9be4134f0034fe7921baeb567b7a62839a58a8b13be5af",
         "width": 48,
         "height": 48
       },
@@ -5410,7 +6070,7 @@
       },
       "plateCheck": {
         "bandRows": 9,
-        "groundShare": 0.0125,
+        "groundShare": 0.1032,
         "footprintWidthShare": 0.9091,
         "suspect": false
       },
@@ -5421,21 +6081,21 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Gold helmet band, crimson surcoat with a gold cross, heater shield with a gold lion: matches the map Fighter.",
-      "acceptedAt": "2026-10-02T08:51:32.937Z"
+      "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the Fighter's bust with the small round wooden shield and cream linen sleeves of the new map sprite; helmet, crest, face, sword and tunic unchanged. Also the Human setup emblem.",
+      "acceptedAt": "2026-10-05T12:58:31.811Z"
     },
     "chibi-direction-portrait-guard": {
       "id": "chibi-direction-portrait-guard",
       "subject": "PORTRAIT:GUARD",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "portrait-guard-heraldic-edit",
+      "recipe": "portrait-guard-r6-a",
       "candidate": 0,
-      "candidateSha256": "e56b042124a278a142228d2f43ed2767727d4ecec2334934f46a7ef7ce61a473",
+      "candidateSha256": "da9389e595e480de696649ee5500986e9f7989f433a7cc1741b64639fffc51ed",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-direction-portrait-guard.png",
-        "sha256": "e56b042124a278a142228d2f43ed2767727d4ecec2334934f46a7ef7ce61a473",
-        "pixelSha256": "d3b687b8ffe56c98f744afbfa08721c7462c38cf191a65035fb69a2cbe4c4574",
+        "sha256": "da9389e595e480de696649ee5500986e9f7989f433a7cc1741b64639fffc51ed",
+        "pixelSha256": "666a8d03e988d49bcafbdfe4c7a4c2b20ca8f48cb3b3db53beba09f65685eecc",
         "width": 48,
         "height": 48
       },
@@ -5454,8 +6114,8 @@
       },
       "plateCheck": {
         "bandRows": 9,
-        "groundShare": 0.0092,
-        "footprintWidthShare": 0.9118,
+        "groundShare": 0.0083,
+        "footprintWidthShare": 0.9143,
         "suspect": false
       },
       "reviewChecks": {
@@ -5465,8 +6125,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Gold helmet band, crimson shield with a gold cross and steel border; spear kept: matches the map Guard.",
-      "acceptedAt": "2026-10-02T08:51:36.937Z"
+      "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the Guard's bust behind the rectangular crimson tower shield with its gold cross and steel border, with a steel pauldron; kettle helmet, face and spear unchanged.",
+      "acceptedAt": "2026-10-05T12:58:32.182Z"
     },
     "chibi-direction-portrait-juggernaut": {
       "id": "chibi-direction-portrait-juggernaut",

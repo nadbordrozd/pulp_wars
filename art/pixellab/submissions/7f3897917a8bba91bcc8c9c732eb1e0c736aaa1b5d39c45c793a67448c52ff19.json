@@ -1,0 +1,36 @@
+{
+  "id": "guard-r6-d",
+  "jobId": "0bc4afae-f23a-4a0e-be81-f4542144ab60",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-guard",
+    "subject": "UNIT:GUARD",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 207314,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the shield: replace it with a much bigger tall rectangular tower shield with a flat bottom standing on the ground, as wide as his body, reaching from under his chin to the ground, hiding his body and legs; crimson with a bold gold cross and a thick steel border. His head, face, helmet, one big steel pauldron and the upright spear stay fully visible beside and above it. Do not redraw anything else: keep proportions, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the shield: replace it with a much bigger tall rectangular tower shield with a flat bottom standing on the ground, as wide as his body, reaching from under his chin to the ground, hiding his body and legs; crimson with a bold gold cross and a thick steel border. His head, face, helmet, one big steel pauldron and the upright spear stay fully visible beside and above it. Do not redraw anything else: keep proportions, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the shield: replace it with a much bigger tall rectangular tower shield with a flat bottom standing on the ground, as wide as his body, reaching from under his chin to the ground, hiding his body and legs; crimson with a bold gold cross and a thick steel border. His head, face, helmet, one big steel pauldron and the upright spear stay fully visible beside and above it. Do not redraw anything else: keep proportions, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the shield: replace it with a much bigger tall rectangular tower shield with a flat bottom standing on the ground, as wide as his body, reaching from under his chin to the ground, hiding his body and legs; crimson with a bold gold cross and a thick steel border. His head, face, helmet, one big steel pauldron and the upright spear stay fully visible beside and above it. Do not redraw anything else: keep proportions, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "guard-r6-a",
+      "candidate": 0,
+      "sha256": "1034bb97d22cc38860ed6adc7a4dd2207e8054e34560b0845d0099463f861378"
+    }
+  }
+}

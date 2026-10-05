@@ -1,0 +1,36 @@
+{
+  "id": "mothership-r6-a",
+  "jobId": "04cb6501-f5d8-417a-8b6c-5dd27d210e92",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-mothership",
+    "subject": "UNIT:MARTIAN:KNIGHT",
+    "faction": "MARTIAN",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 207401,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make it a far bigger command mothership filling the image from left to right edge: a huge thick chrome hull of three stacked decks, the middle deck with a row of lit magenta windows, the lower deck with a ring of big magenta lights, the upper deck with a big chrome command dome with dark windows and an antenna; a very big magenta beam port under it. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make it a far bigger command mothership filling the image from left to right edge: a huge thick chrome hull of three stacked decks, the middle deck with a row of lit magenta windows, the lower deck with a ring of big magenta lights, the upper deck with a big chrome command dome with dark windows and an antenna; a very big magenta beam port under it. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make it a far bigger command mothership filling the image from left to right edge: a huge thick chrome hull of three stacked decks, the middle deck with a row of lit magenta windows, the lower deck with a ring of big magenta lights, the upper deck with a big chrome command dome with dark windows and an antenna; a very big magenta beam port under it. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make it a far bigger command mothership filling the image from left to right edge: a huge thick chrome hull of three stacked decks, the middle deck with a row of lit magenta windows, the lower deck with a ring of big magenta lights, the upper deck with a big chrome command dome with dark windows and an antenna; a very big magenta beam port under it. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "mothership-a",
+      "candidate": 0,
+      "sha256": "542bc7c3c03ca2fce6d6b0ed6569f8b9a898ca3fe79c3e06f0c20dae6231bc30"
+    }
+  }
+}

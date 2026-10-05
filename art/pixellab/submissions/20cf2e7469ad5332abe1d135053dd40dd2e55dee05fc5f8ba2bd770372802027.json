@@ -1,0 +1,36 @@
+{
+  "id": "portrait-rock-candy-golem-r6-mint",
+  "jobId": "b364f011-b0cd-48f6-8947-e73e8818448a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-portrait-candy-rock-candy-golem",
+    "subject": "PORTRAIT:CANDY:JUGGERNAUT",
+    "faction": "CANDY",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 207541,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the crystals and change nothing else: every pink crystal of the head and shoulders becomes rock candy of glossy mint green, colour #7fe0b0, with lighter #c8f5df facets and white highlights, shaded deeper green #3fa878. No pink is left. Keep the caramel brown face and bands, the eyes, the mint trim, the tiny sprinkles, every shape, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the crystals and change nothing else: every pink crystal of the head and shoulders becomes rock candy of glossy mint green, colour #7fe0b0, with lighter #c8f5df facets and white highlights, shaded deeper green #3fa878. No pink is left. Keep the caramel brown face and bands, the eyes, the mint trim, the tiny sprinkles, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the crystals and change nothing else: every pink crystal of the head and shoulders becomes rock candy of glossy mint green, colour #7fe0b0, with lighter #c8f5df facets and white highlights, shaded deeper green #3fa878. No pink is left. Keep the caramel brown face and bands, the eyes, the mint trim, the tiny sprinkles, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the crystals and change nothing else: every pink crystal of the head and shoulders becomes rock candy of glossy mint green, colour #7fe0b0, with lighter #c8f5df facets and white highlights, shaded deeper green #3fa878. No pink is left. Keep the caramel brown face and bands, the eyes, the mint trim, the tiny sprinkles, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-rock-candy-golem-a",
+      "candidate": 0,
+      "sha256": "53e5d3a0e048da3bb6d59a2def31558e3072f570236c1fffef53e3d76389356f"
+    }
+  }
+}

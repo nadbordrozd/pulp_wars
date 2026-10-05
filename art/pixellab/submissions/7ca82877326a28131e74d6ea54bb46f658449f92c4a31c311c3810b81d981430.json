@@ -1,0 +1,37 @@
+{
+  "id": "mothership-r6-b",
+  "jobId": "45751eb7-2a64-4590-a908-969fe6260a9a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-mothership",
+    "subject": "UNIT:MARTIAN:KNIGHT",
+    "faction": "MARTIAN",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 207402,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn this small saucer into a giant mothership filling the whole width of the image and most of its height: a massive thick chrome hull of three stacked tiers narrowing toward the top, each with its own ring of magenta lights; on top a small chrome command dome with dark windows and two antennas; under it one huge magenta beam port. No pilot, no glass bubble, no legs; empty space under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn this small saucer into a giant mothership filling the whole width of the image and most of its height: a massive thick chrome hull of three stacked tiers narrowing toward the top, each with its own ring of magenta lights; on top a small chrome command dome with dark windows and two antennas; under it one huge magenta beam port. No pilot, no glass bubble, no legs; empty space under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn this small saucer into a giant mothership filling the whole width of the image and most of its height: a massive thick chrome hull of three stacked tiers narrowing toward the top, each with its own ring of magenta lights; on top a small chrome command dome with dark windows and two antennas; under it one huge magenta beam port. No pilot, no glass bubble, no legs; empty space under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Turn this small saucer into a giant mothership filling the whole width of the image and most of its height: a massive thick chrome hull of three stacked tiers narrowing toward the top, each with its own ring of magenta lights; on top a small chrome command dome with dark windows and two antennas; under it one huge magenta beam port. No pilot, no glass bubble, no legs; empty space under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "saucer-a-edit",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "0d7103fddedb2040f69ef2f6756a5e6cc0faf77fbdf531d05827254daba92623"
+    }
+  }
+}

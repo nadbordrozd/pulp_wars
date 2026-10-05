@@ -1287,6 +1287,166 @@
       },
       "editInstruction": "Repaint the orange-brown roofs and tower cones as clear terracotta red, and the yellow stone of the walls, towers, keep and church as pale warm sandstone, a light cream-beige with slightly darker beige shading. Keep every shape, the walls, the towers, the keep, the church, the houses, the outline and the art style exactly the same, on a transparent background with nothing under the walls.",
       "notes": "city-3-d-a-edit is the right town, but its stone is more yellow and its roofs more orange-brown than City 1 and 2."
+    },
+    {
+      "id": "fighter-r6-a",
+      "asset": "chibi-direction-fighter",
+      "endpoint": "edit-image-pixen",
+      "seed": 207301,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "fighter-heraldic-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Make him a plain, lightly equipped basic foot soldier: the big pointed heraldic shield becomes a small plain round wooden shield, half as wide, of pale brown planks with a thin steel rim and a round steel boss, no lion and no paint; no chainmail, only a simple crimson cloth tunic with the gold cross, cream linen sleeves and a brown belt. Keep the helmet with its crimson crest, the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: (the user: Fighter and Guard are too similar; the Fighter's shield should be more basic) first sample, a small round wooden shield and a cloth tunic with no mail."
+    },
+    {
+      "id": "fighter-r6-b",
+      "asset": "chibi-direction-fighter",
+      "endpoint": "edit-image-pixen",
+      "seed": 207302,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "fighter-heraldic-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: the big pointed crimson shield with the gold lion becomes a small plain round wooden buckler, about 16 pixels across, of light brown planks with a steel rim and a round steel boss, held low at his side, so his whole tunic and both legs show; no lion and no paint on it. Do not redraw anything else: keep the helmet, crest, face, sword, surcoat with the gold cross, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: second sample, only the shield changes (a small wooden buckler held low)."
+    },
+    {
+      "id": "fighter-r6-c",
+      "asset": "chibi-direction-fighter",
+      "endpoint": "edit-image-pixen",
+      "seed": 207303,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "fighter-heraldic-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a simple levy swordsman, the lightest soldier of the army: a small plain round wooden shield of light brown planks with a steel boss instead of the big heraldic shield; a padded cream linen jacket under a short crimson tabard with a small gold cross, brown belt and boots; no chainmail and no plate; a simple open steel cap with a small crimson crest. Keep the face, the sword held up, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: third sample, a levy swordsman in a padded jacket with a round wooden shield."
+    },
+    {
+      "id": "guard-r6-a",
+      "asset": "chibi-direction-guard",
+      "endpoint": "edit-image-pixen",
+      "seed": 207311,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "guard-heraldic-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Make him a heavily armoured shield-bearer in full polished steel plate: big round pauldrons, breastplate, gauntlets and leg plates. The shield becomes a much bigger tall wide tower shield covering his body from chin to feet, crimson with a bold gold cross and a thick riveted steel border, planted in front of him; feet wide apart. Keep the face, the kettle helmet with its gold band, the upright spear, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: (the user: the Guard should look more armoured with a bigger shield) first sample, plate armour and a tower shield from chin to feet."
+    },
+    {
+      "id": "guard-r6-b",
+      "asset": "chibi-direction-guard",
+      "endpoint": "edit-image-pixen",
+      "seed": 207312,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "guard-heraldic-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a heavy armoured guard behind a giant kite-shaped pavise shield, nearly as tall as he is and wider than his body, crimson with a big gold cross and a thick steel border: only his helmeted head, one big steel pauldron and his steel plate boots show round it; heavy polished steel plate armour; a braced, wide, low stance. Keep the face, the kettle helmet with its gold band, the upright spear, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: second sample, a giant kite pavise with only head, shoulder and boots showing."
+    },
+    {
+      "id": "guard-r6-c",
+      "asset": "chibi-direction-guard",
+      "endpoint": "edit-image-pixen",
+      "seed": 207313,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "guard-heraldic-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change two things only. The shield: twice as big, a huge tower shield with a flat top and rounded bottom from his chin to the ground, as wide as his body, crimson with the bold gold cross and a thick steel border. His armour: polished steel plate with a big round pauldron and plate arms and legs instead of cloth and mail. Do not redraw anything else: keep the face, kettle helmet, spear, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: third sample, the same soldier with a shield twice the size and plate instead of cloth and mail."
+    },
+    {
+      "id": "guard-r6-d",
+      "asset": "chibi-direction-guard",
+      "endpoint": "edit-image-pixen",
+      "seed": 207314,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "guard-r6-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the shield: replace it with a much bigger tall rectangular tower shield with a flat bottom standing on the ground, as wide as his body, reaching from under his chin to the ground, hiding his body and legs; crimson with a bold gold cross and a thick steel border. His head, face, helmet, one big steel pauldron and the upright spear stay fully visible beside and above it. Do not redraw anything else: keep proportions, outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: guard-r6-a has the plate armour and pauldrons but its shield is no bigger than before: a tower shield down to the ground."
+    },
+    {
+      "id": "guard-r6-e",
+      "asset": "chibi-direction-guard",
+      "endpoint": "edit-image-pixen",
+      "seed": 207315,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "guard-r6-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change two things only. The shield: make it taller and wider, a big tower shield whose flat bottom edge rests on the ground and whose top reaches his chin, hiding his legs completely; same crimson with the gold cross and steel border. His shoulders: one big round steel pauldron on each. Do not redraw anything else: keep the face, kettle helmet with its gold band, upright spear, pose, proportions, outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: guard-r6-c keeps the soldier but its shield still ends at the knees: taller, down to the ground, with big pauldrons."
+    },
+    {
+      "id": "portrait-fighter-r6-a",
+      "asset": "chibi-direction-portrait-fighter",
+      "endpoint": "edit-image-pixen",
+      "seed": 207321,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-fighter-heraldic-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his shield and sleeves: the crimson shield with the gold lion becomes a small plain round wooden shield of pale brown planks with a steel rim and a round steel boss, no lion and no paint; his chainmail sleeves become plain cream linen sleeves. Do not redraw anything else: keep the helmet with its gold band and crimson crest, the face, the sword, the crimson tunic with the gold cross, proportions, outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: the Fighter's portrait with the round wooden shield and linen sleeves of the redesigned map sprite (fighter-r6-a)."
+    },
+    {
+      "id": "portrait-guard-r6-a",
+      "asset": "chibi-direction-portrait-guard",
+      "endpoint": "edit-image-pixen",
+      "seed": 207322,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-guard-heraldic-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his shield and armour: the shield becomes a bigger rectangular tower shield with a flat top, as wide as his body, covering him from his chin to the bottom of the image, crimson with a gold cross and a thick steel border; he wears polished steel plate with one big round steel pauldron on his shoulder. Do not redraw anything else: keep the kettle helmet with its gold band, the face, the upright spear, proportions, outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: the Guard's portrait with the tower shield and plate pauldron of the redesigned map sprite (guard-r6-d)."
     }
   ]
 }

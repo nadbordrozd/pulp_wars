@@ -1,0 +1,64 @@
+{
+  "id": "portrait-machine-a",
+  "jobId": "sync-d276031b-6f9f-4ca9-b1dc-ec6b47f0590e",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "candy-redesign",
+    "asset": "chibi-redesign-candy-portrait-machine",
+    "subject": "PORTRAIT:CANDY:MARKSMAN",
+    "faction": "TEST-CANDY-SWEETSHOP",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 207622,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "art/explorations/candy-redesign-2026-10/faction.md#prompt-fragment + art/explorations/candy-redesign-2026-10/faction.md#negative-fragment",
+        "text": "Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface.",
+        "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/candy-redesign-2026-10/subjects.json",
+        "text": "Subject: a close-up portrait of a chunky cute living gumball machine: one very big round clear glass globe with a hard white highlight, packed with small round glossy gumballs in mixed bright colours, apple green, lemon yellow, amber orange, sky blue, white and a few pink, with a small round dark chocolate lid cap on its top, filling the upper two thirds of the square; under it the top of a rounded base of glossy mint green candy, colour #5fcf9f, with two round black dot eyes and a wide happy open mouth, and a round golden caramel coin knob on its side."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "A close-up: the glass globe and the face under it fill the whole square; no legs and no feet.",
+        "negative": "full body, legs, feet, human, person, skin, hair, helmet, jellybean, blaster, gun, robot, red base"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: a close-up portrait of a chunky cute living gumball machine: one very big round clear glass globe with a hard white highlight, packed with small round glossy gumballs in mixed bright colours, apple green, lemon yellow, amber orange, sky blue, white and a few pink, with a small round dark chocolate lid cap on its top, filling the upper two thirds of the square; under it the top of a rounded base of glossy mint green candy, colour #5fcf9f, with two round black dot eyes and a wide happy open mouth, and a round golden caramel coin knob on its side. A close-up: the glass globe and the face under it fill the whole square; no legs and no feet.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, human, person, skin, hair, helmet, jellybean, blaster, gun, robot, red base",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: a close-up portrait of a chunky cute living gumball machine: one very big round clear glass globe with a hard white highlight, packed with small round glossy gumballs in mixed bright colours, apple green, lemon yellow, amber orange, sky blue, white and a few pink, with a small round dark chocolate lid cap on its top, filling the upper two thirds of the square; under it the top of a rounded base of glossy mint green candy, colour #5fcf9f, with two round black dot eyes and a wide happy open mouth, and a round golden caramel coin knob on its side. A close-up: the glass globe and the face under it fill the whole square; no legs and no feet. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, human, person, skin, hair, helmet, jellybean, blaster, gun, robot, red base."
+  }
+}

@@ -3,7 +3,7 @@
   "calibrationPairs": 120,
   "thresholds": {
     "palette": 18.5,
-    "simulated": 12.5,
+    "simulated": 12.4,
     "lightness": 5.5,
     "silhouette": 0.65
   },
@@ -11,22 +11,22 @@
     {
       "candy": "Gumdrop",
       "rival": "goblin-goblin",
-      "palette": 34.1,
-      "deuteranopia": 15.3,
-      "protanopia": 17,
-      "lightness": 17.1,
-      "silhouetteOverlap": 0.55,
-      "distinct": true
+      "palette": 17,
+      "deuteranopia": 9.2,
+      "protanopia": 11.4,
+      "lightness": 5,
+      "silhouetteOverlap": 0.6,
+      "distinct": false
     },
     {
       "candy": "Gumdrop",
       "rival": "ice-folk-yeti",
-      "palette": 27.8,
-      "deuteranopia": 14.4,
-      "protanopia": 13.1,
-      "lightness": 18.5,
-      "silhouetteOverlap": 0.73,
-      "distinct": true
+      "palette": 20.7,
+      "deuteranopia": 17.5,
+      "protanopia": 18.4,
+      "lightness": 2.5,
+      "silhouetteOverlap": 0.71,
+      "distinct": false
     },
     {
       "candy": "Marshmallow",
@@ -51,10 +51,10 @@
     {
       "candy": "Gummy Bear",
       "rival": "ice-folk-sabretooth",
-      "palette": 46.9,
-      "deuteranopia": 24.9,
-      "protanopia": 30.7,
-      "lightness": 17.5,
+      "palette": 41.4,
+      "deuteranopia": 31.1,
+      "protanopia": 28.3,
+      "lightness": 13.5,
       "silhouetteOverlap": 0.53,
       "distinct": true
     },
@@ -79,5 +79,5 @@
       "distinct": true
     }
   ],
-  "failures": 2
+  "failures": 4
 }

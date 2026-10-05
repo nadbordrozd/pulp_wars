@@ -1,0 +1,36 @@
+{
+  "id": "gummy-bear-r6-emerald",
+  "jobId": "b046d4e9-6b23-473a-b46f-6f6157812362",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-gummy-bear",
+    "subject": "UNIT:CANDY:KNIGHT",
+    "faction": "CANDY",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 207503,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn the pink jelly sweet into a green gummy sweet, see-through like green glass: one saturated emerald green jelly, colour #1fae5a, glowing lighter mint green #7fe39a in a big soft patch in the middle of the tummy and of the head, dark bottle green #11703a along its edges; one more long white shine streak on the tummy. Nothing pink is left. Keep the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn the pink jelly sweet into a green gummy sweet, see-through like green glass: one saturated emerald green jelly, colour #1fae5a, glowing lighter mint green #7fe39a in a big soft patch in the middle of the tummy and of the head, dark bottle green #11703a along its edges; one more long white shine streak on the tummy. Nothing pink is left. Keep the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn the pink jelly sweet into a green gummy sweet, see-through like green glass: one saturated emerald green jelly, colour #1fae5a, glowing lighter mint green #7fe39a in a big soft patch in the middle of the tummy and of the head, dark bottle green #11703a along its edges; one more long white shine streak on the tummy. Nothing pink is left. Keep the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Turn the pink jelly sweet into a green gummy sweet, see-through like green glass: one saturated emerald green jelly, colour #1fae5a, glowing lighter mint green #7fe39a in a big soft patch in the middle of the tummy and of the head, dark bottle green #11703a along its edges; one more long white shine streak on the tummy. Nothing pink is left. Keep the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "gummy-bear-e-bare-b",
+      "candidate": 0,
+      "sha256": "4b7f135ef2270fc916e204fe1ce79f68816624ebfa0d7db0ce61b970bb1472f3"
+    }
+  }
+}

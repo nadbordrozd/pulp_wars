@@ -1,0 +1,36 @@
+{
+  "id": "portrait-guard-r6-a",
+  "jobId": "122b43ed-bfb8-4451-961b-f1f0cdeed4ca",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-guard",
+    "subject": "PORTRAIT:GUARD",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 207322,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only his shield and armour: the shield becomes a bigger rectangular tower shield with a flat top, as wide as his body, covering him from his chin to the bottom of the image, crimson with a gold cross and a thick steel border; he wears polished steel plate with one big round steel pauldron on his shoulder. Do not redraw anything else: keep the kettle helmet with its gold band, the face, the upright spear, proportions, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only his shield and armour: the shield becomes a bigger rectangular tower shield with a flat top, as wide as his body, covering him from his chin to the bottom of the image, crimson with a gold cross and a thick steel border; he wears polished steel plate with one big round steel pauldron on his shoulder. Do not redraw anything else: keep the kettle helmet with its gold band, the face, the upright spear, proportions, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only his shield and armour: the shield becomes a bigger rectangular tower shield with a flat top, as wide as his body, covering him from his chin to the bottom of the image, crimson with a gold cross and a thick steel border; he wears polished steel plate with one big round steel pauldron on his shoulder. Do not redraw anything else: keep the kettle helmet with its gold band, the face, the upright spear, proportions, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only his shield and armour: the shield becomes a bigger rectangular tower shield with a flat top, as wide as his body, covering him from his chin to the bottom of the image, crimson with a gold cross and a thick steel border; he wears polished steel plate with one big round steel pauldron on his shoulder. Do not redraw anything else: keep the kettle helmet with its gold band, the face, the upright spear, proportions, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-guard-heraldic-edit",
+      "candidate": 0,
+      "sha256": "e56b042124a278a142228d2f43ed2767727d4ecec2334934f46a7ef7ce61a473"
+    }
+  }
+}

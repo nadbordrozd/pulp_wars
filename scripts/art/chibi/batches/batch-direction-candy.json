@@ -17,7 +17,8 @@
         "height": 80
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "UNIT:CANDY:FIGHTER/TOFFEE"
     },
     {
       "id": "chibi-direction-candy-marshmallow",
@@ -41,7 +42,8 @@
         "height": 88
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "UNIT:CANDY:KNIGHT/AMBER"
     },
     {
       "id": "chibi-direction-candy-rock-candy-golem",
@@ -53,7 +55,8 @@
         "height": 104
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "UNIT:CANDY:JUGGERNAUT/MINT"
     },
     {
       "id": "chibi-direction-candy-donut-racer",
@@ -71,13 +74,14 @@
       "id": "chibi-direction-candy-gumball-gunner",
       "subject": "UNIT:CANDY:MARKSMAN",
       "assetClass": "STANDARD_UNIT",
-      "recipeClass": "unit",
+      "recipeClass": "machine",
       "canvas": {
         "width": 56,
         "height": 80
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "UNIT:CANDY:MARKSMAN/MACHINE"
     },
     {
       "id": "chibi-direction-candy-confectioner",
@@ -113,7 +117,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "PORTRAIT:CANDY:FIGHTER/TOFFEE"
     },
     {
       "id": "chibi-direction-portrait-candy-marshmallow",
@@ -137,7 +142,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "PORTRAIT:CANDY:KNIGHT/AMBER"
     },
     {
       "id": "chibi-direction-portrait-candy-rock-candy-golem",
@@ -149,7 +155,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "PORTRAIT:CANDY:JUGGERNAUT/MINT"
     },
     {
       "id": "chibi-direction-portrait-candy-donut-racer",
@@ -173,7 +180,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "PORTRAIT:CANDY:MARKSMAN/MACHINE"
     },
     {
       "id": "chibi-direction-portrait-candy-confectioner",
@@ -185,7 +193,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "PORTRAIT:CANDY:CAPTAIN/APRON"
     },
     {
       "id": "chibi-direction-portrait-candy-pie-launcher",
@@ -1396,6 +1405,218 @@
       },
       "editInstruction": "Change only the apron and what is under it: the apron becomes a big apron of glossy pink frosting, colour #f79cc4, with a white frill at its hem, covering the whole body from the neck down to the feet, so no dark trousers show; do not redraw anything else. Keep the caramel head, the goggles, the pink frosting on the head, the white baker's hat, the whisk, the arms, the brown feet, shapes, thick black outline and art style exactly the same, on a transparent background.",
       "notes": "Root ruling of the correction pass: a pink frosting apron, so the Confectioner separates from the Dwarf Engineer in the lineup and reads as Candy (confectioner-a wears a small white apron over dark trousers)."
+    },
+    {
+      "id": "gummy-bear-r6-green",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "endpoint": "edit-image-pixen",
+      "seed": 207501,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "gummy-bear-e-bare-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent apple-green gummy jelly, colour #4fc23f, lighter yellow-green #9be56e in the middle of its tummy and head where light shines through, deep green #2a8a2c at its edges and shadows. No pink is left. Keep the white shine streaks, the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: (the user: the Gummy Bear is too pink) first sample, the accepted jelly figure recoloured apple green by hex values."
+    },
+    {
+      "id": "gummy-bear-r6-orange",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "endpoint": "edit-image-pixen",
+      "seed": 207502,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "gummy-bear-e-bare-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent amber-orange gummy jelly, colour #f39a1f, lighter golden yellow #ffcf5c in the middle of its tummy and head where light shines through, deep burnt orange #c5600f at its edges and shadows. No pink is left. Keep the white shine streaks, the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: second sample, the same figure in amber orange."
+    },
+    {
+      "id": "gummy-bear-r6-emerald",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "endpoint": "edit-image-pixen",
+      "seed": 207503,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "gummy-bear-e-bare-b",
+        "candidate": 0
+      },
+      "editInstruction": "Turn the pink jelly sweet into a green gummy sweet, see-through like green glass: one saturated emerald green jelly, colour #1fae5a, glowing lighter mint green #7fe39a in a big soft patch in the middle of the tummy and of the head, dark bottle green #11703a along its edges; one more long white shine streak on the tummy. Nothing pink is left. Keep the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: third sample, emerald green with a light patch where light shines through."
+    },
+    {
+      "id": "portrait-gummy-bear-r6-orange",
+      "asset": "chibi-direction-portrait-candy-gummy-bear",
+      "endpoint": "edit-image-pixen",
+      "seed": 207521,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-gummy-bear-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent amber-orange gummy jelly, colour #f39a1f, lighter golden yellow #ffcf5c in the middle of its head where light shines through, deep burnt orange #c5600f at its edges and shadows. No pink is left. Keep the white shine streaks, the eyes and smile, ears, raised fist, every shape, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: the Gummy Bear's portrait in the amber orange of the redesigned map sprite (gummy-bear-r6-orange)."
+    },
+    {
+      "id": "portrait-confectioner-r6-apron",
+      "asset": "chibi-direction-portrait-candy-confectioner",
+      "endpoint": "edit-image-pixen",
+      "seed": 207522,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-confectioner-a-whisk",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: the white apron top on the shoulders at the bottom of the image becomes an apron of glossy pink frosting, colour #f79cc4, with a thin white frill along its top edge. Do not redraw anything else: keep the caramel head, the brass goggles, the pink frosting with sprinkles on the head, the white baker's hat, the whisk, every shape, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: pulp_wars-jdb.9: the Confectioner's portrait still shows the first sprite's white apron top; the map sprite wears a pink frosting apron."
+    },
+    {
+      "id": "rock-candy-golem-r6-mint",
+      "asset": "chibi-direction-candy-rock-candy-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 207531,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "rock-candy-golem-a-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Recolour only the crystals and change nothing else: every pink crystal chunk of the golem becomes rock candy of glossy mint green, colour #7fe0b0, with lighter #c8f5df facets and white highlights, shaded deeper green #3fa878; a few chunks on the shoulders and fists are clear white sugar crystal. No pink is left. Keep the caramel brown bands and face, the tiny sprinkles, every shape, the pose, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: (the faction is too dominated by pink): the Golem is the largest pink sprite of the roster; a first sample in mint green and white rock candy."
+    },
+    {
+      "id": "rock-candy-golem-r6-mix",
+      "asset": "chibi-direction-candy-rock-candy-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 207532,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "rock-candy-golem-a-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Recolour only the crystals and change nothing else: the golem is built of rock candy in many colours, each big crystal chunk one colour: lemon yellow #ffe066, mint green #7fe0b0, amber orange #ffb347, sky blue #8fd3ff and white, mixed all over the body, each with lighter facets and white highlights; only one or two chunks stay pink. Keep the caramel brown bands and face, every shape, the pose, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: a second sample: rock candy in many colours."
+    },
+    {
+      "id": "portrait-rock-candy-golem-r6-mint",
+      "asset": "chibi-direction-portrait-candy-rock-candy-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 207541,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-rock-candy-golem-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the crystals and change nothing else: every pink crystal of the head and shoulders becomes rock candy of glossy mint green, colour #7fe0b0, with lighter #c8f5df facets and white highlights, shaded deeper green #3fa878. No pink is left. Keep the caramel brown face and bands, the eyes, the mint trim, the tiny sprinkles, every shape, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: the Golem's portrait in the mint green of the recoloured map sprite (rock-candy-golem-r6-mint)."
+    },
+    {
+      "id": "fighter-toffee-a",
+      "asset": "chibi-direction-candy-gumdrop",
+      "endpoint": "create-image-pixen",
+      "seed": 207602,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The toffee cube is drawn very large: about 40 pixels wide and 44 pixels tall, with the wrapper ends reaching the sides of the image.",
+      "negativeAddendum": "human, person, child, skin, hair, helmet, armour, hat, shirt, separate round head on a small body, tiny figure, thin, gumdrop, jelly, goggles, baker's hat",
+      "notes": "Bead pulp_wars-2o7.3, concept 2 of the basic line unit: a wrapped toffee cube with twisted wrapper ends and a lollipop mace. Imported from art/explorations/candy-redesign-2026-10."
+    },
+    {
+      "id": "gunner-machine-mint-a",
+      "asset": "chibi-direction-candy-gumball-gunner",
+      "endpoint": "create-image-pixen",
+      "seed": 207613,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The glass globe is drawn very large, about 46 pixels across, and the whole machine about 66 pixels tall.",
+      "negativeAddendum": "human, person, child, skin, hair, jellybean, pill-shaped figure, figure holding a machine, blaster, gun, rifle, arms, robot, tall humanoid, wheels, red base",
+      "notes": "Bead pulp_wars-2o7.3: third sample, a peppermint mint-green base. Imported from art/explorations/candy-redesign-2026-10."
+    },
+    {
+      "id": "gunner-machine-mint-a-spit-b",
+      "asset": "chibi-direction-candy-gumball-gunner",
+      "endpoint": "edit-image-pixen",
+      "seed": 207615,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "gunner-machine-mint-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add only one thing: the machine is spitting a gumball. One round glossy lemon yellow gumball, about 7 pixels across, flies out of its open mouth toward the lower right, with two short white speed lines behind it. Do not redraw anything else: keep the glass globe and its gumballs, the chocolate lid, the mint green base, the eyes, the open mouth, the gold coin knobs, the feet, every shape, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: retry of gunner-machine-mint-a-spit, whose job failed at PixelLab. Imported from art/explorations/candy-redesign-2026-10."
+    },
+    {
+      "id": "portrait-toffee-b",
+      "asset": "chibi-direction-portrait-candy-gumdrop",
+      "endpoint": "create-image-pixen",
+      "seed": 207623,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up seen from the front: the square toffee cube with its face fills the middle of the square, and both twisted wrapper ends are visible, one on its left and one on its right; small black dot eyes with no whites; no legs and no feet.",
+      "negativeAddendum": "full body, legs, feet, human, person, skin, hair, helmet, shirt, big white eyes, eyelashes, bear, animal ears",
+      "notes": "Bead pulp_wars-2o7.3: portrait-toffee-a shows one wrapper end only and big white eyes; the map sprite has two wrapper wings and dot eyes under a brow. Imported from art/explorations/candy-redesign-2026-10."
+    },
+    {
+      "id": "portrait-machine-b",
+      "asset": "chibi-direction-portrait-candy-gumball-gunner",
+      "endpoint": "create-image-pixen",
+      "seed": 207624,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up: the glass globe and the mint green base under it fill the whole square. The only face is on the mint green base: its two dot eyes and its wide open mouth. The glass globe has no eyes and no face, only gumballs inside. No legs and no feet.",
+      "negativeAddendum": "full body, legs, feet, human, person, skin, hair, helmet, jellybean, blaster, gun, robot, red base, eyes on the glass, face on the globe, arms, hands",
+      "notes": "Bead pulp_wars-2o7.3: portrait-machine-a put a second face on the glass globe and gave the base arms. Imported from art/explorations/candy-redesign-2026-10."
+    },
+    {
+      "id": "portrait-machine-b-noeyes",
+      "asset": "chibi-direction-portrait-candy-gumball-gunner",
+      "endpoint": "edit-image-pixen",
+      "seed": 207625,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-machine-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the two big dark eyes and the mouth drawn inside the glass globe, and fill their place with more small round glossy gumballs, yellow, orange, green, blue, white and pink, so the globe holds only gumballs and has no face. Do not redraw anything else: keep the globe, its highlight, the dark lid, the mint green base with its dot eyes and open mouth, the gold coin knob, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: portrait-machine-b still has dark eyes inside the globe as well as the face on the base. Imported from art/explorations/candy-redesign-2026-10."
     }
   ]
 }

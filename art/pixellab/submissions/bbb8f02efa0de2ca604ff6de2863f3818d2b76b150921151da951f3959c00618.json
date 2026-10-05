@@ -1,0 +1,36 @@
+{
+  "id": "portrait-mothership-r6-b",
+  "jobId": "78358c93-cc0e-41f0-9e56-faa51ee70d53",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-portrait-martian-mothership",
+    "subject": "PORTRAIT:MARTIAN:KNIGHT",
+    "faction": "MARTIAN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 207422,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add a second deck: under the wide chrome disc draw a second chrome disc of the same width, directly below it and touching it, with its own ring of hot magenta lights along its rim; the round magenta beam port sits in the middle of this lower disc, short and wide. The ship now fills the image from left to right. Keep the upper disc, the dark armoured dome, the fins, the antenna, the chrome colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add a second deck: under the wide chrome disc draw a second chrome disc of the same width, directly below it and touching it, with its own ring of hot magenta lights along its rim; the round magenta beam port sits in the middle of this lower disc, short and wide. The ship now fills the image from left to right. Keep the upper disc, the dark armoured dome, the fins, the antenna, the chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add a second deck: under the wide chrome disc draw a second chrome disc of the same width, directly below it and touching it, with its own ring of hot magenta lights along its rim; the round magenta beam port sits in the middle of this lower disc, short and wide. The ship now fills the image from left to right. Keep the upper disc, the dark armoured dome, the fins, the antenna, the chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add a second deck: under the wide chrome disc draw a second chrome disc of the same width, directly below it and touching it, with its own ring of hot magenta lights along its rim; the round magenta beam port sits in the middle of this lower disc, short and wide. The ship now fills the image from left to right. Keep the upper disc, the dark armoured dome, the fins, the antenna, the chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-mothership-r6-a",
+      "candidate": 0,
+      "sha256": "a5a3dcf9e438e6af253fb295ad52c255bebb1948eb6b23cf59824ca87bc85e91"
+    }
+  }
+}

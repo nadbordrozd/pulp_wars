@@ -1460,6 +1460,167 @@
       },
       "editInstruction": "Add only one thing: a short dark gunmetal mast behind his left shoulder that holds one small round silver dish emitter with a glowing hot magenta centre beside the top left of his helmet. Do not redraw anything else: keep the big round chrome shield with its magenta lens and rim, his head, eyes, helmet, antenna, shoulder plates, thick black outline and art style exactly the same, on a transparent background.",
       "notes": "The map sprite (shield-projector-r5-edit-a-3) gained a small dish on a mast beside the helmet; the bust follows."
+    },
+    {
+      "id": "mothership-r6-a",
+      "asset": "chibi-direction-martian-mothership",
+      "endpoint": "edit-image-pixen",
+      "seed": 207401,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "mothership-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make it a far bigger command mothership filling the image from left to right edge: a huge thick chrome hull of three stacked decks, the middle deck with a row of lit magenta windows, the lower deck with a ring of big magenta lights, the upper deck with a big chrome command dome with dark windows and an antenna; a very big magenta beam port under it. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: (the user: the Mothership looks too much like the Flying Saucer; it must be clearly the big one) first sample, three decks, a window row and a command dome, edited from the accepted Mothership."
+    },
+    {
+      "id": "mothership-r6-b",
+      "asset": "chibi-direction-martian-mothership",
+      "endpoint": "edit-image-pixen",
+      "seed": 207402,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "saucer-a-edit",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Turn this small saucer into a giant mothership filling the whole width of the image and most of its height: a massive thick chrome hull of three stacked tiers narrowing toward the top, each with its own ring of magenta lights; on top a small chrome command dome with dark windows and two antennas; under it one huge magenta beam port. No pilot, no glass bubble, no legs; empty space under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: second sample, a three-tier fortress derived from the accepted Saucer."
+    },
+    {
+      "id": "mothership-r6-c",
+      "asset": "chibi-direction-martian-mothership",
+      "endpoint": "edit-image-pixen",
+      "seed": 207403,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "mothership-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make it a giant mothership: enlarge the hull until it touches the left and right edges and make the disc twice as thick, with two rows of magenta lights and a gunmetal belt between; replace the glass dome with a chrome command tower of two stacked rings with lit magenta windows and a mast with antennas; make the magenta beam port underneath larger. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: third sample, a deep hull with two light rows and a command tower."
+    },
+    {
+      "id": "tripod-r6-a",
+      "asset": "chibi-direction-martian-tripod",
+      "endpoint": "edit-image-pixen",
+      "seed": 207411,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "tripod-a-edit-3",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: the machine stands on four legs and must stand on exactly three. Of the two middle legs that stand close together, erase the left one completely, leaving empty space. Three legs remain: one spread to the left, one in the middle, one spread to the right. Do not redraw anything else: keep the chrome hood, the magenta eye lens, the heat-ray arm, the other legs, the height, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: (the user: the Tripod should have three legs, otherwise it looks great) first sample, erase one of the two middle legs of the accepted sprite."
+    },
+    {
+      "id": "tripod-r6-b",
+      "asset": "chibi-direction-martian-tripod",
+      "endpoint": "edit-image-pixen",
+      "seed": 207412,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "tripod-a-edit-3",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw only the legs. The machine is a tripod with exactly three long legs, never four: one thick leg down and out to the left, one straight down in the middle, one down and out to the right, with wide empty gaps between them; each leg dark gunmetal with a round chrome knee and a chunky chrome foot, as now. Keep the chrome hood, the magenta eye lens, the body lights, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: second sample, the legs redrawn as three with wide gaps."
+    },
+    {
+      "id": "mothership-r6-a-port",
+      "asset": "chibi-direction-martian-mothership",
+      "endpoint": "edit-image-pixen",
+      "seed": 207404,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "mothership-r6-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the pink beam of light that hangs under the ship. In its place the underside ends in one short wide round dark gunmetal beam port with a glowing hot magenta lens, no taller than 8 pixels, and everything below it is empty, so the ship hovers. Do not redraw anything else: keep the two stacked chrome decks, the rings of magenta lights, the dark command dome, the fins, the antenna, the size, outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: mothership-r6-a is the big two-deck ship, but a pink beam column hangs under it down to the ground: a flyer must keep the gap under its hull."
+    },
+    {
+      "id": "tripod-r6-c",
+      "asset": "chibi-direction-martian-tripod",
+      "endpoint": "edit-image-pixen",
+      "seed": 207413,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "tripod-r6-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add only one thing: a third leg. The machine now stands on two legs, left and right; add one more leg exactly in the middle between them, going straight down from the centre of the body to the ground, in the same style: dark gunmetal with a round chrome knee and a chunky chrome foot. Exactly three legs in total, with empty gaps between them. Do not redraw anything else: keep the hood, eye lens, arm, outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: tripod-r6-a erased both middle legs and stands on two: adding one leg should be easier than removing one of four."
+    },
+    {
+      "id": "tripod-r6-d",
+      "asset": "chibi-direction-martian-tripod",
+      "endpoint": "edit-image-pixen",
+      "seed": 207414,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "tripod-r6-a",
+        "candidate": 0
+      },
+      "editInstruction": "This walker has two legs and needs three. Draw one new front leg in the empty space in the middle, between the left leg and the right leg: a thick straight dark gunmetal leg from the middle of the body down to the bottom of the image, with a round chrome knee and a big chrome foot. Empty gaps on both sides of it. Three legs in all. Keep the chrome hood, the magenta eye lens, the heat-ray arm, the two other legs, outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: a second seed and wording of the added middle leg."
+    },
+    {
+      "id": "portrait-mothership-r6-a",
+      "asset": "chibi-direction-portrait-martian-mothership",
+      "endpoint": "edit-image-pixen",
+      "seed": 207421,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-mothership-b",
+        "candidate": 0
+      },
+      "editInstruction": "Make it a bigger, heavier command mothership that fills the image: a thick chrome hull of two stacked decks, one wide disc on top of another, each with its own ring of hot magenta lights; on top a dark armoured gunmetal command dome with dark windows, small fins and a short antenna, no glass; under it one big round hot magenta beam port. Keep the silver-white chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: the Mothership's portrait with the two decks and the armoured dome of the redesigned map sprite (mothership-r6-a-port)."
+    },
+    {
+      "id": "portrait-mothership-r6-b",
+      "asset": "chibi-direction-portrait-martian-mothership",
+      "endpoint": "edit-image-pixen",
+      "seed": 207422,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-mothership-r6-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add a second deck: under the wide chrome disc draw a second chrome disc of the same width, directly below it and touching it, with its own ring of hot magenta lights along its rim; the round magenta beam port sits in the middle of this lower disc, short and wide. The ship now fills the image from left to right. Keep the upper disc, the dark armoured dome, the fins, the antenna, the chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2o7.3: portrait-mothership-r6-a got the armoured dome but still shows one disc over a pod; the map sprite has two stacked decks."
     }
   ]
 }

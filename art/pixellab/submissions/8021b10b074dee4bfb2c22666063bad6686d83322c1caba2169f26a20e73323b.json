@@ -1,0 +1,36 @@
+{
+  "id": "guard-r6-a",
+  "jobId": "24856bf3-3a95-440f-b9d9-a3b1b70240de",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-guard",
+    "subject": "UNIT:GUARD",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 207311,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make him a heavily armoured shield-bearer in full polished steel plate: big round pauldrons, breastplate, gauntlets and leg plates. The shield becomes a much bigger tall wide tower shield covering his body from chin to feet, crimson with a bold gold cross and a thick riveted steel border, planted in front of him; feet wide apart. Keep the face, the kettle helmet with its gold band, the upright spear, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make him a heavily armoured shield-bearer in full polished steel plate: big round pauldrons, breastplate, gauntlets and leg plates. The shield becomes a much bigger tall wide tower shield covering his body from chin to feet, crimson with a bold gold cross and a thick riveted steel border, planted in front of him; feet wide apart. Keep the face, the kettle helmet with its gold band, the upright spear, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make him a heavily armoured shield-bearer in full polished steel plate: big round pauldrons, breastplate, gauntlets and leg plates. The shield becomes a much bigger tall wide tower shield covering his body from chin to feet, crimson with a bold gold cross and a thick riveted steel border, planted in front of him; feet wide apart. Keep the face, the kettle helmet with its gold band, the upright spear, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make him a heavily armoured shield-bearer in full polished steel plate: big round pauldrons, breastplate, gauntlets and leg plates. The shield becomes a much bigger tall wide tower shield covering his body from chin to feet, crimson with a bold gold cross and a thick riveted steel border, planted in front of him; feet wide apart. Keep the face, the kettle helmet with its gold band, the upright spear, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "guard-heraldic-edit",
+      "candidate": 0,
+      "sha256": "82566575a8be192abcfd96c88cc3f92bb66098b30ca14690d5b4f7b3d0574313"
+    }
+  }
+}

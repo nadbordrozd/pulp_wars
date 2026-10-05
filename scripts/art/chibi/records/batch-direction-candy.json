@@ -1650,6 +1650,99 @@
         "reviewedAt": "2026-10-04T09:28:29.132Z"
       }
     },
+    "fighter-toffee-a": {
+      "id": "fighter-toffee-a",
+      "asset": "chibi-direction-candy-gumdrop",
+      "jobId": "sync-637c0cce-c22d-405d-a155-7726e6be7c6a",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "candy-redesign",
+        "asset": "chibi-redesign-candy-fighter-toffee",
+        "subject": "UNIT:CANDY:FIGHTER",
+        "faction": "TEST-CANDY-SWEETSHOP",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 207602,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/candy-redesign-2026-10/faction.md#prompt-fragment + art/explorations/candy-redesign-2026-10/faction.md#negative-fragment",
+            "text": "Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/candy-redesign-2026-10/subjects.json",
+            "text": "Subject: a chunky cute living wrapped toffee soldier with no separate head and no neck: the whole figure is one big fat rounded cube of glossy golden caramel toffee, colour #e0a040, shaded #b06a1c, inside a clear shiny wrapper whose two twisted fan-shaped ends of pale lemon yellow paper stick out wide on the left and on the right of the cube like big ears; one hard white highlight; the face is on the cube itself, two big round black dot eyes and a small determined smile; two tiny stubby caramel arms and two tiny round dark chocolate brown feet; it holds one oversized round lollipop mace, a mint green and white swirl disc on a white stick, upright in one hand, and a small square dark chocolate shield marked into four blocks on its other arm; no helmet, no hair and no clothes; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The toffee cube is drawn very large: about 40 pixels wide and 44 pixels tall, with the wrapper ends reaching the sides of the image.",
+            "negative": "human, person, child, skin, hair, helmet, armour, hat, shirt, separate round head on a small body, tiny figure, thin, gumdrop, jelly, goggles, baker's hat"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: a chunky cute living wrapped toffee soldier with no separate head and no neck: the whole figure is one big fat rounded cube of glossy golden caramel toffee, colour #e0a040, shaded #b06a1c, inside a clear shiny wrapper whose two twisted fan-shaped ends of pale lemon yellow paper stick out wide on the left and on the right of the cube like big ears; one hard white highlight; the face is on the cube itself, two big round black dot eyes and a small determined smile; two tiny stubby caramel arms and two tiny round dark chocolate brown feet; it holds one oversized round lollipop mace, a mint green and white swirl disc on a white stick, upright in one hand, and a small square dark chocolate shield marked into four blocks on its other arm; no helmet, no hair and no clothes; simple shapes and very few details. The toffee cube is drawn very large: about 40 pixels wide and 44 pixels tall, with the wrapper ends reaching the sides of the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, child, skin, hair, helmet, armour, hat, shirt, separate round head on a small body, tiny figure, thin, gumdrop, jelly, goggles, baker's hat",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: a chunky cute living wrapped toffee soldier with no separate head and no neck: the whole figure is one big fat rounded cube of glossy golden caramel toffee, colour #e0a040, shaded #b06a1c, inside a clear shiny wrapper whose two twisted fan-shaped ends of pale lemon yellow paper stick out wide on the left and on the right of the cube like big ears; one hard white highlight; the face is on the cube itself, two big round black dot eyes and a small determined smile; two tiny stubby caramel arms and two tiny round dark chocolate brown feet; it holds one oversized round lollipop mace, a mint green and white swirl disc on a white stick, upright in one hand, and a small square dark chocolate shield marked into four blocks on its other arm; no helmet, no hair and no clothes; simple shapes and very few details. The toffee cube is drawn very large: about 40 pixels wide and 44 pixels tall, with the wrapper ends reaching the sides of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, child, skin, hair, helmet, armour, hat, shirt, separate round head on a small body, tiny figure, thin, gumdrop, jelly, goggles, baker's hat."
+      },
+      "submittedAt": "2026-10-05T12:39:12.351Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/fighter-toffee-a.png",
+      "rawSheetSha256": "ff0fe723fedf37c63b4e5d4e4856237730ccb92fe0698097c9d3e7be40c5424c",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0.1667,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:39:55.397Z",
+      "importedFrom": {
+        "exploration": "art/explorations/candy-redesign-2026-10",
+        "batch": "candy-redesign",
+        "recipe": "fighter-toffee-a"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Playtest round 6 redesign (pulp_wars-2o7.3; the user: the Gumdrop is too pink, come up with something): the basic line unit is a wrapped toffee, a fat cube of golden caramel toffee with two twisted lemon wrapper ends like wings, a determined face, a chocolate knob, a mint swirl lollipop mace and a chocolate shield (54 x 53 px, feet on row 65). Chosen over a chocolate-bar soldier and a peppermint disc: the widest silhouette at board size and no pink.",
+        "reviewedAt": "2026-10-05T13:04:45.050Z"
+      }
+    },
     "gumball-gunner-a": {
       "id": "gumball-gunner-a",
       "asset": "chibi-direction-candy-gumball-gunner",
@@ -1732,9 +1825,9 @@
       ],
       "completedAt": "2026-10-04T08:56:00.992Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "A vanilla-cream jellybean with its face on the bean, a pink bandana with sprinkles, chocolate feet and a chunky caramel blaster with a clear bubble of pastel gumballs. A blaster, never a gumball machine.",
+        "notes": "A vanilla-cream jellybean with its face on the bean, a pink bandana with sprinkles, chocolate feet and a chunky caramel blaster with a clear bubble of pastel gumballs. A blaster, never a gumball machine. Superseded by gunner-machine-mint-a-spit-b.",
         "reviewedAt": "2026-10-04T09:28:03.184Z"
       }
     },
@@ -1908,9 +2001,9 @@
       ],
       "completedAt": "2026-10-04T08:40:17.203Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "A squat dome of cotton-candy pink jelly dusted with sugar, with its face on the dome, a mint frosting frill, chocolate feet, a pink-and-white candy-cane spear and a round waffle shield. Small for a soldier (54 x 48 px) and it stands 16 px above the canvas bottom. No likeness to any show's character. Reviewed at 1:1, x4 and in the 32 px lineup.",
+        "notes": "A squat dome of cotton-candy pink jelly dusted with sugar, with its face on the dome, a mint frosting frill, chocolate feet, a pink-and-white candy-cane spear and a round waffle shield. Small for a soldier (54 x 48 px) and it stands 16 px above the canvas bottom. No likeness to any show's character. Reviewed at 1:1, x4 and in the 32 px lineup. Superseded by fighter-toffee-a.",
         "reviewedAt": "2026-10-04T09:27:59.278Z"
       }
     },
@@ -2832,10 +2925,372 @@
       ],
       "completedAt": "2026-10-04T08:53:23.996Z",
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "One piece of glossy pink jelly in the shape of a bear, a fist raised, a face of two dots pressed into the jelly, no belly patch, no muzzle, nothing worn or carried: a gummy sweet, not a teddy bear. Reviewed at 1:1, x4 and in the 32 px lineup. Superseded by gummy-bear-r6-orange.",
+        "reviewedAt": "2026-10-04T09:28:00.771Z"
+      }
+    },
+    "gummy-bear-r6-emerald": {
+      "id": "gummy-bear-r6-emerald",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "jobId": "b046d4e9-6b23-473a-b46f-6f6157812362",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-candy-gummy-bear",
+        "subject": "UNIT:CANDY:KNIGHT",
+        "faction": "CANDY",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 207503,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn the pink jelly sweet into a green gummy sweet, see-through like green glass: one saturated emerald green jelly, colour #1fae5a, glowing lighter mint green #7fe39a in a big soft patch in the middle of the tummy and of the head, dark bottle green #11703a along its edges; one more long white shine streak on the tummy. Nothing pink is left. Keep the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn the pink jelly sweet into a green gummy sweet, see-through like green glass: one saturated emerald green jelly, colour #1fae5a, glowing lighter mint green #7fe39a in a big soft patch in the middle of the tummy and of the head, dark bottle green #11703a along its edges; one more long white shine streak on the tummy. Nothing pink is left. Keep the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn the pink jelly sweet into a green gummy sweet, see-through like green glass: one saturated emerald green jelly, colour #1fae5a, glowing lighter mint green #7fe39a in a big soft patch in the middle of the tummy and of the head, dark bottle green #11703a along its edges; one more long white shine streak on the tummy. Nothing pink is left. Keep the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Turn the pink jelly sweet into a green gummy sweet, see-through like green glass: one saturated emerald green jelly, colour #1fae5a, glowing lighter mint green #7fe39a in a big soft patch in the middle of the tummy and of the head, dark bottle green #11703a along its edges; one more long white shine streak on the tummy. Nothing pink is left. Keep the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "gummy-bear-e-bare-b",
+          "candidate": 0,
+          "sha256": "4b7f135ef2270fc916e204fe1ce79f68816624ebfa0d7db0ce61b970bb1472f3"
+        }
+      },
+      "submittedAt": "2026-10-05T12:36:46.620Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/gummy-bear-r6-emerald.png",
+      "rawSheetSha256": "0a93d3be46394e636fbe0c0995469a14d1b4f8998f5820e3234a6cf6635b1f9d",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.7745,
+          "footprintWidthShare": 0.6667,
+          "suspect": true
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.7745,
+          "footprintWidthShare": 0.6667,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T12:37:20.302Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A fine emerald gummy that stands off the Grass, but the darkest of the three (lit share 43%, 90th percentile L* 71) and close to the Dwarf signal green.",
+        "reviewedAt": "2026-10-05T12:47:02.652Z"
+      }
+    },
+    "gummy-bear-r6-green": {
+      "id": "gummy-bear-r6-green",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "jobId": "f5af018e-9c69-4b1b-a959-622366d47f11",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-candy-gummy-bear",
+        "subject": "UNIT:CANDY:KNIGHT",
+        "faction": "CANDY",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 207501,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent apple-green gummy jelly, colour #4fc23f, lighter yellow-green #9be56e in the middle of its tummy and head where light shines through, deep green #2a8a2c at its edges and shadows. No pink is left. Keep the white shine streaks, the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent apple-green gummy jelly, colour #4fc23f, lighter yellow-green #9be56e in the middle of its tummy and head where light shines through, deep green #2a8a2c at its edges and shadows. No pink is left. Keep the white shine streaks, the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent apple-green gummy jelly, colour #4fc23f, lighter yellow-green #9be56e in the middle of its tummy and head where light shines through, deep green #2a8a2c at its edges and shadows. No pink is left. Keep the white shine streaks, the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent apple-green gummy jelly, colour #4fc23f, lighter yellow-green #9be56e in the middle of its tummy and head where light shines through, deep green #2a8a2c at its edges and shadows. No pink is left. Keep the white shine streaks, the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "gummy-bear-e-bare-b",
+          "candidate": 0,
+          "sha256": "4b7f135ef2270fc916e204fe1ce79f68816624ebfa0d7db0ce61b970bb1472f3"
+        }
+      },
+      "submittedAt": "2026-10-05T12:35:24.578Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/gummy-bear-r6-green.png",
+      "rawSheetSha256": "2257bdbcd8d1e4e6e1f5faab6f5522f68ee7508f3a79d0b251d62ba8c9939159",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.7804,
+          "footprintWidthShare": 0.6667,
+          "suspect": true
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.7804,
+          "footprintWidthShare": 0.6667,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T12:36:07.491Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A fine apple-green gummy, but green on Grass: the lowest contrast of the three at board size, and the Goblins' lime.",
+        "reviewedAt": "2026-10-05T12:47:02.509Z"
+      }
+    },
+    "gummy-bear-r6-orange": {
+      "id": "gummy-bear-r6-orange",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "jobId": "febb6783-73a7-4497-a51e-19c6269a8cb9",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-candy-gummy-bear",
+        "subject": "UNIT:CANDY:KNIGHT",
+        "faction": "CANDY",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 207502,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent amber-orange gummy jelly, colour #f39a1f, lighter golden yellow #ffcf5c in the middle of its tummy and head where light shines through, deep burnt orange #c5600f at its edges and shadows. No pink is left. Keep the white shine streaks, the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent amber-orange gummy jelly, colour #f39a1f, lighter golden yellow #ffcf5c in the middle of its tummy and head where light shines through, deep burnt orange #c5600f at its edges and shadows. No pink is left. Keep the white shine streaks, the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent amber-orange gummy jelly, colour #f39a1f, lighter golden yellow #ffcf5c in the middle of its tummy and head where light shines through, deep burnt orange #c5600f at its edges and shadows. No pink is left. Keep the white shine streaks, the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent amber-orange gummy jelly, colour #f39a1f, lighter golden yellow #ffcf5c in the middle of its tummy and head where light shines through, deep burnt orange #c5600f at its edges and shadows. No pink is left. Keep the white shine streaks, the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "gummy-bear-e-bare-b",
+          "candidate": 0,
+          "sha256": "4b7f135ef2270fc916e204fe1ce79f68816624ebfa0d7db0ce61b970bb1472f3"
+        }
+      },
+      "submittedAt": "2026-10-05T12:36:07.498Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/gummy-bear-r6-orange.png",
+      "rawSheetSha256": "3bb0a1b9e2fc69c6331f4dd4c4898721b31e9e3a81e03f1c762aea5d83a1cb82",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:36:46.612Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "One piece of glossy pink jelly in the shape of a bear, a fist raised, a face of two dots pressed into the jelly, no belly patch, no muzzle, nothing worn or carried: a gummy sweet, not a teddy bear. Reviewed at 1:1, x4 and in the 32 px lineup.",
-        "reviewedAt": "2026-10-04T09:28:00.771Z"
+        "notes": "Playtest round 6 redesign (pulp_wars-2o7.3; the user: the Gummy Bear is too pink): the accepted jelly figure recoloured as a glossy translucent amber-orange gummy, golden where light shines through its tummy and head, burnt orange at its edges; shape, face, raised fist and canvas unchanged (66 x 72 px). It reads best of the three colours on Grass, Snow and rock.",
+        "reviewedAt": "2026-10-05T12:47:02.800Z"
+      }
+    },
+    "gunner-machine-mint-a": {
+      "id": "gunner-machine-mint-a",
+      "asset": "chibi-direction-candy-gumball-gunner",
+      "jobId": "sync-49aee155-8b7e-48df-b748-5b88df4c785b",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "candy-redesign",
+        "asset": "chibi-redesign-candy-gunner-machine-mint",
+        "subject": "UNIT:CANDY:MARKSMAN",
+        "faction": "TEST-CANDY-SWEETSHOP",
+        "recipeClass": "machine",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 207613,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/candy-redesign-2026-10/faction.md#prompt-fragment + art/explorations/candy-redesign-2026-10/faction.md#negative-fragment",
+            "text": "Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-machine.txt + scripts/art/chibi/fragments/class-machine.negative.txt",
+            "text": "Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/candy-redesign-2026-10/subjects.json",
+            "text": "Subject: a chunky cute walking gumball machine that shoots gumballs: on top one very big round clear glass globe, almost as wide as the image, with one hard white highlight, packed full of many small round glossy gumballs in mixed bright colours, apple green, lemon yellow, amber orange, sky blue, white and a few pink; a small round dark chocolate lid cap on top of the globe; under the globe a short squat rounded base of glossy peppermint mint green candy, colour #5fcf9f, shaded #2f9a70, with one white stripe round it and two round black dot eyes, and below the eyes a wide dark open chute like a round mouth out of which one yellow gumball is flying forward with two short white speed lines; a small round golden caramel coin knob on its side; two short stubby dark chocolate brown legs with round feet under the base; no arms, no hat and no weapon; simple shapes and very few details; the feet are the lowest thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The glass globe is drawn very large, about 46 pixels across, and the whole machine about 66 pixels tall.",
+            "negative": "human, person, child, skin, hair, jellybean, pill-shaped figure, figure holding a machine, blaster, gun, rifle, arms, robot, tall humanoid, wheels, red base"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: a chunky cute walking gumball machine that shoots gumballs: on top one very big round clear glass globe, almost as wide as the image, with one hard white highlight, packed full of many small round glossy gumballs in mixed bright colours, apple green, lemon yellow, amber orange, sky blue, white and a few pink; a small round dark chocolate lid cap on top of the globe; under the globe a short squat rounded base of glossy peppermint mint green candy, colour #5fcf9f, shaded #2f9a70, with one white stripe round it and two round black dot eyes, and below the eyes a wide dark open chute like a round mouth out of which one yellow gumball is flying forward with two short white speed lines; a small round golden caramel coin knob on its side; two short stubby dark chocolate brown legs with round feet under the base; no arms, no hat and no weapon; simple shapes and very few details; the feet are the lowest thing in the image. The glass globe is drawn very large, about 46 pixels across, and the whole machine about 66 pixels tall.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, child, skin, hair, jellybean, pill-shaped figure, figure holding a machine, blaster, gun, rifle, arms, robot, tall humanoid, wheels, red base",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: a chunky cute walking gumball machine that shoots gumballs: on top one very big round clear glass globe, almost as wide as the image, with one hard white highlight, packed full of many small round glossy gumballs in mixed bright colours, apple green, lemon yellow, amber orange, sky blue, white and a few pink; a small round dark chocolate lid cap on top of the globe; under the globe a short squat rounded base of glossy peppermint mint green candy, colour #5fcf9f, shaded #2f9a70, with one white stripe round it and two round black dot eyes, and below the eyes a wide dark open chute like a round mouth out of which one yellow gumball is flying forward with two short white speed lines; a small round golden caramel coin knob on its side; two short stubby dark chocolate brown legs with round feet under the base; no arms, no hat and no weapon; simple shapes and very few details; the feet are the lowest thing in the image. The glass globe is drawn very large, about 46 pixels across, and the whole machine about 66 pixels tall. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, child, skin, hair, jellybean, pill-shaped figure, figure holding a machine, blaster, gun, rifle, arms, robot, tall humanoid, wheels, red base."
+      },
+      "submittedAt": "2026-10-05T12:42:11.866Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/gunner-machine-mint-a.png",
+      "rawSheetSha256": "377d7e4e69ebcd21b77a085a80b1b04dff53d3c8d947efbd6e36aa3ab2805b76",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.1368,
+          "footprintWidthShare": 0.8163,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:42:54.831Z",
+      "importedFrom": {
+        "exploration": "art/explorations/candy-redesign-2026-10",
+        "batch": "candy-redesign",
+        "recipe": "gunner-machine-mint-a"
+      },
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right walking gumball machine, but nothing leaves it; superseded by its edit gunner-machine-mint-a-spit-b.",
+        "reviewedAt": "2026-10-05T13:04:45.194Z"
+      }
+    },
+    "gunner-machine-mint-a-spit-b": {
+      "id": "gunner-machine-mint-a-spit-b",
+      "asset": "chibi-direction-candy-gumball-gunner",
+      "jobId": "6f584a59-4396-417a-91d5-5c4475fa7161",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "candy-redesign",
+        "asset": "chibi-redesign-candy-gunner-machine-mint",
+        "subject": "UNIT:CANDY:MARKSMAN",
+        "faction": "TEST-CANDY-SWEETSHOP",
+        "recipeClass": "machine",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 207615,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Add only one thing: the machine is spitting a gumball. One round glossy lemon yellow gumball, about 7 pixels across, flies out of its open mouth toward the lower right, with two short white speed lines behind it. Do not redraw anything else: keep the glass globe and its gumballs, the chocolate lid, the mint green base, the eyes, the open mouth, the gold coin knobs, the feet, every shape, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Add only one thing: the machine is spitting a gumball. One round glossy lemon yellow gumball, about 7 pixels across, flies out of its open mouth toward the lower right, with two short white speed lines behind it. Do not redraw anything else: keep the glass globe and its gumballs, the chocolate lid, the mint green base, the eyes, the open mouth, the gold coin knobs, the feet, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Add only one thing: the machine is spitting a gumball. One round glossy lemon yellow gumball, about 7 pixels across, flies out of its open mouth toward the lower right, with two short white speed lines behind it. Do not redraw anything else: keep the glass globe and its gumballs, the chocolate lid, the mint green base, the eyes, the open mouth, the gold coin knobs, the feet, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Add only one thing: the machine is spitting a gumball. One round glossy lemon yellow gumball, about 7 pixels across, flies out of its open mouth toward the lower right, with two short white speed lines behind it. Do not redraw anything else: keep the glass globe and its gumballs, the chocolate lid, the mint green base, the eyes, the open mouth, the gold coin knobs, the feet, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "gunner-machine-mint-a",
+          "candidate": 0,
+          "sha256": "377d7e4e69ebcd21b77a085a80b1b04dff53d3c8d947efbd6e36aa3ab2805b76"
+        }
+      },
+      "submittedAt": "2026-10-05T12:59:08.690Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/gunner-machine-mint-a-spit-b.png",
+      "rawSheetSha256": "94d29e349f1c80949cd6ee63ed37f1dc5ede6237002679955befa7fe64de47a7",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.1477,
+          "footprintWidthShare": 0.8511,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.1477,
+          "footprintWidthShare": 0.8511,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:59:46.851Z",
+      "importedFrom": {
+        "exploration": "art/explorations/candy-redesign-2026-10",
+        "batch": "candy-redesign",
+        "recipe": "gunner-machine-mint-a-spit-b"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Playtest round 6 redesign (pulp_wars-2o7.3; the user: a big gumball machine spitting gumballs instead of a pill guy holding one): a walking gumball machine, a big clear globe of mixed gumballs under a chocolate lid on a mint-green base with a happy face, gold coin knobs and chocolate feet, a yellow gumball shooting from its side chute (49 x 72 px, feet on row 75). A small squat sweet-shop machine with a face, not a guardian robot.",
+        "reviewedAt": "2026-10-05T13:04:45.342Z"
       }
     },
     "icon-bounce-a": {
@@ -4578,10 +5033,76 @@
       ],
       "completedAt": "2026-10-04T09:13:00.729Z",
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "The caramel head with brass goggles, pink frosting, the white baker's hat and a wire whisk. Superseded by portrait-confectioner-r6-apron.",
+        "reviewedAt": "2026-10-04T09:28:10.567Z"
+      }
+    },
+    "portrait-confectioner-r6-apron": {
+      "id": "portrait-confectioner-r6-apron",
+      "asset": "chibi-direction-portrait-candy-confectioner",
+      "jobId": "cf0605fe-e3c4-43b5-9bb8-0e042b7d6346",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-portrait-candy-confectioner",
+        "subject": "PORTRAIT:CANDY:CAPTAIN",
+        "faction": "CANDY",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 207522,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: the white apron top on the shoulders at the bottom of the image becomes an apron of glossy pink frosting, colour #f79cc4, with a thin white frill along its top edge. Do not redraw anything else: keep the caramel head, the brass goggles, the pink frosting with sprinkles on the head, the white baker's hat, the whisk, every shape, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: the white apron top on the shoulders at the bottom of the image becomes an apron of glossy pink frosting, colour #f79cc4, with a thin white frill along its top edge. Do not redraw anything else: keep the caramel head, the brass goggles, the pink frosting with sprinkles on the head, the white baker's hat, the whisk, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: the white apron top on the shoulders at the bottom of the image becomes an apron of glossy pink frosting, colour #f79cc4, with a thin white frill along its top edge. Do not redraw anything else: keep the caramel head, the brass goggles, the pink frosting with sprinkles on the head, the white baker's hat, the whisk, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: the white apron top on the shoulders at the bottom of the image becomes an apron of glossy pink frosting, colour #f79cc4, with a thin white frill along its top edge. Do not redraw anything else: keep the caramel head, the brass goggles, the pink frosting with sprinkles on the head, the white baker's hat, the whisk, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-confectioner-a-whisk",
+          "candidate": 0,
+          "sha256": "5b52af94b5be41b1ddd1490e7c1351b70873ef3d4b2d330f1a0836dc12fd538f"
+        }
+      },
+      "submittedAt": "2026-10-05T12:47:50.908Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/portrait-confectioner-r6-apron.png",
+      "rawSheetSha256": "9557b614982ba1bdc5ac044896a972c0edcfbb400a40457bb29725312e0b6aad",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.0609,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.0609,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:48:23.074Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "The caramel head with brass goggles, pink frosting, the white baker's hat and a wire whisk.",
-        "reviewedAt": "2026-10-04T09:28:10.567Z"
+        "notes": "The apron top at the bottom of the bust is now pink frosting like the map sprite's apron (pulp_wars-jdb.9, done in pulp_wars-2o7.3); head, goggles, hat and whisk unchanged.",
+        "reviewedAt": "2026-10-05T12:58:32.948Z"
       }
     },
     "portrait-donut-racer-a": {
@@ -4753,9 +5274,9 @@
       ],
       "completedAt": "2026-10-04T09:06:45.459Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The cream jellybean with its pink bandana and the blaster with its gumball bubble; nearly the whole figure, large in the square.",
+        "notes": "The cream jellybean with its pink bandana and the blaster with its gumball bubble; nearly the whole figure, large in the square. Superseded by portrait-machine-b-noeyes.",
         "reviewedAt": "2026-10-04T09:28:09.571Z"
       }
     },
@@ -4841,9 +5362,9 @@
       ],
       "completedAt": "2026-10-04T08:58:48.589Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The pink sugar-dusted dome with its face, the candy cane and the waffle shield, close up.",
+        "notes": "The pink sugar-dusted dome with its face, the candy cane and the waffle shield, close up. Superseded by portrait-toffee-b.",
         "reviewedAt": "2026-10-04T09:28:05.678Z"
       }
     },
@@ -4995,10 +5516,240 @@
       ],
       "completedAt": "2026-10-04T09:05:29.654Z",
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "The pink jelly bust with round ears, a pressed-in face and a raised fist; the plate under it is gone. Superseded by portrait-gummy-bear-r6-orange.",
+        "reviewedAt": "2026-10-04T09:28:07.329Z"
+      }
+    },
+    "portrait-gummy-bear-r6-orange": {
+      "id": "portrait-gummy-bear-r6-orange",
+      "asset": "chibi-direction-portrait-candy-gummy-bear",
+      "jobId": "af445510-e1b2-4a24-aa99-ac131bd17bd7",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-portrait-candy-gummy-bear",
+        "subject": "PORTRAIT:CANDY:KNIGHT",
+        "faction": "CANDY",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 207521,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent amber-orange gummy jelly, colour #f39a1f, lighter golden yellow #ffcf5c in the middle of its head where light shines through, deep burnt orange #c5600f at its edges and shadows. No pink is left. Keep the white shine streaks, the eyes and smile, ears, raised fist, every shape, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent amber-orange gummy jelly, colour #f39a1f, lighter golden yellow #ffcf5c in the middle of its head where light shines through, deep burnt orange #c5600f at its edges and shadows. No pink is left. Keep the white shine streaks, the eyes and smile, ears, raised fist, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent amber-orange gummy jelly, colour #f39a1f, lighter golden yellow #ffcf5c in the middle of its head where light shines through, deep burnt orange #c5600f at its edges and shadows. No pink is left. Keep the white shine streaks, the eyes and smile, ears, raised fist, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent amber-orange gummy jelly, colour #f39a1f, lighter golden yellow #ffcf5c in the middle of its head where light shines through, deep burnt orange #c5600f at its edges and shadows. No pink is left. Keep the white shine streaks, the eyes and smile, ears, raised fist, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-gummy-bear-a-edit",
+          "candidate": 0,
+          "sha256": "79785edeb4dc52dade1dcfc72ddb07c4d6b55f3ed6fb3cbb8a5961c6d899217a"
+        }
+      },
+      "submittedAt": "2026-10-05T12:46:51.144Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/portrait-gummy-bear-r6-orange.png",
+      "rawSheetSha256": "58bdc25dfd317bed21fcabb8149be9858be3abe5954f5a7584800d90bdbb6c47",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9091,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9091,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:47:50.895Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "The pink jelly bust with round ears, a pressed-in face and a raised fist; the plate under it is gone.",
-        "reviewedAt": "2026-10-04T09:28:07.329Z"
+        "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the Gummy Bear's bust in the amber orange of the new map sprite; shape, face and raised fist unchanged.",
+        "reviewedAt": "2026-10-05T12:58:32.565Z"
+      }
+    },
+    "portrait-machine-b": {
+      "id": "portrait-machine-b",
+      "asset": "chibi-direction-portrait-candy-gumball-gunner",
+      "jobId": "sync-0a312809-ff15-4871-9753-b9abd063fe37",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "candy-redesign",
+        "asset": "chibi-redesign-candy-portrait-machine",
+        "subject": "PORTRAIT:CANDY:MARKSMAN",
+        "faction": "TEST-CANDY-SWEETSHOP",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 207624,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/candy-redesign-2026-10/faction.md#prompt-fragment + art/explorations/candy-redesign-2026-10/faction.md#negative-fragment",
+            "text": "Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/candy-redesign-2026-10/subjects.json",
+            "text": "Subject: a close-up portrait of a chunky cute living gumball machine: one very big round clear glass globe with a hard white highlight, packed with small round glossy gumballs in mixed bright colours, apple green, lemon yellow, amber orange, sky blue, white and a few pink, with a small round dark chocolate lid cap on its top, filling the upper two thirds of the square; under it the top of a rounded base of glossy mint green candy, colour #5fcf9f, with two round black dot eyes and a wide happy open mouth, and a round golden caramel coin knob on its side."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "A close-up: the glass globe and the mint green base under it fill the whole square. The only face is on the mint green base: its two dot eyes and its wide open mouth. The glass globe has no eyes and no face, only gumballs inside. No legs and no feet.",
+            "negative": "full body, legs, feet, human, person, skin, hair, helmet, jellybean, blaster, gun, robot, red base, eyes on the glass, face on the globe, arms, hands"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: a close-up portrait of a chunky cute living gumball machine: one very big round clear glass globe with a hard white highlight, packed with small round glossy gumballs in mixed bright colours, apple green, lemon yellow, amber orange, sky blue, white and a few pink, with a small round dark chocolate lid cap on its top, filling the upper two thirds of the square; under it the top of a rounded base of glossy mint green candy, colour #5fcf9f, with two round black dot eyes and a wide happy open mouth, and a round golden caramel coin knob on its side. A close-up: the glass globe and the mint green base under it fill the whole square. The only face is on the mint green base: its two dot eyes and its wide open mouth. The glass globe has no eyes and no face, only gumballs inside. No legs and no feet.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, human, person, skin, hair, helmet, jellybean, blaster, gun, robot, red base, eyes on the glass, face on the globe, arms, hands",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: a close-up portrait of a chunky cute living gumball machine: one very big round clear glass globe with a hard white highlight, packed with small round glossy gumballs in mixed bright colours, apple green, lemon yellow, amber orange, sky blue, white and a few pink, with a small round dark chocolate lid cap on its top, filling the upper two thirds of the square; under it the top of a rounded base of glossy mint green candy, colour #5fcf9f, with two round black dot eyes and a wide happy open mouth, and a round golden caramel coin knob on its side. A close-up: the glass globe and the mint green base under it fill the whole square. The only face is on the mint green base: its two dot eyes and its wide open mouth. The glass globe has no eyes and no face, only gumballs inside. No legs and no feet. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, human, person, skin, hair, helmet, jellybean, blaster, gun, robot, red base, eyes on the glass, face on the globe, arms, hands."
+      },
+      "submittedAt": "2026-10-05T13:01:31.235Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/portrait-machine-b.png",
+      "rawSheetSha256": "cd082dbe55a5fecbaaf83721779c03d751a0de458b26b5044ffa50df2c5c3c13",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.6215,
+          "footprintWidthShare": 0.9286,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T13:02:13.897Z",
+      "importedFrom": {
+        "exploration": "art/explorations/candy-redesign-2026-10",
+        "batch": "candy-redesign",
+        "recipe": "portrait-machine-b"
+      },
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Dark eyes are drawn inside the globe as well as the face on the base; superseded by its edit portrait-machine-b-noeyes.",
+        "reviewedAt": "2026-10-05T13:04:45.630Z"
+      }
+    },
+    "portrait-machine-b-noeyes": {
+      "id": "portrait-machine-b-noeyes",
+      "asset": "chibi-direction-portrait-candy-gumball-gunner",
+      "jobId": "55245663-bccc-456a-8521-b87061750d24",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "candy-redesign",
+        "asset": "chibi-redesign-candy-portrait-machine",
+        "subject": "PORTRAIT:CANDY:MARKSMAN",
+        "faction": "TEST-CANDY-SWEETSHOP",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 207625,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the two big dark eyes and the mouth drawn inside the glass globe, and fill their place with more small round glossy gumballs, yellow, orange, green, blue, white and pink, so the globe holds only gumballs and has no face. Do not redraw anything else: keep the globe, its highlight, the dark lid, the mint green base with its dot eyes and open mouth, the gold coin knob, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: erase the two big dark eyes and the mouth drawn inside the glass globe, and fill their place with more small round glossy gumballs, yellow, orange, green, blue, white and pink, so the globe holds only gumballs and has no face. Do not redraw anything else: keep the globe, its highlight, the dark lid, the mint green base with its dot eyes and open mouth, the gold coin knob, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the two big dark eyes and the mouth drawn inside the glass globe, and fill their place with more small round glossy gumballs, yellow, orange, green, blue, white and pink, so the globe holds only gumballs and has no face. Do not redraw anything else: keep the globe, its highlight, the dark lid, the mint green base with its dot eyes and open mouth, the gold coin knob, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: erase the two big dark eyes and the mouth drawn inside the glass globe, and fill their place with more small round glossy gumballs, yellow, orange, green, blue, white and pink, so the globe holds only gumballs and has no face. Do not redraw anything else: keep the globe, its highlight, the dark lid, the mint green base with its dot eyes and open mouth, the gold coin knob, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-machine-b",
+          "candidate": 0,
+          "sha256": "cd082dbe55a5fecbaaf83721779c03d751a0de458b26b5044ffa50df2c5c3c13"
+        }
+      },
+      "submittedAt": "2026-10-05T13:03:29.660Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/portrait-machine-b-noeyes.png",
+      "rawSheetSha256": "67fe711dc4bed6d9e3938941fb55fec52d3c8509c7fc02f7b811771fcfe2bfe8",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.6215,
+          "footprintWidthShare": 0.9286,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.6215,
+          "footprintWidthShare": 0.9286,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T13:03:57.654Z",
+      "importedFrom": {
+        "exploration": "art/explorations/candy-redesign-2026-10",
+        "batch": "candy-redesign",
+        "recipe": "portrait-machine-b-noeyes"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the gumball machine close up, a globe of mixed gumballs under a dark lid on the mint base with its face and gold coin knob.",
+        "reviewedAt": "2026-10-05T13:04:45.777Z"
       }
     },
     "portrait-marshmallow-a": {
@@ -5345,10 +6096,169 @@
       ],
       "completedAt": "2026-10-04T09:00:32.690Z",
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "The caramel face under the pink crystal crest, crystal shoulders and caramel bands, as on the map sprite. Superseded by portrait-rock-candy-golem-r6-mint.",
+        "reviewedAt": "2026-10-04T09:28:08.014Z"
+      }
+    },
+    "portrait-rock-candy-golem-r6-mint": {
+      "id": "portrait-rock-candy-golem-r6-mint",
+      "asset": "chibi-direction-portrait-candy-rock-candy-golem",
+      "jobId": "b364f011-b0cd-48f6-8947-e73e8818448a",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-portrait-candy-rock-candy-golem",
+        "subject": "PORTRAIT:CANDY:JUGGERNAUT",
+        "faction": "CANDY",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 207541,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the crystals and change nothing else: every pink crystal of the head and shoulders becomes rock candy of glossy mint green, colour #7fe0b0, with lighter #c8f5df facets and white highlights, shaded deeper green #3fa878. No pink is left. Keep the caramel brown face and bands, the eyes, the mint trim, the tiny sprinkles, every shape, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour only the crystals and change nothing else: every pink crystal of the head and shoulders becomes rock candy of glossy mint green, colour #7fe0b0, with lighter #c8f5df facets and white highlights, shaded deeper green #3fa878. No pink is left. Keep the caramel brown face and bands, the eyes, the mint trim, the tiny sprinkles, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour only the crystals and change nothing else: every pink crystal of the head and shoulders becomes rock candy of glossy mint green, colour #7fe0b0, with lighter #c8f5df facets and white highlights, shaded deeper green #3fa878. No pink is left. Keep the caramel brown face and bands, the eyes, the mint trim, the tiny sprinkles, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour only the crystals and change nothing else: every pink crystal of the head and shoulders becomes rock candy of glossy mint green, colour #7fe0b0, with lighter #c8f5df facets and white highlights, shaded deeper green #3fa878. No pink is left. Keep the caramel brown face and bands, the eyes, the mint trim, the tiny sprinkles, every shape, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-rock-candy-golem-a",
+          "candidate": 0,
+          "sha256": "53e5d3a0e048da3bb6d59a2def31558e3072f570236c1fffef53e3d76389356f"
+        }
+      },
+      "submittedAt": "2026-10-05T12:59:41.797Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/portrait-rock-candy-golem-r6-mint.png",
+      "rawSheetSha256": "f91bfa208a1c5bf2aa3d3055cb6565ff02530b78b2687512187991190a95a96f",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.5264,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.5264,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T13:00:23.140Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "The caramel face under the pink crystal crest, crystal shoulders and caramel bands, as on the map sprite.",
-        "reviewedAt": "2026-10-04T09:28:08.014Z"
+        "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the Golem's bust with green rock-candy crystals like the recoloured map sprite (a little deeper green than the sprite's mint); caramel face and bands unchanged.",
+        "reviewedAt": "2026-10-05T13:01:01.514Z"
+      }
+    },
+    "portrait-toffee-b": {
+      "id": "portrait-toffee-b",
+      "asset": "chibi-direction-portrait-candy-gumdrop",
+      "jobId": "sync-be851bfe-817f-4ccb-a85f-9278c6168a83",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "candy-redesign",
+        "asset": "chibi-redesign-candy-portrait-toffee",
+        "subject": "PORTRAIT:CANDY:FIGHTER",
+        "faction": "TEST-CANDY-SWEETSHOP",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 207623,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/candy-redesign-2026-10/faction.md#prompt-fragment + art/explorations/candy-redesign-2026-10/faction.md#negative-fragment",
+            "text": "Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/candy-redesign-2026-10/subjects.json",
+            "text": "Subject: a close-up portrait of a chunky cute living wrapped toffee soldier: one big fat rounded cube of glossy golden caramel toffee, colour #e0a040, shaded #b06a1c, with one hard white highlight, filling most of the square, with two twisted fan-shaped wrapper ends of pale lemon yellow and white paper sticking out wide at its left and right like big ears, and a small dark chocolate knob on its top; the face is on the cube itself, two big round black dot eyes under short determined brows, two small pink cheeks and a small smile; beside it the top of a round mint green and white swirl lollipop."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "A close-up seen from the front: the square toffee cube with its face fills the middle of the square, and both twisted wrapper ends are visible, one on its left and one on its right; small black dot eyes with no whites; no legs and no feet.",
+            "negative": "full body, legs, feet, human, person, skin, hair, helmet, shirt, big white eyes, eyelashes, bear, animal ears"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: a close-up portrait of a chunky cute living wrapped toffee soldier: one big fat rounded cube of glossy golden caramel toffee, colour #e0a040, shaded #b06a1c, with one hard white highlight, filling most of the square, with two twisted fan-shaped wrapper ends of pale lemon yellow and white paper sticking out wide at its left and right like big ears, and a small dark chocolate knob on its top; the face is on the cube itself, two big round black dot eyes under short determined brows, two small pink cheeks and a small smile; beside it the top of a round mint green and white swirl lollipop. A close-up seen from the front: the square toffee cube with its face fills the middle of the square, and both twisted wrapper ends are visible, one on its left and one on its right; small black dot eyes with no whites; no legs and no feet.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, human, person, skin, hair, helmet, shirt, big white eyes, eyelashes, bear, animal ears",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: a close-up portrait of a chunky cute living wrapped toffee soldier: one big fat rounded cube of glossy golden caramel toffee, colour #e0a040, shaded #b06a1c, with one hard white highlight, filling most of the square, with two twisted fan-shaped wrapper ends of pale lemon yellow and white paper sticking out wide at its left and right like big ears, and a small dark chocolate knob on its top; the face is on the cube itself, two big round black dot eyes under short determined brows, two small pink cheeks and a small smile; beside it the top of a round mint green and white swirl lollipop. A close-up seen from the front: the square toffee cube with its face fills the middle of the square, and both twisted wrapper ends are visible, one on its left and one on its right; small black dot eyes with no whites; no legs and no feet. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, human, person, skin, hair, helmet, shirt, big white eyes, eyelashes, bear, animal ears."
+      },
+      "submittedAt": "2026-10-05T13:01:00.161Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/portrait-toffee-b.png",
+      "rawSheetSha256": "6284e4d7ab510139635ee1fb213a85834ae1e7ea7fab501cb0db97388cb95de2",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.6559,
+          "footprintWidthShare": 0.7391,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T13:01:31.234Z",
+      "importedFrom": {
+        "exploration": "art/explorations/candy-redesign-2026-10",
+        "batch": "candy-redesign",
+        "recipe": "portrait-toffee-b"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the toffee cube close up with both wrapper wings, the brow and smile of the map sprite, a chocolate knob and the mint lollipop. Also the Candy setup emblem.",
+        "reviewedAt": "2026-10-05T13:04:45.487Z"
       }
     },
     "rock-candy-golem-a": {
@@ -5499,10 +6409,142 @@
       ],
       "completedAt": "2026-10-04T08:42:19.651Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 1,
-        "notes": "A towering golem of pink rock-candy crystal chunks with sprinkles, bound with dripping caramel bands, a caramel face under a crystal crest, two empty crystal fists; the teal belly crystal and the weapon are gone. Never a gumball machine.",
+        "notes": "A towering golem of pink rock-candy crystal chunks with sprinkles, bound with dripping caramel bands, a caramel face under a crystal crest, two empty crystal fists; the teal belly crystal and the weapon are gone. Never a gumball machine. Superseded by rock-candy-golem-r6-mint.",
         "reviewedAt": "2026-10-04T09:28:01.661Z"
+      }
+    },
+    "rock-candy-golem-r6-mint": {
+      "id": "rock-candy-golem-r6-mint",
+      "asset": "chibi-direction-candy-rock-candy-golem",
+      "jobId": "eb57b3c7-4947-4157-a175-ff464afb9edf",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-candy-rock-candy-golem",
+        "subject": "UNIT:CANDY:JUGGERNAUT",
+        "faction": "CANDY",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 207531,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the crystals and change nothing else: every pink crystal chunk of the golem becomes rock candy of glossy mint green, colour #7fe0b0, with lighter #c8f5df facets and white highlights, shaded deeper green #3fa878; a few chunks on the shoulders and fists are clear white sugar crystal. No pink is left. Keep the caramel brown bands and face, the tiny sprinkles, every shape, the pose, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour only the crystals and change nothing else: every pink crystal chunk of the golem becomes rock candy of glossy mint green, colour #7fe0b0, with lighter #c8f5df facets and white highlights, shaded deeper green #3fa878; a few chunks on the shoulders and fists are clear white sugar crystal. No pink is left. Keep the caramel brown bands and face, the tiny sprinkles, every shape, the pose, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour only the crystals and change nothing else: every pink crystal chunk of the golem becomes rock candy of glossy mint green, colour #7fe0b0, with lighter #c8f5df facets and white highlights, shaded deeper green #3fa878; a few chunks on the shoulders and fists are clear white sugar crystal. No pink is left. Keep the caramel brown bands and face, the tiny sprinkles, every shape, the pose, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour only the crystals and change nothing else: every pink crystal chunk of the golem becomes rock candy of glossy mint green, colour #7fe0b0, with lighter #c8f5df facets and white highlights, shaded deeper green #3fa878; a few chunks on the shoulders and fists are clear white sugar crystal. No pink is left. Keep the caramel brown bands and face, the tiny sprinkles, every shape, the pose, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "rock-candy-golem-a-edit",
+          "candidate": 1,
+          "sha256": "c15e9d98f3c8f9eec08a0b408fd563fc61b95167b513ae3975fe0b07f1af1165"
+        }
+      },
+      "submittedAt": "2026-10-05T12:48:23.084Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/rock-candy-golem-r6-mint.png",
+      "rawSheetSha256": "de968f5a4b8f9ff85762b9ae560c08050cc9bc316ecf52b8b5176e015dd7c3dc",
+      "plateHints": [
+        {
+          "bandRows": 20,
+          "groundShare": 0.3798,
+          "footprintWidthShare": 0.4634,
+          "suspect": false
+        },
+        {
+          "bandRows": 20,
+          "groundShare": 0.3798,
+          "footprintWidthShare": 0.4634,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:49:27.663Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Playtest round 6 redesign (pulp_wars-2o7.3; the user: the faction is too dominated by pink): the accepted Golem with its crystals recoloured as mint-green rock candy with pale facets and a few white sugar chunks; the caramel bands, face, pose and every shape unchanged (82 x 99 px). It was the largest pink sprite of the roster.",
+        "reviewedAt": "2026-10-05T12:58:33.701Z"
+      }
+    },
+    "rock-candy-golem-r6-mix": {
+      "id": "rock-candy-golem-r6-mix",
+      "asset": "chibi-direction-candy-rock-candy-golem",
+      "jobId": "7473741b-1d81-4b60-9243-220576a368f9",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-candy-rock-candy-golem",
+        "subject": "UNIT:CANDY:JUGGERNAUT",
+        "faction": "CANDY",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 207532,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the crystals and change nothing else: the golem is built of rock candy in many colours, each big crystal chunk one colour: lemon yellow #ffe066, mint green #7fe0b0, amber orange #ffb347, sky blue #8fd3ff and white, mixed all over the body, each with lighter facets and white highlights; only one or two chunks stay pink. Keep the caramel brown bands and face, every shape, the pose, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour only the crystals and change nothing else: the golem is built of rock candy in many colours, each big crystal chunk one colour: lemon yellow #ffe066, mint green #7fe0b0, amber orange #ffb347, sky blue #8fd3ff and white, mixed all over the body, each with lighter facets and white highlights; only one or two chunks stay pink. Keep the caramel brown bands and face, every shape, the pose, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour only the crystals and change nothing else: the golem is built of rock candy in many colours, each big crystal chunk one colour: lemon yellow #ffe066, mint green #7fe0b0, amber orange #ffb347, sky blue #8fd3ff and white, mixed all over the body, each with lighter facets and white highlights; only one or two chunks stay pink. Keep the caramel brown bands and face, every shape, the pose, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour only the crystals and change nothing else: the golem is built of rock candy in many colours, each big crystal chunk one colour: lemon yellow #ffe066, mint green #7fe0b0, amber orange #ffb347, sky blue #8fd3ff and white, mixed all over the body, each with lighter facets and white highlights; only one or two chunks stay pink. Keep the caramel brown bands and face, every shape, the pose, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "rock-candy-golem-a-edit",
+          "candidate": 1,
+          "sha256": "c15e9d98f3c8f9eec08a0b408fd563fc61b95167b513ae3975fe0b07f1af1165"
+        }
+      },
+      "submittedAt": "2026-10-05T12:49:27.673Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/rock-candy-golem-r6-mix.png",
+      "rawSheetSha256": "ca8ae918cbd8ed2d96fbef273b420957acf809d14ad9c2aee55d5aa2eab2186d",
+      "plateHints": [
+        {
+          "bandRows": 20,
+          "groundShare": 0.0192,
+          "footprintWidthShare": 0.4634,
+          "suspect": false
+        },
+        {
+          "bandRows": 20,
+          "groundShare": 0.0192,
+          "footprintWidthShare": 0.4634,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:50:16.639Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Each limb a different colour (a yellow shoulder, a blue leg, an orange leg): a harlequin, noisy at board size, and the blue is the Ice Folk's.",
+        "reviewedAt": "2026-10-05T12:58:33.296Z"
       }
     }
   },
@@ -5917,13 +6959,13 @@
       "subject": "UNIT:CANDY:MARKSMAN",
       "assetClass": "STANDARD_UNIT",
       "status": "ACCEPTED",
-      "recipe": "gumball-gunner-a",
+      "recipe": "gunner-machine-mint-a-spit-b",
       "candidate": 0,
-      "candidateSha256": "90b1a4c3fd96f774aa937b9a78183a21c827d5376aa19991e7e43322e4570154",
+      "candidateSha256": "8c9c0678c1cf01b2b05d2ae8e325bd7687d2091aa67a0394f91a6c174fd09378",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-candy-gumball-gunner.png",
-        "sha256": "c30a1802c3c259b31bcbb2cedd94c6cc5d6ffea75d8a365f44bb955bd1ce5ef3",
-        "pixelSha256": "017b44b8ad82532b3e6a97e41c45cbb37d4baf1774cf2a10442e7bc86ffc3953",
+        "sha256": "e438171a00d79843da75ab74d1fb8c7c2bb617eb4fa542560efd2160ec290bb7",
+        "pixelSha256": "4c359c3ddbcef7d3c7550f010f561ca4d984eb894a3d47b169e81302032bbf6d",
         "width": 56,
         "height": 80
       },
@@ -5951,7 +6993,7 @@
               "add": 0.42
             }
           },
-          "accentPixels": 813,
+          "accentPixels": 101,
           "trimPixels": 0
         }
       },
@@ -5966,9 +7008,9 @@
         "down": 0
       },
       "plateCheck": {
-        "bandRows": 13,
-        "groundShare": 0.0101,
-        "footprintWidthShare": 0.5357,
+        "bandRows": 14,
+        "groundShare": 0.1477,
+        "footprintWidthShare": 0.8511,
         "suspect": false
       },
       "reviewChecks": {
@@ -5978,21 +7020,21 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "A vanilla-cream jellybean with its face on the bean, a pink bandana with sprinkles, chocolate feet and a chunky caramel blaster with a clear bubble of pastel gumballs. A blaster, never a gumball machine.",
-      "acceptedAt": "2026-10-04T09:28:03.184Z"
+      "notes": "Playtest round 6 redesign (pulp_wars-2o7.3; the user: a big gumball machine spitting gumballs instead of a pill guy holding one): a walking gumball machine, a big clear globe of mixed gumballs under a chocolate lid on a mint-green base with a happy face, gold coin knobs and chocolate feet, a yellow gumball shooting from its side chute (49 x 72 px, feet on row 75). A small squat sweet-shop machine with a face, not a guardian robot.",
+      "acceptedAt": "2026-10-05T13:04:45.342Z"
     },
     "chibi-direction-candy-gumdrop": {
       "id": "chibi-direction-candy-gumdrop",
       "subject": "UNIT:CANDY:FIGHTER",
       "assetClass": "STANDARD_UNIT",
       "status": "ACCEPTED",
-      "recipe": "gumdrop-b",
+      "recipe": "fighter-toffee-a",
       "candidate": 0,
-      "candidateSha256": "3aa174d0d5bc48f394cdc5e1211e7ef5a37d93c1345e47e831d4ff4b1bbc494e",
+      "candidateSha256": "ff0fe723fedf37c63b4e5d4e4856237730ccb92fe0698097c9d3e7be40c5424c",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-candy-gumdrop.png",
-        "sha256": "04a73141a5d1d94a0e2628bbca4d45b5bce824a1f873036e588ae8ef426492ab",
-        "pixelSha256": "63f4ffd8c001d9246f35fdead7f6cdbd2ca3d3111846d362e86872793e5566bb",
+        "sha256": "ff0fe723fedf37c63b4e5d4e4856237730ccb92fe0698097c9d3e7be40c5424c",
+        "pixelSha256": "0579725c597379a374988f2b7d70438cb632efb7a7af90fd6a1113fde567b686",
         "width": 56,
         "height": 80
       },
@@ -6020,7 +7062,7 @@
               "add": 0.42
             }
           },
-          "accentPixels": 917,
+          "accentPixels": 0,
           "trimPixels": 0
         }
       },
@@ -6035,9 +7077,9 @@
         "down": 0
       },
       "plateCheck": {
-        "bandRows": 10,
-        "groundShare": 0.0856,
-        "footprintWidthShare": 0.7963,
+        "bandRows": 11,
+        "groundShare": 0.1667,
+        "footprintWidthShare": 0.7778,
         "suspect": false
       },
       "reviewChecks": {
@@ -6047,21 +7089,21 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "A squat dome of cotton-candy pink jelly dusted with sugar, with its face on the dome, a mint frosting frill, chocolate feet, a pink-and-white candy-cane spear and a round waffle shield. Small for a soldier (54 x 48 px) and it stands 16 px above the canvas bottom. No likeness to any show's character. Reviewed at 1:1, x4 and in the 32 px lineup.",
-      "acceptedAt": "2026-10-04T09:27:59.278Z"
+      "notes": "Playtest round 6 redesign (pulp_wars-2o7.3; the user: the Gumdrop is too pink, come up with something): the basic line unit is a wrapped toffee, a fat cube of golden caramel toffee with two twisted lemon wrapper ends like wings, a determined face, a chocolate knob, a mint swirl lollipop mace and a chocolate shield (54 x 53 px, feet on row 65). Chosen over a chocolate-bar soldier and a peppermint disc: the widest silhouette at board size and no pink.",
+      "acceptedAt": "2026-10-05T13:04:45.050Z"
     },
     "chibi-direction-candy-gummy-bear": {
       "id": "chibi-direction-candy-gummy-bear",
       "subject": "UNIT:CANDY:KNIGHT",
       "assetClass": "LARGE_UNIT",
       "status": "ACCEPTED",
-      "recipe": "gummy-bear-e-bare-b",
+      "recipe": "gummy-bear-r6-orange",
       "candidate": 0,
-      "candidateSha256": "4b7f135ef2270fc916e204fe1ce79f68816624ebfa0d7db0ce61b970bb1472f3",
+      "candidateSha256": "a589865df190231b34c70d1abb0aebf4e256559cf131120993a3830ee1ad6a49",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-candy-gummy-bear.png",
-        "sha256": "631e9eb93b9adf7f7e32a2e1d48f7b88441b0e9ae5fa8048e7aba2ed4f8a1040",
-        "pixelSha256": "b5d4cca562fcd9c7d41556214f0a012991291b73df1a45c1fa2b2edc735aa11d",
+        "sha256": "a589865df190231b34c70d1abb0aebf4e256559cf131120993a3830ee1ad6a49",
+        "pixelSha256": "d1fa37eff1184876f3bc18018f0299a29a2792762dc7b63b924e0c5756d85a1f",
         "width": 72,
         "height": 88
       },
@@ -6089,7 +7131,7 @@
               "add": 0.42
             }
           },
-          "accentPixels": 2809,
+          "accentPixels": 0,
           "trimPixels": 0
         }
       },
@@ -6116,8 +7158,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "One piece of glossy pink jelly in the shape of a bear, a fist raised, a face of two dots pressed into the jelly, no belly patch, no muzzle, nothing worn or carried: a gummy sweet, not a teddy bear. Reviewed at 1:1, x4 and in the 32 px lineup.",
-      "acceptedAt": "2026-10-04T09:28:00.771Z"
+      "notes": "Playtest round 6 redesign (pulp_wars-2o7.3; the user: the Gummy Bear is too pink): the accepted jelly figure recoloured as a glossy translucent amber-orange gummy, golden where light shines through its tummy and head, burnt orange at its edges; shape, face, raised fist and canvas unchanged (66 x 72 px). It reads best of the three colours on Grass, Snow and rock.",
+      "acceptedAt": "2026-10-05T12:47:02.800Z"
     },
     "chibi-direction-candy-marshmallow": {
       "id": "chibi-direction-candy-marshmallow",
@@ -6262,13 +7304,13 @@
       "subject": "UNIT:CANDY:JUGGERNAUT",
       "assetClass": "GIANT_UNIT",
       "status": "ACCEPTED",
-      "recipe": "rock-candy-golem-a-edit",
-      "candidate": 1,
-      "candidateSha256": "c15e9d98f3c8f9eec08a0b408fd563fc61b95167b513ae3975fe0b07f1af1165",
+      "recipe": "rock-candy-golem-r6-mint",
+      "candidate": 0,
+      "candidateSha256": "153cfd11b6423eda46dd5e79bcd406d0b424a0ed55bad0e9cecf106bb775f887",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-candy-rock-candy-golem.png",
-        "sha256": "db17d21832399f2d5ea2b3c3b4da4955b242340ecd60132c2dc801c618c14ba1",
-        "pixelSha256": "feaed33f9e2257d94abb1565c0dcdb1bd95bc23a5d9a2a0a161435fb14aa8a97",
+        "sha256": "b4e81d53868fac8e81b297c8194d9acb5276d3f40974b8ec83ef93257707291a",
+        "pixelSha256": "caf52718805ba4639879da95db954212a6bf7a018e9c031a2f0269c6ff9ef437",
         "width": 88,
         "height": 104
       },
@@ -6296,7 +7338,7 @@
               "add": 0.42
             }
           },
-          "accentPixels": 2199,
+          "accentPixels": 25,
           "trimPixels": 0
         }
       },
@@ -6312,7 +7354,7 @@
       },
       "plateCheck": {
         "bandRows": 20,
-        "groundShare": 0.0272,
+        "groundShare": 0.3798,
         "footprintWidthShare": 0.4634,
         "suspect": false
       },
@@ -6323,8 +7365,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "A towering golem of pink rock-candy crystal chunks with sprinkles, bound with dripping caramel bands, a caramel face under a crystal crest, two empty crystal fists; the teal belly crystal and the weapon are gone. Never a gumball machine.",
-      "acceptedAt": "2026-10-04T09:28:01.661Z"
+      "notes": "Playtest round 6 redesign (pulp_wars-2o7.3; the user: the faction is too dominated by pink): the accepted Golem with its crystals recoloured as mint-green rock candy with pale facets and a few white sugar chunks; the caramel bands, face, pose and every shape unchanged (82 x 99 px). It was the largest pink sprite of the roster.",
+      "acceptedAt": "2026-10-05T12:58:33.701Z"
     },
     "chibi-direction-effect-candy-bounce": {
       "id": "chibi-direction-effect-candy-bounce",
@@ -7453,13 +8495,13 @@
       "subject": "PORTRAIT:CANDY:CAPTAIN",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "portrait-confectioner-a-whisk",
+      "recipe": "portrait-confectioner-r6-apron",
       "candidate": 0,
-      "candidateSha256": "5b52af94b5be41b1ddd1490e7c1351b70873ef3d4b2d330f1a0836dc12fd538f",
+      "candidateSha256": "1b84be5448f194d2cb1bea7d46e92ade5ab61432424951cbddef9247c0f112a3",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-direction-portrait-candy-confectioner.png",
-        "sha256": "8bba993756df1ccc6f8583d57c43578caa6a18d1c8cfbd6843ce4171c1037f26",
-        "pixelSha256": "3e10602cb8f85347fceba64c90c1acbb9895e425d6e0ac9d227cffeb8cdc733c",
+        "sha256": "15e92ca8a35a12ee569d8d46342feca4dde3979720f05ab63684511cda01d0a1",
+        "pixelSha256": "245289b716b89bc9aa63a7308170a457c27d569e98583be92a0a2d3d418b8079",
         "width": 48,
         "height": 48
       },
@@ -7487,7 +8529,7 @@
               "add": 0.42
             }
           },
-          "accentPixels": 175,
+          "accentPixels": 252,
           "trimPixels": 0
         }
       },
@@ -7503,7 +8545,7 @@
       },
       "plateCheck": {
         "bandRows": 10,
-        "groundShare": 0.125,
+        "groundShare": 0.0609,
         "footprintWidthShare": 0.8,
         "suspect": false
       },
@@ -7514,8 +8556,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The caramel head with brass goggles, pink frosting, the white baker's hat and a wire whisk.",
-      "acceptedAt": "2026-10-04T09:28:10.566Z"
+      "notes": "The apron top at the bottom of the bust is now pink frosting like the map sprite's apron (pulp_wars-jdb.9, done in pulp_wars-2o7.3); head, goggles, hat and whisk unchanged.",
+      "acceptedAt": "2026-10-05T12:58:32.948Z"
     },
     "chibi-direction-portrait-candy-donut-racer": {
       "id": "chibi-direction-portrait-candy-donut-racer",
@@ -7591,13 +8633,13 @@
       "subject": "PORTRAIT:CANDY:MARKSMAN",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "portrait-gumball-gunner-a",
+      "recipe": "portrait-machine-b-noeyes",
       "candidate": 0,
-      "candidateSha256": "705e2772501bb3bb63449d1847f942de5cc39f7168847fad243ad4ab026b6ffb",
+      "candidateSha256": "ac239bfcbbf877b0689d24612daf605c3c6b67256f68a3de1815f343d2a71c22",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-direction-portrait-candy-gumball-gunner.png",
-        "sha256": "f876375aa3568749e5cb1f47e8ad2178fb440a2124d33b9a83cbc6796ba86360",
-        "pixelSha256": "784f014a1b48c0d7d48204be761d59bedf274bc2188ccc50999cb881c723bb72",
+        "sha256": "ccbcb0b7e9702b7f3fbdd9630a8598556535d2a002f131159fbc1a235b0a415f",
+        "pixelSha256": "ec5c22a469158ebf5e224759e5717160b0e37c9d69ff59dc46611245118baf94",
         "width": 48,
         "height": 48
       },
@@ -7625,7 +8667,7 @@
               "add": 0.42
             }
           },
-          "accentPixels": 279,
+          "accentPixels": 53,
           "trimPixels": 0
         }
       },
@@ -7641,9 +8683,9 @@
       },
       "plateCheck": {
         "bandRows": 9,
-        "groundShare": 0.0202,
-        "footprintWidthShare": 0.8222,
-        "suspect": false
+        "groundShare": 0.6215,
+        "footprintWidthShare": 0.9286,
+        "suspect": true
       },
       "reviewChecks": {
         "native": true,
@@ -7652,21 +8694,21 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The cream jellybean with its pink bandana and the blaster with its gumball bubble; nearly the whole figure, large in the square.",
-      "acceptedAt": "2026-10-04T09:28:09.571Z"
+      "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the gumball machine close up, a globe of mixed gumballs under a dark lid on the mint base with its face and gold coin knob.",
+      "acceptedAt": "2026-10-05T13:04:45.777Z"
     },
     "chibi-direction-portrait-candy-gumdrop": {
       "id": "chibi-direction-portrait-candy-gumdrop",
       "subject": "PORTRAIT:CANDY:FIGHTER",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "portrait-gumdrop-a",
+      "recipe": "portrait-toffee-b",
       "candidate": 0,
-      "candidateSha256": "7ff66d60cff5c05b0a168647881921ee34bdb655136a27bc1b3d1c084109b536",
+      "candidateSha256": "6284e4d7ab510139635ee1fb213a85834ae1e7ea7fab501cb0db97388cb95de2",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-direction-portrait-candy-gumdrop.png",
-        "sha256": "c8ed1e3829681e72c756ab1c353f3e525fa44cff6d7257850d74926ab361bc8e",
-        "pixelSha256": "8ca24de02bae320e70d7261822e34dc7c917f74b2ccb9710af2ba26bc97f4993",
+        "sha256": "0d6d3f57442ab8b5962d81804176cb21c7a24173cd9cd6f3dcd46d20f2071add",
+        "pixelSha256": "1d9ae8999aedfb31ed77d0579a3617d70c79605436258db1bbcb396ff9592d0c",
         "width": 48,
         "height": 48
       },
@@ -7694,7 +8736,7 @@
               "add": 0.42
             }
           },
-          "accentPixels": 507,
+          "accentPixels": 6,
           "trimPixels": 0
         }
       },
@@ -7710,8 +8752,8 @@
       },
       "plateCheck": {
         "bandRows": 8,
-        "groundShare": 0.2603,
-        "footprintWidthShare": 0.9744,
+        "groundShare": 0.6559,
+        "footprintWidthShare": 0.7391,
         "suspect": true
       },
       "reviewChecks": {
@@ -7721,21 +8763,21 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The pink sugar-dusted dome with its face, the candy cane and the waffle shield, close up.",
-      "acceptedAt": "2026-10-04T09:28:05.678Z"
+      "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the toffee cube close up with both wrapper wings, the brow and smile of the map sprite, a chocolate knob and the mint lollipop. Also the Candy setup emblem.",
+      "acceptedAt": "2026-10-05T13:04:45.487Z"
     },
     "chibi-direction-portrait-candy-gummy-bear": {
       "id": "chibi-direction-portrait-candy-gummy-bear",
       "subject": "PORTRAIT:CANDY:KNIGHT",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "portrait-gummy-bear-a-edit",
+      "recipe": "portrait-gummy-bear-r6-orange",
       "candidate": 0,
-      "candidateSha256": "79785edeb4dc52dade1dcfc72ddb07c4d6b55f3ed6fb3cbb8a5961c6d899217a",
+      "candidateSha256": "26c1df29f3921827de73b87bd360b683ddf770c56ab9de0f4e890cb43163f718",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-direction-portrait-candy-gummy-bear.png",
-        "sha256": "cc3dae7dbb0f6fdce6653ca6238e0d8751ff0c46d2535e8b04342832763a42f5",
-        "pixelSha256": "9b8c3aed6b9afb0578352a488c9f8cb40beeaaa2459f95e6e7cce17d48fe249f",
+        "sha256": "26c1df29f3921827de73b87bd360b683ddf770c56ab9de0f4e890cb43163f718",
+        "pixelSha256": "e38fa5e86ab6c306b5094761da3762bc419bb4b7aa073fdcb3067dbfddf955d6",
         "width": 48,
         "height": 48
       },
@@ -7763,7 +8805,7 @@
               "add": 0.42
             }
           },
-          "accentPixels": 1149,
+          "accentPixels": 0,
           "trimPixels": 0
         }
       },
@@ -7790,8 +8832,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The pink jelly bust with round ears, a pressed-in face and a raised fist; the plate under it is gone.",
-      "acceptedAt": "2026-10-04T09:28:07.329Z"
+      "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the Gummy Bear's bust in the amber orange of the new map sprite; shape, face and raised fist unchanged.",
+      "acceptedAt": "2026-10-05T12:58:32.565Z"
     },
     "chibi-direction-portrait-candy-marshmallow": {
       "id": "chibi-direction-portrait-candy-marshmallow",
@@ -7936,13 +8978,13 @@
       "subject": "PORTRAIT:CANDY:JUGGERNAUT",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "portrait-rock-candy-golem-a",
+      "recipe": "portrait-rock-candy-golem-r6-mint",
       "candidate": 0,
-      "candidateSha256": "53e5d3a0e048da3bb6d59a2def31558e3072f570236c1fffef53e3d76389356f",
+      "candidateSha256": "244025afe9cbc786fe082c442c1e309a0c118a86dd3a3288d71067421fb13fea",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-direction-portrait-candy-rock-candy-golem.png",
-        "sha256": "64e6ab619a76b35f72695fc519533706cd7b2759d7c91af521a2c1b8040c6a2c",
-        "pixelSha256": "1a77f64a299ac4fd1570e96448d509e595ec3daafa69a5b107e3e18778594639",
+        "sha256": "a667e4dddafd514149ca194cee2d469b1fbd7451a45a790297c2a8f19be47cd8",
+        "pixelSha256": "d9db64483826f7c8f3d034d1492e8ac5d1b24e2beb7e0ca40cb33eab80962c37",
         "width": 48,
         "height": 48
       },
@@ -7970,7 +9012,7 @@
               "add": 0.42
             }
           },
-          "accentPixels": 402,
+          "accentPixels": 30,
           "trimPixels": 0
         }
       },
@@ -7986,7 +9028,7 @@
       },
       "plateCheck": {
         "bandRows": 9,
-        "groundShare": 0.2551,
+        "groundShare": 0.5264,
         "footprintWidthShare": 1,
         "suspect": true
       },
@@ -7997,8 +9039,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The caramel face under the pink crystal crest, crystal shoulders and caramel bands, as on the map sprite.",
-      "acceptedAt": "2026-10-04T09:28:08.014Z"
+      "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the Golem's bust with green rock-candy crystals like the recoloured map sprite (a little deeper green than the sprite's mint); caramel face and bands unchanged.",
+      "acceptedAt": "2026-10-05T13:01:01.514Z"
     }
   }
 }

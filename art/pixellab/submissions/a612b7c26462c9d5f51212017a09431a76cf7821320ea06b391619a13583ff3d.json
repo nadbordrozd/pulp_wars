@@ -1,0 +1,36 @@
+{
+  "id": "tripod-r6-d",
+  "jobId": "d575adb0-7010-4cd8-81ec-496a03b5807d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-tripod",
+    "subject": "UNIT:MARTIAN:CATAPULT",
+    "faction": "MARTIAN",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 207414,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "This walker has two legs and needs three. Draw one new front leg in the empty space in the middle, between the left leg and the right leg: a thick straight dark gunmetal leg from the middle of the body down to the bottom of the image, with a round chrome knee and a big chrome foot. Empty gaps on both sides of it. Three legs in all. Keep the chrome hood, the magenta eye lens, the heat-ray arm, the two other legs, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "This walker has two legs and needs three. Draw one new front leg in the empty space in the middle, between the left leg and the right leg: a thick straight dark gunmetal leg from the middle of the body down to the bottom of the image, with a round chrome knee and a big chrome foot. Empty gaps on both sides of it. Three legs in all. Keep the chrome hood, the magenta eye lens, the heat-ray arm, the two other legs, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "This walker has two legs and needs three. Draw one new front leg in the empty space in the middle, between the left leg and the right leg: a thick straight dark gunmetal leg from the middle of the body down to the bottom of the image, with a round chrome knee and a big chrome foot. Empty gaps on both sides of it. Three legs in all. Keep the chrome hood, the magenta eye lens, the heat-ray arm, the two other legs, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "This walker has two legs and needs three. Draw one new front leg in the empty space in the middle, between the left leg and the right leg: a thick straight dark gunmetal leg from the middle of the body down to the bottom of the image, with a round chrome knee and a big chrome foot. Empty gaps on both sides of it. Three legs in all. Keep the chrome hood, the magenta eye lens, the heat-ray arm, the two other legs, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "tripod-r6-a",
+      "candidate": 0,
+      "sha256": "40b79b120a867f39e4158896e8d7814cec82c60e2ae3fb6f42235ed00c5a849e"
+    }
+  }
+}

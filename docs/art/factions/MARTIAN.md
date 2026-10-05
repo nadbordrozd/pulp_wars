@@ -149,18 +149,18 @@ subject lines in
 [`subjects/MARTIAN.json`](../../../scripts/art/chibi/subjects/MARTIAN.json).
 The canvas follows the mechanical role, as for every faction.
 
-| Unit (role)                | Canvas   | Sprite   | Accepted recipe                | What it shows, and how its job reads                                                                  |
-| -------------------------- | -------- | -------- | ------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| Grunt (`FIGHTER`)          | 56 x 80  | 48 x 75  | `grunt-r5-edit-b`              | a slim alien in a plain silver jumpsuit, no armour, no pack, a small pistol held out: the basic one   |
-| Saucer (`RAIDER`)          | 72 x 88  | 63 x 56  | `saucer-a-edit`                | a small chrome saucer with a glass dome, its pilot, rim lights and a beam nozzle; no legs: it flies   |
-| Ray Gunner (`MARKSMAN`)    | 56 x 80  | 56 x 73  | `ray-gunner-r5-edit-a`         | a fin crest, a visor band, a big boxy power pack, a huge finned rifle on a coiled cable, wide stance  |
-| Shield Projector (`GUARD`) | 56 x 80  | 54 x 73  | `shield-projector-r5-edit-a-3` | heavy shoulder plates, a big round shield disc with a magenta lens and arc, a dish on a mast          |
-| Brain (`CAPTAIN`)          | 56 x 80  | 52 x 69  | `brain-b`                      | a big brain with two eyes in a glass jar on a chrome base with spider legs                            |
-| Tripod (`CATAPULT`)        | 72 x 88  | 58 x 77  | `tripod-a-edit-3`              | a smooth chrome hood with one big magenta lens, a heat-ray arm, tall gunmetal legs: the tallest unit  |
-| Mothership (`KNIGHT`)      | 72 x 88  | 68 x 68  | `mothership-a`                 | a wide two-tier chrome disc with fins, an antenna and a big magenta beam port: bigger than the Saucer |
-| Colossus (`JUGGERNAUT`)    | 88 x 104 | 83 x 89  | `colossus-b-edit`              | a huge chrome dome head with two magenta eyes, a heavy ray cannon and thick armoured legs             |
-| Thrall (as a `FIGHTER`)    | 56 x 80  | 36 x 70  | `thrall-b`                     | a slumped drab grey soldier with a chrome control helmet, an antenna and one magenta light            |
-| Patrol Boat, Battleship    | shared   | (shared) | (unchanged)                    | the shared ships with the player-coloured sail                                                        |
+| Unit (role)                | Canvas   | Sprite   | Accepted recipe                | What it shows, and how its job reads                                                                 |
+| -------------------------- | -------- | -------- | ------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| Grunt (`FIGHTER`)          | 56 x 80  | 48 x 75  | `grunt-r5-edit-b`              | a slim alien in a plain silver jumpsuit, no armour, no pack, a small pistol held out: the basic one  |
+| Saucer (`RAIDER`)          | 72 x 88  | 63 x 56  | `saucer-a-edit`                | a small chrome saucer with a glass dome, its pilot, rim lights and a beam nozzle; no legs: it flies  |
+| Ray Gunner (`MARKSMAN`)    | 56 x 80  | 56 x 73  | `ray-gunner-r5-edit-a`         | a fin crest, a visor band, a big boxy power pack, a huge finned rifle on a coiled cable, wide stance |
+| Shield Projector (`GUARD`) | 56 x 80  | 54 x 73  | `shield-projector-r5-edit-a-3` | heavy shoulder plates, a big round shield disc with a magenta lens and arc, a dish on a mast         |
+| Brain (`CAPTAIN`)          | 56 x 80  | 52 x 69  | `brain-b`                      | a big brain with two eyes in a glass jar on a chrome base with spider legs                           |
+| Tripod (`CATAPULT`)        | 72 x 88  | 58 x 76  | `tripod-r6-c`                  | a smooth chrome hood with one big magenta lens, a heat-ray arm, exactly three tall gunmetal legs     |
+| Mothership (`KNIGHT`)      | 72 x 88  | 68 x 65  | `mothership-r6-a-port`         | two stacked chrome decks, each with a ring of lights, an armoured dome, a big beam port: the big one |
+| Colossus (`JUGGERNAUT`)    | 88 x 104 | 83 x 89  | `colossus-b-edit`              | a huge chrome dome head with two magenta eyes, a heavy ray cannon and thick armoured legs            |
+| Thrall (as a `FIGHTER`)    | 56 x 80  | 36 x 70  | `thrall-b`                     | a slumped drab grey soldier with a chrome control helmet, an antenna and one magenta light           |
+| Patrol Boat, Battleship    | shared   | (shared) | (unchanged)                    | the shared ships with the player-coloured sail                                                       |
 
 Each unit has a 48 x 48 portrait (`chibi-direction-portrait-martian-<unit>`):
 busts for the Grunt, the Ray Gunner, the Shield Projector and the Thrall, and
@@ -261,11 +261,43 @@ no emblem, with a chrome helmet, an antenna and one magenta light (21
 magenta pixels, 1.3% of the sprite). It is narrow (36 px on a 52 px plate),
 so the owner's plate shows well.
 
+## The Mothership and the Tripod (bead `pulp_wars-2o7.3`)
+
+The user (2026-10-05): "the martian mothership looks too much like the
+flying saucer. i suppose it can be saucer shaped but needs to be clearer
+that this is the big one. The tripod martian should have 3 legs (otherwise
+it looks great)." Both were redrawn in place (same asset ids, canvases and
+anchors; new recipes `*-r6-*` in batch `direction-martian`, whose
+`accept` supersedes the earlier one). 10 PixelLab calls, all edits.
+
+- **Mothership** (`mothership-r6-a-port`, 68 x 65 px): the first Mothership
+  was the Saucer's disc with a bigger dome. The new one is two stacked
+  chrome decks, each with its own ring of magenta lights, under a dark
+  armoured command dome with fins and an antenna, with one big round beam
+  port. Three first samples: `mothership-r6-a` (the two decks; a pink
+  beam hung from it to the ground, which one edit replaced by the port),
+  `-b` (three narrow tiers, 61 px wide: a spinning top, narrower than the
+  Saucer) and `-c` (a slanted beam across the canvas). The canvas is 72 px
+  wide and the Saucer already 63, so "the big one" is carried by the decks
+  and the mass, not by width. The hull ends on row 69;
+  `MARTIAN_FLYER_PRESENTATION_V7` holds it, and the shadow is unchanged.
+  The portrait (`portrait-mothership-r6-b`) shows the stacked decks and
+  the grey armoured dome; its beam port is hidden under the lower deck.
+- **Tripod** (`tripod-r6-c`, 58 x 76 px): exactly three legs, one spread
+  to each side and one straight down in the middle, with gaps between
+  them. Removing one of four legs failed again (`tripod-r6-a` erased both
+  middle legs, `-b` redrew four); **adding a leg worked first time**:
+  `tripod-r6-c` is an edit of the two-legged `tripod-r6-a` that adds one
+  leg in the middle (`-d`, the same request in other words, left one leg
+  only). The hood, the lens, the body lights and the heat-ray arm are the
+  accepted sprite's. The portrait already showed three leg tops and is
+  kept.
+
 ## Flying
 
 The Saucer and the Mothership are drawn with no legs and **a gap of ten
 empty rows under the hull**: the lowest pixel of the Saucer is row 71 of 88
-and of the Mothership row 72, where a walker of the same canvas stands on
+and of the Mothership row 69 (72 before bead `pulp_wars-2o7.3`), where a walker of the same canvas stands on
 row 81 to 84. On a base plate the hull therefore already floats above the
 plate. The interface adds the ground shadow the spec asks for
 (`MARTIAN_FLYER_PRESENTATION_V7`: an ellipse on the ground line, radius
@@ -480,16 +512,18 @@ decisions":
    `GUARD` reads as a trooper who holds the line.
 5. **Brain:** a brain with two eyes in a jar on spider legs, not a
    hover-chair: it must not read as a third flyer.
-6. **Tripod and Colossus stand on four visible legs.** Three edits and a
-   second creation could not make it three (one removed the eye lens
-   instead of a leg). At board size the shape reads as "a head on tall
-   legs"; it is a known inaccuracy.
+6. **The Colossus stands on four visible legs; the Tripod on three since
+   bead `pulp_wars-2o7.3`** (see
+   [the Mothership and the Tripod](#the-mothership-and-the-tripod-bead-pulp_wars-2o73)).
+   In the first batch three edits and a second creation could not make it
+   three (one removed the eye lens instead of a leg).
 7. **Colossus:** a squat, wide giant with a ball head and a cannon, of the
    Tripod's family but not a taller Tripod: the `JUGGERNAUT` canvas is
    wider than it is tall, and a second tall thin walker would read as a
    Tripod.
-8. **Mothership:** no pilot and a dark dome; it is told from the Saucer by
-   its two tiers, fins, antenna and the big beam port.
+8. **Mothership:** no pilot and a dark armoured dome; it is told from the
+   Saucer by its two stacked decks, each with its own ring of lights, its
+   fins, antenna and the big beam port (redrawn in bead `pulp_wars-2o7.3`).
 9. **Flyers** carry a 10 px gap under the hull and no baked shadow; the
    shadow is code-drawn.
 10. **Thrall:** an edit of the Human Fighter into a drab grey soldier; one
@@ -515,8 +549,10 @@ decisions":
 - **Magenta and the Teal plate** are close for a deuteranope (7).
 - **The Thrall's light is small** (21 pixels), and its boots and trousers
   are brown and olive, not grey.
-- **The Mothership is only 5 px wider than the Saucer** (68 against 63);
-  it is taller and heavier, and its plate is the same.
+- **The Mothership is only 5 px wider than the Saucer** (68 against 63):
+  the canvas is 72 px wide. Since bead `pulp_wars-2o7.3` its size is told
+  by its two decks and its mass: 2,536 opaque pixels against the Saucer's
+  1,892 (the first Mothership had 2,186).
 - **The Colossus is 15 px and the Mothership 11 px wider than their plate,**
   like the other factions' large units.
 - **Glass is a cyan-tinted blue** (`#8db9cd`), 18% of a unit: on a Teal

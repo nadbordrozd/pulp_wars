@@ -1,0 +1,36 @@
+{
+  "id": "portrait-gummy-bear-r6-orange",
+  "jobId": "af445510-e1b2-4a24-aa99-ac131bd17bd7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-portrait-candy-gummy-bear",
+    "subject": "PORTRAIT:CANDY:KNIGHT",
+    "faction": "CANDY",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 207521,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent amber-orange gummy jelly, colour #f39a1f, lighter golden yellow #ffcf5c in the middle of its head where light shines through, deep burnt orange #c5600f at its edges and shadows. No pink is left. Keep the white shine streaks, the eyes and smile, ears, raised fist, every shape, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent amber-orange gummy jelly, colour #f39a1f, lighter golden yellow #ffcf5c in the middle of its head where light shines through, deep burnt orange #c5600f at its edges and shadows. No pink is left. Keep the white shine streaks, the eyes and smile, ears, raised fist, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent amber-orange gummy jelly, colour #f39a1f, lighter golden yellow #ffcf5c in the middle of its head where light shines through, deep burnt orange #c5600f at its edges and shadows. No pink is left. Keep the white shine streaks, the eyes and smile, ears, raised fist, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent amber-orange gummy jelly, colour #f39a1f, lighter golden yellow #ffcf5c in the middle of its head where light shines through, deep burnt orange #c5600f at its edges and shadows. No pink is left. Keep the white shine streaks, the eyes and smile, ears, raised fist, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-gummy-bear-a-edit",
+      "candidate": 0,
+      "sha256": "79785edeb4dc52dade1dcfc72ddb07c4d6b55f3ed6fb3cbb8a5961c6d899217a"
+    }
+  }
+}

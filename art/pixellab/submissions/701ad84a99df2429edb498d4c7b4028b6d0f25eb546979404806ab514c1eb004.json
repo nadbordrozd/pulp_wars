@@ -1,0 +1,36 @@
+{
+  "id": "guard-r6-e",
+  "jobId": "86087753-993c-4cc3-a1e6-a417a27a79f2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-guard",
+    "subject": "UNIT:GUARD",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 207315,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change two things only. The shield: make it taller and wider, a big tower shield whose flat bottom edge rests on the ground and whose top reaches his chin, hiding his legs completely; same crimson with the gold cross and steel border. His shoulders: one big round steel pauldron on each. Do not redraw anything else: keep the face, kettle helmet with its gold band, upright spear, pose, proportions, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change two things only. The shield: make it taller and wider, a big tower shield whose flat bottom edge rests on the ground and whose top reaches his chin, hiding his legs completely; same crimson with the gold cross and steel border. His shoulders: one big round steel pauldron on each. Do not redraw anything else: keep the face, kettle helmet with its gold band, upright spear, pose, proportions, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change two things only. The shield: make it taller and wider, a big tower shield whose flat bottom edge rests on the ground and whose top reaches his chin, hiding his legs completely; same crimson with the gold cross and steel border. His shoulders: one big round steel pauldron on each. Do not redraw anything else: keep the face, kettle helmet with its gold band, upright spear, pose, proportions, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change two things only. The shield: make it taller and wider, a big tower shield whose flat bottom edge rests on the ground and whose top reaches his chin, hiding his legs completely; same crimson with the gold cross and steel border. His shoulders: one big round steel pauldron on each. Do not redraw anything else: keep the face, kettle helmet with its gold band, upright spear, pose, proportions, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "guard-r6-c",
+      "candidate": 0,
+      "sha256": "49b15ac3d3abe439c8243ed8bf456662b00835d2cf11bc17afd7bb955d4ae8f0"
+    }
+  }
+}

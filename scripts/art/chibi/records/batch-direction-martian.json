@@ -2812,10 +2812,275 @@
       ],
       "completedAt": "2026-10-02T20:13:29.390Z",
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "A wide two-tier chrome disc with fins, a ring of small magenta lights, a dark dome with an antenna and a big magenta beam port under it. Superseded by mothership-r6-a-port.",
+        "reviewedAt": "2026-10-02T20:21:35.699Z"
+      }
+    },
+    "mothership-r6-a": {
+      "id": "mothership-r6-a",
+      "asset": "chibi-direction-martian-mothership",
+      "jobId": "04cb6501-f5d8-417a-8b6c-5dd27d210e92",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-mothership",
+        "subject": "UNIT:MARTIAN:KNIGHT",
+        "faction": "MARTIAN",
+        "recipeClass": "machine",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 207401,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make it a far bigger command mothership filling the image from left to right edge: a huge thick chrome hull of three stacked decks, the middle deck with a row of lit magenta windows, the lower deck with a ring of big magenta lights, the upper deck with a big chrome command dome with dark windows and an antenna; a very big magenta beam port under it. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Make it a far bigger command mothership filling the image from left to right edge: a huge thick chrome hull of three stacked decks, the middle deck with a row of lit magenta windows, the lower deck with a ring of big magenta lights, the upper deck with a big chrome command dome with dark windows and an antenna; a very big magenta beam port under it. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make it a far bigger command mothership filling the image from left to right edge: a huge thick chrome hull of three stacked decks, the middle deck with a row of lit magenta windows, the lower deck with a ring of big magenta lights, the upper deck with a big chrome command dome with dark windows and an antenna; a very big magenta beam port under it. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Make it a far bigger command mothership filling the image from left to right edge: a huge thick chrome hull of three stacked decks, the middle deck with a row of lit magenta windows, the lower deck with a ring of big magenta lights, the upper deck with a big chrome command dome with dark windows and an antenna; a very big magenta beam port under it. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "mothership-a",
+          "candidate": 0,
+          "sha256": "542bc7c3c03ca2fce6d6b0ed6569f8b9a898ca3fe79c3e06f0c20dae6231bc30"
+        }
+      },
+      "submittedAt": "2026-10-05T12:35:24.568Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/mothership-r6-a.png",
+      "rawSheetSha256": "26c6e606b87e378f55635ab72a8bc0caf1a6a7d59b5d62869ba1c0c123c63ab5",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2353,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2353,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:36:10.888Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right big ship (two stacked chrome decks, two rings of lights, an armoured dome), but a pink beam column hangs from it to the ground; superseded by its edit mothership-r6-a-port.",
+        "reviewedAt": "2026-10-05T12:44:32.288Z"
+      }
+    },
+    "mothership-r6-a-port": {
+      "id": "mothership-r6-a-port",
+      "asset": "chibi-direction-martian-mothership",
+      "jobId": "858da862-79b9-46e4-94a7-0405bb7bb6a8",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-mothership",
+        "subject": "UNIT:MARTIAN:KNIGHT",
+        "faction": "MARTIAN",
+        "recipeClass": "machine",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 207404,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the pink beam of light that hangs under the ship. In its place the underside ends in one short wide round dark gunmetal beam port with a glowing hot magenta lens, no taller than 8 pixels, and everything below it is empty, so the ship hovers. Do not redraw anything else: keep the two stacked chrome decks, the rings of magenta lights, the dark command dome, the fins, the antenna, the size, outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: erase the pink beam of light that hangs under the ship. In its place the underside ends in one short wide round dark gunmetal beam port with a glowing hot magenta lens, no taller than 8 pixels, and everything below it is empty, so the ship hovers. Do not redraw anything else: keep the two stacked chrome decks, the rings of magenta lights, the dark command dome, the fins, the antenna, the size, outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the pink beam of light that hangs under the ship. In its place the underside ends in one short wide round dark gunmetal beam port with a glowing hot magenta lens, no taller than 8 pixels, and everything below it is empty, so the ship hovers. Do not redraw anything else: keep the two stacked chrome decks, the rings of magenta lights, the dark command dome, the fins, the antenna, the size, outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: erase the pink beam of light that hangs under the ship. In its place the underside ends in one short wide round dark gunmetal beam port with a glowing hot magenta lens, no taller than 8 pixels, and everything below it is empty, so the ship hovers. Do not redraw anything else: keep the two stacked chrome decks, the rings of magenta lights, the dark command dome, the fins, the antenna, the size, outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "mothership-r6-a",
+          "candidate": 0,
+          "sha256": "08511b59820e8ab6982945d756d2fafe5cdcbe19a1e734ba38abed11a276cadc"
+        }
+      },
+      "submittedAt": "2026-10-05T12:40:48.900Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/mothership-r6-a-port.png",
+      "rawSheetSha256": "757549bf361d41693d1a597e2ad1c105d49989c41524c51b4a6ac2a229eb41ed",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:41:16.813Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "A wide two-tier chrome disc with fins, a ring of small magenta lights, a dark dome with an antenna and a big magenta beam port under it.",
-        "reviewedAt": "2026-10-02T20:21:35.699Z"
+        "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): clearly the big one. Two stacked chrome decks, each with its own ring of magenta lights, a dark armoured command dome with fins and an antenna, and one big round magenta beam port under the hull; no pilot, no legs, no beam. 68 x 65 px and 2,536 opaque pixels against the Saucer's 63 x 56 and 1,892; the hull ends on row 69, so it hovers 13 rows over the ground line.",
+        "reviewedAt": "2026-10-05T13:09:12.505Z"
+      }
+    },
+    "mothership-r6-b": {
+      "id": "mothership-r6-b",
+      "asset": "chibi-direction-martian-mothership",
+      "jobId": "45751eb7-2a64-4590-a908-969fe6260a9a",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-mothership",
+        "subject": "UNIT:MARTIAN:KNIGHT",
+        "faction": "MARTIAN",
+        "recipeClass": "machine",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 207402,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn this small saucer into a giant mothership filling the whole width of the image and most of its height: a massive thick chrome hull of three stacked tiers narrowing toward the top, each with its own ring of magenta lights; on top a small chrome command dome with dark windows and two antennas; under it one huge magenta beam port. No pilot, no glass bubble, no legs; empty space under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn this small saucer into a giant mothership filling the whole width of the image and most of its height: a massive thick chrome hull of three stacked tiers narrowing toward the top, each with its own ring of magenta lights; on top a small chrome command dome with dark windows and two antennas; under it one huge magenta beam port. No pilot, no glass bubble, no legs; empty space under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn this small saucer into a giant mothership filling the whole width of the image and most of its height: a massive thick chrome hull of three stacked tiers narrowing toward the top, each with its own ring of magenta lights; on top a small chrome command dome with dark windows and two antennas; under it one huge magenta beam port. No pilot, no glass bubble, no legs; empty space under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Turn this small saucer into a giant mothership filling the whole width of the image and most of its height: a massive thick chrome hull of three stacked tiers narrowing toward the top, each with its own ring of magenta lights; on top a small chrome command dome with dark windows and two antennas; under it one huge magenta beam port. No pilot, no glass bubble, no legs; empty space under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "saucer-a-edit",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "0d7103fddedb2040f69ef2f6756a5e6cc0faf77fbdf531d05827254daba92623"
+        }
+      },
+      "submittedAt": "2026-10-05T12:36:10.893Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/mothership-r6-b.png",
+      "rawSheetSha256": "a4a667f25b8b132cedde5fc283fdce31d2c0739577dbadee468c0bdfdd0a49e5",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.377,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.377,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:36:49.415Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Three narrow tiers like a spinning top, 61 px wide: narrower than the Saucer, a tower more than a ship, with a pink beam.",
+        "reviewedAt": "2026-10-05T12:44:32.607Z"
+      }
+    },
+    "mothership-r6-c": {
+      "id": "mothership-r6-c",
+      "asset": "chibi-direction-martian-mothership",
+      "jobId": "f72fc5c4-e3c6-402a-9979-5d887eaa2204",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-mothership",
+        "subject": "UNIT:MARTIAN:KNIGHT",
+        "faction": "MARTIAN",
+        "recipeClass": "machine",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 207403,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make it a giant mothership: enlarge the hull until it touches the left and right edges and make the disc twice as thick, with two rows of magenta lights and a gunmetal belt between; replace the glass dome with a chrome command tower of two stacked rings with lit magenta windows and a mast with antennas; make the magenta beam port underneath larger. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Make it a giant mothership: enlarge the hull until it touches the left and right edges and make the disc twice as thick, with two rows of magenta lights and a gunmetal belt between; replace the glass dome with a chrome command tower of two stacked rings with lit magenta windows and a mast with antennas; make the magenta beam port underneath larger. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make it a giant mothership: enlarge the hull until it touches the left and right edges and make the disc twice as thick, with two rows of magenta lights and a gunmetal belt between; replace the glass dome with a chrome command tower of two stacked rings with lit magenta windows and a mast with antennas; make the magenta beam port underneath larger. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Make it a giant mothership: enlarge the hull until it touches the left and right edges and make the disc twice as thick, with two rows of magenta lights and a gunmetal belt between; replace the glass dome with a chrome command tower of two stacked rings with lit magenta windows and a mast with antennas; make the magenta beam port underneath larger. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "mothership-a",
+          "candidate": 0,
+          "sha256": "542bc7c3c03ca2fce6d6b0ed6569f8b9a898ca3fe79c3e06f0c20dae6231bc30"
+        }
+      },
+      "submittedAt": "2026-10-05T12:36:49.422Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/mothership-r6-c.png",
+      "rawSheetSha256": "fee19a3169ed63e4d6e21fc76c17168264e44023fcef9ad75250fd9981e90baa",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5286,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5286,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:37:44.112Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A slanted pink beam fills the lower right of the canvas and the hull is no heavier than before.",
+        "reviewedAt": "2026-10-05T12:44:32.919Z"
       }
     },
     "portrait-brain-a": {
@@ -3382,10 +3647,142 @@
       ],
       "completedAt": "2026-10-02T20:57:15.799Z",
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "The Mothership whole: two chrome tiers with rings of magenta lights, a dome with an antenna and the big beam port. Superseded by portrait-mothership-r6-b.",
+        "reviewedAt": "2026-10-02T21:02:49.798Z"
+      }
+    },
+    "portrait-mothership-r6-a": {
+      "id": "portrait-mothership-r6-a",
+      "asset": "chibi-direction-portrait-martian-mothership",
+      "jobId": "3405eaa6-4bc1-4978-9c69-19718ebd2cc7",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-portrait-martian-mothership",
+        "subject": "PORTRAIT:MARTIAN:KNIGHT",
+        "faction": "MARTIAN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 207421,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make it a bigger, heavier command mothership that fills the image: a thick chrome hull of two stacked decks, one wide disc on top of another, each with its own ring of hot magenta lights; on top a dark armoured gunmetal command dome with dark windows, small fins and a short antenna, no glass; under it one big round hot magenta beam port. Keep the silver-white chrome colours, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Make it a bigger, heavier command mothership that fills the image: a thick chrome hull of two stacked decks, one wide disc on top of another, each with its own ring of hot magenta lights; on top a dark armoured gunmetal command dome with dark windows, small fins and a short antenna, no glass; under it one big round hot magenta beam port. Keep the silver-white chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make it a bigger, heavier command mothership that fills the image: a thick chrome hull of two stacked decks, one wide disc on top of another, each with its own ring of hot magenta lights; on top a dark armoured gunmetal command dome with dark windows, small fins and a short antenna, no glass; under it one big round hot magenta beam port. Keep the silver-white chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Make it a bigger, heavier command mothership that fills the image: a thick chrome hull of two stacked decks, one wide disc on top of another, each with its own ring of hot magenta lights; on top a dark armoured gunmetal command dome with dark windows, small fins and a short antenna, no glass; under it one big round hot magenta beam port. Keep the silver-white chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-mothership-b",
+          "candidate": 0,
+          "sha256": "17f3ea5a78b44d0a277cf8de6f294c25b2862baae365d80af35968b212a23cf4"
+        }
+      },
+      "submittedAt": "2026-10-05T12:48:09.716Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/portrait-mothership-r6-a.png",
+      "rawSheetSha256": "be9bd5c242cc2c136e529e4aa027ab3d2c3046187d6b25f2665082c0478c1975",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:49:16.812Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The armoured dome is right, but it still shows one disc over a pod; superseded by its edit portrait-mothership-r6-b.",
+        "reviewedAt": "2026-10-05T13:01:00.200Z"
+      }
+    },
+    "portrait-mothership-r6-b": {
+      "id": "portrait-mothership-r6-b",
+      "asset": "chibi-direction-portrait-martian-mothership",
+      "jobId": "78358c93-cc0e-41f0-9e56-faa51ee70d53",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-portrait-martian-mothership",
+        "subject": "PORTRAIT:MARTIAN:KNIGHT",
+        "faction": "MARTIAN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 207422,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Add a second deck: under the wide chrome disc draw a second chrome disc of the same width, directly below it and touching it, with its own ring of hot magenta lights along its rim; the round magenta beam port sits in the middle of this lower disc, short and wide. The ship now fills the image from left to right. Keep the upper disc, the dark armoured dome, the fins, the antenna, the chrome colours, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Add a second deck: under the wide chrome disc draw a second chrome disc of the same width, directly below it and touching it, with its own ring of hot magenta lights along its rim; the round magenta beam port sits in the middle of this lower disc, short and wide. The ship now fills the image from left to right. Keep the upper disc, the dark armoured dome, the fins, the antenna, the chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Add a second deck: under the wide chrome disc draw a second chrome disc of the same width, directly below it and touching it, with its own ring of hot magenta lights along its rim; the round magenta beam port sits in the middle of this lower disc, short and wide. The ship now fills the image from left to right. Keep the upper disc, the dark armoured dome, the fins, the antenna, the chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Add a second deck: under the wide chrome disc draw a second chrome disc of the same width, directly below it and touching it, with its own ring of hot magenta lights along its rim; the round magenta beam port sits in the middle of this lower disc, short and wide. The ship now fills the image from left to right. Keep the upper disc, the dark armoured dome, the fins, the antenna, the chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-mothership-r6-a",
+          "candidate": 0,
+          "sha256": "a5a3dcf9e438e6af253fb295ad52c255bebb1948eb6b23cf59824ca87bc85e91"
+        }
+      },
+      "submittedAt": "2026-10-05T12:59:11.720Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/portrait-mothership-r6-b.png",
+      "rawSheetSha256": "4e1b4977fb8e3bb10dea585227b852421c4d9b34f1d4a4c1b5f981fd3e08a77d",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.95,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.95,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:59:41.548Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "The Mothership whole: two chrome tiers with rings of magenta lights, a dome with an antenna and the big beam port.",
-        "reviewedAt": "2026-10-02T21:02:49.798Z"
+        "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the Mothership whole, with stacked chrome decks, each with its ring of magenta lights, and the grey armoured command dome with its antenna: the big ship of the new map sprite, not the Saucer with its glass bubble. The beam port is hidden under the lower deck.",
+        "reviewedAt": "2026-10-05T13:01:00.806Z"
       }
     },
     "portrait-ray-gunner-a": {
@@ -5848,9 +6245,9 @@
       ],
       "completedAt": "2026-10-02T20:16:38.345Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The faction's walker: a smooth chrome hood with one big magenta lens, a heat-ray arm, tall gunmetal legs with chrome joints. It shows four legs, not three (three edits and a fresh creation could not make it three); accepted as a known weak spot.",
+        "notes": "The faction's walker: a smooth chrome hood with one big magenta lens, a heat-ray arm, tall gunmetal legs with chrome joints. It shows four legs, not three (three edits and a fresh creation could not make it three); accepted as a known weak spot. Superseded by tripod-r6-c.",
         "reviewedAt": "2026-10-02T20:21:31.810Z"
       }
     },
@@ -5940,6 +6337,270 @@
         "candidate": null,
         "notes": "Blue steel with orange joints and guns on both sides: off the palette, and a different machine.",
         "reviewedAt": "2026-10-02T20:21:32.244Z"
+      }
+    },
+    "tripod-r6-a": {
+      "id": "tripod-r6-a",
+      "asset": "chibi-direction-martian-tripod",
+      "jobId": "9af6d7b6-98d7-408d-a6fe-ee28ea9a56c5",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-tripod",
+        "subject": "UNIT:MARTIAN:CATAPULT",
+        "faction": "MARTIAN",
+        "recipeClass": "machine",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 207411,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: the machine stands on four legs and must stand on exactly three. Of the two middle legs that stand close together, erase the left one completely, leaving empty space. Three legs remain: one spread to the left, one in the middle, one spread to the right. Do not redraw anything else: keep the chrome hood, the magenta eye lens, the heat-ray arm, the other legs, the height, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: the machine stands on four legs and must stand on exactly three. Of the two middle legs that stand close together, erase the left one completely, leaving empty space. Three legs remain: one spread to the left, one in the middle, one spread to the right. Do not redraw anything else: keep the chrome hood, the magenta eye lens, the heat-ray arm, the other legs, the height, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: the machine stands on four legs and must stand on exactly three. Of the two middle legs that stand close together, erase the left one completely, leaving empty space. Three legs remain: one spread to the left, one in the middle, one spread to the right. Do not redraw anything else: keep the chrome hood, the magenta eye lens, the heat-ray arm, the other legs, the height, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: the machine stands on four legs and must stand on exactly three. Of the two middle legs that stand close together, erase the left one completely, leaving empty space. Three legs remain: one spread to the left, one in the middle, one spread to the right. Do not redraw anything else: keep the chrome hood, the magenta eye lens, the heat-ray arm, the other legs, the height, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "tripod-a-edit-3",
+          "candidate": 0,
+          "sha256": "a22d7134c2f84e2f29504535783441324ddd815342b454b9a4542c9ad98089b6"
+        }
+      },
+      "submittedAt": "2026-10-05T12:37:44.118Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/tripod-r6-a.png",
+      "rawSheetSha256": "fc717bbf07fb703ddb83d1ed257d0013afca60a774dc53b5744813e053b02d41",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.431,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.431,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:38:53.290Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The edit erased both middle legs: a walker on two legs. Kept as the source of tripod-r6-c.",
+        "reviewedAt": "2026-10-05T12:44:33.479Z"
+      }
+    },
+    "tripod-r6-b": {
+      "id": "tripod-r6-b",
+      "asset": "chibi-direction-martian-tripod",
+      "jobId": "0891dfef-e52a-48ef-8e1b-84d7d3f36706",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-tripod",
+        "subject": "UNIT:MARTIAN:CATAPULT",
+        "faction": "MARTIAN",
+        "recipeClass": "machine",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 207412,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw only the legs. The machine is a tripod with exactly three long legs, never four: one thick leg down and out to the left, one straight down in the middle, one down and out to the right, with wide empty gaps between them; each leg dark gunmetal with a round chrome knee and a chunky chrome foot, as now. Keep the chrome hood, the magenta eye lens, the body lights, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw only the legs. The machine is a tripod with exactly three long legs, never four: one thick leg down and out to the left, one straight down in the middle, one down and out to the right, with wide empty gaps between them; each leg dark gunmetal with a round chrome knee and a chunky chrome foot, as now. Keep the chrome hood, the magenta eye lens, the body lights, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw only the legs. The machine is a tripod with exactly three long legs, never four: one thick leg down and out to the left, one straight down in the middle, one down and out to the right, with wide empty gaps between them; each leg dark gunmetal with a round chrome knee and a chunky chrome foot, as now. Keep the chrome hood, the magenta eye lens, the body lights, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Redraw only the legs. The machine is a tripod with exactly three long legs, never four: one thick leg down and out to the left, one straight down in the middle, one down and out to the right, with wide empty gaps between them; each leg dark gunmetal with a round chrome knee and a chunky chrome foot, as now. Keep the chrome hood, the magenta eye lens, the body lights, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "tripod-a-edit-3",
+          "candidate": 0,
+          "sha256": "a22d7134c2f84e2f29504535783441324ddd815342b454b9a4542c9ad98089b6"
+        }
+      },
+      "submittedAt": "2026-10-05T12:38:53.301Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/tripod-r6-b.png",
+      "rawSheetSha256": "129641daa379c917c55cec2e8ff0e2b0d5b92a0b8fa361e2213062cced30defc",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6897,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6897,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:39:20.064Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Redrawn legs with wider gaps, but a fourth leg still stands behind the middle one.",
+        "reviewedAt": "2026-10-05T12:44:33.728Z"
+      }
+    },
+    "tripod-r6-c": {
+      "id": "tripod-r6-c",
+      "asset": "chibi-direction-martian-tripod",
+      "jobId": "30a15b20-ab0e-43a3-bae6-7811b477c1c5",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-tripod",
+        "subject": "UNIT:MARTIAN:CATAPULT",
+        "faction": "MARTIAN",
+        "recipeClass": "machine",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 207413,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Add only one thing: a third leg. The machine now stands on two legs, left and right; add one more leg exactly in the middle between them, going straight down from the centre of the body to the ground, in the same style: dark gunmetal with a round chrome knee and a chunky chrome foot. Exactly three legs in total, with empty gaps between them. Do not redraw anything else: keep the hood, eye lens, arm, outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Add only one thing: a third leg. The machine now stands on two legs, left and right; add one more leg exactly in the middle between them, going straight down from the centre of the body to the ground, in the same style: dark gunmetal with a round chrome knee and a chunky chrome foot. Exactly three legs in total, with empty gaps between them. Do not redraw anything else: keep the hood, eye lens, arm, outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Add only one thing: a third leg. The machine now stands on two legs, left and right; add one more leg exactly in the middle between them, going straight down from the centre of the body to the ground, in the same style: dark gunmetal with a round chrome knee and a chunky chrome foot. Exactly three legs in total, with empty gaps between them. Do not redraw anything else: keep the hood, eye lens, arm, outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Add only one thing: a third leg. The machine now stands on two legs, left and right; add one more leg exactly in the middle between them, going straight down from the centre of the body to the ground, in the same style: dark gunmetal with a round chrome knee and a chunky chrome foot. Exactly three legs in total, with empty gaps between them. Do not redraw anything else: keep the hood, eye lens, arm, outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "tripod-r6-a",
+          "candidate": 0,
+          "sha256": "40b79b120a867f39e4158896e8d7814cec82c60e2ae3fb6f42235ed00c5a849e"
+        }
+      },
+      "submittedAt": "2026-10-05T12:41:16.818Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/tripod-r6-c.png",
+      "rawSheetSha256": "5c1c118be0f2558cb3ce9d243e0af9e59f6b4749ef2d211ca39e598d78023afa",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6207,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6207,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:41:50.359Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): exactly three legs, countable at board size: one spread to the left, one straight down in the middle, one spread to the right, with gaps between them. Made by erasing both middle legs of the accepted four-legged sprite (tripod-r6-a) and adding one. The hood, the magenta lens, the body lights and the heat-ray arm are the accepted sprite's (58 x 76 px, feet on row 83).",
+        "reviewedAt": "2026-10-05T12:44:34.261Z"
+      }
+    },
+    "tripod-r6-d": {
+      "id": "tripod-r6-d",
+      "asset": "chibi-direction-martian-tripod",
+      "jobId": "d575adb0-7010-4cd8-81ec-496a03b5807d",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-tripod",
+        "subject": "UNIT:MARTIAN:CATAPULT",
+        "faction": "MARTIAN",
+        "recipeClass": "machine",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 207414,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "This walker has two legs and needs three. Draw one new front leg in the empty space in the middle, between the left leg and the right leg: a thick straight dark gunmetal leg from the middle of the body down to the bottom of the image, with a round chrome knee and a big chrome foot. Empty gaps on both sides of it. Three legs in all. Keep the chrome hood, the magenta eye lens, the heat-ray arm, the two other legs, outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "This walker has two legs and needs three. Draw one new front leg in the empty space in the middle, between the left leg and the right leg: a thick straight dark gunmetal leg from the middle of the body down to the bottom of the image, with a round chrome knee and a big chrome foot. Empty gaps on both sides of it. Three legs in all. Keep the chrome hood, the magenta eye lens, the heat-ray arm, the two other legs, outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "This walker has two legs and needs three. Draw one new front leg in the empty space in the middle, between the left leg and the right leg: a thick straight dark gunmetal leg from the middle of the body down to the bottom of the image, with a round chrome knee and a big chrome foot. Empty gaps on both sides of it. Three legs in all. Keep the chrome hood, the magenta eye lens, the heat-ray arm, the two other legs, outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "This walker has two legs and needs three. Draw one new front leg in the empty space in the middle, between the left leg and the right leg: a thick straight dark gunmetal leg from the middle of the body down to the bottom of the image, with a round chrome knee and a big chrome foot. Empty gaps on both sides of it. Three legs in all. Keep the chrome hood, the magenta eye lens, the heat-ray arm, the two other legs, outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "tripod-r6-a",
+          "candidate": 0,
+          "sha256": "40b79b120a867f39e4158896e8d7814cec82c60e2ae3fb6f42235ed00c5a849e"
+        }
+      },
+      "submittedAt": "2026-10-05T12:41:50.367Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/tripod-r6-d.png",
+      "rawSheetSha256": "6949e01245487ad6e11c3179f5eb9101d42f8948d7b8a750ec38bc5f566da12e",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3171,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3171,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:42:18.016Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The edit replaced both legs by one: a walker on a single leg.",
+        "reviewedAt": "2026-10-05T12:44:33.983Z"
       }
     }
   },
@@ -6930,13 +7591,13 @@
       "subject": "UNIT:MARTIAN:KNIGHT",
       "assetClass": "LARGE_UNIT",
       "status": "ACCEPTED",
-      "recipe": "mothership-a",
+      "recipe": "mothership-r6-a-port",
       "candidate": 0,
-      "candidateSha256": "542bc7c3c03ca2fce6d6b0ed6569f8b9a898ca3fe79c3e06f0c20dae6231bc30",
+      "candidateSha256": "6c05a85f63eeed0b35d686376d8e7c8477f90a4faf3cc0062f205219f49f889e",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-martian-mothership.png",
-        "sha256": "56a1c382bd40fbe342f1b220224490e90979628f308d25224c228ee7f73838b1",
-        "pixelSha256": "51ca831e8aedf89442410424f8a14d71d13c65234f65fd673e37e4becb288c43",
+        "sha256": "de5d39e895cf00ae5bea013512fe57c71f535aec4154b850d47e03485c011fa3",
+        "pixelSha256": "5d7219a81891a9a065a81643b200dcb649792ff4aabc55d666c8bfe0cf5355b8",
         "width": 72,
         "height": 88
       },
@@ -6955,7 +7616,7 @@
             "hue": 322,
             "hueSpread": 0.2
           },
-          "accentPixels": 182,
+          "accentPixels": 231,
           "trimPixels": 0
         }
       },
@@ -6970,9 +7631,9 @@
         "down": 0
       },
       "plateCheck": {
-        "bandRows": 14,
+        "bandRows": 13,
         "groundShare": 0,
-        "footprintWidthShare": 0.4853,
+        "footprintWidthShare": 0.75,
         "suspect": false
       },
       "reviewChecks": {
@@ -6982,8 +7643,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "A wide two-tier chrome disc with fins, a ring of small magenta lights, a dark dome with an antenna and a big magenta beam port under it.",
-      "acceptedAt": "2026-10-02T20:21:35.699Z"
+      "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): clearly the big one. Two stacked chrome decks, each with its own ring of magenta lights, a dark armoured command dome with fins and an antenna, and one big round magenta beam port under the hull; no pilot, no legs, no beam. 68 x 65 px and 2,536 opaque pixels against the Saucer's 63 x 56 and 1,892; the hull ends on row 69, so it hovers 13 rows over the ground line.",
+      "acceptedAt": "2026-10-05T13:09:12.505Z"
     },
     "chibi-direction-martian-ray-gunner": {
       "id": "chibi-direction-martian-ray-gunner",
@@ -7170,13 +7831,13 @@
       "subject": "UNIT:MARTIAN:CATAPULT",
       "assetClass": "LARGE_UNIT",
       "status": "ACCEPTED",
-      "recipe": "tripod-a-edit-3",
+      "recipe": "tripod-r6-c",
       "candidate": 0,
-      "candidateSha256": "a22d7134c2f84e2f29504535783441324ddd815342b454b9a4542c9ad98089b6",
+      "candidateSha256": "98fa09ba12d51ce60fd71d39a55376a26e3f6e0d5ad1d179d02a8abbd655282d",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-martian-tripod.png",
-        "sha256": "478f56a99139e0c0a7087d55e21228bb5020a92b9135938a2102df4bb1bee14b",
-        "pixelSha256": "bd8d5c5df71981d4f7a990976e0270a1d05896138c3dfc7e6ac8d248f690e0c8",
+        "sha256": "ae5b1f992585421b4260e228082a49852da80ac45668b16cd2d6b4a13c56f71a",
+        "pixelSha256": "63e8b26370aef3247ddbfd64d8f78fcf2932caf636a9f4b0590eaa998f584334",
         "width": 72,
         "height": 88
       },
@@ -7195,7 +7856,7 @@
             "hue": 322,
             "hueSpread": 0.2
           },
-          "accentPixels": 185,
+          "accentPixels": 160,
           "trimPixels": 0
         }
       },
@@ -7212,7 +7873,7 @@
       "plateCheck": {
         "bandRows": 15,
         "groundShare": 0,
-        "footprintWidthShare": 0.6897,
+        "footprintWidthShare": 0.6207,
         "suspect": false
       },
       "reviewChecks": {
@@ -7222,8 +7883,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The faction's walker: a smooth chrome hood with one big magenta lens, a heat-ray arm, tall gunmetal legs with chrome joints. It shows four legs, not three (three edits and a fresh creation could not make it three); accepted as a known weak spot.",
-      "acceptedAt": "2026-10-02T20:21:31.810Z"
+      "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): exactly three legs, countable at board size: one spread to the left, one straight down in the middle, one spread to the right, with gaps between them. Made by erasing both middle legs of the accepted four-legged sprite (tripod-r6-a) and adding one. The hood, the magenta lens, the body lights and the heat-ray arm are the accepted sprite's (58 x 76 px, feet on row 83).",
+      "acceptedAt": "2026-10-05T12:44:34.261Z"
     },
     "chibi-direction-portrait-martian-brain": {
       "id": "chibi-direction-portrait-martian-brain",
@@ -7410,13 +8071,13 @@
       "subject": "PORTRAIT:MARTIAN:KNIGHT",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "portrait-mothership-b",
+      "recipe": "portrait-mothership-r6-b",
       "candidate": 0,
-      "candidateSha256": "17f3ea5a78b44d0a277cf8de6f294c25b2862baae365d80af35968b212a23cf4",
+      "candidateSha256": "a7920e96722cb88870006456be37b474b8735e65b1c3289022b94fbecc4684a4",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-direction-portrait-martian-mothership.png",
-        "sha256": "cdab4df308c8f1eb811ac29e79c240feef3c566b04958f50c47c5310fead8b79",
-        "pixelSha256": "6f7e4ca641e6b7a690996dbec0979f265c6a17ebeca35ad0e586d3c8d32c8ef0",
+        "sha256": "23bb7a9e967564579e012254084a62f1217044f196260e5f7a0e115bd3761fcf",
+        "pixelSha256": "e52a8a6a66cd282bbe108b017e6a8f12d21534615ce6ad94b11204a444d2da9f",
         "width": 48,
         "height": 48
       },
@@ -7435,7 +8096,7 @@
             "hue": 322,
             "hueSpread": 0.2
           },
-          "accentPixels": 117,
+          "accentPixels": 180,
           "trimPixels": 0
         }
       },
@@ -7452,7 +8113,7 @@
       "plateCheck": {
         "bandRows": 8,
         "groundShare": 0,
-        "footprintWidthShare": 0.5,
+        "footprintWidthShare": 0.95,
         "suspect": false
       },
       "reviewChecks": {
@@ -7462,8 +8123,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The Mothership whole: two chrome tiers with rings of magenta lights, a dome with an antenna and the big beam port.",
-      "acceptedAt": "2026-10-02T21:02:49.798Z"
+      "notes": "Playtest round 6 redesign (pulp_wars-2o7.3): the Mothership whole, with stacked chrome decks, each with its ring of magenta lights, and the grey armoured command dome with its antenna: the big ship of the new map sprite, not the Saucer with its glass bubble. The beam port is hidden under the lower deck.",
+      "acceptedAt": "2026-10-05T13:01:00.805Z"
     },
     "chibi-direction-portrait-martian-ray-gunner": {
       "id": "chibi-direction-portrait-martian-ray-gunner",

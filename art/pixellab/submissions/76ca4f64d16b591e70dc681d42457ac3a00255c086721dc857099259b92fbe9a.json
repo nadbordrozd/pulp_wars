@@ -1,0 +1,36 @@
+{
+  "id": "guard-r6-c",
+  "jobId": "23cd1a38-79f3-4e6a-a992-7d447886349e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-guard",
+    "subject": "UNIT:GUARD",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 207313,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change two things only. The shield: twice as big, a huge tower shield with a flat top and rounded bottom from his chin to the ground, as wide as his body, crimson with the bold gold cross and a thick steel border. His armour: polished steel plate with a big round pauldron and plate arms and legs instead of cloth and mail. Do not redraw anything else: keep the face, kettle helmet, spear, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change two things only. The shield: twice as big, a huge tower shield with a flat top and rounded bottom from his chin to the ground, as wide as his body, crimson with the bold gold cross and a thick steel border. His armour: polished steel plate with a big round pauldron and plate arms and legs instead of cloth and mail. Do not redraw anything else: keep the face, kettle helmet, spear, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change two things only. The shield: twice as big, a huge tower shield with a flat top and rounded bottom from his chin to the ground, as wide as his body, crimson with the bold gold cross and a thick steel border. His armour: polished steel plate with a big round pauldron and plate arms and legs instead of cloth and mail. Do not redraw anything else: keep the face, kettle helmet, spear, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change two things only. The shield: twice as big, a huge tower shield with a flat top and rounded bottom from his chin to the ground, as wide as his body, crimson with the bold gold cross and a thick steel border. His armour: polished steel plate with a big round pauldron and plate arms and legs instead of cloth and mail. Do not redraw anything else: keep the face, kettle helmet, spear, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "guard-heraldic-edit",
+      "candidate": 0,
+      "sha256": "82566575a8be192abcfd96c88cc3f92bb66098b30ca14690d5b4f7b3d0574313"
+    }
+  }
+}

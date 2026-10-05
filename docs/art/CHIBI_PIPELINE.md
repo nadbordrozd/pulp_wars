@@ -1006,6 +1006,17 @@ aliens once more. "Make him smaller, slimmer …" shrank a 54 px figure to
 48 px but gave it long thin limbs, which a second edit ("short stubby arms
 and legs") fixed.
 
+**Playtest round 6 (bead `pulp_wars-2o7.3`).** The Mothership and the
+Tripod were redrawn in place with recipes `*-r6-*`
+([MARTIAN.md](factions/MARTIAN.md#the-mothership-and-the-tripod-bead-pulp_wars-2o73)).
+A leg could not be removed from the four-legged walker in five edits over
+two beads; erasing two legs and **adding one** ("Add only one thing: a
+third leg … exactly in the middle between them") gave three first time.
+`MARTIAN_FLYER_PRESENTATION_V7` holds the new hull bottom of the
+Mothership, and `npm run art:unit-shadows-measure` was run. The same bead
+redrew the Human Fighter and Guard in `direction-human`
+([ORIGINAL.md](factions/ORIGINAL.md#fighter-and-guard-bead-pulp_wars-2o73)).
+
 ## The Ice Folk batch (bead `pulp_wars-7g3.5`)
 
 Batch `direction-ice-folk` holds the direction study and the production art
@@ -1525,6 +1536,25 @@ What worked, added to the prompt notes of the earlier batches:
 - **The `resource` class draws a single calm object** even for a heap; the
   subject line that named "three broken pieces … with many small loose
   crumbs" gave the Crumbs.
+
+**The sweet-shop redesign (bead `pulp_wars-2o7.3`).** The basic line
+unit, the Gumball Gunner, the Gummy Bear and the Rock Candy Golem were
+redrawn in place, with their portraits and the Confectioner's
+([CANDY.md](factions/CANDY.md#redesign-october-2026-the-sweet-shop)). The
+fresh creations (three concepts of the line unit, the gumball machine and
+two portraits) were generated in the exploration run
+`art/explorations/candy-redesign-2026-10` with the new faction fragment,
+which is now the live one in CANDY.md, and six recipes were imported
+(`import --batch direction-candy --from
+art/explorations/candy-redesign-2026-10`); the recolours are edits made in
+the batch. The assets name new subject keys (`UNIT:CANDY:FIGHTER/TOFFEE`,
+`UNIT:CANDY:MARKSMAN/MACHINE`, `UNIT:CANDY:KNIGHT/AMBER`,
+`UNIT:CANDY:JUGGERNAUT/MINT`, their portraits and
+`PORTRAIT:CANDY:CAPTAIN/APRON`), and the Gunner uses the `machine` class.
+Every asset still goes through `candy-pink`; the test that asked for pink
+on every unit now asks for the opposite on the four redrawn ones and for
+under a quarter of the roster. The lineup now misses four of seven pairs
+by the measure (the toffee unit against the Goblin and the Yeti).
 
 `npm run art:chibi-candy-direction-review` writes
 `art/pixellab/reviews/chibi-batch-direction-candy/`: `lineup-{1x,x3}.png`

@@ -1,0 +1,36 @@
+{
+  "id": "fighter-r6-c",
+  "jobId": "f043081d-b10b-4555-9f94-610193345fe2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-fighter",
+    "subject": "UNIT:FIGHTER",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 207303,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a simple levy swordsman, the lightest soldier of the army: a small plain round wooden shield of light brown planks with a steel boss instead of the big heraldic shield; a padded cream linen jacket under a short crimson tabard with a small gold cross, brown belt and boots; no chainmail and no plate; a simple open steel cap with a small crimson crest. Keep the face, the sword held up, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw him as a simple levy swordsman, the lightest soldier of the army: a small plain round wooden shield of light brown planks with a steel boss instead of the big heraldic shield; a padded cream linen jacket under a short crimson tabard with a small gold cross, brown belt and boots; no chainmail and no plate; a simple open steel cap with a small crimson crest. Keep the face, the sword held up, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw him as a simple levy swordsman, the lightest soldier of the army: a small plain round wooden shield of light brown planks with a steel boss instead of the big heraldic shield; a padded cream linen jacket under a short crimson tabard with a small gold cross, brown belt and boots; no chainmail and no plate; a simple open steel cap with a small crimson crest. Keep the face, the sword held up, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Redraw him as a simple levy swordsman, the lightest soldier of the army: a small plain round wooden shield of light brown planks with a steel boss instead of the big heraldic shield; a padded cream linen jacket under a short crimson tabard with a small gold cross, brown belt and boots; no chainmail and no plate; a simple open steel cap with a small crimson crest. Keep the face, the sword held up, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "fighter-heraldic-edit",
+      "candidate": 0,
+      "sha256": "18e448198d79c948caa6ac2c7eb7264132ef8bc31dd981b3337d93a8f951ab71"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "portrait-mothership-r6-a",
+  "jobId": "3405eaa6-4bc1-4978-9c69-19718ebd2cc7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-portrait-martian-mothership",
+    "subject": "PORTRAIT:MARTIAN:KNIGHT",
+    "faction": "MARTIAN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 207421,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make it a bigger, heavier command mothership that fills the image: a thick chrome hull of two stacked decks, one wide disc on top of another, each with its own ring of hot magenta lights; on top a dark armoured gunmetal command dome with dark windows, small fins and a short antenna, no glass; under it one big round hot magenta beam port. Keep the silver-white chrome colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make it a bigger, heavier command mothership that fills the image: a thick chrome hull of two stacked decks, one wide disc on top of another, each with its own ring of hot magenta lights; on top a dark armoured gunmetal command dome with dark windows, small fins and a short antenna, no glass; under it one big round hot magenta beam port. Keep the silver-white chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make it a bigger, heavier command mothership that fills the image: a thick chrome hull of two stacked decks, one wide disc on top of another, each with its own ring of hot magenta lights; on top a dark armoured gunmetal command dome with dark windows, small fins and a short antenna, no glass; under it one big round hot magenta beam port. Keep the silver-white chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make it a bigger, heavier command mothership that fills the image: a thick chrome hull of two stacked decks, one wide disc on top of another, each with its own ring of hot magenta lights; on top a dark armoured gunmetal command dome with dark windows, small fins and a short antenna, no glass; under it one big round hot magenta beam port. Keep the silver-white chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-mothership-b",
+      "candidate": 0,
+      "sha256": "17f3ea5a78b44d0a277cf8de6f294c25b2862baae365d80af35968b212a23cf4"
+    }
+  }
+}

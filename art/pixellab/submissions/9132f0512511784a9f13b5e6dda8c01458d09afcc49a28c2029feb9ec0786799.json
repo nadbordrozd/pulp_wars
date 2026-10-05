@@ -1,0 +1,36 @@
+{
+  "id": "mothership-r6-a-port",
+  "jobId": "858da862-79b9-46e4-94a7-0405bb7bb6a8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-mothership",
+    "subject": "UNIT:MARTIAN:KNIGHT",
+    "faction": "MARTIAN",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 207404,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the pink beam of light that hangs under the ship. In its place the underside ends in one short wide round dark gunmetal beam port with a glowing hot magenta lens, no taller than 8 pixels, and everything below it is empty, so the ship hovers. Do not redraw anything else: keep the two stacked chrome decks, the rings of magenta lights, the dark command dome, the fins, the antenna, the size, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the pink beam of light that hangs under the ship. In its place the underside ends in one short wide round dark gunmetal beam port with a glowing hot magenta lens, no taller than 8 pixels, and everything below it is empty, so the ship hovers. Do not redraw anything else: keep the two stacked chrome decks, the rings of magenta lights, the dark command dome, the fins, the antenna, the size, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the pink beam of light that hangs under the ship. In its place the underside ends in one short wide round dark gunmetal beam port with a glowing hot magenta lens, no taller than 8 pixels, and everything below it is empty, so the ship hovers. Do not redraw anything else: keep the two stacked chrome decks, the rings of magenta lights, the dark command dome, the fins, the antenna, the size, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the pink beam of light that hangs under the ship. In its place the underside ends in one short wide round dark gunmetal beam port with a glowing hot magenta lens, no taller than 8 pixels, and everything below it is empty, so the ship hovers. Do not redraw anything else: keep the two stacked chrome decks, the rings of magenta lights, the dark command dome, the fins, the antenna, the size, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "mothership-r6-a",
+      "candidate": 0,
+      "sha256": "08511b59820e8ab6982945d756d2fafe5cdcbe19a1e734ba38abed11a276cadc"
+    }
+  }
+}

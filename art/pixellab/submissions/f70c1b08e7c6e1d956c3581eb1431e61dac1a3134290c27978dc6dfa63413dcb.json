@@ -1,0 +1,36 @@
+{
+  "id": "portrait-confectioner-r6-apron",
+  "jobId": "cf0605fe-e3c4-43b5-9bb8-0e042b7d6346",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-portrait-candy-confectioner",
+    "subject": "PORTRAIT:CANDY:CAPTAIN",
+    "faction": "CANDY",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 207522,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: the white apron top on the shoulders at the bottom of the image becomes an apron of glossy pink frosting, colour #f79cc4, with a thin white frill along its top edge. Do not redraw anything else: keep the caramel head, the brass goggles, the pink frosting with sprinkles on the head, the white baker's hat, the whisk, every shape, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: the white apron top on the shoulders at the bottom of the image becomes an apron of glossy pink frosting, colour #f79cc4, with a thin white frill along its top edge. Do not redraw anything else: keep the caramel head, the brass goggles, the pink frosting with sprinkles on the head, the white baker's hat, the whisk, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: the white apron top on the shoulders at the bottom of the image becomes an apron of glossy pink frosting, colour #f79cc4, with a thin white frill along its top edge. Do not redraw anything else: keep the caramel head, the brass goggles, the pink frosting with sprinkles on the head, the white baker's hat, the whisk, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: the white apron top on the shoulders at the bottom of the image becomes an apron of glossy pink frosting, colour #f79cc4, with a thin white frill along its top edge. Do not redraw anything else: keep the caramel head, the brass goggles, the pink frosting with sprinkles on the head, the white baker's hat, the whisk, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-confectioner-a-whisk",
+      "candidate": 0,
+      "sha256": "5b52af94b5be41b1ddd1490e7c1351b70873ef3d4b2d330f1a0836dc12fd538f"
+    }
+  }
+}

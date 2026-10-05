@@ -48,10 +48,10 @@ with Settings > Developer tools > Classic look. See
 
 | Role       | New look (the signature prop is unchanged)                                      |
 | ---------- | ------------------------------------------------------------------------------- |
-| Fighter    | crimson surcoat with a gold cross, heater shield with a gold lion, gold band    |
+| Fighter    | crimson cloth tunic with a gold cross, small round wooden shield, gold band     |
 | Raider     | crimson hooded cloak with a gold trim over a cream tunic, on the sandy pony     |
 | Marksman   | crimson hood with a gold trim, cream gambeson with a crimson and gold tabard    |
-| Guard      | crimson tower shield with a gold cross and steel border, gold helmet band       |
+| Guard      | steel plate, crimson tower shield from chin to ground, gold cross, steel border |
 | Captain    | crimson hat with a gold band and white feather, crimson banner with a gold lion |
 | Catapult   | the same frame; crimson pennant with a gold stripe, crimson cloths with gold    |
 | Knight     | crowned great helm, crimson caparison with a gold trim, lance pennant           |
@@ -75,6 +75,35 @@ chainmail and helmets and cream linen; steel is shaded with darker
 blue-grey, cloth with a deeper tone of its own colour, leather is dark
 brown.
 ```
+
+### Fighter and Guard (bead `pulp_wars-2o7.3`)
+
+The user (2026-10-05): "human units - fighter and guard are quite similar.
+it should be more obvious that the guard is the more defensive unit and the
+[fighter] is the basic soldier. maybe if the guard looked a bit more armored
+with a bigger shield and the fighter's shield was more basic." Both carried
+a crimson shield with gold heraldry about as big as their body. They were
+redrawn in place (same asset ids, canvases and anchors; recipes `*-r6-*`
+in batch `direction-human`, edits of the accepted sprites), with their
+portraits; 10 PixelLab calls.
+
+- **Fighter** (`fighter-r6-a`, 53 x 72 px): the basic soldier. A small
+  plain round wooden shield with a steel rim and boss, a crimson cloth
+  tunic with the gold cross over cream linen sleeves, no mail. Helmet,
+  crest, sword and face are unchanged. Rejected: the same shield with the
+  mail kept (darker), and a levy swordsman with no crest and almost no
+  crimson (a different, smaller soldier).
+- **Guard** (`guard-r6-d`, 51 x 73 px): the defensive unit. Full steel
+  plate with a big round pauldron, and a rectangular crimson tower shield
+  with a gold cross and a riveted steel border that stands on the ground
+  and covers him from chin to feet; kettle helmet, face and spear kept.
+  Rejected: plate with the old shield, a giant pavise that hid the face and
+  the spear, a shield that only grew to the knees, and one with a grey
+  plate under it.
+- **Told apart by silhouette:** a round shield beside the body, a crest
+  and a raised sword against a rectangle with a head and a spear.
+- The Fighter's portrait is also the Human emblem of the setup form; it
+  keeps the helmet, crest and cross and shows the round shield.
 
 The other factions are **not** converted: Undead, Goblin and Dinosaur units,
 cities and portraits still carry the owner colour on a mask.

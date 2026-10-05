@@ -1,0 +1,36 @@
+{
+  "id": "mothership-r6-c",
+  "jobId": "f72fc5c4-e3c6-402a-9979-5d887eaa2204",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-mothership",
+    "subject": "UNIT:MARTIAN:KNIGHT",
+    "faction": "MARTIAN",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 207403,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make it a giant mothership: enlarge the hull until it touches the left and right edges and make the disc twice as thick, with two rows of magenta lights and a gunmetal belt between; replace the glass dome with a chrome command tower of two stacked rings with lit magenta windows and a mast with antennas; make the magenta beam port underneath larger. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make it a giant mothership: enlarge the hull until it touches the left and right edges and make the disc twice as thick, with two rows of magenta lights and a gunmetal belt between; replace the glass dome with a chrome command tower of two stacked rings with lit magenta windows and a mast with antennas; make the magenta beam port underneath larger. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make it a giant mothership: enlarge the hull until it touches the left and right edges and make the disc twice as thick, with two rows of magenta lights and a gunmetal belt between; replace the glass dome with a chrome command tower of two stacked rings with lit magenta windows and a mast with antennas; make the magenta beam port underneath larger. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make it a giant mothership: enlarge the hull until it touches the left and right edges and make the disc twice as thick, with two rows of magenta lights and a gunmetal belt between; replace the glass dome with a chrome command tower of two stacked rings with lit magenta windows and a mast with antennas; make the magenta beam port underneath larger. No pilot, no legs; empty space stays under it. Keep the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "mothership-a",
+      "candidate": 0,
+      "sha256": "542bc7c3c03ca2fce6d6b0ed6569f8b9a898ca3fe79c3e06f0c20dae6231bc30"
+    }
+  }
+}

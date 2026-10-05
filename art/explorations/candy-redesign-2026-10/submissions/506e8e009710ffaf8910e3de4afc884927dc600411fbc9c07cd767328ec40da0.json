@@ -1,0 +1,64 @@
+{
+  "id": "gunner-machine-mint-a",
+  "jobId": "sync-49aee155-8b7e-48df-b748-5b88df4c785b",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "candy-redesign",
+    "asset": "chibi-redesign-candy-gunner-machine-mint",
+    "subject": "UNIT:CANDY:MARKSMAN",
+    "faction": "TEST-CANDY-SWEETSHOP",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 207613,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "art/explorations/candy-redesign-2026-10/faction.md#prompt-fragment + art/explorations/candy-redesign-2026-10/faction.md#negative-fragment",
+        "text": "Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface.",
+        "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-machine.txt + scripts/art/chibi/fragments/class-machine.negative.txt",
+        "text": "Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/candy-redesign-2026-10/subjects.json",
+        "text": "Subject: a chunky cute walking gumball machine that shoots gumballs: on top one very big round clear glass globe, almost as wide as the image, with one hard white highlight, packed full of many small round glossy gumballs in mixed bright colours, apple green, lemon yellow, amber orange, sky blue, white and a few pink; a small round dark chocolate lid cap on top of the globe; under the globe a short squat rounded base of glossy peppermint mint green candy, colour #5fcf9f, shaded #2f9a70, with one white stripe round it and two round black dot eyes, and below the eyes a wide dark open chute like a round mouth out of which one yellow gumball is flying forward with two short white speed lines; a small round golden caramel coin knob on its side; two short stubby dark chocolate brown legs with round feet under the base; no arms, no hat and no weapon; simple shapes and very few details; the feet are the lowest thing in the image."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The glass globe is drawn very large, about 46 pixels across, and the whole machine about 66 pixels tall.",
+        "negative": "human, person, child, skin, hair, jellybean, pill-shaped figure, figure holding a machine, blaster, gun, rifle, arms, robot, tall humanoid, wheels, red base"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: a chunky cute walking gumball machine that shoots gumballs: on top one very big round clear glass globe, almost as wide as the image, with one hard white highlight, packed full of many small round glossy gumballs in mixed bright colours, apple green, lemon yellow, amber orange, sky blue, white and a few pink; a small round dark chocolate lid cap on top of the globe; under the globe a short squat rounded base of glossy peppermint mint green candy, colour #5fcf9f, shaded #2f9a70, with one white stripe round it and two round black dot eyes, and below the eyes a wide dark open chute like a round mouth out of which one yellow gumball is flying forward with two short white speed lines; a small round golden caramel coin knob on its side; two short stubby dark chocolate brown legs with round feet under the base; no arms, no hat and no weapon; simple shapes and very few details; the feet are the lowest thing in the image. The glass globe is drawn very large, about 46 pixels across, and the whole machine about 66 pixels tall.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, child, skin, hair, jellybean, pill-shaped figure, figure holding a machine, blaster, gun, rifle, arms, robot, tall humanoid, wheels, red base",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: a chunky cute walking gumball machine that shoots gumballs: on top one very big round clear glass globe, almost as wide as the image, with one hard white highlight, packed full of many small round glossy gumballs in mixed bright colours, apple green, lemon yellow, amber orange, sky blue, white and a few pink; a small round dark chocolate lid cap on top of the globe; under the globe a short squat rounded base of glossy peppermint mint green candy, colour #5fcf9f, shaded #2f9a70, with one white stripe round it and two round black dot eyes, and below the eyes a wide dark open chute like a round mouth out of which one yellow gumball is flying forward with two short white speed lines; a small round golden caramel coin knob on its side; two short stubby dark chocolate brown legs with round feet under the base; no arms, no hat and no weapon; simple shapes and very few details; the feet are the lowest thing in the image. The glass globe is drawn very large, about 46 pixels across, and the whole machine about 66 pixels tall. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, child, skin, hair, jellybean, pill-shaped figure, figure holding a machine, blaster, gun, rifle, arms, robot, tall humanoid, wheels, red base."
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "id": "portrait-toffee-b",
+  "jobId": "sync-be851bfe-817f-4ccb-a85f-9278c6168a83",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "candy-redesign",
+    "asset": "chibi-redesign-candy-portrait-toffee",
+    "subject": "PORTRAIT:CANDY:FIGHTER",
+    "faction": "TEST-CANDY-SWEETSHOP",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 207623,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "art/explorations/candy-redesign-2026-10/faction.md#prompt-fragment + art/explorations/candy-redesign-2026-10/faction.md#negative-fragment",
+        "text": "Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface.",
+        "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/candy-redesign-2026-10/subjects.json",
+        "text": "Subject: a close-up portrait of a chunky cute living wrapped toffee soldier: one big fat rounded cube of glossy golden caramel toffee, colour #e0a040, shaded #b06a1c, with one hard white highlight, filling most of the square, with two twisted fan-shaped wrapper ends of pale lemon yellow and white paper sticking out wide at its left and right like big ears, and a small dark chocolate knob on its top; the face is on the cube itself, two big round black dot eyes under short determined brows, two small pink cheeks and a small smile; beside it the top of a round mint green and white swirl lollipop."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "A close-up seen from the front: the square toffee cube with its face fills the middle of the square, and both twisted wrapper ends are visible, one on its left and one on its right; small black dot eyes with no whites; no legs and no feet.",
+        "negative": "full body, legs, feet, human, person, skin, hair, helmet, shirt, big white eyes, eyelashes, bear, animal ears"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: a close-up portrait of a chunky cute living wrapped toffee soldier: one big fat rounded cube of glossy golden caramel toffee, colour #e0a040, shaded #b06a1c, with one hard white highlight, filling most of the square, with two twisted fan-shaped wrapper ends of pale lemon yellow and white paper sticking out wide at its left and right like big ears, and a small dark chocolate knob on its top; the face is on the cube itself, two big round black dot eyes under short determined brows, two small pink cheeks and a small smile; beside it the top of a round mint green and white swirl lollipop. A close-up seen from the front: the square toffee cube with its face fills the middle of the square, and both twisted wrapper ends are visible, one on its left and one on its right; small black dot eyes with no whites; no legs and no feet.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, human, person, skin, hair, helmet, shirt, big white eyes, eyelashes, bear, animal ears",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a cheerful sweet shop of many different sweets, bright, glossy and silly. Its fixed colours: glossy milk and dark chocolate brown; golden caramel and toffee; pale biscuit wafer; matte marshmallow white and cream; clear jewel-coloured gummy jelly and hard candy in apple green, lemon yellow and amber orange; white peppermint with mint green stripes; a little liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a small trim; one hard pure white highlight on every glossy surface. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: a close-up portrait of a chunky cute living wrapped toffee soldier: one big fat rounded cube of glossy golden caramel toffee, colour #e0a040, shaded #b06a1c, with one hard white highlight, filling most of the square, with two twisted fan-shaped wrapper ends of pale lemon yellow and white paper sticking out wide at its left and right like big ears, and a small dark chocolate knob on its top; the face is on the cube itself, two big round black dot eyes under short determined brows, two small pink cheeks and a small smile; beside it the top of a round mint green and white swirl lollipop. A close-up seen from the front: the square toffee cube with its face fills the middle of the square, and both twisted wrapper ends are visible, one on its left and one on its right; small black dot eyes with no whites; no legs and no feet. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, human, person, skin, hair, helmet, shirt, big white eyes, eyelashes, bear, animal ears."
+  }
+}

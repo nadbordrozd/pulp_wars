@@ -1,0 +1,36 @@
+{
+  "id": "gummy-bear-r6-green",
+  "jobId": "f5af018e-9c69-4b1b-a959-622366d47f11",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-gummy-bear",
+    "subject": "UNIT:CANDY:KNIGHT",
+    "faction": "CANDY",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 207501,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent apple-green gummy jelly, colour #4fc23f, lighter yellow-green #9be56e in the middle of its tummy and head where light shines through, deep green #2a8a2c at its edges and shadows. No pink is left. Keep the white shine streaks, the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent apple-green gummy jelly, colour #4fc23f, lighter yellow-green #9be56e in the middle of its tummy and head where light shines through, deep green #2a8a2c at its edges and shadows. No pink is left. Keep the white shine streaks, the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent apple-green gummy jelly, colour #4fc23f, lighter yellow-green #9be56e in the middle of its tummy and head where light shines through, deep green #2a8a2c at its edges and shadows. No pink is left. Keep the white shine streaks, the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the whole jelly figure and change nothing else: all its pink jelly becomes glossy translucent apple-green gummy jelly, colour #4fc23f, lighter yellow-green #9be56e in the middle of its tummy and head where light shines through, deep green #2a8a2c at its edges and shadows. No pink is left. Keep the white shine streaks, the dot eyes and smile, ears, raised fist, pose, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "gummy-bear-e-bare-b",
+      "candidate": 0,
+      "sha256": "4b7f135ef2270fc916e204fe1ce79f68816624ebfa0d7db0ce61b970bb1472f3"
+    }
+  }
+}

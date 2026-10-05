@@ -95,55 +95,55 @@
   "tones": [
     {
       "tone": "pinkLit",
-      "hex": "#fba3c7",
+      "hex": "#fba1c8",
       "againstFactionColours": [
         {
           "a": "pinkLit",
           "b": "ORIGINAL",
-          "deltaE": 56.6,
-          "worst": 46.9,
-          "contrast": 2.9
+          "deltaE": 56.5,
+          "worst": 47.7,
+          "contrast": 2.8
         },
         {
           "a": "pinkLit",
           "b": "UNDEAD",
-          "deltaE": 87.8,
-          "worst": 75.4,
+          "deltaE": 86.1,
+          "worst": 73.1,
           "contrast": 2.8
         },
         {
           "a": "pinkLit",
           "b": "GOBLIN",
-          "deltaE": 97.4,
-          "worst": 83.4,
+          "deltaE": 99.1,
+          "worst": 84.6,
           "contrast": 1.3
         },
         {
           "a": "pinkLit",
           "b": "DINOSAUR",
-          "deltaE": 79.1,
-          "worst": 73.7,
+          "deltaE": 80.1,
+          "worst": 74.7,
           "contrast": 1.4
         },
         {
           "a": "pinkLit",
           "b": "MARTIAN",
-          "deltaE": 46.8,
-          "worst": 24.1,
+          "deltaE": 45.1,
+          "worst": 23.2,
           "contrast": 2
         },
         {
           "a": "pinkLit",
           "b": "ICE_FOLK",
-          "deltaE": 65.3,
-          "worst": 28.2,
+          "deltaE": 65.5,
+          "worst": 26,
           "contrast": 1.2
         },
         {
           "a": "pinkLit",
           "b": "DWARF",
-          "deltaE": 88.5,
-          "worst": 19.3,
+          "deltaE": 89.9,
+          "worst": 19.8,
           "contrast": 1.3
         }
       ],
@@ -151,185 +151,185 @@
         {
           "a": "pinkLit",
           "b": "Grass",
-          "deltaE": 82.7,
-          "worst": 41.1,
+          "deltaE": 84.4,
+          "worst": 42.1,
           "contrast": 1.2
         },
         {
           "a": "pinkLit",
           "b": "Mountain rock",
-          "deltaE": 38.3,
-          "worst": 5.3,
-          "contrast": 1.3
+          "deltaE": 39.4,
+          "worst": 6.7,
+          "contrast": 1.2
         },
         {
           "a": "pinkLit",
           "b": "Shallow Water",
-          "deltaE": 56.8,
-          "worst": 9.9,
+          "deltaE": 57.9,
+          "worst": 10.9,
           "contrast": 1.1
         },
         {
           "a": "pinkLit",
           "b": "Deep Water",
-          "deltaE": 55.4,
-          "worst": 28.4,
+          "deltaE": 55.5,
+          "worst": 26.6,
           "contrast": 2.5
         },
         {
           "a": "pinkLit",
           "b": "Snow",
-          "deltaE": 61.3,
-          "worst": 21.7,
+          "deltaE": 63,
+          "worst": 22.8,
           "contrast": 1.2
         }
       ],
-      "againstOutline": 11
+      "againstOutline": 10.8
     },
     {
       "tone": "pinkShade",
-      "hex": "#b25d81",
+      "hex": "#a95879",
       "againstFactionColours": [
         {
           "a": "pinkShade",
           "b": "ORIGINAL",
-          "deltaE": 45.8,
-          "worst": 30.1,
-          "contrast": 1.2
+          "deltaE": 45.9,
+          "worst": 28.2,
+          "contrast": 1.1
         },
         {
           "a": "pinkShade",
           "b": "UNDEAD",
-          "deltaE": 82,
-          "worst": 70.4,
-          "contrast": 1.2
+          "deltaE": 83.5,
+          "worst": 71.5,
+          "contrast": 1.1
         },
         {
           "a": "pinkShade",
           "b": "GOBLIN",
-          "deltaE": 103.2,
-          "worst": 89.3,
-          "contrast": 3
+          "deltaE": 102.7,
+          "worst": 89.9,
+          "contrast": 3.3
         },
         {
           "a": "pinkShade",
           "b": "DINOSAUR",
-          "deltaE": 78.8,
-          "worst": 74.2,
-          "contrast": 1.6
+          "deltaE": 78.6,
+          "worst": 73.6,
+          "contrast": 1.8
         },
         {
           "a": "pinkShade",
           "b": "MARTIAN",
-          "deltaE": 40.8,
-          "worst": 16.4,
-          "contrast": 1.2
+          "deltaE": 43,
+          "worst": 18.2,
+          "contrast": 1.3
         },
         {
           "a": "pinkShade",
           "b": "ICE_FOLK",
-          "deltaE": 69.6,
-          "worst": 39.3,
-          "contrast": 2
+          "deltaE": 69.7,
+          "worst": 41.8,
+          "contrast": 2.1
         },
         {
           "a": "pinkShade",
           "b": "DWARF",
-          "deltaE": 90.9,
-          "worst": 17.7,
-          "contrast": 1.7
+          "deltaE": 89.6,
+          "worst": 19.4,
+          "contrast": 1.9
         }
       ],
       "againstGrounds": [
         {
           "a": "pinkShade",
           "b": "Grass",
-          "deltaE": 85.5,
-          "worst": 42.4,
-          "contrast": 1.9
+          "deltaE": 84.3,
+          "worst": 43,
+          "contrast": 2.1
         },
         {
           "a": "pinkShade",
           "b": "Mountain rock",
-          "deltaE": 43.5,
-          "worst": 17.7,
-          "contrast": 1.9
+          "deltaE": 43.3,
+          "worst": 20.5,
+          "contrast": 2.1
         },
         {
           "a": "pinkShade",
           "b": "Shallow Water",
-          "deltaE": 65.6,
-          "worst": 29.2,
-          "contrast": 2.6
+          "deltaE": 65.5,
+          "worst": 31.9,
+          "contrast": 2.9
         },
         {
           "a": "pinkShade",
           "b": "Deep Water",
-          "deltaE": 49.4,
-          "worst": 16.9,
-          "contrast": 1.1
+          "deltaE": 48.4,
+          "worst": 18.6,
+          "contrast": 1
         },
         {
           "a": "pinkShade",
           "b": "Snow",
-          "deltaE": 69.7,
-          "worst": 35.3,
-          "contrast": 2.7
+          "deltaE": 69.2,
+          "worst": 37.3,
+          "contrast": 3
         }
       ],
-      "againstOutline": 4.7
+      "againstOutline": 4.3
     },
     {
       "tone": "white",
-      "hex": "#fcf7f5",
+      "hex": "#f7f8f6",
       "againstFactionColours": [
         {
           "a": "white",
           "b": "ORIGINAL",
-          "deltaE": 89.1,
-          "worst": 60.1,
+          "deltaE": 90.4,
+          "worst": 60.5,
           "contrast": 5
         },
         {
           "a": "white",
           "b": "UNDEAD",
-          "deltaE": 120.8,
-          "worst": 89.9,
+          "deltaE": 121.5,
+          "worst": 88.9,
           "contrast": 4.9
         },
         {
           "a": "white",
           "b": "GOBLIN",
-          "deltaE": 84.3,
-          "worst": 81,
+          "deltaE": 84.8,
+          "worst": 81.9,
           "contrast": 1.4
         },
         {
           "a": "white",
           "b": "DINOSAUR",
-          "deltaE": 91.2,
-          "worst": 72.9,
+          "deltaE": 92.4,
+          "worst": 73.3,
           "contrast": 2.5
         },
         {
           "a": "white",
           "b": "MARTIAN",
-          "deltaE": 88,
-          "worst": 41.8,
+          "deltaE": 89.3,
+          "worst": 41.1,
           "contrast": 3.5
         },
         {
           "a": "white",
           "b": "ICE_FOLK",
-          "deltaE": 56,
-          "worst": 46.1,
+          "deltaE": 55.1,
+          "worst": 45.7,
           "contrast": 2.1
         },
         {
           "a": "white",
           "b": "DWARF",
-          "deltaE": 60.1,
-          "worst": 34.3,
+          "deltaE": 58.8,
+          "worst": 34.4,
           "contrast": 2.4
         }
       ],
@@ -337,185 +337,185 @@
         {
           "a": "white",
           "b": "Grass",
-          "deltaE": 58.7,
-          "worst": 47.1,
+          "deltaE": 58.1,
+          "worst": 47.7,
           "contrast": 2.2
         },
         {
           "a": "white",
           "b": "Mountain rock",
-          "deltaE": 29.6,
-          "worst": 28.8,
+          "deltaE": 29.3,
+          "worst": 28.7,
           "contrast": 2.2
         },
         {
           "a": "white",
           "b": "Shallow Water",
-          "deltaE": 29.3,
-          "worst": 17.1,
+          "deltaE": 27.9,
+          "worst": 16.9,
           "contrast": 1.6
         },
         {
           "a": "white",
           "b": "Deep Water",
-          "deltaE": 58.5,
-          "worst": 55,
+          "deltaE": 58,
+          "worst": 54.8,
           "contrast": 4.5
         },
         {
           "a": "white",
           "b": "Snow",
-          "deltaE": 32.2,
-          "worst": 24.9,
+          "deltaE": 31.5,
+          "worst": 25.5,
           "contrast": 1.5
         }
       ],
-      "againstOutline": 19.5
+      "againstOutline": 19.3
     },
     {
       "tone": "biscuit",
-      "hex": "#c8783a",
+      "hex": "#d67f29",
       "againstFactionColours": [
         {
           "a": "biscuit",
           "b": "ORIGINAL",
-          "deltaE": 44.8,
-          "worst": 14.3,
-          "contrast": 1.6
+          "deltaE": 49.2,
+          "worst": 24.3,
+          "contrast": 1.8
         },
         {
           "a": "biscuit",
           "b": "UNDEAD",
-          "deltaE": 133.5,
-          "worst": 121.7,
-          "contrast": 1.6
+          "deltaE": 143.4,
+          "worst": 132.1,
+          "contrast": 1.7
         },
         {
           "a": "biscuit",
           "b": "GOBLIN",
-          "deltaE": 54,
-          "worst": 42.9,
-          "contrast": 2.3
+          "deltaE": 46,
+          "worst": 32.9,
+          "contrast": 2.1
         },
         {
           "a": "biscuit",
           "b": "DINOSAUR",
-          "deltaE": 34.7,
-          "worst": 19.6,
-          "contrast": 1.3
-        },
-        {
-          "a": "biscuit",
-          "b": "MARTIAN",
-          "deltaE": 84.6,
-          "worst": 63.7,
+          "deltaE": 25.5,
+          "worst": 6.5,
           "contrast": 1.1
         },
         {
           "a": "biscuit",
+          "b": "MARTIAN",
+          "deltaE": 93.2,
+          "worst": 74.1,
+          "contrast": 1.2
+        },
+        {
+          "a": "biscuit",
           "b": "ICE_FOLK",
-          "deltaE": 100.9,
-          "worst": 84.8,
-          "contrast": 1.5
+          "deltaE": 111.2,
+          "worst": 96.6,
+          "contrast": 1.4
         },
         {
           "a": "biscuit",
           "b": "DWARF",
-          "deltaE": 81,
-          "worst": 26.2,
-          "contrast": 1.3
+          "deltaE": 86.8,
+          "worst": 35.9,
+          "contrast": 1.2
         }
       ],
       "againstGrounds": [
         {
           "a": "biscuit",
           "b": "Grass",
-          "deltaE": 58.5,
-          "worst": 12.3,
-          "contrast": 1.4
+          "deltaE": 61.3,
+          "worst": 15.9,
+          "contrast": 1.3
         },
         {
           "a": "biscuit",
           "b": "Mountain rock",
-          "deltaE": 60.9,
-          "worst": 52.6,
-          "contrast": 1.4
+          "deltaE": 70.9,
+          "worst": 64.3,
+          "contrast": 1.3
         },
         {
           "a": "biscuit",
           "b": "Shallow Water",
-          "deltaE": 76.6,
-          "worst": 58.8,
-          "contrast": 2
+          "deltaE": 85.2,
+          "worst": 69,
+          "contrast": 1.8
         },
         {
           "a": "biscuit",
           "b": "Deep Water",
-          "deltaE": 82.5,
-          "worst": 70.9,
-          "contrast": 1.4
+          "deltaE": 93.6,
+          "worst": 83.8,
+          "contrast": 1.6
         },
         {
           "a": "biscuit",
           "b": "Snow",
-          "deltaE": 55.8,
-          "worst": 34.1,
-          "contrast": 2.1
+          "deltaE": 61.4,
+          "worst": 40.5,
+          "contrast": 1.9
         }
       ],
-      "againstOutline": 6.1
+      "againstOutline": 6.8
     },
     {
       "tone": "chocolate",
-      "hex": "#6d2415",
+      "hex": "#6e2513",
       "againstFactionColours": [
         {
           "a": "chocolate",
           "b": "ORIGINAL",
-          "deltaE": 40.3,
-          "worst": 15.1,
+          "deltaE": 40,
+          "worst": 15.5,
           "contrast": 2
         },
         {
           "a": "chocolate",
           "b": "UNDEAD",
-          "deltaE": 114.7,
-          "worst": 104.8,
+          "deltaE": 116.3,
+          "worst": 105.7,
           "contrast": 2.1
         },
         {
           "a": "chocolate",
           "b": "GOBLIN",
-          "deltaE": 89.1,
-          "worst": 78.6,
-          "contrast": 7.5
+          "deltaE": 87.7,
+          "worst": 77.8,
+          "contrast": 7.4
         },
         {
           "a": "chocolate",
           "b": "DINOSAUR",
-          "deltaE": 62.4,
-          "worst": 55.3,
+          "deltaE": 60.9,
+          "worst": 53.4,
           "contrast": 4
         },
         {
           "a": "chocolate",
           "b": "MARTIAN",
-          "deltaE": 72.3,
-          "worst": 55.1,
+          "deltaE": 73.4,
+          "worst": 55.9,
           "contrast": 2.9
         },
         {
           "a": "chocolate",
           "b": "ICE_FOLK",
-          "deltaE": 96.5,
-          "worst": 80.5,
-          "contrast": 4.9
+          "deltaE": 97.6,
+          "worst": 81.9,
+          "contrast": 4.8
         },
         {
           "a": "chocolate",
           "b": "DWARF",
-          "deltaE": 90.6,
-          "worst": 40.7,
+          "deltaE": 90.7,
+          "worst": 41.1,
           "contrast": 4.3
         }
       ],
@@ -523,37 +523,37 @@
         {
           "a": "chocolate",
           "b": "Grass",
-          "deltaE": 77.7,
-          "worst": 41.4,
-          "contrast": 4.7
+          "deltaE": 77.2,
+          "worst": 41.1,
+          "contrast": 4.6
         },
         {
           "a": "chocolate",
           "b": "Mountain rock",
-          "deltaE": 63.9,
-          "worst": 55.4,
+          "deltaE": 64.7,
+          "worst": 56,
           "contrast": 4.6
         },
         {
           "a": "chocolate",
           "b": "Shallow Water",
-          "deltaE": 83.9,
-          "worst": 66.6,
-          "contrast": 6.5
+          "deltaE": 84.5,
+          "worst": 67.2,
+          "contrast": 6.4
         },
         {
           "a": "chocolate",
           "b": "Deep Water",
-          "deltaE": 70.5,
-          "worst": 56.9,
+          "deltaE": 71.9,
+          "worst": 58.6,
           "contrast": 2.3
         },
         {
           "a": "chocolate",
           "b": "Snow",
-          "deltaE": 74.9,
-          "worst": 53.8,
-          "contrast": 6.7
+          "deltaE": 74.8,
+          "worst": 53.9,
+          "contrast": 6.6
         }
       ],
       "againstOutline": 1.9
@@ -565,29 +565,29 @@
       "role": "FIGHTER",
       "id": "chibi-direction-candy-gumdrop",
       "canvas": "56 x 80",
-      "body": "54 x 48",
-      "rows": "16 to 63",
-      "standsAboveCanvasBottom": 16,
-      "pinkShare": 53.9,
+      "body": "54 x 53",
+      "rows": "13 to 65",
+      "standsAboveCanvasBottom": 14,
+      "pinkShare": 0,
       "familyDistance": 0,
       "nearest": [
         {
+          "unit": "goblin-scrap-buggy",
+          "palette": 11.3,
+          "worst": 7.9,
+          "silhouetteOverlap": 0.6
+        },
+        {
           "unit": "dwarf-engineer",
-          "palette": 21.5,
-          "worst": 8.3,
+          "palette": 12.1,
+          "worst": 6.4,
           "silhouetteOverlap": 0.54
         },
         {
-          "unit": "martian-tripod",
-          "palette": 22.5,
-          "worst": 11.1,
-          "silhouetteOverlap": 0.42
-        },
-        {
-          "unit": "dwarf-steam-tank",
-          "palette": 23.5,
-          "worst": 8.9,
-          "silhouetteOverlap": 0.55
+          "unit": "dwarf-steam-mole",
+          "palette": 12.5,
+          "worst": 6.5,
+          "silhouetteOverlap": 0.63
         }
       ]
     },
@@ -600,7 +600,7 @@
       "rows": "11 to 76",
       "standsAboveCanvasBottom": 11,
       "pinkShare": 42.7,
-      "familyDistance": 9.4,
+      "familyDistance": 18.2,
       "nearest": [
         {
           "unit": "dwarf-engineer",
@@ -627,29 +627,29 @@
       "role": "MARKSMAN",
       "id": "chibi-direction-candy-gumball-gunner",
       "canvas": "56 x 80",
-      "body": "56 x 66",
-      "rows": "8 to 73",
-      "standsAboveCanvasBottom": 6,
-      "pinkShare": 44.4,
-      "familyDistance": 7.8,
+      "body": "47 x 72",
+      "rows": "4 to 75",
+      "standsAboveCanvasBottom": 4,
+      "pinkShare": 5.2,
+      "familyDistance": 16,
       "nearest": [
         {
-          "unit": "dwarf-engineer",
-          "palette": 19.9,
-          "worst": 8.4,
-          "silhouetteOverlap": 0.66
+          "unit": "goblin-rocket-cart",
+          "palette": 15.5,
+          "worst": 6.7,
+          "silhouetteOverlap": 0.65
         },
         {
-          "unit": "dwarf-brass-titan",
-          "palette": 20.4,
-          "worst": 8.3,
-          "silhouetteOverlap": 0.46
+          "unit": "goblin-scrap-buggy",
+          "palette": 16.2,
+          "worst": 8.8,
+          "silhouetteOverlap": 0.54
         },
         {
-          "unit": "dwarf-hammerer",
-          "palette": 20.8,
-          "worst": 10.4,
-          "silhouetteOverlap": 0.74
+          "unit": "goblin-bomb-chucker",
+          "palette": 16.8,
+          "worst": 9.2,
+          "silhouetteOverlap": 0.62
         }
       ]
     },
@@ -662,7 +662,7 @@
       "rows": "10 to 71",
       "standsAboveCanvasBottom": 8,
       "pinkShare": 30.9,
-      "familyDistance": 11.8,
+      "familyDistance": 15.8,
       "nearest": [
         {
           "unit": "dwarf-engineer",
@@ -693,7 +693,7 @@
       "rows": "7 to 71",
       "standsAboveCanvasBottom": 8,
       "pinkShare": 38.3,
-      "familyDistance": 10,
+      "familyDistance": 20.7,
       "nearest": [
         {
           "unit": "dwarf-engineer",
@@ -724,7 +724,7 @@
       "rows": "0 to 85",
       "standsAboveCanvasBottom": 2,
       "pinkShare": 35.2,
-      "familyDistance": 8.3,
+      "familyDistance": 21.4,
       "nearest": [
         {
           "unit": "marksman",
@@ -754,26 +754,26 @@
       "body": "66 x 72",
       "rows": "9 to 80",
       "standsAboveCanvasBottom": 7,
-      "pinkShare": 85.2,
-      "familyDistance": 12.2,
+      "pinkShare": 0,
+      "familyDistance": 23.6,
       "nearest": [
         {
-          "unit": "martian-tripod",
-          "palette": 29.7,
-          "worst": 10.4,
-          "silhouetteOverlap": 0.56
+          "unit": "raider",
+          "palette": 19,
+          "worst": 7.1,
+          "silhouetteOverlap": 0.67
         },
         {
-          "unit": "martian-brain",
-          "palette": 34.6,
-          "worst": 7.9,
-          "silhouetteOverlap": 0.62
+          "unit": "dwarf-steam-cannon",
+          "palette": 20.1,
+          "worst": 10.5,
+          "silhouetteOverlap": 0.59
         },
         {
-          "unit": "martian-shield-projector",
-          "palette": 36.3,
-          "worst": 8.9,
-          "silhouetteOverlap": 0.66
+          "unit": "captain",
+          "palette": 20.6,
+          "worst": 10.1,
+          "silhouetteOverlap": 0.53
         }
       ]
     },
@@ -785,34 +785,34 @@
       "body": "82 x 99",
       "rows": "2 to 100",
       "standsAboveCanvasBottom": 3,
-      "pinkShare": 56.9,
-      "familyDistance": 7,
+      "pinkShare": 5.7,
+      "familyDistance": 14.4,
       "nearest": [
         {
-          "unit": "dwarf-steam-cannon",
-          "palette": 20.6,
-          "worst": 6,
-          "silhouetteOverlap": 0.42
+          "unit": "goblin-orc-brute",
+          "palette": 20.4,
+          "worst": 11,
+          "silhouetteOverlap": 0.4
         },
         {
-          "unit": "dwarf-steam-tank",
-          "palette": 20.9,
-          "worst": 6.7,
-          "silhouetteOverlap": 0.43
+          "unit": "goblin-rocket-cart",
+          "palette": 21.7,
+          "worst": 7.4,
+          "silhouetteOverlap": 0.49
         },
         {
-          "unit": "dwarf-gyrocopter",
-          "palette": 21,
-          "worst": 5.9,
-          "silhouetteOverlap": 0.38
+          "unit": "dwarf-clockwork-gunner",
+          "palette": 22,
+          "worst": 8.9,
+          "silhouetteOverlap": 0.37
         }
       ]
     }
   ],
   "saturatedPinkPixels": {
     "test": "hue 285 to 5, saturation above 0.56, value at least 0.3 (the Martian magenta and the Human crimson), on the unit and portrait masters",
-    "count": 416,
-    "opaque": 32937
+    "count": 526,
+    "opaque": 33147
   },
   "markers": {
     "crumbs": {
@@ -840,8 +840,8 @@
     }
   },
   "distances": {
-    "pinkLitFromCandyColour": 8.9,
-    "pinkShadeFromMartianMagenta": 40.8,
-    "pinkShadeFromHumanCrimson": 45.8
+    "pinkLitFromCandyColour": 10.1,
+    "pinkShadeFromMartianMagenta": 43,
+    "pinkShadeFromHumanCrimson": 45.9
   }
 }

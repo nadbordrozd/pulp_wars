@@ -1,0 +1,36 @@
+{
+  "id": "portrait-machine-b-noeyes",
+  "jobId": "55245663-bccc-456a-8521-b87061750d24",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-redesign",
+    "asset": "chibi-redesign-candy-portrait-machine",
+    "subject": "PORTRAIT:CANDY:MARKSMAN",
+    "faction": "TEST-CANDY-SWEETSHOP",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 207625,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the two big dark eyes and the mouth drawn inside the glass globe, and fill their place with more small round glossy gumballs, yellow, orange, green, blue, white and pink, so the globe holds only gumballs and has no face. Do not redraw anything else: keep the globe, its highlight, the dark lid, the mint green base with its dot eyes and open mouth, the gold coin knob, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the two big dark eyes and the mouth drawn inside the glass globe, and fill their place with more small round glossy gumballs, yellow, orange, green, blue, white and pink, so the globe holds only gumballs and has no face. Do not redraw anything else: keep the globe, its highlight, the dark lid, the mint green base with its dot eyes and open mouth, the gold coin knob, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the two big dark eyes and the mouth drawn inside the glass globe, and fill their place with more small round glossy gumballs, yellow, orange, green, blue, white and pink, so the globe holds only gumballs and has no face. Do not redraw anything else: keep the globe, its highlight, the dark lid, the mint green base with its dot eyes and open mouth, the gold coin knob, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the two big dark eyes and the mouth drawn inside the glass globe, and fill their place with more small round glossy gumballs, yellow, orange, green, blue, white and pink, so the globe holds only gumballs and has no face. Do not redraw anything else: keep the globe, its highlight, the dark lid, the mint green base with its dot eyes and open mouth, the gold coin knob, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-machine-b",
+      "candidate": 0,
+      "sha256": "cd082dbe55a5fecbaaf83721779c03d751a0de458b26b5044ffa50df2c5c3c13"
+    }
+  }
+}

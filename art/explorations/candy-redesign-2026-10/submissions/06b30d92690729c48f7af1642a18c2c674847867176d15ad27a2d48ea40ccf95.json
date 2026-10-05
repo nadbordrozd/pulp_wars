@@ -1,0 +1,36 @@
+{
+  "id": "gunner-machine-mint-a-spit-b",
+  "jobId": "6f584a59-4396-417a-91d5-5c4475fa7161",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-redesign",
+    "asset": "chibi-redesign-candy-gunner-machine-mint",
+    "subject": "UNIT:CANDY:MARKSMAN",
+    "faction": "TEST-CANDY-SWEETSHOP",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 207615,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only one thing: the machine is spitting a gumball. One round glossy lemon yellow gumball, about 7 pixels across, flies out of its open mouth toward the lower right, with two short white speed lines behind it. Do not redraw anything else: keep the glass globe and its gumballs, the chocolate lid, the mint green base, the eyes, the open mouth, the gold coin knobs, the feet, every shape, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only one thing: the machine is spitting a gumball. One round glossy lemon yellow gumball, about 7 pixels across, flies out of its open mouth toward the lower right, with two short white speed lines behind it. Do not redraw anything else: keep the glass globe and its gumballs, the chocolate lid, the mint green base, the eyes, the open mouth, the gold coin knobs, the feet, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only one thing: the machine is spitting a gumball. One round glossy lemon yellow gumball, about 7 pixels across, flies out of its open mouth toward the lower right, with two short white speed lines behind it. Do not redraw anything else: keep the glass globe and its gumballs, the chocolate lid, the mint green base, the eyes, the open mouth, the gold coin knobs, the feet, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add only one thing: the machine is spitting a gumball. One round glossy lemon yellow gumball, about 7 pixels across, flies out of its open mouth toward the lower right, with two short white speed lines behind it. Do not redraw anything else: keep the glass globe and its gumballs, the chocolate lid, the mint green base, the eyes, the open mouth, the gold coin knobs, the feet, every shape, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "gunner-machine-mint-a",
+      "candidate": 0,
+      "sha256": "377d7e4e69ebcd21b77a085a80b1b04dff53d3c8d947efbd6e36aa3ab2805b76"
+    }
+  }
+}

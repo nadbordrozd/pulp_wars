@@ -1,0 +1,36 @@
+{
+  "id": "tripod-r6-c",
+  "jobId": "30a15b20-ab0e-43a3-bae6-7811b477c1c5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-tripod",
+    "subject": "UNIT:MARTIAN:CATAPULT",
+    "faction": "MARTIAN",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 207413,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only one thing: a third leg. The machine now stands on two legs, left and right; add one more leg exactly in the middle between them, going straight down from the centre of the body to the ground, in the same style: dark gunmetal with a round chrome knee and a chunky chrome foot. Exactly three legs in total, with empty gaps between them. Do not redraw anything else: keep the hood, eye lens, arm, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only one thing: a third leg. The machine now stands on two legs, left and right; add one more leg exactly in the middle between them, going straight down from the centre of the body to the ground, in the same style: dark gunmetal with a round chrome knee and a chunky chrome foot. Exactly three legs in total, with empty gaps between them. Do not redraw anything else: keep the hood, eye lens, arm, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only one thing: a third leg. The machine now stands on two legs, left and right; add one more leg exactly in the middle between them, going straight down from the centre of the body to the ground, in the same style: dark gunmetal with a round chrome knee and a chunky chrome foot. Exactly three legs in total, with empty gaps between them. Do not redraw anything else: keep the hood, eye lens, arm, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add only one thing: a third leg. The machine now stands on two legs, left and right; add one more leg exactly in the middle between them, going straight down from the centre of the body to the ground, in the same style: dark gunmetal with a round chrome knee and a chunky chrome foot. Exactly three legs in total, with empty gaps between them. Do not redraw anything else: keep the hood, eye lens, arm, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "tripod-r6-a",
+      "candidate": 0,
+      "sha256": "40b79b120a867f39e4158896e8d7814cec82c60e2ae3fb6f42235ed00c5a849e"
+    }
+  }
+}

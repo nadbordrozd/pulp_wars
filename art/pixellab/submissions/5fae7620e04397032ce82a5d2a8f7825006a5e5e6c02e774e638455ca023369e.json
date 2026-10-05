@@ -1,0 +1,36 @@
+{
+  "id": "tripod-r6-b",
+  "jobId": "0891dfef-e52a-48ef-8e1b-84d7d3f36706",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-tripod",
+    "subject": "UNIT:MARTIAN:CATAPULT",
+    "faction": "MARTIAN",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 207412,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw only the legs. The machine is a tripod with exactly three long legs, never four: one thick leg down and out to the left, one straight down in the middle, one down and out to the right, with wide empty gaps between them; each leg dark gunmetal with a round chrome knee and a chunky chrome foot, as now. Keep the chrome hood, the magenta eye lens, the body lights, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw only the legs. The machine is a tripod with exactly three long legs, never four: one thick leg down and out to the left, one straight down in the middle, one down and out to the right, with wide empty gaps between them; each leg dark gunmetal with a round chrome knee and a chunky chrome foot, as now. Keep the chrome hood, the magenta eye lens, the body lights, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw only the legs. The machine is a tripod with exactly three long legs, never four: one thick leg down and out to the left, one straight down in the middle, one down and out to the right, with wide empty gaps between them; each leg dark gunmetal with a round chrome knee and a chunky chrome foot, as now. Keep the chrome hood, the magenta eye lens, the body lights, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Redraw only the legs. The machine is a tripod with exactly three long legs, never four: one thick leg down and out to the left, one straight down in the middle, one down and out to the right, with wide empty gaps between them; each leg dark gunmetal with a round chrome knee and a chunky chrome foot, as now. Keep the chrome hood, the magenta eye lens, the body lights, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "tripod-a-edit-3",
+      "candidate": 0,
+      "sha256": "a22d7134c2f84e2f29504535783441324ddd815342b454b9a4542c9ad98089b6"
+    }
+  }
+}

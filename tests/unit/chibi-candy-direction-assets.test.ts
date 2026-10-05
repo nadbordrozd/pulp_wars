@@ -497,7 +497,20 @@ describe("Candy production art (pulp_wars-jdb.5)", () => {
       const { opaque } = countPixels(master, () => true);
       expect(key / opaque, `${asset.id}: key-colour share`).toBeLessThan(0.08);
     }
-    // Every unit shows the faction's pink.
+    // The pink is an accent of the roster, not its body colour (bead
+    // pulp_wars-2o7.3, the user: "the whole faction is so dominated by this
+    // pink gum/icing"). The four redesigned units (toffee, the gumball
+    // machine, the amber gummy, the mint rock candy) are not pink; the four
+    // kept ones still show the frosting; the roster as a whole is under a
+    // quarter pink (it was 46%).
+    const redesigned = new Set([
+      "gumdrop",
+      "gumball-gunner",
+      "gummy-bear",
+      "rock-candy-golem",
+    ]);
+    let rosterPink = 0;
+    let rosterOpaque = 0;
     for (const [, name] of UNITS) {
       const asset = byId.get(`chibi-direction-candy-${name}`);
       if (asset === undefined) throw new Error(name);
@@ -506,10 +519,14 @@ describe("Candy production art (pulp_wars-jdb.5)", () => {
         (hue, saturation, value) =>
           hue >= 300 && hue <= 358 && saturation >= 0.12 && value >= 0.5,
       );
-      expect(pink.count / pink.opaque, `${name}: pink share`).toBeGreaterThan(
-        0.15,
-      );
+      rosterPink += pink.count;
+      rosterOpaque += pink.opaque;
+      const share = pink.count / pink.opaque;
+      if (redesigned.has(name))
+        expect(share, `${name}: pink share`).toBeLessThan(0.1);
+      else expect(share, `${name}: pink share`).toBeGreaterThan(0.15);
     }
+    expect(rosterPink / rosterOpaque, "roster pink share").toBeLessThan(0.25);
   });
 
   it("has a checked-in sugar palette, and every effect pixel is one of its colours", async () => {

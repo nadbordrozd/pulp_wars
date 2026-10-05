@@ -1,0 +1,36 @@
+{
+  "id": "tripod-r6-a",
+  "jobId": "9af6d7b6-98d7-408d-a6fe-ee28ea9a56c5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-tripod",
+    "subject": "UNIT:MARTIAN:CATAPULT",
+    "faction": "MARTIAN",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 207411,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: the machine stands on four legs and must stand on exactly three. Of the two middle legs that stand close together, erase the left one completely, leaving empty space. Three legs remain: one spread to the left, one in the middle, one spread to the right. Do not redraw anything else: keep the chrome hood, the magenta eye lens, the heat-ray arm, the other legs, the height, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: the machine stands on four legs and must stand on exactly three. Of the two middle legs that stand close together, erase the left one completely, leaving empty space. Three legs remain: one spread to the left, one in the middle, one spread to the right. Do not redraw anything else: keep the chrome hood, the magenta eye lens, the heat-ray arm, the other legs, the height, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: the machine stands on four legs and must stand on exactly three. Of the two middle legs that stand close together, erase the left one completely, leaving empty space. Three legs remain: one spread to the left, one in the middle, one spread to the right. Do not redraw anything else: keep the chrome hood, the magenta eye lens, the heat-ray arm, the other legs, the height, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: the machine stands on four legs and must stand on exactly three. Of the two middle legs that stand close together, erase the left one completely, leaving empty space. Three legs remain: one spread to the left, one in the middle, one spread to the right. Do not redraw anything else: keep the chrome hood, the magenta eye lens, the heat-ray arm, the other legs, the height, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "tripod-a-edit-3",
+      "candidate": 0,
+      "sha256": "a22d7134c2f84e2f29504535783441324ddd815342b454b9a4542c9ad98089b6"
+    }
+  }
+}

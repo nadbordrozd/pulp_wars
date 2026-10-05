@@ -1,0 +1,36 @@
+{
+  "id": "fighter-r6-b",
+  "jobId": "f91b6ad2-4698-4684-917e-778ab0cbae28",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-fighter",
+    "subject": "UNIT:FIGHTER",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 207302,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: the big pointed crimson shield with the gold lion becomes a small plain round wooden buckler, about 16 pixels across, of light brown planks with a steel rim and a round steel boss, held low at his side, so his whole tunic and both legs show; no lion and no paint on it. Do not redraw anything else: keep the helmet, crest, face, sword, surcoat with the gold cross, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: the big pointed crimson shield with the gold lion becomes a small plain round wooden buckler, about 16 pixels across, of light brown planks with a steel rim and a round steel boss, held low at his side, so his whole tunic and both legs show; no lion and no paint on it. Do not redraw anything else: keep the helmet, crest, face, sword, surcoat with the gold cross, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: the big pointed crimson shield with the gold lion becomes a small plain round wooden buckler, about 16 pixels across, of light brown planks with a steel rim and a round steel boss, held low at his side, so his whole tunic and both legs show; no lion and no paint on it. Do not redraw anything else: keep the helmet, crest, face, sword, surcoat with the gold cross, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: the big pointed crimson shield with the gold lion becomes a small plain round wooden buckler, about 16 pixels across, of light brown planks with a steel rim and a round steel boss, held low at his side, so his whole tunic and both legs show; no lion and no paint on it. Do not redraw anything else: keep the helmet, crest, face, sword, surcoat with the gold cross, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "fighter-heraldic-edit",
+      "candidate": 0,
+      "sha256": "18e448198d79c948caa6ac2c7eb7264132ef8bc31dd981b3337d93a8f951ab71"
+    }
+  }
+}

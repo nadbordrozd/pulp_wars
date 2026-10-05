@@ -1,0 +1,36 @@
+{
+  "id": "fighter-r6-a",
+  "jobId": "2a5c1eb3-9612-4284-ba06-6719d79d32db",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-fighter",
+    "subject": "UNIT:FIGHTER",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 207301,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make him a plain, lightly equipped basic foot soldier: the big pointed heraldic shield becomes a small plain round wooden shield, half as wide, of pale brown planks with a thin steel rim and a round steel boss, no lion and no paint; no chainmail, only a simple crimson cloth tunic with the gold cross, cream linen sleeves and a brown belt. Keep the helmet with its crimson crest, the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make him a plain, lightly equipped basic foot soldier: the big pointed heraldic shield becomes a small plain round wooden shield, half as wide, of pale brown planks with a thin steel rim and a round steel boss, no lion and no paint; no chainmail, only a simple crimson cloth tunic with the gold cross, cream linen sleeves and a brown belt. Keep the helmet with its crimson crest, the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make him a plain, lightly equipped basic foot soldier: the big pointed heraldic shield becomes a small plain round wooden shield, half as wide, of pale brown planks with a thin steel rim and a round steel boss, no lion and no paint; no chainmail, only a simple crimson cloth tunic with the gold cross, cream linen sleeves and a brown belt. Keep the helmet with its crimson crest, the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make him a plain, lightly equipped basic foot soldier: the big pointed heraldic shield becomes a small plain round wooden shield, half as wide, of pale brown planks with a thin steel rim and a round steel boss, no lion and no paint; no chainmail, only a simple crimson cloth tunic with the gold cross, cream linen sleeves and a brown belt. Keep the helmet with its crimson crest, the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "fighter-heraldic-edit",
+      "candidate": 0,
+      "sha256": "18e448198d79c948caa6ac2c7eb7264132ef8bc31dd981b3337d93a8f951ab71"
+    }
+  }
+}

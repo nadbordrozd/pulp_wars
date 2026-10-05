@@ -1,0 +1,36 @@
+{
+  "id": "portrait-fighter-r6-a",
+  "jobId": "2d930732-d2f4-4889-8d63-27310ac7abe7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-fighter",
+    "subject": "PORTRAIT:FIGHTER",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 207321,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only his shield and sleeves: the crimson shield with the gold lion becomes a small plain round wooden shield of pale brown planks with a steel rim and a round steel boss, no lion and no paint; his chainmail sleeves become plain cream linen sleeves. Do not redraw anything else: keep the helmet with its gold band and crimson crest, the face, the sword, the crimson tunic with the gold cross, proportions, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only his shield and sleeves: the crimson shield with the gold lion becomes a small plain round wooden shield of pale brown planks with a steel rim and a round steel boss, no lion and no paint; his chainmail sleeves become plain cream linen sleeves. Do not redraw anything else: keep the helmet with its gold band and crimson crest, the face, the sword, the crimson tunic with the gold cross, proportions, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only his shield and sleeves: the crimson shield with the gold lion becomes a small plain round wooden shield of pale brown planks with a steel rim and a round steel boss, no lion and no paint; his chainmail sleeves become plain cream linen sleeves. Do not redraw anything else: keep the helmet with its gold band and crimson crest, the face, the sword, the crimson tunic with the gold cross, proportions, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only his shield and sleeves: the crimson shield with the gold lion becomes a small plain round wooden shield of pale brown planks with a steel rim and a round steel boss, no lion and no paint; his chainmail sleeves become plain cream linen sleeves. Do not redraw anything else: keep the helmet with its gold band and crimson crest, the face, the sword, the crimson tunic with the gold cross, proportions, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-fighter-heraldic-edit",
+      "candidate": 0,
+      "sha256": "66a22cd78de05ffe307af44300940bdeec3f89a39630694a63cc85211ad85fc8"
+    }
+  }
+}

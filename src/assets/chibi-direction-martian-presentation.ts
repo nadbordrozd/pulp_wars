@@ -43,7 +43,7 @@ export const MARTIAN_FLYER_PRESENTATION_V7 = {
     shadow: { x: 36, y: 80, radiusX: 20, radiusY: 4 },
   },
   "chibi-direction-martian-mothership": {
-    hullBottom: 72,
+    hullBottom: 69,
     groundLine: 82,
     shadow: { x: 36, y: 81, radiusX: 25, radiusY: 5 },
   },

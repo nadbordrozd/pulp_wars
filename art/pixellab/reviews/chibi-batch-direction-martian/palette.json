@@ -1,84 +1,84 @@
 {
-  "measuredOn": "the eight faction unit masters (the Thrall is left out)",
+  "measuredOn": "the eight faction unit masters",
   "palette": [
     {
       "role": "Hot magenta accent",
-      "mean": "#aa1671",
+      "mean": "#ab1572",
       "tones": [
         "#ef0f93",
-        "#b00873",
+        "#fe12b1",
         "#fe53b9",
         "#680342"
       ],
-      "share": 8,
+      "share": 8.1,
       "lit": "#ef0f93",
       "meanHue": 323
     },
     {
       "role": "Outline and darkest tones",
-      "mean": "#010104",
+      "mean": "#010105",
       "tones": [
         "#000000",
         "#000006",
         "#000009",
         "#000007"
       ],
-      "share": 22.7
+      "share": 23.1
     },
     {
       "role": "Lavender-grey skin",
-      "mean": "#8885ab",
+      "mean": "#8885aa",
       "tones": [
         "#767e97",
         "#b3b0d0",
         "#6c6699",
         "#afabce"
       ],
-      "share": 9.8
+      "share": 9.7
     },
     {
       "role": "Glass",
-      "mean": "#8eb8cc",
+      "mean": "#8eb7ca",
       "tones": [
         "#c7e7f5",
         "#88a6c1",
-        "#9ed3e6",
-        "#64a2bb"
+        "#728294",
+        "#9ed3e6"
       ],
-      "share": 16.7
+      "share": 16.3
     },
     {
       "role": "Chrome, lit",
-      "mean": "#d3dde2",
+      "mean": "#d2dce0",
       "tones": [
+        "#f2fbf8",
         "#c8d7d6",
-        "#afc6d3",
-        "#ffffff",
-        "#ecf6f8"
+        "#b1c8d1",
+        "#ffffff"
       ],
-      "share": 13.3
+      "share": 13.6
     },
     {
       "role": "Chrome, shaded blue-grey",
-      "mean": "#6a758d",
+      "mean": "#6a758e",
       "tones": [
         "#515777",
         "#8b95a3",
         "#9ba7ad",
         "#61759e"
       ],
-      "share": 11
+      "share": 10.3
     },
     {
       "role": "Gunmetal",
-      "mean": "#34364d",
+      "mean": "#36394e",
       "tones": [
-        "#332a47",
         "#3a3e5e",
-        "#1f2a3b",
-        "#2c1926"
+        "#2c1926",
+        "#3c4a5f",
+        "#273145"
       ],
-      "share": 12.2
+      "share": 13.2
     }
   ],
   "codeDrawn": {
