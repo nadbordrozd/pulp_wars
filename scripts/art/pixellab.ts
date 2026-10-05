@@ -31,6 +31,7 @@ import {
 import { resolveUnitFitOffset } from "./unit-fit-offset";
 import { validateChibiProduction } from "./chibi/pipeline";
 import { gloamGrassProblems } from "./faction-buildings/gloam-grass";
+import { factionGrassProblems } from "./faction-grass";
 import { forestPieceProblems } from "./chibi-forest-pieces";
 import { mountainRangeProblems } from "./chibi-mountain-ranges";
 import { submergedSubmarineProblems } from "./naval-branch/submerged";
@@ -691,6 +692,8 @@ async function main(): Promise<void> {
     const chibiProblems = [
       ...(await validateChibiProduction(ROOT)),
       ...(await gloamGrassProblems(ROOT)),
+      // EXPERIMENT pulp_wars-2o7.4: the faction grass tiles, derived too.
+      ...(await factionGrassProblems(ROOT)),
       // The composed forest pieces (pulp_wars-maw.3) are derived from the
       // accepted Forest clumps the same way.
       ...(await forestPieceProblems(ROOT)),

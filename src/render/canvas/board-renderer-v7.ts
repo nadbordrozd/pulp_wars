@@ -322,6 +322,14 @@ import {
   type ChibiMassifArtV7,
   type ChibiMassifCellV7,
 } from "./chibi-massif-v7";
+import {
+  drawFactionGrassV7,
+  factionGrassCellsOfV7,
+  factionGrassGladeLayersV7,
+  factionGrassPlanMemberV7,
+  type FactionGrassArtV7,
+  type FactionGrassIdV7,
+} from "./faction-grass-v7";
 import { drawLegacyRiftV7, riftPieceV7 } from "./rift-presentation-v7";
 import { factionColourV7 } from "./faction-colours-v7";
 import {
@@ -714,6 +722,8 @@ export interface BoardRenderPlanEntryV7 {
    * such territory.
    */
   readonly territoryGround?: TerritoryGroundV7;
+  /** EXPERIMENT pulp_wars-2o7.4: the faction grass of the cell's territory. */
+  readonly factionGrass?: FactionGrassIdV7;
   readonly label?: string;
   readonly ownerId?: number | null;
   readonly hp?: number;
@@ -942,6 +952,7 @@ export function buildBoardRenderPlanV7(
               : `TERRAIN:${tile.terrain}`,
       ...(riftPiece === undefined ? {} : { riftPiece }),
       ...(territoryGround === null ? {} : { territoryGround }),
+      ...factionGrassPlanMemberV7(tile.terrain, tileFaction),
       ownerId: tile.territoryOwnerId,
       ...ownerPresentation(view, tile.territoryOwnerId),
       ...(seaIce.has(coordKey(tile.at))
@@ -1902,6 +1913,8 @@ export function drawBoardV7(input: {
    * every Mountain cell draws its single mountain as before.
    */
   readonly mountainArt?: { resolve(): ChibiMassifArtV7 | null };
+  /** EXPERIMENT pulp_wars-2o7.4 (faction-grass-v7.ts); the live look only. */
+  readonly factionGrassArt?: { resolve(): FactionGrassArtV7 | null };
   /**
    * The Mind Control revision: the control halo's pulse clock in ms (0, the
    * default, and reduced motion draw it static in the faction colour).
@@ -2162,6 +2175,11 @@ export function drawBoardV7(input: {
   if (mountainCells !== null)
     for (const key of mountainCells.keys()) splitCells.add(key);
   const iceFolkArt = input.iceFolkArt;
+  // EXPERIMENT pulp_wars-2o7.4: faction grass, in the live look only.
+  const factionGrassArt =
+    direction === undefined ? null : (input.factionGrassArt?.resolve() ?? null);
+  const factionGrassCells =
+    factionGrassArt === null ? null : factionGrassCellsOfV7(input.plan.entries);
   // Composed forests on Snow: caps go on cell by cell, so a piece that
   // spans a Snow border is capped only over its Snow cells.
   const forestSnowCells = new Set<string>();
@@ -2413,6 +2431,18 @@ export function drawBoardV7(input: {
                 entry.at,
                 layers.ground,
               );
+              for (const grass of factionGrassGladeLayersV7(
+                factionGrassArt,
+                entry,
+                factionGrassCells,
+              ))
+                drawChibiForestGladeV7(
+                  context,
+                  forestFrame,
+                  forestArt,
+                  entry.at,
+                  grass,
+                );
               // On Snow the open ground of the glade is snowy too.
               const snowTile =
                 entry.snow === undefined
@@ -2534,6 +2564,14 @@ export function drawBoardV7(input: {
                 sceneAlpha,
                 part: "CELL",
               });
+            drawFactionGrassV7(
+              context,
+              forestFrame,
+              factionGrassArt,
+              entry,
+              factionGrassCells,
+              true,
+            );
             drawChibiTerrainV7(context, chibi, {
               ...part,
               sceneAlpha,
@@ -2566,6 +2604,15 @@ export function drawBoardV7(input: {
                       image: massifGround(layers.ground, false),
                     }),
             });
+          if (pass === "GROUND")
+            drawFactionGrassV7(
+              context,
+              forestFrame,
+              factionGrassArt,
+              entry,
+              factionGrassCells,
+              false,
+            );
           // The shade under a composed forest, over its ground.
           if (pass === "GROUND" && forestArt !== null && forestCell !== null)
             drawChibiForestFloorV7(

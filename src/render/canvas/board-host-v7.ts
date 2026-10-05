@@ -164,6 +164,12 @@ import {
   createChibiMassifArtV7,
   type ChibiMassifArtV7,
 } from "./chibi-massif-v7";
+import { FACTION_GRASS_TILES_V7 } from "../../assets/faction-grass-manifest";
+import {
+  createFactionGrassArtV7,
+  factionGrassEnabledV7,
+  type FactionGrassArtV7,
+} from "./faction-grass-v7";
 import {
   createChibiForestArtV7,
   type ChibiForestArtV7,
@@ -310,6 +316,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   readonly #iceFolkArt: IceFolkBoardArtV7;
   readonly #forestArt: { resolve(): ChibiForestArtV7 | null };
   readonly #mountainArt: { resolve(): ChibiMassifArtV7 | null };
+  /** EXPERIMENT pulp_wars-2o7.4: undefined with the switch off. */
+  readonly #factionGrassArt?: { resolve(): FactionGrassArtV7 | null };
   /** The Blizzard's slow ambient redraw (a timer, not every frame). */
   #blizzardTimer: number | null = null;
   /** The unit being shattered on the board, cased in ice until it bursts. */
@@ -438,6 +446,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             redraw: () => this.#draw(),
             set: CHIBI_MOUNTAIN_ART_SET_V7,
           });
+    if (factionGrassEnabledV7())
+      this.#factionGrassArt = createFactionGrassArtV7({
+        environment: browserChibiRasterEnvironmentV7(documentRoot),
+        redraw: () => this.#draw(),
+        tiles: FACTION_GRASS_TILES_V7,
+      });
   }
 
   mount(container: HTMLElement, callbacks: BoardHostCallbacksV7): void {
@@ -1529,6 +1543,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         dwarfArt: this.#dwarfArt,
         forestArt: this.#forestArt,
         mountainArt: this.#mountainArt,
+        ...(this.#factionGrassArt === undefined
+          ? {}
+          : { factionGrassArt: this.#factionGrassArt }),
         // The Candy revision: a Crashed unit's faded sprite.
         candyDroop: (image) =>
           this.#candyDroopCache.resolve(image, CRASHED_SPRITE_SATURATION_V7),

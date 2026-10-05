@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "bead": "pulp_wars-2o7.4",
+  "sources": [
+    {
+      "path": "public/assets/chibi/terrain/chibi-grass-1.png",
+      "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0"
+    },
+    {
+      "path": "public/assets/chibi/terrain/chibi-grass-2.png",
+      "sha256": "d94b6245c88320fb161868322d40d0726fc1e9219f245a4764a1e317abd60638"
+    },
+    {
+      "path": "public/assets/chibi/terrain/chibi-grass-3.png",
+      "sha256": "a9cfa8be11ce4abe315b113948cd8303fc42b11384a301f2492257b6b7239635"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "GOBLIN",
+      "label": "Scrubland: yellowed, trampled turf with dry straw tufts and mud patches",
+      "base": "#a9ac5c",
+      "light": "#bcbe70",
+      "mid": "#8f9249",
+      "dark": "#7b7d3e",
+      "motifs": [
+        {
+          "kind": "patch",
+          "count": [1, 2],
+          "radius": [5, 8],
+          "fill": "#9d905e",
+          "rim": "#887a4c",
+          "speck": {
+            "colour": "#a99c6a",
+            "share": 10
+          }
+        },
+        {
+          "kind": "tufts",
+          "share": 35,
+          "light": "#cdc47e",
+          "mid": "#a59a54",
+          "dark": "#8a7f45"
+        },
+        {
+          "kind": "fleck",
+          "count": [3, 5],
+          "colours": ["#8f8250", "#b8b46a"]
+        }
+      ],
+      "tiles": [
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-goblin-grass-1.png",
+          "sha256": "109633defe3a4de1cb6515c36359047ea99609f72a075ef64e5b4678f7cec710",
+          "pixelSha256": "8f9e45c471b96aba1250cf5441b56057ad26bd625db0529d57f57777a0b6d300"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-goblin-grass-2.png",
+          "sha256": "819fb101bfd1bc72ad0f191620bc26194ece7c960fb240f41d552f8c4450ce04",
+          "pixelSha256": "51a57c9bea6c6522dcdc9dc009f3c51b85256c6e508e767fdc23c612ded40637"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-goblin-grass-3.png",
+          "sha256": "ec87135dfd341dcdb2f38d576675c8e27a08b1102aa12dfd5f74615a9c462d31",
+          "pixelSha256": "b0f2de09b5f5a94679dae9d6788cae22297a6f2f3bb0529998f6601f149441bc"
+        }
+      ]
+    },
+    {
+      "id": "DINOSAUR",
+      "label": "Jungle floor: lush, darker, bluer green with ferns",
+      "base": "#5f9f58",
+      "light": "#77b56b",
+      "mid": "#4a8549",
+      "dark": "#3c703f",
+      "motifs": [
+        {
+          "kind": "stamp",
+          "stamp": "fern",
+          "count": [2, 3],
+          "dark": "#357040",
+          "light": "#86c474"
+        },
+        {
+          "kind": "stamp",
+          "stamp": "fernSmall",
+          "count": [2, 3],
+          "dark": "#3a7743",
+          "light": "#86c474"
+        },
+        {
+          "kind": "patch",
+          "count": [1, 2],
+          "radius": [5, 7],
+          "fill": "#569652"
+        }
+      ],
+      "tiles": [
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-dinosaur-grass-1.png",
+          "sha256": "4344a845f1a44878a973e6a934894128e60a42fe56b05230b5c80e9e375cc538",
+          "pixelSha256": "f69c4ff506225b07bde309c9d115af5729b1c31a216413c21b028d8fb8b2a1ce"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-dinosaur-grass-2.png",
+          "sha256": "23e48d4843abf470ab9ae15dc4cbde46d768fe4bd70c7278ed5e17675f8fad13",
+          "pixelSha256": "256f2bf94f85937a675f04c403d5d30e5afdb1380a10add57828dce188915593"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-dinosaur-grass-3.png",
+          "sha256": "8562a35158077487f79935389412444cbdeabec7fddc5904b03e4bf042c922f2",
+          "pixelSha256": "b66c68d54f7f81f913d9278eaf1df75dc347efafcafb3cb262cf87940356d8f7"
+        }
+      ]
+    },
+    {
+      "id": "MARTIAN",
+      "label": "Red dust: ochre-red ground, dark scrub, teal lichen and stones",
+      "base": "#b98c6a",
+      "light": "#c9a07e",
+      "mid": "#a07556",
+      "dark": "#8b6248",
+      "motifs": [
+        {
+          "kind": "patch",
+          "count": [1, 2],
+          "radius": [4, 6],
+          "fill": "#7fa698",
+          "rim": "#67897e",
+          "speck": {
+            "colour": "#98bcae",
+            "share": 14
+          }
+        },
+        {
+          "kind": "pebble",
+          "count": [2, 3],
+          "top": "#d8bfaa",
+          "foot": "#8b6248"
+        },
+        {
+          "kind": "patch",
+          "count": [1, 1],
+          "radius": [5, 7],
+          "fill": "#b28462"
+        }
+      ],
+      "tiles": [
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-martian-grass-1.png",
+          "sha256": "e54036e5d99043cb9d7693615b1415775e6aa28232c8dfed2cabb345f75f1e22",
+          "pixelSha256": "43d09989844b430634aeb2bcb8a043e10b419030a127b85fb6a56e723b6b2edd"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-martian-grass-2.png",
+          "sha256": "cc00017ba09f06ef6a770d72a89409967c231c1c0e428b125749e470c8813996",
+          "pixelSha256": "9fccaf9daade05c802dd38bf831cc0fba909f33663da8c70972f0cb97cefd0ae"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-martian-grass-3.png",
+          "sha256": "c52b15d23f48de1167d9ca127668df3c05526b1033f83e4b35f91675a1abb320",
+          "pixelSha256": "e4131cb4795232db3a23f5fecfd67787d66002e7912ec25dda4c46308ae363f1"
+        }
+      ]
+    },
+    {
+      "id": "DWARF",
+      "label": "Stony moor: grey-khaki short turf, moss patches and grey stones",
+      "base": "#959c7c",
+      "light": "#a8af8d",
+      "mid": "#7b8366",
+      "dark": "#697158",
+      "motifs": [
+        {
+          "kind": "patch",
+          "count": [1, 2],
+          "radius": [5, 8],
+          "fill": "#869c6a",
+          "speck": {
+            "colour": "#93a876",
+            "share": 12
+          }
+        },
+        {
+          "kind": "pebble",
+          "count": [4, 6],
+          "top": "#bcbdb2",
+          "foot": "#74776c"
+        }
+      ],
+      "tiles": [
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-dwarf-grass-1.png",
+          "sha256": "250809208891922eb760b4232e8f4a3cf91e3476c830243e3a85b43fd118b690",
+          "pixelSha256": "60f494874a4c64fa919f756ec7c68f9f73207fb9f06ba4e20d0269f9c74662a7"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-dwarf-grass-2.png",
+          "sha256": "3ed2c2a005b2ad57fc88fc9aef0a04b0e60b99e5b5f7cacc70c480de2f8b8be9",
+          "pixelSha256": "4c1b09d15a85db0f9c4dac88244a22d429dd9b3911d207e51ac9d2c121873d15"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-dwarf-grass-3.png",
+          "sha256": "5a78ea737b3ff06e579235da648576a4949247f2215fcb5a2ab758004cee1bcf",
+          "pixelSha256": "25e9b8cd62380008a2f740db0939eb812b06ebf84eb5e6b040eb5662a438c705"
+        }
+      ]
+    },
+    {
+      "id": "CANDY",
+      "label": "Sugar meadow: pastel mint with sprinkles",
+      "base": "#9cd4b6",
+      "light": "#b8e6ce",
+      "mid": "#7ec0a0",
+      "dark": "#6aae8e",
+      "motifs": [
+        {
+          "kind": "fleck",
+          "count": [10, 13],
+          "colours": ["#f39cc2", "#f7e27c", "#ffffff", "#8fb9f0", "#c9a2ea"]
+        },
+        {
+          "kind": "patch",
+          "count": [1, 1],
+          "radius": [5, 7],
+          "fill": "#a6dabd"
+        }
+      ],
+      "tiles": [
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-candy-grass-1.png",
+          "sha256": "79e28e2beee1f8669efc71a12321c0591d1ec90b55bcba5373400dbe1d796725",
+          "pixelSha256": "be405cc42623b84cb13920c58b493c6664d8594c670d0e194e635c31e4fe8478"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-candy-grass-2.png",
+          "sha256": "c7d0f4a86b230e1fb3aa402aef810b745525b94e92fc4131d45bb227579cad2a",
+          "pixelSha256": "e051ebf54462f0f62d88eeab12b62698e3a9c3910b6c1c2512a4d50bb7da2429"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-candy-grass-3.png",
+          "sha256": "be30e909c7e8620e44b0472b28643d3e05eaa097c65ca13964dfb1e7397c2e3a",
+          "pixelSha256": "80bc4b761dac5bd5ba87139838a3998c225d5c4cc8729cf8e1117e08dd9b8260"
+        }
+      ]
+    }
+  ]
+}
