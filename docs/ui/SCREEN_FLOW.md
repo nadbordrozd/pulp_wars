@@ -2534,6 +2534,15 @@ audio exists), UI scale, motion (Full/Reduced), animation speed (Normal/Fast),
 high-contrast map overlays, and Help/Controls. System `prefers-reduced-motion`
 is the initial default unless the player overrides it.
 
+**Sound** (bead `pulp_wars-2yc.10`, [Sound](SOUND.md)) is one row in the
+current Ruleset 7 Settings: a loudspeaker toggle and a volume slider (0–100%,
+default on at 70%), with no separate music or effects volume. A collapsed
+**Sound test** below lists every sound with a play button. The match menu's
+first item, **Sound**, mutes and unmutes without closing the menu. The
+Gallery header has a **Sounds** button that shows the same sound test. Reduced
+motion does not turn sound off. The preference is stored under
+`pulpWars.audio.v1`, outside the shared settings envelope.
+
 Match-only actions are Resume, Restart Same Match, Exit to Hub, and Delete Save.
 Restart uses the same setup/seed and requires confirmation. Exit preserves the
 autosave and returns to Hub. Delete Save is destructive, requires the exact

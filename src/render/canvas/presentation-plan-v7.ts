@@ -213,6 +213,21 @@ export type CorePresentationStepV7 =
       readonly durationMs: 100;
     };
 
+/**
+ * What the board host tells its step listener when a step starts playing
+ * (bead pulp_wars-2yc.10): the step, the views and projected events it was
+ * planned from, and the animation's time scale. The sound mapping reads it;
+ * the host does not know what the listener does.
+ */
+export interface PresentationStepCueV7 {
+  readonly step: CorePresentationStepV7;
+  readonly before: PlayerViewV7;
+  readonly after: PlayerViewV7;
+  readonly envelope: PlayerEventEnvelopeV7;
+  /** 0.5 at Fast animation speed: delays shrink with the animation. */
+  readonly durationScale: number;
+}
+
 /** A unit a support cue plays on. */
 export interface SupportCueUnitV7 {
   readonly unitId: number;

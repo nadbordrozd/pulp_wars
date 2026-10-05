@@ -113,6 +113,7 @@ import { targetIsSteppedV7 } from "./target-highlight-v7";
 import {
   corePresentationPlanV7,
   type CorePresentationStepV7,
+  type PresentationStepCueV7,
 } from "./presentation-plan-v7";
 import { selectionJumpDurationMs } from "./selection-jump-presentation";
 import {
@@ -233,6 +234,14 @@ export interface BoardHostV7 {
     events: PlayerEventEnvelopeV7,
   ): Promise<void>;
   finishPresentations?(): void;
+  /**
+   * Bead pulp_wars-2yc.10: called as each presentation step starts to play
+   * (in reduced motion, as its still frame shows), so sound is timed with
+   * the animation. Null removes the listener.
+   */
+  setPresentationStepListener?(
+    listener: ((cue: PresentationStepCueV7) => void) | null,
+  ): void;
   destroy(): void;
 }
 
@@ -281,6 +290,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #animationFrame: number | null = null;
   #animationResolve: (() => void) | null = null;
   #presentationToken = 0;
+  #stepListener: ((cue: PresentationStepCueV7) => void) | null = null;
   #cameraFollowAllowed = false;
   #ambientFrame: number | null = null;
   #readinessStartedAt = 0;
@@ -788,6 +798,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (redraw) this.#draw();
   }
 
+  setPresentationStepListener(
+    listener: ((cue: PresentationStepCueV7) => void) | null,
+  ): void {
+    this.#stepListener = listener;
+  }
+
   async presentBoundary(
     before: PlayerViewV7,
     after: PlayerViewV7,
@@ -804,6 +820,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#cameraFollowAllowed = this.#pointers.size === 0;
     const durationScale = model.animationSpeed === "FAST" ? 0.5 : 1;
     this.#presentedView = before;
+    // Bead pulp_wars-2yc.10: each step is announced once, as it starts.
+    const announced = new Set<CorePresentationStepV7>();
+    const announce = (step: CorePresentationStepV7): void => {
+      if (announced.has(step)) return;
+      announced.add(step);
+      try {
+        this.#stepListener?.({ step, before, after, envelope, durationScale });
+      } catch {
+        // A listener cannot stop or disturb the presentation.
+      }
+    };
     if (model.motion === "REDUCED") {
       // Reduced motion frames the final public location once, without travel.
       const focus = [...steps]
@@ -833,6 +860,20 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       const attackSteps = steps.filter(
         (step): step is ShotStepV7 => attackEffectOf(step) !== null,
       );
+      // Bead pulp_wars-2yc.10: the steps without a still frame of their own
+      // are announced now, with the result; the others as their frame shows.
+      const framed = new Set<CorePresentationStepV7>([
+        ...attackSteps,
+        ...supportSteps,
+        ...windmillSteps,
+        ...explosionSteps,
+        ...dinosaurSteps,
+        ...martianSteps,
+        ...iceFolkSteps,
+        ...dwarfSteps,
+        ...candySteps,
+      ]);
+      for (const step of steps) if (!framed.has(step)) announce(step);
       if (
         attackSteps.length > 0 ||
         supportSteps.length > 0 ||
@@ -851,6 +892,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         for (const step of attackSteps) {
           const effect = attackEffectOf(step);
           if (effect === null) continue;
+          announce(step);
           this.#attackFeedback = this.#attackFeedbackOf(
             effect,
             step.from,
@@ -866,6 +908,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // Revision 19: each Dinosaur cue holds its midpoint; growth and a
         // laid Egg show their new sprite and marker at once.
         for (const step of dinosaurSteps) {
+          announce(step);
           if (step.followCamera === true && step.cells[0] !== undefined)
             this.#followCamera(step.cells[0]);
           if (step.effect === "GROW" || step.effect === "EGG_LAID") continue;
@@ -883,6 +926,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         }
         // The Martian revision: each Martian cue holds its midpoint.
         for (const step of martianSteps) {
+          announce(step);
           if (step.followCamera === true && step.cells[0] !== undefined)
             this.#followCamera(step.cells[0]);
           this.#martianFeedback = martianFeedbackOf(step, 0.5);
@@ -895,6 +939,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // The Ice Folk revision: each Ice Folk cue holds a frame after its
         // midpoint (a Shatter shows its burst, the shattered unit gone).
         for (const step of iceFolkSteps) {
+          announce(step);
           if (step.followCamera === true && step.cells[0] !== undefined)
             this.#followCamera(step.cells[0]);
           this.#iceFolkFeedback = iceFolkFeedbackOf(
@@ -910,6 +955,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // The Dwarf revision: each Dwarf cue holds one frame (the eruption
         // its peak) long enough to read.
         for (const step of dwarfSteps) {
+          announce(step);
           if (step.followCamera === true && step.cells[0] !== undefined)
             this.#followCamera(step.cells[0]);
           this.#dwarfFeedback = dwarfFeedbackOf(
@@ -925,6 +971,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // The Candy revision: each Candy cue holds one still frame where it
         // reads (a Sugar Toss its "+n", the swirl settled).
         for (const step of candySteps) {
+          announce(step);
           if (step.followCamera === true && step.cells[0] !== undefined)
             this.#followCamera(step.cells[0]);
           this.#candyFeedback = candyFeedbackOf(
@@ -940,6 +987,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // Revision 17: each explosion wave holds its midpoint burst, in
         // wave order, long enough to read.
         for (const step of explosionSteps) {
+          announce(step);
           this.#explosionFeedback = {
             wave: step.wave,
             blasts: step.blasts,
@@ -952,6 +1000,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           this.#drawSupportOverlay();
         }
         for (const step of supportSteps) {
+          announce(step);
           // Revision 17: the still "+N" of Troll regeneration holds long
           // enough to read; a Recover's "+N" a little less.
           if (step.followCamera === true) this.#followCamera(step.actor.at);
@@ -981,6 +1030,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           this.#drawSupportOverlay();
         }
         for (const step of windmillSteps) {
+          announce(step);
           for (const phase of ["SOURCES", "RECIPIENTS"] as const) {
             this.#windmillHealingFeedback = {
               phase,
@@ -1032,6 +1082,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#heldUnits = pushBoundary
         ? heldUnitsAfterV7(steps, index)
         : NO_HELD_UNITS;
+      announce(step);
       if (step.kind === "MOVE") {
         this.#presentedView = after;
         const unit = before.units.find(

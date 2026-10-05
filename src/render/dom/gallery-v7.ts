@@ -94,6 +94,11 @@ export interface GalleryViewOptionsV7 {
   readonly domEnvironment?: ChibiDomEnvironmentV7;
   /** The animation preview's board host (tests inject a fake). */
   readonly createDemoHost?: () => BoardHostV7;
+  /**
+   * The sound test (bead pulp_wars-2yc.10): with it the header shows a
+   * Sounds button, which swaps the tables for this panel and back.
+   */
+  readonly soundPanel?: () => HTMLElement;
 }
 
 type GalleryDetailV7 =
@@ -261,6 +266,8 @@ export class GalleryViewV7 {
   readonly #scenes = new Map<string, GalleryDemoSceneV7 | null>();
   readonly #cues = new Map<string, readonly GalleryDemoCueV7[]>();
   #destroyed = false;
+  /** The sound test is shown in place of the tables. */
+  #soundsOpen = false;
   /** The filter panel starts open, except on a phone, where it is tall. */
   #filtersOpen: boolean;
 
@@ -355,7 +362,10 @@ export class GalleryViewV7 {
       (slot) => this.#dialog?.contains(slot.slot) === true,
     );
     const content = el(this.#document, "div", "v7-gallery-content");
-    content.append(this.#header(), this.#tabs(), this.#panel());
+    const soundPanel = this.#soundsOpen ? this.#options.soundPanel : undefined;
+    if (soundPanel === undefined)
+      content.append(this.#header(), this.#tabs(), this.#panel());
+    else content.append(this.#header(), soundPanel());
     if (this.#dialog !== null) content.setAttribute("inert", "");
     const previous = this.#content;
     this.#content = content;
@@ -382,6 +392,21 @@ export class GalleryViewV7 {
     const heading = text(this.#document, "h1", "Gallery");
     heading.id = "v7-gallery-title";
     header.append(back, heading);
+    if (this.#options.soundPanel !== undefined) {
+      const sounds = button(
+        this.#document,
+        "",
+        "gallery-sounds",
+        "v7-gallery-sounds",
+      );
+      sounds.append(uiIconV7(this.#document, "sound"), "Sounds");
+      sounds.setAttribute("aria-pressed", String(this.#soundsOpen));
+      sounds.onclick = () => {
+        this.#soundsOpen = !this.#soundsOpen;
+        this.#renderContent();
+      };
+      header.append(sounds);
+    }
     return header;
   }
 

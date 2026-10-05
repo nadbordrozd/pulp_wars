@@ -1937,6 +1937,25 @@ CHIBI follows [chibi direction](../art/CHIBI_ART_DIRECTION.md) sections 3–4:
   remain for the study directions), and a capital gets the stock crown
   (`drawCapitalCrownV7`).
 
+### Sound (`pulp_wars-2yc.10`)
+
+Sound effects live in `src/audio/` and are described in
+[Sound](../ui/SOUND.md). They are presentation only: the engine, the AI, saves
+and replays do not import the module or see its preference.
+
+- The DOM view owns one `GameAudioV1` (injectable through
+  `MountRuleset7AppOptions.audio`). Importing `src/audio/` or constructing the
+  view creates no `AudioContext`; the first user gesture does.
+- The board host announces each presentation step as it starts through
+  `BoardHostV7.setPresentationStepListener` with a `PresentationStepCueV7`
+  (the step, the before and after views, the projected events and the
+  animation's time scale). The view maps it with `soundCuesForStepV7`. The
+  host does not import the audio module.
+- Events without a step are mapped from the accepted boundary by
+  `soundCuesForBoundaryV7`.
+- Both mappings read only the viewer's views and projected events, so sound
+  reveals nothing the board does not show.
+
 ## 9. Application and screen state
 
 Navigation is a finite state separate from `GameState`:

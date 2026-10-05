@@ -516,6 +516,18 @@ import {
 } from "../role-presentation-v7";
 import { economicFormulaV7 } from "../economy-presentation-v7";
 import { GalleryViewV7 } from "./gallery-v7";
+import {
+  createBrowserGameAudioV1,
+  soundCuesForBoundaryV7,
+  soundCuesForStepV7,
+  type GameAudioV1,
+  type SoundCueV1,
+} from "../../audio/index";
+import {
+  SILENT_CLICK_ATTRIBUTE_V7,
+  soundControlsV7,
+  soundTestPanelV7,
+} from "./sound-panel-v7";
 
 export {
   AT_SEA_MOVE_TEXT_V7,
@@ -712,6 +724,13 @@ export interface MountRuleset7AppOptions {
    * tests inject a fake. A CanvasBoardHostV7 by default.
    */
   readonly galleryDemoHost?: () => BoardHostV7;
+  /**
+   * The game's sound (bead pulp_wars-2yc.10); tests inject one. By default
+   * the browser's, which stays silent until the first user gesture and
+   * wherever there is no WebAudio. An injected one is the caller's to
+   * destroy.
+   */
+  readonly audio?: GameAudioV1;
 }
 
 /** A fresh unsigned 32-bit map seed from the browser. */
@@ -912,6 +931,8 @@ export class Ruleset7DomAppView {
   #presentationQueue: {
     readonly matchInstance: number;
     readonly boundary: Ruleset7AcceptedBoundary;
+    /** Sounds heard once the board has played the boundary. */
+    readonly endSounds: readonly SoundCueV1[];
   }[] = [];
   #presentationTail: Promise<void> = Promise.resolve();
   #humanDispatchPending = false;
@@ -954,6 +975,10 @@ export class Ruleset7DomAppView {
   #gallery: GalleryViewV7 | null = null;
   #galleryOpen = false;
   readonly #galleryDemoHost: (() => BoardHostV7) | undefined;
+  /** Sound effects (bead pulp_wars-2yc.10, docs/ui/SOUND.md). */
+  readonly #audio: GameAudioV1;
+  readonly #ownsAudio: boolean;
+  #soundTestOpen = false;
 
   constructor(
     documentRoot: Document,
@@ -975,6 +1000,14 @@ export class Ruleset7DomAppView {
     this.#randomSeed =
       options.randomSeed ?? (() => browserRandomSeedV7(documentRoot));
     this.#galleryDemoHost = options.galleryDemoHost;
+    this.#ownsAudio = options.audio === undefined;
+    this.#audio =
+      options.audio ??
+      createBrowserGameAudioV1(documentRoot, this.#settingsStorage);
+    // Sound is timed by the board's own presentation steps.
+    this.#boardHost.setPresentationStepListener?.((cue) =>
+      this.#audio.playCues(soundCuesForStepV7(cue), cue.durationScale),
+    );
     this.#artSet = options.artSet ?? "LEGACY";
     this.#chibiDomEnvironment =
       this.#artSet === "CHIBI"
@@ -1021,6 +1054,8 @@ export class Ruleset7DomAppView {
     this.#snapshot = controller.snapshot();
     this.#document.addEventListener("keydown", this.#onKeyDown);
     this.#root.addEventListener("dragstart", this.#onDragStart);
+    // Capturing: the click is heard before the sound of what it does.
+    this.#root.addEventListener("click", this.#onClickSound, true);
     this.#unsubscribeAcceptedBoundary = controller.subscribeAcceptedBoundary(
       (boundary) => this.#queueBoundary(boundary),
     );
@@ -1046,6 +1081,9 @@ export class Ruleset7DomAppView {
       CHIBI_ECONOMY_ICONS.delete(this.#document);
     this.#document.removeEventListener("keydown", this.#onKeyDown);
     this.#root.removeEventListener("dragstart", this.#onDragStart);
+    this.#root.removeEventListener("click", this.#onClickSound, true);
+    this.#boardHost.setPresentationStepListener?.(null);
+    if (this.#ownsAudio) this.#audio.destroy();
     this.#unsubscribe?.();
     this.#unsubscribeAcceptedBoundary?.();
     this.#unsubscribeAcceptedBoundary = null;
@@ -1068,6 +1106,25 @@ export class Ruleset7DomAppView {
     )
       return;
     event.preventDefault();
+  };
+
+  /** The game's sound: its preference and the log of what it was asked. */
+  get audio(): GameAudioV1 {
+    return this.#audio;
+  }
+
+  /**
+   * A soft click for every button, link and disclosure of the interface.
+   * Controls that make a sound of their own (the sound toggle, the sound
+   * test) opt out.
+   */
+  readonly #onClickSound = (event: MouseEvent): void => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const control = target.closest("button, a, summary");
+    if (control === null || control.hasAttribute(SILENT_CLICK_ATTRIBUTE_V7))
+      return;
+    this.#audio.play("ui.click");
   };
 
   /**
@@ -2221,6 +2278,8 @@ export class Ruleset7DomAppView {
     this.#gallery ??= new GalleryViewV7(this.#document, {
       storage: this.#settingsStorage,
       onBack: () => this.#closeGallery(),
+      soundPanel: () =>
+        soundTestPanelV7(this.#document, this.#audio, { withControls: true }),
       motion: () => this.#motion,
       ...(this.#chibiDomEnvironment === null
         ? {}
@@ -2301,6 +2360,7 @@ export class Ruleset7DomAppView {
       this.#boardContainer = board;
       this.#boardHost.mount(board, {
         onSelection: (selection) => {
+          if (selection !== null) this.#audio.play("ui.select");
           this.#selection = selection;
           this.#kaboomArmedUnitId = null;
           this.#kaboomHoverUnitId = null;
@@ -2417,6 +2477,7 @@ export class Ruleset7DomAppView {
     if (this.#compactMenuOpen) {
       const menu = el(this.#document, "div", "v7-hud-menu");
       menu.id = "v7-hud-menu";
+      menu.append(this.#muteMenuItem());
       for (const [label, screen, action] of [
         ["Leaderboard", "LEADERBOARD", "leaderboard"],
         ["Achievements", "ACHIEVEMENTS", "achievements"],
@@ -5921,6 +5982,36 @@ export class Ruleset7DomAppView {
     return section;
   }
 
+  /**
+   * The match menu's mute (bead pulp_wars-2yc.10): one press turns sound
+   * off or on. It redraws itself, so the menu stays open.
+   */
+  #muteMenuItem(): HTMLButtonElement {
+    const item = this.#document.createElement("button");
+    item.type = "button";
+    item.dataset.action = "mute";
+    item.className = "v7-menu-item v7-menu-sound";
+    item.setAttribute(SILENT_CLICK_ATTRIBUTE_V7, "");
+    const sync = (): void => {
+      const enabled = this.#audio.settings.enabled;
+      item.replaceChildren(
+        uiIconV7(this.#document, enabled ? "sound" : "sound-off"),
+        text(this.#document, "span", "Sound"),
+      );
+      item.setAttribute("aria-pressed", String(enabled));
+      item.dataset.sound = enabled ? "on" : "off";
+      item.title = enabled ? "Sound on" : "Sound off";
+    };
+    sync();
+    item.onclick = () => {
+      if (!this.#audio.setEnabled(!this.#audio.settings.enabled))
+        this.#error = "Settings could not be saved.";
+      sync();
+      this.#audio.play("ui.toggle");
+    };
+    return item;
+  }
+
   #settings(): HTMLElement {
     const section = el(this.#document, "div", "v7-info-screen v7-settings");
     section.append(text(this.#document, "h2", "Settings"));
@@ -5985,7 +6076,24 @@ export class Ruleset7DomAppView {
       this.#persistSettings();
       this.#render();
     };
-    display.append(motion, speed, scale, contrast);
+    // Sound: an icon toggle and a volume slider (docs/ui/SOUND.md).
+    const sound = soundControlsV7(this.#document, this.#audio, {
+      onStoreFailed: () => {
+        this.#error = "Settings could not be saved.";
+      },
+    });
+    display.append(motion, speed, scale, contrast, sound);
+    // Every sound with a play button, to audition them.
+    const soundTest = this.#document.createElement("details");
+    soundTest.className = "v7-developer-tools v7-sound-test-disclosure";
+    soundTest.open = this.#soundTestOpen;
+    soundTest.addEventListener("toggle", () => {
+      this.#soundTestOpen = soundTest.open;
+    });
+    soundTest.append(
+      text(this.#document, "summary", "Sound test"),
+      soundTestPanelV7(this.#document, this.#audio),
+    );
     const game = el(this.#document, "div", "button-row");
     const restart = button(this.#document, "Restart game", "restart");
     restart.onclick = () => void this.#restart();
@@ -6057,7 +6165,7 @@ export class Ruleset7DomAppView {
       this.#classicLookControl(),
       developerActions,
     );
-    section.append(display, game, ...matchInfo, developer);
+    section.append(display, game, ...matchInfo, soundTest, developer);
     return section;
   }
 
@@ -6715,6 +6823,7 @@ export class Ruleset7DomAppView {
     if (!result.accepted) {
       this.#presentationActive = false;
       this.#error = `Can't do that right now (${result.error?.code ?? result.reason}).`;
+      this.#audio.play("ui.error");
       this.#render();
       return false;
     }
@@ -6964,14 +7073,23 @@ export class Ruleset7DomAppView {
       this.#notice = notice.text;
       if (notice.toast) this.#showToast(notice.text);
     }
+    // Bead pulp_wars-2yc.10: the sounds no presentation step carries.
+    const sounds = soundCuesForBoundaryV7(
+      boundary.beforeView,
+      boundary.playerEvents,
+      boundary.afterView,
+    );
     if (this.#snapshot.ai.fastForward) {
       this.#presentationQueue = [];
+      this.#audio.playCues(sounds.essential);
       return;
     }
+    this.#audio.playCues(sounds.start);
     this.#presentationActive = true;
     this.#presentationQueue.push({
       matchInstance: this.#matchInstance,
       boundary,
+      endSounds: sounds.end,
     });
     if (this.#presentationQueue.length > 12) {
       const latest = this.#presentationQueue.at(-1);
@@ -7000,6 +7118,8 @@ export class Ruleset7DomAppView {
           next.boundary.afterView,
           next.boundary.playerEvents,
         );
+        if (!this.#destroyed && next.matchInstance === this.#matchInstance)
+          this.#audio.playCues(next.endSounds);
       }
       if (this.#presentationQueue.length === 0) {
         this.#presentationActive = false;

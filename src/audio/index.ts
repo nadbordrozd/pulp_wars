@@ -1,0 +1,69 @@
+/**
+ * Sound effects (bead pulp_wars-2yc.10, docs/ui/SOUND.md). Importing this
+ * module creates nothing: no audio context, no listener, no timer.
+ */
+export {
+  AUDIO_SETTINGS_STORAGE_KEY_V1,
+  AUDIO_VOLUME_STEP_V1,
+  DEFAULT_AUDIO_SETTINGS_V1,
+  clampAudioVolumeV1,
+  loadAudioSettingsV1,
+  parseStoredAudioSettingsV1,
+  storeAudioSettingsV1,
+  type AudioSettingsV1,
+} from "./audio-settings";
+export {
+  GameAudioV1,
+  audioVolumeGainV1,
+  createBrowserGameAudioV1,
+  type GameAudioOptionsV1,
+  type SoundLogEntryV1,
+  type SoundRequestOutcomeV1,
+} from "./game-audio";
+export {
+  DEFAULT_CATEGORY_GAINS_V1,
+  DEFAULT_COALESCE_MS_V1,
+  DEFAULT_MAX_VOICES_V1,
+  SoundMixerV1,
+  type SoundMixerOptionsV1,
+  type SoundOutputV1,
+  type SoundPlayOutcomeV1,
+  type SoundStartV1,
+} from "./mixer";
+export {
+  SOUND_CATEGORIES_V1,
+  SOUND_IDS_V1,
+  SOUND_MANIFEST_V1,
+  midiHzV1,
+  soundRecipeV1,
+  type SoundCategoryV1,
+  type SoundEntryV1,
+  type SoundIdV1,
+  type SoundSourceV1,
+} from "./sound-manifest";
+export {
+  soundCuesForBoundaryV7,
+  soundCuesForStepV7,
+  type BoundarySoundCuesV7,
+  type PresentationStepCueV7,
+  type SoundCueV1,
+} from "./sound-events-v7";
+export {
+  soundTableMarkdownV1,
+  soundTableRowsV1,
+  type SoundTableRowV1,
+} from "./sound-table";
+export {
+  SYNTH_SAMPLE_RATE_V1,
+  measureSynthSamplesV1,
+  renderSynthRecipeV1,
+  synthRecipeDurationMsV1,
+  type SynthLayerV1,
+  type SynthMeasurementV1,
+  type SynthRecipeV1,
+  type SynthWaveV1,
+} from "./synth";
+export {
+  createWebAudioOutputV1,
+  type WebAudioOutputV1,
+} from "./web-audio-output";

@@ -25,6 +25,7 @@ import { probeCuriositiesV7 } from "./browser-smoke-v7-curiosities";
 import { probeGalleryV7 } from "./browser-smoke-v7-gallery";
 import { probeManySeatsV7 } from "./browser-smoke-v7-many-seats";
 import { probeResearchPromptV7 } from "./browser-smoke-v7-research-prompt";
+import { probeSoundV7 } from "./browser-smoke-v7-sound";
 import {
   browserTimingModeV7,
   collectBrowserTimingV7,
@@ -736,6 +737,21 @@ try {
         pressEscape: () => pressKey(connection, "Escape", "Escape"),
         capture: (name) => capture(connection, name),
       });
+  // Bead pulp_wars-2yc.10: the sound toggle in Settings and the sounds an
+  // attack asks for, on the Undead fixture (dev server only, likewise).
+  const sound = deployed
+    ? "fixture skipped on the deployed bundle"
+    : await probeSoundV7({
+        evaluate: (expression, awaitPromise) =>
+          evaluate(connection, expression, awaitPromise),
+        waitForExpression: (expression, attempts) =>
+          waitForExpression(connection, expression, attempts),
+        pointerClick: (selector) => pointerClick(connection, selector),
+        pressEscape: () => pressKey(connection, "Escape", "Escape"),
+        openCompactMenuItem: (action) =>
+          openCompactMenuItem(connection, action),
+        capture: (name) => capture(connection, name),
+      });
   const showcase = await probeShowcaseMatch(connection);
   // Bead pulp_wars-ic8: the Gallery from the fresh front screen.
   const gallery = await probeGalleryV7({
@@ -843,7 +859,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and four-key isolation passed; research prompt ${researchPrompt}; Campaign ${campaign}; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}. Candy ${candy}. Curiosities ${curiosities}. Many players ${manySeats}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and four-key isolation passed; research prompt ${researchPrompt}; sound ${sound}; Campaign ${campaign}; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}. Candy ${candy}. Curiosities ${curiosities}. Many players ${manySeats}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {

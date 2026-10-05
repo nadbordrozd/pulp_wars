@@ -4646,3 +4646,111 @@
     transform: none;
   }
 }
+
+/* Sound (bead pulp_wars-2yc.10, docs/ui/SOUND.md): the toggle and volume
+   slider of Settings, the match menu's mute, and the sound test. */
+.v7-sound-controls {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) 3.2rem;
+  grid-column: 1 / -1;
+  gap: 0.6rem;
+  align-items: center;
+  min-height: 44px;
+}
+
+.v7-sound-toggle[data-sound="off"] {
+  color: var(--muted);
+}
+
+.v7-sound-volume {
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  accent-color: var(--gold);
+}
+
+.v7-sound-volume-value {
+  color: var(--paper);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.v7-menu-sound {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.v7-menu-sound .v7-ui-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.v7-menu-sound[data-sound="off"] {
+  color: var(--muted);
+}
+
+.v7-sound-test {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.v7-sound-test h3 {
+  margin: 0 0 0.4rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.v7-sound-test-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.4rem;
+}
+
+.v7-sound-test-button {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.7rem;
+  border: 1px solid var(--v7-edge);
+  border-radius: 12px;
+  background: var(--v7-glass);
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.v7-sound-test-button:hover {
+  border-color: var(--v7-edge-strong);
+}
+
+.v7-sound-test-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--gold);
+}
+
+.v7-gallery-sounds {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  min-height: 44px;
+  margin-left: auto;
+  padding: 0 0.9rem;
+}
+
+.v7-gallery-sounds .v7-ui-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.v7-gallery-sounds[aria-pressed="true"] {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.v7-gallery .v7-sound-test {
+  margin-top: 1rem;
+}
