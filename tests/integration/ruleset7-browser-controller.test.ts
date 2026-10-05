@@ -119,9 +119,9 @@ describe("Ruleset 7 browser controller", () => {
       }
       if (snapshot.ai.active) clock += 3;
     });
-    // Seed 2: the human moves last on its village-density map (seed 3 did on
-    // revision 14, seed 0 on revision 13), so three AI turns run first.
-    const launched = await controller.launch(setupV7(2, 3));
+    // Seed 9: the human moves last on its many-seats map (`pulp_wars-ykw.3`;
+    // seed 2 did on the village-density map), so three AI turns run first.
+    const launched = await controller.launch(setupV7(9, 3));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const progress = controller.progressAiTurns();
     await waitUntil(() => scheduler.activeCount() === 1);
@@ -362,9 +362,9 @@ describe("Ruleset 7 browser controller", () => {
         queueMicrotask(resume);
       },
     });
-    // Seed 3: the human moves first and has Fertile Ground at its capital
-    // on the village-density board (`pulp_wars-ykw.2`; seed 1 before).
-    const launched = await controller.launch(setupV7(3, 1));
+    // Seed 1: the human moves first and has Fertile Ground at its capital
+    // on the many-seats board (`pulp_wars-ykw.3`; seed 3 before).
+    const launched = await controller.launch(setupV7(1, 1));
     if (!launched.ok) throw new Error(launched.diagnostic);
     await dispatchKind(
       controller,
@@ -739,7 +739,7 @@ function setupV7(seed: number, aiCount: 1 | 2 | 3): MatchSetupV7 {
     // pulp_wars-w5j.1: the browser launches only distinct factions.
     factions: distinctFactionsV7(aiCount + 1),
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
   };
 }

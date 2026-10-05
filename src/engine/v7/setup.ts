@@ -1,6 +1,7 @@
 import {
   FACTION_IDS_V7,
   MAP_GENERATION_REVISION_V7,
+  PLAYER_COLORS_V7,
   RULESET_7_ID,
   type AiCountV7,
   type BoardSizeV7,
@@ -9,6 +10,7 @@ import {
   type PlayerColorV7,
 } from "./types";
 import { hasExactKeysV7, isDenseArrayV7, isUint32V7 } from "./schema";
+import { seatCountAllowedV7 } from "./map-scale";
 import { missionDefinitionV7, missionSeatFactionsV7 } from "./missions/index";
 
 const SETUP_KEYS_V7 = [
@@ -126,7 +128,10 @@ export function allowDuplicateFactionsV7(setup: MatchSetupV7): MatchSetupV7 {
 
 /**
  * Validates a Ruleset 7 setup. Besides the shape and the board, seat, and
- * map constraints, every seat must play a different faction
+ * map constraints (docs/product/RULESET_7_MAP_SCALE.md section 3.3: 1 to
+ * `F - 1` AI seats, `F` the number of factions, and no more seats than the
+ * width holds for the map type, `seatCountAllowedV7`; the mirror flag never
+ * lifts either bound), every seat must play a different faction
  * (`DUPLICATE_FACTION`) unless the setup carries the headless and test only
  * `allowDuplicateFactions: true`. A `MISSION` setup carries exactly one
  * extra key, `mission: { id, revision }`, and never `allowDuplicateFactions`;
@@ -162,9 +167,10 @@ export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
     !isBoardSize(input.width) ||
     input.height !== input.width ||
     !isAiCount(input.aiCount) ||
-    input.width < minimumWidth(input.aiCount) ||
-    // Revision 18 section 5.1: the Showcase board is exactly 16 x 16.
-    (input.mapType === "SHOWCASE" && input.width !== 16) ||
+    // Map scale section 3.3: at most as many seats as there are factions
+    // and as the width holds for the map type (`P(w, type)`); the Showcase
+    // (revision 18 section 5.1) is exactly 16 x 16 with two to four seats.
+    !seatCountAllowedV7(input.width, input.mapType, input.aiCount + 1) ||
     input.aiDifficulty !== "NORMAL" ||
     (input.aiMode !== "RIVAL" && input.aiMode !== "COOPERATIVE") ||
     !isColor(input.humanColor) ||
@@ -232,6 +238,8 @@ function validateMissionSetupV7(input: unknown): MatchSetupValidationV7 {
     !isBoardSize(input.width) ||
     input.height !== input.width ||
     !isAiCount(input.aiCount) ||
+    // A mission has two to four seats (docs/product/CAMPAIGN.md).
+    input.aiCount > 3 ||
     input.aiDifficulty !== "NORMAL" ||
     (input.aiMode !== "RIVAL" && input.aiMode !== "COOPERATIVE") ||
     !isColor(input.humanColor) ||
@@ -307,10 +315,6 @@ function isMapType(input: unknown): input is MatchSetupV7["mapType"] {
   );
 }
 
-function minimumWidth(aiCount: AiCountV7): BoardSizeV7 {
-  return aiCount === 1 ? 11 : aiCount === 2 ? 14 : 16;
-}
-
 function isBoardSize(input: unknown): input is BoardSizeV7 {
   return (
     input === 11 || input === 14 || input === 16 || input === 20 || input === 25
@@ -318,14 +322,14 @@ function isBoardSize(input: unknown): input is BoardSizeV7 {
 }
 
 function isAiCount(input: unknown): input is AiCountV7 {
-  return input === 1 || input === 2 || input === 3;
+  return (
+    typeof input === "number" &&
+    Number.isSafeInteger(input) &&
+    input >= 1 &&
+    input <= FACTION_IDS_V7.length - 1
+  );
 }
 
 function isColor(input: unknown): input is PlayerColorV7 {
-  return (
-    input === "CORAL" ||
-    input === "TEAL" ||
-    input === "GOLD" ||
-    input === "VIOLET"
-  );
+  return PLAYER_COLORS_V7.includes(input as PlayerColorV7);
 }

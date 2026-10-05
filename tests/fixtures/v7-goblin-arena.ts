@@ -80,7 +80,7 @@ export function goblinSetupV7(
     humanColor: "CORAL",
     factions: [...factions],
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
     ...mirrorOptionV7(factions),
   };

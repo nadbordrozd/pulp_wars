@@ -2433,7 +2433,7 @@ describe("ruleset-7 revision-19 Eggs and city capture", () => {
     factions: [...factions],
     ...mirrorOptionV7(factions),
     mapType: "SHOWCASE",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
   });
 
@@ -2810,7 +2810,7 @@ describe("ruleset-7 revision-19 Showcase with a Dinosaur seat", () => {
       factions: ["DINOSAUR", "DINOSAUR"],
       allowDuplicateFactions: true,
       mapType: "SHOWCASE",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
     });
     if (!created.ok) throw new Error(created.error.code);

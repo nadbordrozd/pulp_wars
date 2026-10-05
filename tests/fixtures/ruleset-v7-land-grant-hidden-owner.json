@@ -15,9 +15,9 @@
   },
   "state": {
     "schemaVersion": 7,
-    "rulesetId": "pulp-wars-poc-7r41",
+    "rulesetId": "pulp-wars-poc-7r42",
     "setup": {
-      "rulesetId": "pulp-wars-poc-7r41",
+      "rulesetId": "pulp-wars-poc-7r42",
       "seed": 1,
       "width": 16,
       "height": 16,
@@ -27,7 +27,7 @@
       "humanColor": "CORAL",
       "factions": ["UNDEAD", "ORIGINAL", "UNDEAD", "ORIGINAL"],
       "mapType": "LAKES",
-      "mapGenerationRevision": "REGIONAL_BIOMES_NAVAL_V3",
+      "mapGenerationRevision": "REGIONAL_BIOMES_NAVAL_V4",
       "curiosities": false,
       "allowDuplicateFactions": true
     },

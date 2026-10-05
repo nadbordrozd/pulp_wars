@@ -91,7 +91,7 @@ describe("Ruleset 7 Giant Spider in the browser controller (pulp_wars-737.3)", (
       humanColor: "CORAL",
       factions: ["ORIGINAL", "UNDEAD", "GOBLIN"],
       mapType: "DRY_LAND",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: true,
     };
     const created = createPlayableGameV7(setup);

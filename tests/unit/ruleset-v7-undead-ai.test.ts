@@ -565,6 +565,10 @@ describe("ruleset-7 revision-13 Normal AI determinism and headless play", () => 
       // 4 times, and the second Wails six times.
       { factions: ["UNDEAD", "ORIGINAL"], seed: 15, mapType: "DRY_LAND" },
       { factions: ["UNDEAD", "ORIGINAL"], seed: 21, mapType: "DRY_LAND" },
+      // pulp_wars-ykw.3: many seats regenerates every board again and none
+      // of the cases above reaches a Devour any more (they still Raise
+      // Dead, Wail, and Rally); this Pangea match Devours three times.
+      { factions: ["UNDEAD", "ORIGINAL"], seed: 3, mapType: "PANGEA" },
     ];
     const used: Record<string, number> = {
       RAISE_DEAD: 0,
@@ -622,7 +626,7 @@ function setupWith(factions: readonly FactionIdV7[], seed = 2): MatchSetupV7 {
     factions: [...factions],
     ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
   };
 }

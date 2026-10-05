@@ -798,9 +798,10 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // roles at +2 HP the seed-4 match ends in round 21 with no Wail; seed 8
     // has two (of seeds 0-23, so do 9, 11, 15, 17, and 23).
     // pulp_wars-if6: with 3 starting Coins the seed-8 match ends in round 22
-    // with no Wail; seed 2 has two (of seeds 0-23, so do 1, 3, 4, 5, 13, 17,
-    // 20, 22, and 23).
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 2);
+    // with no Wail; seed 2 had two (of seeds 0-23, so did 1, 3, 4, 5, 13, 17,
+    // 20, 22, and 23). On the many-seats boards (`pulp_wars-ykw.3`) the
+    // seed-2 match has no Wail; seed 5 has two.
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 5);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
@@ -848,8 +849,9 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // before them, seed 11 on revision-14/15 maps, seed 3 on revision-13
     // maps).
     // With 3 starting Coins (`pulp_wars-if6`) seed 15 trains no Lich; seed 2
-    // fields four, and they splash.
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 2), {
+    // fielded four, and they splashed. On the many-seats boards
+    // (`pulp_wars-ykw.3`) seed 5 fields two, which splash seven times.
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 5), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);
@@ -1139,7 +1141,7 @@ function setupWith(
     factions: [...factions],
     ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
   };
 }

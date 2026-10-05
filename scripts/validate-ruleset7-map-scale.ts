@@ -3,12 +3,25 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  FACTION_IDS_V7,
   LAND_PER_SETTLEMENT_V7,
   MAP_GENERATION_REVISION_V7,
+  MEASURED_SEAT_CAPACITY_V7,
   RULESET_7_ID,
+  capitalRoomSharesV7,
+  capitalSpacingV7,
+  centralZoneEdgeDistanceV7,
+  continentCapitalSplitV7,
+  domainBandV7,
+  domainsPerSideV7,
   generateInitialMapV7,
   landTileCountV7,
   landmassSettlementCapV7,
+  majorLandmassMinimumV7,
+  maxSeatsV7,
+  nearestCapitalSharesV7,
+  partialVillagesV7,
+  seatCapacityV7,
   settlementCountV7,
   villageCountV7,
   wildCentreVillageDistanceV7,
@@ -21,17 +34,27 @@ import {
   type MatchSetupV7,
 } from "../src/engine/index";
 
-// Map scale, village density (`pulp_wars-ykw.2`,
-// docs/product/RULESET_7_MAP_SCALE.md sections 5 and 10.1): for every
-// generated map type, size, and seat count (2-4 seats until `pulp_wars-ykw.3`
-// widens the seats), seeds 0..SEEDS-1 (default 256, `--seeds=N`; `--types=`
-// a comma list of map types):
+// Map scale, village density and many seats (`pulp_wars-ykw.2` and
+// `pulp_wars-ykw.3`, docs/product/RULESET_7_MAP_SCALE.md sections 3 to 5 and
+// 10.1 as amended in sections 5.5 and 5.6): for every legal cell (a
+// generated map type, a size, and 2 to `min(F, P(w, type))` seats), seeds
+// 0..SEEDS-1 (default 256, `--seeds=N`; `--types=` a comma list of map
+// types; `--seats=` a comma list of seat counts):
 //
 // - generation succeeds on every seed (no `MAP_GENERATION_FAILED`);
-// - the board has exactly `S` settlements of the section 5.2 table (one
-//   capital per seat and `S - N` villages), capitals `floor(width / 2)` or
-//   more apart (2 or more from the edge on Dry Land), villages 1 or more
-//   from the edge, and settlements 3 or more apart;
+// - the board has one capital per seat and the villages of the section 5.2
+//   table, `max(0, S - N)`: exactly on the setups of `7r41` (2 seats, 3 on
+//   14 and up, 4 on 16 and up), and at most that many on every setup new at
+//   `7r42`, whose least and mean counts are reported;
+// - capitals `D(w, N)` or more apart, 2 or more from the edge, and with 8
+//   seats or fewer outside the central zone; on Dry Land, Pangea, and Lakes
+//   each in its own domain (never the centre one of the 3 x 3); villages 1
+//   or more from the edge, and settlements 3 or more apart;
+// - room balance (the largest land share at most 1.5 times the smallest up
+//   to 4 seats, 2.0 from 5) and village balance (the largest village share
+//   minus the smallest at most `max(2, ceil(T / (2N)))`);
+// - Continents: 2 / 3 / 4 landmasses for 2 / 3-5 / 6 and more seats, each
+//   holding exactly its capitals; Archipelago: one capital per island;
 // - the wild reserve: none on Continents and Archipelago, at most
 //   1 / 2 / 3 (widths 11-16 / 20 / 25) elsewhere, each centre a land tile 2
 //   or more from the edge, 5 or more from every capital with at most 4
@@ -45,12 +68,12 @@ import {
 //   curiosities.
 //
 // With the full 256 seeds it also compares against the `7r39` baseline
-// (`scripts/ruleset7-map-scale-baseline-7r39.json`): the mean and the worst
-// accepted attempt are at most 1.6 times the baseline's (never asserted
-// below a mean of 8 and a worst of 64; the ruling was 1.5, and two
-// four-seat 16 x 16 cells measure 1.53 and 1.57: Dry Land, where one of the
-// three capital lattice offsets cannot hold 17 settlements, and
-// Continents); on Dry Land, Pangea, and Lakes
+// (`scripts/ruleset7-map-scale-baseline-7r39.json`, the cells that existed
+// then): the mean and the worst accepted attempt are at most 1.6 times the
+// baseline's (never asserted below a mean of 8 and a worst of 64). A cell
+// new at `7r42` has no baseline: its mean is at most 8 and its worst
+// attempt at most 64, the bounds of section 10.1. On Dry Land, Pangea, and
+// Lakes
 // boards of width 16 and up, the seeds with a land feature (a Fountain, a
 // Shrine, or a Giant Spider) are at least 90% of the baseline's, the boards
 // with a Giant Spider at least 60% per map type, and the seeds with a Rift at least 85% of the
@@ -100,21 +123,31 @@ const mapTypes =
         typeArg.toUpperCase().split(",").includes(type),
       );
 assert(mapTypes.length > 0, "--types names no generated map type");
-const SHAPES = [
-  [11, 1],
-  [14, 1],
-  [14, 2],
-  [16, 1],
-  [16, 2],
-  [16, 3],
-  [20, 1],
-  [20, 2],
-  [20, 3],
-  [25, 1],
-  [25, 2],
-  [25, 3],
-] as const;
 const WIDTHS = [11, 14, 16, 20, 25] as const;
+const seatArg = process.argv
+  .find((value) => value.startsWith("--seats="))
+  ?.slice(8);
+const seatFilter =
+  seatArg === undefined ? null : new Set(seatArg.split(",").map(Number));
+// Section 3.2, `P(w, type)` at 11 / 14 / 16 / 20 / 25, pinned independently
+// of the engine, with the two measured cells of section 3.4.
+const CAPACITY: Readonly<Record<GeneratedMapTypeV7, readonly number[]>> = {
+  DRY_LAND: [9, 16, 16, 36, 49],
+  LAKES: [2, 16, 16, 35, 49],
+  PANGEA: [8, 14, 16, 32, 49],
+  CONTINENTS: [6, 12, 15, 24, 38],
+  ARCHIPELAGO: [4, 8, 9, 16, 27],
+};
+assert.deepEqual(MEASURED_SEAT_CAPACITY_V7, [
+  { width: 11, mapType: "LAKES", seats: 2 },
+  { width: 11, mapType: "CONTINENTS", seats: 6 },
+]);
+// Every legal cell: 2 to min(F, P) seats.
+const SHAPES: (readonly [(typeof WIDTHS)[number], number])[] = [];
+for (const width of WIDTHS)
+  for (let aiCount = 1; aiCount < FACTION_IDS_V7.length; aiCount += 1)
+    if (seatFilter === null || seatFilter.has(aiCount + 1))
+      SHAPES.push([width, aiCount]);
 // Section 5.2, pinned independently of the engine.
 const LAND: Readonly<Record<GeneratedMapTypeV7, readonly number[]>> = {
   DRY_LAND: [121, 196, 256, 400, 625],
@@ -145,21 +178,20 @@ for (const mapType of ALL_TYPES)
       SETTLEMENTS[mapType][index],
       `${mapType}/${width} settlements`,
     );
+    assert.equal(
+      seatCapacityV7(width, mapType),
+      CAPACITY[mapType][index],
+      `${mapType}/${width} capacity`,
+    );
+    assert.equal(
+      maxSeatsV7(width, mapType),
+      Math.min(FACTION_IDS_V7.length, CAPACITY[mapType][index] as number),
+    );
   });
-assert.equal(MAP_GENERATION_REVISION_V7, "REGIONAL_BIOMES_NAVAL_V3");
+assert.equal(MAP_GENERATION_REVISION_V7, "REGIONAL_BIOMES_NAVAL_V4");
 
-const FACTIONS: readonly FactionIdV7[] = [
-  "ORIGINAL",
-  "UNDEAD",
-  "GOBLIN",
-  "DINOSAUR",
-];
-const OTHER_FACTIONS: readonly FactionIdV7[] = [
-  "DWARF",
-  "MARTIAN",
-  "ICE_FOLK",
-  "CANDY",
-];
+const FACTIONS: readonly FactionIdV7[] = FACTION_IDS_V7;
+const OTHER_FACTIONS: readonly FactionIdV7[] = [...FACTION_IDS_V7].reverse();
 function setupOf(
   mapType: GeneratedMapTypeV7,
   width: MatchSetupV7["width"],
@@ -183,6 +215,18 @@ function setupOf(
     curiosities,
   };
 }
+// Section 4.3, pinned independently of the engine: the capitals each
+// Continents landmass holds, the largest first, by seat count.
+const CONTINENT_SPLIT: Readonly<Record<number, readonly number[]>> = {
+  2: [1, 1],
+  3: [1, 1, 1],
+  4: [2, 1, 1],
+  5: [2, 2, 1],
+  6: [2, 2, 1, 1],
+  7: [2, 2, 2, 1],
+  8: [2, 2, 2, 2],
+  9: [3, 2, 2, 2],
+};
 const chebyshev = (a: CoordV7, b: CoordV7): number =>
   Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 const edgeDistance = (width: number, at: CoordV7): number =>
@@ -229,6 +273,7 @@ function checkMap(
   width: number,
   seats: number,
   label: string,
+  partial: boolean,
 ): void {
   const expectedSettlements = SETTLEMENTS[mapType][
     WIDTHS.indexOf(width as (typeof WIDTHS)[number])
@@ -236,11 +281,18 @@ function checkMap(
   const { tiles } = map.board;
   const at = (coord: CoordV7) => tiles[coord.y * width + coord.x];
   assert.equal(map.capitals.length, seats, `${label}: capitals`);
-  assert.equal(
-    map.villages.length,
-    Math.max(0, expectedSettlements - seats),
-    `${label}: villages`,
-  );
+  // Section 5.6: a setup new at 7r42 holds as many villages as fit.
+  if (partial)
+    assert(
+      map.villages.length <= Math.max(0, expectedSettlements - seats),
+      `${label}: villages over the density`,
+    );
+  else
+    assert.equal(
+      map.villages.length,
+      Math.max(0, expectedSettlements - seats),
+      `${label}: villages`,
+    );
   assert.equal(
     tiles.filter((tile) => tile.site === "CAPITAL").length,
     seats,
@@ -251,11 +303,49 @@ function checkMap(
     map.villages.length,
     `${label}: village sites`,
   );
+  const zone = centralZoneEdgeDistanceV7(width, seats);
+  assert.equal(zone, seats <= 8 ? Math.floor(width / 3) : null);
   for (const capital of map.capitals) {
     assert.equal(at(capital)?.site, "CAPITAL", `${label}: capital site`);
-    if (mapType === "DRY_LAND")
-      assert(edgeDistance(width, capital) >= 2, `${label}: capital margin`);
+    assert(edgeDistance(width, capital) >= 2, `${label}: capital margin`);
+    if (seats <= 8)
+      assert(
+        edgeDistance(width, capital) < Math.floor(width / 3),
+        `${label}: capital in the central zone`,
+      );
   }
+  // Section 4.2: one capital per domain on Dry Land, Pangea, and Lakes.
+  if (mapType === "DRY_LAND" || mapType === "PANGEA" || mapType === "LAKES") {
+    const k = Math.ceil(Math.sqrt(seats));
+    assert.equal(domainsPerSideV7(seats), k);
+    const bandOf = (value: number): number => {
+      for (let index = 0; index < k; index += 1) {
+        const band = domainBandV7(width, k, index);
+        assert.equal(band.from, Math.floor((index * width) / k));
+        if (value >= band.from && value <= band.to) return index;
+      }
+      throw new Error(`${label}: no domain band`);
+    };
+    const domains = map.capitals.map(
+      (capital) => `${bandOf(capital.x)},${bandOf(capital.y)}`,
+    );
+    assert.equal(new Set(domains).size, seats, `${label}: shared domain`);
+    if (k === 3 && seats <= 8)
+      assert(!domains.includes("1,1"), `${label}: centre domain`);
+  }
+  // Section 4.4 items 3 and 4.
+  const room = capitalRoomSharesV7(map.board, map.capitals);
+  assert(
+    Math.max(...room) <= (seats <= 4 ? 1.5 : 2) * Math.min(...room) + 1e-9,
+    `${label}: room balance ${room.join("/")}`,
+  );
+  const shares = nearestCapitalSharesV7(map.board, map.capitals, map.villages);
+  const counted = shares.reduce((sum, share) => sum + share, 0);
+  assert(
+    Math.max(...shares) - Math.min(...shares) <=
+      Math.max(2, Math.ceil((counted - 1e-9) / (2 * seats))) + 1e-9,
+    `${label}: village balance ${shares.join("/")}`,
+  );
   for (const village of map.villages) {
     assert.equal(at(village)?.site, "VILLAGE", `${label}: village site`);
     assert(edgeDistance(width, village) >= 1, `${label}: village margin`);
@@ -268,14 +358,13 @@ function checkMap(
         assert(chebyshev(a, b) >= 3, `${label}: settlement spacing`),
       ),
   );
+  const spacing = Math.max(3, Math.floor(width / Math.ceil(Math.sqrt(seats))));
+  assert.equal(capitalSpacingV7(width, seats), spacing);
   map.capitals.forEach((a, index) =>
     map.capitals
       .slice(index + 1)
       .forEach((b) =>
-        assert(
-          chebyshev(a, b) >= Math.floor(width / 2),
-          `${label}: capital spacing`,
-        ),
+        assert(chebyshev(a, b) >= spacing, `${label}: capital spacing`),
       ),
   );
   // The wild reserve.
@@ -311,11 +400,42 @@ function checkMap(
   const components = landComponents(map);
   const componentOf = (coord: CoordV7): number =>
     components.label[coord.y * width + coord.x] ?? -1;
-  const majorMinimum = Math.max(6, Math.floor((width * width) / 20));
+  // Section 4.3: the major landmass minimum scales down with the islands.
+  const majorMinimum = Math.max(
+    6,
+    mapType === "ARCHIPELAGO"
+      ? Math.min(
+          Math.floor((width * width) / 20),
+          Math.floor(
+            (LAND.ARCHIPELAGO[
+              WIDTHS.indexOf(width as (typeof WIDTHS)[number])
+            ] as number) /
+              (2 * seats),
+          ),
+        )
+      : Math.floor((width * width) / 20),
+  );
+  assert.equal(majorLandmassMinimumV7(width, mapType, seats), majorMinimum);
   const major = components.sizes
     .map((size, id) => ({ size, id }))
     .filter((component) => component.size >= majorMinimum);
   if (mapType === "CONTINENTS") {
+    // Section 4.3: the landmasses and the capitals each holds.
+    const split = CONTINENT_SPLIT[seats];
+    assert(split !== undefined, `${label}: no landmass split`);
+    assert.deepEqual(continentCapitalSplitV7(seats), split);
+    assert.equal(major.length, split.length, `${label}: landmasses`);
+    assert.deepEqual(
+      major
+        .map(
+          (component) =>
+            map.capitals.filter((coord) => componentOf(coord) === component.id)
+              .length,
+        )
+        .sort((a, b) => b - a),
+      split,
+      `${label}: capitals per landmass`,
+    );
     const majorLand = major.reduce((sum, component) => sum + component.size, 0);
     for (const component of major) {
       const held = settlements.filter(
@@ -353,16 +473,16 @@ function checkMap(
 interface CellReport {
   readonly cell: string;
   readonly settlements: number;
-  readonly villagesPerPlayer: number;
+  /** The villages of the density, and the least and mean a board holds. */
+  readonly villageTarget: number;
+  readonly leastVillages: number;
+  readonly meanVillages: number;
   readonly meanAttempts: number;
   readonly worstAttempt: number;
-  readonly baselineMean: number;
-  readonly baselineWorst: number;
   readonly wildCentres: number;
   readonly landFeatureSeeds: number;
   readonly spiderSeeds: number;
   readonly riftSeeds: number;
-  readonly baselineRiftSeeds: number;
 }
 const reports: CellReport[] = [];
 const failures: string[] = [];
@@ -370,11 +490,22 @@ let boards = 0;
 for (const mapType of mapTypes)
   for (const [width, aiCount] of SHAPES) {
     const seats = aiCount + 1;
+    if (seats > maxSeatsV7(width, mapType)) continue;
     const cell = `${mapType}/${width}/${seats}`;
-    const base = baseline.cells[cell];
-    assert(base !== undefined, `${cell}: no baseline`);
+    // The setups of 7r41 have a baseline and exact village counts.
+    const legacy =
+      seats === 2 ||
+      (seats === 3 && width >= 14) ||
+      (seats === 4 && width >= 16);
+    assert.equal(
+      baseline.cells[cell] !== undefined,
+      legacy,
+      `${cell}: baseline`,
+    );
     let attempts = 0;
     let worst = 0;
+    let leastVillages = Infinity;
+    let villageSum = 0;
     let wild = 0;
     let landFeature = 0;
     let spider = 0;
@@ -392,7 +523,13 @@ for (const mapType of mapTypes)
         continue;
       }
       const map = result.map;
-      checkMap(map, mapType, width, seats, label);
+      assert.equal(
+        partialVillagesV7("CAPITAL_DOMAINS_CURIOSITIES", setup),
+        !legacy,
+      );
+      checkMap(map, mapType, width, seats, label, !legacy);
+      leastVillages = Math.min(leastVillages, map.villages.length);
+      villageSum += map.villages.length;
       boards += 1;
       attempts += map.attempt;
       worst = Math.max(worst, map.attempt);
@@ -427,37 +564,53 @@ for (const mapType of mapTypes)
     reports.push({
       cell,
       settlements: SETTLEMENTS[mapType][WIDTHS.indexOf(width)] as number,
-      villagesPerPlayer:
-        ((SETTLEMENTS[mapType][WIDTHS.indexOf(width)] as number) - seats) /
-        seats,
+      villageTarget: Math.max(
+        0,
+        (SETTLEMENTS[mapType][WIDTHS.indexOf(width)] as number) - seats,
+      ),
+      leastVillages,
+      meanVillages: villageSum / seeds,
       meanAttempts: attempts / seeds,
       worstAttempt: worst,
-      baselineMean: base.meanAttempts,
-      baselineWorst: base.worstAttempt,
       wildCentres: wild / seeds,
       landFeatureSeeds: landFeature,
       spiderSeeds: spider,
       riftSeeds: rift,
-      baselineRiftSeeds: base.riftSeeds,
     });
   }
 
 process.stdout.write(
-  "cell                 S (7r39)  villages/player  attempts mean/worst (7r39)   wild  land feature (7r39)  Spider (7r39)  Rift (7r39)\n",
+  "cell                 S (7r39)  villages target, least / mean  attempts mean/worst (7r39)   wild  land feature (7r39)  Spider (7r39)  Rift (7r39)\n",
 );
 const ATTEMPT_ALLOWANCE = 1.6;
+// Section 10.1: a cell new at 7r42 has no baseline to compare against.
+const NEW_CELL_MEAN_ATTEMPTS = 8;
+const NEW_CELL_WORST_ATTEMPT = 64;
 const misses: string[] = [];
+const pad = (value: number | undefined, width: number): string =>
+  (value === undefined ? "-" : String(value)).padStart(width);
 for (const report of reports) {
   const base = baseline.cells[report.cell];
-  assert(base !== undefined);
   process.stdout.write(
-    `${report.cell.padEnd(20)} ${String(report.settlements).padStart(2)} (${String(base.settlements).padStart(2)})   ${report.villagesPerPlayer.toFixed(1).padStart(5)}            ${report.meanAttempts.toFixed(2).padStart(6)} / ${String(report.worstAttempt).padStart(3)} (${base.meanAttempts.toFixed(2).padStart(5)} / ${String(base.worstAttempt).padStart(3)})   ${report.wildCentres.toFixed(2)}  ${String(report.landFeatureSeeds).padStart(4)} (${String(base.landFeatureSeeds).padStart(3)})           ${String(report.spiderSeeds).padStart(4)} (${String(base.spiderSeeds).padStart(3)})     ${String(report.riftSeeds).padStart(4)} (${String(base.riftSeeds).padStart(3)})\n`,
+    `${report.cell.padEnd(20)} ${String(report.settlements).padStart(2)} (${pad(base?.settlements, 2)})   ${String(report.villageTarget).padStart(2)}  ${String(report.leastVillages).padStart(2)} / ${report.meanVillages.toFixed(1).padStart(4)}                ${report.meanAttempts.toFixed(2).padStart(6)} / ${String(report.worstAttempt).padStart(3)} (${(base === undefined ? "-" : base.meanAttempts.toFixed(2)).padStart(5)} / ${pad(base?.worstAttempt, 3)})   ${report.wildCentres.toFixed(2)}  ${String(report.landFeatureSeeds).padStart(4)} (${pad(base?.landFeatureSeeds, 3)})           ${String(report.spiderSeeds).padStart(4)} (${pad(base?.spiderSeeds, 3)})     ${String(report.riftSeeds).padStart(4)} (${pad(base?.riftSeeds, 3)})\n`,
   );
   if (seeds !== baseline.seeds) continue;
-  if (report.meanAttempts > Math.max(8, ATTEMPT_ALLOWANCE * base.meanAttempts))
+  if (
+    report.meanAttempts >
+    (base === undefined
+      ? NEW_CELL_MEAN_ATTEMPTS
+      : Math.max(8, ATTEMPT_ALLOWANCE * base.meanAttempts))
+  )
     misses.push(`${report.cell}: mean attempts ${report.meanAttempts}`);
-  if (report.worstAttempt > Math.max(64, ATTEMPT_ALLOWANCE * base.worstAttempt))
+  if (
+    report.worstAttempt >
+    (base === undefined
+      ? NEW_CELL_WORST_ATTEMPT
+      : Math.max(64, ATTEMPT_ALLOWANCE * base.worstAttempt))
+  )
     misses.push(`${report.cell}: worst attempt ${report.worstAttempt}`);
+  // The wild-reserve comparisons are of the cells the baseline has.
+  if (base === undefined) continue;
   const [type, widthText] = report.cell.split("/");
   if (
     Number(widthText) >= 16 &&
@@ -479,7 +632,8 @@ if (seeds === baseline.seeds)
     const cells = reports.filter(
       (report) =>
         report.cell.startsWith(`${mapType}/`) &&
-        Number(report.cell.split("/")[1]) >= 16,
+        Number(report.cell.split("/")[1]) >= 16 &&
+        baseline.cells[report.cell] !== undefined,
     );
     const now = cells.reduce((sum, report) => sum + report.spiderSeeds, 0);
     const before = cells.reduce(
@@ -487,7 +641,7 @@ if (seeds === baseline.seeds)
       0,
     );
     process.stdout.write(
-      `Giant Spider boards, ${mapType} 16 and up: ${now} (7r39: ${before})\n`,
+      `Giant Spider boards, ${mapType} 16 and up, two to four seats: ${now} (7r39: ${before})\n`,
     );
     // Continents and Archipelago had one Spider on these 3,072 boards.
     if (wildReserveMapTypeV7(mapType) && now < 0.6 * before)
@@ -496,5 +650,5 @@ if (seeds === baseline.seeds)
 assert.deepEqual(failures, [], "generation failed");
 assert.deepEqual(misses, [], "worse than the 7r39 baseline allows");
 process.stdout.write(
-  `ruleset-7 map scale PASS: ${boards} boards (${mapTypes.join(", ")}; seeds 0-${seeds - 1}), no generation failure, the section 5.2 settlement counts, spacing, margins, wild reserve, and per-landmass rules hold${seeds === baseline.seeds ? ", and attempts, land features, Giant Spiders, and Rifts stay within the 7r39 baseline's allowance" : " (baseline comparison needs the full 256 seeds)"}\n`,
+  `ruleset-7 map scale PASS: ${boards} boards in ${reports.length} cells (${mapTypes.join(", ")}; 2 to ${FACTION_IDS_V7.length} seats; seeds 0-${seeds - 1}), no generation failure, the section 5.2 village counts (exact on the setups of 7r41, at most on the new ones), capital spacing, margins, central zone, domains, room and village balance, wild reserve, and per-landmass rules hold${seeds === baseline.seeds ? ", and attempts, land features, Giant Spiders, and Rifts stay within the 7r39 baseline's allowance (new cells: mean 8, worst 64)" : " (baseline comparison needs the full 256 seeds)"}\n`,
 );

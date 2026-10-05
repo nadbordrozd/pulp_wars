@@ -89,7 +89,7 @@ function setup(): MatchSetupV7 {
     // pulp_wars-w5j.1: the browser launches only distinct factions.
     factions: ["ORIGINAL", "UNDEAD"],
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
   };
 }

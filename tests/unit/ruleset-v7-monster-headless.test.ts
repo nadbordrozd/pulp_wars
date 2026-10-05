@@ -65,7 +65,7 @@ describe("neutral-owner fuzz, headless matches (section 10.5)", () => {
         humanColor: "CORAL",
         factions: [...factions],
         mapType,
-        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
         curiosities: true,
       };
       const match = runAiMatchV7(setup, { maxRounds: 25 });

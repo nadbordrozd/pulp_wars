@@ -8672,7 +8672,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r41",
+    rulesetId: "pulp-wars-poc-7r42",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -8688,7 +8688,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
       (_, seat): FactionIdV7 => draft.factions[seat] ?? "ORIGINAL",
     ),
     mapType: draft.mapType,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     // The Showcase never has curiosities and launches with `false`.
     curiosities: draft.mapType !== "SHOWCASE" && draft.curiosities,
   };

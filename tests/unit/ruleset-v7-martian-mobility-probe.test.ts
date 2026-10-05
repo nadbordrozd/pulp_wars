@@ -564,7 +564,7 @@ describe("Martian mobility probe: Mind Control", () => {
 describe("Martian mobility probe: headless match", () => {
   const setup = (factions: MatchSetupV7["factions"]): MatchSetupV7 => ({
     rulesetId: RULESET_7_ID,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
     seed: 3,
     width: 11,

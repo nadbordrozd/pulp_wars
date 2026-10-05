@@ -136,9 +136,10 @@ describe("ruleset-7 revision-13 headless Undead telemetry", () => {
   });
 
   it("reconciles role damage with every combat, splash, and Wail event in an AI match", () => {
-    // Seed 2 fields Lich splashes within 45 rounds (see the area-attack
+    // Seed 5 fields Lich splashes within 45 rounds on the many-seats boards
+    // (`pulp_wars-ykw.3`; seed 2 before, see the area-attack
     // tests; seed 15 until the 3 starting Coins of `pulp_wars-if6`).
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 2), {
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 5), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);
@@ -304,7 +305,7 @@ function setupWith(factions: readonly FactionIdV7[], seed = 2): MatchSetupV7 {
     factions: [...factions],
     ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
   };
 }

@@ -34,7 +34,7 @@ const setup: MatchSetupV7 = {
   humanColor: "CORAL",
   factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
   allowDuplicateFactions: true,
-  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
   curiosities: false,
 };
 const created = createInitialMapStateV7(setup);

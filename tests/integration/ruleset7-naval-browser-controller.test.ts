@@ -87,7 +87,8 @@ describe("Ruleset 7 naval browser controller", () => {
       },
     });
     const launched = await controller.launch({
-      ...browserSetupV7(0, 1),
+      // Seed 6: an AI seat moves first on the many-seats board.
+      ...browserSetupV7(6, 1),
       mapType: "CONTINENTS",
     });
     if (!launched.ok) throw new Error(launched.diagnostic);

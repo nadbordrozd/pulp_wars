@@ -4,9 +4,9 @@
   "target": { "x": 10, "y": 5 },
   "state": {
     "schemaVersion": 7,
-    "rulesetId": "pulp-wars-poc-7r41",
+    "rulesetId": "pulp-wars-poc-7r42",
     "setup": {
-      "rulesetId": "pulp-wars-poc-7r41",
+      "rulesetId": "pulp-wars-poc-7r42",
       "seed": 9,
       "width": 14,
       "height": 14,
@@ -16,7 +16,7 @@
       "humanColor": "CORAL",
       "factions": ["MARTIAN", "MARTIAN"],
       "mapType": "DRY_LAND",
-      "mapGenerationRevision": "REGIONAL_BIOMES_NAVAL_V3",
+      "mapGenerationRevision": "REGIONAL_BIOMES_NAVAL_V4",
       "curiosities": false,
       "allowDuplicateFactions": true
     },

@@ -66,6 +66,7 @@ export * from "./v7/rift";
 export * from "./v7/growth";
 export * from "./v7/infect";
 export * from "./v7/map";
+export * from "./v7/map-scale";
 export * from "./v7/martian";
 export * from "./v7/missions/index";
 export * from "./v7/missions/build";

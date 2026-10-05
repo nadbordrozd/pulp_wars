@@ -65,8 +65,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r41");
-    expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V3");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r42");
+    expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V4");
     expect(TECHNOLOGY_IDS_V7).toContain("ENGINEERING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
     expect(UNIT_ROLE_IDS_V7).not.toContain("SABOTEUR");

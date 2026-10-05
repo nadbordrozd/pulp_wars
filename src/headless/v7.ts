@@ -24,6 +24,11 @@ import type { CommandV7 } from "../engine/v7/commands";
 import { pierceTileV7 } from "../engine/v7/martian";
 import { distinctFactionsV7 } from "../engine/v7/setup";
 import {
+  allowedBoardSizesV7,
+  autoBoardSizeV7,
+  seatCountAllowedV7,
+} from "../engine/v7/map-scale";
+import {
   createIceFolkMetricsV7,
   createIceFolkTelemetryStateV7,
   recordIceFolkV7,
@@ -122,7 +127,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r41";
+  readonly rulesetId: "pulp-wars-poc-7r42";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -992,17 +997,21 @@ export async function runAiBatchV7(
   for (const mapType of mapTypes)
     for (const aiMode of modes)
       for (const aiCount of options.aiCounts) {
-        const size =
-          options.boardSize ?? (aiCount === 1 ? 11 : aiCount === 2 ? 14 : 16);
-        if (size < (aiCount === 1 ? 11 : aiCount === 2 ? 14 : 16))
-          throw new RangeError("boardSize is too small for aiCount");
+        // Map scale sections 3.3 and 6.2: the auto size by default, and a
+        // size that does not hold the seats on the map type is refused.
+        const seats = aiCount + 1;
+        const size = options.boardSize ?? autoBoardSizeV7(seats, mapType);
+        if (size === null || !seatCountAllowedV7(size, mapType, seats))
+          throw new RangeError(
+            `boardSize is too small for aiCount: ${mapType} with ${seats} seats allows ${allowedBoardSizesV7(mapType, seats).join(", ") || "no size"}`,
+          );
         for (const seed of options.seeds) {
           await new Promise<void>((resolve) => setTimeout(resolve, 0));
           const factions = options.factions ?? distinctFactionsV7(aiCount + 1);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r41",
-              mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+              rulesetId: "pulp-wars-poc-7r42",
+              mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
               seed,
               width: size,
               height: size,
@@ -1116,7 +1125,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r41",
+    rulesetId: "pulp-wars-poc-7r42",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,

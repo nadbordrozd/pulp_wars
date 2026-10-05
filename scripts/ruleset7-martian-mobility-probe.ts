@@ -71,7 +71,7 @@ interface CellResult extends Cell {
 function setupFor(cell: Cell): MatchSetupV7 {
   return {
     rulesetId: RULESET_7_ID,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
     seed: cell.seed,
     width: cell.size,

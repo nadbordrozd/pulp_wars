@@ -47,7 +47,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     const result = runCli(
       "match",
       "--ruleset",
-      "pulp-wars-poc-7r41",
+      "pulp-wars-poc-7r42",
       "--max-commands",
       "1",
       "--max-rounds",
@@ -56,7 +56,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     expect(result).toMatchObject({
       acceptedCommands: 1,
       termination: "COMMAND_CAP",
-      metrics: { rulesetId: "pulp-wars-poc-7r41" },
+      metrics: { rulesetId: "pulp-wars-poc-7r42" },
     });
   });
 
@@ -69,7 +69,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
       }>(
         "match",
         "--ruleset",
-        "pulp-wars-poc-7r41",
+        "pulp-wars-poc-7r42",
         "--factions",
         "original,Candy",
         "--max-commands",
@@ -80,7 +80,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
       runCli(
         "match",
         "--ruleset",
-        "pulp-wars-poc-7r41",
+        "pulp-wars-poc-7r42",
         "--factions",
         "original,elf",
         "--max-commands",
@@ -93,7 +93,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
       runCli(
         "match",
         "--ruleset",
-        "pulp-wars-poc-7r41",
+        "pulp-wars-poc-7r42",
         "--factions",
         "undead",
         "--max-commands",
@@ -102,13 +102,13 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     ).toThrow(/ruleset 7 --factions must contain exactly 2 seat values/);
     expect(() =>
       runCli("match", "--ruleset", "pulp-wars-poc-7", "--max-commands", "1"),
-    ).toThrow(/pulp-wars-poc-7r41/);
+    ).toThrow(/pulp-wars-poc-7r42/);
   }, 15_000);
 
   it("accepts seat-ordered Human, Undead, and Goblin factions in match and batch modes", () => {
     const common = [
       "--ruleset",
-      "pulp-wars-poc-7r41",
+      "pulp-wars-poc-7r42",
       "--max-commands",
       "1",
       "--max-rounds",
@@ -214,7 +214,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
   it("defaults to Continents and accepts all map types in match and batch modes", () => {
     const common = [
       "--ruleset",
-      "pulp-wars-poc-7r41",
+      "pulp-wars-poc-7r42",
       "--max-commands",
       "1",
       "--max-rounds",
@@ -254,7 +254,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
   it("accepts the showcase map type at size 16 only", () => {
     const common = [
       "--ruleset",
-      "pulp-wars-poc-7r41",
+      "pulp-wars-poc-7r42",
       "--max-commands",
       "1",
       "--max-rounds",
@@ -272,7 +272,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     expect(match).toMatchObject({
       acceptedCommands: 1,
       termination: "COMMAND_CAP",
-      metrics: { rulesetId: "pulp-wars-poc-7r41" },
+      metrics: { rulesetId: "pulp-wars-poc-7r42" },
     });
     const explicit = runCli(
       "match",
@@ -329,6 +329,127 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
         "11",
       ),
     ).toThrow(/--size must be 16 for the showcase map type/);
+  }, 600_000);
+
+  // Many seats (`pulp_wars-ykw.3`, docs/product/RULESET_7_MAP_SCALE.md
+  // section 9): 1 to F - 1 AI, the auto size, and the sizes a width holds.
+  it("accepts 1 to 7 AI seats, defaults to the auto size, and names the allowed sizes", () => {
+    const common = [
+      "--ruleset",
+      "pulp-wars-poc-7r42",
+      "--max-commands",
+      "1",
+      "--max-rounds",
+      "5",
+    ] as const;
+    type Seats = {
+      readonly metrics: {
+        readonly setupHash: string;
+        readonly factionsBySeat: readonly string[];
+      };
+    };
+    // Eight players on the smallest Dry Land board, distinct by default.
+    const crowded = runCli<Seats>(
+      "match",
+      ...common,
+      "--map-type",
+      "dry-land",
+      "--ai-count",
+      "7",
+      "--size",
+      "11",
+    );
+    expect(crowded.metrics.factionsBySeat).toEqual([
+      "ORIGINAL",
+      "UNDEAD",
+      "GOBLIN",
+      "DINOSAUR",
+      "MARTIAN",
+      "ICE_FOLK",
+      "DWARF",
+      "CANDY",
+    ]);
+    // Without --size five seats play the auto size, 20 x 20.
+    const auto = runCli<Seats>(
+      "match",
+      ...common,
+      "--map-type",
+      "dry-land",
+      "--ai-count",
+      "4",
+    );
+    const twenty = runCli<Seats>(
+      "match",
+      ...common,
+      "--map-type",
+      "dry-land",
+      "--ai-count",
+      "4",
+      "--size",
+      "20",
+    );
+    expect(auto.metrics.setupHash).toBe(twenty.metrics.setupHash);
+    expect(auto.metrics.factionsBySeat).toHaveLength(5);
+    expect(() => runCli("match", ...common, "--ai-count", "8")).toThrow(
+      /--ai-count must be 1 to 7/,
+    );
+    expect(() => runCli("match", ...common, "--ai-count", "0")).toThrow(
+      /--ai-count must be 1 to 7/,
+    );
+    // A width that does not hold the seats names the allowed sizes.
+    expect(() =>
+      runCli(
+        "match",
+        ...common,
+        "--map-type",
+        "archipelago",
+        "--ai-count",
+        "4",
+        "--size",
+        "11",
+      ),
+    ).toThrow(
+      /--size must be 14, 16, 20, 25 for 5 seats on the archipelago map type/,
+    );
+    expect(() =>
+      runCli("match", ...common, "--map-type", "showcase", "--ai-count", "4"),
+    ).toThrow(/--ai-count 4 has no board size on the showcase map type/);
+    expect(() =>
+      runCli("batch", ...common, "--seeds", "0", "--ai-counts", "1,9"),
+    ).toThrow(/--ai-counts must be a comma list of 1 to 7/);
+    // A batch entry takes its own auto size and refuses a size too small.
+    const batch = runCli<{
+      readonly matches: number;
+      readonly entries: readonly { readonly aiCount: number }[];
+    }>(
+      "batch",
+      ...common,
+      "--seeds",
+      "0",
+      "--ai-counts",
+      "5",
+      "--modes",
+      "rival",
+      "--map-types",
+      "dry-land",
+    );
+    expect(batch.entries.map((entry) => entry.aiCount)).toEqual([5]);
+    expect(() =>
+      runCli(
+        "batch",
+        ...common,
+        "--seeds",
+        "0",
+        "--ai-counts",
+        "2",
+        "--map-types",
+        "lakes",
+        "--size",
+        "11",
+      ),
+    ).toThrow(
+      /boardSize is too small for aiCount: LAKES with 3 seats allows 14, 16, 20, 25/,
+    );
   }, 600_000);
 
   it("dispatches a command-zero v7 replay through canonical playable creation", () => {

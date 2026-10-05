@@ -4,14 +4,16 @@ import type { PlayerColorV7 } from "../../engine/index";
  * The four seat colours the game drew before bead pulp_wars-b5f.4. The game
  * no longer shows them: every owner colour is the faction's
  * (FACTION_COLOURS_V7 in faction-colours-v7.ts). They stay as sample owner
- * colours for the recolour tests and the historical study benches.
+ * colours for the recolour tests and the historical study benches; the five
+ * seat colours added for many seats (map scale section 8.6) are stored and
+ * never drawn, so they have no sample here.
  */
 export const RULESET7_PLAYER_COLORS = {
   CORAL: "#f06762",
   TEAL: "#28b7a4",
   GOLD: "#e2b63f",
   VIOLET: "#a277d2",
-} as const satisfies Readonly<Record<PlayerColorV7, string>>;
+} as const satisfies Readonly<Partial<Record<PlayerColorV7, string>>>;
 
 /** Generation key colour for owner areas (CHIBI_ART_DIRECTION.md section 4). */
 export const CHIBI_OWNER_KEY_COLOUR = "#d8262c";

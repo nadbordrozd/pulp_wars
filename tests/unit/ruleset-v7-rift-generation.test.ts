@@ -62,7 +62,7 @@ function setup(
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
     allowDuplicateFactions: true,
     mapType,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
   };
 }
@@ -227,7 +227,7 @@ function generated(input: MatchSetupV7) {
   const base = generateInitialMapWithVillageCountV7(
     input,
     villageCountV7(input),
-    "VILLAGE_DENSITY",
+    "CAPITAL_DOMAINS",
   );
   if (!map.ok || !base.ok) throw new Error("generation failed");
   return { map: map.map, base: base.map };

@@ -25,6 +25,21 @@ import {
   missionTreasureChestsV7,
 } from "./missions/build";
 import { missionDefinitionV7 } from "./missions/index";
+import {
+  CAPITAL_EDGE_MARGIN_V7,
+  SETTLEMENT_SPACING_V7,
+  VILLAGE_EDGE_MARGIN_V7,
+  capitalSpacingV7,
+  centralZoneEdgeDistanceV7,
+  continentCapitalSplitV7,
+  domainBandV7,
+  domainsPerSideV7,
+  lakeWaterCountV7,
+  landmassLandCountV7,
+  majorLandmassMinimumV7,
+  pangeaLandCountV7,
+  villageCountV7,
+} from "./map-scale";
 import { validateMatchSetupV7, type MatchSetupErrorV7 } from "./setup";
 import {
   createShowcaseEntitiesV7,
@@ -35,6 +50,7 @@ import { parseGameStateV7 } from "./state-schema";
 import {
   BIOME_IDS_V7,
   NEUTRAL_OWNER_ID_V7,
+  PLAYER_COLORS_V7,
   RESOURCE_IDS_V7,
   RULESET_7_ID,
   TERRAIN_IDS_V7,
@@ -84,7 +100,11 @@ export type MapInvariantCodeV7 =
   | "COAST_RING"
   // Map scale (docs/product/RULESET_7_MAP_SCALE.md section 5.3): the
   // candidate could not place every village of its density.
-  | "VILLAGE_DENSITY";
+  | "VILLAGE_DENSITY"
+  // Map scale section 4.4 items 3 and 4: the land or the villages nearest
+  // each capital are too uneven.
+  | "ROOM_BALANCE"
+  | "VILLAGE_BALANCE";
 
 export interface MapGenerationAttemptV7 {
   readonly attempt: number;
@@ -165,8 +185,10 @@ interface Candidate {
   readonly regionByKey: ReadonlyMap<string, number>;
   readonly seeds: readonly CoordV7[];
   readonly navalPlacementFailed: boolean;
+  /** Dry Land under the capital domains: the capital search found none. */
+  readonly capitalPlacementFailed: boolean;
 }
-const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
+const COLORS: readonly PlayerColorV7[] = PLAYER_COLORS_V7;
 // The fixed village table of revision 14 through `pulp-wars-poc-7r39`, kept
 // for the parity rules only ({@link revision14VillageCountV7}); the current
 // count follows the density ({@link villageCountV7}).
@@ -178,30 +200,19 @@ const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
 const STANDARD: Readonly<Record<AiCountV7, number>> = { 1: 4, 2: 5, 3: 7 };
 const LARGE: Readonly<Record<AiCountV7, number>> = { 1: 14, 2: 13, 3: 12 };
 const HUGE: Readonly<Record<AiCountV7, number>> = { 1: 21, 2: 20, 3: 19 };
+/**
+ * The setups the generators before the capital domains accepted (two to
+ * four seats, with at least 14 tiles a side for three and 16 for four): a
+ * parity call under their rules refuses any other setup.
+ */
+function legacySeatSetupV7(setup: MatchSetupV7): boolean {
+  return (
+    setup.aiCount <= 3 &&
+    setup.width >= (setup.aiCount === 1 ? 11 : setup.aiCount === 2 ? 14 : 16)
+  );
+}
 const SMALL_ARCHIPELAGO_VILLAGES_V7 = 3;
 const CROWDED_ARCHIPELAGO_VILLAGES_V7 = 6;
-/** The five generated map types (never the Showcase or a mission). */
-export type GeneratedMapTypeV7 = Exclude<MapTypeV7, "SHOWCASE" | "MISSION">;
-/**
- * Map scale section 5.1: the land tiles per settlement (capitals plus
- * villages) of each generated map type, close to Polytopia's spacing rule
- * measured on Pulp Wars boards.
- */
-export const LAND_PER_SETTLEMENT_V7: Readonly<
-  Record<GeneratedMapTypeV7, number>
-> = Object.freeze({
-  DRY_LAND: 15,
-  LAKES: 13,
-  PANGEA: 12,
-  CONTINENTS: 12,
-  ARCHIPELAGO: 11,
-});
-/** Map scale section 5.3: every two settlements are at least this far apart. */
-export const SETTLEMENT_SPACING_V7 = 3;
-/** Map scale section 5.3: a capital is at least this far from the edge. */
-export const CAPITAL_EDGE_MARGIN_V7 = 2;
-/** Map scale section 5.3: a village is at least this far from the edge. */
-export const VILLAGE_EDGE_MARGIN_V7 = 1;
 /** Map scale section 5.4: a wild centre is at least this far from the edge. */
 export const WILD_CENTRE_EDGE_MARGIN_V7 = 2;
 /** Map scale section 5.4: two wild centres are at least this far apart. */
@@ -272,8 +283,8 @@ export function generateInitialMapV7(input: unknown): GenerateMapResultV7 {
   if (setup.mapType === "MISSION") return missionMapV7(setup);
   return generateMapWithVillageCountV7(
     setup,
-    villageCount(setup),
-    "VILLAGE_DENSITY_CURIOSITIES",
+    villageCountV7(setup),
+    "CAPITAL_DOMAINS_CURIOSITIES",
   );
 }
 
@@ -341,10 +352,29 @@ function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
 }
 
 /**
- * Generation rules a parity call reproduces. The three `VILLAGE_DENSITY`
+ * Generation rules a parity call reproduces. The three `CAPITAL_DOMAINS`
+ * rules are the many-seats generator of `pulp_wars-ykw.3`
+ * (docs/product/RULESET_7_MAP_SCALE.md sections 3 and 4, map revision
+ * `REGIONAL_BIOMES_NAVAL_V4`): the village-density generator below with
+ * two to as many seats as there are factions; capitals drawn uniformly
+ * inside domains (the four corner domains for up to four seats, the ring
+ * of the 3 x 3 for five to eight) on Dry Land, Pangea, and Lakes, at least
+ * `D(w, N)` apart, 2 or more from the edge, and outside the central zone;
+ * Continents with two to four landmasses sized by the capitals they hold
+ * and exactly that many capitals each; Archipelago with one island per
+ * seat, on the ring slots from five seats; and the room and village balance
+ * invariants. `CAPITAL_DOMAINS` is that generator without Rifts or
+ * curiosities, `CAPITAL_DOMAINS_RIFTS` adds Rift placement, and
+ * `CAPITAL_DOMAINS_CURIOSITIES`, the current generator, adds curiosity
+ * placement when the setup's `curiosities` is true, exactly as for the
+ * `VILLAGE_DENSITY` rules.
+ *
+ * The three `VILLAGE_DENSITY`
  * rules are the map scale generator of `pulp_wars-ykw.2`
  * (docs/product/RULESET_7_MAP_SCALE.md section 5, map revision
- * `REGIONAL_BIOMES_NAVAL_V3`): the village count follows the density; on
+ * `REGIONAL_BIOMES_NAVAL_V3`, `pulp-wars-poc-7r40` and `7r41`; two to four
+ * seats, capitals on the corners of the settlement lattice or by the naval
+ * score order): the village count follows the density; on
  * Dry Land, Pangea, and Lakes the villages are packed lattice-first on
  * tiles 1 or more from the edge after the wild reserve; on Continents and
  * Archipelago they fill the land in `(y, x)` order with no reserve, each
@@ -353,7 +383,7 @@ function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
  * `VILLAGE_DENSITY` is that generator
  * with the Pangea coast ring and without Rifts or curiosities;
  * `VILLAGE_DENSITY_RIFTS` adds Rift placement; and
- * `VILLAGE_DENSITY_CURIOSITIES`, the current generator, adds curiosity
+ * `VILLAGE_DENSITY_CURIOSITIES`, the `7r41` generator, adds curiosity
  * placement when the setup's `curiosities` is true. Rift and curiosity
  * placement are the same steps as under `RIFTS` and `CURIOSITIES`, so a
  * `VILLAGE_DENSITY_RIFTS` map without a Rift is byte-identical to its
@@ -399,15 +429,31 @@ export const MAP_GENERATION_RULES_V7 = Object.freeze([
   "VILLAGE_DENSITY",
   "VILLAGE_DENSITY_RIFTS",
   "VILLAGE_DENSITY_CURIOSITIES",
+  "CAPITAL_DOMAINS",
+  "CAPITAL_DOMAINS_RIFTS",
+  "CAPITAL_DOMAINS_CURIOSITIES",
 ] as const);
 export type MapGenerationRulesV7 = (typeof MAP_GENERATION_RULES_V7)[number];
 
-/** Whether `rules` are the village-density generator (map revision V3). */
+/** Whether `rules` are the many-seats generator (map revision V4). */
+function domainRulesV7(rules: MapGenerationRulesV7): boolean {
+  return (
+    rules === "CAPITAL_DOMAINS" ||
+    rules === "CAPITAL_DOMAINS_RIFTS" ||
+    rules === "CAPITAL_DOMAINS_CURIOSITIES"
+  );
+}
+
+/**
+ * Whether `rules` place villages by the density (map revisions V3 and V4:
+ * the village-density rules and the many-seats rules built on them).
+ */
 function densityRulesV7(rules: MapGenerationRulesV7): boolean {
   return (
     rules === "VILLAGE_DENSITY" ||
     rules === "VILLAGE_DENSITY_RIFTS" ||
-    rules === "VILLAGE_DENSITY_CURIOSITIES"
+    rules === "VILLAGE_DENSITY_CURIOSITIES" ||
+    domainRulesV7(rules)
   );
 }
 
@@ -430,25 +476,18 @@ function riftRulesV7(rules: MapGenerationRulesV7): boolean {
     rules === "RIFTS" ||
     rules === "CURIOSITIES" ||
     rules === "VILLAGE_DENSITY_RIFTS" ||
-    rules === "VILLAGE_DENSITY_CURIOSITIES"
+    rules === "VILLAGE_DENSITY_CURIOSITIES" ||
+    rules === "CAPITAL_DOMAINS_RIFTS" ||
+    rules === "CAPITAL_DOMAINS_CURIOSITIES"
   );
 }
 
 /** Whether `rules` place curiosities (when the setup's option is on). */
 function curiosityRulesV7(rules: MapGenerationRulesV7): boolean {
-  return rules === "CURIOSITIES" || rules === "VILLAGE_DENSITY_CURIOSITIES";
-}
-
-/**
- * Pangea land cells under the coast ring: 72% of the board, capped at 90% of
- * the interior (the board without its edge ring) so that small boards keep
- * some water inside the ring: 72 of 121 cells on 11 x 11, 129 of 196 on
- * 14 x 14, 176 of 256 on 16 x 16, and 72% (288 and 450) on 20 and 25.
- */
-export function pangeaLandCountV7(width: number, height: number): number {
-  return Math.min(
-    Math.floor(width * height * 0.72),
-    Math.floor((width - 2) * (height - 2) * 0.9),
+  return (
+    rules === "CURIOSITIES" ||
+    rules === "VILLAGE_DENSITY_CURIOSITIES" ||
+    rules === "CAPITAL_DOMAINS_CURIOSITIES"
   );
 }
 
@@ -460,12 +499,16 @@ export function pangeaLandCountV7(width: number, height: number): number {
  * and with {@link revision14VillageCountV7} and `CURIOSITIES` rules the
  * `pulp-wars-poc-7r39` map, which lets tests hold a map fixed while the
  * rules change. With {@link villageCountV7} and the default rules it is
- * {@link generateInitialMapV7}.
+ * {@link generateInitialMapV7}; with {@link villageCountV7} and
+ * `VILLAGE_DENSITY_CURIOSITIES` it reproduces the `pulp-wars-poc-7r41` map
+ * (map revision V3). The rules before the capital domains exist for two to
+ * four seats on the widths they accepted (14 and up for three seats, 16 and
+ * up for four): any other setup under them is `INVALID_SETUP`.
  */
 export function generateInitialMapWithVillageCountV7(
   input: unknown,
   villages: number,
-  rules: MapGenerationRulesV7 = "VILLAGE_DENSITY_CURIOSITIES",
+  rules: MapGenerationRulesV7 = "CAPITAL_DOMAINS_CURIOSITIES",
 ): GenerateMapResultV7 {
   const validated = validateMatchSetupV7(input);
   if (!validated.ok) return validated;
@@ -477,7 +520,8 @@ export function generateInitialMapWithVillageCountV7(
     setup.mapType === "MISSION" ||
     !Number.isSafeInteger(villages) ||
     villages < 0 ||
-    !MAP_GENERATION_RULES_V7.includes(rules)
+    !MAP_GENERATION_RULES_V7.includes(rules) ||
+    (!domainRulesV7(rules) && !legacySeatSetupV7(setup))
   )
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
   return generateMapWithVillageCountV7(setup, villages, rules);
@@ -607,69 +651,153 @@ function generateCandidate(
       random = draw.random;
       topologyDraws.set(key(at), draw.value);
     }
+  const density = densityRulesV7(rules);
+  const domainRules = domainRulesV7(rules);
+  const seats = setup.aiCount + 1;
+  // Map scale section 4.2: the capital domains of this candidate, drawn
+  // from the match stream after the topology draws and before the land
+  // mask (an Archipelago of five or more seats centres its islands on
+  // them). Null under the rules before them and where the landmasses take
+  // their place ({@link capitalDomainMapV7}).
+  let domains: readonly CapitalDomainV7[] | null = null;
+  if (domainRules && capitalDomainMapV7(setup.mapType, seats)) {
+    const drawn = drawCapitalDomainsV7(setup.width, seats, random);
+    random = drawn.random;
+    domains = drawn.domains;
+  }
   const navalLand =
     setup.mapType === "DRY_LAND"
       ? null
-      : topologyMaskV7(setup, topologyDraws, rules);
-  const density = densityRulesV7(rules);
+      : topologyMaskV7(setup, topologyDraws, rules, domains);
   // Map scale section 5.3: on a water map the village-density generator
   // places every settlement on the land mask (in `applyNavalTopologyV7`), so
   // it draws no lattice here.
   const capitals: CoordV7[] = [];
   const villages: CoordV7[] = [];
   const wildCentres: CoordV7[] = [];
-  if (!density || setup.mapType === "DRY_LAND") {
-    let offset = 0;
-    if (setup.width === 16) {
-      const draw = nextBounded(random, 3);
-      offset = draw.value;
-      random = draw.random;
-    }
-    const axis: number[] = [];
-    for (let value = 2 + offset; value < setup.width - 2; value += 3)
-      axis.push(value);
-    const low = axis[0];
-    const high = axis.at(-1);
-    if (low === undefined || high === undefined)
-      throw new RangeError("Missing settlement lattice");
-    const corners = shuffle(
-      [
-        { x: low, y: low },
-        { x: high, y: low },
-        { x: low, y: high },
-        { x: high, y: high },
-      ],
-      random,
+  let capitalPlacementFailed = false;
+  // Map scale sections 5.3 and 5.4 on Dry Land: the wild reserve, then the
+  // villages packed lattice-first, both from the match stream.
+  const settleDryLand = (
+    standing: readonly CoordV7[],
+    stream: RandomStateV7,
+  ): {
+    readonly wildCentres: readonly CoordV7[];
+    readonly villages: readonly CoordV7[];
+    readonly random: RandomStateV7;
+  } => {
+    const wild = reserveWildCentresV7(
+      setup.width,
+      setup.height,
+      standing,
+      () => true,
+      stream,
     );
-    random = corners.random;
-    capitals.push(...corners.values.slice(0, setup.aiCount + 1));
-    if (density) {
-      // Map scale sections 5.3 and 5.4: the wild reserve, then the villages
-      // packed lattice-first, both from the match stream.
-      const wild = reserveWildCentresV7(
-        setup.width,
-        setup.height,
-        capitals,
-        () => true,
-        random,
-      );
-      random = wild.random;
-      wildCentres.push(...wild.centres);
+    const partial = partialVillagesV7(rules, setup);
+    let chosen: {
+      readonly wildCentres: readonly CoordV7[];
+      readonly villages: readonly CoordV7[];
+      readonly random: RandomStateV7;
+    } | null = null;
+    // Section 5.6: where fewer villages may stand, the wild reserve gives
+    // way first: its last centres are dropped one at a time while villages
+    // are missing, and the reserve with the most villages stands (the
+    // largest on a tie). Elsewhere the whole reserve always stands.
+    for (let kept = wild.centres.length; kept >= 0; kept -= 1) {
+      const centres = wild.centres.slice(0, kept);
       const packed = packVillagesV7(
         villageCandidatesV7(
           setup.width,
           setup.height,
-          capitals,
-          wildCentres,
+          standing,
+          centres,
           () => true,
         ),
-        capitals,
+        standing,
         villageTotal,
+        // Section 4.4 item 4: under the capital domains every village keeps
+        // the villages balanced between the capitals.
+        domainRules
+          ? (at, placed) => villageKeepsBalanceV7(() => 0, standing, placed, at)
+          : () => true,
+        partial,
+        wild.random,
+      );
+      if (chosen === null || packed.villages.length > chosen.villages.length)
+        chosen = { wildCentres: centres, ...packed };
+      if (!partial || packed.villages.length >= villageTotal) break;
+    }
+    if (chosen === null) throw new RangeError("Missing village packing");
+    return chosen;
+  };
+  if (!density || setup.mapType === "DRY_LAND") {
+    const axis: number[] = [];
+    if (domainRules) {
+      // Map scale section 4.2: one capital per domain, a uniformly drawn
+      // legal tile each, with backtracking over the domains in slot order.
+      if (domains === null) throw new RangeError("Missing capital domains");
+      const coords = allCoords(setup.width, setup.height);
+      const legal = coords.filter((at) =>
+        capitalTileLegalV7(setup.width, setup.height, seats, at),
+      );
+      const drawn = drawCapitalsV7(
+        domains.map((domain) =>
+          legal.filter((at) => inCapitalDomainV7(domain, at)),
+        ),
+        capitalSpacingV7(setup.width, seats),
         () => true,
+        (found, stream) => {
+          // Section 4.4 item 3: the search keeps only a room-balanced set.
+          if (!roomBalancedV7(capitalSharesV7(() => 0, found, coords)))
+            return null;
+          const settled = settleDryLand(found, stream);
+          return {
+            missing: villageTotal - settled.villages.length,
+            settled,
+          };
+        },
         random,
       );
-      random = packed.random;
-      villages.push(...packed.villages);
+      random = drawn.random;
+      if (drawn.found === null) capitalPlacementFailed = true;
+      else {
+        capitals.push(...drawn.found.capitals);
+        wildCentres.push(...drawn.found.settled.wildCentres);
+        villages.push(...drawn.found.settled.villages);
+        random = drawn.found.settled.random;
+      }
+    } else {
+      let offset = 0;
+      if (setup.width === 16) {
+        const draw = nextBounded(random, 3);
+        offset = draw.value;
+        random = draw.random;
+      }
+      for (let value = 2 + offset; value < setup.width - 2; value += 3)
+        axis.push(value);
+      const low = axis[0];
+      const high = axis.at(-1);
+      if (low === undefined || high === undefined)
+        throw new RangeError("Missing settlement lattice");
+      const corners = shuffle(
+        [
+          { x: low, y: low },
+          { x: high, y: low },
+          { x: low, y: high },
+          { x: high, y: high },
+        ],
+        random,
+      );
+      random = corners.random;
+      capitals.push(...corners.values.slice(0, setup.aiCount + 1));
+    }
+    if (domainRules) {
+      // The capital search settled the wild reserve and the villages.
+    } else if (density) {
+      const settled = settleDryLand(capitals, random);
+      wildCentres.push(...settled.wildCentres);
+      villages.push(...settled.villages);
+      random = settled.random;
     } else {
       const capitalKeys = new Set(capitals.map(key));
       const candidates = axis
@@ -813,6 +941,7 @@ function generateCandidate(
         navalLand,
         rules,
         density ? { villageTotal, random } : null,
+        domains,
       );
       board = naval.board;
       // The village-density generator drew its wild reserve and its village
@@ -874,13 +1003,19 @@ function generateCandidate(
   // Revision 16 (section 3.3): the PRNG-free capital growth floor runs last,
   // after the settlement ring floors and the water resource draws, so every
   // invariant (capital fairness included) sees the floored board.
+  const rankOf = (at: CoordV7): number => rank.get(key(at)) ?? 0;
+  // Map scale section 4.4 item 2 (amended 2026-10-05): on Dry Land under the
+  // capital domains the PRNG-free mountain floor runs before the growth
+  // floor and the levelling after it.
+  const navalMap = setup.mapType !== "DRY_LAND";
+  const levelled =
+    domainRules && !navalPlacementFailed && !capitalPlacementFailed;
+  if (levelled && !navalMap)
+    board = applyCapitalMountainFloorV7(board, capitals, rankOf);
   if (!navalPlacementFailed && rules !== "REVISION_15")
-    board = applyCapitalGrowthFloorV7(
-      board,
-      capitals,
-      (at) => rank.get(key(at)) ?? 0,
-      setup.mapType !== "DRY_LAND",
-    );
+    board = applyCapitalGrowthFloorV7(board, capitals, rankOf, navalMap);
+  if (levelled)
+    board = applyCapitalLevellingV7(board, capitals, rankOf, navalMap);
   return {
     board,
     capitals: [...capitals].sort(compareCoords),
@@ -905,7 +1040,371 @@ function generateCandidate(
     regionByKey: regions,
     seeds,
     navalPlacementFailed,
+    capitalPlacementFailed,
   };
+}
+
+/**
+ * Map scale section 4.2: one domain of the board's `k x k` grid, as its
+ * first and last column and row.
+ */
+export interface CapitalDomainV7 {
+  readonly x0: number;
+  readonly x1: number;
+  readonly y0: number;
+  readonly y1: number;
+}
+
+/**
+ * The eight ring domains of the 3 x 3 grid as (column, row) bands, clockwise
+ * from the top-left corner (map scale section 4.2).
+ */
+const DOMAIN_RING_V7: readonly (readonly [number, number])[] = [
+  [0, 0],
+  [1, 0],
+  [2, 0],
+  [2, 1],
+  [2, 2],
+  [1, 2],
+  [0, 2],
+  [0, 1],
+];
+
+/**
+ * Whether the capitals of a map type and seat count are drawn inside the
+ * domain grid (map scale section 4.2): always on Dry Land, Pangea, and
+ * Lakes. On Continents the landmasses take the domains' place (each holds
+ * exactly its share of the capitals, section 4.3), and on an Archipelago the
+ * islands do (one capital each): up to four seats keep the landmass centres
+ * of the earlier generators and draw no domain, and from five seats the
+ * landmasses and islands stand on the drawn ring slots.
+ */
+export function capitalDomainMapV7(mapType: MapTypeV7, seats: number): boolean {
+  return (
+    mapType === "DRY_LAND" ||
+    mapType === "PANGEA" ||
+    mapType === "LAKES" ||
+    ((mapType === "ARCHIPELAGO" || mapType === "CONTINENTS") && seats >= 5)
+  );
+}
+
+/**
+ * Map scale section 4.2: the domains of the seats, in slot order.
+ *
+ * - Two to four seats (`k = 2`): the four corner domains (top-left,
+ *   top-right, bottom-left, bottom-right) in a seeded shuffle; the first
+ *   `seats` are used.
+ * - Five to eight seats (`k = 3`): ring slots
+ *   `(round(j * 8 / N) + r) mod 8` for `j = 0 .. N - 1`, clockwise from the
+ *   top-left corner, with a seeded rotation `r` (one draw, 0-7) and a seeded
+ *   mirror (one draw; when 1 the ring runs anticlockwise). The centre domain
+ *   stays empty.
+ * - Nine and more seats: the `k x k` domains in a seeded shuffle; the first
+ *   `seats` are used (all nine for nine seats).
+ */
+export function drawCapitalDomainsV7(
+  width: number,
+  seats: number,
+  initial: RandomStateV7,
+): {
+  readonly domains: readonly CapitalDomainV7[];
+  readonly random: RandomStateV7;
+} {
+  const k = domainsPerSideV7(seats);
+  const domainAt = (column: number, row: number): CapitalDomainV7 => {
+    const x = domainBandV7(width, k, column);
+    const y = domainBandV7(width, k, row);
+    return { x0: x.from, x1: x.to, y0: y.from, y1: y.to };
+  };
+  if (k === 3 && seats <= 8) {
+    const rotation = nextBounded(initial, 8);
+    const mirror = nextBounded(rotation.random, 2);
+    return {
+      domains: Array.from({ length: seats }, (_, seat) => {
+        const slot = (Math.round((seat * 8) / seats) + rotation.value) % 8;
+        const [column, row] = DOMAIN_RING_V7[
+          mirror.value === 1 ? (8 - slot) % 8 : slot
+        ] as readonly [number, number];
+        return domainAt(column, row);
+      }),
+      random: mirror.random,
+    };
+  }
+  const all: CapitalDomainV7[] = [];
+  for (let row = 0; row < k; row += 1)
+    for (let column = 0; column < k; column += 1)
+      all.push(domainAt(column, row));
+  const shuffled = shuffle(all, initial);
+  return {
+    domains: shuffled.values.slice(0, seats),
+    random: shuffled.random,
+  };
+}
+
+/** Whether `at` lies in `domain`. */
+export function inCapitalDomainV7(
+  domain: CapitalDomainV7,
+  at: CoordV7,
+): boolean {
+  return (
+    at.x >= domain.x0 &&
+    at.x <= domain.x1 &&
+    at.y >= domain.y0 &&
+    at.y <= domain.y1
+  );
+}
+
+/**
+ * Map scale sections 4.1 and 4.2: whether a capital may stand on `at` as far
+ * as the board's edge goes: 2 or more from it, and with at most 8 seats
+ * outside the central zone (less than `floor(w / 3)` from it).
+ */
+export function capitalTileLegalV7(
+  width: number,
+  height: number,
+  seats: number,
+  at: CoordV7,
+): boolean {
+  const edge = Math.min(at.x, at.y, width - 1 - at.x, height - 1 - at.y);
+  const zone = centralZoneEdgeDistanceV7(width, seats);
+  return edge >= CAPITAL_EDGE_MARGIN_V7 && (zone === null || edge < zone);
+}
+
+/**
+ * Under the capital domains a lake of a board 14 or more wide keeps this far
+ * from the edge, which leaves a capital 2 from the edge its land.
+ */
+export const LAKE_EDGE_DISTANCE_V7 = 3;
+/** The most placements one capital search tries before it gives up. */
+const CAPITAL_SEARCH_BUDGET_V7 = 20000;
+/** What testing one complete assignment costs of that budget. */
+const CAPITAL_SEARCH_COMPLETE_COST_V7 = 50;
+/** The most capital sets one search settles (wild reserve and villages). */
+const CAPITAL_SEARCH_SETS_V7 = 12;
+
+/**
+ * Map scale section 4.2: one capital per slot, each a uniformly drawn legal
+ * tile. Every slot's candidates (given in `(y, x)` order) are shuffled once
+ * from the match stream, in slot order, whatever the search then does; the
+ * search takes each slot's first shuffled candidate that is `spacing` or
+ * more from every capital already placed and that `compatible` allows, and
+ * backtracks over the slots in order when a later slot has none.
+ *
+ * Amended 2026-10-05 (section 5.5): a complete set is then settled by
+ * `settle` from the stream after the shuffles (the wild reserve and the
+ * villages, which draw the same stream whichever set is tried). `settle`
+ * returns null for a set that cannot stand (room balance, a landmass
+ * without a coast site) and otherwise how many villages are `missing`. The
+ * first set with none missing wins; failing that, the set with the fewest
+ * missing among the first {@link CAPITAL_SEARCH_SETS_V7} settled, the
+ * earliest on a tie. Null when no set stands within the fixed budget of
+ * placements; the stream state returned is the one after the shuffles
+ * either way.
+ */
+function drawCapitalsV7<Settled>(
+  slots: readonly (readonly CoordV7[])[],
+  spacing: number,
+  compatible: (placed: readonly CoordV7[], at: CoordV7) => boolean,
+  settle: (
+    capitals: readonly CoordV7[],
+    random: RandomStateV7,
+  ) => { readonly missing: number; readonly settled: Settled } | null,
+  initial: RandomStateV7,
+): {
+  readonly found: {
+    readonly capitals: readonly CoordV7[];
+    readonly settled: Settled;
+  } | null;
+  readonly random: RandomStateV7;
+} {
+  let random = initial;
+  const orders = slots.map((slot) => {
+    const shuffled = shuffle(slot, random);
+    random = shuffled.random;
+    return shuffled.values;
+  });
+  // With many seats the spacing leaves each slot few tiles that any
+  // assignment can use (eight ring capitals stand at almost fixed pitch), so
+  // a candidate with no partner `spacing` away in some other slot is
+  // dropped first, repeatedly, keeping the shuffled order.
+  for (let changed = true; changed;) {
+    changed = false;
+    orders.forEach((order, slot) => {
+      const kept = order.filter((at) =>
+        orders.every(
+          (other, otherSlot) =>
+            otherSlot === slot ||
+            other.some((partner) => chebyshev(at, partner) >= spacing),
+        ),
+      );
+      if (kept.length !== order.length) {
+        orders[slot] = kept;
+        changed = true;
+      }
+    });
+  }
+  const after = random;
+  const placed: CoordV7[] = [];
+  let budget = CAPITAL_SEARCH_BUDGET_V7;
+  let settledSets = 0;
+  let best: {
+    readonly capitals: readonly CoordV7[];
+    readonly missing: number;
+    readonly settled: Settled;
+  } | null = null;
+  // True once the search is over: a set with every village stands, or the
+  // sets settled or the placements tried reached their fixed limits.
+  const search = (slot: number): boolean => {
+    if (slot === orders.length) {
+      budget -= CAPITAL_SEARCH_COMPLETE_COST_V7;
+      const result = settle(placed, after);
+      if (result === null) return false;
+      settledSets += 1;
+      if (best === null || result.missing < best.missing)
+        best = { capitals: [...placed], ...result };
+      return result.missing <= 0 || settledSets >= CAPITAL_SEARCH_SETS_V7;
+    }
+    for (const at of orders[slot] as readonly CoordV7[]) {
+      if (budget <= 0) return true;
+      if (
+        !placed.every((other) => chebyshev(at, other) >= spacing) ||
+        !compatible(placed, at)
+      )
+        continue;
+      budget -= 1;
+      placed.push(at);
+      if (search(slot + 1)) return true;
+      placed.pop();
+    }
+    return false;
+  };
+  search(0);
+  const found = best as {
+    readonly capitals: readonly CoordV7[];
+    readonly settled: Settled;
+  } | null;
+  return {
+    found:
+      found === null
+        ? null
+        : { capitals: found.capitals, settled: found.settled },
+    random: after,
+  };
+}
+
+/**
+ * Map scale section 4.4 items 3 and 4: how many of `points` (land tiles)
+ * count for each capital. A point counts for its nearest capital
+ * (Chebyshev) on the same eight-connected landmass, split equally between
+ * capitals at the same distance; a point on a landmass without a capital
+ * counts for nobody.
+ */
+export function nearestCapitalSharesV7(
+  board: BoardStateV7,
+  capitals: readonly CoordV7[],
+  points: readonly CoordV7[],
+): readonly number[] {
+  return capitalSharesV7(landmassOfV7(board), capitals, points);
+}
+
+/**
+ * The landmass of each tile of a board: the index of its eight-connected
+ * land component, undefined on water.
+ */
+function landmassOfV7(
+  board: BoardStateV7,
+): (at: CoordV7) => number | undefined {
+  const landKeys = new Set(
+    board.tiles
+      .filter((tile) => tile.biome !== null)
+      .map((tile) => key(tile.at)),
+  );
+  if (landKeys.size === board.tiles.length) return () => 0;
+  const componentByKey = componentIndex(
+    componentsOfMask(board.width, board.height, landKeys, true),
+  );
+  return (at) => componentByKey.get(key(at));
+}
+
+/** {@link nearestCapitalSharesV7} over a landmass function. */
+function capitalSharesV7(
+  landmassOf: (at: CoordV7) => number | undefined,
+  capitals: readonly CoordV7[],
+  points: readonly CoordV7[],
+): number[] {
+  const shares = capitals.map(() => 0);
+  const capitalLandmasses = capitals.map(landmassOf);
+  for (const at of points) {
+    const landmass = landmassOf(at);
+    if (landmass === undefined) continue;
+    let nearest = Infinity;
+    let winners: number[] = [];
+    capitals.forEach((capital, index) => {
+      if (capitalLandmasses[index] !== landmass) return;
+      const distance = chebyshev(capital, at);
+      if (distance < nearest) {
+        nearest = distance;
+        winners = [index];
+      } else if (distance === nearest) winners.push(index);
+    });
+    for (const index of winners)
+      shares[index] = (shares[index] ?? 0) + 1 / winners.length;
+  }
+  return shares;
+}
+
+/**
+ * Map scale section 4.4 item 4 inside the village fill: whether one more
+ * village on `at` keeps the villages balanced, given the villages `placed`
+ * so far. The fill asks before every village, so a board whose fill
+ * completes passes `VILLAGE_BALANCE` by construction.
+ */
+function villageKeepsBalanceV7(
+  landmassOf: (at: CoordV7) => number | undefined,
+  capitals: readonly CoordV7[],
+  placed: readonly CoordV7[],
+  at: CoordV7,
+): boolean {
+  return villageBalancedV7(
+    capitalSharesV7(landmassOf, capitals, [...placed, at]),
+  );
+}
+
+/** Map scale section 4.4 item 3: the land tiles that count for each capital. */
+export function capitalRoomSharesV7(
+  board: BoardStateV7,
+  capitals: readonly CoordV7[],
+): readonly number[] {
+  return nearestCapitalSharesV7(
+    board,
+    capitals,
+    board.tiles.filter((tile) => tile.biome !== null).map((tile) => tile.at),
+  );
+}
+
+/**
+ * Map scale section 4.4 item 3, room balance: the largest room share is at
+ * most 1.5 times the smallest with up to 4 seats and 2.0 times with 5 or
+ * more.
+ */
+export function roomBalancedV7(shares: readonly number[]): boolean {
+  if (shares.length === 0) return false;
+  const ratio = shares.length <= 4 ? 1.5 : 2;
+  return Math.max(...shares) <= ratio * Math.min(...shares) + 1e-9;
+}
+
+/**
+ * Map scale section 4.4 item 4, village balance: the largest village share
+ * minus the smallest is at most `max(2, ceil(T / (2N)))`, `T` the villages
+ * counted.
+ */
+export function villageBalancedV7(shares: readonly number[]): boolean {
+  if (shares.length === 0) return false;
+  const counted = shares.reduce((sum, share) => sum + share, 0);
+  return (
+    Math.max(...shares) - Math.min(...shares) <=
+    Math.max(2, Math.ceil((counted - 1e-9) / (2 * shares.length))) + 1e-9
+  );
 }
 
 export function selectRegionSeedsV7(
@@ -1168,6 +1667,203 @@ export function applyCapitalGrowthFloorV7(
   return current();
 }
 
+/** A capital's eight ring cells count at least this many that are not Mountain. */
+export const CAPITAL_OPEN_NEIGHBOURS_V7 = 4;
+/** The capital development score bounds and the most two capitals differ. */
+export const CAPITAL_SCORE_MINIMUM_V7 = 6;
+export const CAPITAL_SCORE_MAXIMUM_V7 = 17;
+export const CAPITAL_SCORE_SPREAD_V7 = 5;
+
+/**
+ * Map scale section 4.4 item 2 (amended 2026-10-05), Dry Land under the
+ * capital domains: the PRNG-free capital mountain floor. On Dry Land the
+ * sites are fixed before the terrain is drawn, so with many capitals some
+ * ring is almost always walled in. For each capital in `(y, x)` order with
+ * fewer than four ring cells that are not Mountain, the Mountain ring cells
+ * of lowest `rank` (those without Ore first) become empty Grass until four
+ * are open. A capital that already has four is unchanged.
+ */
+export function applyCapitalMountainFloorV7(
+  board: BoardStateV7,
+  capitals: readonly CoordV7[],
+  rank: (at: CoordV7) => number,
+): BoardStateV7 {
+  const tiles = [...board.tiles];
+  const current = (): BoardStateV7 => ({ ...board, tiles });
+  for (const capital of [...capitals].sort(compareCoords)) {
+    const ring = neighbors8(board.width, board.height, capital);
+    for (;;) {
+      const cells = ring.map((at) => tileAt(current(), at) as TileStateV7);
+      const mountains = cells.filter((tile) => tile.terrain === "MOUNTAIN");
+      if (cells.length - mountains.length >= CAPITAL_OPEN_NEIGHBOURS_V7) break;
+      const opened = [...mountains].sort(
+        (a, b) =>
+          Number(a.resource !== null) - Number(b.resource !== null) ||
+          rank(a.at) - rank(b.at) ||
+          compareCoords(a.at, b.at),
+      )[0];
+      if (opened === undefined) break;
+      tiles[opened.at.y * board.width + opened.at.x] = {
+        ...opened,
+        terrain: "GRASS",
+        resource: null,
+      };
+    }
+  }
+  return current();
+}
+
+/**
+ * Map scale section 4.4 item 2 (amended 2026-10-05), under the capital
+ * domains: the PRNG-free capital levelling, after the settlement ring
+ * floors, the Dry Land mountain floor, the water resources, and the growth
+ * floor. With many capitals at almost fixed places the generator can no
+ * longer pick capitals whose rings happen to be even, so it evens them. A
+ * board whose capitals already pass `CAPITAL_GROWTH` and `CAPITAL_SCORE` is
+ * unchanged. Only land ring cells without a site change; Water never does.
+ * `naval` is true on every map type but Dry Land (Fish then counts for
+ * growth, and the ring's economy is judged by the water-map rule).
+ *
+ * 1. Growth. A capital that the growth floor left without two growth
+ *    resources of a kind has too little empty Grass and Forest. In `rank`
+ *    order its empty ring Grass gains Fruit, then its ring Fertile Ground
+ *    becomes Fruit, then its ring Mountain becomes Grass with Fruit, until
+ *    two Fruit stand.
+ * 2. Score. The band `[L, L + 5]` inside 6-17 that needs the fewest
+ *    points of change is chosen (ties: the fewest points removed, then the
+ *    lowest `L`). A capital below it gains, on its ring cells of lowest
+ *    `rank`: Fruit on empty Grass or Game on empty Forest (1 point each),
+ *    then Ore on an empty Mountain (2). A capital above it loses: Game from
+ *    a Forest, Fruit from Grass, or Fertile Ground turned into Fruit (1
+ *    point each), then Ore from a Mountain or an empty Forest turned into
+ *    Grass (2). No step may leave the ring without two growth resources of
+ *    a kind, with fewer than three developable cells, or with fewer than
+ *    two resource families, and no step touches a site.
+ *
+ * A capital that cannot reach the band is left as far as it got for
+ * `CAPITAL_SCORE` to reject.
+ */
+export function applyCapitalLevellingV7(
+  board: BoardStateV7,
+  capitals: readonly CoordV7[],
+  rank: (at: CoordV7) => number,
+  naval: boolean,
+): BoardStateV7 {
+  const tiles = [...board.tiles];
+  const current = (): BoardStateV7 => ({ ...board, tiles });
+  const put = (tile: TileStateV7): void => {
+    tiles[tile.at.y * board.width + tile.at.x] = tile;
+  };
+  const ordered = [...capitals].sort(compareCoords);
+  const ringOf = (capital: CoordV7): TileStateV7[] =>
+    neighbors8(board.width, board.height, capital)
+      .map((at) => tileAt(current(), at) as TileStateV7)
+      .filter((tile) => tile.biome !== null && tile.site === null)
+      .sort((a, b) => rank(a.at) - rank(b.at) || compareCoords(a.at, b.at));
+  const ringSound = (capital: CoordV7): boolean => {
+    if (!capitalGrowthReadyV7(current(), capital, naval)) return false;
+    if (naval) return capitalEconomyFair(current(), capital);
+    const ring = neighbors8(board.width, board.height, capital).map(
+      (at) => tileAt(current(), at) as TileStateV7,
+    );
+    const families = ring.map(familyOf).filter((family) => family !== null);
+    return families.length >= 3 && new Set(families).size >= 2;
+  };
+  for (const capital of ordered)
+    for (const fruitful of [
+      (tile: TileStateV7): boolean =>
+        tile.terrain === "GRASS" && tile.resource === null,
+      (tile: TileStateV7): boolean =>
+        tile.terrain === "GRASS" && tile.resource === "FERTILE_GROUND",
+      (tile: TileStateV7): boolean => tile.terrain === "MOUNTAIN",
+    ])
+      for (const tile of ringOf(capital)) {
+        if (capitalGrowthReadyV7(current(), capital, naval)) break;
+        if (fruitful(tile))
+          put({ ...tile, terrain: "GRASS", resource: "FRUIT" });
+      }
+  const scores = (): number[] =>
+    ordered.map((capital) => capitalScore(current(), capital));
+  const first = scores();
+  let floor = CAPITAL_SCORE_MINIMUM_V7;
+  let best: readonly [number, number] | null = null;
+  for (
+    let low = CAPITAL_SCORE_MINIMUM_V7;
+    low <= CAPITAL_SCORE_MAXIMUM_V7 - CAPITAL_SCORE_SPREAD_V7;
+    low += 1
+  ) {
+    const removed = first.reduce(
+      (sum, score) =>
+        sum + Math.max(0, score - (low + CAPITAL_SCORE_SPREAD_V7)),
+      0,
+    );
+    const total = first.reduce(
+      (sum, score) => sum + Math.max(0, low - score),
+      removed,
+    );
+    if (
+      best === null ||
+      total < best[0] ||
+      (total === best[0] && removed < best[1])
+    ) {
+      best = [total, removed];
+      floor = low;
+    }
+  }
+  if (best === null || best[0] === 0) return current();
+  type Step = { readonly tile: TileStateV7; readonly gain: number };
+  const gains = (tile: TileStateV7): Step[] =>
+    tile.resource !== null
+      ? []
+      : tile.terrain === "GRASS"
+        ? [{ tile: { ...tile, resource: "FRUIT" }, gain: 1 }]
+        : tile.terrain === "FOREST"
+          ? [{ tile: { ...tile, resource: "GAME" }, gain: 1 }]
+          : tile.terrain === "MOUNTAIN"
+            ? [{ tile: { ...tile, resource: "ORE" }, gain: 2 }]
+            : [];
+  const losses = (tile: TileStateV7): Step[] =>
+    tile.terrain === "FOREST" && tile.resource === "GAME"
+      ? [{ tile: { ...tile, resource: null }, gain: -1 }]
+      : tile.terrain === "GRASS" && tile.resource === "FRUIT"
+        ? [{ tile: { ...tile, resource: null }, gain: -1 }]
+        : tile.terrain === "GRASS" && tile.resource === "FERTILE_GROUND"
+          ? [{ tile: { ...tile, resource: "FRUIT" }, gain: -1 }]
+          : tile.terrain === "MOUNTAIN" && tile.resource === "ORE"
+            ? [{ tile: { ...tile, resource: null }, gain: -2 }]
+            : tile.terrain === "FOREST" && tile.resource === null
+              ? [{ tile: { ...tile, terrain: "GRASS" }, gain: -2 }]
+              : [];
+  for (const capital of ordered)
+    for (let guard = 0; guard < 32; guard += 1) {
+      const score = capitalScore(current(), capital);
+      const need =
+        score < floor
+          ? floor - score
+          : score > floor + CAPITAL_SCORE_SPREAD_V7
+            ? floor + CAPITAL_SCORE_SPREAD_V7 - score
+            : 0;
+      if (need === 0) break;
+      // The smallest steps first, in rank order; a step that would break
+      // the ring's other guarantees is skipped.
+      const steps = ringOf(capital)
+        .flatMap((tile) => (need > 0 ? gains(tile) : losses(tile)))
+        .sort((a, b) => Math.abs(a.gain) - Math.abs(b.gain));
+      let moved = false;
+      for (const step of steps) {
+        const before = tileAt(current(), step.tile.at) as TileStateV7;
+        put(step.tile);
+        if (ringSound(capital)) {
+          moved = true;
+          break;
+        }
+        put(before);
+      }
+      if (!moved) break;
+    }
+  return current();
+}
+
 function validate(
   candidate: Candidate,
   setup: MatchSetupV7,
@@ -1176,6 +1872,8 @@ function validate(
 ): MapInvariantCodeV7[] {
   if (setup.mapType !== "DRY_LAND")
     return validateNavalCandidate(candidate, setup, villageTotal, rules);
+  // Map scale section 4.2: the capital search found no assignment.
+  if (candidate.capitalPlacementFailed) return ["CAPITAL_SPACING"];
   const board = candidate.board;
   const density = densityRulesV7(rules);
   const failures: MapInvariantCodeV7[] = [];
@@ -1201,7 +1899,12 @@ function validate(
   )
     failures.push("SETTLEMENT_COUNT");
   // Map scale section 5.3: the packing could not place every village.
-  if (density && villages.length !== villageTotal)
+  if (
+    density &&
+    (partialVillagesV7(rules, setup)
+      ? villages.length > villageTotal
+      : villages.length !== villageTotal)
+  )
     failures.push("VILLAGE_DENSITY");
   if (
     settlements.some((tile) => {
@@ -1227,13 +1930,14 @@ function validate(
     )
   )
     failures.push("SETTLEMENT_SPACING");
-  if (
-    pairTooClose(
-      capitals.map((tile) => tile.at),
-      Math.floor(board.width / 2),
-    )
-  )
-    failures.push("CAPITAL_SPACING");
+  failures.push(
+    ...capitalLayoutFailuresV7(
+      board,
+      candidate.capitals,
+      candidate.villages,
+      rules,
+    ),
+  );
   if (
     BIOME_IDS_V7.some(
       (biome) => !board.tiles.some((tile) => tile.biome === biome),
@@ -1316,54 +2020,37 @@ function validate(
 }
 
 /**
- * Map scale section 5.2: the land tiles `L` of a generated map type at a
- * width, fixed by the generator on every seed: the whole board on Dry Land,
- * the coast-ring count on Pangea, 56% on Continents, 40% on Archipelago, and
- * the board minus its lakes on Lakes.
+ * The capital layout invariants shared by every generated map type.
+ * `CAPITAL_SPACING`: every two capitals are `floor(w / 2)` or more apart
+ * under the rules before the capital domains; under them (map scale
+ * sections 4.1 and 4.2) `D(w, N)` or more apart, 2 or more from the edge,
+ * and outside the central zone. `ROOM_BALANCE` and `VILLAGE_BALANCE`
+ * (section 4.4 items 3 and 4) exist only under the capital domains.
  */
-export function landTileCountV7(
-  width: number,
-  mapType: GeneratedMapTypeV7,
-): number {
-  const area = width * width;
-  return mapType === "DRY_LAND"
-    ? area
-    : mapType === "PANGEA"
-      ? pangeaLandCountV7(width, width)
-      : mapType === "LAKES"
-        ? area - lakeWaterCountV7(width, width)
-        : landmassLandCountV7(width, width, mapType);
-}
-
-/** The land cells of the Continents (56%) and Archipelago (40%) masks. */
-function landmassLandCountV7(
-  width: number,
-  height: number,
-  mapType: "CONTINENTS" | "ARCHIPELAGO",
-): number {
-  return Math.round(width * height * (mapType === "CONTINENTS" ? 0.56 : 0.4));
-}
-
-/**
- * The water cells of the Lakes mask: the two fixed lakes of the 11 x 11
- * board (4 x 4 and 3 x 3), otherwise 20% of the board rounded up.
- */
-function lakeWaterCountV7(width: number, height: number): number {
-  return width === 11 ? 25 : Math.ceil(width * height * 0.2);
-}
-
-/**
- * Map scale section 5.1: the settlements `S` (capitals plus villages) of a
- * generated map, `roundHalfUp(L / LPS)`. It depends only on the width and
- * the map type, never on the seat count: the density is constant.
- */
-export function settlementCountV7(
-  width: number,
-  mapType: GeneratedMapTypeV7,
-): number {
-  const land = landTileCountV7(width, mapType);
-  const perSettlement = LAND_PER_SETTLEMENT_V7[mapType];
-  return Math.floor((2 * land + perSettlement) / (2 * perSettlement));
+function capitalLayoutFailuresV7(
+  board: BoardStateV7,
+  capitals: readonly CoordV7[],
+  villages: readonly CoordV7[],
+  rules: MapGenerationRulesV7,
+): MapInvariantCodeV7[] {
+  if (!domainRulesV7(rules))
+    return pairTooClose(capitals, Math.floor(board.width / 2))
+      ? ["CAPITAL_SPACING"]
+      : [];
+  const failures: MapInvariantCodeV7[] = [];
+  const seats = capitals.length;
+  if (
+    pairTooClose(capitals, capitalSpacingV7(board.width, seats)) ||
+    capitals.some(
+      (at) => !capitalTileLegalV7(board.width, board.height, seats, at),
+    )
+  )
+    failures.push("CAPITAL_SPACING");
+  if (!roomBalancedV7(capitalRoomSharesV7(board, capitals)))
+    failures.push("ROOM_BALANCE");
+  if (!villageBalancedV7(nearestCapitalSharesV7(board, capitals, villages)))
+    failures.push("VILLAGE_BALANCE");
+  return failures;
 }
 
 /**
@@ -1487,6 +2174,22 @@ function villageCandidatesV7(
 }
 
 /**
+ * Whether a board may hold fewer villages than its density asks for (map
+ * scale section 5.6, amended 2026-10-05): under the capital domains, every
+ * setup that did not exist before them (five or more seats, three seats on
+ * 11 x 11, four seats on 11 x 11 or 14 x 14). There the capitals' spacing
+ * can leave no room for all `S - N` villages, so the board keeps the most
+ * the fill could place, and the wild reserve gives way first. The setups of
+ * the earlier generators keep their exact count.
+ */
+export function partialVillagesV7(
+  rules: MapGenerationRulesV7,
+  setup: MatchSetupV7,
+): boolean {
+  return domainRulesV7(rules) && !legacySeatSetupV7(setup);
+}
+
+/**
  * Map scale section 5.3: adds each candidate of `order`, in order, that
  * keeps 3 from every settlement and that `accepts` allows (the per-landmass
  * rule), until `count` villages stand. A candidate that `accepts` refuses
@@ -1538,10 +2241,12 @@ function scanFillVillagesV7(
   settlements: readonly CoordV7[],
   count: number,
   accepts: (at: CoordV7, placed: readonly CoordV7[]) => boolean,
+  partial: boolean,
 ): readonly CoordV7[] {
   const rows = [...candidates].sort(compareCoords);
   const columns = [...candidates].sort((a, b) => a.x - b.x || a.y - b.y);
   let first: readonly CoordV7[] | null = null;
+  let most: readonly CoordV7[] = [];
   for (const order of [
     rows,
     columns,
@@ -1551,8 +2256,9 @@ function scanFillVillagesV7(
     const villages = fillVillagesV7(order, settlements, count, accepts);
     if (villages.length >= count) return villages;
     first ??= villages;
+    if (villages.length > most.length) most = villages;
   }
-  return first ?? [];
+  return partial ? most : (first ?? []);
 }
 
 /**
@@ -1572,12 +2278,14 @@ function packVillagesV7(
   settlements: readonly CoordV7[],
   count: number,
   accepts: (at: CoordV7, placed: readonly CoordV7[]) => boolean,
+  partial: boolean,
   initial: RandomStateV7,
 ): { readonly villages: readonly CoordV7[]; readonly random: RandomStateV7 } {
   const phaseX = nextBounded(initial, 3);
   const phaseY = nextBounded(phaseX.random, 3);
   const shuffled = shuffle(candidates, phaseY.random);
   let drawn: readonly CoordV7[] | null = null;
+  let most: readonly CoordV7[] = [];
   for (let shift = 0; shift < 9; shift += 1) {
     const px = (phaseX.value + (shift % 3)) % 3;
     const py = (phaseY.value + Math.floor(shift / 3)) % 3;
@@ -1594,8 +2302,9 @@ function packVillagesV7(
     );
     if (villages.length >= count) return { villages, random: shuffled.random };
     drawn ??= villages;
+    if (villages.length > most.length) most = villages;
   }
-  return { villages: drawn ?? [], random: shuffled.random };
+  return { villages: partial ? most : (drawn ?? []), random: shuffled.random };
 }
 
 /**
@@ -1632,6 +2341,9 @@ function applyNavalTopologyV7(
     readonly villageTotal: number;
     readonly random: RandomStateV7;
   } | null,
+  // Map scale section 4.2: the capital domains of Pangea, Lakes, and an
+  // Archipelago of five or more seats under the many-seats rules, else null.
+  domains: readonly CapitalDomainV7[] | null,
 ): {
   board: BoardStateV7;
   capitals: CoordV7[];
@@ -1674,10 +2386,10 @@ function applyNavalTopologyV7(
   components.forEach((component, index) =>
     component.forEach((at) => componentByKey.set(key(at), index)),
   );
-  const majorMinimum = Math.max(
-    6,
-    Math.floor((setup.width * setup.height) / 20),
-  );
+  const domainRules = domainRulesV7(rules);
+  const majorMinimum = domainRules
+    ? majorLandmassMinimumV7(setup.width, setup.mapType, capitalCount)
+    : Math.max(6, Math.floor((setup.width * setup.height) / 20));
   const majorComponentIds = new Set(
     components
       .map((component, index) => ({ component, index }))
@@ -1725,103 +2437,159 @@ function applyNavalTopologyV7(
     }
     return false;
   };
-  if (!findCapitals(0))
-    throw new RangeError("Naval topology cannot place capitals");
-  const settlements = [...capitals];
-  // Map scale section 5.4: the wild reserve (Pangea and Lakes; Continents
-  // and Archipelago have none), after the capitals and before every village
-  // (the required coastal settlements included).
-  const wild =
-    density === null
-      ? null
-      : wildReserveMapTypeV7(setup.mapType)
-        ? reserveWildCentresV7(
-            setup.width,
-            setup.height,
-            capitals,
-            (at) => land.has(key(at)),
-            density.random,
-          )
-        : { centres: [], random: density.random };
-  const wildCentres = wild?.centres ?? [];
-  const componentHasCoastalSettlement = (componentId: number): boolean =>
-    settlements.some(
-      (settlement) =>
-        componentByKey.get(key(settlement)) === componentId &&
-        neighbors8(setup.width, setup.height, settlement).some(
-          (near) => !land.has(key(near)),
-        ),
-    );
-  const requiredSettlementComponents =
-    setup.mapType === "CONTINENTS" || setup.mapType === "ARCHIPELAGO"
-      ? [...majorComponentIds].sort((a, b) => a - b)
-      : [
-          ...new Set(
-            capitals
-              .map((capital) => componentByKey.get(key(capital)))
-              .filter((value): value is number => value !== undefined),
-          ),
-        ].sort((a, b) => a - b);
-  for (const componentId of requiredSettlementComponents) {
-    if (componentHasCoastalSettlement(componentId)) continue;
-    const coastal = candidates
-      .filter(
-        (candidate) =>
-          componentByKey.get(key(candidate)) === componentId &&
-          neighbors8(setup.width, setup.height, candidate).some(
-            (near) => !land.has(key(near)),
-          ) &&
-          settlements.every((other) => chebyshev(candidate, other) >= 3) &&
-          wildCentres.every(
-            (centre) =>
-              chebyshev(candidate, centre) >=
-              wildCentreVillageDistanceV7(setup.width),
-          ),
-      )
-      .sort(compareCoords)[0];
-    if (coastal === undefined)
-      throw new RangeError("Naval topology lacks coastal settlement");
-    settlements.push(coastal);
-  }
-  let random: RandomStateV7 | null = null;
-  if (density === null || wild === null) {
-    const orderedVillageCandidates = [...candidates].sort((a, b) => {
-      const aMissing = capitals.some(
-        (capital) =>
-          componentByKey.get(key(capital)) === componentByKey.get(key(a)),
-      );
-      const bMissing = capitals.some(
-        (capital) =>
-          componentByKey.get(key(capital)) === componentByKey.get(key(b)),
-      );
-      return Number(aMissing) - Number(bMissing) || compareCoords(a, b);
-    });
-    for (const candidate of orderedVillageCandidates) {
-      if (settlements.length >= settlementCount) break;
-      const component = componentByKey.get(key(candidate));
-      if (
-        component === undefined ||
-        !requiredSettlementComponents.includes(component)
-      )
-        continue;
-      const componentCount = settlements.filter(
-        (other) => componentByKey.get(key(other)) === component,
-      ).length;
-      const componentLimit =
-        setup.mapType === "CONTINENTS"
-          ? Math.ceil((2 * settlementCount) / 3)
-          : setup.mapType === "ARCHIPELAGO"
-            ? Math.ceil(settlementCount / 2)
-            : settlementCount;
-      if (
-        componentCount < componentLimit &&
-        settlements.every((other) => chebyshev(candidate, other) >= 3)
-      )
-        settlements.push(candidate);
+  const settlementKeys = new Set(candidates.map(key));
+  /**
+   * The settlements of a capital set: the wild reserve, the coastal
+   * settlement every inhabited landmass needs, and the villages, drawn from
+   * `afterCapitals` (null under the rules before the village density, which
+   * draw nothing). Throws when a landmass has no coast site or, before the
+   * density, when the villages do not fit.
+   */
+  const settle = (
+    capitals: readonly CoordV7[],
+    afterCapitals: RandomStateV7 | null,
+  ): {
+    readonly settlements: readonly CoordV7[];
+    readonly wildCentres: readonly CoordV7[];
+    readonly random: RandomStateV7 | null;
+  } => {
+    // Map scale section 5.4: the wild reserve (Pangea and Lakes; Continents
+    // and Archipelago have none), after the capitals and before every
+    // village (the required coastal settlements included).
+    const wild =
+      density === null || afterCapitals === null
+        ? null
+        : wildReserveMapTypeV7(setup.mapType)
+          ? reserveWildCentresV7(
+              setup.width,
+              setup.height,
+              capitals,
+              (at) => land.has(key(at)),
+              afterCapitals,
+            )
+          : { centres: [], random: afterCapitals };
+    const partial = partialVillagesV7(rules, setup);
+    // Section 5.6: where fewer villages may stand, the wild reserve gives
+    // way first, as on Dry Land: its last centres are dropped one at a time
+    // while villages are missing or a landmass has no coast site, and the
+    // reserve with the most settlements stands (the largest on a tie).
+    let chosen: ReturnType<typeof settleWith> | null = null;
+    let failure: unknown = null;
+    for (let kept = wild?.centres.length ?? 0; kept >= 0; kept -= 1) {
+      try {
+        const result = settleWith(
+          capitals,
+          wild,
+          (wild?.centres ?? []).slice(0, kept),
+        );
+        if (
+          chosen === null ||
+          result.settlements.length > chosen.settlements.length
+        )
+          chosen = result;
+        if (!partial || result.settlements.length >= settlementCount) break;
+      } catch (error) {
+        failure ??= error;
+        if (!partial) break;
+      }
     }
-    if (settlements.length !== settlementCount)
-      throw new RangeError("Naval topology cannot place settlements");
-  } else {
+    if (chosen === null)
+      throw failure ?? new RangeError("Naval topology cannot settle");
+    return chosen;
+  };
+  const settleWith = (
+    capitals: readonly CoordV7[],
+    wild: {
+      readonly centres: readonly CoordV7[];
+      readonly random: RandomStateV7;
+    } | null,
+    wildCentres: readonly CoordV7[],
+  ): {
+    readonly settlements: readonly CoordV7[];
+    readonly wildCentres: readonly CoordV7[];
+    readonly random: RandomStateV7 | null;
+  } => {
+    const settlements = [...capitals];
+    const partial = partialVillagesV7(rules, setup);
+    const componentHasCoastalSettlement = (componentId: number): boolean =>
+      settlements.some(
+        (settlement) =>
+          componentByKey.get(key(settlement)) === componentId &&
+          neighbors8(setup.width, setup.height, settlement).some(
+            (near) => !land.has(key(near)),
+          ),
+      );
+    const requiredSettlementComponents =
+      setup.mapType === "CONTINENTS" || setup.mapType === "ARCHIPELAGO"
+        ? [...majorComponentIds].sort((a, b) => a - b)
+        : [
+            ...new Set(
+              capitals
+                .map((capital) => componentByKey.get(key(capital)))
+                .filter((value): value is number => value !== undefined),
+            ),
+          ].sort((a, b) => a - b);
+    for (const componentId of requiredSettlementComponents) {
+      if (componentHasCoastalSettlement(componentId)) continue;
+      const coastal = candidates
+        .filter(
+          (candidate) =>
+            componentByKey.get(key(candidate)) === componentId &&
+            neighbors8(setup.width, setup.height, candidate).some(
+              (near) => !land.has(key(near)),
+            ) &&
+            settlements.every((other) => chebyshev(candidate, other) >= 3) &&
+            wildCentres.every(
+              (centre) =>
+                chebyshev(candidate, centre) >=
+                wildCentreVillageDistanceV7(setup.width),
+            ),
+        )
+        .sort(compareCoords)[0];
+      if (coastal === undefined)
+        throw new RangeError("Naval topology lacks coastal settlement");
+      settlements.push(coastal);
+    }
+    let random: RandomStateV7 | null = null;
+    if (density === null || wild === null) {
+      const orderedVillageCandidates = [...candidates].sort((a, b) => {
+        const aMissing = capitals.some(
+          (capital) =>
+            componentByKey.get(key(capital)) === componentByKey.get(key(a)),
+        );
+        const bMissing = capitals.some(
+          (capital) =>
+            componentByKey.get(key(capital)) === componentByKey.get(key(b)),
+        );
+        return Number(aMissing) - Number(bMissing) || compareCoords(a, b);
+      });
+      for (const candidate of orderedVillageCandidates) {
+        if (settlements.length >= settlementCount) break;
+        const component = componentByKey.get(key(candidate));
+        if (
+          component === undefined ||
+          !requiredSettlementComponents.includes(component)
+        )
+          continue;
+        const componentCount = settlements.filter(
+          (other) => componentByKey.get(key(other)) === component,
+        ).length;
+        const componentLimit =
+          setup.mapType === "CONTINENTS"
+            ? Math.ceil((2 * settlementCount) / 3)
+            : setup.mapType === "ARCHIPELAGO"
+              ? Math.ceil(settlementCount / 2)
+              : settlementCount;
+        if (
+          componentCount < componentLimit &&
+          settlements.every((other) => chebyshev(candidate, other) >= 3)
+        )
+          settlements.push(candidate);
+      }
+      if (settlements.length !== settlementCount)
+        throw new RangeError("Naval topology cannot place settlements");
+      return { settlements, wildCentres, random };
+    }
     // Map scale section 5.3: the villages of the density on the land mask
     // with the per-landmass rule: lattice-first packing on Pangea and Lakes,
     // the fill in `(y, x)` order (no draw) on Continents and Archipelago.
@@ -1873,21 +2641,33 @@ function applyNavalTopologyV7(
         )
       );
     };
-    const eligible = new Set(candidates.map(key));
     const villageCandidates = villageCandidatesV7(
       setup.width,
       setup.height,
       settlements,
       wildCentres,
-      (at) => eligible.has(key(at)),
+      (at) => settlementKeys.has(key(at)),
     );
     const missing = settlementCount - settlements.length;
+    // Section 4.4 item 4: under the capital domains every village also
+    // keeps the villages balanced between the capitals.
+    const balanced = domainRules
+      ? (at: CoordV7, placed: readonly CoordV7[]): boolean =>
+          accepts(at, placed) &&
+          villageKeepsBalanceV7(
+            (point) => componentByKey.get(key(point)),
+            capitals,
+            [...coastal, ...placed],
+            at,
+          )
+      : accepts;
     if (wildReserveMapTypeV7(setup.mapType)) {
       const packed = packVillagesV7(
         villageCandidates,
         settlements,
         missing,
-        accepts,
+        balanced,
+        partial,
         wild.random,
       );
       random = packed.random;
@@ -1895,10 +2675,111 @@ function applyNavalTopologyV7(
     } else {
       random = wild.random;
       settlements.push(
-        ...scanFillVillagesV7(villageCandidates, settlements, missing, accepts),
+        ...scanFillVillagesV7(
+          villageCandidates,
+          settlements,
+          missing,
+          balanced,
+          partial,
+        ),
       );
     }
+    return { settlements, wildCentres, random };
+  };
+  let settled: ReturnType<typeof settle>;
+  if (domainRules) {
+    // Map scale sections 4.2 and 4.3: one capital per slot, each a
+    // uniformly drawn legal tile (2 or more from the edge, outside the
+    // central zone, on a major landmass with four land neighbours),
+    // `D(w, N)` or more apart. A slot is a domain on Pangea and Lakes, an
+    // island (the `N` largest) on an Archipelago, and one of a landmass's
+    // capitals on Continents (the largest landmass holds the most). The
+    // projected score of the rules before the capital domains (4-17, at
+    // most 5 apart) is not asked: the capital levelling evens the rings
+    // afterwards (section 4.4 item 2 as amended).
+    if (density === null) throw new RangeError("Missing match stream");
+    const legal = candidates
+      .filter(
+        (at) =>
+          majorComponentIds.has(componentByKey.get(key(at)) ?? -1) &&
+          capitalTileLegalV7(setup.width, setup.height, capitalCount, at),
+      )
+      .sort(compareCoords);
+    const onComponent = (component: number): readonly CoordV7[] =>
+      majorComponentIds.has(component)
+        ? legal.filter((at) => componentByKey.get(key(at)) === component)
+        : [];
+    const split = continentCapitalSplitV7(capitalCount);
+    // Continents: every landmass holds exactly its share of the capitals.
+    const landmassesFull = (found: readonly CoordV7[]): boolean => {
+      if (setup.mapType !== "CONTINENTS") return true;
+      const held = split.map(() => 0);
+      for (const capital of found) {
+        const component = componentByKey.get(key(capital));
+        if (component === undefined || component >= held.length) return false;
+        held[component] = (held[component] ?? 0) + 1;
+      }
+      return [...held]
+        .sort((a, b) => b - a)
+        .every((count, index) => count === split[index]);
+    };
+    let slots: readonly (readonly CoordV7[])[];
+    if (setup.mapType === "CONTINENTS" && domains === null)
+      slots = split.flatMap((held, index) =>
+        Array.from({ length: held }, () => onComponent(index)),
+      );
+    else if (setup.mapType === "ARCHIPELAGO")
+      slots = Array.from({ length: capitalCount }, (_, index) =>
+        onComponent(index),
+      );
+    else {
+      if (domains === null) throw new RangeError("Missing capital domains");
+      slots = domains.map((domain) =>
+        legal.filter((at) => inCapitalDomainV7(domain, at)),
+      );
+    }
+    const landCoords = allCoords(setup.width, setup.height).filter((at) =>
+      land.has(key(at)),
+    );
+    const drawn = drawCapitalsV7(
+      slots,
+      capitalSpacingV7(setup.width, capitalCount),
+      () => true,
+      (found, stream) => {
+        // Section 4.4 item 3: the search keeps only a room-balanced set.
+        if (
+          !landmassesFull(found) ||
+          !roomBalancedV7(
+            capitalSharesV7(
+              (at) => componentByKey.get(key(at)),
+              found,
+              landCoords,
+            ),
+          )
+        )
+          return null;
+        try {
+          const result = settle(found, stream);
+          return {
+            missing: settlementCount - result.settlements.length,
+            settled: result,
+          };
+        } catch {
+          return null;
+        }
+      },
+      density.random,
+    );
+    if (drawn.found === null)
+      throw new RangeError("Naval topology cannot place capitals");
+    capitals.push(...drawn.found.capitals);
+    settled = drawn.found.settled;
+  } else {
+    if (!findCapitals(0))
+      throw new RangeError("Naval topology cannot place capitals");
+    settled = settle(capitals, density?.random ?? null);
   }
+  const { settlements, wildCentres, random } = settled;
   const sortedCapitals = [...capitals].sort(compareCoords);
   const villages = settlements.slice(capitals.length).sort(compareCoords);
   const oldSorted = [...oldCapitals].sort(compareCoords);
@@ -1963,6 +2844,7 @@ function topologyMaskV7(
   setup: MatchSetupV7,
   draws: ReadonlyMap<string, number>,
   rules: MapGenerationRulesV7,
+  domains: readonly CapitalDomainV7[] | null,
 ): Set<string> {
   const { width, height, mapType } = setup;
   const land = new Set<string>();
@@ -1992,54 +2874,124 @@ function topologyMaskV7(
       .slice(0, wanted))
       add(at.x, at.y);
   } else if (mapType === "CONTINENTS" || mapType === "ARCHIPELAGO") {
+    const domainRules = domainRulesV7(rules);
+    const seats = setup.aiCount + 1;
+    // Map scale section 4.3: Continents has two landmasses for 2 seats,
+    // three for 3 to 5, and four from 6 (two or three before the capital
+    // domains); an Archipelago has one island per seat.
+    const split = continentCapitalSplitV7(seats);
     const count =
       mapType === "ARCHIPELAGO"
-        ? setup.aiCount + 1
-        : setup.aiCount === 1
-          ? 2
-          : 3;
+        ? seats
+        : domainRules
+          ? split.length
+          : setup.aiCount === 1
+            ? 2
+            : 3;
     const wanted = landmassLandCountV7(width, height, mapType);
-    const centers =
-      count === 2
+    // From five seats (section 5.6, amended 2026-10-05) the land follows
+    // the seats' ring domains: each domain has a centre, 2 or more from the
+    // edge so that a capital's square fits around it; an Archipelago grows
+    // one island around each, and Continents grows each landmass around the
+    // line through the centres of the adjacent domains whose capitals it
+    // holds ({@link continentDomainGroupsV7}). A corner landmass cannot
+    // hold two capitals `D(w, N)` apart on any board under 24 tiles wide.
+    const ring = domainRules && seats >= 5;
+    const domainCentres = (domains ?? []).map((domain) => ({
+      x: Math.min(
+        width - 3,
+        Math.max(2, Math.floor((domain.x0 + domain.x1) / 2)),
+      ),
+      y: Math.min(
+        height - 3,
+        Math.max(2, Math.floor((domain.y0 + domain.y1) / 2)),
+      ),
+    }));
+    if (ring && domainCentres.length !== seats)
+      throw new RangeError("Missing capital domains");
+    // Each landmass grows around its spine: one centre, or from five seats
+    // on Continents the tiles on the lines joining its domain centres.
+    const spines: readonly (readonly CoordV7[])[] = ring
+      ? mapType === "ARCHIPELAGO"
+        ? domainCentres.map((centre) => [centre])
+        : continentDomainGroupsV7(seats).map((group) =>
+            spineV7(group.map((slot) => domainCentres[slot] as CoordV7)),
+          )
+      : count === 2
         ? [
-            { x: 1, y: Math.floor(height / 2) },
-            { x: width - 2, y: Math.floor(height / 2) },
+            [{ x: 1, y: Math.floor(height / 2) }],
+            [{ x: width - 2, y: Math.floor(height / 2) }],
           ]
         : count === 3
           ? [
-              { x: 1, y: 1 },
-              { x: width - 2, y: 1 },
-              { x: Math.floor(width / 2), y: height - 2 },
+              [{ x: 1, y: 1 }],
+              [{ x: width - 2, y: 1 }],
+              [{ x: Math.floor(width / 2), y: height - 2 }],
             ]
           : [
-              { x: 1, y: 1 },
-              { x: width - 2, y: 1 },
-              { x: 1, y: height - 2 },
-              { x: width - 2, y: height - 2 },
+              [{ x: 1, y: 1 }],
+              [{ x: width - 2, y: 1 }],
+              [{ x: 1, y: height - 2 }],
+              [{ x: width - 2, y: height - 2 }],
             ];
+    if (spines.length !== count) throw new RangeError("Missing island centres");
+    const reach = (at: CoordV7, spine: readonly CoordV7[]): number =>
+      Math.min(...spine.map((point) => chebyshev(at, point)));
+    // The land weights of the Continents landmasses are the capitals they
+    // hold: up to four seats the bottom band of three takes the most
+    // (1, 1, 2 for 4 seats as before the capital domains, 1, 1, 1 for 3),
+    // and from five seats the groups come largest first.
     const weights =
-      mapType === "CONTINENTS" && count === 3
-        ? [1, 1, 2]
-        : centers.map(() => 1);
+      mapType !== "CONTINENTS"
+        ? spines.map(() => 1)
+        : !domainRules
+          ? count === 3
+            ? [1, 1, 2]
+            : [1, 1]
+          : !ring && count === 3
+            ? [split[1] ?? 1, split[2] ?? 1, split[0] ?? 1]
+            : [...split];
     const totalWeight = weights.reduce((sum, value) => sum + value, 0);
+    // From five seats the remainder of the land is spread one tile each
+    // over the heaviest landmasses first; up to four seats the last
+    // landmass takes it, as before the capital domains.
+    const spread = domainRules && seats >= 5;
+    const shares = weights.map((weight) =>
+      Math.floor((wanted * weight) / totalWeight),
+    );
+    if (spread) {
+      const order = weights
+        .map((weight, index) => ({ weight, index }))
+        .sort((a, b) => b.weight - a.weight || a.index - b.index);
+      const left = wanted - shares.reduce((sum, value) => sum + value, 0);
+      for (let extra = 0; extra < left; extra += 1) {
+        const target = order[extra % order.length]?.index ?? 0;
+        shares[target] = (shares[target] ?? 0) + 1;
+      }
+    }
     let allocated = 0;
-    centers.forEach((center, index) => {
+    // Each landmass's cells, nearest its spine first.
+    const grown: CoordV7[][] = [];
+    spines.forEach((spine, index) => {
       const amount =
-        index === centers.length - 1
+        !spread && index === spines.length - 1
           ? wanted - allocated
-          : Math.floor((wanted * (weights[index] ?? 1)) / totalWeight);
+          : (shares[index] ?? 0);
       allocated += amount;
+      const center = spine[0] as CoordV7;
       const distance = (at: CoordV7): number =>
-        mapType === "CONTINENTS" && count === 3 && index === 2
+        !ring && mapType === "CONTINENTS" && count === 3 && index === 2
           ? Math.abs(at.y - center.y)
-          : chebyshev(at, center);
+          : reach(at, spine);
+      const cells: CoordV7[] = [];
+      grown.push(cells);
       for (const at of allCoords(width, height)
         .filter(
           (candidate) =>
-            !centers.some(
+            !spines.some(
               (other, otherIndex) =>
                 otherIndex !== index &&
-                chebyshev(candidate, other) <= chebyshev(candidate, center) + 1,
+                reach(candidate, other) <= reach(candidate, spine) + 1,
             ),
         )
         .sort(
@@ -2049,9 +3001,42 @@ function topologyMaskV7(
               (distance(b) + ((draws.get(key(b)) ?? 0) >>> 28) / 4) ||
             compareCoords(a, b),
         )
-        .slice(0, amount))
+        .slice(0, amount)) {
         add(at.x, at.y);
+        cells.push(at);
+      }
     });
+    // Section 5.6 (amended 2026-10-05): under the capital domains a pond (a
+    // Water cell with no Water neighbour, which `NAVAL_TOPOLOGY` refuses)
+    // is filled, and the landmass it lies in gives up its outermost cell
+    // instead, so the land count stays exact. Ponds are taken in `(y, x)`
+    // order; the landmass is that of the pond's first land neighbour.
+    if (domainRules) {
+      const landmassOf = new Map<string, number>();
+      grown.forEach((cells, index) =>
+        cells.forEach((at) => landmassOf.set(key(at), index)),
+      );
+      for (let guard = 0; guard < width * height; guard += 1) {
+        const pond = allCoords(width, height).find(
+          (at) =>
+            !land.has(key(at)) &&
+            neighbors8(width, height, at).every((near) => land.has(key(near))),
+        );
+        if (pond === undefined) break;
+        const owner = neighbors8(width, height, pond)
+          .map((near) => landmassOf.get(key(near)))
+          .find((value) => value !== undefined);
+        const cells = owner === undefined ? undefined : grown[owner];
+        const given = cells?.pop();
+        if (owner === undefined || cells === undefined || given === undefined)
+          break;
+        land.delete(key(given));
+        landmassOf.delete(key(given));
+        land.add(key(pond));
+        landmassOf.set(key(pond), owner);
+        cells.unshift(pond);
+      }
+    }
   } else if (mapType === "LAKES") {
     for (const at of allCoords(width, height)) add(at.x, at.y);
     const wantedWater = lakeWaterCountV7(width, height);
@@ -2061,31 +3046,62 @@ function topologyMaskV7(
         if (smallLakeCell(at, variant)) land.delete(key(at));
       return land;
     }
-    const centers = [
-      { x: Math.floor(width / 4), y: Math.floor(height / 4) },
-      { x: Math.floor((3 * width) / 4), y: Math.floor((3 * height) / 4) },
-    ];
+    // Section 5.6 (amended 2026-10-05): under the capital domains the two
+    // lakes of a board 14 or more wide are long lakes down the west and the
+    // east side, 3 or more from the edge: each grows around a north-south
+    // line one tile inside that limit, long enough for a lake three tiles
+    // wide. Every corner and ring domain then keeps land for its capital 2
+    // from the edge, and the middle of the board stays land for the wild
+    // reserve. (The lakes of the earlier generators stood a quarter of the
+    // way in from two opposite corners, on the corner domains.)
+    const sides = domainRulesV7(rules);
+    const inset = sides ? LAKE_EDGE_DISTANCE_V7 : 1;
+    const half = (index: number): number =>
+      Math.floor(wantedWater / 2) + (index < wantedWater % 2 ? 1 : 0);
+    const lakeSpine = (index: number): readonly CoordV7[] => {
+      const length = Math.min(
+        height - 2 * inset,
+        Math.max(1, Math.ceil(half(index) / 3) - 2),
+      );
+      const top = Math.floor((height - length) / 2);
+      const x = index === 0 ? inset + 1 : width - inset - 2;
+      return Array.from({ length }, (_, step) => ({ x, y: top + step }));
+    };
+    const centers: readonly (readonly CoordV7[])[] = sides
+      ? [lakeSpine(0), lakeSpine(1)]
+      : [
+          [{ x: Math.floor(width / 4), y: Math.floor(height / 4) }],
+          [
+            {
+              x: Math.floor((3 * width) / 4),
+              y: Math.floor((3 * height) / 4),
+            },
+          ],
+        ];
+    const lakeJitter = sides ? 16 : 8;
+    const lakeReach = (at: CoordV7, spine: readonly CoordV7[]): number =>
+      Math.min(...spine.map((point) => chebyshev(at, point)));
     centers.forEach((center, index) => {
-      const amount =
-        Math.floor(wantedWater / 2) + (index < wantedWater % 2 ? 1 : 0);
+      const amount = half(index);
       const cells = allCoords(width, height)
         .filter(
           (at) =>
-            at.x > 0 &&
-            at.y > 0 &&
-            at.x < width - 1 &&
-            at.y < height - 1 &&
+            at.x >= inset &&
+            at.y >= inset &&
+            at.x < width - inset &&
+            at.y < height - inset &&
             !centers.some(
               (other, otherIndex) =>
                 otherIndex !== index &&
-                chebyshev(at, other) <= chebyshev(at, center) + 1,
+                lakeReach(at, other) <= lakeReach(at, center) + 1,
             ),
         )
         .sort(
           (a, b) =>
-            chebyshev(a, center) +
-              ((draws.get(key(a)) ?? 0) >>> 28) / 8 -
-              (chebyshev(b, center) + ((draws.get(key(b)) ?? 0) >>> 28) / 8) ||
+            lakeReach(a, center) +
+              ((draws.get(key(a)) ?? 0) >>> 28) / lakeJitter -
+              (lakeReach(b, center) +
+                ((draws.get(key(b)) ?? 0) >>> 28) / lakeJitter) ||
             compareCoords(a, b),
         )
         .slice(0, amount);
@@ -2093,6 +3109,66 @@ function topologyMaskV7(
     });
   }
   return land;
+}
+
+/**
+ * Map scale section 5.6 (amended 2026-10-05): how the ring domains of five
+ * or more Continents seats form landmasses, as lists of seat slots, the
+ * largest first ({@link continentCapitalSplitV7}). The slots are taken in
+ * ring order from the start that makes the groups tightest (the least ring
+ * distance inside the groups; the lowest start on a tie), so that a
+ * landmass holds the capitals of adjacent domains: with five seats on ring
+ * slots 0, 2, 3, 5, and 6 the groups are slots (2, 3), (5, 6), and (0).
+ */
+export function continentDomainGroupsV7(
+  seats: number,
+): readonly (readonly number[])[] {
+  const split = continentCapitalSplitV7(seats);
+  const position = (seat: number): number => Math.round((seat * 8) / seats);
+  let best: { readonly span: number; readonly groups: number[][] } | null =
+    null;
+  for (let start = 0; start < seats; start += 1) {
+    const groups: number[][] = [];
+    let cursor = start;
+    let span = 0;
+    for (const held of split) {
+      const group: number[] = [];
+      for (let member = 0; member < held; member += 1) {
+        const seat = cursor % seats;
+        if (member > 0) {
+          const previous = group[member - 1] as number;
+          span += (position(seat) - position(previous) + 8) % 8;
+        }
+        group.push(seat);
+        cursor += 1;
+      }
+      groups.push(group);
+    }
+    if (best === null || span < best.span) best = { span, groups };
+  }
+  return best?.groups ?? [];
+}
+
+/**
+ * The tiles on the straight lines joining `points` in order, each point
+ * included (one tile per step of the longer axis).
+ */
+function spineV7(points: readonly CoordV7[]): readonly CoordV7[] {
+  const spine: CoordV7[] = [];
+  points.forEach((point, index) => {
+    const previous = points[index - 1];
+    if (previous === undefined) {
+      spine.push(point);
+      return;
+    }
+    const steps = chebyshev(previous, point);
+    for (let step = 1; step <= steps; step += 1)
+      spine.push({
+        x: previous.x + Math.round(((point.x - previous.x) * step) / steps),
+        y: previous.y + Math.round(((point.y - previous.y) * step) / steps),
+      });
+  });
+  return spine;
 }
 
 function smallLakeCell(at: CoordV7, variant: number): boolean {
@@ -2179,12 +3255,23 @@ function validateNavalCandidate(
   )
     failures.push("SETTLEMENT_COUNT");
   // Map scale section 5.3: the packing could not place every village.
-  if (density && villageSites !== villageTotal)
+  if (
+    density &&
+    (partialVillagesV7(rules, setup)
+      ? villageSites > villageTotal
+      : villageSites !== villageTotal)
+  )
     failures.push("VILLAGE_DENSITY");
   if (pairTooClose([...candidate.capitals, ...candidate.villages], 3))
     failures.push("SETTLEMENT_SPACING");
-  if (pairTooClose(candidate.capitals, Math.floor(board.width / 2)))
-    failures.push("CAPITAL_SPACING");
+  failures.push(
+    ...capitalLayoutFailuresV7(
+      board,
+      candidate.capitals,
+      candidate.villages,
+      rules,
+    ),
+  );
   const landKeys = new Set(land.map((tile) => key(tile.at)));
   const waterKeys = new Set(water.map((tile) => key(tile.at)));
   const landComponents = componentsOfMask(
@@ -2199,7 +3286,13 @@ function validateNavalCandidate(
     waterKeys,
     true,
   );
-  const majorMinimum = Math.max(6, Math.floor(board.tiles.length / 20));
+  const domainRules = domainRulesV7(rules);
+  const seats = setup.aiCount + 1;
+  // Map scale section 4.3: the least land of a major landmass scales down
+  // with the islands of an Archipelago of many seats.
+  const majorMinimum = domainRules
+    ? majorLandmassMinimumV7(board.width, setup.mapType, seats)
+    : Math.max(6, Math.floor(board.tiles.length / 20));
   const major = landComponents.filter(
     (component) => component.length >= majorMinimum,
   );
@@ -2210,8 +3303,29 @@ function validateNavalCandidate(
     const keys = new Set(component.map(key));
     return settlementTiles.filter((tile) => keys.has(key(tile.at))).length;
   };
+  // Map scale section 4.3: two landmasses for 2 seats, three for 3 to 5,
+  // four from 6 (two or three before the capital domains), each holding
+  // exactly its share of the capitals (capitals on at least two before).
+  const continentSplit = continentCapitalSplitV7(seats);
   const expectedMajor =
-    setup.mapType === "CONTINENTS" ? (setup.aiCount === 1 ? 2 : 3) : undefined;
+    setup.mapType !== "CONTINENTS"
+      ? undefined
+      : domainRules
+        ? continentSplit.length
+        : setup.aiCount === 1
+          ? 2
+          : 3;
+  const capitalsPerMajor = major
+    .map((component) => {
+      const keys = new Set(component.map(key));
+      return capitalTiles.filter((tile) => keys.has(key(tile.at))).length;
+    })
+    .sort((left, right) => right - left);
+  const continentCapitalsWrong = domainRules
+    ? capitalsPerMajor.length !== continentSplit.length ||
+      capitalsPerMajor.some((count, index) => count !== continentSplit[index])
+    : new Set(capitalTiles.map((tile) => landComponentByKey.get(key(tile.at))))
+        .size < 2;
   // Map scale section 5.3: a Continents landmass holds at most its share of
   // the settlements by land, rounded up (two thirds before); the home
   // islands of an Archipelago hold the same number of villages, within 1
@@ -2254,9 +3368,7 @@ function validateNavalCandidate(
       (major.length !== expectedMajor ||
         major.some((component) => settlementsIn(component) === 0) ||
         major.some(continentOverfull) ||
-        new Set(
-          capitalTiles.map((tile) => landComponentByKey.get(key(tile.at))),
-        ).size < 2)) ||
+        continentCapitalsWrong)) ||
     (setup.mapType === "ARCHIPELAGO" &&
       (major.length < setup.aiCount + 1 ||
         major.length > 2 * (setup.aiCount + 1) + 2 ||
@@ -2734,7 +3846,7 @@ export function createInitialMapStateV7(
 export function createInitialMapStateWithVillageCountV7(
   input: unknown,
   villages: number,
-  rules: MapGenerationRulesV7 = "VILLAGE_DENSITY_CURIOSITIES",
+  rules: MapGenerationRulesV7 = "CAPITAL_DOMAINS_CURIOSITIES",
 ): CreateInitialMapStateResultV7 {
   const validated = validateMatchSetupV7(input);
   if (!validated.ok) return validated;
@@ -3139,24 +4251,6 @@ export function canonicalMapRandomHashV7(
 }
 
 /**
- * The neutral villages of a generated setup (current rules section 2.2, map
- * scale section 5.1): the settlements of its width and map type less one
- * capital per seat, `max(0, S - N)`. The Showcase and a mission have no
- * generated village: 0.
- */
-export function villageCountV7(setup: MatchSetupV7): number {
-  return villageCount(setup);
-}
-
-function villageCount(setup: MatchSetupV7): number {
-  if (setup.mapType === "SHOWCASE" || setup.mapType === "MISSION") return 0;
-  return Math.max(
-    0,
-    settlementCountV7(setup.width, setup.mapType) - (setup.aiCount + 1),
-  );
-}
-
-/**
  * Parity and fixture support only: the fixed neutral village count of
  * revision 14 through `pulp-wars-poc-7r39` (4/5/7 on widths 11-16 by AI
  * count, 14/13/12 on 20, 21/20/19 on 25, with 3 on 11 x 11 Archipelago and
@@ -3173,11 +4267,13 @@ export function revision14VillageCountV7(setup: MatchSetupV7): number {
     setup.aiCount === 3
   )
     return CROWDED_ARCHIPELAGO_VILLAGES_V7;
-  return setup.width === 25
-    ? HUGE[setup.aiCount]
-    : setup.width === 20
-      ? LARGE[setup.aiCount]
-      : STANDARD[setup.aiCount];
+  return (
+    (setup.width === 25
+      ? HUGE[setup.aiCount]
+      : setup.width === 20
+        ? LARGE[setup.aiCount]
+        : STANDARD[setup.aiCount]) ?? 0
+  );
 }
 function threshold(percent: number): number {
   return Math.floor((percent * 0x1_0000_0000) / 100);

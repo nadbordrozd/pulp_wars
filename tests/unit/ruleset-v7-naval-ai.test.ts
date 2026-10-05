@@ -879,10 +879,10 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
       expect(result.metrics.commandsByKind[kind]).toBe(0);
   });
 
-  it("avoids redundant landing and reboarding on the cooperative seed-8 Continents map", () => {
+  it("avoids redundant landing and reboarding on the cooperative seed-3 Continents map", () => {
     const result = runAiMatchV7(
       {
-        ...setupV7(8, 3),
+        ...setupV7(3, 3),
         aiMode: "COOPERATIVE",
         mapType: "CONTINENTS",
       },
@@ -895,7 +895,11 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
       // and reboarded on seeds 3 and 5 until `pulp_wars-ykw.7` (a landmass
       // takes no more landings than it has villages, a capturer that can
       // walk to an endgame target does not board, and the endgame lands a
-      // transport only by a real target city).
+      // transport only by a real target city). On the many-seats boards
+      // (`pulp_wars-ykw.3`) seed 3 lands and captures inside the window
+      // without reboarding; on seed 0 a unit lands and reboards once
+      // (a Normal AI finding for `pulp_wars-eru`, not tuned here), and
+      // seeds 1 and 2 take no city from a landing inside the window.
       { maxRounds: 30, maxCommands: 800 },
     );
     expect(result.errors).toEqual([]);

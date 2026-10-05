@@ -1258,7 +1258,9 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("uses only public Monument provenance and places an unlocked entitlement in one map activation", async () => {
     const source = new Ruleset7BrowserController();
-    const launched = await source.launch(browserSetupV7(1546));
+    // Seed 1: the human moves first on the many-seats board, so its city
+    // action is ready (seed 1546 did on the earlier boards).
+    const launched = await source.launch(browserSetupV7(1));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const initial = source.snapshot();
     if (initial.view === null) throw new Error("public view missing");

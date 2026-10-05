@@ -36,6 +36,7 @@ import {
   type FactionIdV7,
   type GameStateV7,
   type MatchSetupV7,
+  PLAYER_COLORS_V7,
   type PlayerColorV7,
   type PlayerStateV7,
   type PopulationContributionV7,
@@ -66,7 +67,7 @@ export class MissionBuildErrorV7 extends Error {
   }
 }
 
-const COLORS_V7: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
+const COLORS_V7: readonly PlayerColorV7[] = PLAYER_COLORS_V7;
 const TERRAIN_LEGEND_V7: Readonly<Record<string, TerrainIdV7 | "WATER">> = {
   ".": "GRASS",
   f: "FOREST",

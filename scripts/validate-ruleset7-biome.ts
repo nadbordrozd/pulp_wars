@@ -118,7 +118,7 @@ for (const [width, aiCount] of setups) {
     grandWorks: 0,
   };
   const setup = (seed: number, mode: "RIVAL" | "COOPERATIVE") => ({
-    rulesetId: "pulp-wars-poc-7r41" as const,
+    rulesetId: "pulp-wars-poc-7r42" as const,
     seed,
     width,
     height: width,
@@ -133,7 +133,7 @@ for (const [width, aiCount] of setups) {
       aiCount + 1,
     ),
     mapType: "DRY_LAND" as const,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3" as const,
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4" as const,
     curiosities: false,
   });
   for (let seed = 0; seed < 1000; seed += 1) {
@@ -372,7 +372,7 @@ for (const [width, aiCount] of setups) {
 console.log(
   JSON.stringify(
     {
-      rulesetId: "pulp-wars-poc-7r41",
+      rulesetId: "pulp-wars-poc-7r42",
       seeds: "0..999",
       setups: report,
       failures,

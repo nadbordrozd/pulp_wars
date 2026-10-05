@@ -33,13 +33,13 @@ const setup: MatchSetupV7 = {
   // pulp_wars-w5j.1: every seat plays a different faction.
   factions: ["ORIGINAL", "UNDEAD"],
   mapType: "DRY_LAND",
-  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
   curiosities: false,
 };
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r41");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r42");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",

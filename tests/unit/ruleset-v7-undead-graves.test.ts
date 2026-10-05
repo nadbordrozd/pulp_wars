@@ -631,8 +631,10 @@ describe("ruleset-7 revision-13 Graves: state, events, and persistence", () => {
     // Seed 6: thirty rounds with the revision-16 economy numbers included a
     // Raise Dead or Devour (pulp_wars-vkq.9); seed 4 did before them, seed 2
     // on its revision-13 map. pulp_wars-9s0.1: with the campaign plan seed 6
-    // ends without one; seed 2 has two (and five Graves left).
-    const setup = setupWith(["UNDEAD", "UNDEAD"], 2);
+    // ends without one; seed 2 has two (and five Graves left). On the
+    // many-seats boards (`pulp_wars-ykw.3`) seed 2 ends in round 19 with
+    // none; seed 4 has five Raise Dead (seven Graves raised, four left).
+    const setup = setupWith(["UNDEAD", "UNDEAD"], 4);
     const match = runAiMatchV7(setup, { maxRounds: 30 });
     expect(match.errors).toEqual([]);
     expect(match.state.graves.length).toBeGreaterThan(0);
@@ -1073,7 +1075,7 @@ function setupWith(factions: readonly FactionIdV7[], seed = 2): MatchSetupV7 {
     factions: [...factions],
     ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
   };
 }

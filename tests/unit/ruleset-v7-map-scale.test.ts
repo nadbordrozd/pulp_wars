@@ -30,6 +30,13 @@ import {
 // village table, villages 1 from the edge, the wild reserve, lattice packing
 // on Dry Land, Pangea, and Lakes, the row-major fill with the per-landmass
 // rules on Continents and Archipelago, and map revision V3.
+//
+// The many-seats generator (`pulp_wars-ykw.3`, map revision V4,
+// tests/unit/ruleset-v7-many-seats.test.ts) replaced it as the current
+// generator. Every board here is generated under the
+// `VILLAGE_DENSITY_CURIOSITIES` parity rules, which must keep reproducing
+// the V3 boards byte for byte: the golden hashes below were pinned at
+// `7r40`, when these rules were the current generator.
 
 const TYPES: readonly GeneratedMapTypeV7[] = [
   "DRY_LAND",
@@ -78,7 +85,11 @@ function setup(
 }
 
 function generated(input: MatchSetupV7): GeneratedMapV7 {
-  const result = generateInitialMapV7(input);
+  const result = generateInitialMapWithVillageCountV7(
+    input,
+    villageCountV7(input),
+    "VILLAGE_DENSITY_CURIOSITIES",
+  );
   if (!result.ok)
     throw new Error(`generation failed: ${JSON.stringify(result.error)}`);
   return result.map;
@@ -209,9 +220,9 @@ function expectDensityBoard(
   ).toBeLessThanOrEqual(1);
 }
 
-describe("ruleset-7 map scale: village density (7r40)", () => {
+describe("ruleset-7 map scale: village density (7r40, the V3 parity rules)", () => {
   it("counts settlements by land per settlement, whatever the seats", () => {
-    expect(MAP_GENERATION_REVISION_V7).toBe("REGIONAL_BIOMES_NAVAL_V3");
+    expect(MAP_GENERATION_REVISION_V7).toBe("REGIONAL_BIOMES_NAVAL_V4");
     expect(LAND_PER_SETTLEMENT_V7).toEqual({
       DRY_LAND: 15,
       LAKES: 13,
@@ -393,13 +404,20 @@ describe("ruleset-7 map scale: village density (7r40)", () => {
       "VILLAGE_DENSITY",
       "VILLAGE_DENSITY_RIFTS",
       "VILLAGE_DENSITY_CURIOSITIES",
+      "CAPITAL_DOMAINS",
+      "CAPITAL_DOMAINS_RIFTS",
+      "CAPITAL_DOMAINS_CURIOSITIES",
     ]);
     const input = setup("DRY_LAND", 20, 1, 3, { curiosities: true });
-    const current = generateInitialMapV7(input);
     // The default rules and the density count are the current generator.
     expect(
       generateInitialMapWithVillageCountV7(input, villageCountV7(input)),
-    ).toEqual(current);
+    ).toEqual(generateInitialMapV7(input));
+    const current = generateInitialMapWithVillageCountV7(
+      input,
+      villageCountV7(input),
+      "VILLAGE_DENSITY_CURIOSITIES",
+    );
     const rifts = generateInitialMapWithVillageCountV7(
       input,
       villageCountV7(input),
@@ -444,7 +462,11 @@ describe("ruleset-7 map scale: village density (7r40)", () => {
   it("rejects a candidate that cannot hold its villages, and the old revision", () => {
     // 40 villages never fit an 11 x 11 board (9 settlements at most).
     expect(
-      generateInitialMapWithVillageCountV7(setup("DRY_LAND", 11, 1, 0), 40),
+      generateInitialMapWithVillageCountV7(
+        setup("DRY_LAND", 11, 1, 0),
+        40,
+        "VILLAGE_DENSITY_CURIOSITIES",
+      ),
     ).toEqual({
       ok: false,
       error: {
@@ -462,6 +484,7 @@ describe("ruleset-7 map scale: village density (7r40)", () => {
       const failed = generateInitialMapWithVillageCountV7(
         setup(mapType, 11, 1, 0),
         40,
+        "VILLAGE_DENSITY_CURIOSITIES",
       );
       expect(failed.ok).toBe(false);
       if (!failed.ok && failed.error.code === "MAP_GENERATION_FAILED")
@@ -469,18 +492,45 @@ describe("ruleset-7 map scale: village density (7r40)", () => {
           failed.error.params.lastFailure,
         );
     }
-    expect(
-      parseMatchSetupV7({
-        ...setup("DRY_LAND", 11, 1, 0),
-        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
-      }),
-    ).toBeNull();
-    expect(
-      generateInitialMapV7({
-        ...setup("DRY_LAND", 11, 1, 0),
-        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
-      }),
-    ).toEqual({ ok: false, error: { code: "INVALID_SETUP", params: {} } });
+    for (const mapGenerationRevision of [
+      "REGIONAL_BIOMES_NAVAL_V2",
+      "REGIONAL_BIOMES_NAVAL_V3",
+    ]) {
+      expect(
+        parseMatchSetupV7({
+          ...setup("DRY_LAND", 11, 1, 0),
+          mapGenerationRevision,
+        }),
+      ).toBeNull();
+      expect(
+        generateInitialMapV7({
+          ...setup("DRY_LAND", 11, 1, 0),
+          mapGenerationRevision,
+        }),
+      ).toEqual({ ok: false, error: { code: "INVALID_SETUP", params: {} } });
+    }
+    // The rules before the capital domains exist for the setups they
+    // accepted: two to four seats, 14 and up for three, 16 and up for four.
+    for (const [width, aiCount] of [
+      [11, 2],
+      [14, 3],
+      [20, 4],
+    ] as const)
+      expect(
+        generateInitialMapWithVillageCountV7(
+          setup("DRY_LAND", width, aiCount, 0, {
+            factions: [
+              "ORIGINAL",
+              "UNDEAD",
+              "GOBLIN",
+              "DINOSAUR",
+              "DWARF",
+            ].slice(0, aiCount + 1) as FactionIdV7[],
+          }),
+          1,
+          "VILLAGE_DENSITY_CURIOSITIES",
+        ),
+      ).toEqual({ ok: false, error: { code: "INVALID_SETUP", params: {} } });
   });
 
   it("pins one golden board per map type at two seats", () => {

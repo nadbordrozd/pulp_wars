@@ -1195,8 +1195,9 @@ function scriptedUndeadMatch(goal: "RAISE_DEAD" | "DEVOUR"): {
   readonly events: readonly DomainEventV7[];
   readonly replay: ReplayFileV7;
 } {
-  // Seed 1 on revision-14 maps (seed 2 on revision-13 maps).
-  const setup = setupWith(["UNDEAD", "UNDEAD"], 1);
+  // Seed 0 on the many-seats boards (`pulp_wars-ykw.3`; seed 1 on revision-14
+  // maps, seed 2 on revision-13 maps).
+  const setup = setupWith(["UNDEAD", "UNDEAD"], 0);
   const plan =
     goal === "RAISE_DEAD"
       ? { techs: ["GATHERING", "ADMINISTRATION"], role: "CAPTAIN" }
@@ -1340,7 +1341,7 @@ function setupWith(
     factions: [...factions],
     ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
   };
 }

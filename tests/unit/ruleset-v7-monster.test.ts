@@ -636,7 +636,7 @@ describe("parsing, saves, and replays (sections 10.2 and 8.9)", () => {
       humanColor: "CORAL",
       factions: ["ORIGINAL", "UNDEAD", "GOBLIN"],
       mapType: "DRY_LAND",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: true,
     };
     const created = createPlayableGameV7(setup);

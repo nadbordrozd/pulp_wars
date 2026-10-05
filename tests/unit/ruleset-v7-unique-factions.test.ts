@@ -47,7 +47,7 @@ function setupOf(
     humanColor: "CORAL",
     factions: [...factions],
     mapType,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
   };
 }

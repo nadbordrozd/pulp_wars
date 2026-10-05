@@ -346,7 +346,7 @@ describe("the mission registry", () => {
       humanColor: "CORAL",
       factions: ["ORIGINAL", "UNDEAD"],
       mapType: "MISSION",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
       mission: { id: "TEST_GROUNDS", revision: 1 },
     });

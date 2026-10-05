@@ -55,7 +55,7 @@ const showcase: MatchSetupV7 = {
   humanColor: "CORAL",
   factions: ["CANDY", "ORIGINAL", "UNDEAD", "GOBLIN"],
   mapType: "SHOWCASE",
-  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
   curiosities: false,
 };
 

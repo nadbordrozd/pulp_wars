@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r41" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r42" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -52,15 +52,18 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r38",
   "pulp-wars-poc-7r39",
   "pulp-wars-poc-7r40",
+  "pulp-wars-poc-7r41",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r41.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r42.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
- * section 8.8, `pulp_wars-ykw.2`): `V3` is the village-density generator
- * (settlements per land tile, villages one tile from the edge, the wild
- * reserve). A setup naming any other revision is invalid.
+ * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
+ * (capitals in domains, room and village balance, Continents and
+ * Archipelago layouts for up to as many seats as there are factions) on top
+ * of the village density of `V3` (`pulp_wars-ykw.2`). A setup naming any
+ * other revision is invalid.
  */
-export const MAP_GENERATION_REVISION_V7 = "REGIONAL_BIOMES_NAVAL_V3" as const;
+export const MAP_GENERATION_REVISION_V7 = "REGIONAL_BIOMES_NAVAL_V4" as const;
 export type MapGenerationRevisionV7 = typeof MAP_GENERATION_REVISION_V7;
 export const FACTION_IDS_V7 = Object.freeze([
   "ORIGINAL",
@@ -388,8 +391,31 @@ export type CommandKindV7 = (typeof COMMAND_KIND_ORDER_V7)[number];
 export type RewardIdV7 = (typeof REWARD_IDS_V7)[number];
 export type DomainEventKindV7 = (typeof DOMAIN_EVENT_KIND_ORDER_V7)[number];
 export type BoardSizeV7 = 11 | 14 | 16 | 20 | 25;
-export type AiCountV7 = 1 | 2 | 3;
-export type PlayerColorV7 = "CORAL" | "TEAL" | "GOLD" | "VIOLET";
+/**
+ * The AI seats of a match: 1 to `FACTION_IDS_V7.length - 1`
+ * (docs/product/RULESET_7_MAP_SCALE.md section 6.1). The upper bound follows
+ * the faction registry, so the type is a number and
+ * `validateMatchSetupV7` holds the range.
+ */
+export type AiCountV7 = number;
+/**
+ * The seat colours (map scale section 8.6), stored and never shown: owner
+ * colours are the factions'. The human seat takes the setup's colour and the
+ * AI seats the others in this order. There are at least as many as
+ * factions (a unit test holds it).
+ */
+export const PLAYER_COLORS_V7 = Object.freeze([
+  "CORAL",
+  "TEAL",
+  "GOLD",
+  "VIOLET",
+  "SKY",
+  "LIME",
+  "ROSE",
+  "SLATE",
+  "AMBER",
+] as const);
+export type PlayerColorV7 = (typeof PLAYER_COLORS_V7)[number];
 /**
  * The five generated map types, plus the revision-18 fixed `SHOWCASE` board
  * (16 x 16, three developed cities and one unit of every role per seat) and

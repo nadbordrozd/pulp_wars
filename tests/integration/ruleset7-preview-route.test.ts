@@ -132,7 +132,9 @@ describe("Ruleset 7 application route", () => {
         };
       },
     });
-    requiredInput("v7-seed").value = "0";
+    // Seed 6: an AI seat moves first on the many-seats board (seed 0 did
+    // on the earlier boards).
+    requiredInput("v7-seed").value = "6";
     chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().ai.active);
@@ -229,7 +231,7 @@ describe("Ruleset 7 application route", () => {
         },
       }),
     });
-    requiredInput("v7-seed").value = "0";
+    requiredInput("v7-seed").value = "6";
     chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => scheduler.activeCount() === 1);

@@ -63,7 +63,7 @@ export function undeadUiSetupV7(
     humanColor: "CORAL",
     factions: [...factions],
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
     ...mirrorOptionV7(factions),
   };
@@ -199,14 +199,15 @@ export function undeadShowcaseFixtureV7(): GameStateV7 {
 }
 
 /**
- * The seed of {@link scriptedUndeadRaiseDeadSaveV7}: 10 on the
- * village-density boards (`pulp_wars-ykw.2`; the script reaches Raise Dead
- * on 20 of seeds 0-39), 2 before.
+ * The seed of {@link scriptedUndeadRaiseDeadSaveV7}: 1 on the many-seats
+ * boards (`pulp_wars-ykw.3`), 10 on the village-density boards
+ * (`pulp_wars-ykw.2`; the script reached Raise Dead on 20 of seeds 0-39),
+ * 2 before.
  */
-export const SCRIPTED_RAISE_DEAD_SEED_V7 = 10;
+export const SCRIPTED_RAISE_DEAD_SEED_V7 = 1;
 
 /**
- * A real, replay-valid seed-10 Undead-vs-Human save (Undead-vs-Undead until
+ * A real, replay-valid seed-1 Undead-vs-Human save (Undead-vs-Undead until
  * pulp_wars-w5j.1: the browser resumes only distinct factions) that stops on
  * the human turn where Raise Dead first becomes legal. Both seats follow a
  * fixed script (research and train a Necromancer, fight, walk the

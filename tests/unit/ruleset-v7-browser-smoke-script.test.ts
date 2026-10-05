@@ -95,7 +95,7 @@ describe("Ruleset 7 browser smoke script", () => {
     // Every fast-forward launch types a fixed seed first.
     const launches = [
       ...source.matchAll(
-        /await replaceSeedInput\(connection, "0"\);\s*await launchWithFastForward\(connection\)/g,
+        /await replaceSeedInput\(connection, "6"\);\s*await launchWithFastForward\(connection\)/g,
       ),
     ];
     expect(launches).toHaveLength(4);
@@ -786,7 +786,7 @@ describe("Ruleset 7 browser smoke script", () => {
   it("replaces the seed using the browser edit command on every host", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     expect(
-      source.match(/await replaceSeedInput\(connection, "0"\)/g),
+      source.match(/await replaceSeedInput\(connection, "6"\)/g),
     ).toHaveLength(4);
     expect(source).toContain('commands: ["selectAll"]');
     expect(source).toContain("if (actual !== value)");
@@ -828,7 +828,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
       fastForwardObserved: true,
       hostTicks: 2,
     },
-    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r41", commandIndex: 3 },
+    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r42", commandIndex: 3 },
     ordinaryBoundary: {
       controllerOwnProperties: [],
       snapshotHasStateHash: false,

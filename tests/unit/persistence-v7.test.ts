@@ -28,9 +28,10 @@ import {
 
 const setup: MatchSetupV7 = {
   rulesetId: RULESET_7_ID,
-  // pulp_wars-ykw.2: seed 40 on the village-density boards (42 before): its
-  // human capital has a natural farm tile with a mill site beside it.
-  seed: 40,
+  // pulp_wars-ykw.3: seed 8 on the many-seats boards (40 on the
+  // village-density boards, 42 before): its human capital has a natural farm
+  // tile with a mill site beside it.
+  seed: 8,
   width: 11,
   height: 11,
   aiCount: 1,
@@ -41,7 +42,7 @@ const setup: MatchSetupV7 = {
   // pulp_wars-w5j.1: a Human mirror through the test only option.
   allowDuplicateFactions: true,
   mapType: "DRY_LAND",
-  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
   curiosities: false,
 };
 /** A one-city tier-3 technology (9 Coins since `pulp_wars-if6`; 12 in revision 16). */
@@ -49,7 +50,7 @@ const TIER_3_COST = technologyResearchCostV7(3, 1);
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r41.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r42.current");
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
@@ -482,8 +483,8 @@ describe("ruleset-7 save and replay foundation", () => {
     // pulp_wars-wwc: revision-16 maps differ (the growth floor accepts an
     // earlier candidate); seed 42 leaves no open Monument tile after the
     // scripted Muster turns, seed 46 does. On the village-density boards
-    // (`pulp_wars-ykw.2`) seed 40 does.
-    const musterSetup = { ...setup, seed: 40 };
+    // (`pulp_wars-ykw.2`) seed 40 did; on the many-seats boards seed 2 does.
+    const musterSetup = { ...setup, seed: 2 };
     const created = createPlayableGameV7(musterSetup);
     if (!created.ok) throw new Error(created.error.code);
     let state: GameStateV7 = created.state;

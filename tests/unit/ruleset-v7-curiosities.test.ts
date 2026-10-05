@@ -339,7 +339,7 @@ describe("generation (section 4)", () => {
 // ------------------------------------------------------ Headless ---
 
 describe("headless parity and the CLI flag", () => {
-  it("with the option off plays the pinned matches command for command across map types and factions (recomputed at 7r41)", () => {
+  it("with the option off plays the pinned matches command for command across map types and factions (recomputed at 7r42)", () => {
     // Computed on main at 7r34 (8540406a): runAiMatchV7 with
     // { maxCommands: 250, maxRounds: 40 }. The Martian and Ice Folk balance
     // round (`pulp_wars-1wy.3`, 7r37) changes, by design, every match with
@@ -363,6 +363,11 @@ describe("headless parity and the CLI flag", () => {
     // event hashes of all five pins were recomputed at 7r41, with the rounds
     // of the Pangea and Archipelago pins and the PRNG end of the Pangea pin;
     // the maps did not change.
+    // Many seats (`pulp_wars-ykw.3`, 7r42) regenerates every board again
+    // (capitals in domains, the long side lakes), so all five pins (maps,
+    // PRNG ends, commands, events, and rounds) were recomputed at 7r42; the
+    // 7r41 boards are held by the V3 parity rules
+    // (tests/unit/ruleset-v7-map-scale.test.ts).
     const pins: readonly {
       readonly mapType: MapTypeV7;
       readonly factions: readonly FactionIdV7[];
@@ -379,29 +384,29 @@ describe("headless parity and the CLI flag", () => {
         mapType: "DRY_LAND",
         factions: ["ORIGINAL", "UNDEAD"],
         seed: 3,
-        rounds: 16,
+        rounds: 17,
         commandHash:
-          "fe4df5a231b97da048cbd50145f52cfc8925159602d9771907c0d8abf2e4eb8e",
+          "ced0c25d56388055bf3c2587536280f05d1af15706c5ec397dd210f628ea617f",
         eventHash:
-          "051368513c45601d97d256a4bf891fa018041bb11f5c2af4d915b69845a04234",
+          "fd4dc8d3a21d5734ac9a6e305d13edd3f9f807b436065137b521440f98bda9cd",
         mapHash:
-          "9a1a8d70a071c4a01b6944df9fb2f7a565b19bb7f04315354bd25787165cd463",
+          "1f6ad08d476884229d6cb8a7319ea209b8667cf4e28e24cd07352ebafc3055de",
         finalPrngHash:
-          "106a083e502fa65c0842420813be58d30e20a595cbc88352726c204532d43808",
+          "6ecdac89b46e4cbd434c0c8eec3723232d5419d7308165da635935e8d0fbcca1",
       },
       {
         mapType: "PANGEA",
         factions: ["GOBLIN", "DINOSAUR", "MARTIAN"],
         seed: 11,
-        rounds: 14,
+        rounds: 15,
         commandHash:
-          "d0923573af9747dfe6551466b7128acccc78408b59f0331809dd9ef2b8efeec5",
+          "b74aa59d23513f0c961c4b75a81c3f9a5f2d708af921b542af3caf9ce1c303d8",
         eventHash:
-          "6f512de22c3a42b932af5d39473d492ef812cc1edcb497f503acdaf97817a52e",
+          "68c75b7af3ddfb4dc4aa6e32e8c76ad0864355ec36a1ed6d9fc48226dd6ba856",
         mapHash:
-          "4152eac3ae5b2f83030ae357843bb7a2c4c681c0891d7a1f6d75fbb47c826da7",
+          "5b286bbe8cdb2f8a339cd7a74ba219bc2b57a4322370548442b3c8f26bef4ad9",
         finalPrngHash:
-          "d5f2922b9707007a5823e25d84dc2de6a82846de79d50b718da29b12000ae7af",
+          "8cdb862599e395d0cae5c157a7ff48acd492cd2082bab7c6dfb32c3337c6c4df",
       },
       {
         mapType: "CONTINENTS",
@@ -409,41 +414,41 @@ describe("headless parity and the CLI flag", () => {
         seed: 5,
         rounds: 18,
         commandHash:
-          "22148ab2355b4e07c784dda9704cb90e917f0b33d1e9e61a1c7ca4bc10cf39c1",
+          "2c1c3766514e106c06e9497477d8007079aba9a46ebef941f89ac7b0eabcd518",
         eventHash:
-          "f992373087169f8927a42fe89ef5f34deed94f6bbb55e08ff9a36dbada00ede0",
+          "bd9d09deb737e9d7107a651d4507a18029acc7124ea539d3d3d0c822ca877c62",
         mapHash:
-          "5a15d5d0d3850a8a2e29608d411c2d673859613f638aef60421919b747da7081",
+          "2cbf36a1c5d03e70dd785be13a1ed7d5dd04fecdd54925baa1b483261d71c9be",
         finalPrngHash:
-          "728fb5256831fc2a177519f920e65ebbb6252213427e2b25d5ae235baf6a9700",
+          "c42f592a01a3ffba7df73eb817e340aae85857fac4a465686a83fa4fd8d06f90",
       },
       {
         mapType: "ARCHIPELAGO",
         factions: ["MARTIAN", "ORIGINAL", "GOBLIN"],
         seed: 7,
-        rounds: 16,
+        rounds: 14,
         commandHash:
-          "b7db052a0b270df86eaf6100b4a3c15444e3e1a2fdd95ba14727ff1c887d6c7a",
+          "78f067971e0f8aec5855e7fd25f519c8cbd69092772228fbc8cfaf3b868187ae",
         eventHash:
-          "3d379511e138c6d473721e5f6cc999d343238ab3dcf1e30f6b421894267394e7",
+          "7fe9bd05b9fd52e78f7f99df67e2e40117d1489f0f496294becbb524fb8fdd9e",
         mapHash:
-          "efb35e3c21d801d15041a266b7640efe2b79a26da1417ec8e4c9f69c741da441",
+          "be112bd78cfeb3f5ae72a6b67f8f91bd45b81814c5d0cdad9abe7f31f221be5d",
         finalPrngHash:
-          "7efcbafd23b8bde5e73ee5c612832666cb8f9876f380156161a510fda246a64f",
+          "93ed9f1c09f66acd0db8cdb2a0b2e1da51eaf630d4e7fa2a4769ecbbc50084a7",
       },
       {
         mapType: "LAKES",
         factions: ["DWARF", "UNDEAD", "ICE_FOLK", "DINOSAUR"],
         seed: 2,
-        rounds: 12,
+        rounds: 11,
         commandHash:
-          "107beff1effef6dfababc1701295637d6a1b8437b14cd78b996a7a99c54f92c1",
+          "0e09b1924ab593443a1cc26cbd4a6596ae3003f3bd2edbf2e27e24b6f23125ea",
         eventHash:
-          "0e8b5243d28ade1e738dd629254e5201ffc631aa6739e116328bd91ea00efa95",
+          "67fb68c498478662e35445ab4f0421d338d9b19aed5f2688b53eded7618cc3ac",
         mapHash:
-          "9655fa2d6cf9c0e7d7ac425d7098c8fe09650995af6f1a5fb363184e30a70f45",
+          "70ff339440ce86f231bca6b2be56c748891436934f614f6ef66fa53933f3d5ab",
         finalPrngHash:
-          "e0c0bf495f17a5ce19a59f760ac08d3de2ab1227fe242ee27a5e79c39c11cc95",
+          "7b19df276523773e45ee21ddbff082d03424c46ae533dc4ded29b69103a8f124",
       },
     ];
     for (const pin of pins) {
@@ -1153,11 +1158,12 @@ describe("public view, projection, events, and the state schema", () => {
 
 describe("saves and replays", () => {
   it("round-trips a generated match with curiosities, a Shrine claimed by Normal, through the replay and the save", () => {
-    // 16 x 16 Dry Land seed 4, Human v Goblin: one Shrine, which the
+    // 16 x 16 Dry Land seed 12, Human v Goblin: one Shrine, which the
     // Normal AI claims inside 30 rounds (seed 10 until the Monster joined
     // the kind draw at 7r36; seed 4 since, also on the village-density
-    // boards of `pulp_wars-ykw.2` and `pulp_wars-ykw.7`).
-    const setup = generatedSetup(4, "DRY_LAND", 16, 1, true, [
+    // boards of `pulp_wars-ykw.2` and `pulp_wars-ykw.7`; seed 12 on the
+    // many-seats boards of `pulp_wars-ykw.3`).
+    const setup = generatedSetup(12, "DRY_LAND", 16, 1, true, [
       "ORIGINAL",
       "GOBLIN",
     ]);

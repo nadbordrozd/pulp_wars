@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r41");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r41.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r42");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r42.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r40 and preserves the r41 save", () => {
+  it("cleans obsolete keys through v7r41 and preserves the r42 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r40.current",
+      "pulpWars.save.v7r41.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(40);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(41);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -178,7 +178,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r38.current", "r38"],
       ["pulpWars.save.v7r39.current", "r39"],
       ["pulpWars.save.v7r40.current", "r40"],
-      [SAVE_STORAGE_KEY_V7, "r41"],
+      ["pulpWars.save.v7r41.current", "r41"],
+      [SAVE_STORAGE_KEY_V7, "r42"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -213,8 +214,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r38.current",
         "pulpWars.save.v7r39.current",
         "pulpWars.save.v7r40.current",
+        "pulpWars.save.v7r41.current",
       ],
-      removedCount: 29,
+      removedCount: 30,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -1695,7 +1697,7 @@ describe("ruleset-7 all-Human parity digests", () => {
         // pulp_wars-w5j.1: a Human mirror through the test only option.
         allowDuplicateFactions: true,
         mapType: baseline.mapType,
-        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
         curiosities: false,
       };
       const result = runAiMatchV7(setup, {
@@ -2069,7 +2071,7 @@ function setupWith(factions: readonly FactionIdV7[], seed = 2): MatchSetupV7 {
     factions: [...factions],
     ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
   };
 }

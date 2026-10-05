@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r41`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
+## Current release contract (`pulp-wars-poc-7r42`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
 
-The current runtime is `pulp-wars-poc-7r41` (autosave
-`pulpWars.save.v7r41.current`; saves and replays of `pulp-wars-poc-7r40`
+The current runtime is `pulp-wars-poc-7r42` (autosave
+`pulpWars.save.v7r42.current`; saves and replays of `pulp-wars-poc-7r41`
 and earlier are refused, and startup removes their autosave keys). Its eight
 factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy, are
 all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
@@ -195,6 +195,26 @@ The per-city steps did not change, and no shape changed. Every pin on a
 headless match was recomputed; generated boards and the missions (which set
 their own Coins) did not change.
 `npm run validate:ruleset7-naval-playable` lists the Normal AI's landing/embark oscillation on Pangea and Lakes boards as warnings (`pulp_wars-eru`, deferred) and still fails on one on Continents.
+`pulp_wars-ykw.3` (`7r42`) is engine step II of the
+[map scale design](../product/RULESET_7_MAP_SCALE.md): a match has 2 to as
+many players as there are factions (8) on every width that holds them,
+capitals stand in domains with room and village balance, Continents and
+Archipelago have layouts for many seats, and the map revision is
+`REGIONAL_BIOMES_NAVAL_V4`
+([current rules, sections 2.1 to 2.3](../product/RULESET_7_CURRENT.md#21-match-setup)).
+No shape changed (`aiCount` and the seat colours gained values). Every
+generated board changed again, so every pin on a generated board or a
+headless match was recomputed; the Showcase and the missions did not change.
+The generator of `7r41` stays reachable for tests as the
+`VILLAGE_DENSITY_CURIOSITIES` parity rules, whose golden boards
+(`tests/unit/ruleset-v7-map-scale.test.ts`) still hold. `npm run
+validate:ruleset7-map-scale` now generates every legal cell (163: each map
+type and size with 2 to 8 seats where the width holds them) on seeds 0-255
+and checks capital spacing, margins, the central zone, domains, room and
+village balance, and the landmass rules; the cells that existed at `7r39`
+are still compared against
+`scripts/ruleset7-map-scale-baseline-7r39.json`, and a new cell must stay
+inside a mean of 8 and a worst of 64 candidates.
 The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, the
 Dwarves, and the Candy are part of the default route: match setup always
 offers a
@@ -215,8 +235,8 @@ Candy have no balance report); the release does not rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r41` identity (ruleset ID, autosave key, the
-  map revision `REGIONAL_BIOMES_NAVAL_V3`, the
+  contract. It checks the `7r42` identity (ruleset ID, autosave key, the
+  map revision `REGIONAL_BIOMES_NAVAL_V4`, the
   eight-entry
   `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`/`DWARF`/`CANDY`
   faction and tree orders of the engine, and a Human-against-Undead setup), confirms

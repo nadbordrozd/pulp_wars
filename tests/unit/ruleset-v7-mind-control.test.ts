@@ -1424,12 +1424,13 @@ describe("Mind Control revision: saves and replays (section 5.4)", () => {
     // Martian against Ice Folk (seed 4 until the balance round,
     // `pulp_wars-1wy.3`, seed 9 until the Grunt's 8 HP, `pulp_wars-1wy.6`,
     // seed 13 until the village density, `pulp_wars-ykw.2`, seed 9 until the 3
-    // starting Coins, `pulp_wars-if6`; seed 10 now): the Normal AI
+    // starting Coins, `pulp_wars-if6`, seed 10 until the many-seats boards,
+    // `pulp_wars-ykw.3`; seed 11 now): the Normal AI
     // takes its first Mind Control within the 1,500 steps below. The
     // replay of the command log reaches the same state,
     // with the controlled unit, and a save of it loads back (the loader
     // replays the log, so a save needs a real match).
-    const setup = goblinSetupV7(["MARTIAN", "ICE_FOLK"], 10);
+    const setup = goblinSetupV7(["MARTIAN", "ICE_FOLK"], 11);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;

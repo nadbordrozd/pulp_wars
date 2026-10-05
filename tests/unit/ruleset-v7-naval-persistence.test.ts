@@ -27,9 +27,9 @@ describe("ruleset-7 naval persistence schema", () => {
     expect(parsed).toEqual(fixture.state);
     expect(parseMatchSetupV7(fixture.state.setup)).toEqual(fixture.state.setup);
     expect(fixture.state.setup).toMatchObject({
-      rulesetId: "pulp-wars-poc-7r41",
+      rulesetId: "pulp-wars-poc-7r42",
       mapType: "DRY_LAND",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
     });
   });
@@ -71,7 +71,9 @@ describe("ruleset-7 naval persistence schema", () => {
   });
 
   it("round-trips saves, replays, and the headless API at every naval command boundary", async () => {
-    const setup = { ...setupV7(0), mapType: "CONTINENTS" as const };
+    // Seed 7: on the many-seats boards (`pulp_wars-ykw.3`) an AI seat moves
+    // first and the human capital's territory has Fish (seed 0 before).
+    const setup = { ...setupV7(7), mapType: "CONTINENTS" as const };
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
@@ -198,8 +200,9 @@ describe("ruleset-7 naval persistence schema", () => {
     await accept(land);
 
     // pulp_wars-wwc: seed 20 (was 27) puts Pearls in the human capital's
-    // territory on revision-16 maps (orthogonal Shallow Water redraws water).
-    const pearlSetup = { ...setupV7(20), mapType: "CONTINENTS" as const };
+    // territory on revision-16 maps (orthogonal Shallow Water redraws water);
+    // seed 23 does on the many-seats boards (`pulp_wars-ykw.3`).
+    const pearlSetup = { ...setupV7(23), mapType: "CONTINENTS" as const };
     const pearlCreated = createPlayableGameV7(pearlSetup);
     if (!pearlCreated.ok) throw new Error(pearlCreated.error.code);
     state = pearlCreated.state;

@@ -275,7 +275,7 @@ describe("vkq.21 Normal AI: Liches and Vampires stay ashore", () => {
     // rounds; seed 13 embarks four Undead units (9 of seeds 0-32 embark).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
       seed: 13,
       width: 14,
@@ -348,7 +348,7 @@ function setupWith(factions: readonly FactionIdV7[]): MatchSetupV7 {
     factions: [...factions],
     ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
   };
 }

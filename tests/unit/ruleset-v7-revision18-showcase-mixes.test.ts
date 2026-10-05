@@ -34,7 +34,7 @@ function showcaseSetup(
     humanColor: "CORAL",
     factions,
     mapType: "SHOWCASE",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
     // pulp_wars-w5j.1: the test only mirror option for repeated factions.
     ...mirrorOptionV7(factions),

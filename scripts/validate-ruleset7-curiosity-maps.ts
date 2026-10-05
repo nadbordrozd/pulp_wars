@@ -67,7 +67,7 @@ for (const mapType of mapTypes)
         factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL"),
         allowDuplicateFactions: true,
         mapType,
-        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
         curiosities,
       });
       const off = generateInitialMapV7(setup(false));
@@ -76,7 +76,7 @@ for (const mapType of mapTypes)
       const base = generateInitialMapWithVillageCountV7(
         setup(true),
         villageCountV7(setup(true)),
-        "VILLAGE_DENSITY_RIFTS",
+        "CAPITAL_DOMAINS_RIFTS",
       );
       const label = `${mapType}/${width}`;
       assert(off.ok && on.ok && again.ok && base.ok, `${label}/${seed}`);

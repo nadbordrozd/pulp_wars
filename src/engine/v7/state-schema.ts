@@ -71,6 +71,7 @@ import {
   type UnitRoleIdV7,
   type UnitStateV7,
 } from "./types";
+import { PLAYER_COLORS_V7 } from "./types";
 import { PLAGUE_DURATION_TURNS_V7 } from "./afflictions";
 import {
   CURIOSITY_CENTER_DISTANCE_V7,
@@ -2545,12 +2546,7 @@ function sameSet(left: readonly number[], right: readonly number[]): boolean {
   );
 }
 function isColor(input: unknown): input is PlayerStateV7["color"] {
-  return (
-    input === "CORAL" ||
-    input === "TEAL" ||
-    input === "GOLD" ||
-    input === "VIOLET"
-  );
+  return PLAYER_COLORS_V7.includes(input as PlayerStateV7["color"]);
 }
 /**
  * Revision 12: an improvement never removes the resource beneath it. A Farm

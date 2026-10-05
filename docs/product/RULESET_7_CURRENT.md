@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r41`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r42`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -155,7 +155,15 @@ missions, and every other rule did not, and `pulp-wars-poc-7r41`
 ([section 3](#3-players-turns-and-victory)), and lowers the tier 3
 technology base cost to 9 (was 12), so the one-city costs read 5, 7, and 9
 ([section 6.1](#61-research-cost)). The per-city steps, the missions' own
-Coins, and every other rule did not change.
+Coins, and every other rule did not change. `pulp-wars-poc-7r42`
+(`pulp_wars-ykw.3`, engine step II of the
+[map scale design](RULESET_7_MAP_SCALE.md)) allows **2 to 8 players** (as
+many as there are factions) on every width that holds them, places capitals
+in domains with room and village balance, and gives Continents and
+Archipelago layouts for many seats
+([sections 2.1 to 2.3](#21-match-setup)). Every generated board changed
+again (map revision `REGIONAL_BIOMES_NAVAL_V4`); the Showcase, the missions,
+and every rule of play did not.
 
 **The Candy overlay is folded.** `pulp_wars-jdb.8` completed the fold the
 engine bead began: the Candy rules are
@@ -237,7 +245,7 @@ telemetry, and balance sections where the build differs (its
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r41`.
+resolved ones as of `pulp-wars-poc-7r42`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -327,11 +335,11 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r41`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Ruleset                                    | `pulp-wars-poc-7r42`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| Browser autosave                           | `pulpWars.save.v7r41.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Map revision                               | `REGIONAL_BIOMES_NAVAL_V3`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Browser autosave                           | `pulpWars.save.v7r42.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                             |
 | Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`; `ICE_FOLK` → `ICE_FOLK_BASELINE_V1`; `DWARF` → `DWARF_BASELINE_V1`; `CANDY` → `CANDY_BASELINE_V1`                                                                                                                                                                                                                                |
@@ -342,7 +350,7 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r39`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r41`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
   and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
   Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
@@ -455,12 +463,17 @@ separate [Ruleset 6](RULESET_6.md) route.
   `7r39`) changed one number of the Martian registration and no shape; a
   match without a Martian seat is the `7r38` match. The village density
   (`pulp_wars-ykw.2`, `7r40`) changed map generation only and no shape: the
-  setup's `mapGenerationRevision` is `REGIONAL_BIOMES_NAVAL_V3`, the only
-  value a setup may carry. The early economy tweak (`pulp_wars-if6`, `7r41`)
+  setup's `mapGenerationRevision` became `REGIONAL_BIOMES_NAVAL_V3`. The
+  early economy tweak (`pulp_wars-if6`, `7r41`)
   changed the starting Coins and one number of the research cost table, and
-  no shape.
+  no shape. Many seats (`pulp_wars-ykw.3`, `7r42`) changed map generation
+  and two value sets, and no shape: `aiCount` is 1 to `F − 1` (1–3 before),
+  the seat colours are nine (four before), and the setup's
+  `mapGenerationRevision` is `REGIONAL_BIOMES_NAVAL_V4`, the only value a
+  setup may carry. The map invariants gained `ROOM_BALANCE` and
+  `VILLAGE_BALANCE`.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r40.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r41.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
@@ -546,19 +559,54 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 ### 2.1 Match setup
 
-A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
-`COOPERATIVE` mode, on a square board.
+A match is one human against 1 to `F − 1` equal-rules Normal AI seats, in
+`RIVAL` or `COOPERATIVE` mode, on a square board. `F` is the number of
+registered factions (`FACTION_IDS_V7.length`, 8 today), so a match has 2 to
+8 players, every one a different faction (many seats: `pulp_wars-ykw.3`,
+`pulp-wars-poc-7r42`, [map scale design](RULESET_7_MAP_SCALE.md) sections 3,
+4, and 6; a match had 1–3 AI seats through `7r41`).
 
-| Setup field | Legal values                                                                                                                                                  |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Board width | 11, 14, 16, 20, or 25 (height equals width); minimum 11/14/16 for 1/2/3 AI                                                                                    |
-| Auto size   | 11, 14, or 16 for 1, 2, or 3 AI                                                                                                                               |
-| Map type    | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only), `MISSION` (a registered mission only)                       |
-| AI          | `aiCount` 1–3, difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                                                                             |
-| Human color | `CORAL`, `TEAL`, `GOLD`, `VIOLET`                                                                                                                             |
-| Factions    | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, or `CANDY`; no two seats alike |
-| Seed        | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures                                                                        |
-| Curiosities | `true` (the setup screen's and the headless default) or `false`; `false` on a mission ([section 2.7](#27-map-curiosities))                                    |
+| Setup field | Legal values                                                                                                                                                                                                                             |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Board width | 11, 14, 16, 20, or 25 (height equals width), as long as the width holds the seats on the map type (the table below)                                                                                                                      |
+| Auto size   | the smallest allowed width with at least 56 tiles per seat: 11, 14, 16 for 2, 3, 4 seats, 20 for 5–7, 25 for 8 (`autoBoardSizeV7`)                                                                                                       |
+| Map type    | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only, at most 3 AI), `MISSION` (a registered mission only)                                                                                    |
+| AI          | `aiCount` 1 to `F − 1` (7 today), difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                                                                                                                                     |
+| Human color | `CORAL`, `TEAL`, `GOLD`, `VIOLET`, `SKY`, `LIME`, `ROSE`, `SLATE`, `AMBER` (`PLAYER_COLORS_V7`; stored, never shown: owner colours are the factions'). The AI seats take the other colours in this order. There are never fewer than `F` |
+| Factions    | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, or `CANDY`; no two seats alike                                                                            |
+| Seed        | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures                                                                                                                                                   |
+| Curiosities | `true` (the setup screen's and the headless default) or `false`; `false` on a mission ([section 2.7](#27-map-curiosities))                                                                                                               |
+
+- **Seats a width holds.** A generated board holds
+  `P(w, type) = min(floor((w − 2) / 3)², floor(L / 9))` players (a 3 x 3
+  land square each inside a 1-tile margin; `L` is the land of
+  [section 2.2](#22-settlements-and-treasures)), on an Archipelago also at
+  most `floor((w − 1) / 4)²` islands, and two measured cells hold fewer
+  (`MEASURED_SEAT_CAPACITY_V7`, provisional,
+  [map scale design](RULESET_7_MAP_SCALE.md) section 3.4). A setup is legal
+  with 2 to `min(F, P)` seats (`seatCountAllowedV7`); more is
+  `INVALID_SETUP`, with or without the mirror option. The public queries
+  are `maxSeatsV7(width, mapType)`, `allowedBoardSizesV7(mapType, seats)`,
+  and `autoBoardSizeV7(seats, mapType)`.
+
+  | Width | Dry Land | Lakes | Pangea | Continents | Archipelago |
+  | ----: | -------: | ----: | -----: | ---------: | ----------: |
+  |    11 |        9 |     2 |      8 |          6 |           4 |
+  |    14 |       16 |    16 |     14 |         12 |           8 |
+  |    16 |       16 |    16 |     16 |         15 |           9 |
+  |    20 |       36 |    35 |     32 |         24 |          16 |
+  |    25 |       49 |    49 |     49 |         38 |          27 |
+
+  With 8 factions every cell allows 2–8 players but 11 x 11 Lakes (2),
+  11 x 11 Continents (2–6), and 11 x 11 Archipelago (2–4). The minimums of
+  `7r41` (14 for 3 seats, 16 for 4) are gone: four players on an 11 x 11
+  Dry Land board are legal. The setup screen still offers at most three
+  opponents and those minimum sizes until `pulp_wars-ykw.5`.
+
+- **Crowded.** A generated board with less than one village per two
+  players (`2 × villages < seats`, `crowdedBoardV7`) is a capital brawl:
+  legal, never the auto size, and to be labelled on the setup screen
+  (`pulp_wars-ykw.5`). 11 x 11 Dry Land is crowded from six players.
 
 - **Faction choice.** `factions` is a dense array; index `i` is seat `i`'s
   faction. **Every seat plays a different faction**
@@ -601,13 +649,15 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
 
 ### 2.2 Settlements and treasures
 
-| Board width | Legal AI counts | Settlements `S`: Dry Land / Lakes / Pangea / Continents / Archipelago | Treasure chests |
-| ----------: | --------------- | --------------------------------------------------------------------- | --------------: |
-|          11 | 1               | 8 / 7 / 6 / 6 / 4                                                     |               2 |
-|          14 | 1–2             | 13 / 12 / 11 / 9 / 7                                                  |               2 |
-|          16 | 1–3             | 17 / 16 / 15 / 12 / 9                                                 |               2 |
-|          20 | 1–3             | 27 / 25 / 24 / 19 / 15                                                |               4 |
-|          25 | 1–3             | 42 / 38 / 38 / 29 / 23                                                |               5 |
+| Board width | Settlements `S`: Dry Land / Lakes / Pangea / Continents / Archipelago | Treasure chests |
+| ----------: | --------------------------------------------------------------------- | --------------: |
+|          11 | 8 / 7 / 6 / 6 / 4                                                     |               2 |
+|          14 | 13 / 12 / 11 / 9 / 7                                                  |               2 |
+|          16 | 17 / 16 / 15 / 12 / 9                                                 |               2 |
+|          20 | 27 / 25 / 24 / 19 / 15                                                |               4 |
+|          25 | 42 / 38 / 38 / 29 / 23                                                |               5 |
+
+The seats each width holds are in [section 2.1](#21-match-setup).
 
 - **Village density** (`pulp_wars-ykw.2`, `pulp-wars-poc-7r40`,
   [map scale design](RULESET_7_MAP_SCALE.md) section 5). A generated board
@@ -623,15 +673,66 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
   were a fixed table by AI count: 4/5/7 on widths 11–16, 14/13/12 on 20,
   21/20/19 on 25. The parity generator keeps that table as
   `revision14VillageCountV7`.)
+- **Villages with many seats** (`7r42`, provisional,
+  [map scale design](RULESET_7_MAP_SCALE.md) section 5.6). The count
+  `max(0, S − seats)` is exact on every setup that existed at `7r41` (2
+  seats; 3 seats on 14 and up; 4 seats on 16 and up). On every setup new at
+  `7r42` (5 or more seats; 3 seats on 11 x 11; 4 seats on 11 x 11 or
+  14 x 14) it is the most a board holds: the capital spacing can leave no
+  room for all of them, so such a board keeps as many as fit
+  (`partialVillagesV7`), and the wild reserve below gives way to villages
+  first. `npm run validate:ruleset7-map-scale` prints the least and the
+  mean per cell: a 25 x 25 Dry Land board with eight players holds all 34
+  on every seed measured, a 16 x 16 one 5 to 9 (mean 8.0) of 9.
 - The chest count is a maximum: if fewer candidate cells exist, fewer chests
   are placed. Chests are not part of the density.
 - Settlements are Grass land cells at least Chebyshev distance 3 apart.
-  Capitals are at least two cells from an edge on Dry Land and at least
-  `floor(width / 2)` apart; **a village may stand one cell from an edge**
-  (two before `7r40`), so its eight-cell ring is still on the board.
-- **Order.** Capitals first (on Dry Land the corners of the pitch-3 lattice,
-  as before; on a water map the land mask search, as before), then the wild
-  reserve, then the villages, then terrain and resources as before.
+  **A village may stand one cell from an edge** (two before `7r40`), so its
+  eight-cell ring is still on the board.
+- **Capitals** (`7r42`; through `7r41` the corners of the pitch-3 lattice
+  on Dry Land and a score-ordered search on water maps, `floor(width / 2)`
+  apart). Every capital is at least 2 cells from an edge on every map type
+  and at least `D(w, N) = max(3, floor(w / k))` from every other, with
+  `k = ceil(sqrt(N))` **domains** per side: `floor(w / 2)` for 2–4 seats
+  (5, 7, 8, 10, 12 on widths 11–25) and `floor(w / 3)` for 5–8 (3, 4, 5, 6,
+  8). With 8 seats or fewer no capital stands in the **central zone**, a
+  tile `floor(w / 3)` or more from the nearest edge, so the middle of the
+  board is contested neutral land.
+  - **Domains.** The board is cut into `k x k` equal domains (band `i`
+    covers rows or columns `floor(i × w / k)` to `floor((i + 1) × w / k) − 1`).
+    On Dry Land, Pangea, and Lakes each capital lies in its own domain: for
+    2–4 seats the four corner domains in a seeded shuffle, the first `N`
+    used; for 5–8 seats the eight ring domains of the 3 x 3 (the centre one
+    stays empty), slot `(round(j × 8 / N) + r) mod 8` for seat slot `j`,
+    clockwise from the top-left corner, with a seeded rotation `r` (0–7)
+    and a seeded mirror.
+  - **Draw.** The domain draws come from the match stream right after the
+    topology draws. Every slot's legal tiles (on a water map: land with at
+    least four land neighbours on a major landmass) are shuffled once from
+    the match stream, in slot order; a tile with no partner `D(w, N)` away
+    in some other slot is dropped; and the search takes each slot's first
+    shuffled tile that fits, backtracking over the slots in order. A
+    complete set must be room-balanced (below), is then settled with the
+    wild reserve and the villages, and wins at once when every village
+    stands; otherwise the set with the most villages among the first 12
+    settled wins. A search that finds no set, or exhausts its fixed budget
+    of placements, rejects the candidate (`CAPITAL_SPACING` on Dry Land,
+    `SETTLEMENT_COUNT` on a water map).
+- **Room and village balance** (`7r42`). Each land tile counts for its
+  nearest capital on the same eight-connected landmass (Chebyshev, split
+  equally between capitals at the same distance; a landmass without a
+  capital counts for nobody). **Room balance:** the largest land share is
+  at most 1.5 times the smallest with up to 4 seats and 2.0 times with 5 or
+  more (`ROOM_BALANCE`). **Village balance:** counting villages the same
+  way, the largest count minus the smallest is at most
+  `max(2, ceil(T / (2N)))`, `T` the villages counted (`VILLAGE_BALANCE`).
+  The capital search keeps only room-balanced sets, and the village fill
+  places a village only where the villages stay balanced, so both hold by
+  construction; the invariants still check the finished board.
+- **Order.** Capitals first, then the wild reserve, then the villages, then
+  terrain and resources as before (on Dry Land the sites are fixed before
+  the terrain is drawn; on a water map the settlements go on the land
+  mask).
 - **Wild reserve** (Dry Land, Pangea, and Lakes only). After the capitals
   and before the villages the generator reserves up to 1 (widths 11–16), 2
   (20), or 3 (25) **wild centres**: a land tile at least 2 from the edge, at
@@ -640,8 +741,11 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
   [section 2.7](#27-map-curiosities)), and at least 6 from another wild
   centre, each drawn uniformly from the legal tiles in `(y, x)` order (one
   draw of the match stream). With no legal tile fewer are reserved, with no
-  further draw (a 16 x 16 Dry Land board with four players has none); the
-  reserve never rejects a board. Every village keeps 3 from every wild
+  further draw (a crowded board often has none); the reserve never rejects
+  a board. On a setup new at `7r42` (see "Villages with many seats" above)
+  the reserve gives way to the villages: while villages are missing, its
+  last centres are dropped one at a time, and the reserve with the most
+  villages stands (the largest on a tie). Every village keeps 3 from every wild
   centre on widths 11 and 14 and 4 on widths 16 and up (the boards that may
   have a Giant Spider, whose lair needs 4 from every village), so a
   curiosity and a Rift stay possible on a village-dense board.
@@ -656,9 +760,12 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
   once (all from the match stream). A phase's order is the shuffled
   candidates on its pitch-3 lattice (`x mod 3 = px`, `y mod 3 = py`), then
   the other shuffled candidates; each is added if it still keeps 3 from
-  every settlement, until `S − seats` villages stand. The nine phases are
+  every settlement and keeps the villages balanced between the capitals
+  (a candidate refused for balance is tried again once the others have
+  caught up), until `S − seats` villages stand. The nine phases are
   tried in turn from the drawn one (`px` advancing first, then `py`) and
-  the first that places every village wins.
+  the first that places every village wins; where fewer may stand, the
+  phase that places the most does (the earliest on a tie).
 - **Village fill on Continents and Archipelago.** No draw: after the
   coastal settlement every major landmass needs, the candidates (land with
   at least four land neighbours, 1 from the edge, 3 from every settlement)
@@ -671,15 +778,19 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
   before). On **Archipelago** a home island (one with a capital) takes a
   village only while no other home island has fewer, so the home islands
   hold the same number of villages, within 1; every other island, major or
-  minor, takes the rest (half the settlements per island before).
+  minor, takes the rest (half the settlements per island before). Both
+  also keep the village balance above, and where fewer villages may stand
+  the scan that places the most wins.
 - A candidate that cannot place all `S − seats` villages fails the
-  `VILLAGE_DENSITY` map invariant and the stream continues.
-- Measured on seeds 0–255 of every map type, size, and seat count
-  (`npm run validate:ruleset7-map-scale`): every board generates; the mean
-  accepted candidate is 1.2–9.8 on Dry Land, Pangea, and Lakes and up to
-  18.5 on Continents and Archipelago (14 x 14 Continents and 16 x 16
-  Archipelago with the most seats), no worse than 1.6 times the `7r39`
-  generator on any cell.
+  `VILLAGE_DENSITY` map invariant and the stream continues; on a setup new
+  at `7r42` the invariant asks only that the board holds no more than
+  `S − seats`.
+- Measured on seeds 0–255 of every legal map type, size, and seat count
+  (163 cells, `npm run validate:ruleset7-map-scale`): every board
+  generates; the mean accepted candidate is at most 7.1 (16 x 16
+  Archipelago with four players) and the worst 45, no worse than 1.6 times
+  the `7r39` generator on any cell that existed then (and far below it on
+  most) and inside "mean 8, worst 64" on every new one.
 - Every settlement's eight-cell ring has at least three economic opportunities
   from at least two families (Agriculture, Timber, Metal).
 - **Capital growth guarantee.** Every capital's eight-cell ring (its starting
@@ -702,6 +813,29 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
 - Capital fairness: every capital's development score is 6–17 and scores on
   one map differ by at most 5. It is evaluated after the growth floor and
   never relaxed.
+- **Capital levelling** (`7r42`,
+  [map scale design](RULESET_7_MAP_SCALE.md) section 4.4). With many
+  capitals at almost fixed places the generator can no longer pick capitals
+  whose rings happen to be even, so it evens them, PRNG-free, after the
+  growth floor. A board whose capitals already pass is unchanged; only
+  land ring tiles without a site change, never Water.
+  1. On Dry Land, before the growth floor, the **mountain floor**: a
+     capital with fewer than four ring tiles that are not Mountain has its
+     ring Mountains of lowest rank (those without Ore first) turned to
+     empty Grass until it has four.
+  2. **Growth.** A ring the growth floor could not fix gains Fruit, in rank
+     order, on its empty Grass, then on its Fertile Ground, then on its
+     Mountains (turned to Grass), until two Fruit stand.
+  3. **Score.** The window `[L, L + 5]` inside 6–17 that needs the fewest
+     points of change is chosen (ties: the fewest points removed, then the
+     lowest `L`). A capital below it gains, on its ring tiles of lowest
+     rank, Fruit on empty Grass or Game on an empty Forest (1 point each),
+     then Ore on an empty Mountain (2). A capital above it loses Game,
+     Fruit, or Fertile Ground turned to Fruit (1 each), then Ore or an
+     empty Forest turned to Grass (2). No step may leave the ring without
+     its two growth resources or its economy minimum.
+     A capital the levelling cannot bring into the window still fails
+     `CAPITAL_SCORE`.
 - Chests sit on empty Grass/Forest land reachable from a capital (no site,
   resource, or improvement). Moving onto a chest makes one PRNG draw: 5 Coins,
   or a full-HP exhausted unit of the mover's faction's **treasure role**
@@ -722,13 +856,49 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
 
 ### 2.3 Map types
 
-| Map type      | Land share | Structure                                                                                       |
-| ------------- | ---------: | ----------------------------------------------------------------------------------------------- |
-| `DRY_LAND`    |       100% | No water; all capitals share one land component.                                                |
-| `PANGEA`      |   59.5–72% | One major landmass holds every settlement and at least 90% of land; a coast ring surrounds it.  |
-| `CONTINENTS`  |     50–62% | Two major landmasses for two players, otherwise three; capitals on at least two of them.        |
-| `ARCHIPELAGO` |     34–46% | Between `playerCount` and `2 * playerCount + 2` major islands; each capital on a different one. |
-| `LAKES`       |     72–84% | At least two enclosed lakes of four or more cells; at least 75% of water is not edge-connected. |
+| Map type      | Land share | Structure                                                                                         |
+| ------------- | ---------: | ------------------------------------------------------------------------------------------------- |
+| `DRY_LAND`    |       100% | No water; all capitals share one land component.                                                  |
+| `PANGEA`      |   59.5–72% | One major landmass holds every settlement and at least 90% of land; a coast ring surrounds it.    |
+| `CONTINENTS`  |     50–62% | Two major landmasses for 2 players, three for 3–5, four for 6–8; each holds exactly its capitals. |
+| `ARCHIPELAGO` |     34–46% | Between `playerCount` and `2 * playerCount + 2` major islands; each capital on a different one.   |
+| `LAKES`       |     72–84% | At least two enclosed lakes of four or more cells; at least 75% of water is not edge-connected.   |
+
+- **Landmasses with many seats** (`pulp_wars-ykw.3`, `pulp-wars-poc-7r42`,
+  [map scale design](RULESET_7_MAP_SCALE.md) section 4.3).
+  - **Continents.** The capitals each landmass holds, the largest first:
+    1, 1 for 2 seats; 1, 1, 1 for 3; 2, 1, 1 for 4; 2, 2, 1 for 5;
+    2, 2, 1, 1 for 6; 2, 2, 2, 1 for 7; 2, 2, 2, 2 for 8
+    (`continentCapitalSplitV7`). Each landmass takes land in proportion to
+    its capitals and must hold exactly that many (through `7r41`: two or
+    three landmasses with land weights 1, 1 or 1, 1, 2, and capitals on at
+    least two of them). Up to four seats the landmasses keep their centres
+    (left and right for two; the two top corners and the bottom band, which
+    holds the most capitals, for three). From five seats they follow the
+    seats' ring domains ([section 2.2](#22-settlements-and-treasures)): the
+    ring slots are grouped in ring order, starting where the groups are
+    tightest, so that a landmass holds the capitals of adjacent domains,
+    and each landmass grows around the line joining its domains' centres.
+  - **Archipelago.** One island per seat with equal land. Up to four seats
+    the islands keep their centres; from five seats each island is centred
+    on the middle tile of its seat's ring domain, at least 2 from the edge.
+    A major landmass has at least
+    `max(6, min(floor(w² / 20), floor(L / (2N))))` land tiles, which is the
+    earlier `max(6, floor(w² / 20))` up to four seats and lets eight
+    20-tile islands of a 20 x 20 board count as major.
+  - **Lakes.** On boards 14 and wider the two lakes are long lakes down
+    the west and the east side, about three tiles wide and never closer
+    than 3 to the edge: each grows around a centred north-south line at
+    `x = 4` or `x = w − 5`, `ceil(water / 6) − 2` tiles long (through
+    `7r41` the lakes stood a quarter of the way in from two opposite
+    corners, on two corner domains, where no capital 2 from the edge fits).
+    The middle of the board stays land. The 11 x 11 board keeps its two
+    fixed lakes and holds two players.
+  - **Ponds.** On Continents and Archipelago a Water tile with no Water
+    neighbour is filled, and the landmass it lies in gives up its outermost
+    tile instead, so the land count stays exact.
+  - Faction choice and `curiosities` still change no draw, and the Showcase
+    and every mission are unchanged.
 
 - **Pangea coast ring** (`pulp_wars-9s0.2`). Pangea land never lies on the
   board's edge ring (row 0, column 0, the last row, and the last column),
@@ -1440,8 +1610,9 @@ Gallery has a Curiosities tab.
   contract's second-Goblin placement for a value of 2 (created after every
   seat's first unit, on the first land, non-Mountain, empty, chest-free cell
   of the capital ring in `(y, x)` order, or not at all), but it is unused.
-- Turn order is a seeded shuffle; `round` starts at 1 and increments after the
-  last seat in turn order.
+- Turn order is a seeded shuffle of every seat (2 to 8 players,
+  [section 2.1](#21-match-setup)); `round` starts at 1 and increments after
+  the last seat in turn order. No seat is compensated for moving later.
 - A `SHOWCASE` match starts differently: three developed cities, every
   technology, ten units, the whole board explored, and seat-order turns
   ([section 2.5](#25-showcase-setup)). Everything after its first Start Turn
@@ -1449,7 +1620,9 @@ Gallery has a Curiosities tab.
 - **Relationships:** in Rival mode every pair of players is hostile. In
   Cooperative mode all AI seats are formal allies of each other and hostile to
   the human. Allies cannot attack each other, capture each other's cities, or
-  enter each other's territory; they share nothing else.
+  enter each other's territory; they share nothing else. Both modes mean
+  the same at every seat count: with seven AI seats, Cooperative sets seven
+  allies against the human.
 - **Start Turn** (in order): set the active seat and reset its units'
   activations and capture eligibility (an Egg keeps its exhausted
   activation); set every owned city's city action available; count down the
@@ -1536,6 +1709,9 @@ Gallery has a Curiosities tab.
   ([section 17](#17-undead-faction-rules)).
 - **Outcome:** the human wins when every other player is eliminated and loses
   immediately when eliminated. There is no draw, score, or turn-limit victory.
+  The rule is the same with 2 or 8 players: an eliminated AI seat's turns
+  are skipped and the match goes on until the human is the last player or
+  is eliminated.
 
 ## 4. Cities
 
@@ -7927,6 +8103,7 @@ has no Candy step.
 | Balance     | `pulp-wars-poc-7r39` | `pulp_wars-1wy.6` measurement of the balance round: the Martian Grunt at 8 HP (was 9), the first step of the design's fallback ladder; the Normal AI's threatened-city Grunt bias 15 (was 14); matches without a Martian seat unchanged                                                                                                                                                                                                                                                                           | [section 11](#11-unit-roster), [balance design](RULESET_7_BALANCE_MARTIAN_ICE.md#17-measurement-and-the-grunt-at-8-hp-pulp_wars-1wy6) |
 | Map scale   | `pulp-wars-poc-7r40` | `pulp_wars-ykw.2` map scale engine I: village density per map type (`S = roundHalfUp(L / LPS)`, `LPS` 15/13/12/12/11) instead of the fixed village table; villages 1 from the edge; lattice packing with nine phases and the wild reserve on Dry Land, Pangea, and Lakes; the row-major fill with the landmass share on Continents and equal home islands on Archipelago; `VILLAGE_DENSITY` invariant; map revision `REGIONAL_BIOMES_NAVAL_V3`; every generated board changed, the Showcase and missions did not  |
 | Economy     | `pulp-wars-poc-7r41` | `pulp_wars-if6` early economy tweak: 3 starting Coins (was 5), so a first turn has 5 Coins and no longer pays for free research, level 2, and a unit; tier 3 technology base cost 9 (was 12), so one-city costs read 5 / 7 / 9; the per-city steps (1 / 3 / 5) unchanged; missions keep their own Coins; no shape changed                                                                                                                                                                                         | [section 3](#3-players-turns-and-victory), [section 6.1](#61-research-cost)                                                           |
+| Map scale   | `pulp-wars-poc-7r42` | `pulp_wars-ykw.3` map scale engine II: 2 to `F` players (8 today) on every width that holds them (`P(w, type)`, two measured limits on 11 x 11); capitals in domains, `D(w, N)` apart, 2 from the edge, outside the central zone; room and village balance; capital levelling; Continents and Archipelago on ring domains from five seats; long side lakes on boards 14 and wider; as many villages as fit on the new setups; nine seat colours; map revision `REGIONAL_BIOMES_NAVAL_V4`; no shape changed        | [section 2.1](#21-match-setup), [section 2.3](#23-map-types), [section 3](#3-players-turns-and-victory)                               |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -8280,9 +8457,31 @@ base cost 9) are the ones quoted here. The overlay's own corrections are in
 its [section 25](RULESET_7_CANDY.md#25-fold-notes-pulp_wars-jdb8), and the
 open items in [section 25](#25-known-discrepancies) here.
 
+**Map scale fold, engine step II (2026-10-05, `pulp_wars-ykw.3`,
+`pulp-wars-poc-7r42`):** many seats of the
+[map scale design](RULESET_7_MAP_SCALE.md) (its sections 3, 4, and 6 as
+amended after measurement, section 5.6) were folded in with their identity
+bump: the identity table (map revision `REGIONAL_BIOMES_NAVAL_V4`),
+[section 2.1](#21-match-setup) (1 to `F − 1` AI, the seats each width
+holds, the auto size, nine seat colours, Crowded),
+[section 2.2](#22-settlements-and-treasures) (capitals in domains, room and
+village balance, the capital levelling, villages on the new setups),
+[section 2.3](#23-map-types) (Continents and Archipelago for many seats,
+the long side lakes), and [section 3](#3-players-turns-and-victory).
+Two rulings of that fold were made after measurement and accepted: the
+measured seat limits of 11 x 11 Lakes and Continents, and "as many
+villages as fit" on the setups new at `7r42`. The Normal AI's turn budget,
+the setup screen for more than three opponents, and the coarse check
+(`pulp_wars-ykw.4` to `ykw.6`) are not folded. The values were checked
+against `map-scale.ts` and `map.ts` with
+`tests/unit/ruleset-v7-many-seats.test.ts` and
+`npm run validate:ruleset7-map-scale`. Board-dependent figures quoted
+elsewhere in this document (curiosity and Rift frequencies, balance
+results) were measured on earlier boards.
+
 ## 25. Known discrepancies
 
-As of `pulp-wars-poc-7r41` the rules in this document match the code for
+As of `pulp-wars-poc-7r42` the rules in this document match the code for
 the eight factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
 Martian overlay with the engine of the Mind Control overlay, the Ice Folk
@@ -8292,7 +8491,7 @@ the mission setup of [section 2.6](#26-mission-setup), the map
 curiosities of [section 2.7](#27-map-curiosities), and the Martian and Ice
 Folk balance round of `7r37` with the Grunt's 8 HP of `7r39`, and the
 village density of `7r40`, and the starting Coins and tier 3 technology base
-cost of `7r41`,
+cost of `7r41`, and the many seats of `7r42`,
 with these
 open items: the Candy items left after the fold and the pending balance
 steps below.

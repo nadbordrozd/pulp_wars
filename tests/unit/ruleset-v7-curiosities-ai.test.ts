@@ -228,15 +228,15 @@ describe("the gate and the switch (section 11, Gating)", () => {
       humanColor: "CORAL",
       factions: [...factions],
       mapType,
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities,
     });
-    // A four-seat 16 x 16 Dry Land board has no legal curiosity site (no
-    // tile is 5 from all four capitals), so the option on places none; the
-    // other match has it off.
+    // Seed 1 of the four-seat 16 x 16 Dry Land board has no legal curiosity
+    // site (no tile is 5 from all four capitals, as on most such boards),
+    // so the option on places none; the other match has it off.
     const cases = [
       setup(2, "PANGEA", ["ORIGINAL", "GOBLIN"], false),
-      setup(0, "DRY_LAND", ["ORIGINAL", "GOBLIN", "UNDEAD", "DINOSAUR"], true),
+      setup(1, "DRY_LAND", ["ORIGINAL", "GOBLIN", "UNDEAD", "DINOSAUR"], true),
     ];
     for (const match of cases) {
       const created = createPlayableGameV7(match);

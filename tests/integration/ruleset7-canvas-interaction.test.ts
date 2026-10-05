@@ -481,7 +481,9 @@ describe("Ruleset 7 Canvas interaction", () => {
     });
     const seed = document.querySelector<HTMLInputElement>("#v7-seed");
     if (seed === null) throw new Error("seed missing");
-    seed.value = "0";
+    // Seed 6: an AI seat moves first on the many-seats board (seed 0 did
+    // on the earlier boards).
+    seed.value = "6";
     chooseSeed();
     document
       .querySelector<HTMLButtonElement>('[data-action="launch"]')
@@ -520,6 +522,11 @@ describe("Ruleset 7 Canvas interaction", () => {
       storage: null,
       boardHost: host,
     });
+    // Seed 0: the human moves first on the many-seats board (the default
+    // seed 42 did on the earlier boards).
+    const seedField = document.querySelector<HTMLInputElement>("#v7-seed");
+    if (seedField === null) throw new Error("seed missing");
+    seedField.value = "0";
     chooseSeed();
     document
       .querySelector<HTMLButtonElement>('[data-action="launch"]')

@@ -175,7 +175,7 @@ function runPairedGame(
     // Human v Human: the headless and test only mirror option
     // (docs/architecture/HEADLESS_SIMULATION.md).
     allowDuplicateFactions: true,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
   });
   if (!created.ok) throw new Error(`${mapType}/${seed}: ${created.error.code}`);
@@ -510,7 +510,7 @@ function runNaturalGame(
     humanColor: "CORAL",
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL"),
     mapType: "CONTINENTS",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
     // Human v Human: the headless and test only mirror option
     // (docs/architecture/HEADLESS_SIMULATION.md).

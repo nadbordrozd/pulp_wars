@@ -370,7 +370,7 @@ function setup(): MatchSetupV7 {
     factions: ["ORIGINAL", "ORIGINAL"],
     allowDuplicateFactions: true,
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
   };
 }

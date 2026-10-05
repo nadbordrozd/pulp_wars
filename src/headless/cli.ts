@@ -10,7 +10,18 @@ import {
 import type { AiModeV6, FactionIdV6, MatchSetupV6 } from "../engine/v6/types";
 import type { ReplayFileV6 } from "../engine/v6/replay";
 import type { ReplayFileV7 } from "../engine/v7/replay";
-import type { FactionIdV7, MapTypeV7, MatchSetupV7 } from "../engine/v7/types";
+import {
+  FACTION_IDS_V7,
+  type BoardSizeV7,
+  type FactionIdV7,
+  type MapTypeV7,
+  type MatchSetupV7,
+} from "../engine/v7/types";
+import {
+  allowedBoardSizesV7,
+  autoBoardSizeV7,
+  seatCountAllowedV7,
+} from "../engine/v7/map-scale";
 import {
   missionByIdV7,
   missionMatchSetupV7,
@@ -47,12 +58,12 @@ if (mode === "replay") {
         : await headless.run(replay as ReplayFile);
   process.stdout.write(`${canonicalJson(result)}\n`);
 } else if (mode === "match") {
-  if (ruleset === "pulp-wars-poc-7r41") await runV7Match();
+  if (ruleset === "pulp-wars-poc-7r42") await runV7Match();
   else if (ruleset === "pulp-wars-poc-6") await runV6Match();
   else if (ruleset === "pulp-wars-poc-5") await runV5Match();
   else invalidRuleset();
 } else if (mode === "batch") {
-  if (ruleset === "pulp-wars-poc-7r41") await runV7Batch();
+  if (ruleset === "pulp-wars-poc-7r42") await runV7Batch();
   else if (ruleset === "pulp-wars-poc-6") await runV6Batch();
   else if (ruleset === "pulp-wars-poc-5") await runV5Batch();
   else invalidRuleset();
@@ -70,11 +81,11 @@ async function runV7Match(): Promise<void> {
   }
   if (args.includes("--mission"))
     throw new Error("--mission requires --map-type mission");
-  const aiCount = aiCountArg("--ai-count", 1);
+  const aiCount = aiCountArgV7();
   const size = boardSizeArgV7(aiCount, mapType);
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r41",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    rulesetId: "pulp-wars-poc-7r42",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     seed: numberArg("--seed", 0),
     width: size,
     height: size,
@@ -122,7 +133,7 @@ async function runV7MissionMatch(): Promise<void> {
     throw new Error(`--mission ${id} is not a registered mission`);
   const choices = mission.seats.map((seat) => missionSeatFactionsV7(seat));
   const factions = args.includes("--factions")
-    ? factionsArgV7((mission.seats.length - 1) as 1 | 2 | 3)
+    ? factionsArgV7(mission.seats.length - 1)
     : null;
   const setup = missionMatchSetupV7(mission, factions?.[0]);
   if (
@@ -141,12 +152,12 @@ async function runV7MissionMatch(): Promise<void> {
 
 async function runV7Batch(): Promise<void> {
   const factions = args.includes("--factions")
-    ? factionsArgV7(uniqueBatchAiCount())
+    ? factionsArgV7(uniqueBatchAiCountV7())
     : null;
   const mapTypes = mapTypesArg();
   const result = await headlessV7.runAiBatch({
     seeds: commaNumbers("--seeds", "0,1,2,3,4,5,6,7"),
-    aiCounts: batchAiCounts(),
+    aiCounts: batchAiCountsV7(),
     modes: modesArg(),
     maxCommands: numberArg("--max-commands", V7_MATCH_MAX_COMMANDS_DEFAULT),
     maxRounds: numberArg("--max-rounds", V7_MATCH_MAX_ROUNDS_DEFAULT),
@@ -319,17 +330,68 @@ function boardSizeArg(aiCount: 1 | 2 | 3): 11 | 14 | 16 | 20 | 25 {
 }
 
 /**
- * Revision 18 section 5.5: the fixed Showcase board is 16 x 16. Its size
- * defaults to 16 for every seat count, and any other `--size` is an error.
+ * Ruleset 7 `--ai-count` (docs/product/RULESET_7_MAP_SCALE.md section 9): 1
+ * to `F - 1`, `F` the number of factions; the default stays 1.
  */
-function boardSizeArgV7(
-  aiCount: 1 | 2 | 3,
-  mapType: MapTypeV7,
-): 11 | 14 | 16 | 20 | 25 {
-  if (mapType !== "SHOWCASE") return boardSizeArg(aiCount);
-  if (numberArg("--size", 16) !== 16)
+function aiCountArgV7(): number {
+  const count = numberArg("--ai-count", 1);
+  if (!Number.isSafeInteger(count) || count < 1 || count > maxAiCountV7())
+    throw new Error(`--ai-count must be 1 to ${maxAiCountV7()}`);
+  return count;
+}
+
+/** Ruleset 7 `--ai-counts`: each 1 to `F - 1`; the default stays 1,2,3. */
+function batchAiCountsV7(): number[] {
+  const counts = commaNumbers("--ai-counts", "1,2,3");
+  if (
+    counts.length === 0 ||
+    counts.some(
+      (count) =>
+        !Number.isSafeInteger(count) || count < 1 || count > maxAiCountV7(),
+    )
+  )
+    throw new Error(
+      `--ai-counts must be a comma list of 1 to ${maxAiCountV7()}`,
+    );
+  return counts;
+}
+
+function maxAiCountV7(): number {
+  return FACTION_IDS_V7.length - 1;
+}
+
+function uniqueBatchAiCountV7(): number {
+  const unique = [...new Set(batchAiCountsV7())];
+  if (unique.length !== 1 || unique[0] === undefined) {
+    throw new Error(
+      "--factions with batch requires exactly one --ai-counts value",
+    );
+  }
+  return unique[0];
+}
+
+/**
+ * Ruleset 7 `--size` (map scale sections 3.3, 6.2, and 9): the auto size of
+ * the seat count and map type by default; a size that does not hold the
+ * seats on the map type is an error naming the allowed sizes. Revision 18
+ * section 5.5: the fixed Showcase board is 16 x 16 with at most three AI
+ * seats, and any other `--size` is an error.
+ */
+function boardSizeArgV7(aiCount: number, mapType: MapTypeV7): BoardSizeV7 {
+  const seats = aiCount + 1;
+  const allowed = allowedBoardSizesV7(mapType, seats);
+  if (mapType === "SHOWCASE" && numberArg("--size", 16) !== 16)
     throw new Error("--size must be 16 for the showcase map type");
-  return 16;
+  if (allowed.length === 0)
+    throw new Error(
+      `--ai-count ${aiCount} has no board size on the ${mapType.toLowerCase()} map type`,
+    );
+  const size = numberArg("--size", autoBoardSizeV7(seats, mapType) ?? 0);
+  if (!seatCountAllowedV7(size, mapType, seats))
+    throw new Error(
+      `--size must be ${allowed.join(", ")} for ${seats} seats on the ${mapType.toLowerCase()} map type`,
+    );
+  return size as BoardSizeV7;
 }
 
 function v7BatchBoardSize(mapTypes: readonly MapTypeV7[]): {
@@ -430,7 +492,7 @@ function curiositiesArgV7(): boolean {
  * play distinct factions in registration order (Human, Undead, Goblin,
  * Dinosaur).
  */
-function factionsArgV7(aiCount: 1 | 2 | 3): readonly FactionIdV7[] {
+function factionsArgV7(aiCount: number): readonly FactionIdV7[] {
   if (!args.includes("--factions")) return distinctFactionsV7(aiCount + 1);
   const values = stringArg("--factions", "").split(",");
   if (values.length !== aiCount + 1)
@@ -517,6 +579,6 @@ function parseFactionValues(
 
 function invalidRuleset(): never {
   throw new Error(
-    "--ruleset must be pulp-wars-poc-7r41, pulp-wars-poc-6, or pulp-wars-poc-5",
+    "--ruleset must be pulp-wars-poc-7r42, pulp-wars-poc-6, or pulp-wars-poc-5",
   );
 }

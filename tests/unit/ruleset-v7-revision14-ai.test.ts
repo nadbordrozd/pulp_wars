@@ -366,10 +366,12 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // seed 21 Pangea trains a Lich and plagues within 40 rounds.
     // With 3 starting Coins (`pulp_wars-if6`) every opening changes: of
     // seeds 0-23 only seed 3 Pangea trains a Lich (two) and plagues within
-    // 40 rounds.
+    // 40 rounds. Many seats (`pulp_wars-ykw.3`) regenerates every board
+    // again: seeds 1, 7, 9, and 13 Pangea train a Lich and plague within 40
+    // rounds (seed 1: two Liches, seven Plague applications).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 3,
+      seed: 1,
       width: 11,
       height: 11,
       aiCount: 1,
@@ -378,7 +380,7 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
       humanColor: "CORAL",
       factions: ["UNDEAD", "ORIGINAL"],
       mapType: "PANGEA",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
     };
     const first = runAiMatchV7(setup, { maxRounds: 40 });
@@ -425,7 +427,7 @@ function setupWith(factions: readonly FactionIdV7[]): MatchSetupV7 {
     humanColor: "CORAL",
     factions: [...factions],
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
   };
 }

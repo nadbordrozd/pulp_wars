@@ -15,13 +15,13 @@ import {
  * for byte, so rule tests written against a revision-13 board keep that board.
  */
 export function revision13VillageCountV7(setup: MatchSetupV7): number {
-  const table =
+  const table: Readonly<Record<number, number>> =
     setup.width === 25
       ? { 1: 20, 2: 19, 3: 18 }
       : setup.width === 20
         ? { 1: 13, 2: 12, 3: 11 }
         : { 1: 3, 2: 4, 3: 6 };
-  return table[setup.aiCount];
+  return table[setup.aiCount] ?? 0;
 }
 
 /**

@@ -114,13 +114,26 @@ describe("ruleset-7 revision-4 regional biome map", () => {
       canonicalMapRandomHashV7(second.map),
     );
     expect(first.map).toEqual(second.map);
-    // The village density (`pulp_wars-ykw.2`, 7r40) regenerates every
-    // board: 13 villages for four players on 16 x 16 (seven before).
+    // Many seats (`pulp_wars-ykw.3`, 7r42) regenerates every board again:
+    // capitals in domains, still 13 villages for four players on 16 x 16.
     expect(canonicalMapRandomHashV7(first.map)).toBe(
-      "791c9ff7fe64e825526426def16e8e7a16ddcf4f6483f4420b0d988569baf599",
+      "b0051188621da89b243538c69c47b2e1793657b6dc61a9a680684ec0f20bdbe6",
     );
     expect(first.map.attempt).toBe(1);
     expect(first.map.villages).toHaveLength(13);
+    // The village density (`pulp_wars-ykw.2`, 7r40 and 7r41) regenerated
+    // every board: 13 villages for four players on 16 x 16 (seven before).
+    // The V3 parity rules reproduce that board exactly.
+    const revision41 = generateInitialMapWithVillageCountV7(
+      setupV7(0, 3),
+      13,
+      "VILLAGE_DENSITY_CURIOSITIES",
+    );
+    if (!revision41.ok) throw new Error(revision41.error.code);
+    expect(canonicalMapRandomHashV7(revision41.map)).toBe(
+      "791c9ff7fe64e825526426def16e8e7a16ddcf4f6483f4420b0d988569baf599",
+    );
+    expect(revision41.map.attempt).toBe(1);
     // Revision 16 (`pulp_wars-wwc`): the capital growth floor and
     // `CAPITAL_GROWTH` accepted the map before the density on its eleventh
     // candidate; the 7r39 parity rules reproduce it exactly.

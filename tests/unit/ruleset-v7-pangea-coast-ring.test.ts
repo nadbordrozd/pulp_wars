@@ -48,7 +48,7 @@ function setup(
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
     allowDuplicateFactions: true,
     mapType,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3" as const,
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4" as const,
     curiosities: false,
   };
 }
