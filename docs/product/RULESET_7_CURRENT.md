@@ -165,27 +165,36 @@ Archipelago layouts for many seats
 again (map revision `REGIONAL_BIOMES_NAVAL_V4`); the Showcase, the missions,
 and every rule of play did not.
 
-**The naval branch, engine steps I and II, is live and not folded here.**
-`pulp-wars-poc-7r43` (`pulp_wars-5ti.2`) implements engine step I of the
-[naval branch overlay](RULESET_7_NAVAL_BRANCH.md): the Naval branch has five
-technologies in all eight trees (Seamanship, tier 2 under Shorecraft:
-**Ram** and **Board**; Submersibles, tier 3 under Seamanship: the
-**Submarine** and **Harbours**). `pulp-wars-poc-7r44` (`pulp_wars-5ti.3`)
-implements engine step II, **the Ice Folk frozen sea**: the Ice Folk have no
-ships and never embark; their five Naval technologies (shown as Rime, Pack
-Ice, Icebound, Black Ice, and Glacier) let their land units **Freeze** water
-into ice that everyone's land units can stand on, on which Ice Folk units
-**slide** and others slip, which traps ships (**Icebound**, with the crush),
-Chills enemies standing on it (**Black Ice**), and thaws outside its owner's
-territory. Until the fold of `pulp_wars-5ti.9` the overlay is the rule for
-these (its sections 2 to 10 and 12, with the records of its
-[section 20](RULESET_7_NAVAL_BRANCH.md#20-engine-step-i-as-built-pulp_wars-5ti2)
-and [section 22](RULESET_7_NAVAL_BRANCH.md#22-engine-step-ii-as-built-pulp_wars-5ti3)),
-and the Naval text of this document
-([sections 6](#6-technology), [11](#11-unit-roster),
-[13](#13-combat-and-fortification), and [14](#14-naval-rules)) still
-describes the three-technology branch with ships for every faction. A match
-on Dry Land plays as before: the whole branch is forbidden there.
+**The naval branch overlay is folded.** `pulp_wars-5ti.9` folded the
+[naval branch overlay](RULESET_7_NAVAL_BRANCH.md) as built.
+`pulp-wars-poc-7r43` (`pulp_wars-5ti.2`, engine step I) gives the Naval
+branch five technologies in all eight trees (Seamanship, tier 2 under
+Shorecraft: **Ram** and **Board**; Submersibles, tier 3 under Seamanship:
+the **Submarine** and **Harbours**). `pulp-wars-poc-7r44`
+(`pulp_wars-5ti.3`, engine step II) is **the Ice Folk frozen sea**: the Ice
+Folk have no ships and never embark; their five Naval technologies (shown
+as Rime, Pack Ice, Icebound, Black Ice, and Glacier) let their land units
+**Freeze** water into ice that every faction's land units can stand on, on
+which Ice Folk units **slide** and others slip, which locks ships in
+(**Icebound**, with the crush), Chills enemies standing on it (**Black
+Ice**), and thaws outside its owner's territory. The art (`pulp_wars-5ti.6`)
+and the interface (`pulp_wars-5ti.7`) are live with no identity change. The
+rules are in [section 6.2](#62-technology-tree) (the tree),
+[section 11](#11-unit-roster) (the Submarine),
+[section 14](#14-naval-rules) (ships, [the Ram](#141-the-ram-bow-ram),
+[Board](#142-board), [the Submarine](#143-the-submarine-submerged-and-torpedo),
+and [Harbours](#144-harbours)), and
+[section 21.16](#2116-the-frozen-sea) (the frozen sea), with the shared
+sections changed where a shared rule reads differently
+([sections 2.5](#25-showcase-setup), [2.6](#26-mission-setup),
+[3](#3-players-turns-and-victory), [5](#5-achievements-and-monuments),
+[12](#12-movement-and-unit-actions), [13](#13-combat-and-fortification),
+[15](#15-fog-and-observation), and [16](#16-normal-ai-summary)). A match on
+Dry Land plays as before (the whole branch is forbidden there), and a match
+without an Ice Folk seat has no ice. What is still open (the Normal AI's
+use of the branch, `pulp_wars-5ti.4` and `pulp_wars-5ti.5`; the coarse
+balance on water maps, `pulp_wars-5ti.8`; and the polish items of
+`pulp_wars-5ti.10`) is in [section 25](#25-known-discrepancies).
 
 **The Candy overlay is folded.** `pulp_wars-jdb.8` completed the fold the
 engine bead began: the Candy rules are
@@ -231,8 +240,9 @@ overlays, revisions [4](RULESET_7_REVISION_4_BIOME_ECONOMY.md),
 [21](RULESET_7_REVISION_21_ACHIEVEMENTS.md), with the
 [Martian overlay](RULESET_7_MARTIANS.md), the
 [Ice Folk overlay](RULESET_7_ICE_FOLK.md), the
-[Dwarf overlay](RULESET_7_DWARVES.md), and the
-[Candy overlay](RULESET_7_CANDY.md). Those documents remain as design
+[Dwarf overlay](RULESET_7_DWARVES.md), the
+[Candy overlay](RULESET_7_CANDY.md), and the
+[naval branch overlay](RULESET_7_NAVAL_BRANCH.md). Those documents remain as design
 history, exact schema/ordering detail, measurements, and acceptance
 provenance. When one of them disagrees with this document, this document
 describes the current rules. In particular, the [baseline](RULESET_7.md)
@@ -263,7 +273,11 @@ some Help text, an identity written as `7rNN`, and a fallback-art plan, and
 the Candy overlay keeps an identity written as `7rNN`, a per-unit analysis
 computed at `7r35`, and the plans of its Normal AI, UI, browser smoke,
 telemetry, and balance sections where the build differs (its
-[section 25](RULESET_7_CANDY.md#25-fold-notes-pulp_wars-jdb8) lists them);
+[section 25](RULESET_7_CANDY.md#25-fold-notes-pulp_wars-jdb8) lists them),
+and the naval branch overlay keeps identities written as `7rA` and `7rB`, a
+tier 3 cost of 12, a Snow cover of × 1.5 for Glacier, seven factions, and
+the plans of its Normal AI, UI, art, telemetry, and balance sections where
+the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
@@ -299,8 +313,16 @@ lost ([section 20.9](#209-mind-controlled-units)). A unit's **kind** is the
 faction whose unit it is (`unitFactionV7`): its original owner's faction
 while it is controlled, otherwise its owner's. Every faction word above
 ("Undead units", "Goblin-crewed", "dinosaurs", "Ice Folk units", "Dwarf
-units", the Martian terms) names a unit's kind. **Ice Folk units** are the land
-roles of an Ice Folk seat in land form (never a boat or an embarked unit);
+units", the Martian terms) names a unit's kind. A **ship** (or **boat**) is
+a unit in `NAVAL` form: a Patrol Boat, a Battleship, or a Submarine. A unit
+is **afloat** in `NAVAL` or `EMBARKED` form (a ship, a transport, or a
+self-launched machine). An **ice tile** is a water tile with an entry in
+the `ice` list; an afloat unit standing on one is **icebound**; a
+**submerged** Submarine is one that is not icebound
+([sections 14](#14-naval-rules) and [21.16](#2116-the-frozen-sea)).
+**Ice Folk units** are the land
+roles of the Ice Folk kind in land form (the Ice Folk have no boat and
+never embark);
 **Mountain-born** units are its Yeti, Boulder Yeti, and Frost Giant; a unit
 of any faction is **Chilled** while its `chilled` entry has `turnsLeft` of
 at least 1 and **sluggish** (Frozen) on the turn of a new freeze; **Snow**
@@ -328,7 +350,10 @@ combat, Graves, Infect, Wail, Plague and Bitten afflictions, explosions,
 Eggs, growth, Shields, Cooling, controlled units and their release, and
 Mind Control cooldowns (`martian.ts`; the kind resolver `unitFactionV7` and
 `unitCapabilitiesV7` in `ruleset-v7.ts`), Chill, Snow, the Blizzard, and the Cold Aura
-(`ice-folk.ts`), Dig In, clockwork, Knockback, and the rider brake
+(`ice-folk.ts`), the ice tiles, the Freeze set, the thaw, Black Ice, and
+the crush (`ice.ts`), the Board target rule (`naval-branch.ts`; the Ram,
+Submerged, Torpedo, icebound, and dock-population helpers are in
+`ruleset-v7.ts`), Dig In, clockwork, Knockback, and the rider brake
 (`dwarf.ts`), Tunnel, surfacing, Bomb Run, and Assemble
 (`dwarf-reducer.ts`), Sugar Rush, the Rush perks, Splat, Bounce, Crumbs,
 and Home Sweet Home (`candy.ts`), the Candy commands, eating, and the Crash
@@ -355,24 +380,24 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 ## 1. Identity and compatibility
 
-| Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r44`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| Browser autosave                           | `pulpWars.save.v7r44.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                             |
-| Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`; `ICE_FOLK` → `ICE_FOLK_BASELINE_V1`; `DWARF` → `DWARF_BASELINE_V1`; `CANDY` → `CANDY_BASELINE_V1`                                                                                                                                                                                                                                |
-| Display names                              | `ORIGINAL` is "Human"; `UNDEAD` is "Undead"; `GOBLIN` is "Goblin"; `DINOSAUR` is "Dinosaur"; `MARTIAN` is "Martian"; `ICE_FOLK` is "Ice Folk"; `DWARF` is "Dwarf"; `CANDY` is "Candy"                                                                                                                                                                                                                                                                                                                           |
-| Achievements (`ACHIEVEMENT_IDS_V7`)        | `EXPLORER`, `ENGINEER`, `MUSTER`, `CONQUEROR`, `LAND_BARON`, `SEA_DOG`, `SLAYER` ([section 5](#5-achievements-and-monuments))                                                                                                                                                                                                                                                                                                                                                                                   |
-| Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, all described here and offered by the browser setup, the engine, and the headless tools                                                                                                                                                                                                                                                                                                                                    |
-| Folded overlays                            | Martian ([section 20](#20-martian-faction-rules), `pulp_wars-t6s.7`); Ice Folk ([section 21](#21-ice-folk-faction-rules), `pulp_wars-7g3.8`); Dwarf ([section 22](#22-dwarf-faction-rules), `pulp_wars-78i.8`); Candy ([section 23](#23-candy-faction-rules), `pulp_wars-jdb.8`, after the engine fold of `pulp_wars-jdb.3`); the Rift (`7r28`, [Rift overlay](RULESET_7_RIFT.md)) and one faction per seat (`7r29`, [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md)), folded directly when they landed |
+| Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ruleset                                    | `pulp-wars-poc-7r44`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Browser autosave                           | `pulpWars.save.v7r44.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`; `ICE_FOLK` → `ICE_FOLK_BASELINE_V1`; `DWARF` → `DWARF_BASELINE_V1`; `CANDY` → `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                        |
+| Display names                              | `ORIGINAL` is "Human"; `UNDEAD` is "Undead"; `GOBLIN` is "Goblin"; `DINOSAUR` is "Dinosaur"; `MARTIAN` is "Martian"; `ICE_FOLK` is "Ice Folk"; `DWARF` is "Dwarf"; `CANDY` is "Candy"                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Achievements (`ACHIEVEMENT_IDS_V7`)        | `EXPLORER`, `ENGINEER`, `MUSTER`, `CONQUEROR`, `LAND_BARON`, `SEA_DOG`, `SLAYER` ([section 5](#5-achievements-and-monuments))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, all described here and offered by the browser setup, the engine, and the headless tools                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Folded overlays                            | Martian ([section 20](#20-martian-faction-rules), `pulp_wars-t6s.7`); Ice Folk ([section 21](#21-ice-folk-faction-rules), `pulp_wars-7g3.8`); Dwarf ([section 22](#22-dwarf-faction-rules), `pulp_wars-78i.8`); Candy ([section 23](#23-candy-faction-rules), `pulp_wars-jdb.8`, after the engine fold of `pulp_wars-jdb.3`); the naval branch ([sections 14](#14-naval-rules) and [21.16](#2116-the-frozen-sea), `pulp_wars-5ti.9`); the Rift (`7r28`, [Rift overlay](RULESET_7_RIFT.md)) and one faction per seat (`7r29`, [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md)), folded directly when they landed |
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r41`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r43`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
   and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
   Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
@@ -493,9 +518,36 @@ separate [Ruleset 6](RULESET_6.md) route.
   the seat colours are nine (four before), and the setup's
   `mapGenerationRevision` is `REGIONAL_BIOMES_NAVAL_V4`, the only value a
   setup may carry. The map invariants gained `ROOM_BALANCE` and
-  `VILLAGE_BALANCE`.
+  `VILLAGE_BALANCE`. Naval branch engine I (`pulp_wars-5ti.2`, `7r43`)
+  appended the technologies `SEAMANSHIP` and `SUBMERSIBLES` (after
+  `NAVAL_ENGINEERING`, so earlier indices are unchanged) and the mechanical
+  role `SUBMARINE` (after `BATTLESHIP`) and added the command `BOARD` (right
+  after `ATTACK`), the event `SHIP_BOARDED` (right after
+  `UNIT_MIND_CONTROLLED`), the errors `BOARD_NOT_LEGAL` and the
+  `ATTACK_NOT_LEGAL` reason `NOT_AFLOAT`, the combat-preview fields `ram`
+  and `torpedo`, the unit stats `submerged` and `boardableAt`, and the
+  public query `previewBoardV7`; `PORT_BUILT.populationAdded` and
+  `SHIPYARD_BUILT.livePopulationTotal` became values (1 or 2, and 2 or 3).
+  No state or view list was added; a Dry Land match plays the commands of
+  the same setup and seed at `7r42`. Naval branch engine II
+  (`pulp_wars-5ti.3`, `7r44`) added the command `FREEZE` (right after
+  `COLD_SNAP`), the state and view list `ice` (after `curiosities`; the view's
+  entries carry `permanent`), the events `WATER_FROZEN`, `ICE_MELTED`, and
+  `UNITS_CRUSHED` (in that order right after `UNITS_CHILLED`), the
+  `UNIT_DIED` cause `CRUSHED`, the `UNITS_CHILLED` source `BLACK_ICE`, the
+  error `FREEZE_NOT_LEGAL`, the reason `ICEBOUND` of `ATTACK_NOT_LEGAL`,
+  `BOARD_NOT_LEGAL`, `MOVEMENT_ILLEGAL`, and `noRetaliationReason`, the
+  `BOARD_NOT_LEGAL` reason `DEEP_WATER`, the movement failure reasons
+  `SLIDE_FORCED` and `ICE_STOPS_MOVE`, the `UNIT_MOVE_INTERRUPTED` reason
+  `ICE`, the combat-preview fields `iceCover` and `icebound`, the unit stat
+  `icebound` (present exactly in a match with an Ice Folk seat) and the
+  `iceFolk` block's `onIce`, `slides`, and `iceCover`, and the public query
+  `previewFreezeV7`
+  ([sections 14](#14-naval-rules) and [21.16](#2116-the-frozen-sea)); a
+  match without an Ice Folk seat is the `7r43` match apart from the empty
+  list.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r41.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r43.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
@@ -512,7 +564,8 @@ separate [Ruleset 6](RULESET_6.md) route.
   Candy faction is unrelated to the Ruleset 7 Candy of
   [section 23](#23-candy-faction-rules)). Every faction shares
   the frozen mechanical role order `FIGHTER`, `RAIDER`, `MARKSMAN`, `GUARD`,
-  `CAPTAIN`, `CATAPULT`, `KNIGHT`, `JUGGERNAUT`, `PATROL_BOAT`, `BATTLESHIP`.
+  `CAPTAIN`, `CATAPULT`, `KNIGHT`, `JUGGERNAUT`, `PATROL_BOAT`, `BATTLESHIP`,
+  `SUBMARINE`.
   State, commands, events, reward IDs, and event literals serialize the
   mechanical role, never a faction label. Rules, public views, previews, UI,
   and the AI resolve every unit through its **kind's** faction registration
@@ -525,7 +578,9 @@ separate [Ruleset 6](RULESET_6.md) route.
   built) uses the seat's own faction (`seatRoleRuleV7`). Infect and Bitten
   remove the victim and create a new unit; Mind Control changes a unit's
   owner and keeps everything else, and a release gives it back
-  ([section 20.9](#209-mind-controlled-units)). An Egg hatches in place
+  ([section 20.9](#209-mind-controlled-units)); a boarding changes a ship's
+  owner for good, so its kind follows its new owner
+  ([section 14.2](#142-board)). An Egg hatches in place
   into its unit with the same ID ([section 19.5](#195-hatching)).
 - The Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy technology
   graphs, economy, and every non-unit rule are identical to the Human ones;
@@ -537,7 +592,8 @@ separate [Ruleset 6](RULESET_6.md) route.
   Deep Winter, and Brittle for the Ice Folk; Engineer support, Assemble,
   Dive, no Overrun, Dig In, and Blasting Charges for the Dwarves;
   Confectioner support, no Overrun, Home Sweet Home, and Peppermint Surprise
-  for the Candy), and the faction rules of
+  for the Candy; and the whole Naval branch for the Ice Folk, who freeze
+  the sea instead of sailing it), and the faction rules of
   [section 17](#17-undead-faction-rules) (Undead),
   [section 18](#18-goblin-faction-rules) (Goblin),
   [section 19](#19-dinosaur-faction-rules) (Dinosaur),
@@ -575,7 +631,10 @@ separate [Ruleset 6](RULESET_6.md) route.
   ([sections 23.5](#235-splat) and [23.7](#237-frosting-and-sugar-toss));
   Bounce stores nothing. Its only map-curiosity field is `curiosities`, the
   Fountains, Shrines, and Wrecks sorted by `(y, x)`
-  ([section 2.7](#27-map-curiosities)).
+  ([section 2.7](#27-map-curiosities)). The naval branch stores one list,
+  `ice`, the ice tiles `{ at, ownerId, turnsLeft }` sorted by `(y, x)`
+  ([section 21.16](#2116-the-frozen-sea)); the Ram, Submerged, Torpedo, a
+  boarded prize, Harbours, icebound, and the slide store nothing.
 
 ## 2. Setup and map generation
 
@@ -1059,7 +1118,7 @@ for them.
 | ------- | ---------- | ----: | --------------------------------------- | --------: | ---: | ---------: | -----------: |
 | North   | `(cx, 3)`  |     4 | `SURVEY`, `WALLS`, `TREASURY_8`         |         0 |   11 |          2 |            5 |
 | Capital | `(cx, 7)`  |     5 | `SURVEY`, `WALLS`, `BOOM`, `JUGGERNAUT` |         4 |   10 |          0 |            7 |
-| Coast   | `(cx, 11)` |     3 | `SURVEY`, `WALLS`                       |         0 |    8 |          3 |            4 |
+| Coast   | `(cx, 11)` |     4 | `SURVEY`, `WALLS`, `TREASURY_8`         |         0 |   10 |          1 |            5 |
 
 | City    | Tile           | Content                               | Live population |
 | ------- | -------------- | ------------------------------------- | --------------: |
@@ -1082,13 +1141,18 @@ for them.
 | Coast   | `(cx + 1, 10)` | Forest, Game                          |               — |
 | Coast   | `(cx − 1, 11)` | Workshop (one adjacent basic type)    |               2 |
 | Coast   | `(cx + 1, 11)` | Fruit                                 |               — |
-| Coast   | `(cx − 1, 12)` | Port                                  |               1 |
-| Coast   | `(cx + 1, 12)` | Shipyard                              |               2 |
+| Coast   | `(cx − 1, 12)` | Port (with Harbours)                  |               2 |
+| Coast   | `(cx + 1, 12)` | Shipyard (with Harbours)              |               3 |
 
 - Roads also lie on the neutral tiles `(cx, 5)` and `(cx, 9)`, so the Road
   line `(cx, 4) … (cx, 10)` joins the three centers: Road population is +2
   for the capital and +1 for each other city, included in the Live column
-  (North 10 + 1, Capital 8 + 2, Coast 7 + 1).
+  (North 10 + 1, Capital 8 + 2, Coast 9 + 1).
+- Every technology is researched, so **Harbours**
+  ([section 14.4](#144-harbours)) gives the Port 2 and the Shipyard 3 for
+  every faction (the Ice Folk have it from Glacier). With them the Coast
+  city is level 4 under the ordinary ledger (it was level 3 before
+  `pulp-wars-poc-7r43`), with the level-4 reward record North has.
 - The capital's permanent population is its `BOOM` record (3, at the center)
   plus one `HARVEST_FRUIT` record (1) at `(cx + 1, 8)`, a Grass tile whose
   Fruit is gone.
@@ -1097,22 +1161,33 @@ for them.
   spatial rules compute, and
   `population = permanent + live − growthSpent(level)`.
 - First income ([section 4.3](#43-income)): the capital pays 4 + 1 + 2
-  (Market); North 4 + 1 land trade; Coast 3 + 1 land trade: 16 Coins for a
-  Human, Undead, Dinosaur, Martian, Ice Folk, or Dwarf seat and 14 for a
-  Goblin seat (Plunder
+  (Market); North 4 + 1 land trade; Coast 4 + 1 land trade: 17 Coins for a
+  Human, Undead, Dinosaur, Martian, Ice Folk, Dwarf, or Candy seat and 15
+  for a Goblin seat (Plunder
   replaces land trade). No city has sea trade: the Port and Shipyard belong
   to one city.
 
-**Players.** Every seat has all 23 technologies (nothing is left to
+**Players.** Every seat has all 25 technologies (nothing is left to
 research and the free opening technology does not apply), 3 Coins before its
-first Start Turn (so the first seat shows 19 Coins, or 17 for a Goblin seat),
-all 256 cells explored, and seven locked achievement entitlements. Explorer
-and Muster unlock at each seat's first evaluation; no other achievement does
-(no processor reaches output 6, three cities and two ships are below the
-Land Baron and Sea Dog thresholds, and no unit has a kill).
+first Start Turn (so the first seat shows 20 Coins, or 18 for a Goblin seat),
+all 256 cells explored, and seven locked achievement entitlements. Explorer,
+Muster, and Sea Dog unlock at each seat's first evaluation (its three ships
+are Sea Dog); an Ice Folk seat unlocks Explorer and Muster only, since none
+of its units stands on ice at the start
+([section 5](#5-achievements-and-monuments)). No other achievement unlocks
+(no processor reaches output 6, three cities are below the Land Baron
+threshold, and no unit has a kill).
 
-**Units.** One unit of each of the ten roles, in the seat's faction, at full
-HP with zero kills and a fresh activation. A Dinosaur seat's units are all
+**Units.** One unit of each of the eleven roles, in the seat's faction, at
+full HP with zero kills and a fresh activation. **An Ice Folk seat has
+eight units and no ship:** the three water tiles where its boats would
+stand, `(cx, 12)`, `(cx, 13)`, and `(cx + 1, 13)`, are its ice instead,
+each with 5 turns (every technology is researched, so Glacier). Only
+`(cx, 12)` lies in its Coast city's territory and is permanent; the two at
+`y = 13` count down like any ice. Its Coast city is home to no unit, the
+entity IDs of its three boats stay unused (so every other seat keeps the
+unit IDs it has beside any other faction), and no `TRAIN_NAVAL` is offered
+to it ([section 21.16](#2116-the-frozen-sea)). A Dinosaur seat's units are all
 hatched (no Egg exists at setup) and at growth stage 0. A Martian seat's
 units are at full Shield, with no controlled unit, no Cooling entry, and no
 Mind Control cooldown; the first seat's first Start Turn recharges its Shields
@@ -1135,38 +1210,42 @@ turn if it stays, while its Steam Mole on `(cx + 1, 5)`, two tiles from the
 North and Capital centers, is not dug in
 ([section 22.7](#227-dig-in)).
 
-| Role          | Tile          | Form  | Home city |
-| ------------- | ------------- | ----- | --------- |
-| `FIGHTER`     | `(cx, 7)`     | land  | Capital   |
-| `RAIDER`      | `(cx − 1, 5)` | land  | North     |
-| `MARKSMAN`    | `(cx, 5)`     | land  | North     |
-| `GUARD`       | `(cx + 1, 5)` | land  | North     |
-| `CAPTAIN`     | `(cx − 1, 9)` | land  | Capital   |
-| `CATAPULT`    | `(cx, 9)`     | land  | Capital   |
-| `KNIGHT`      | `(cx + 1, 9)` | land  | Capital   |
-| `JUGGERNAUT`  | `(cx + 1, 8)` | land  | Capital   |
-| `PATROL_BOAT` | `(cx, 12)`    | naval | Coast     |
-| `BATTLESHIP`  | `(cx, 13)`    | naval | Coast     |
+| Role          | Tile           | Form  | Home city |
+| ------------- | -------------- | ----- | --------- |
+| `FIGHTER`     | `(cx, 7)`      | land  | Capital   |
+| `RAIDER`      | `(cx − 1, 5)`  | land  | North     |
+| `MARKSMAN`    | `(cx, 5)`      | land  | North     |
+| `GUARD`       | `(cx + 1, 5)`  | land  | North     |
+| `CAPTAIN`     | `(cx − 1, 9)`  | land  | Capital   |
+| `CATAPULT`    | `(cx, 9)`      | land  | Capital   |
+| `KNIGHT`      | `(cx + 1, 9)`  | land  | Capital   |
+| `JUGGERNAUT`  | `(cx + 1, 8)`  | land  | Capital   |
+| `PATROL_BOAT` | `(cx, 12)`     | naval | Coast     |
+| `BATTLESHIP`  | `(cx, 13)`     | naval | Coast     |
+| `SUBMARINE`   | `(cx + 1, 13)` | naval | Coast     |
 
 - Creation performs no capacity check, but the homes fit: Capital 5 of 7,
-  North 3 of 6, Coast 2 of 5 (each capacity one higher for a Goblin seat,
+  North 3 of 6, Coast 3 of 6 (each capacity one higher for a Goblin seat,
   Warrens), so every trainable role is offered from the first turn. A
   Dinosaur seat counts slots and has Nesting's city slot
   ([section 4.4](#44-unit-capacity)): its capital is exactly full at 8 of 8
   (Caveman and Shaman 1 each, Triceratops, T-Rex, and Brontosaurus 2 each),
   so it cannot train or lay until a slot frees, while North (3 of 7) and
-  Coast (2 of 6) can lay every Egg from the first turn. A Martian seat's
+  Coast (3 of 7) can lay every Egg from the first turn. A Martian seat's
   capital is exactly full at 7 of 7 (Grunt, Brain, and Tripod 1 each,
   Mothership and Colossus 2 each), so it cannot train until a slot frees;
-  North (3 of 6) and Coast (2 of 5) can train. An Ice Folk or Dwarf seat's
-  units all use one slot (Capital 5 of 7, North 3 of 6, Coast 2 of 5), so
+  North (3 of 6) and Coast (3 of 6) can train. An Ice Folk or Dwarf seat's
+  units all use one slot (Capital 5 of 7, North 3 of 6, and Coast 3 of 6
+  for a Dwarf seat, 0 of 6 for an Ice Folk seat), so
   the Dwarf Engineer, homed to the Capital, can Assemble from the first
   turn. Both docks start empty.
 - **Entity IDs.** Seat `s` has capital ID `2s + 1` and `FIGHTER` ID `2s + 2`.
   Then, each pass in seat order: every seat's North and Coast cities; then
   every seat's ledger records (per city in the order capital, North, Coast:
   permanent records, then live records, each in `(y, x)` tile order); then
-  every seat's nine remaining units in the role order of the table.
+  every seat's ten remaining units in the role order of the table (an Ice
+  Folk seat's three naval IDs are consumed and no unit is created for
+  them).
 - The Normal AI plays its ordinary policy with no Showcase logic. Seats in
   neighbouring strips start one neutral column apart with every unit ready,
   so a four-seat Showcase is a fight from the first turn.
@@ -1257,9 +1336,10 @@ entitlements.
 **Units.** Each unit is written by mechanical role and resolves through its
 seat's faction (a Fighter for a Human seat, a Goblin for a Goblin seat), at
 full HP with zero kills and a fresh activation, homed as written (the
-capital by default). A Patrol Boat or Battleship is naval and starts on
-Shallow Water (Deep only with Navigation); every other role is a land unit
-on a tile its movement may enter. Creation performs no capacity check, so
+capital by default). A Patrol Boat, Battleship, or Submarine is naval and
+starts on Shallow Water (Deep only with Navigation); every other role is a
+land unit on a tile its movement may enter. An Ice Folk seat has no ship:
+the builder refuses a mission that gives it one. Creation performs no capacity check, so
 a mission may start a seat over capacity. A Martian seat's units start at
 full Shield and a Dinosaur seat's hatched.
 
@@ -1271,8 +1351,14 @@ and every seat's other units in definition order.
 
 **Forbidden technologies.** A mission's list is closed under prerequisites
 and disjoint from every seat's starting technologies; a board without water
-forbids the whole Naval branch. They are refused, never offered, and
-`DISABLED` in the tree ([section 6.1](#61-research-cost)).
+forbids the whole Naval branch, all five technologies (a list that forbids
+Shorecraft must, by closure, also name Navigation, Naval Engineering,
+Seamanship, and Submersibles). They are refused, never offered, and
+`DISABLED` in the tree ([section 6.1](#61-research-cost)). Every registered
+mission (the four of Chapter One and the five test fixtures) forbids the
+five Naval technologies; adding Seamanship and Submersibles to their lists
+at `pulp-wars-poc-7r43` changed no initial state, so no mission revision
+was bumped.
 
 **Revisions, saves, and replays.** A mission's revision is bumped whenever
 its built initial state changes; a test pins the initial-state hash (the
@@ -1454,7 +1540,11 @@ its owner and the Wreck leaves the board; passing over it, a pull, or
 Knockback does nothing. Event `WRECK_SALVAGED { playerId, unitId, at,
 coins }` after the Move's `UNIT_MOVED` (and `UNIT_EMBARKED` of a
 self-launch). The tile stays ordinary water (no Fish or Pearls under it,
-never a Port site).
+never a Port site). **Under ice** ([section 21.16](#2116-the-frozen-sea))
+the rule is the same for the unit that can stand there: a land-form unit of
+any faction that ends a `MOVE` on the iced Wreck tile, having moved onto it
+(the end of a slide included), salvages it, and afloat units cannot reach
+it while it is ice.
 
 **The Giant Spider: a unit owned by nobody.** The Spider is an ordinary
 entry of `GameStateV7.units` whose `ownerId` is the reserved **neutral
@@ -1636,7 +1726,8 @@ Gallery has a Curiosities tab.
   [section 2.1](#21-match-setup)); `round` starts at 1 and increments after
   the last seat in turn order. No seat is compensated for moving later.
 - A `SHOWCASE` match starts differently: three developed cities, every
-  technology, ten units, the whole board explored, and seat-order turns
+  technology, eleven units (an Ice Folk seat: eight, and ice where its
+  three boats would stand), the whole board explored, and seat-order turns
   ([section 2.5](#25-showcase-setup)). Everything after its first Start Turn
   is the ordinary rules.
 - **Relationships:** in Rival mode every pair of players is hostile. In
@@ -1651,6 +1742,9 @@ Gallery has a Curiosities tab.
   seat's Mind Control cooldowns ([section 20.8](#208-mind-control)); recharge
   the seat's Shields ([section 20.2](#202-shields)); apply the Cold Aura of
   the seat's Frost Giants ([section 21.12](#2112-prowl-and-the-cold-aura));
+  apply the seat's Black Ice and then the crush of the icebound units on
+  the seat's ice, with its deaths
+  ([section 21.16](#2116-the-frozen-sea));
   surface the seat's burrowed Steam Moles and their riders, with each
   eruption, its deaths, and its chain
   ([section 22.3](#223-the-mound-surfacing-and-the-eruption)); resolve the
@@ -1663,7 +1757,11 @@ Gallery has a Curiosities tab.
   ([section 18.10](#1810-waaagh-ram-and-troll-regeneration)); award income;
   settle pending city rewards; evaluate achievements. Events:
   `TURN_STARTED`, then `SHIELDS_RECHARGED`, then one `UNITS_CHILLED` per
-  Frost Giant that chilled a unit, then one block per surfacing Mole
+  Frost Giant that chilled a unit, then one `UNITS_CHILLED` with source
+  `BLACK_ICE`, then `UNITS_CRUSHED` with its `UNIT_DIED` (cause `CRUSHED`),
+  the releases of a crushed Brain's controlled unit, the economy changes,
+  and the death blast of a crushed embarked exploding unit, then one block
+  per surfacing Mole
   (`UNIT_SURFACED`, `FIELD_DEFENSE_DESTROYED` reason `UNDERMINED`, the
   eruption's deaths, risings, and collapses, its chain, `PLUNDER_AWARDED`,
   and `TILES_REVEALED`) and the economy changes of the surfacing, then
@@ -1680,8 +1778,10 @@ Gallery has a Curiosities tab.
   that city's income this turn, and Plunder from a Start Turn chain is added
   before income. A unit that hatched this Start Turn counts for that turn's
   Muster evaluation. The cooldown and Shield steps do nothing in a match
-  without a Martian seat, the Cold Aura step nothing in a match without an
-  Ice Folk seat, and the surfacing step nothing in a match without a Dwarf
+  without a Martian seat, the Cold Aura, Black Ice, and crush steps nothing
+  in a match without an Ice Folk seat (the crush acts for any seat that
+  owns ice, which is an Ice Folk seat or the controller of an Ice Folk
+  unit), and the surfacing step nothing in a match without a Dwarf
   seat (a seat has one faction, so the Cold Aura and the surfacing never
   both run in one Start Turn).
 - **End Turn** (in order): auto-recover idle damaged units (never a Dwarf
@@ -1690,14 +1790,15 @@ Gallery has a Curiosities tab.
   ([section 20.4](#204-heat-rays-and-cooling)); with Force Fields, recharge
   the player's Shields again ([section 20.3](#203-force-field-and-force-fields));
   count down the Chill entries of the player's units, burrowed ones
-  included ([section 21.2](#212-chill), no event); empty
+  included ([section 21.2](#212-chill), no event); run the thaw of the
+  player's ice ([section 21.16](#2116-the-frozen-sea)); empty
   `surfacedThisTurn` and `bombedThisTurn`
   ([section 22](#22-dwarf-faction-rules), no event); run the Crash step,
   count down the player's Crumbs, and empty `splattedThisTurn` and
   `tossedThisTurn` ([section 23.8](#238-resolution-order)); preview next income;
   advance to
   the next active seat and run its Start Turn. Events: the recovery events,
-  `SHIELDS_RECHARGED` (Force Fields), `UNITS_CRASHED`, `CRUMBS_STALE`,
+  `SHIELDS_RECHARGED` (Force Fields), `ICE_MELTED`, `UNITS_CRASHED`, `CRUMBS_STALE`,
   `INCOME_PREVIEWED`, `TURN_ENDED`, then
   the next Start Turn's.
   End Turn is unavailable while a city reward choice is pending.
@@ -1726,7 +1827,8 @@ Gallery has a Curiosities tab.
   their Chill entries; `UNIT_DIED` cause
   `ELIMINATION`, leaving no Graves and setting off no
   death blasts) and its future turns skipped. Its units that another seat
-  controls stay controlled. Plague
+  controls stay controlled, a ship another seat boarded from it stays with
+  its captor, and its ice stays and counts down at every End Turn. Plague
   from its removed Liches and the bites it inflicted end
   ([section 17](#17-undead-faction-rules)).
 - **Outcome:** the human wins when every other player is eliminated and loses
@@ -1956,7 +2058,7 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
 | Muster      | `MUSTER`     | Drill       | at least four distinct trainable roles owned on the board at once (Juggernaut excluded)            | —                          |
 | Conqueror   | `CONQUEROR`  | —           | the player captures a city owned by another player (`CONQUEROR_CAPTURES_V7` 1)                     | Capture an enemy city.     |
 | Land Baron  | `LAND_BARON` | —           | the player owns at least 5 cities at once (`LAND_BARON_CITIES_V7`)                                 | Own 5 cities at once.      |
-| Sea Dog     | `SEA_DOG`    | —           | at least 3 of the player's units in `NAVAL` form on the board at once (`SEA_DOG_SHIPS_V7`)         | Own 3 warships at once.    |
+| Sea Dog     | `SEA_DOG`    | —           | at least 3 units in `NAVAL` form at once (`SEA_DOG_SHIPS_V7`); Ice Folk: 3 land units on ice       | Own 3 warships at once.    |
 | Slayer      | `SLAYER`     | —           | one of the player's units on the board has at least 5 kills (`SLAYER_KILLS_V7`)                    | Get 5 kills with one unit. |
 
 - Every seat has seven entitlements (`PlayerStateV7.achievementEntitlements`)
@@ -1983,33 +2085,44 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
   once unlocked and 0 before. A hostile capture that brings the player to 5
   cities emits Conqueror, then Land Baron.
 - **Land Baron** counts the cities the player owns, the capital included,
-  however gained. **Sea Dog** counts the player's Patrol Boats and
-  Battleships on the board (an embarked land unit, a self-launched Martian
+  however gained. **Sea Dog** counts the player's Patrol Boats,
+  Battleships, and Submarines on the board, a boarded prize included (an
+  embarked land unit, a self-launched Martian
   machine or Dwarf Gyrocopter included, is `EMBARKED` and does not count; it
   cannot be completed
-  on `DRY_LAND`). **Slayer** reads the largest
+  on `DRY_LAND`). **For an Ice Folk seat**, which has no ship, Sea Dog
+  counts instead its land-form units standing on an ice tile, whoever owns
+  the ice (the seat's faction decides the count, so a Martian seat's
+  controlled Yeti on ice counts for nobody); 3 at once unlock it, and its
+  goal reads "Hold the ice with 3 units at once."
+  ([section 21.16](#2116-the-frozen-sea)). **Slayer** reads the largest
   `kills` of one unit on the board, with the ordinary kill credit
   ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)): explosions
   credit no unit, a Shatter and a hostile Sweep kill credit the attacker,
   an eruption kill credits the Mole and a bomb kill the Gyrocopter,
   a rising starts at 0, an Egg has 0, a Mind Control is no kill and a
   controlled unit keeps its kills (they count for its controller), a
+  boarding is no kill and a prize keeps its kills (they count for its new
+  owner), an ice crush credits no unit, a
   `BRAIN_LOST` removal is no kill, kills of different
   units never add up, and a Promotion or growth stage does not reset the
   count.
-- Muster counts mechanical roles under the owner's registration (for Undead:
-  Skeleton, Ghoul, Banshee, Zombie, Necromancer, Lich, Vampire, Patrol Boat,
-  Battleship; the Abomination is excluded like the Juggernaut; for Goblins:
+- Muster counts mechanical roles under the owner's registration; the
+  Patrol Boat, the Battleship, and the Submarine are trainable roles of
+  every faction but the Ice Folk, and a boarded prize counts for its new
+  owner (for Undead:
+  Skeleton, Ghoul, Banshee, Zombie, Necromancer, Lich, Vampire, and the
+  three ships; the Abomination is excluded like the Juggernaut; for Goblins:
   Goblin, Wolf Rider, Bomb Chucker, Orc Brute, Orc Warboss, Rocket Cart,
-  Scrap Buggy, Patrol Boat, Battleship, with the Troll excluded; for
+  Scrap Buggy, and the three ships, with the Troll excluded; for
   Dinosaurs: Caveman, Raptor, Spitter, Ankylosaurus, Shaman, Triceratops,
-  T-Rex, Patrol Boat, Battleship, with the Brontosaurus excluded; for
+  T-Rex, and the three ships, with the Brontosaurus excluded; for
   Martians: Grunt, Saucer, Ray Gunner, Shield Projector, Brain, Tripod,
-  Mothership, Patrol Boat, Battleship, with the Colossus excluded; for the
-  Ice Folk: Yeti, Sled, Snow Hunter, Mammoth, Ice Witch, Boulder Yeti,
-  Sabretooth, Patrol Boat, Battleship, with the Frost Giant excluded; for
+  Mothership, and the three ships, with the Colossus excluded; for the
+  Ice Folk: Yeti, Sled, Snow Hunter, Mammoth, Ice Witch, Boulder Yeti, and
+  Sabretooth, with the Frost Giant excluded and no ship; for
   the Dwarves: Hammerer, Gyrocopter, Clockwork Gunner, Steam Mole, Engineer,
-  Steam Cannon, Steam Tank, Patrol Boat, Battleship, with the Brass Titan
+  Steam Cannon, Steam Tank, and the three ships, with the Brass Titan
   excluded). Risings, controlled units (by their role, when it is trainable
   under their kind), hatched units, and
   assembled Gunners count; an Egg does not count until it hatches, and a
@@ -2049,11 +2162,13 @@ tier 3 = 9  + 5 * (C - 1)
 lower); the per-city steps did not change. Research is permanent,
 costs Coins only, and needs the one listed prerequisite. No technology starts
 known (a mission may start a seat with some, [section 2.6](#26-mission-setup)).
-On `DRY_LAND` the three Naval technologies are visible but cannot be
-researched, so Shorecraft is never offered there. **Forbidden technologies**
+On `DRY_LAND` the five Naval technologies are visible but cannot be
+researched, so Shorecraft is never offered there (nor Rime to an Ice Folk
+seat). **Forbidden technologies**
 generalize that rule: `forbiddenTechnologiesV7(setup)` lists the
 technologies no seat may research in the match, with the reason, `DRY_LAND`
-(the three Naval technologies of a `DRY_LAND` match) or `MISSION` (the
+(the five Naval technologies of a `DRY_LAND` match, read from the Human
+tree's Naval branch) or `MISSION` (the
 mission's own list, closed under prerequisites, on a `MISSION` match);
 other matches forbid nothing. A `RESEARCH` of a forbidden technology is
 refused with `TECH_REQUIRED { tech, reason }` and changes no state; the
@@ -2097,6 +2212,18 @@ ordinary formula applies to every technology.
 | Naval      |    1 | `SHORECRAFT`        | —              | Harvest Fish; Build Port; embarkation and Shallow Water transport; Patrol Boat     |
 | Naval      |    2 | `NAVIGATION`        | Shorecraft     | Deep Water movement; Gather Pearls; sea trade                                      |
 | Naval      |    3 | `NAVAL_ENGINEERING` | Navigation     | Battleship; Shipyard; −2 Coin naval training at a Shipyard                         |
+| Naval      |    2 | `SEAMANSHIP`        | Shorecraft     | Ram (Patrol Boats); Board (every ship)                                             |
+| Naval      |    3 | `SUBMERSIBLES`      | Seamanship     | Submarine; Harbours (+1 population from every active Port and Shipyard)            |
+
+There are 25 technologies. Since `pulp-wars-poc-7r43` the Naval branch has
+the shape of every other branch: one tier-1 root (Shorecraft), two tier-2
+children (Navigation and Seamanship), and one tier-3 child under each
+(Naval Engineering and Submersibles). `SEAMANSHIP` and `SUBMERSIBLES` are
+the last two entries of `TECHNOLOGY_IDS_V7`. Seamanship and Submersibles
+read the same for the Human, Undead, Goblin, Dinosaur, Martian, Dwarf, and
+Candy trees (the **seafaring** factions: same unlocks, numbers, and names;
+[section 14](#14-naval-rules)); the Ice Folk tree replaces the whole branch
+(below).
 
 The table uses Human (`ORIGINAL_BASELINE_V5`) names. The Undead tree
 (`UNDEAD_BASELINE_V1`) has the same graph, tiers, prerequisites, costs, free
@@ -2216,7 +2343,8 @@ differently from the Human table are:
 
 The Ice Folk tree (`ICE_FOLK_BASELINE_V1`) has the same graph, tiers,
 prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
-the Human one, with four unlock differences. **Administration** grants
+the Human one, with four unlock differences outside the Naval branch and a
+Naval branch of its own. **Administration** grants
 `WITCH_SUPPORT` (the Ice Witch's Cold Snap; her Blizzard needs no unlock)
 instead of Captain support. **Chivalry** grants no Overrun (the Undead
 precedent). **Fortification**, displayed as **Deep Winter**, grants
@@ -2225,28 +2353,46 @@ tiles of each own city center is Snow, and Recover heals 6 in own territory
 ([section 21.7](#217-deep-winter-and-brittle)). **Explosives**, displayed as
 **Brittle**, keeps Blast Mountain and the melee Field Defense demolition and
 adds `BRITTLE`: the player's Shatter threshold is 4 instead of 3
-([section 21.4](#214-shatter)). `TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7`
-holds `ICE_FOLK: { FORTIFICATION: "Deep Winter", EXPLOSIVES: "Brittle" }`,
+([section 21.4](#214-shatter)). **The Naval branch** keeps its five IDs,
+tiers, prerequisites, costs, and economic unlocks (Harvest Fish, Build
+Port, Gather Pearls, sea trade, Build Shipyard, Harbours), loses every
+ship, the Ram, and Board, and gains the frozen sea
+([section 21.16](#2116-the-frozen-sea)): **Shorecraft**, displayed as
+**Rime**, grants `FREEZE { depth: "SHALLOW" }`; **Navigation**, displayed as
+**Pack Ice**, `FREEZE { depth: "DEEP" }`; **Naval Engineering**, displayed
+as **Icebound**, `ICEBOUND`; **Seamanship**, displayed as **Black Ice**,
+`BLACK_ICE`; and **Submersibles**, displayed as **Glacier**,
+`GLACIER { iceTurns: 5 }` beside Harbours. The tree unlocks no naval role,
+so an Ice Folk seat never trains a ship, and a unit of the Ice Folk kind
+never embarks. `TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7`
+holds `ICE_FOLK: { FORTIFICATION: "Deep Winter", EXPLOSIVES: "Brittle", SHORECRAFT: "Rime", NAVIGATION: "Pack Ice", NAVAL_ENGINEERING: "Icebound", SEAMANSHIP: "Black Ice", SUBMERSIBLES: "Glacier" }`,
 resolved by `technologyNameV7`. Engineering's Mountain entry matters only
 to the Sled, Snow Hunter, Mammoth, Ice Witch, and Sabretooth (the three
 Mountain-born roles need none), Raiding's Pillage reaches every Ice Folk
 land role but the Frost Giant, and every technology still has a live unlock
-for an Ice Folk seat. The Ice Folk unlocks that read differently from the
-Human table are:
+for an Ice Folk seat (two parts are dead for it: Navigation's Deep Water
+movement of ships, and Naval Engineering's `NAVAL_TRAINING_DISCOUNT`, which
+its tree keeps and which does nothing). The Ice Folk unlocks that read
+differently from the Human table are:
 
-| Technology     | Ice Folk name | Ice Folk unlocks                                                                       |
-| -------------- | ------------- | -------------------------------------------------------------------------------------- |
-| Administration | same          | Ice Witch (Blizzard, Cold Snap); Market; Disband                                       |
-| Sawmilling     | same          | Sawmill; Boulder Yeti (ignores Walls and Field Defense)                                |
-| Marksmanship   | same          | Snow Hunter (Cold Blood)                                                               |
-| Fieldcraft     | same          | Replant Forest; Sled and Snow Hunter ignore Forest movement stops; Snow Hunter Sight 2 |
-| Scouting       | same          | Sled (Bolas); Sled Sight 2                                                             |
-| Raiding        | same          | Pillage; Sled Charge                                                                   |
-| Chivalry       | same          | Sabretooth (Prowl); Cultivate Forest                                                   |
-| Drill          | same          | reveal Ore; Mammoth (Sweep, Trample); first-hostile-capture Spoils (2 Coins)           |
-| Engineering    | same          | every unit enters Mountain; +1 Sight on Mountain; Mine; Workshop; Redevelop            |
-| Fortification  | Deep Winter   | Snow spreads two tiles from your city centers; Recover heals 6 in your territory       |
-| Explosives     | Brittle       | Blast Mountain; melee attacks destroy Field Defense; Shatter at 4 HP or less           |
+| Technology        | Ice Folk name | Ice Folk unlocks                                                                                                                |
+| ----------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Administration    | same          | Ice Witch (Blizzard, Cold Snap); Market; Disband                                                                                |
+| Sawmilling        | same          | Sawmill; Boulder Yeti (ignores Walls and Field Defense)                                                                         |
+| Marksmanship      | same          | Snow Hunter (Cold Blood)                                                                                                        |
+| Fieldcraft        | same          | Replant Forest; Sled and Snow Hunter ignore Forest movement stops; Snow Hunter Sight 2                                          |
+| Scouting          | same          | Sled (Bolas); Sled Sight 2                                                                                                      |
+| Raiding           | same          | Pillage; Sled Charge                                                                                                            |
+| Chivalry          | same          | Sabretooth (Prowl); Cultivate Forest                                                                                            |
+| Drill             | same          | reveal Ore; Mammoth (Sweep, Trample); first-hostile-capture Spoils (2 Coins)                                                    |
+| Engineering       | same          | every unit enters Mountain; +1 Sight on Mountain; Mine; Workshop; Redevelop                                                     |
+| Fortification     | Deep Winter   | Snow spreads two tiles from your city centers; Recover heals 6 in your territory                                                |
+| Explosives        | Brittle       | Blast Mountain; melee attacks destroy Field Defense; Shatter at 4 HP or less                                                    |
+| Shorecraft        | Rime          | Harvest Fish; Build Port; Freeze Shallow Water; your units slide on ice; no Patrol Boat and no embarking                        |
+| Navigation        | Pack Ice      | Freeze Deep Water; Gather Pearls; sea trade                                                                                     |
+| Naval Engineering | Icebound      | Freeze locks hostile ships in the ice, which crushes them for 3 a turn; Shipyard (no Battleship; the training discount is dead) |
+| Seamanship        | Black Ice     | hostile land units on your ice are Chilled at the start of your turn                                                            |
+| Submersibles      | Glacier       | your ice lasts 5 turns instead of 3; your units on ice have Snow cover (× 1.25); Harbours                                       |
 
 The Dwarf tree (`DWARF_BASELINE_V1`) has the same graph, tiers,
 prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
@@ -2336,7 +2482,17 @@ and `shatterThreshold` (3 or 4), and the Dwarf unlocks through `digIn`,
 `assemble`, `bombDamage` (5 or 6), `eruptionDamage` (2 or 3), and
 `cannonIgnoresFortification`, and the Candy unlocks through `homeSweetHome`
 and `crumbsBite` (0 or 3), never through a raw `FORTIFICATION`,
-`EXPLOSIVES`, `RAIDING`, or `MARKSMANSHIP` test.
+`EXPLOSIVES`, `RAIDING`, or `MARKSMANSHIP` test. The naval branch is read
+the same way: `ram`, `boarding`, and `harbourPopulation` (0 or 1), and for
+the Ice Folk `freezeWater` (`NONE`, `SHALLOW`, or `DEEP`), `icebound`,
+`blackIce`, `iceTurns` (3, or 5 with Glacier), and `iceCover`, never
+through a raw `SEAMANSHIP` or `SUBMERSIBLES` test (the Ice Folk Glacier
+grants Harbours through the same capability). Unit-level reads (the Ram,
+Board, Freeze, Icebound, the ice turns, and the ice cover) go through
+`unitCapabilitiesV7`, the owner's research read through the unit's kind's
+tree; Black Ice is read from the seat's own faction and research. The one
+raw read is Board's Deep Water gate, the boarder's owner's Navigation
+([section 14.2](#142-board)).
 
 ## 7. Resources and visibility
 
@@ -2674,18 +2830,19 @@ market income = min(3, 1 + distinct adjacent families)
 
 Attack and Defense are shown in whole units (the code stores half-units).
 
-| Unit        | Tech              | Cost |  HP | Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                |
-| ----------- | ----------------- | ---: | --: | -----: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------ |
-| Fighter     | start             |    2 | 12² |      2 |       2 |    1 |     1 |     1 | yes               | yes     | Field Defense            |
-| Raider      | Scouting          |    4 | 12² |      2 |       1 |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Escape |
-| Marksman    | Marksmanship      |    3 | 12² |      2 |       1 |    1 |   1–2 |    1¹ | yes               | yes     | —                        |
-| Guard       | Drill             |    3 | 17² |    1.5 |       3 |    1 |     1 |     1 | no                | yes     | Field Defense            |
-| Captain     | Administration    |    5 |  10 |      1 |       1 |    1 |     1 |     1 | yes               | no      | Rally; Tend Wounded      |
-| Catapult    | Sawmilling        |    8 |  10 |    3.5 |     0.5 |    1 |   2–3 |     1 | no                | no      | —                        |
-| Knight      | Chivalry          |    9 |  10 |      3 |       1 |    3 |     1 |     1 | yes               | no      | Overrun                  |
-| Juggernaut  | reward only       |    — |  40 |      4 |       4 |    1 |     1 |     1 | yes               | yes     | Push                     |
-| Patrol Boat | Shorecraft        |    5 |  10 |      2 |       2 |    2 |     1 |     2 | yes               | no      | naval                    |
-| Battleship  | Naval Engineering |   16 |  25 |      6 |       4 |    2 |   1–3 |     3 | no                | no      | naval; splash            |
+| Unit        | Tech              | Cost |  HP | Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                 |
+| ----------- | ----------------- | ---: | --: | -----: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------- |
+| Fighter     | start             |    2 | 12² |      2 |       2 |    1 |     1 |     1 | yes               | yes     | Field Defense             |
+| Raider      | Scouting          |    4 | 12² |      2 |       1 |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Escape  |
+| Marksman    | Marksmanship      |    3 | 12² |      2 |       1 |    1 |   1–2 |    1¹ | yes               | yes     | —                         |
+| Guard       | Drill             |    3 | 17² |    1.5 |       3 |    1 |     1 |     1 | no                | yes     | Field Defense             |
+| Captain     | Administration    |    5 |  10 |      1 |       1 |    1 |     1 |     1 | yes               | no      | Rally; Tend Wounded       |
+| Catapult    | Sawmilling        |    8 |  10 |    3.5 |     0.5 |    1 |   2–3 |     1 | no                | no      | —                         |
+| Knight      | Chivalry          |    9 |  10 |      3 |       1 |    3 |     1 |     1 | yes               | no      | Overrun                   |
+| Juggernaut  | reward only       |    — |  40 |      4 |       4 |    1 |     1 |     1 | yes               | yes     | Push                      |
+| Patrol Boat | Shorecraft        |    5 |  10 |      2 |       2 |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)   |
+| Battleship  | Naval Engineering |   16 |  25 |      6 |       4 |    2 |   1–3 |     3 | no                | no      | naval; splash             |
+| Submarine   | Submersibles      |    9 |  12 |      4 |       2 |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo |
 
 ¹ Marksman Sight becomes 2 with Fieldcraft.
 ² [Revision 20 section 6.3](RULESET_7_REVISION_20.md#63-tuning-record)
@@ -2693,6 +2850,19 @@ Attack and Defense are shown in whole units (the code stores half-units).
 (were 10), Guard 17 (was 15); promoted 17 and 22. The Skeleton, Caveman,
 Ghoul, Goblin, Wolf Rider, and Orc Brute state their own values and do not
 copy these. The Knight keeps 10.
+
+The **Submarine** (role `SUBMARINE`, tactical label `NAVAL_HUNTER`;
+`pulp-wars-poc-7r43`) is the third ship: trained with `TRAIN_NAVAL` like the
+other two (7 Coins at a Shipyard), promoted to 17 HP, attackable only from
+an adjacent tile (**Submerged**), and attacking only units afloat, which
+never strike back (**Torpedo**). A Patrol Boat's **Ram** needs Seamanship
+(the interface calls it **Bow Ram**, since the Goblin Scrap Buggy's Overrun
+is displayed as "Ram"). The three ships have the same numbers, names, and
+rules in the Human, Undead, Goblin, Dinosaur, Martian, Dwarf, and Candy
+rosters (each drawn in its faction's style); the Ice Folk have none
+([section 14](#14-naval-rules)). Public abilities: Patrol Boat `ATTACK`,
+`RAM` (listed whatever its owner has researched); Battleship `ATTACK`;
+Submarine `ATTACK`, `SUBMERGED`, `TORPEDO`.
 
 The table above is the Human (`ORIGINAL`) roster. The Undead (`UNDEAD`)
 roster, by mechanical role (half-unit values `attack2`/`defense2` in
@@ -2708,8 +2878,9 @@ parentheses):
 | Lich        | `CATAPULT`    | Sawmilling        |    8 |  10 |  3 (6) |   1 (2) |    1 |   2–3 |     1 | no                | no      | splash; Plague; never advances              |
 | Vampire     | `KNIGHT`      | Chivalry          |    9 |  10 |  3 (6) |   1 (2) |    3 |     1 |     1 | yes               | no      | Lifesteal; Unanswered                       |
 | Abomination | `JUGGERNAUT`  | reward only       |    — |  40 |  4 (8) |   4 (8) |    1 |     1 |     1 | yes               | yes     | Push                                        |
-| Patrol Boat | `PATROL_BOAT` | Shorecraft        |    5 |  10 |  2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval                                       |
+| Patrol Boat | `PATROL_BOAT` | Shorecraft        |    5 |  10 |  2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                     |
 | Battleship  | `BATTLESHIP`  | Naval Engineering |   16 |  25 | 6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                               |
+| Submarine   | `SUBMARINE`   | Submersibles      |    9 |  12 |  4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                   |
 
 ² Banshee Sight becomes 2 with Fieldcraft.
 
@@ -2731,7 +2902,8 @@ parentheses):
 - **Vampire** cannot capture and has no Overrun; the defender of its attacks
   never retaliates (`UNANSWERED`).
 - **Abomination** has exact Juggernaut parity (reward only, Push, capture, no
-  Pillage or Disband). Patrol Boat and Battleship are the Human units.
+  Pillage or Disband). Patrol Boat, Battleship, and Submarine are the Human
+  units.
 - Undead Disband refunds: Skeleton, Ghoul, Banshee, and Zombie 1,
   Necromancer 2, Lich and Vampire 4. Arms Industry and the Shipyard discount
   apply to every faction.
@@ -2751,8 +2923,9 @@ damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
 | Rocket Cart  | `CATAPULT`    | Sawmilling        |    7 |   8 | 3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | no                | no      |      5 |           4 | Kaboom; never advances               |
 | Scrap Buggy  | `KNIGHT`      | Chivalry          |    8 |  10 |   3 (6) |   1 (2) |    3 |     1 |     1 | yes               | no      |      5 |           4 | Ram; Kaboom                          |
 | Troll        | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) |   3 (6) |    1 |     1 |     1 | yes               | yes     |      — |           — | Push; Regenerate 4                   |
-| Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval                                |
+| Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval; Ram (Seamanship)              |
 | Battleship   | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      |      — |           — | naval; splash                        |
+| Submarine    | `SUBMARINE`   | Submersibles      |    9 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval; Submerged; Torpedo            |
 
 ³ Bomb Chucker Sight becomes 2 with Fieldcraft.
 
@@ -2779,8 +2952,8 @@ damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
 - **Troll** has Juggernaut parity (reward only, Push, capture, no Pillage or
   Disband) with Defense 3 instead of 4, and regenerates 4 HP at its owner's
   Start Turn.
-- **Patrol Boat and Battleship** are the Human units (names, stats,
-  hostile-only Battleship splash, and art). Goblin faction rules do not apply
+- **Patrol Boat, Battleship, and Submarine** are the Human units (names,
+  stats, and hostile-only Battleship splash; drawn in the Goblin style). Goblin faction rules do not apply
   to them: no Gang Up, no Kaboom, no death blast.
 - Goblin Disband refunds: Goblin 0, Wolf Rider, Bomb Chucker, and Orc Brute
   1, Orc Warboss 2, Rocket Cart 3, Scrap Buggy 4.
@@ -2812,8 +2985,9 @@ capacity the unit, or its Egg, uses
 | Triceratops  | `CATAPULT`    | Sawmilling        |    8 | 2       |     2 |  20 |   3 (6) |   2 (4) |    2 |     1 |     1 | yes               | no      | yes   | Charge!                        |
 | T-Rex        | `KNIGHT`      | Chivalry          |   14 | 4       |     2 |  28 |   4 (8) |   2 (4) |    2 |     1 |     1 | yes               | no      | yes   | Rampage                        |
 | Brontosaurus | `JUGGERNAUT`  | reward only       |    — | —       |     2 |  45 | 3.5 (7) |   4 (8) |    1 |     1 |     1 | yes               | yes     | yes   | Push                           |
-| Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 | trained |     1 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | no    | naval                          |
+| Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 | trained |     1 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | no    | naval; Ram (Seamanship)        |
 | Battleship   | `BATTLESHIP`  | Naval Engineering |   16 | trained |     1 |  25 |  6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | no    | naval; splash                  |
+| Submarine    | `SUBMARINE`   | Submersibles      |    9 | trained |     1 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | no    | naval; Submerged; Torpedo      |
 
 ⁴ Spitter Sight becomes 2 with Fieldcraft.
 
@@ -2842,7 +3016,7 @@ capacity the unit, or its Egg, uses
   with Move 2 instead of 3. It is never a treasure unit.
 - **Brontosaurus** has Juggernaut parity (reward only, Push, capture, no
   Pillage or Disband) with 45 HP and Attack 3.5, and uses 2 slots.
-- **Patrol Boat and Battleship** are the Human units. Dinosaur faction rules
+- **Patrol Boat, Battleship, and Submarine** are the Human units. Dinosaur faction rules
   do not apply to them: they are trained with `TRAIN_NAVAL`, use 1 slot, do
   not grow, and keep the ordinary Promotion.
 - Dinosaur Disband refunds: Caveman 1; Raptor, Spitter, Ankylosaurus, and
@@ -2866,7 +3040,9 @@ capacity the unit, or its Egg, uses
   `CAPTURE`, `ACID`, `GROW`; Ankylosaurus `ATTACK`, `CAPTURE`, `ARMOURED`,
   `GROW`; Shaman `ATTACK`, `RALLY`, `TEND_WOUNDED`, `HATCH`; Triceratops
   `ATTACK`, `LINEBREAKER`, `GROW`; T-Rex `ATTACK`, `OVERRUN`, `GROW`;
-  Brontosaurus `ATTACK`, `CAPTURE`, `PUSH`, `GROW`; boats `ATTACK`. Slots,
+  Brontosaurus `ATTACK`, `CAPTURE`, `PUSH`, `GROW`; Patrol Boat `ATTACK`, `RAM`; Battleship `ATTACK`; Submarine `ATTACK`,
+  `SUBMERGED`, `TORPEDO`.
+  Slots,
   hatch times, the run-up bonus, and the Armoured reduction are role
   mechanics (`capacitySlots`, `hatchTurns`, `runUpBonus2`,
   `armourReduction`), exposed through the `dinosaur` block of the public
@@ -2888,8 +3064,9 @@ is its movement mode ([section 20.6](#206-movement-stride-flying-and-crossing-wa
 | Tripod           | `CATAPULT`    | Sawmilling        |    9 |     1 |  12 |      2 |   4 (8) |    1 (2) |    2 |    2⁶ |    2⁶ | stride | yes               | no      | heat ray; Pierce; never advances                                                    |
 | Mothership       | `KNIGHT`      | Chivalry          |   8⁷ |     2 |  16 |      4 | 2.5 (5) |    2 (4) |    2 |     1 |     1 | fly    | yes               | no      | Beam Down⁷; Heavy Tractor Beam⁷ (free once a turn); no Overrun, Pillage, or advance |
 | Colossus         | `JUGGERNAUT`  | reward only       |    — |     2 |  32 |      3 |   4 (8) | 2.5 (5)⁶ |    1 |   1–2 |     1 | stride | yes               | yes     | heat ray; Push                                                                      |
-| Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |     1 |  10 |      0 |   2 (4) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval                                                                               |
+| Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |     1 |  10 |      0 |   2 (4) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Ram (Seamanship)                                                             |
 | Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |     1 |  25 |      0 |  6 (12) |    4 (8) |    2 |   1–3 |     3 | —      | no                | no      | naval; splash                                                                       |
+| Submarine        | `SUBMARINE`   | Submersibles      |    9 |     1 |  12 |      0 |   4 (8) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Submerged; Torpedo                                                           |
 
 ⁵ Ray Gunner Sight becomes 2 with Fieldcraft.
 ⁶ [Martian tuning record](RULESET_7_MARTIANS.md#165-tuning-record)
@@ -2952,7 +3129,7 @@ applied after the Martians won about 75% of the coarse Dry Land games at
 - **Mind-controlled units** keep their own kind's statline
   ([section 20.9](#209-mind-controlled-units)); there is no Thrall (retired
   in `7r33`).
-- **Patrol Boat and Battleship** are the Human units. Martian faction rules
+- **Patrol Boat, Battleship, and Submarine** are the Human units. Martian faction rules
   do not apply to them: no Shield, one slot, the ordinary Promotion.
 - Martian Disband refunds: Grunt 1 (`floor(3 / 2)`); Saucer, Ray Gunner, Shield Projector,
   and Brain 2; Tripod 4; Mothership 4. The Colossus and a mind-controlled
@@ -2963,7 +3140,9 @@ applied after the Martians won about 75% of the coarse Dry Land games at
   `FORCE_FIELD`; Brain `ATTACK`, `RALLY`, `MIND_CONTROL`; Tripod `ATTACK`,
   `STRIDE`, `HEAT_RAY`, `PIERCE`; Mothership `ATTACK`, `FLY`, `BEAM_DOWN`,
   `TRACTOR_BEAM`; Colossus `ATTACK`, `CAPTURE`, `PUSH`, `STRIDE`,
-  `HEAT_RAY`; boats `ATTACK`. The Shield maximum, the slots, the movement
+  `HEAT_RAY`; Patrol Boat `ATTACK`, `RAM`; Battleship `ATTACK`; Submarine `ATTACK`,
+  `SUBMERGED`, `TORPEDO`.
+  The Shield maximum, the slots, the movement
   mode, and the advance are role mechanics (`shield`, `capacitySlots`,
   `movementMode`, `advancesAfterKill`), the first three exposed through the
   `martian` block of
@@ -2976,18 +3155,16 @@ The Ice Folk (`ICE_FOLK`) roster, by mechanical role, with the
 units cross Mountains without Engineering and without stopping
 ([section 21.8](#218-mountain-born-and-rockfall)):
 
-| Unit         | Role          | Tech              | Cost |  HP |               Attack |  Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                               |
-| ------------ | ------------- | ----------------- | ---: | --: | -------------------: | -------: | ---: | ----: | ----: | ----------------- | ------- | ----------------------------------------------------------------------- |
-| Yeti         | `FIGHTER`     | start             |    2 |  9⁸ |                2 (4) | 1.5 (3)⁸ |    1 |    1⁹ |     1 | yes               | yes     | Mountain-born; Rockfall; no Field Defense                               |
-| Sled         | `RAIDER`      | Scouting          |    3 |  10 |                2 (4) |    1 (2) |    2 |     1 |     2 | yes               | yes     | Bolas; Charge (Raiding); no Escape                                      |
-| Snow Hunter  | `MARKSMAN`    | Marksmanship      |    3 |   8 |                2 (4) |    1 (2) |    1 |   1–2 |    1⁷ | yes               | yes     | Cold Blood                                                              |
-| Mammoth      | `GUARD`       | Drill             |    6 |  20 |              2.5 (5) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; no Field Defense                                        |
-| Ice Witch    | `CAPTAIN`     | Administration    |    5 |  12 |                1 (2) |    1 (2) |    1 |     1 |     1 | yes               | no      | Blizzard; Cold Snap; no Rally; no Tend Wounded                          |
-| Boulder Yeti | `CATAPULT`    | Sawmilling        |    8 |  12 | 2 (4); 3 (6) planted |  1.5 (3) |    2 |   1–2 |     1 | yes               | no      | Boulders (ignore fortification); Planted; Mountain-born; never advances |
-| Sabretooth   | `KNIGHT`      | Chivalry          |    9 |  14 |                3 (6) |    1 (2) |    3 |     1 |     1 | yes               | no      | Prowl; no Glide; never on a foreign center; no Overrun                  |
-| Frost Giant  | `JUGGERNAUT`  | reward only       |    — |  40 |                4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Push; Cold Aura; Mountain-born                                          |
-| Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 |  10 |                2 (4) |    2 (4) |    2 |     1 |     2 | yes               | no      | naval                                                                   |
-| Battleship   | `BATTLESHIP`  | Naval Engineering |   16 |  25 |               6 (12) |    4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                                           |
+| Unit         | Role         | Tech           | Cost |  HP |               Attack |  Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                               |
+| ------------ | ------------ | -------------- | ---: | --: | -------------------: | -------: | ---: | ----: | ----: | ----------------- | ------- | ----------------------------------------------------------------------- |
+| Yeti         | `FIGHTER`    | start          |    2 |  9⁸ |                2 (4) | 1.5 (3)⁸ |    1 |    1⁹ |     1 | yes               | yes     | Mountain-born; Rockfall; no Field Defense                               |
+| Sled         | `RAIDER`     | Scouting       |    3 |  10 |                2 (4) |    1 (2) |    2 |     1 |     2 | yes               | yes     | Bolas; Charge (Raiding); no Escape                                      |
+| Snow Hunter  | `MARKSMAN`   | Marksmanship   |    3 |   8 |                2 (4) |    1 (2) |    1 |   1–2 |    1⁷ | yes               | yes     | Cold Blood                                                              |
+| Mammoth      | `GUARD`      | Drill          |    6 |  20 |              2.5 (5) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; no Field Defense                                        |
+| Ice Witch    | `CAPTAIN`    | Administration |    5 |  12 |                1 (2) |    1 (2) |    1 |     1 |     1 | yes               | no      | Blizzard; Cold Snap; no Rally; no Tend Wounded                          |
+| Boulder Yeti | `CATAPULT`   | Sawmilling     |    8 |  12 | 2 (4); 3 (6) planted |  1.5 (3) |    2 |   1–2 |     1 | yes               | no      | Boulders (ignore fortification); Planted; Mountain-born; never advances |
+| Sabretooth   | `KNIGHT`     | Chivalry       |    9 |  14 |                3 (6) |    1 (2) |    3 |     1 |     1 | yes               | no      | Prowl; no Glide; never on a foreign center; no Overrun                  |
+| Frost Giant  | `JUGGERNAUT` | reward only    |    — |  40 |                4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Push; Cold Aura; Mountain-born                                          |
 
 ⁷ Snow Hunter Sight becomes 2 with Fieldcraft.
 ⁸ [Ice Folk tuning record](RULESET_7_ICE_FOLK.md#165-tuning-record)
@@ -3031,9 +3208,15 @@ units cross Mountains without Engineering and without stopping
   adjacent surviving target, the advance, no Pillage, no Disband) and the
   Juggernaut's numbers, plus the Cold Aura
   ([section 21.12](#2112-prowl-and-the-cold-aura)). It is Mountain-born.
-- **Patrol Boat and Battleship** are the Human units. Ice Folk faction rules
-  do not apply to them: no Snow cover, no Glide, no Blizzard protection, no
-  Shatter, one slot, the ordinary Promotion.
+- **No ships.** The Ice Folk tree unlocks no naval role, so an Ice Folk
+  seat never has a Patrol Boat, a Battleship, or a Submarine, and a unit of
+  the Ice Folk kind never embarks; its land units Freeze the sea and slide
+  on the ice instead ([section 21.16](#2116-the-frozen-sea)). The three
+  ship roles stay in the Ice Folk registration with the Human numbers and
+  no unlock (the registry requires every role; the reward-only
+  `JUGGERNAUT` role has no unlock either), and no rule gives the seat a
+  ship: rewards and treasure units are land units, it cannot Board without
+  a ship, and the state schema refuses an Ice Folk seat that owns one.
 - Ice Folk Disband refunds: Yeti, Sled, and Snow Hunter 1; Ice Witch 2;
   Mammoth 3; Boulder Yeti and Sabretooth 4. The Frost Giant cannot Disband.
 - **Public abilities** (the role rule's `abilities`): Yeti `ATTACK`,
@@ -3042,7 +3225,8 @@ units cross Mountains without Engineering and without stopping
   `CAPTURE`, `SWEEP`, `TRAMPLE`; Ice Witch `ATTACK`, `BLIZZARD`,
   `COLD_SNAP`; Boulder Yeti `ATTACK`, `BOULDERS`, `MOUNTAIN_BORN`;
   Sabretooth `ATTACK`, `PROWL`; Frost Giant `ATTACK`, `CAPTURE`, `PUSH`,
-  `COLD_AURA`, `MOUNTAIN_BORN`; boats `ATTACK`. Mountain-born, Glide, Prowl,
+  `COLD_AURA`, `MOUNTAIN_BORN`; and every one of the eight also `FREEZE`.
+  Mountain-born, Glide, Prowl,
   the Sweep damage, Trample, ignoring fortification, the Planted bonus, the
   Rockfall Attack, Cold Blood, and the advance are role mechanics
   (`mountainBorn`, `glides`, `ignoresZocStops`, `sweepDamage`,
@@ -3067,8 +3251,9 @@ The Dwarf (`DWARF`) roster, by mechanical role, with the
 | Steam Cannon     | `CATAPULT`    | Sawmilling        |    8 |  10 |   3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | living; machine    | no                   | no      | Knockback; with Blasting Charges ignores Walls and Field Defense |
 | Steam Tank       | `KNIGHT`      | Chivalry          |    9 |  16 |     3 (6) |   2 (4) |    2 |     1 |     1 | living; machine    | yes                  | no      | Plated 4; no Overrun                                             |
 | Brass Titan      | `JUGGERNAUT`  | reward only       |    — |  36 |     4 (8) |   3 (6) |    1 |     1 |     1 | construct; machine | yes                  | yes     | Push                                                             |
-| Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |  10 |     2 (4) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval                                                            |
+| Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |  10 |     2 (4) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Ram (Seamanship)                                          |
 | Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |  25 |    6 (12) |   4 (8) |    2 |   1–3 |     3 | —                  | no                   | no      | naval; splash                                                    |
+| Submarine        | `SUBMARINE`   | Submersibles      |    9 |  12 |     4 (8) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Submerged; Torpedo                                        |
 
 ¹⁰ Clockwork Gunner Sight becomes 2 with Fieldcraft.
 ¹¹ The Gyrocopter has no `ATTACK` ability: its Attack is used only when it
@@ -3112,7 +3297,7 @@ retaliates, at distance 1 ([section 22.5](#225-gyrocopters-and-the-bombing-run))
 - **Brass Titan** has Juggernaut parity (reward only, capture, Push on an
   adjacent surviving target, the advance, no Pillage, no Disband) with
   36 HP, Attack 4, and Defense 3, and the construct rules.
-- **Patrol Boat and Battleship** are the Human units (drawn in the Dwarf
+- **Patrol Boat, Battleship, and Submarine** are the Human units (drawn in the Dwarf
   style). Dwarf faction rules do not apply to them: no Dig In, no Repair
   (it targets land-form units only), one slot, the ordinary Promotion.
 - **No Dwarf unit builds Field Defense** (`buildsFieldDefense` false for
@@ -3126,7 +3311,9 @@ retaliates, at distance 1 ([section 22.5](#225-gyrocopters-and-the-bombing-run))
   `ATTACK`, `CAPTURE`, `TUNNEL`, `ERUPTION`, `DIG_IN`; Engineer `ATTACK`,
   `TEND_WOUNDED` (labelled Repair), `ASSEMBLE`; Steam Cannon `ATTACK`,
   `KNOCKBACK`; Steam Tank `ATTACK`, `PLATED`; Brass Titan `ATTACK`,
-  `CAPTURE`, `PUSH`, `CLOCKWORK`; boats `ATTACK`. Constructs, Unflinching,
+  `CAPTURE`, `PUSH`, `CLOCKWORK`; Patrol Boat `ATTACK`, `RAM`; Battleship `ATTACK`; Submarine `ATTACK`,
+  `SUBMERGED`, `TORPEDO`.
+  Constructs, Unflinching,
   machines, the Repair amount, Dig In, the tunnel range, the ride, the
   bombing run, the Gunner's shots, Knockback, Plated, and the advance are
   role mechanics (`construct`, `unflinchingAttack`, `repairsAsMachine`,
@@ -3151,8 +3338,9 @@ living, and every Candy land unit is a ground unit:
 | Pie Launcher     | `CATAPULT`    | Sawmilling        |    8 |  10 |   3 (6) | 0.5 (1) |    1 |   2–3 |     1 | no                | no      | Sugar Rush; Splat; never advances                                  |
 | Gummy Bear       | `KNIGHT`      | Chivalry          |    9 |  14 |   3 (6) | 1.5 (3) |    2 |     1 |     1 | yes               | no      | Sugar Rush (Rushed: Sugar Frenzy); no Overrun otherwise            |
 | Rock Candy Golem | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) | 3.5 (7) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Push; Bounce                                           |
-| Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval                                                              |
+| Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                                            |
 | Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                                      |
+| Submarine        | `SUBMARINE`   | Submersibles      |    9 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                                          |
 
 ¹³ Gumball Gunner Sight becomes 2 with Fieldcraft.
 
@@ -3184,7 +3372,7 @@ living, and every Candy land unit is a ground unit:
 - **Rock Candy Golem** has Juggernaut parity (reward only, capture, Push on
   an adjacent surviving target, the advance, no Pillage, no Disband) with
   Defense 3.5, and it Bounces.
-- **Patrol Boat and Battleship** are the Human units. Candy faction rules
+- **Patrol Boat, Battleship, and Submarine** are the Human units. Candy faction rules
   do not apply to them: no Sugar Rush, no Crumbs, one slot, the ordinary
   Promotion.
 - **No Candy unit builds Field Defense** (`buildsFieldDefense` false for
@@ -3199,7 +3387,9 @@ living, and every Candy land unit is a ground unit:
   Confectioner `ATTACK`, `TEND_WOUNDED` (labelled Frosting), `REBAKE`,
   `SUGAR_RUSH`; Pie Launcher `ATTACK`, `SUGAR_RUSH`, `SPLAT`; Gummy Bear
   `ATTACK`, `SUGAR_RUSH`; Rock Candy Golem `ATTACK`, `CAPTURE`, `PUSH`,
-  `SUGAR_RUSH`, `BOUNCE`; boats `ATTACK`. The Rush perks and Crumbs are role
+  `SUGAR_RUSH`, `BOUNCE`; Patrol Boat `ATTACK`, `RAM`; Battleship `ATTACK`; Submarine `ATTACK`,
+  `SUBMERGED`, `TORPEDO`.
+  The Rush perks and Crumbs are role
   mechanics (`rushPerk`: `ESCAPE` for the Donut Racer, `SUGAR_FRENZY` for
   the Gummy Bear; `leavesCrumbs`: the seven trainable land roles), exposed
   through the `candy` block of the public unit stats
@@ -3207,12 +3397,13 @@ living, and every Candy land unit is a ground unit:
 
 General roster rules:
 
-- An **embarked** land unit of any faction has Move 2 on water (landing
+- An **embarked** land unit of any faction that embarks (never a unit of
+  the Ice Folk kind) has Move 2 on water (landing
   uses one point, [section 14](#14-naval-rules)), Defense 1, Sight 1, no
   Attack, no retaliation, no ZOC, no Kaboom, no Charge!, no Martian
   ability (no Beam Down, Mind Control, Tractor Beam, Psychic Command, or
-  Force Field), and no Ice Folk ability (no Bolas, Cold Snap, Blizzard,
-  Cold Aura, Snow cover, or Glide); an embarked dinosaur keeps its slots and
+  Force Field); a unit of the Ice Folk kind never embarks, so no Ice Folk
+  ability is ever afloat; an embarked dinosaur keeps its slots and
   growth, an embarked Martian unit keeps its slots, its Cooling, and its
   Shield, which still absorbs damage and recharges, and an embarked unit
   cannot be Chilled, while a Chilled unit that embarks keeps a dormant
@@ -3223,7 +3414,9 @@ General roster rules:
 - Minimum range limits only the chosen target: a Catapult, Lich, Rocket Cart,
   Steam Cannon, or Bomb Chucker cannot target an adjacent unit but may still
   fire at another target in range.
-- Tactical-role labels (`LINE`, `SKIRMISHER`, and so on) are display metadata
+- Tactical-role labels (`LINE`, `SKIRMISHER`, and so on; the ships are
+  `NAVAL_SCREEN`, `NAVAL_CAPITAL`, and, for the Submarine, `NAVAL_HUNTER`)
+  are display metadata
   with no combat effect, except that Rally (Frenzy, War Drums, Psychic
   Command) skips the `SUPPORT` and `SIEGE` labels
   ([section 10](#10-recovery-and-support)). The registry requires every
@@ -3247,33 +3440,52 @@ General roster rules:
   being left is a usable Road node and 2 otherwise
   ([section 9.2](#92-road-movement)), or, for a land-form Ice Folk unit
   other than the Sabretooth, when the step is from Snow onto Snow (Glide,
-  [section 21.5](#215-snow)).
+  [section 21.5](#215-snow)). A tile entered by a slide on ice costs
+  nothing, and a step that leaves an ice tile costs 2 (ice is water: it has
+  no Road).
+- **Ice** ([section 21.16](#2116-the-frozen-sea)). An ice tile is ground
+  for every land-form unit and closed to every unit afloat. A land-form
+  Ice Folk unit that Glides (every Ice Folk land role but the Sabretooth)
+  **slides**: a step onto ice continues straight on, at no cost, to the end
+  of the ice, a unit, or a hostile zone of control it knew of; the slide is
+  forced (`SLIDE_FORCED`). A land-form ground unit of any other kind
+  **slips**: its Move ends on entering ice (`ICE_STOPS_MOVE`). An icebound
+  unit never moves (`MOVEMENT_ILLEGAL` reason `ICEBOUND`). Ice is read once
+  per `MOVE`, from the state before the command.
 - A Move ends on entering an unexplored cell, a Forest (unless a Road edge or
   Fieldcraft freedom for the `RAIDER` and `MARKSMAN` roles: Raider and
   Marksman, Ghoul and Banshee, Wolf Rider and Bomb Chucker, Raptor and
   Spitter, Saucer and Ray Gunner, Sled and Snow Hunter), a Mountain (unless
   a Road edge or a Mountain-born unit), a Snow tile for a land-form ground
   unit of any faction but the Ice Folk (**deep snow**, unless a Road edge or
-  the same Fieldcraft freedom; `SNOW_STOPS_MOVE`), or a cell in hostile ZOC
+  the same Fieldcraft freedom; `SNOW_STOPS_MOVE`), an ice tile for a
+  land-form ground unit of any kind but the Ice Folk (the slip; nothing
+  waives it), or a cell in hostile ZOC
   (never for a Sabretooth, which Prowls). A path that continues past such a
   stop is illegal. A Martian walker or flyer and a Dwarf Gyrocopter (a
-  flyer) are never stopped by terrain, Snow included, and a flyer not by ZOC
+  flyer) are never stopped by terrain, Snow and ice included, and a flyer not by ZOC
   ([section 20.6](#206-movement-stride-flying-and-crossing-water)). Snow is
   read once per `MOVE`, from the state before the command. Deep snow ends
   the Move of a Dwarf ground unit like any other faction's; it matters to
   the Move-2 Steam Tank, since the others have Move 1.
 - Land units need Engineering to enter Mountain (Martian walkers and flyers,
   the Dwarf Gyrocopter, and Ice Folk Mountain-born units do not) and cannot
-  enter water except by embarking (Martian machines and the Gyrocopter also
-  cross water inside a Move and self-launch). Every "can this unit stand on
+  enter water except by embarking or where it is ice (Martian machines and
+  the Gyrocopter also cross water inside a Move and self-launch; on ice
+  they stand in land form and do not). Every "can this unit stand on
   this tile" test (`MOVE`, `DISEMBARK`, the advance, Push and the Charge!
   push, the Tractor Beam, Knockback, Beam Down, a tunnel or rider
   destination, an Assemble tile, treasure-unit placement, reward
   displacement, and their public twins) goes through the one shared terrain
   rule `canEnterTerrainV7` (terrain, movement mode, afloat, Engineering,
-  Navigation, and Mountain-born, true only for a land-form Yeti, Boulder
-  Yeti, or Frost Giant), and "does entering this tile end the Move" through
-  `terrainStopsMoveV7`.
+  Navigation, Mountain-born, true only for a land-form Yeti, Boulder
+  Yeti, or Frost Giant, and ice: ground for every unit that is not afloat,
+  whatever the depth and without Navigation, and never entered by a unit
+  afloat), and "does entering this tile end the Move" through
+  `terrainStopsMoveV7` (the slip included). A placement that may not stand
+  on ice (an Egg, a reward or treasure unit, a rising, a Re-baked unit, an
+  Assembled Gunner, a tunnel or rider destination) reads the tile as the
+  water it is.
 - **Rift.** `canEnterTerrainV7` admits a Rift for a land-form flyer only
   (the Martian Saucer and Mothership and the Dwarf Gyrocopter):
   a flyer enters, crosses, and ends a Move on it at the ordinary cost
@@ -3312,7 +3524,10 @@ General roster rules:
   ([section 20.6](#206-movement-stride-flying-and-crossing-water)); no other
   player's unit passes a Martian unit. A Dwarf Gyrocopter is such a flyer
   too. An own unit standing on a Snow tile where a non-Ice-Folk mover would
-  have to stop cannot be passed either.
+  have to stop cannot be passed either, nor one on an ice tile where a
+  slipping mover stops; and an Ice Folk unit that slides never passes a
+  unit standing on ice, its owner's included (the Sabretooth, which walks
+  the ice, passes its owner's units there as on land).
 - **Mounds** ([section 22.3](#223-the-mound-surfacing-and-the-eruption)). A
   burrowed Dwarf unit stands on no tile, but its mound reserves one: the one
   occupancy predicate `tileOccupiedV7` is true for a tile with a unit or a
@@ -3334,7 +3549,10 @@ General roster rules:
   (the Blizzard of an Ice Witch hidden before the command: `SNOW`, reported
   also when the step is a ZOC stop too), or a mound on a tile the mover had
   not explored, met on the last tile of the Move (`MOUND`, naming the
-  mound tile), interrupts the Move, which is still accepted. The mover stands on the last
+  mound tile), or, for a slipping mover, ice on a tile it had not explored
+  before the command (`ICE`: it stops on that tile), interrupts the Move,
+  which is still accepted. A slide that meets a zone of control first seen
+  during the Move stops there with the ordinary `ZOC` interruption. The mover stands on the last
   tile it entered; if that tile holds an own unit, it ends on the last tile
   of the entered path that holds no unit, or on its starting tile if there
   is none. `UNIT_MOVED.path` is the entered path cut to that tile (omitted
@@ -3351,10 +3569,15 @@ General roster rules:
   seat, that unit passes through the visible units of its own owner only (a
   flyer through every visible unit). It reads Snow from the view's public
   `snow` flags: for an Ice Folk mover hidden Snow can only make a step
-  cheaper, so every offered `MOVE` is still accepted.
+  cheaper, so every offered `MOVE` is still accepted. Ice on explored tiles
+  is public, so slides and slips are exact: for an Ice Folk unit the query
+  offers only tiles a Move can really end on (the end of each slide, never
+  a tile it would slide through).
 - **ZOC:** a hostile land unit projects ZOC onto adjacent land cells. A naval
   unit projects it onto adjacent water it could enter. A land unit projects
   onto adjacent water only against an afloat unit it could attack at range 1.
+  An ice tile takes ZOC like land: from land units, never from naval units.
+  An icebound unit projects none.
   Embarked units, Eggs, Martian flyers, the Dwarf Gyrocopter, and mounds
   project none, and a flyer ignores hostile ZOC; a Sabretooth projects it
   but is never stopped by it, and a Chilled unit projects it as usual. A
@@ -3370,11 +3593,13 @@ General roster rules:
 - Primary actions are Attack, Recover, Capture, and specials
   (Rally/Frenzy/WAAAGH!/War Drums/Psychic Command, Tend and Repair, Field
   Defense, Pillage, Raise Dead, Devour, Wail, Kaboom, Hatch, Beam Down, Mind
-  Control, Tractor Beam, Bolas, Cold Snap, Bomb Run, Assemble). Guard,
+  Control, Tractor Beam, Bolas, Cold Snap, Freeze, Board, Bomb Run,
+  Assemble). Guard,
   Zombie, Orc Brute, Ankylosaurus, Shield Projector, Catapult, Lich, Rocket
   Cart, Steam Cannon, and Battleship cannot attack after moving; the
   Triceratops (revision 20), the Tripod, the Mammoth, the Boulder Yeti, and
-  the Steam Mole can. Every read of this role flag for a unit
+  the Steam Mole can. `BOARD` and `FREEZE` follow the same flag, so a
+  Battleship that moved cannot board. Every read of this role flag for a unit
   goes through the single rule `unitMayActAfterMoveV7`: the role's
   `mayUsePrimaryActionAfterMove`, and not sluggish.
 - **Sluggish** ([section 21.3](#213-sluggish-move-or-act-not-both)): a
@@ -3389,6 +3614,10 @@ General roster rules:
   sluggish Clockwork Gunner that has not moved fires twice, one that moved
   cannot fire; a sluggish Engineer that moved can neither Repair nor
   Assemble.
+- **Icebound units** ([section 21.16](#2116-the-frozen-sea)): an afloat
+  unit standing on ice cannot Move, Attack, or Board; it may Recover (a
+  ship on or next to its own active dock), Wait, and Promote, and an
+  icebound embarked unit may still `DISEMBARK`.
 - **Burrowed units** have no activation on the board: every command naming
   one is rejected with `UNIT_ALREADY_HANDLED` and never offered
   ([section 22.2](#222-the-tunnel-and-burrowed-units)).
@@ -3493,6 +3722,15 @@ General roster rules:
   its own retaliation range stays 1.
 - Land units may attack afloat units from shore and naval units may attack
   coastal land units.
+- **Submerged, Torpedo, icebound** ([section 14.3](#143-the-submarine-submerged-and-torpedo),
+  [section 21.16](#2116-the-frozen-sea)). A submerged Submarine is a legal
+  target only from Chebyshev distance 1; from farther the attack is
+  `TARGET_OUT_OF_RANGE` and never offered. A Submarine's own `ATTACK`
+  targets only units afloat; a land-form target, on land or on ice, is
+  `ATTACK_NOT_LEGAL { reason: "NOT_AFLOAT" }`, checked right after
+  `TARGET_ALLIED` and before the range. An icebound unit cannot attack
+  (`ATTACK_NOT_LEGAL { reason: "ICEBOUND" }`, checked right after the
+  embarked test).
 - The Giant Spider is hostile to every player in both modes, so a visible
   Spider is a legal target like any hostile unit. The combat preview of an
   attack on it carries `monsterRetaliates` (true when neither side dies and
@@ -3509,11 +3747,12 @@ attack  = base Attack (a half-power heat ray: half, rounded down;
                        a Rockfall: 1.5)
         + 1 (Charge/Pounce/Strafe) + 1 (Inspired/Frenzied/WAAAGH!/War Drums/Psychic Command)
         + Gang Up (0–2) + 1 (Alpha) + run-up (Charge!: 0–2)
-        + 1 (Planted) + 0.5 (Cold Blood)
+        + 1 (Planted) + 0.5 (Cold Blood) + 1 (Ram)
 defense = base Defense + fortification level          (embarked or Egg: 1)
 cover   = 1.5 on Forest or Mountain for land-form ground defenders
-          (never a Martian walker or flyer), else 1.25 on Snow for an
-          Ice Folk defender with no fortification of its own, else 1
+          (never a Martian walker or flyer), else 1.25 on Snow, or on ice
+          with Glacier, for an Ice Folk defender with no fortification of
+          its own, else 1
 
 attackForce  = attack  * attacker.hp / attacker.maxHp   (a Dwarf construct: attack)
 defenseForce = defense * defender.hp / defender.maxHp * cover
@@ -3542,14 +3781,28 @@ damageToAttacker = roundHalfUp(defenseForce / total * defense * 4.5)
   ([section 20.2](#202-shields)).
 - A surviving defender retaliates only if it has the `ATTACK` ability (or
   `BOMB_RUN`: a Dwarf Gyrocopter strikes back at distance 1 with Attack
-  1.5) and an Attack above 0, is not embarked or an Egg, the attacker is
-  within its own range, and the attacker is not `UNANSWERED` (a Vampire). The preview then
-  reports `noRetaliationReason` `DEFENDER_DIED`, `UNANSWERED`, or
+  1.5) and an Attack above 0, is not embarked, an Egg, or icebound, the
+  attacker is
+  within its own range, and the attacker is not `UNANSWERED` (a Vampire)
+  and its attack is not a torpedo (a Submarine's). The preview then
+  reports `noRetaliationReason` `DEFENDER_DIED`, `UNANSWERED` (a torpedo
+  too), `ICEBOUND`, or
   `OUT_OF_RANGE` (the last also for an embarked defender, an Egg, or a
-  defender without Attack).
+  defender without Attack), in that order of precedence.
 - **Charge:** with Raiding, a Raider, Ghoul, Wolf Rider, Raptor (where it
   is labelled **Pounce**), or Saucer (**Strafe**) that moved at least two
   cells this turn gets +1 Attack on its first attack, at range 1.
+- **Ram** (a Patrol Boat whose owner has Seamanship,
+  [section 14.1](#141-the-ram-bow-ram)): +1 Attack (`RAM_BONUS2_V7` 2) on
+  an attack from distance 1 on a target afloat that is not icebound, on a
+  turn on which the boat has moved; never on retaliation. The preview and
+  `COMBAT_RESOLVED` carry `ram`, and `torpedo` for a Submarine's attack;
+  both are false for every other attack.
+- **Ice cover** (Glacier, [section 21.16](#2116-the-frozen-sea)): a
+  land-form unit of the Ice Folk kind standing on ice, whose owner has
+  Glacier and whose own fortification level is 0, has the Snow cover,
+  × 1.25. The preview carries `iceCover`, and `icebound` when the defender
+  is icebound.
 - **Inspired** (Frenzied for Undead, WAAAGH! for Goblins, War Drums for
   Dinosaurs, Psychic Command for Martians): +1 Attack on the unit's first
   accepted attack after Rally, Frenzy, WAAAGH!, War Drums, or Psychic
@@ -3650,7 +3903,9 @@ Disintegrator ([section 21.5](#215-snow)).
   and the Steam Mole do advance; role mechanic `advancesAfterKill`) that
   kills a land defender or an Egg moves into its cell if explored and
   enterable (Mountain needs Engineering unless the attacker strides or is
-  Mountain-born), then reveals sight. It does not
+  Mountain-born; an ice tile a land-form defender died on is entered like
+  land, and the advance is not a Move, so nothing slides or slips), then
+  reveals sight. It does not
   advance when the defender rises in place (an Infect or Bitten rising, a
   shattered Bitten unit too), a Sabretooth or a rider on its surfacing turn
   never advances onto a settlement center its owner does not own, and the
@@ -3668,7 +3923,17 @@ Disintegrator ([section 21.5](#215-snow)).
   needs no Engineering for a Mountain), and not in territory allied to the
   target. It never pushes an Egg, and the pusher stays where it is. A pushed
   unit keeps its Chill and its `moved` flag (a Dwarf unit's Dig In is read
-  on its new tile).
+  on its new tile). An ice tile is ground here: a land-form unit may be
+  pushed, knocked back, or pulled onto ice and an afloat unit never, and
+  nothing moves an icebound unit (the preview's `push` is `BLOCKED`).
+- **A ram's shove** ([section 14.1](#141-the-ram-bow-ram)): a target that
+  survives a Ram is shoved one tile directly away from the boat when that
+  tile is on the board, explored by the attacker, open water that is not
+  ice and not a dock, holds no unit, and is Shallow Water, or Deep Water
+  only for a target standing on Deep Water. It is the Push step (the same
+  place, `UNIT_PUSHED`, and the preview field `push`, which for a Ram is
+  always `WILL_PUSH` or `BLOCKED`), and the one case in which a ship
+  pushes.
 - **Knockback** (the Dwarf Steam Cannon,
   [section 22.9](#229-steam-cannon-knockback)): a target that survives a
   land-form Steam Cannon's attack is pushed one tile directly away from the
@@ -3702,7 +3967,7 @@ Disintegrator ([section 21.5](#215-snow)).
   without a cap until a non-kill, death, or no target. The continuation is
   evaluated after growth and after any death-blast chain the attack set off
   ([section 18.7](#187-where-chains-run-and-event-order)).
-- **Splash** (Battleship of any faction, the Undead Lich, and the Goblin Bomb
+- **Splash** (the Battleship of every seafaring faction, the Undead Lich, and the Goblin Bomb
   Chucker): when the unit attacks (never when it retaliates), every other
   unit on the eight cells around the primary target, hidden or visible and of
   any faction or form, takes `max(1, ceil(primary damage / 2))` (capped at its
@@ -3748,15 +4013,16 @@ Disintegrator ([section 21.5](#215-snow)).
   and hostile splash, Pierce, and Sweep kills, Shatters, Dwarf eruption
   kills (credited to the Mole) and bomb kills (credited to the Gyrocopter),
   kills whose victim rises, and destroyed Eggs (not friendly bomb-splash or
-  Pierce kills, explosion kills,
-  or a Mind Control and a `BRAIN_LOST` removal). A dinosaur that reaches
+  Pierce kills, explosion kills, an ice crush,
+  or a Mind Control, a boarding, and a `BRAIN_LOST` removal). A dinosaur that reaches
   Big or Alpha grows at once, after the exchange's damage, Lifesteal, and
   kill credit and before the advance, Push, follow, and any chain
   ([section 19.8](#198-grow)).
 - **Deaths.** A combat death leaves a Grave, an Infect rising, or a Bitten
   rising as [section 17](#17-undead-faction-rules) describes; a destroyed Egg
   leaves none of them, and neither does a death on a **Rift** (any cause:
-  no Grave, no Infect or Bitten rising). A shattered unit (`UNIT_DIED`
+  no Grave, no Infect or Bitten rising) or a death on **ice** (a water
+  death, like a death afloat: no Grave, no rising, no Crumbs). A shattered unit (`UNIT_DIED`
   cause `SHATTER`) leaves no Grave and has no death blast; a shattered
   Bitten unit still rises. A Dwarf construct leaves no Grave on any death
   and never rises ([section 22.6](#226-clockwork)). A unit on a Rift is
@@ -3778,11 +4044,25 @@ Disintegrator ([section 21.5](#215-snow)).
   the Cooling of a full-power ray; the Ice Folk steps are in
   [section 21.13](#2113-attack-resolution-order), the Dwarf steps in
   [section 22.11](#2211-resolution-order), and the Candy steps in
-  [section 23.8](#238-resolution-order).
+  [section 23.8](#238-resolution-order). The naval branch adds to the
+  ordinary order: the legality tests above; the Ram in the Attack and the
+  ice cover in the Defense; no retaliation for a torpedo or from an
+  icebound defender; and the ram's shove in the Push step.
 
 ## 14. Naval rules
 
-- **Water movement:** only naval and embarked units stand on water. Shallow
+The ships are the Patrol Boat, the Battleship, and the Submarine, the same
+three for the Human, Undead, Goblin, Dinosaur, Martian, Dwarf, and Candy
+factions (the **seafaring** factions). The Ice Folk have none: they freeze
+the sea and cross it on foot ([section 21.16](#2116-the-frozen-sea)). The
+branch gives sea warfare three roles that counter each other: the
+Battleship outguns Patrol Boats at range, the Submarine sinks Battleships
+that cannot shoot it from afar, and Patrol Boats that ram hunt Submarines.
+Every rule that names "naval units", "ships", or "boats" covers all three.
+
+- **Water movement:** only naval and embarked units stand on open water
+  (an ice tile is the reverse: ground for land-form units and closed to
+  every unit afloat). Shallow
   Water needs Shorecraft (via embarking or training), Deep Water needs
   Navigation. A Martian machine or a Dwarf Gyrocopter is the exception for
   entering: it crosses water inside a Move in land form and
@@ -3790,7 +4070,7 @@ Disintegrator ([section 21.5](#215-snow)).
   bombing run) ends on water, with no Port and without Shorecraft
   ([section 20.6](#206-movement-stride-flying-and-crossing-water)).
   Every step that leaves a water tile costs a full movement point. Patrol
-  Boats, Battleships, and embarked units all have Move 2. A naval or embarked
+  Boats, Battleships, Submarines, and embarked units all have Move 2. A naval or embarked
   unit passes through its owner's boats and transports and cannot end on one
   ([section 12.1](#121-movement)); pass-through adds no landing cell, it only
   widens where a two-cell water Move can end.
@@ -3827,60 +4107,91 @@ Disintegrator ([section 21.5](#215-snow)).
 - **Port** (Shorecraft, 4 Coins): on owned Shallow Water with a land cell of
   the same city among its eight neighbours, and with no improvement, site, or
   Road. It may share its tile with Fish or Pearls, has no per-city limit, and
-  gives +1 live population while active.
+  gives +1 live population while active (+2 with Harbours,
+  [section 14.4](#144-harbours)). No Port is built on an ice tile.
 - **Shipyard** (Naval Engineering, 5 Coins, one per city): upgrades an active
   Port in place. It keeps all Port functions, gives +2 live population in
-  total, and makes naval training 2 Coins cheaper (minimum 1): Patrol Boat 3,
-  Battleship 14.
+  total (+3 with Harbours), and makes naval training 2 Coins cheaper
+  (minimum 1): Patrol Boat 3, Submarine 7, Battleship 14.
 - **Active and blockaded docks:** a Port or Shipyard is active while its city's
   owner owns it and no hostile naval or embarked unit stands on it. A
   blockaded dock gives 0 population and cannot train, embark, harvest its
   resource, recover ships, or join sea trade until the blockader leaves.
 - **Naval training:** `TRAIN_NAVAL` selects an active, empty dock assigned to
-  the city and spends the city action, capacity, and Coins.
+  the city and spends the city action, capacity, and Coins. It trains the
+  Patrol Boat (Shorecraft), the Battleship (Naval Engineering), and the
+  Submarine (Submersibles); Arms Industry applies to no ship. An Ice Folk
+  seat is never offered it, and its `TRAIN_NAVAL` is rejected with
+  `UNIT_ROLE_INVALID { role }` whatever it has researched.
 - Naval units cannot capture, embark, pillage, disband, push, or advance, and
-  they receive no terrain cover or fortification.
+  they receive no terrain cover or fortification. The one push a ship makes
+  is the shove of a Ram ([section 14.1](#141-the-ram-bow-ram)).
+- **Naval recovery, ZOC, and blockade** are the same for the three ships: a
+  ship recovers 4 on or next to an own active dock
+  ([section 10](#10-recovery-and-support)), projects ZOC onto adjacent
+  water it could enter (never onto ice), and blockades a hostile dock it
+  stands on.
+- **Undead boats** are the Human ships: a ship leaves no Grave and never
+  rises, Restless never applies to it, and a boarded Undead ship simply
+  becomes its captor's ship. Wail is not an attack, so it reaches a
+  Submarine within its radius.
 - Reward units and treasure units are always land units.
-- **Goblin boats** are the Human Patrol Boat and Battleship: no Gang Up, no
-  Kaboom, and no death blast. Blasts hit naval and embarked units in the
+- **Goblin boats** are the Human Patrol Boat, Battleship, and Submarine: no
+  Gang Up, no Kaboom, and no death blast. Plunder pays for a ship sunk,
+  never for a boarding (it is not a kill). A Bomb Chucker (range exactly 2)
+  cannot target a submerged Submarine; its splash, a Kaboom, and a death
+  blast reach one like any unit. Blasts hit naval and embarked units in the
   blast area like any unit (the embarked Defense 1 is irrelevant to fixed
   damage), and an exploding unit killed while embarked explodes on its water
   tile. A blast that kills a blockader lifts the blockade.
-- **Dinosaur boats** are the Human Patrol Boat and Battleship too: trained
+- **Dinosaur boats** are the Human Patrol Boat, Battleship, and Submarine
+  too: trained
   with `TRAIN_NAVAL`, one slot each, no growth, ordinary Promotion. Dinosaur
   land units embark, sail, and land under the ordinary rules (a two-slot
   unit embarks like any other, keeping its slots and growth; landing ends
   the activation, so a landed Triceratops cannot Charge! that turn). An Egg
   is never on water or a dock, never embarks, and never blockades.
-- **Martian boats** are the Human Patrol Boat and Battleship too: no Shield,
-  one slot, ordinary Promotion. Martian foot units embark at an own active,
+- **Martian boats** are the Human Patrol Boat, Battleship, and Submarine
+  too: no Shield, one slot, ordinary Promotion. Mind Control never takes a
+  ship; the Tractor Beam may pull a one-slot ship, a submerged Submarine
+  included, and never an icebound one (`TARGET_IMMUNE`). A self-launched
+  machine is `EMBARKED`: it can be rammed and torpedoed and is never
+  boarded. A Ray Gunner or a Tripod cannot target a submerged Submarine
+  from 2. Martian foot units embark at an own active,
   empty Port or Shipyard with Shorecraft like Human units; machines also
   self-launch. Afloat, a Martian unit is an ordinary embarked unit (Move 2,
   Defense 1, Sight 1, no Attack, retaliation, ZOC, or ability) that keeps its
   Shield and Cooling; a walker afloat may enter Deep Water with Navigation.
   An embarked Martian unit on a hostile dock blockades it, and so does an
   embarked mind-controlled unit.
-- **Ice Folk boats** are the Human Patrol Boat and Battleship too: no Snow
-  cover, Glide, Blizzard protection, or Shatter, one slot, ordinary
-  Promotion. Ice Folk land units embark at an own active, empty Port or
-  Shipyard with Shorecraft like Human units; afloat they have no Ice Folk
-  rule (an embarked Ice Witch has no Blizzard or Cold Snap, an embarked
-  Frost Giant no Cold Aura). No embarked or naval unit of any faction can be
+- **The Ice Folk have no boats** (`pulp-wars-poc-7r44`). Their tree unlocks
+  no naval role, and a unit of the Ice Folk kind never embarks: a Move
+  never ends on a dock for it, its owner's own docks included (a body rule,
+  so a mind-controlled Yeti does not embark either). Ports and Shipyards
+  keep their economy for an Ice Folk seat (population, Harvest Fish on the
+  dock tile, sea trade, the Shipyard upgrade, and Harbours with Glacier),
+  and an enemy ship can still blockade an Ice Folk dock it can reach. They
+  cross water by freezing it ([section 21.16](#2116-the-frozen-sea), which
+  replaces the floe the
+  [Ice Folk overlay section 17.3](RULESET_7_ICE_FOLK.md#173-deferred-the-floe)
+  deferred). No embarked or naval unit of any faction can be
   Chilled or shattered; a Chilled unit that embarks keeps a dormant entry
-  that still counts down. Nothing freezes water: the overlay's floe is
-  deferred ([Ice Folk overlay section 17.3](RULESET_7_ICE_FOLK.md#173-deferred-the-floe)).
-  `THROW_BOLAS` and `COLD_SNAP` move no unit, so they are not on the
-  blockade-event list below.
-- **Candy boats** are the Human Patrol Boat and Battleship too (drawn in the
-  Candy style): one slot, ordinary Promotion, no Candy rule (no Sugar Rush,
+  that still counts down.
+  `THROW_BOLAS`, `COLD_SNAP`, and `FREEZE` move no unit and touch no dock,
+  so they are not on the blockade-event list below.
+- **Candy boats** are the Human Patrol Boat, Battleship, and Submarine too
+  (drawn in the Candy style): one slot, ordinary Promotion, no Candy rule (no Sugar Rush,
   and a death afloat leaves no Crumbs). Candy land units embark like Human
   units; an embarked unit cannot Rush, a Rushed unit that embarks still
   Crashes, and a Crashed embarked unit may land. A boat that attacks a
   Marshmallow or a Golem from distance 1 is bounced over water, and Splat
   applies to boats and embarked units
   ([section 23.9](#239-interactions-with-other-rules)).
-- **Dwarf boats** are the Human Patrol Boat and Battleship too (drawn in the
-  Dwarf style): one slot, ordinary Promotion, no Dwarf rule. Dwarf foot
+- **Dwarf boats** are the Human Patrol Boat, Battleship, and Submarine too
+  (drawn in the Dwarf style): one slot, ordinary Promotion, no Dwarf rule.
+  A Steam Cannon (range 2–3) cannot target a submerged Submarine, so its
+  Knockback never moves one; a Gyrocopter's bomb is not an attack and
+  reaches a Submarine within 2. Dwarf foot
   units and machines other than the Gyrocopter embark at an own active,
   empty Port or Shipyard with Shorecraft like Human units; the Gyrocopter
   flies over Shallow Water (Deep Water with Navigation) and self-launches
@@ -3891,18 +4202,208 @@ Disintegrator ([section 21.5](#215-snow)).
   one. `TUNNEL` and `ASSEMBLE` never touch water, so they are not on the
   blockade-event list below; `BOMB_RUN` is.
 - **Blockade events.** `PORT_BLOCKADE_CHANGED` and `SEA_NETWORK_CHANGED` are
-  recomputed after `ATTACK`, `BUILD_PORT`, `BUILD_ROAD`, `CAPTURE`,
+  recomputed after `ATTACK`, `BOARD`, `BUILD_PORT`, `BUILD_ROAD`, `CAPTURE`,
   `DISEMBARK`, `MOVE`, `REDEVELOP`, `WAIL`, `KABOOM`, `MIND_CONTROL`,
   `TRACTOR_BEAM`, `BOMB_RUN`, `END_TURN`, `LAND_GRANT`, research of Roads,
   Shorecraft, or Navigation, `DISBAND` while the state has a mind-controlled
   unit, and every command that emits `UNIT_RELEASED` (a released embarked
   unit may have been, or may become, a blockader). `KABOOM` and
   `END_TURN` joined the list in revision 17, the three Martian entries
-  with the Martian overlay, and `BOMB_RUN` with the Dwarf overlay (a bomb
-  can kill an embarked blockader, and a self-launch can start a blockade); with `END_TURN`, a blockade lifted by a
+  with the Martian overlay, `BOMB_RUN` with the Dwarf overlay (a bomb
+  can kill an embarked blockader, and a self-launch can start a blockade),
+  and `BOARD` with the naval branch (a prize standing on its former owner's
+  dock now blockades it, and a blockader taken on an own dock lifts the
+  blockade; a ram that shoves a blockader off a dock reports it under
+  `ATTACK`); with `END_TURN`, a blockade lifted by a
   death at the next seat's Start Turn (Plague or a Plague-started chain) is
   reported in that command instead of silently. The events are emitted only
   when a dock or network changed.
+
+### 14.1 The Ram (Bow Ram)
+
+**One sentence:** a Patrol Boat that moved this turn rams a boat or a
+transport: +1 Attack, and the target is shoved one tile back. (The
+interface calls it **Bow Ram**; "Ram" there is the Goblin Scrap Buggy's
+Overrun.)
+
+- **Who.** A unit in `NAVAL` form whose role has the `RAM` ability (the
+  Patrol Boat), whose kind's capabilities under its owner have `ram`
+  (Seamanship).
+- **When.** An `ATTACK` at Chebyshev distance 1 on a target **afloat**
+  (`NAVAL` or `EMBARKED` form) that is not icebound, on a turn on which the
+  boat has moved (activation `moved`; an interrupted Move counts).
+- **Bonus.** +1 Attack (`RAM_BONUS2_V7` 2), in `attack2` like Charge; never
+  on retaliation. The preview and `COMBAT_RESOLVED` carry `ram: true`.
+- **Shove.** A target that survives is shoved one tile directly away from
+  the boat: its tile plus `(sign(dx), sign(dy))`, where `(dx, dy)` is its
+  offset from the boat. The shove happens only when that tile is on the
+  board, explored by the attacker, water that is **not ice and not a dock**
+  (Port or Shipyard), holds no unit, and is Shallow Water, or Deep Water
+  only if the target stands on Deep Water (the Tractor Beam's public rule:
+  the target owner's Navigation is private, so the preview is exact).
+  Otherwise nothing moves (`push: "BLOCKED"`; a tile the attacker has not
+  explored is `BLOCKED` too, never `UNKNOWN_BEHIND_FOG`). These are the
+  shove's only conditions: unlike the ordinary Push it does not refuse
+  territory allied to the shoved unit. It is the Push step of the attack
+  (the same place as a Juggernaut's Push, the same `UNIT_PUSHED` event,
+  the preview field `push`).
+- The shoved unit keeps its HP, statuses, and activation. A blockader
+  shoved off a dock lifts the blockade. A shove never moves a second unit
+  and never chains: one attack, one shove.
+- A Patrol Boat's public abilities list `RAM` whatever its owner has
+  researched; whether an attack is a Ram is read from the preview.
+  `estimateCombatV7` counts the Ram for an attack after a planned Move.
+
+### 14.2 Board
+
+**One sentence:** a ship next to a badly damaged enemy ship (a third of its
+HP or less) captures it; the prize is patched up just above that line.
+
+`BOARD { kind, unitId, targetUnitId }` is a primary action. It is not an
+Attack and costs no Coins. Legality, in this order (all rejections atomic):
+
+| #   | Requirement                                                                                                                       | Rejection                                      |
+| --- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                                    | the ordinary unit errors                       |
+| 2   | It is in `NAVAL` form (any ship role).                                                                                            | `BOARD_NOT_LEGAL { reason: "NOT_A_SHIP" }`     |
+| 3   | Its kind's capabilities under its owner have `boarding` (Seamanship).                                                             | `TECH_REQUIRED { tech: "SEAMANSHIP" }`         |
+| 4   | It has not used a primary action, and `unitMayActAfterMoveV7` allows it if it moved (so a Battleship that moved cannot board).    | `UNIT_ALREADY_ACTED`                           |
+| 5   | It is not icebound.                                                                                                               | `BOARD_NOT_LEGAL { reason: "ICEBOUND" }`       |
+| 6   | `targetUnitId` is a unit on the board the actor can see.                                                                          | `TARGET_NOT_FOUND`                             |
+| 7   | It is hostile to the actor (not the actor's own or an ally's).                                                                    | `TARGET_ALLIED`                                |
+| 8   | It is in `NAVAL` form (a transport, a self-launched machine, or a land unit is never boarded).                                    | `BOARD_NOT_LEGAL { reason: "TARGET_IMMUNE" }`  |
+| 9   | It is within Chebyshev distance 1.                                                                                                | `BOARD_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
+| 10  | Its HP is at most `floor(maxHp / 3)` (`BOARDING_HP_DIVISOR_V7` 3): Patrol Boat 3, Submarine 4, Battleship 8 (promoted: 5, 5, 10). | `BOARD_NOT_LEGAL { reason: "TARGET_HEALTHY" }` |
+| 11  | The boarder's owner could sail the prize where it stands: a target on Deep Water needs the actor's Navigation.                    | `BOARD_NOT_LEGAL { reason: "DEEP_WATER" }`     |
+
+- **Result.** The target's `ownerId` becomes the actor, `homeCityId` null
+  (an orphan: it uses no slot anywhere and is never re-homed),
+  `captureEligible` false, and it gets the exhausted activation. Its **kind
+  follows its new owner** (no side list): it is now that faction's ship of
+  the same role, with that faction's label and art. Its HP becomes
+  `floor(maxHp / 3) + 1` (the prize crew patches it up: Patrol Boat 4,
+  Submarine 5, Battleship 9; promoted 6, 6, 11), so it cannot be boarded
+  back without a new hit. It keeps its ID, role, maximum HP, kills,
+  `veteran`, tile, and every status entry, so a prize with three kills may
+  be promoted by its new owner like any unit. The boarder is marked like a
+  unit that used a special action (`specialActed` and `handled`).
+- **Not a kill:** no kill credit, Slayer, Plunder, Grave, or growth. Sea
+  Dog and Muster count the prize for its new owner.
+- An icebound target may be boarded; the prize stays icebound.
+- **Events:** `SHIP_BOARDED { playerId, unitId, targetUnitId, fromPlayerId, at, hp }`,
+  `TILES_REVEALED` (the prize's sight for its new owner), the tail, and the
+  blockade and sea-network events.
+- **Preview.** `previewBoardV7(view, unitId, targetUnitId)` returns null
+  unless the command is offered, otherwise
+  `{ unitId, targetUnitId, fromPlayerId, hpAfter }`. It is exact. A ship's
+  public stats carry `boardableAt`, the HP at or below which it can be
+  boarded (null for every other form).
+- A prize of a player who is later eliminated stays with its captor.
+
+### 14.3 The Submarine: Submerged and Torpedo
+
+| Unit      | Role        | Tech         | Cost | Slots |  HP | Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                 |
+| --------- | ----------- | ------------ | ---: | ----: | --: | -----: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------- |
+| Submarine | `SUBMARINE` | Submersibles |    9 |     1 |  12 |  4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo |
+
+- It is trained with `TRAIN_NAVAL` at an active, empty dock (7 Coins at a
+  Shipyard) and moves like a Patrol Boat (Shallow Water, Deep Water with
+  Navigation, Move 2). It projects naval ZOC, blockades a dock, recovers 4
+  on or next to an own active dock, cannot capture, embark, pillage,
+  disband, or advance, and receives no cover or fortification. Ordinary
+  Promotion (17 HP).
+- **Submerged** (one sentence: a Submarine can only be attacked from an
+  adjacent tile). An `ATTACK` whose target is a Submarine that is not
+  icebound is legal only from Chebyshev distance 1. From farther it is
+  rejected with `TARGET_OUT_OF_RANGE` and never offered. Nothing else is
+  restricted: splash (Battleship, Lich, Bomb Chucker), Pierce, Sweep,
+  explosions, a Dwarf bomb, Wail, Plague, the ice crush, a Tractor Beam
+  pull, and a ram's shove reach it as any boat. It is always visible on an
+  explored tile like any unit: nothing about it is hidden. An **icebound**
+  Submarine is not submerged (it is frozen at the surface). The public unit
+  stat `submerged` says which it is.
+- **Torpedo** (one sentence: a Submarine attacks only boats and transports,
+  and they never strike back). A Submarine's `ATTACK` targets only units
+  afloat (`NAVAL` or `EMBARKED` form, an icebound ship included); a
+  land-form target, on land or on ice, is rejected with
+  `ATTACK_NOT_LEGAL { reason: "NOT_AFLOAT" }` and never offered. Its attack
+  draws no retaliation: `noRetaliationReason: "UNANSWERED"` (the
+  Vampire's), with the preview and `COMBAT_RESOLVED` field `torpedo: true`.
+  It retaliates normally when it is attacked (at distance 1).
+- **Threatened tiles.** `queryThreatenedTilesV7` gives a Submarine explored
+  water tiles only, and counts a tile that holds a visible Submarine of
+  another owner as threatened by an attacker only from the attacker's
+  reachable tiles next to it (a Wail keeps its reach).
+
+Worked examples (full HP, open water, the attacker first; "dealt; taken"):
+
+| Attacker → defender | Patrol Boat             | Submarine                | Battleship        |
+| ------------------- | ----------------------- | ------------------------ | ----------------- |
+| Patrol Boat         | 5; 5 (ram 8; 4)         | 5; 5 (ram 8; 4)          | 3; 12 (ram 6; 10) |
+| Submarine           | 12 (sunk); 0            | 12 (sunk); 0             | 9; 0              |
+| Battleship          | 20 (sunk), from 3 tiles | 20 (sunk), only adjacent | 16; 7             |
+
+| Exchange                                                   | Result                                                                                        |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Patrol Boat rams a Patrol Boat                             | 8 dealt (2 left: boardable), 4 taken, target shoved                                           |
+| a second ship boards that Patrol Boat                      | it is the boarder's at 4 HP                                                                   |
+| Patrol Boat rams a transport (any land unit embarked)      | 10 dealt (6 without the ram), 0 taken (an embarked unit never strikes back); transport shoved |
+| Patrol Boat rams a Submarine                               | 8 (4 left: boardable), 4 taken                                                                |
+| two Submarines torpedo a Battleship, then a boat boards it | 9 and 11 dealt (5 left), then the Battleship is the boarder's at 9 HP                         |
+| Submarine torpedoes a transport                            | 14, no reply                                                                                  |
+| a Battleship two or three tiles from a Submarine           | cannot target it at all                                                                       |
+| a Fighter on the shore attacks an adjacent Submarine       | 5 dealt, 5 taken                                                                              |
+| a Dwarf Gyrocopter bombs a Submarine                       | 5 (6 with Dive), never answered                                                               |
+| a Battleship at 5 HP shoots an adjacent Submarine          | 10 dealt (2 left), 5 taken: the Battleship sinks in its own attack                            |
+
+### 14.4 Harbours
+
+**One sentence:** every active Port gives 2 population and every active
+Shipyard 3.
+
+The capability `harbourPopulation` (`HARBOUR_POPULATION_V7` 1,
+Submersibles; for the Ice Folk, Glacier) adds 1 live population to every
+active Port and Shipyard of the owner; a blockaded dock still gives 0. It
+is read through the capability, never through a raw `SUBMERSIBLES` test.
+`PORT_BUILT.populationAdded` is 1 or 2 and
+`SHIPYARD_BUILT.livePopulationTotal` 2 or 3, and the public preview of
+`BUILD_PORT` reports 2 with the viewer's Harbours. A foreign city's
+population is public as before, so a viewer may infer an opponent's
+Harbours from it.
+
+### 14.5 Commands, events, errors, and queries
+
+- **Command:** `BOARD { kind, unitId, targetUnitId }`, right after `ATTACK`
+  in `COMMAND_KIND_ORDER_V7`. `ATTACK` applies Submerged, Torpedo, and the
+  Ram. A pending city reward blocks `BOARD` like every command.
+- **Event:** `SHIP_BOARDED`, right after `UNIT_MIND_CONTROLLED` in
+  `DOMAIN_EVENT_KIND_ORDER_V7`, projected to the actor, the former owner,
+  and every viewer that has explored the prize's tile before or after the
+  command. `UNIT_PUSHED` reports a ram's shove.
+- **Errors:** `BOARD_NOT_LEGAL` (`NOT_A_SHIP`, `ICEBOUND`, `TARGET_IMMUNE`,
+  `OUT_OF_RANGE`, `TARGET_HEALTHY`, `DEEP_WATER`); `ATTACK_NOT_LEGAL` gains
+  `NOT_AFLOAT` (a torpedo at a land unit); a Submarine targeted from 2 or
+  more is the existing `TARGET_OUT_OF_RANGE`.
+- **Combat preview** (so also `COMBAT_RESOLVED`): `ram` and `torpedo`,
+  false where they do not apply; `push` also reports a ram's shove.
+- **Registration:** role `SUBMARINE` in every faction (tactical label
+  `NAVAL_HUNTER`); ability literals `RAM`, `SUBMERGED`, `TORPEDO`; unlock
+  kinds `RAM` and `HARBOURS` (and `COMMAND BOARD`); capabilities `ram`,
+  `boarding`, and `harbourPopulation`; constants `RAM_BONUS2_V7` 2,
+  `BOARDING_HP_DIVISOR_V7` 3, and `HARBOUR_POPULATION_V7` 1.
+- **`queryPlayerCommandsV7`** offers `BOARD` for every legal pair and never
+  an `ATTACK` on a submerged Submarine from 2 or more or a torpedo at a
+  land-form unit. Every offered command is accepted, and every preview
+  equals the resolution.
+- **Public unit stats:** `submerged` and `boardableAt`.
+- **Normal AI, presentation, and balance:** the Normal AI does not yet use
+  the Ram, Board, or Submarines on purpose
+  ([section 16](#16-normal-ai-summary)); the interface is described in
+  [board targeting section 3.4](../ui/BOARD_TARGETING.md#34-board-the-bow-ram-and-the-submarine-bead-pulp_wars-5ti7)
+  and the art in
+  [NAVAL_FACTIONS.md](../art/NAVAL_FACTIONS.md#the-naval-branch-art-bead-pulp_wars-5ti6);
+  the branch has not been balance-checked on water maps
+  ([section 25](#25-known-discrepancies)).
 
 ## 15. Fog and observation
 
@@ -4027,6 +4528,30 @@ Disintegrator ([section 21.5](#215-snow)).
   the estimate cannot decide (`UNKNOWN_BEHIND_FOG`,
   [section 23.6](#236-bounce)); see
   [section 23.10](#2310-commands-events-errors-and-queries).
+- **Ships and ice.** A Submarine is visible like any unit, on a tile the
+  viewer has explored; nothing about it is hidden. A visible unit's
+  `submerged`, `boardableAt`, and `icebound` stats are public. Ice is
+  public on every explored tile, like a unit there: `PlayerViewV7.ice`
+  lists each entry on a tile the viewer has explored with its owner, its
+  `turnsLeft`, and `permanent` (the tile is in its owner's territory), and
+  since the explored set never re-fogs a viewer sees ice appear and melt on
+  those tiles. Research stays private, but some of it shows: a visible Ice
+  Folk unit's `iceCover` and an entry made with 5 turns tell of Glacier, a
+  frozen Deep Water tile of Pack Ice, a ship frozen in of Icebound, the
+  first `UNITS_CHILLED` with source `BLACK_ICE` of Black Ice, and a foreign
+  city's public population may show Harbours; a Patrol Boat lists `RAM`
+  whatever its owner has researched, so the Ram shows only when it is used.
+  `SHIP_BOARDED` reaches the actor, the former owner, and every viewer that
+  has explored the prize's tile. `WATER_FROZEN` and `ICE_MELTED` reach
+  every viewer with the tiles it has explored (before or after the command)
+  and the units it owns or can see, and are dropped when no tile is left;
+  `WATER_FROZEN.unitId` is null for a viewer that cannot see the Freezing
+  unit and does not own it. `UNITS_CRUSHED` is projected like Plague
+  damage: the results of units the viewer owns or could see. The Ram, the
+  torpedo, Board, and Freeze previews are exact (every tile and unit they
+  read is visible to the actor), and so are slides and slips on explored
+  tiles; ice on a tile a slipping mover had not explored interrupts its
+  Move (`ICE`).
 - Exact projection rules are in
   [baseline §9](RULESET_7.md#9-observation-safe-views-events-queries-and-artifacts)
   and the relevant overlay sections.
@@ -4102,6 +4627,22 @@ Disintegrator ([section 21.5](#215-snow)).
   commands; an embarked Move of one cell that ends next to a planned landing
   cell is preferred, so a transport one cell from the coast moves and lands
   the same turn.
+- **The naval branch** (`pulp_wars-5ti.2` and `5ti.3`; legal, not clever).
+  The policy does not yet play the branch on purpose. A seafaring seat
+  counts Submarines among its naval units for the two-ship training cap,
+  its naval plan never asks for one, and it may research Seamanship or
+  Submersibles, train a Submarine, ram (by moving and then attacking), or
+  pick an offered `BOARD` only as its general scoring happens to. An Ice
+  Folk seat makes no naval plan and never picks `FREEZE` (the command is
+  not a policy candidate), so it does not cross water on purpose; its units
+  walk and slide onto ice that exists when an offered Move does. Every
+  seat's threat estimate treats ice as ground for land units, gives a
+  slipping unit one tile of ice and an icebound unit no threat, and does
+  not follow a slide. Dry Land decisions are unchanged. The rules for the
+  seafaring seats (`pulp_wars-5ti.4`) and the Ice Folk ice plan with the
+  play against the ice (`pulp_wars-5ti.5`) are open
+  ([section 25](#25-known-discrepancies);
+  [Normal AI, naval plan](../architecture/NORMAL_AI.md#the-naval-branch-pulp_wars-5ti2-and-5ti3)).
 - **Undead play.** In a match with an Undead seat (and only there, so
   decisions elsewhere are unchanged), Normal plays as and against the Undead
   from public information: Raise Dead on Graves whose Skeletons would survive,
@@ -6274,14 +6815,16 @@ first, and they finish frozen units without a blow in return; they are weak
 against cheap packs, against fresh bodies that are never left wounded in
 reach, and wherever the Witch is not. Every rule in this section applies
 only to units of an `ICE_FOLK` seat, except where a rule names its target
-(Chill and Shatter act on other players' units, and deep snow stops them);
-in a match without one the list `chilled` is empty, no tile is Snow or
-Blizzard (the view flags are false), no `THROW_BOLAS` or `COLD_SNAP` is
-offered or accepted, every role has `mountainBorn` false, the shared rules
+(Chill and Shatter act on other players' units, deep snow stops them, and
+every faction's units stand, slip, or are locked on the ice);
+in a match without one the lists `chilled` and `ice` are empty, no tile is Snow or
+Blizzard (the view flags are false), no `THROW_BOLAS`, `COLD_SNAP`, or
+`FREEZE` is offered or accepted, every role has `mountainBorn` false, the shared rules
 `unitMayActAfterMoveV7` and `canEnterTerrainV7` return what the role flag
 and Engineering returned before, every `curedChill` is false, every unit's
-`chill` stat is null, and the eight Ice Folk combat-preview fields are
-false. Each rule resolves through the owner's registration
+`chill` stat is null, no unit stat `icebound` exists, and the eight Ice
+Folk combat-preview fields and the two of the frozen sea (`iceCover`,
+`icebound`) are false. Each rule resolves through the owner's registration
 (`FACTION_RULES_V7`, whose `snow` rule is true only for the Ice Folk,
 `ICE_FOLK_ROLE_RULES_V7`, `ICE_FOLK_ROLE_MECHANICS_V7`) and the helpers of
 `src/engine/v7/ice-folk.ts`. Human, Undead, Goblin, Dinosaur, Martian,
@@ -6306,12 +6849,14 @@ the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
 | `KNIGHT`        | Sabretooth    | Prowl; no Glide                         |
 | `JUGGERNAUT`    | Frost Giant   | Chill source (Cold Aura); Mountain-born |
 
-- **Ice Folk units** are the eight land roles in land form. The Snow rules,
-  Shatter, and the Blizzard's protection never apply to an Ice Folk boat (the
-  Human boats) or to an embarked unit. Snow works **per faction** and the
+- **Ice Folk units** are the eight land roles in land form. The Ice Folk
+  have no boat and never embark ([section 21.16](#2116-the-frozen-sea)), so
+  an Ice Folk unit is never afloat; the Snow rules, Shatter, and the
+  Blizzard's protection never apply to an afloat unit of any faction. Snow works **per faction** and the
   Blizzard's protection **per seat** ([section 21.6](#216-the-blizzard-and-cold-snap)).
-- **Chill sources** are the Sled (Bolas), the Ice Witch (Cold Snap), and the
-  Frost Giant (Cold Aura). No attack applies Chill.
+- **Chill sources** are the Sled (Bolas), the Ice Witch (Cold Snap), the
+  Frost Giant (Cold Aura), and, with Black Ice, the seat's ice
+  ([section 21.16](#2116-the-frozen-sea)). No attack applies Chill.
 - **Tactical labels** are the Human ones of the same mechanical role: the
   Mammoth is `DEFENDER`, the Ice Witch `SUPPORT`, and the Boulder Yeti
   `SIEGE`. They have no rule effect for the Ice Folk (the faction has no
@@ -6326,7 +6871,8 @@ the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
   unit:** one Yeti. **Militia:** one Yeti. **Level-5+ reward:** a Frost
   Giant. Capture-capable: Yeti, Sled, Snow Hunter, Mammoth, Frost Giant.
   Every Ice Folk land unit except the Frost Giant is trained on the city
-  center with `TRAIN`.
+  center with `TRAIN`. All eight roles **Freeze** (ability `FREEZE`, with
+  Rime), and all but the Sabretooth **slide** on ice.
 
 ### 21.2 Chill
 
@@ -6515,7 +7061,10 @@ snow(tile) =
   from the first turn.
 - Snow lies on Grass, Forest, and Mountain alike, on Roads, improvements,
   resources, Field Defense, centers, Graves, and chests, and changes none of
-  them. Water and Rift tiles are never Snow. Several sources do not add up.
+  them. Water and Rift tiles are never Snow, and neither is an ice tile
+  (no Glide and no deep snow there; Glacier gives the Snow cover on ice by
+  its own rule, [section 21.16](#2116-the-frozen-sea)). Several sources do
+  not add up.
 
 **What Snow does.** For a land-form Ice Folk unit:
 
@@ -6820,7 +7369,7 @@ tail.
 | Martian rules           | [Section 20.11](#2011-interactions-with-other-rules): Chill ignores Shields; Shatter reads the HP after the Shield; walkers and flyers ignore deep snow; the Frost Giant is immune to Mind Control and the Tractor Beam; a mind-controlled Ice Folk unit keeps its Ice Folk rules (a controlled Witch's Blizzard serves her controller).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Human abilities         | Field Defense and Walls give a defender their bonus against every Ice Folk attack except a Boulder Yeti's; a Mammoth's attack tramples the Field Defense on the target tile after the exchange; with Brittle, Ice Folk melee attackers demolish Field Defense like any owner of Explosives. A sluggish Captain that moved cannot Rally; a sluggish Knight that attacks without moving still Overruns. A Catapult always shoots from distance 2 or 3 and a Marksman from 2 is halved against a protected unit.                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Cities, siege, capacity | An Ice Folk unit on a hostile center besieges it (never a Sabretooth). Capture needs no Move, so a sluggish unit that began its turn on a center captures as usual. Every Ice Folk role uses one slot; a reward Frost Giant may exceed capacity. Land Grant, Spoils, rewards, and the city action are unchanged; Bolas and Cold Snap spend no city action.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Boats, water            | Ice Folk boats are the Human boats. Land units embark at Ports with Shorecraft. No embarked or naval unit is Chilled or shattered; an attack from the shore on an embarked unit never shatters it, and a naval attack from distance 2 or more on a protected unit is halved (a Battleship's splash from the halved hit). The `blizzard` flag covers water tiles for drawing only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Boats, water            | The Ice Folk have no boats and never embark; they freeze the sea ([section 21.16](#2116-the-frozen-sea)). No embarked or naval unit of any faction is Chilled or shattered, so an icebound ship is crushed, not shattered; an attack from the shore on an embarked unit never shatters it, and a naval attack from distance 2 or more on a protected unit is halved (a Battleship's splash from the halved hit). The `blizzard` flag covers water tiles for drawing only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | Rift                    | A Rift is never Snow and Mountain-born does not cover it, so no Ice Folk unit enters one. A flyer on a Rift is in land form: it can be Chilled, attacked from an adjacent tile, and shattered; the attacker does not advance.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Achievements, Promotion | Promotion is the ordinary rule for every Ice Folk unit (3 kills, +5 maximum HP, a full heal that takes a unit out of the Shatter window but removes no Chill). Shatter, hostile Sweep, Rockfall, Boulder, and retaliation kills are credited; a Bolas and a Cold Snap are not kills. Muster counts the Ice Folk trainable roles and excludes the Frost Giant; Slayer counts Shatter and Sweep kills.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | Dwarf rules             | [Section 22.13](#2213-interactions-with-other-rules): tunnels ignore Snow, and a surfaced unit stands on Snow like any ground unit; deep snow ends a Dwarf ground unit's Move (only the Move-2 Steam Tank notices), and the Gyrocopter flies over it. Every Dwarf land unit can be Chilled, constructs and the Brass Titan included, and shattered, except the Brass Titan (`JUGGERNAUT`); a mound is neither; a burrowed unit's Chill entry keeps counting down at its owner's End Turn, and the Engineer's Repair cures Chill. A sluggish Gyrocopter cannot bomb; a sluggish Mole may tunnel and a sluggish Hammerer ride; a sluggish unmoved Gunner fires twice; a sluggish Engineer that moved can neither Repair nor Assemble. The Shatter test reads a Steam Tank's HP after the Plated cap. The Blizzard halves a Gunner's or a Steam Cannon's shot from distance 2 or more, never a bomb or an eruption (not attacks); bombs and eruptions also ignore Snow cover. |
@@ -6844,7 +7393,7 @@ tail.
   fields, all false for an attack that involves no Ice Folk unit:
   `shatters`, `coldBloodApplied`, `rockfallApplied`, `plantedApplied`,
   `blizzardHalved` (`damageToDefender` is the halved value), `snowCover`
-  (the defender's × 1.5 comes from Snow), `sweep` (the flank victims are the
+  (the defender's × 1.25 comes from Snow), `sweep` (the flank victims are the
   `splash` entries), and `hiddenBlizzardPossible` (public previews only).
   Boulders report `fortificationLevel: 0` and `fortificationIgnored`; a
   Trample is read from `sweep` and the target tile's Field Defense.
@@ -6910,6 +7459,350 @@ tail.
   the source `PLANTED`; a snowy cover row reads `SNOW`.
 - `PublicPlayerV7` and the leaderboard carry `ICE_FOLK` and
   `ICE_FOLK_BASELINE_V1`.
+- The commands, events, errors, and queries of the frozen sea (`FREEZE`,
+  the `ice` list, `WATER_FROZEN`, `ICE_MELTED`, `UNITS_CRUSHED`,
+  `previewFreezeV7`) are in [section 21.16](#2116-the-frozen-sea).
+
+### 21.16 The frozen sea
+
+The Ice Folk Naval branch (`pulp_wars-5ti.3`, `pulp-wars-poc-7r44`; the
+[naval branch overlay](RULESET_7_NAVAL_BRANCH.md), section 8, with the
+records of its sections 22 and 23). An Ice Folk seat never builds a ship.
+With **Rime** its units freeze the water next to them, two tiles out in a
+line (the Ice Witch: every tile around her), and they **slide**: an Ice
+Folk unit that steps onto ice keeps going straight until something stops
+it. Ice in the seat's own territory stays; ice elsewhere melts after three
+of its owner's turns unless refrozen, but never under a land unit. Other
+factions may walk on the ice, slowly (a Move ends on entering it), and
+their ships cannot sail through it. **Pack Ice** freezes the deep sea,
+**Black Ice** frosts every enemy that stands on the ice, **Icebound**
+freezes enemy ships in place to be crushed, and **Glacier** makes the ice
+last and shelter the Ice Folk on it. In a match without an Ice Folk seat
+nothing here happens: the `ice` list is always empty.
+
+| Rule      | One sentence                                                                                                                        |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Freeze    | A unit turns the water next to it to ice, two tiles out in a straight line; the Witch freezes every tile around her.                |
+| Slide     | An Ice Folk unit that steps onto ice slides straight on until it reaches the end of the ice, a unit, or an enemy's zone of control. |
+| Slip      | Any other unit may walk onto ice, but its Move ends there.                                                                          |
+| Thaw      | Ice melts after 3 of its owner's turns, but never in the owner's territory and never under a land unit.                             |
+| No ships  | Ships cannot enter ice; the Ice Folk have no ships at all.                                                                          |
+| Black Ice | Whoever stands on your ice at the start of your turn is frosted.                                                                    |
+| Icebound  | Freeze a ship in place: it cannot sail, shoot, board, or strike back, and the ice crushes it for 3 each turn.                       |
+| Glacier   | Your ice lasts 5 turns and your units on it have Snow cover.                                                                        |
+
+**Ice tiles.**
+
+- **State.** `GameStateV7.ice: { at, ownerId, turnsLeft }[]`, sorted by
+  `(y, x)`, hashed, saved, and replayed. An **ice tile** is a water tile
+  (Shallow or Deep) with an entry. Its terrain does not change: ice is a
+  layer, so no command turns water into land and map generation is
+  untouched. State parsing rejects an entry off the board, on a land tile,
+  or on a dock (Port or Shipyard), a duplicate or unsorted entry, a
+  `turnsLeft` outside 0 to 5, an `ownerId` that is not a player of the
+  match, and any entry in a match without an Ice Folk seat. It also rejects
+  a unit of the Ice Folk kind in `NAVAL` or `EMBARKED` form and an Ice Folk
+  seat that owns a unit in `NAVAL` form, and it admits a land-form unit on
+  a water tile only where that tile is ice.
+- **View.** `PlayerViewV7.ice` lists the entries on tiles the viewer has
+  explored, each with `permanent` (the tile is in its owner's territory).
+- **Ground for land-form units.** For a land-form unit of every faction and
+  movement mode an ice tile is ground (`canEnterTerrainV7`), whatever the
+  depth and without Navigation or Engineering: it may be the end of a
+  `MOVE`, a `DISEMBARK` target, the destination of a Push, a Charge! push
+  or follow, a Knockback, a Tractor Beam pull, an advance, a Beam Down,
+  and a bombing-run landing (a Gyrocopter stands on it and does not
+  self-launch, and neither does a Martian machine that ends a Move there).
+  A land unit projects ZOC onto adjacent ice as onto land.
+- **Water for everything else.** No terrain cover (Glacier gives Ice Folk
+  units the Snow cover there), no Walls or Field Defense, never Snow, and
+  no Road, building, improvement, Grave, Egg, mound, Crumbs, chest, reward
+  or treasure unit, rising, Re-bake, Assemble, or tunnel end on it. The one
+  fortification a unit can have on ice is a Dwarf's Dig In, which is read
+  from the distance to its owner's city center and not from the tile
+  ([section 22.7](#227-dig-in)). **A death on ice is a water death:** no
+  Grave, no Infect or Bitten rising, no Crumbs. The tile's Fish or Pearls
+  stay and may be harvested under the ordinary gates; a Port cannot be
+  built on ice, and ice never forms on a dock. Sea trade counts an ice tile
+  as water (a route may run under the ice). A tunnel never passes under it,
+  and an eruption hits a land-form unit standing on it.
+- **Ships cannot enter ice.** A unit afloat (`NAVAL` or `EMBARKED`) never
+  enters, passes, or is pushed, shoved, or pulled onto an ice tile, and a
+  naval unit projects no ZOC onto ice. The only afloat unit ever on ice is
+  one frozen in (Icebound, below).
+
+**Freeze.** `FREEZE { kind, unitId, at }` is a primary action of every Ice
+Folk land role (ability `FREEZE`). It is not an Attack and costs no Coins.
+Legality, in this order (all rejections atomic):
+
+| #   | Requirement                                                                                                     | Rejection                                     |
+| --- | --------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                  | the ordinary unit errors                      |
+| 2   | Its role, under its kind, has `FREEZE` (a land role of the Ice Folk), and it is in land form.                   | `UNIT_ROLE_INVALID { role }`                  |
+| 3   | Its kind's capabilities under its owner have `freezeWater` `SHALLOW` or `DEEP` (Rime).                          | `TECH_REQUIRED { tech: "SHORECRAFT" }`        |
+| 4   | It has not used a primary action, and a sluggish unit has not moved (`unitMayActAfterMoveV7`).                  | `UNIT_ALREADY_ACTED`                          |
+| 5   | For the Ice Witch, `at` is her own tile; for every other role, `at` is one of the eight tiles next to the unit. | `FREEZE_NOT_LEGAL { reason: "OUT_OF_RANGE" }` |
+| 6   | The freeze set (below) is not empty.                                                                            | `FREEZE_NOT_LEGAL { reason: "NO_TARGET" }`    |
+
+- **A line, for every role but the Witch** (`FREEZE_LINE_V7` 2): the tile
+  `at`, then the next tile beyond it in the same direction. The line takes
+  `at` if it is freezable, then the second tile if it is freezable and `at`
+  did not hold a unit afloat. A line never skips a tile: if `at` is not
+  freezable the set is empty.
+- **A ring, for the Ice Witch** (`WITCH_FREEZE_RADIUS_V7` 1; the role with
+  the Blizzard): every freezable tile within Chebyshev 1 of her, her own
+  tile included when she stands on ice.
+- A tile is **freezable** when it is on the board, explored by the actor,
+  water, not a dock, Shallow Water or (with `freezeWater` `DEEP`, Pack Ice)
+  Deep Water, and one of: it holds no unit; it is already ice (whoever
+  stands on it: the ice is refreshed, and it becomes the actor's); or, with
+  the capability `icebound` (the Ice Folk Naval Engineering), it holds a
+  **hostile afloat unit**, which becomes icebound. An own or allied ship is
+  never frozen in.
+- **Result.** Every tile of the set gets the entry
+  `{ at, ownerId: the actor, turnsLeft: iceTurns }` (3, `ICE_TURNS_V7`, or
+  5, `GLACIER_ICE_TURNS_V7`, with Glacier), replacing any earlier entry.
+  The Freezing unit is marked like a unit that used a special action
+  (`specialActed` and `handled`). Event
+  `WATER_FROZEN { playerId, unitId, tiles, icebound }` (tiles in `(y, x)`
+  order, the newly icebound unit IDs in ID order). A Freeze moves no unit
+  and touches no dock, so it is not on the blockade-event list.
+- **Preview.** `previewFreezeV7(view, unitId, at)` returns null unless the
+  command is offered, otherwise `{ unitId, tiles, refreshed, icebound }`.
+  Every tile it reads is explored by the actor and every unit on it
+  visible, so it is exact. It does not carry the countdown: the turns are
+  the unit owner's `iceTurns`, and a tile in that owner's territory stays.
+
+**Thaw.** At the End Turn of player `P`, after the Chill countdown:
+
+```text
+for each ice entry owned by P, or by an eliminated player:
+    if its tile is not in its owner's territory (an eliminated owner has none):
+        turnsLeft := max(0, turnsLeft − 1)
+then each of those entries with turnsLeft 0, outside its owner's territory,
+     and with no land-form unit on its tile melts
+```
+
+- **Own territory keeps the ice:** while the tile is in its owner's
+  territory the entry never counts down and never melts (the view's
+  `permanent`). The water of a captured city starts counting at its former
+  owner's next End Turn.
+- **A land unit holds the ice:** an entry at 0 with a land-form unit of any
+  owner on it stays at 0 and melts at the first of its owner's End Turns on
+  which the tile is empty. No unit ever drowns.
+- **An afloat unit does not hold it:** an icebound unit floats free when
+  its ice melts.
+- An eliminated owner's ice counts down at every End Turn, of every player.
+- So ice made on the owner's turn `N` with 3 turns is there for the rest of
+  turn `N` and through its turns `N + 1` and `N + 2`, and melts at the end
+  of turn `N + 2` unless it was refrozen or a land unit stands on it.
+- Event `ICE_MELTED { tiles, freed }` (the melted tiles, and the icebound
+  units that floated free), dropped when nothing melted.
+
+**Slide.** A land-form unit of the Ice Folk kind whose role mechanic
+`glides` is true (every Ice Folk land role but the Sabretooth) slides; it
+is a body rule, so a mind-controlled Ice Folk unit slides for its
+controller.
+
+- When a step of its `MOVE` **enters an ice tile** in direction `d` (one of
+  the eight), it continues in `d`, tile after tile, **at no cost**, while
+  the next tile in `d` is on the board, explored by the mover before the
+  command, an ice tile (read from the state before the command, like
+  Snow), and holds no unit and no mound (the mover's own units included),
+  and while the tile it is on is not in a hostile ZOC. It stops on the last
+  tile so entered.
+- Its Move then continues with the half-points it has left: another step
+  (onto land, or onto ice in a new direction, which starts a new slide) or
+  nothing. Entering ice costs the ordinary step cost (half from a usable
+  Road node; no Glide discount, since ice is never Snow); a step that
+  leaves an ice tile costs a full point; slid tiles cost nothing.
+- **The slide is forced:** a `MOVE` path must follow every slide to its
+  end; a path that stops or turns where a slide continues is rejected with
+  `MOVEMENT_ILLEGAL { reason: "SLIDE_FORCED" }`, and the movement query
+  offers only the tiles a Move can really end on.
+- Slid tiles are part of the path: they reveal sight and count toward the
+  Charge path length and a Wreck salvage at the end of the Move. A slide
+  that meets a ZOC first seen during the Move stops there and the Move is
+  interrupted (`ZOC`), as for any Move. A sliding unit never passes a unit
+  on ice, its owner's included.
+- The **Sabretooth** never slides: on ice it walks at the ordinary cost,
+  and, being of the Ice Folk kind, it does not slip.
+- Reach: a Yeti (Move 1) on the shore of a straight four-tile bridge
+  crosses it in one Move and stops on its far tile; a Sled (Move 2) does
+  the same and still has a full point to step ashore, and it may Charge at
+  the end.
+
+**Slip.** For a land-form unit of every other kind in movement mode
+`GROUND`, **a Move ends on entering an ice tile** (`terrainStopsMoveV7`; a
+path that continues past it is rejected with
+`MOVEMENT_ILLEGAL { reason: "ICE_STOPS_MOVE" }`). No Road edge and no
+Fieldcraft waives it. Martian walkers and flyers and the Dwarf Gyrocopter
+are never stopped by terrain and cross ice like land. Leaving an ice tile
+costs a full point, so any army may use an Ice Folk bridge, one tile per
+turn. A slipping unit that steps onto ice on a tile it had not explored
+before the command stops there, and its Move is interrupted with reason
+`ICE`, as for Snow.
+
+**Black Ice.** At the Start Turn of an Ice Folk seat with the capability
+`blackIce` (its Seamanship), after the Cold Aura, every land-form unit
+**hostile to that player standing on that player's ice** is Chilled
+([section 21.2](#212-chill): a new freeze is sluggish once; a
+re-application refreshes the two turns without a new sluggish turn). One
+`UNITS_CHILLED` (source `BLACK_ICE`, `sourceUnitId` null) with every
+result, dropped when empty. So an enemy that lands on, or walks onto, the
+ice is Shatter-eligible on the Ice Folk turn that follows; a unit that
+stays on the ice is frosted, not locked, since a re-applied Chill never
+makes it sluggish twice in a row. Martian flyers and walkers standing on
+the ice are Chilled like anyone. Black Ice is read from the seat's own
+faction and research, so the ice of a Martian controller (below) never
+Chills.
+
+**Icebound and the crush.** An afloat unit (`NAVAL` or `EMBARKED`) standing
+on an ice tile is **icebound** (`unitIsIceboundV7`). That is derived, never
+stored: the only way an afloat unit is on ice is a Freeze of its tile with
+the capability `icebound`.
+
+- **Frozen solid.** An icebound unit cannot `MOVE`
+  (`MOVEMENT_ILLEGAL { reason: "ICEBOUND" }`), `ATTACK`
+  (`ATTACK_NOT_LEGAL { reason: "ICEBOUND" }`), or `BOARD`
+  (`BOARD_NOT_LEGAL { reason: "ICEBOUND" }`), none of them offered, and it
+  never retaliates (`noRetaliationReason: "ICEBOUND"`, preview field
+  `icebound`). It projects no ZOC and threatens no tile. An icebound
+  embarked unit may still `DISEMBARK` under the ordinary landing rules
+  (the crew climbs out, onto land or onto ice). It may Recover (a ship on
+  or next to its own active dock), Wait, and Promote. No ram's shove,
+  Push, Charge! push, Knockback, or Tractor Beam moves it (the Tractor
+  Beam is refused with `TARGET_IMMUNE`), and an attack on it is never a
+  Ram. An icebound Submarine is not submerged. It may be attacked,
+  torpedoed, and boarded like any ship; a boarded prize stays icebound.
+- **The crush.** At the Start Turn of the ice tile's owner, right after
+  Black Ice, every icebound unit on that player's ice, whoever owns the
+  unit, takes `ICE_CRUSH_DAMAGE_V7` **3**, in unit-ID order: fixed damage,
+  not an attack (no cover, Defense, or HP ratio); a Shield absorbs first
+  (an icebound self-launched Martian machine); capped at its HP. The crush
+  needs no technology of its own. Event
+  `UNITS_CRUSHED { playerId, results: [{ unitId, damage, shieldDamage, hpAfter }] }`,
+  dropped when empty; a death has cause `CRUSHED`, credits no unit, leaves
+  no Grave, releases the controlled unit of a crushed Brain, and an
+  embarked exploding Goblin unit explodes on its tile.
+- **Release.** It floats free when its ice melts. Ice in the freezing
+  seat's own territory never melts, so a ship frozen in Ice Folk home
+  waters stays until it sinks.
+- Docks never freeze, so an icebound unit is never on a dock and never
+  blockades one. Chill never applies to afloat units, so an icebound ship
+  is crushed, never shattered.
+
+**Glacier.** The capability `iceTurns` becomes 5 for the ice the seat makes
+from then on (existing entries keep their count), and `iceCover`: a
+land-form unit of the Ice Folk kind on ice whose own fortification level is
+0 has the Snow cover, **× 1.25** (`SNOW_COVER_V7`; never added to anything
+else; the preview's `iceCover` is true, and the unit's public `iceCover`
+stat makes every preview exact). Glacier also grants Harbours
+([section 14.4](#144-harbours)).
+
+**No ships, no embarking.**
+
+- The Ice Folk tree unlocks no naval role: `TRAIN_NAVAL` is never offered
+  to an Ice Folk seat and is rejected with `UNIT_ROLE_INVALID { role }`,
+  and no rule gives the seat a ship ([section 11](#11-unit-roster)).
+- **A unit of the Ice Folk kind never embarks** (a body rule, so a
+  mind-controlled Yeti does not either): a Move never ends on a dock for
+  it, and a dock is never ice, so it cannot stand on one.
+- **Ports** keep their economic functions for the Ice Folk: +1 population
+  (2 with Harbours), Harvest Fish on the dock tile, sea trade, and the
+  Shipyard upgrade (+2, 3 with Harbours). An enemy ship can still blockade
+  an Ice Folk dock it can reach.
+- **Sea Dog** for an Ice Folk seat counts its land-form units standing on
+  ice instead of its ships: 3 at once (`ICE_SEA_DOG_UNITS_V7`;
+  [section 5](#5-achievements-and-monuments)).
+- **The Sunken Wreck:** on an ice tile, the first land-form unit (of any
+  faction) that ends a `MOVE` on it, having moved onto it (a slide's end
+  included), salvages it; afloat units cannot reach it while it is ice
+  ([section 2.7](#27-map-curiosities)).
+
+**Why ice cannot wall off a sea.** Outside its owner's territory ice melts
+after 3 (Glacier 5) of its owner's turns, so keeping a strait frozen costs
+a unit's action every turn or two, on exposed ice; docks never freeze, so
+no dock can be frozen shut; ice is walkable by everyone, so a frozen strait
+is a bridge for the enemy's land units too (one tile per turn), and a
+transport may always land on the edge of the ice. What stays for good is
+ice in the Ice Folk's own territory: their home waters, like land they
+own, and a ship frozen there stays until crushed.
+
+**Interactions.**
+
+| Rule                 | Interaction                                                                                                                                                                                                                                                                                                                                                                              |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Graves, risings      | No death afloat or on ice leaves a Grave or rises, and Raise Dead never reaches the sea. A shattered unit on ice leaves nothing, as everywhere.                                                                                                                                                                                                                                          |
+| Plague, Bitten, Wail | Unchanged on ships and on ice. A Black Ice Chill and a bite coexist.                                                                                                                                                                                                                                                                                                                     |
+| Kaboom, blasts       | Hit ships, Submarines, icebound ships, and units on ice like any unit. A blast never melts or makes ice.                                                                                                                                                                                                                                                                                 |
+| Dinosaurs            | A Triceratops may Charge! along land and onto ice (a Dinosaur ground unit slips, so its run-up ends on the first ice tile), and its push moves a land-form target onto ice. Eggs are never on ice.                                                                                                                                                                                       |
+| Martians             | Flyers and walkers cross ice like land; a machine that ends a Move on ice stands (no self-launch). Shields absorb the crush. Mind Control works on a unit on ice (land form). A controlled Ice Folk unit slides and Freezes for its controller, with the controller's research read through the Ice Folk tree; its ice belongs to the controller, who has the crush but never Black Ice. |
+| Dwarves              | Tunnels never run under ice and a mound is never on ice; a bomb run may land on ice; eruptions hit land-form units on ice. A Hammerer or Steam Mole on ice next to its own city center may be dug in.                                                                                                                                                                                    |
+| Candy                | A Candy unit that dies on ice leaves no Crumbs, and nothing is Re-baked onto ice. Candy ground units slip like any other.                                                                                                                                                                                                                                                                |
+| Ice Folk (the rest)  | Ice is never Snow. The Blizzard's ranged halving protects Ice Folk units on ice within 1 of their seat's Witch. Shatter applies on ice (land form).                                                                                                                                                                                                                                      |
+| Push and pulls       | A land-form unit may be pushed, knocked back, or pulled onto ice; an afloat unit never; an icebound unit never moves.                                                                                                                                                                                                                                                                    |
+| Embarking, landing   | A transport may land on adjacent ice (landing ends the activation as always). A unit of the Ice Folk kind never embarks.                                                                                                                                                                                                                                                                 |
+| Blockade, sea trade  | Docks never freeze; sea-trade routes run under ice.                                                                                                                                                                                                                                                                                                                                      |
+| Elimination          | Units are removed as always; an eliminated seat's ice counts down at every End Turn.                                                                                                                                                                                                                                                                                                     |
+| Map generation       | Unchanged; faction choice never affects any draw.                                                                                                                                                                                                                                                                                                                                        |
+
+**Worked examples** (full HP unless stated):
+
+| Situation                                                         | Result                                                                                                                                                |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A Yeti on the shore freezes toward an island 4 Shallow tiles away | turn 1: tiles 1 and 2; turn 2: it steps onto tile 1, slides to tile 2, freezes 3 and 4; turn 3: it steps onto 3, slides to 4, and is ashore next turn |
+| The army follows on turn 3                                        | each unit steps onto tile 1 and slides to the first occupied or last tile; tiles 1 and 2 melt at the end of turn 3 unless someone stands on them      |
+| An Ice Witch walks out onto the bridge head and freezes           | her ring (up to 8 tiles, and her own) becomes ice                                                                                                     |
+| A Patrol Boat (10 HP) is frozen in on permanent ice               | the crush alone sinks it at the fourth Start Turn of the ice's owner (3, 3, 3, then its last HP)                                                      |
+| A Battleship (25 HP) is frozen in                                 | it cannot sail, shoot, board, or reply; every attack on it is free, and the crush adds 3 at each Start Turn of the ice's owner                        |
+
+**Commands, events, errors, and queries.**
+
+- **Command:** `FREEZE { kind, unitId, at }`, right after `COLD_SNAP` in
+  `COMMAND_KIND_ORDER_V7`. `MOVE` validates slides and slips. A pending
+  city reward blocks `FREEZE` like every command.
+- **Events:** `WATER_FROZEN`, `ICE_MELTED`, and `UNITS_CRUSHED`, in that
+  order right after `UNITS_CHILLED` in `DOMAIN_EVENT_KIND_ORDER_V7`;
+  `UNIT_DIED.cause` gains `CRUSHED`; `UNITS_CHILLED.source` gains
+  `BLACK_ICE`; `UNIT_MOVE_INTERRUPTED.reason` gains `ICE`. Projection:
+  [section 15](#15-fog-and-observation).
+- **Errors:** `FREEZE_NOT_LEGAL` (`OUT_OF_RANGE`, `NO_TARGET`);
+  `MOVEMENT_ILLEGAL` reasons `SLIDE_FORCED`, `ICE_STOPS_MOVE`, and
+  `ICEBOUND`; `ATTACK_NOT_LEGAL` and `BOARD_NOT_LEGAL` reason `ICEBOUND`;
+  `noRetaliationReason` gains `ICEBOUND`.
+- **Combat preview** (so also `COMBAT_RESOLVED`): `iceCover` and
+  `icebound`, false where they do not apply.
+- **Registration:** ability `FREEZE` on every Ice Folk land role; unlock
+  kinds `FREEZE { depth }`, `ICEBOUND`, `BLACK_ICE`, and `GLACIER`;
+  capabilities `freezeWater`, `icebound`, `blackIce`, `iceTurns`, and
+  `iceCover`; constants `ICE_TURNS_V7` 3, `GLACIER_ICE_TURNS_V7` 5,
+  `FREEZE_LINE_V7` 2, `WITCH_FREEZE_RADIUS_V7` 1, `ICE_CRUSH_DAMAGE_V7` 3,
+  and `ICE_SEA_DOG_UNITS_V7` 3; the five display names of
+  [section 6.2](#62-technology-tree).
+- **Shared rules** extended, never paralleled: `canEnterTerrainV7` (ice for
+  land form, never for afloat), `terrainStopsMoveV7` (the slip), the one
+  occupancy predicate, and `unitMayActAfterMoveV7`, with the helpers
+  `isIceAtV7` and `iceAtV7`, `unitIsIceboundV7`, `unitSlidesV7`,
+  `freezeSetV7`, and `iceIsPermanentV7`. The slide is part of the one
+  movement validation, not a separate helper.
+- **`queryPlayerCommandsV7`** offers `FREEZE` for every legal `at` (one per
+  Witch) and `MOVE` endpoints after slides; it offers an icebound unit no
+  Move, Attack, or Board. `queryThreatenedTilesV7` gives a visible Ice
+  Folk unit its slide reach on known ice and an icebound unit nothing.
+  Every offered command is accepted, and every preview equals the
+  resolution.
+- **Public unit stats:** `icebound` (on every unit, exactly in a match
+  with an Ice Folk seat) and, in the `iceFolk` block, `onIce`, `slides`,
+  and `iceCover`.
+- **Normal AI, presentation, and balance:** an Ice Folk seat's Normal AI
+  never Freezes and makes no naval plan
+  ([section 16](#16-normal-ai-summary)); the interface is described in
+  [board targeting section 3.5](../ui/BOARD_TARGETING.md#35-the-frozen-sea-freeze-the-slide-icebound-bead-pulp_wars-5ti7)
+  and the art in
+  [NAVAL_FACTIONS.md](../art/NAVAL_FACTIONS.md#the-naval-branch-art-bead-pulp_wars-5ti6);
+  the frozen sea has not been balance-checked
+  ([section 25](#25-known-discrepancies)).
 
 ## 22. Dwarf faction rules
 
@@ -6961,7 +7854,8 @@ coarse pass on Dry Land).
 | `JUGGERNAUT`    | Brass Titan      | construct; machine; Push                                        |
 
 - **Dwarf units** are the eight land roles in land form. The Dwarf rules
-  never apply to a Dwarf boat (the Human Patrol Boat and Battleship) or to
+  never apply to a Dwarf boat (the Human Patrol Boat, Battleship, and
+  Submarine) or to
   an embarked unit, except where a rule says so.
 - **Constructs** (role mechanic `construct`) are the Clockwork Gunner and
   the Brass Titan: fully mechanical, no dwarf inside
@@ -7666,6 +8560,7 @@ offered in every setup; the achievement that is to unlock them later
 | `JUGGERNAUT`    | Rock Candy Golem | Sugar Rush; Push; Bounce; the level-5 reward           |
 | `PATROL_BOAT`   | Patrol Boat      | the Human boat                                         |
 | `BATTLESHIP`    | Battleship       | the Human boat                                         |
+| `SUBMARINE`     | Submarine        | the Human boat                                         |
 
 A **Candy unit** is a unit whose kind is `CANDY`; the Candy rules apply to
 the land roles in land form (never a boat, and never an embarked unit except
@@ -8126,8 +9021,9 @@ has no Candy step.
 | Map scale   | `pulp-wars-poc-7r40` | `pulp_wars-ykw.2` map scale engine I: village density per map type (`S = roundHalfUp(L / LPS)`, `LPS` 15/13/12/12/11) instead of the fixed village table; villages 1 from the edge; lattice packing with nine phases and the wild reserve on Dry Land, Pangea, and Lakes; the row-major fill with the landmass share on Continents and equal home islands on Archipelago; `VILLAGE_DENSITY` invariant; map revision `REGIONAL_BIOMES_NAVAL_V3`; every generated board changed, the Showcase and missions did not                                                                                                                                                                                                                                                                                                                 |
 | Economy     | `pulp-wars-poc-7r41` | `pulp_wars-if6` early economy tweak: 3 starting Coins (was 5), so a first turn has 5 Coins and no longer pays for free research, level 2, and a unit; tier 3 technology base cost 9 (was 12), so one-city costs read 5 / 7 / 9; the per-city steps (1 / 3 / 5) unchanged; missions keep their own Coins; no shape changed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | [section 3](#3-players-turns-and-victory), [section 6.1](#61-research-cost)                                                           |
 | Map scale   | `pulp-wars-poc-7r42` | `pulp_wars-ykw.3` map scale engine II: 2 to `F` players (8 today) on every width that holds them (`P(w, type)`, two measured limits on 11 x 11); capitals in domains, `D(w, N)` apart, 2 from the edge, outside the central zone; room and village balance; capital levelling; Continents and Archipelago on ring domains from five seats; long side lakes on boards 14 and wider; as many villages as fit on the new setups; nine seat colours; map revision `REGIONAL_BIOMES_NAVAL_V4`; no shape changed                                                                                                                                                                                                                                                                                                                       | [section 2.1](#21-match-setup), [section 2.3](#23-map-types), [section 3](#3-players-turns-and-victory)                               |
-| Naval       | `pulp-wars-poc-7r43` | `pulp_wars-5ti.2` naval branch engine step I (the overlay's `7rA`): the technologies `SEAMANSHIP` (tier 2 under Shorecraft: Ram, Board) and `SUBMERSIBLES` (tier 3 under Seamanship: the Submarine, Harbours) in all eight trees; the role `SUBMARINE` (9 Coins, 12 HP, Attack 4, Defense 2; Submerged: attacked only from an adjacent tile; Torpedo: attacks only units afloat, never answered); the Ram (+1 Attack and a shove for a Patrol Boat that moved); the command `BOARD` and the event `SHIP_BOARDED` (a ship at a third of its maximum HP or less is captured and patched up one above the line); Harbours (+1 population from every active Port and Shipyard); Dry Land and the naval-forbidden missions forbid all five; a Submarine per Showcase seat, whose Coast city is level 4; not folded into this document | [naval branch overlay](RULESET_7_NAVAL_BRANCH.md)                                                                                     |
-| Naval       | `pulp-wars-poc-7r44` | `pulp_wars-5ti.3` naval branch engine step II (the overlay's `7rB`), the Ice Folk frozen sea: the Ice Folk tree unlocks no ship, Ram, or Board, and an Ice Folk unit never embarks; the command `FREEZE` (a line of two water tiles, the Witch's ring) and the stored `ice` list; ice is ground for land units, thaws outside its owner's territory, and no ship enters it; the slide and the slip; Icebound and the crush (3 at the owner's Start Turn); Black Ice; Glacier (5 turns, Snow cover on ice); the events `WATER_FROZEN`, `ICE_MELTED`, and `UNITS_CRUSHED`; an Ice Folk Showcase seat with ice instead of ships; not folded into this document                                                                                                                                                                      | [naval branch overlay](RULESET_7_NAVAL_BRANCH.md)                                                                                     |
+| Naval       | `pulp-wars-poc-7r43` | `pulp_wars-5ti.2` naval branch engine step I (the overlay's `7rA`): the technologies `SEAMANSHIP` (tier 2 under Shorecraft: Ram, Board) and `SUBMERSIBLES` (tier 3 under Seamanship: the Submarine, Harbours) in all eight trees; the role `SUBMARINE` (9 Coins, 12 HP, Attack 4, Defense 2; Submerged: attacked only from an adjacent tile; Torpedo: attacks only units afloat, never answered); the Ram (+1 Attack and a shove for a Patrol Boat that moved); the command `BOARD` and the event `SHIP_BOARDED` (a ship at a third of its maximum HP or less is captured and patched up one above the line); Harbours (+1 population from every active Port and Shipyard); Dry Land and every registered mission forbid all five; a Submarine per Showcase seat, whose Coast city is level 4; folded into sections 14 and 21.16 | [naval branch overlay](RULESET_7_NAVAL_BRANCH.md)                                                                                     |
+| Naval       | `pulp-wars-poc-7r44` | `pulp_wars-5ti.3` naval branch engine step II (the overlay's `7rB`), the Ice Folk frozen sea: the Ice Folk tree unlocks no ship, Ram, or Board, and an Ice Folk unit never embarks; the command `FREEZE` (a line of two water tiles, the Witch's ring) and the stored `ice` list; ice is ground for land units, thaws outside its owner's territory, and no ship enters it; the slide and the slip; Icebound and the crush (3 at the owner's Start Turn); Black Ice; Glacier (5 turns, Snow cover on ice); the events `WATER_FROZEN`, `ICE_MELTED`, and `UNITS_CRUSHED`; an Ice Folk Showcase seat with ice instead of ships; folded by `pulp_wars-5ti.9`                                                                                                                                                                        | [naval branch overlay](RULESET_7_NAVAL_BRANCH.md)                                                                                     |
+| Naval       | `pulp-wars-poc-7r44` | `pulp_wars-5ti.6` naval art (a Submarine and portrait per seafaring faction, the sea ice, the Icebound overlay), `pulp_wars-5ti.7` naval UI (Board, Bow Ram, the Submarine, Harbours; Freeze, ice, the slide, Icebound), and the `pulp_wars-5ti.9` fold, no identity change; the Normal AI's use of the branch and the balance check are open                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | [sections 14](#14-naval-rules) and [21.16](#2116-the-frozen-sea)                                                                      |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -8503,11 +9399,61 @@ against `map-scale.ts` and `map.ts` with
 elsewhere in this document (curiosity and Rift frequencies, balance
 results) were measured on earlier boards.
 
+**Naval branch fold (2026-10-05, `pulp_wars-5ti.9`, `pulp-wars-poc-7r44`,
+no identity change):** the
+[naval branch overlay](RULESET_7_NAVAL_BRANCH.md) was folded in as built,
+after its two engine steps (`pulp_wars-5ti.2` at `7r43`: Seamanship,
+Submersibles, the Submarine, the Ram, Board, and Harbours;
+`pulp_wars-5ti.3` at `7r44`: the Ice Folk frozen sea), its art
+(`pulp_wars-5ti.6`), and its interface (`pulp_wars-5ti.7`). The fold was
+made before the overlay's Normal AI beads (`pulp_wars-5ti.4`, `5ti.5`) and
+its coarse balance (`pulp_wars-5ti.8`), which stay open
+([section 25](#25-known-discrepancies)). New here:
+[sections 14.1 to 14.5](#141-the-ram-bow-ram) (the Ram, Board, the
+Submarine with Submerged and Torpedo, Harbours, and their commands and
+events) and [section 21.16](#2116-the-frozen-sea) (ice tiles, Freeze, the
+thaw, the slide and the slip, Black Ice, Icebound and the crush, Glacier,
+no ships, interactions). Changed: the identity bullets and the role order
+([section 1](#1-identity-and-compatibility)); the Showcase (25
+technologies, eleven units, a level-4 Coast city with Harbours, first
+income 17 and 15, Sea Dog at the first evaluation, and an Ice Folk seat
+with ice instead of ships; [section 2.5](#25-showcase-setup)); missions
+(five forbidden Naval technologies, no ship for an Ice Folk seat;
+[section 2.6](#26-mission-setup)); the Wreck under ice
+([section 2.7](#27-map-curiosities)); the Start and End Turn orders and
+elimination ([section 3](#3-players-turns-and-victory)); Sea Dog, Muster,
+and Slayer ([section 5](#5-achievements-and-monuments)); the tree with five
+Naval technologies and the Ice Folk Naval branch
+([section 6](#6-technology)); a Submarine row in every seafaring roster and
+no ship in the Ice Folk one ([section 11](#11-unit-roster)); ice in
+movement, occupancy, interruptions, and ZOC, and `BOARD` and `FREEZE` as
+primary actions ([section 12](#12-movement-and-unit-actions)); Submerged,
+Torpedo, the Ram, the ice cover, the shove, and deaths on ice in combat
+([section 13](#13-combat-and-fortification)); the naval rules and the
+faction boats ([section 14](#14-naval-rules)); fog
+([section 15](#15-fog-and-observation)); and the Normal AI summary
+([section 16](#16-normal-ai-summary)). The sections that gave the Ice Folk
+ships (6.2, 11, 14, 21.1, 21.14, and the Showcase) were rewritten. The
+values were checked at `pulp-wars-poc-7r44` against the registrations and
+`technologyCapabilitiesV7` in `ruleset-v7.ts`, `ice.ts`,
+`naval-branch.ts`, the naval hooks of `combat.ts`, `movement.ts`, the
+reducer, `achievements.ts`, `curiosities.ts`, `showcase.ts`, the mission
+definitions, the state schema, event projection, the unit stats, the view,
+and the public queries, with the tests
+`tests/unit/ruleset-v7-naval-branch-*.test.ts`,
+`tests/unit/ruleset-v7-frozen-sea-*.test.ts`, and
+`tests/unit/ruleset-v7-revision18-showcase.test.ts`. Starting Coins (3, so
+5 in hand on a first turn), the tier costs (5, 7, 9), the Snow cover
+(× 1.25, which is Glacier's cover on ice), and the crush (3) are the `7r44`
+values. Two older slips were corrected on the way: section 21.15 quoted the
+Snow cover as × 1.5, and section 1 named `7r41` as the last prior identity
+and autosave key (it is `7r43`). The overlay's own corrections are in its
+[section 24](RULESET_7_NAVAL_BRANCH.md#24-fold-notes-pulp_wars-5ti9).
+
 ## 25. Known discrepancies
 
 As of `pulp-wars-poc-7r44` the rules in this document match the code for
-the eight factions it describes, **except the naval branch of `7r43` and `7r44`, which
-is not folded** (the first open item below), including the Dinosaur faction of revisions
+the eight factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
 Martian overlay with the engine of the Mind Control overlay, the Ice Folk
 faction of the Ice Folk overlay, the Dwarf faction of the Dwarf overlay,
@@ -8516,47 +9462,87 @@ the mission setup of [section 2.6](#26-mission-setup), the map
 curiosities of [section 2.7](#27-map-curiosities), and the Martian and Ice
 Folk balance round of `7r37` with the Grunt's 8 HP of `7r39`, and the
 village density of `7r40`, and the starting Coins and tier 3 technology base
-cost of `7r41`, and the many seats of `7r42`,
+cost of `7r41`, and the many seats of `7r42`, and the naval branch of
+`7r43` and `7r44`,
 with these
-open items: the naval branch, the Candy items left after the fold, and the
-pending balance steps below.
+open items: what is left of the naval branch after the fold, the Candy
+items left after the fold, and the pending balance steps below.
 
 **Open.**
 
-- **Naval branch, engine step I, not folded** (`pulp_wars-5ti.2`,
-  `pulp-wars-poc-7r43`; the fold is `pulp_wars-5ti.9`). The code has five
-  Naval technologies, the Submarine, the Ram, Board, and Harbours as the
-  [naval branch overlay](RULESET_7_NAVAL_BRANCH.md) specifies, with the
-  as-built records of its
-  [section 20](RULESET_7_NAVAL_BRANCH.md#20-engine-step-i-as-built-pulp_wars-5ti2).
-  This document still says: three Naval technologies and 23 in all
-  ([section 6](#6-technology); there are 25); two ship roles
-  ([section 11](#11-unit-roster)); "a Port gives 1 population and a Shipyard
-  2" (2 and 3 with Harbours); no `BOARD` command, `SHIP_BOARDED` event, or
-  `ram` and `torpedo` preview fields ([section 13](#13-combat-and-fortification));
-  and a Showcase Coast city of level 3 with two ships (level 4, with a
-  Submarine east of the Battleship;
-  [section 2.5](#25-showcase-setup)). The Normal AI does not use Ram,
-  Board, or Submarines on purpose (`pulp_wars-5ti.4`), and the interface
-  shows them with stand-in art and plain text (`pulp_wars-5ti.6`,
-  `pulp_wars-5ti.7`).
-
-- **Naval branch, engine step II (the Ice Folk frozen sea), not folded**
-  (`pulp_wars-5ti.3`, `pulp-wars-poc-7r44`; the fold is `pulp_wars-5ti.9`).
-  The code follows the overlay's
-  [section 8](RULESET_7_NAVAL_BRANCH.md#8-ice-folk-the-frozen-sea) with the
-  as-built records of its
-  [section 22](RULESET_7_NAVAL_BRANCH.md#22-engine-step-ii-as-built-pulp_wars-5ti3).
-  This document still gives the Ice Folk ships, embarking, and the Human
-  Naval technologies ([sections 6](#6-technology), [14](#14-naval-rules),
-  and [21](#21-ice-folk-faction-rules)), has no `FREEZE` command, `ice`
-  list, or `WATER_FROZEN`, `ICE_MELTED`, and `UNITS_CRUSHED` events, and
-  shows an Ice Folk Showcase seat with three ships
-  ([section 2.5](#25-showcase-setup)). The Normal AI of an Ice Folk seat
-  never Freezes and does not cross water on purpose (`pulp_wars-5ti.5`).
-  The interface draws ice with the Snow overlay and has no control for
-  `FREEZE`, so a player's Ice Folk cannot make ice yet (`pulp_wars-5ti.6`,
-  `pulp_wars-5ti.7`).
+- **Naval branch: what is left after the fold** (`pulp_wars-5ti.9`; the
+  engine `pulp_wars-5ti.2` and `pulp_wars-5ti.3`, the art
+  `pulp_wars-5ti.6`, and the UI `pulp_wars-5ti.7` are done, and
+  [sections 14](#14-naval-rules) and [21.16](#2116-the-frozen-sea) state
+  the rules as built):
+  - **Normal AI for the seafaring seats, `pulp_wars-5ti.4`.** The policy
+    does not use the Ram, Board, or Submarines on purpose: its naval plan
+    never asks for a Submarine, and none of the research, training, Ram,
+    Board, Submarine, or estimate rules of the overlay is implemented (its
+    [section 13.1](RULESET_7_NAVAL_BRANCH.md#131-seafaring-seats-bead-5ti4)).
+    It stays legal: Submarines count for the two-ship training cap, and
+    headless water matches of every faction finish.
+  - **Normal AI for and against the frozen sea, `pulp_wars-5ti.5`.** An Ice
+    Folk seat never Freezes and makes no naval plan, so on Continents and
+    Archipelago it stays on the land it can walk to; other seats do not
+    avoid landing on ice, keep ships out of Freeze reach, or follow a slide
+    in their threat estimates (the overlay's
+    [sections 13.2 and 13.3](RULESET_7_NAVAL_BRANCH.md#132-the-ice-folk-bead-5ti5)).
+    A player's Ice Folk can do all of it.
+  - **Balance, `pulp_wars-5ti.8`.** The branch has had no balance check:
+    the Continents and Archipelago matrix, the telemetry, and the
+    acceptance list of the overlay's
+    [section 15](RULESET_7_NAVAL_BRANCH.md#15-headless-support-measurement-tuning-bounds-and-balance-acceptance)
+    were not run, no number was tuned, and the headless tools count `BOARD`
+    and `FREEZE` in `commandsByKind` and the Black Ice Chills in the
+    `iceFolk` block but have none of the naval telemetry of its section
+    15.2. The check waits for the two AI beads, since without them the
+    Ice Folk do not cross water and no seat plays Submarines. The numbers
+    here are the overlay's decided ones (with the Snow cover of `7r37`).
+  - **Polish, `pulp_wars-5ti.10`.** (1) Freeze has no registered action
+    icon (the button shows a snowflake glyph), and the five Ice Folk Naval
+    technology cards show registered ice art as stand-ins. (2)
+    `previewFreezeV7` carries the tiles, the refreshed ones, and the ships,
+    not the turns or the permanence, which the interface reads from two
+    other public facts. (3) The Ice Witch's Freeze has no confirm step on a
+    phone. (4) The slide arrow and the crush pill are thin at desktop zoom.
+  - **Tests the overlay planned and the build does not have, no bead.** The
+    overlay's section 16 asked for one test per row of its interaction
+    table. The frozen-sea suites cover the Push, Knockback, Charge!,
+    Tractor Beam, Beam Down, advance, bombing-run landing, a death on ice,
+    Port building, Glacier's cover, Sea Dog, the Showcase, persistence, and
+    headless play; they have no dedicated test for a Wreck under ice, an
+    eruption or a tunnel at ice, an Egg, a Re-bake or an Assemble at ice, a
+    mind-controlled Ice Folk unit's Freeze and slide, an icebound unit's
+    Recover and Promote, ice fishing, or sea trade under ice. Those rules
+    are stated here from the code.
+  - **Where the code differs from the overlay's rules text** (this
+    document states the code's behavior): (1) Glacier's cover is the Snow
+    cover of today, × 1.25 (the overlay's section 8.10 quotes × 1.5); (2)
+    tier 3 costs 9 with one city, so Submersibles costs 9 (the overlay's
+    section 2 quotes 12); (3) eight factions, the Candy among the
+    seafarers; (4) an embarked unit never strikes back at a ram or a
+    torpedo; (5) a ram's shove has exactly its own conditions (it does not
+    refuse allied territory, and an unexplored tile is `BLOCKED`); (6)
+    `BOARD` of a ship on Deep Water needs the boarder's Navigation
+    (`DEEP_WATER`); (7) the crush hits every icebound unit on the player's
+    ice, whoever owns it, and needs no technology; (8) **a Dwarf Hammerer
+    or Steam Mole standing still on ice next to its own city center is dug
+    in**, although the overlay's section 8.3 says a unit on ice has no
+    fortification: Dig In is read from the distance to the center, not from
+    the tile (a ruling for the root; this document states the code); (9)
+    there is no `slideEndV7` helper and `canCrossWaterV7` was not extended:
+    the slide is part of the movement validation (canonical and public),
+    and a unit afloat is kept off ice by `canEnterTerrainV7`; (10) the
+    Showcase Coast city is level 4, and only one of an Ice Folk seat's
+    three ice tiles there is permanent; (11) no mission revision was
+    bumped.
+  - **Superseded overlay text:** its identities `7rA` and `7rB` (`7r43` and
+    `7r44`), "seven trees", "the Ice Folk are ordinary seafarers for the
+    interim" (true only at `7r43`), the stand-ins of its sections 20 to 22
+    (the art and both parts of the interface are live), the six Submarines
+    of its art table (seven and the Classic one), and its tuning bounds and
+    named levers (unused so far).
 
 - **Candy: what is left after the fold** (`pulp_wars-jdb.8`; the engine
   `pulp_wars-jdb.3`, the Normal AI `pulp_wars-jdb.4`, the art
@@ -8626,8 +9612,10 @@ pending balance steps below.
     offers the faction until `pulp_wars-jdb.6`" (the setup offered it from
     the engine bead), the badge fallback of its section 15.4, the tuning
     bounds and named levers of its section 19.3 (unused), and its naval
-    section 16, which describes a naval branch that is still a design (the
-    Candy have the current Human Patrol Boat and Battleship).
+    section 16, written while the naval branch was a design: the branch as
+    built is [section 14](#14-naval-rules) (the Candy have the Human
+    Patrol Boat, Battleship, and Submarine, Seamanship, and Submersibles,
+    with no Candy rule on a boat).
 
 - **Martian and Ice Folk balance: the measurement
   pending.** The engine step of the

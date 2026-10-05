@@ -1,22 +1,32 @@
 # Ruleset 7: Naval branch expansion and the frozen sea
 
-**Status:** design specification (`pulp_wars-5ti.1`, epic `pulp_wars-5ti`):
-drafted, critiqued, and redrafted ([Appendix A](#appendix-a-draft-critique-redraft)).
-**Engine step I is implemented** (`pulp_wars-5ti.2`, identity
-`pulp-wars-poc-7r43`, which is `7rA` below): the five-technology branch,
-the Submarine, Ram, Board, and Harbours for all eight factions, as recorded
-in [section 20](#20-engine-step-i-as-built-pulp_wars-5ti2). **Engine step II
-is implemented** (`pulp_wars-5ti.3`, identity `pulp-wars-poc-7r44`, which is
-`7rB` below): the Ice Folk frozen sea, as recorded in
-[section 22](#22-engine-step-ii-as-built-pulp_wars-5ti3). The first part of the
-interface and the art are in ([section 21](#21-naval-interface-first-part-as-built-pulp_wars-5ti7)); the Normal AI and
-the frozen sea interface are not implemented. It is an overlay over
-[Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r35`
+**Status:** **folded into
+[Ruleset 7: current rules](RULESET_7_CURRENT.md) by `pulp_wars-5ti.9`** and
+kept as design history: the specification (`pulp_wars-5ti.1`, epic
+`pulp_wars-5ti`; drafted, critiqued, and redrafted,
+[Appendix A](#appendix-a-draft-critique-redraft)), the per-unit battle
+analysis, the decisions, and the as-built records. The current rules state
+the game as built: the shared branch in their
+[section 14](RULESET_7_CURRENT.md#14-naval-rules) and the frozen sea in
+their [section 21.16](RULESET_7_CURRENT.md#2116-the-frozen-sea). Where this
+document and the current rules disagree, the current rules are right;
+[section 24](#24-fold-notes-pulp_wars-5ti9) lists where.
+
+| Step                                                              | Bead               | State                                                                                                                                         |
+| ----------------------------------------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Engine step I: the shared branch                                  | `pulp_wars-5ti.2`  | done, `pulp-wars-poc-7r43` (`7rA` below); [section 20](#20-engine-step-i-as-built-pulp_wars-5ti2)                                             |
+| Engine step II: the Ice Folk frozen sea                           | `pulp_wars-5ti.3`  | done, `pulp-wars-poc-7r44` (`7rB` below); [section 22](#22-engine-step-ii-as-built-pulp_wars-5ti3)                                            |
+| Art                                                               | `pulp_wars-5ti.6`  | done; [section 14.3](#143-what-the-art-bead-must-draw-bead-5ti6), "As built"                                                                  |
+| Interface, both parts                                             | `pulp_wars-5ti.7`  | done; [sections 21](#21-naval-interface-first-part-as-built-pulp_wars-5ti7) and [23](#23-naval-interface-second-part-as-built-pulp_wars-5ti7) |
+| Fold                                                              | `pulp_wars-5ti.9`  | done, before the three steps below; [section 24](#24-fold-notes-pulp_wars-5ti9)                                                               |
+| Normal AI for the seafaring seats                                 | `pulp_wars-5ti.4`  | open: [section 13.1](#131-seafaring-seats-bead-5ti4) is still a plan                                                                          |
+| Normal AI for and against the frozen sea                          | `pulp_wars-5ti.5`  | open: [sections 13.2 and 13.3](#132-the-ice-folk-bead-5ti5) are still a plan                                                                  |
+| Coarse balance on water maps                                      | `pulp_wars-5ti.8`  | open: [section 15](#15-headless-support-measurement-tuning-bounds-and-balance-acceptance) is still a plan; no number has been tuned           |
+| Polish (Freeze icon, Ice Folk technology icons, preview, markers) | `pulp_wars-5ti.10` | open                                                                                                                                          |
+
+It was written as an overlay over the current rules at `pulp-wars-poc-7r35`
 (seven factions, map curiosities engine I), and it supersedes the deferred
 floe of the [Ice Folk overlay section 17.3](RULESET_7_ICE_FOLK.md#173-deferred-the-floe).
-When the root accepts it, the beads of
-[section 17](#17-implementation-bead-breakdown) implement it and a final bead
-folds it into the current rules.
 
 **Ruleset IDs:** two engine steps, each taking the next free identity when it
 starts. **`7rA`** stands for the identity of engine step I
@@ -80,7 +90,8 @@ walkable ice and slow enemies."
 
 Research costs, the free opening technology, and prerequisites follow
 [current rules section 6.1](RULESET_7_CURRENT.md#61-research-cost) unchanged:
-tier 1 costs `5 + (C − 1)`, tier 2 `7 + 3(C − 1)`, tier 3 `12 + 5(C − 1)`.
+tier 1 costs `5 + (C − 1)`, tier 2 `7 + 3(C − 1)`, tier 3 `12 + 5(C − 1)`
+(as built: `9 + 5(C − 1)`, the tier 3 base since `pulp-wars-poc-7r41`).
 
 ### 2.1 Human (and every seafaring faction)
 
@@ -636,7 +647,9 @@ on ice is a Freeze of its tile with the capability `icebound` (the Ice Folk
 The capability `iceTurns` becomes 5 (`GLACIER_ICE_TURNS_V7`) for the ice the
 seat makes from then on, and `iceCover`: a land-form Ice Folk unit on ice
 whose own fortification level is 0 has cover × 1.5 (the Snow cover, not added
-to anything else; the preview's `iceCover` is true). Glacier also grants
+to anything else; the preview's `iceCover` is true; **as built × 1.25**, the
+Snow cover since `pulp-wars-poc-7r37`,
+[section 22](#22-engine-step-ii-as-built-pulp_wars-5ti3) item 2). Glacier also grants
 Harbours ([section 5.4](#54-harbours)).
 
 ### 8.11 No ships, no embarking
@@ -971,7 +984,8 @@ only by units that slide up to the ice edge. The balance bead measures it
   `UNITS_CRUSHED` like Plague damage (the owner of a victim, and viewers that
   see it).
 - **Errors.** `BOARD_NOT_LEGAL` (`NOT_A_SHIP`, `TARGET_IMMUNE`,
-  `OUT_OF_RANGE`, `TARGET_HEALTHY`, and in step II `ICEBOUND`);
+  `OUT_OF_RANGE`, `TARGET_HEALTHY`, and in step II `ICEBOUND` and
+  `DEEP_WATER`);
   `ATTACK_NOT_LEGAL` (`NOT_AFLOAT` for a torpedo at a land unit, and in step
   II `ICEBOUND` for a frozen attacker); a Submarine targeted from 2 or more is
   the existing `TARGET_OUT_OF_RANGE`; `FREEZE_NOT_LEGAL` (`OUT_OF_RANGE`,
@@ -1465,6 +1479,8 @@ Conditional final gates: npm run validate:ruleset7-release (reviewed refresh, if
 known discrepancies; the Ice Folk overlay's section 17.3 marked superseded;
 [NAVAL_FACTIONS.md](../art/NAVAL_FACTIONS.md) and
 [NORMAL_AI.md](../architecture/NORMAL_AI.md) updated). Depends on `5ti.8`.
+**Done out of this order**, before `5ti.4`, `5ti.5`, and `5ti.8`
+([section 24](#24-fold-notes-pulp_wars-5ti9)).
 
 ```text
 Validation profile: docs/tracker
@@ -1787,6 +1803,90 @@ this differs from [section 14.1](#141-surfaces-bead-5ti7) or
    glyph.
 10. **Normal AI.** Unchanged: an Ice Folk seat still never Freezes
     ([section 22](#22-engine-step-ii-as-built-pulp_wars-5ti3) item 11).
+
+## 24. Fold notes (`pulp_wars-5ti.9`)
+
+The fold checked [sections 2 to 12](#2-the-branch-at-a-glance) and the
+as-built records of sections 20 to 23 against the code at
+`pulp-wars-poc-7r44` (the registrations and `technologyCapabilitiesV7`,
+`ice.ts`, `naval-branch.ts`, the naval hooks of combat, movement, the
+reducer, achievements, curiosities, the Showcase, the missions, the state
+schema, event projection, the unit stats, the view, and the public
+queries, with the naval-branch and frozen-sea test suites) and wrote the
+rules into the current rules. It changed no code, rule, or identity. The
+fold was made before the Normal AI beads and the balance bead, at the
+root's direction, so those sections of this document are plans, not
+records.
+
+**Where the build differs from the text above** (the current rules state
+the build):
+
+1. **Numbers that moved under the overlay.** Tier 3 costs `9 + 5(C − 1)`
+   ([section 2](#2-the-branch-at-a-glance) quotes 12), and Glacier's cover
+   is the Snow cover of today, × 1.25
+   ([section 8.10](#810-glacier) quotes × 1.5; the Glacier figures of
+   [section 11.6](#116-ice-folk-on-the-ice-against-ships) were computed
+   with × 1.5). Every other number is as decided here: Submarine 9 Coins,
+   12 HP, Attack 4, Defense 2; the Ram +1; boarding at a third; Harbours
+   +1; ice 3 turns, 5 with Glacier; a two-tile Freeze line; the Witch's
+   ring of radius 1; the crush 3; Sea Dog 3 units on ice.
+2. **Eight factions.** The Candy are a seafaring faction; "seven trees"
+   and "six Submarines" read eight and seven
+   ([section 20](#20-engine-step-i-as-built-pulp_wars-5ti2) item 1).
+3. **Helpers.** [Section 12](#12-commands-events-errors-state-and-queries)
+   and concern 3 of [section 19](#19-concerns) ask for one slide helper,
+   `slideEndV7`, used everywhere, and for `canCrossWaterV7` to keep afloat
+   units off ice. There is no `slideEndV7`: the slide is part of the
+   movement validation, once for the canonical state and once for the
+   public view (`src/engine/v7/movement.ts`), and the offered-equals-
+   accepted test the concern asked for exists
+   (`tests/unit/ruleset-v7-frozen-sea-slide.test.ts`). `canCrossWaterV7`
+   was not changed: a unit afloat is kept off ice by `canEnterTerrainV7`.
+   The shared helpers are `isIceAtV7`, `iceAtV7`, `unitIsIceboundV7`,
+   `unitSlidesV7`, `freezeSetV7`, and `iceIsPermanentV7`.
+4. **Dig In on ice.** [Section 8.3](#83-ice-tiles) says a unit on ice has
+   no fortification. Walls and Field Defense cannot be there, but a Dwarf
+   Hammerer or Steam Mole that stands still on an ice tile next to its own
+   city center is dug in (one level): Dig In is read from the distance to
+   the center, not from the tile. The current rules state it; whether it
+   should be so is a ruling for the root.
+5. **Black Ice is a seat rule.** A Martian seat that controls an Ice Folk
+   unit gets the Freeze, the slide, Icebound, the 5 turns, and the ice
+   cover through that unit (its own research read through the Ice Folk
+   tree) and the crush on its ice, but never Black Ice, which is read from
+   the seat's own faction ([section 10](#10-interactions-with-existing-rules),
+   the Martian row, does not say so).
+6. **Sea Dog for the Ice Folk** counts the seat's land-form units on any
+   ice tile, whoever owns the ice.
+7. **A Freeze of ice that is already there takes it over:** the refreshed
+   entry belongs to the Freezing unit's owner.
+8. **Tests.** [Section 16](#16-test-plan) asked for one test per row of
+   the interaction table. The suites named there exist and cover the
+   legality rows, the freeze set, the thaw, the slide and the slip, Black
+   Ice, Icebound and the crush, Glacier, the placements on ice (Push,
+   Knockback, Charge!, Tractor Beam, Beam Down, the advance, a bombing-run
+   landing), a death on ice, Sea Dog, the Showcase, persistence, and
+   headless play. They have no dedicated test for a Wreck under ice, an
+   eruption or a tunnel at ice, an Egg, a Re-bake, or an Assemble at ice,
+   a mind-controlled Ice Folk unit's Freeze and slide, an icebound unit's
+   Recover and Promote, ice fishing, or sea trade under ice.
+9. **Telemetry.** The headless tools count `BOARD` and `FREEZE` in
+   `commandsByKind` and Black Ice among the Chill sources of the `iceFolk`
+   block. None of the telemetry of
+   [section 15.2](#152-measurement) exists yet; it belongs to
+   `pulp_wars-5ti.8`.
+
+**Open after the fold:** the Normal AI of
+[section 13](#13-normal-ai-requirements) (`pulp_wars-5ti.4` and
+`pulp_wars-5ti.5`), the coarse balance of
+[section 15](#15-headless-support-measurement-tuning-bounds-and-balance-acceptance)
+(`pulp_wars-5ti.8`), and the polish of `pulp_wars-5ti.10` (a Freeze action
+icon and five Ice Folk technology icons; `previewFreezeV7` carrying the
+turns and the permanence; a confirm step for the Ice Witch's Freeze on a
+phone; a thicker slide arrow and crush pill at desktop zoom). The three
+questions of [section 18.1](#181-questions-for-the-root) were ruled by the
+root on 2026-10-03: no ships and no transports for the Ice Folk, ice in
+their own territory stays, and Submerged is accepted.
 
 ## Appendix A. Draft, critique, redraft
 

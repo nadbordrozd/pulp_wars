@@ -23,7 +23,12 @@ The current runtime is `pulp-wars-poc-7r44` (autosave
 and earlier are refused, and startup removes their autosave keys). Its eight
 factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy, are
 all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
-into which `pulp_wars-jdb.8` folded the
+into which `pulp_wars-5ti.9` folded the
+[naval branch overlay](../product/RULESET_7_NAVAL_BRANCH.md) (engine
+`pulp_wars-5ti.2` at `7r43` and `pulp_wars-5ti.3` at `7r44`, UI
+`pulp_wars-5ti.7` with the production art of `pulp_wars-5ti.6`; its Normal
+AI, `pulp_wars-5ti.4` and `5ti.5`, and its coarse balance,
+`pulp_wars-5ti.8`, are open), after `pulp_wars-jdb.8` folded the
 [Candy overlay](../product/RULESET_7_CANDY.md) (engine `pulp_wars-jdb.3`
 at `7r38`, Normal AI `pulp_wars-jdb.4`, UI `pulp_wars-jdb.6` with the
 production art of `pulp_wars-jdb.5`, and the `pulp_wars-jdb.7` coarse
@@ -223,9 +228,11 @@ command `BOARD`, the event `SHIP_BOARDED`, and the combat-preview fields
 `ram` and `torpedo`. Generated boards did not change; the Showcase gained a
 Submarine per seat and a level-4 Coast city, and every pin on a Showcase or
 a headless water match was recomputed. A Dry Land match plays the same
-commands as at `7r42`. The overlay is not folded into the current rules yet
-(`pulp_wars-5ti.9`); the Normal AI's use of the branch, its art, and its
-interface are later beads (`pulp_wars-5ti.4`, `5ti.6`, `5ti.7`).
+commands as at `7r42`. Its art (`pulp_wars-5ti.6`) and its interface
+(`pulp_wars-5ti.7`) followed with no identity change, and `pulp_wars-5ti.9`
+folded it into the current rules
+([section 14](../product/RULESET_7_CURRENT.md#14-naval-rules)); the Normal
+AI's use of the branch is a later bead (`pulp_wars-5ti.4`).
 `pulp_wars-5ti.3` (`7r44`) is engine step II of the same overlay, the Ice
 Folk frozen sea: the Ice Folk tree has no ship, and its five Naval
 technologies give Freeze, the slide, Icebound and the crush, Black Ice, and
@@ -235,8 +242,12 @@ combat-preview fields `iceCover` and `icebound`. Generated boards did not
 change; an Ice Folk Showcase seat has ice where its three boats stood. A
 match without an Ice Folk seat plays the same commands as at `7r43`; the one
 pinned headless match that changed has an Ice Folk seat on Continents. The
-Ice Folk Normal AI's use of the ice and the interface for `FREEZE` are later
-beads (`pulp_wars-5ti.5`, `5ti.7`).
+interface for `FREEZE` and the ice (`pulp_wars-5ti.7`) followed with no
+identity change, and `pulp_wars-5ti.9` folded the frozen sea into the
+current rules
+([section 21.16](../product/RULESET_7_CURRENT.md#2116-the-frozen-sea)). The
+Ice Folk Normal AI's use of the ice is a later bead (`pulp_wars-5ti.5`),
+and the branch has had no balance check (`pulp_wars-5ti.8`).
 The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, the
 Dwarves, and the Candy are part of the default route: match setup always
 offers a
@@ -254,6 +265,8 @@ coarse [Martian](RULESET_7_MARTIAN_BALANCE.md),
 sample in
 [Candy measurements](../architecture/NORMAL_AI.md#candy-measurements) (the
 Candy have no balance report); the release does not rerun their matrices.
+The naval branch has no balance evidence yet: its water-map matrix is
+`pulp_wars-5ti.8`, which waits for its Normal AI.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
@@ -352,7 +365,8 @@ Candy have no balance report); the release does not rerun their matrices.
     board), and resumes the save with its Dwarf seat and the mound on a
     fresh default-route load.
   - The **Showcase probe** (`pulp_wars-6gd.3`) launches the Showcase map
-    (16 x 16 only, no seed control), checks the ten own units, three own
+    (16 x 16 only, no seed control), checks the eleven own units (one of
+    each role, the Submarine included), three own
     cities, and every technology, ends one turn, and resumes.
   - The **Curiosities probe** (`pulp_wars-737.6`,
     `scripts/browser-smoke-v7-curiosities.ts`) mounts the curiosities UI
@@ -404,7 +418,29 @@ Candy have no balance report); the release does not rerun their matrices.
   (`tests/unit/ruleset-v7-candy-headless.test.ts`). A Rushed attack, the
   Crash, Splat, Bounce, Frosting, eaten Crumbs, and the Peppermint Surprise
   are covered by the engine, AI, and UI tests and the
-  `review:ruleset7-candy-ui` captures, not by the smoke.
+  `review:ruleset7-candy-ui` captures, not by the smoke. The naval branch
+  is not in this smoke beyond the Showcase probe's Submarine: Board, the
+  Bow Ram, the Submarine, Harbours, Freeze, the slide, and Icebound are
+  covered by the engine and UI tests and by the naval smoke below.
+
+- `npm run smoke:naval-browser` (`scripts/browser-naval-smoke-v7.ts`) is
+  the naval browser smoke. It is risk-triggered, not a routine release
+  gate: run it when a change touches the naval interface, the ships' art
+  wiring, or the frozen sea's drawing. On engine-built water scenes and
+  mounted fixtures it checks the Port and transport docks and the Naval
+  technology branch, then the naval branch interface of `pulp_wars-5ti.7`
+  (`tests/fixtures/v7-naval-ui.ts`: one Board button that arms the
+  capture, the prize picked on the board at desktop and phone widths with
+  an accepted `BOARD` and its `SHIP_BOARDED`, the Bow Ram preview, the
+  Submarine's dock, and the Seamanship and Submersibles cards), and then,
+  **in the current (CHIBI) look**, the frozen sea
+  (`tests/fixtures/v7-frozen-sea-ui.ts`: the Bow Ram and Torpedo lines
+  with their art, a line role's Freeze armed and aimed on the board at
+  desktop and phone widths, the Ice Witch's ring, a Sled sliding a bridge
+  to the far shore, an icebound ship with its crush warning, melting ice,
+  and the five Ice Folk technology cards). It needs the development
+  server's fixtures and writes its captures to a temporary directory
+  unless it is asked to archive them.
 
 - `npm run validate:ruleset7-curiosity-maps`
   (`scripts/validate-ruleset7-curiosity-maps.ts`, `pulp_wars-737.2`,
@@ -450,6 +486,19 @@ Candy have no balance report); the release does not rerun their matrices.
   `art/pixellab/reviews/chibi-batch-direction-candy/`; its scenes are
   stand-ins drawn by the review itself, so the Candy as the game draws them
   are in the `review:ruleset7-candy-ui` captures.
+  `npm run art:chibi-naval-faction-review`
+  (`scripts/art/chibi-naval-faction-review.ts`, `pulp_wars-w5j.2`, extended
+  by `pulp_wars-5ti.6`) does the same for the faction fleets, with the
+  Submarine of every seafaring faction and of the Classic look, surfaced
+  and riding low, and its portrait, under
+  `art/pixellab/reviews/chibi-batch-naval-factions/`, and
+  `npm run art:naval-branch-ice-review`
+  (`scripts/art/naval-branch-ice-review.ts`, `pulp_wars-5ti.6`) for the
+  Ice Folk sea ice over both waters, its tiling and edges, and the
+  Icebound overlay on the three hulls of the seven seafaring factions,
+  under `art/pixellab/reviews/naval-branch-ice/` (it uses no browser and
+  no PixelLab call). Both exit cleanly at `7r44`; the first rewrites four
+  tracked scene captures on macOS Chrome, like the other reviews.
 - **Gate order.** Run `npm run check` **before** the art review commands,
   then restore the checked-in review evidence with `git checkout -- art/`
   after them: on macOS Chrome the reviews rewrite tracked review evidence,
@@ -469,8 +518,8 @@ Candy have no balance report); the release does not rerun their matrices.
 
 The current release gates, in the order they are run from the reviewed
 release revision (the `cross-cutting/release` profile plus the Ruleset 7,
-Goblin, Dinosaur, Martian, Ice Folk, Dwarf, map-curiosity, and Candy
-additions).
+Goblin, Dinosaur, Martian, Ice Folk, Dwarf, map-curiosity, Candy, and
+naval-branch additions).
 `npm run check`
 runs
 before the art
@@ -504,6 +553,8 @@ npm run art:chibi-ice-folk-direction-review
 npm run art:chibi-dwarf-direction-review
 npm run art:chibi-candy-direction-review
 npm run art:curiosities-review
+npm run art:chibi-naval-faction-review
+npm run art:naval-branch-ice-review
 git checkout -- art/
 npm run smoke:browser
 npm run smoke:browser:legacy-v5
@@ -517,7 +568,10 @@ The results of a release run are recorded on its bead
 `pulp_wars-7g3.8` for the six-faction `7r30` fold, `pulp_wars-78i.8` for
 the seven-faction `7r31` fold, `pulp_wars-737.7` for the map-curiosities
 fold, no identity change, `pulp_wars-jdb.8` for the eight-faction `7r41`
-fold, no identity change), not in this document;
+fold, no identity change, `pulp_wars-5ti.9` for the naval-branch `7r44`
+fold, a documentation fold with no identity change, run under the
+`docs/tracker` profile with the two naval art reviews), not in this
+document;
 the
 [final release gates](#final-release-gates) and
 [root verification status](#root-verification-status) below are the frozen

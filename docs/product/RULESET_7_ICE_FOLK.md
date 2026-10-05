@@ -2989,6 +2989,15 @@ may change any of them.
 
 ### 17.3 Deferred: the floe
 
+**Superseded.** The floe was never built. The
+[naval branch overlay](RULESET_7_NAVAL_BRANCH.md) replaced it at
+`pulp-wars-poc-7r44` (`pulp_wars-5ti.3`) with a stored ice layer: the Ice
+Folk have no ships and never embark, their land units Freeze water and
+slide on the ice, and no unit ever becomes embarked on melting ice
+([current rules section 21.16](RULESET_7_CURRENT.md#2116-the-frozen-sea)).
+The text below, and every "Ice Folk boats are the Human boats" in this
+document, is history.
+
 The user's hint was that the Ice Folk "freeze water into walkable ice". The
 root deferred it: **it is not in the first implementation,** and the Ice Folk
 use the ordinary boats. Nothing in this contract depends on it, and the

@@ -9,7 +9,8 @@ through `pulpWars.save.v7r43.current`;
 [map curiosities](#map-curiosities-pulp_wars-7372),
 [the Giant Spider](#the-giant-spider-pulp_wars-7373),
 [the Martian and Ice Folk balance round](#the-martian-and-ice-folk-balance-round-pulp_wars-1wy3),
-and [the Candy engine boundary](#candy-engine-boundary-pulp_wars-jdb3)
+[the Candy engine boundary](#candy-engine-boundary-pulp_wars-jdb3),
+and [the naval branch boundary](#naval-branch-boundary-pulp_wars-5ti2-and-5ti3)
 are described below),
 whose rules for all eight factions
 the setup screen offers, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk,
@@ -18,8 +19,9 @@ Dwarf, and Candy, are described by
 (`pulp_wars-c87.9` folded revisions 19–21 into it, `pulp_wars-t6s.7` the
 [Martian overlay](../product/RULESET_7_MARTIANS.md), `pulp_wars-7g3.8` the
 [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md), `pulp_wars-78i.8`
-the [Dwarf overlay](../product/RULESET_7_DWARVES.md), and `pulp_wars-jdb.8`
-the [Candy overlay](../product/RULESET_7_CANDY.md)). The Dinosaur faction of
+the [Dwarf overlay](../product/RULESET_7_DWARVES.md), `pulp_wars-jdb.8`
+the [Candy overlay](../product/RULESET_7_CANDY.md), and `pulp_wars-5ti.9`
+the [naval branch overlay](../product/RULESET_7_NAVAL_BRANCH.md)). The Dinosaur faction of
 the [revision-19 overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md)
 (`pulp_wars-c87.2`: identity, roster, capacity slots, Grow, Acid, Armoured;
 `pulp_wars-c87.3`: Eggs, Shaman Hatch, and Nesting, with their public
@@ -722,6 +724,77 @@ presentation of the last item below.
   looks draw Candy units as Human sprites with no badge
   (`pulp_wars-jdb.9`). The Gallery shows the Candy column with the art and
   plays Sugar Rush, Re-bake, and Sugar Toss on its demo board.
+
+## Naval branch boundary (`pulp_wars-5ti.2` and `5ti.3`)
+
+`pulp-wars-poc-7r43` and `pulp-wars-poc-7r44` implement the two engine
+steps of the [naval branch overlay](../product/RULESET_7_NAVAL_BRANCH.md),
+folded by `pulp_wars-5ti.9` into
+[current rules section 14](../product/RULESET_7_CURRENT.md#14-naval-rules)
+(the Submarine, the Ram, Board, Harbours) and
+[section 21.16](../product/RULESET_7_CURRENT.md#2116-the-frozen-sea) (the
+Ice Folk frozen sea). The interface (`pulp_wars-5ti.7`) and the art
+(`pulp_wars-5ti.6`) are live.
+
+- **Modules.** `src/engine/v7/naval-branch.ts` holds the Board target rule
+  (`boardTargetBlockV7`), shared by the `BOARD` command and the public
+  command query. `src/engine/v7/ice.ts` holds the ice reads (`iceAtV7`,
+  `iceIndexSetV7`, `iceIsPermanentV7`), the slide and slip predicates
+  (`unitSlidesV7`, `unitKindWalksIceV7`), the Freeze set (`freezeSetV7`,
+  called with the canonical board by the reducer and with the view's
+  explored tiles by the query, so a preview equals its resolution), and
+  the Start and End Turn steps (`resolveBlackIceV7`, `resolveIceCrushV7`,
+  `resolveThawV7`). The registry (`src/engine/rules/ruleset-v7.ts`) holds
+  the helpers every layer shares: `attackIsRamV7`, `attackIsTorpedoV7`,
+  `unitIsSubmergedV7`, `boardableAtV7`, `boardedHpV7`, `dockPopulationV7`,
+  `isIceAtV7`, and `unitIsIceboundV7`. The slide itself is part of the
+  movement validation in `movement.ts` (the canonical one and its public
+  twin).
+- **The ice list is never cached across commands.** It changes in the
+  middle of a turn (a Freeze), is read once per `MOVE` from the state
+  before the command, and is empty in a match without an Ice Folk seat,
+  where every helper returns the neutral answer.
+- **State, view, events.** `GameStateV7.ice` and `PlayerViewV7.ice` (the
+  entries on tiles the viewer has explored, each with `permanent`); the
+  commands `BOARD` and `FREEZE`; the events `SHIP_BOARDED`,
+  `WATER_FROZEN`, `ICE_MELTED`, and `UNITS_CRUSHED`; the `UNIT_DIED` cause
+  `CRUSHED`; the combat-preview fields `ram`, `torpedo`, `iceCover`, and
+  `icebound`. A boarded ship changes owner in place, so every reader of a
+  ship resolves its faction through its current owner (`unitFactionV7`).
+- **Queries.** `previewBoardV7` and `previewFreezeV7`; the public unit
+  stats' `submerged`, `boardableAt`, and `icebound`, and the `iceFolk`
+  block's `onIce`, `slides`, and `iceCover`.
+- **Presentation.** `src/render/naval-presentation-v7.ts` (the words of
+  Board, the Bow Ram, the Submarine, and Harbours),
+  `src/render/canvas/naval-board-plan-v7.ts` (the Board aiming, the hook
+  badges, the shove preview, the Submarine markers), and
+  `naval-canvas-v7.ts`; `src/render/frozen-sea-presentation-v7.ts` (the
+  words of Freeze, the slide, the slip, Icebound, the crush, Black Ice,
+  Glacier, and the Ice Folk technology cards),
+  `src/render/canvas/frozen-sea-board-plan-v7.ts` (ice cells, the Freeze
+  aiming and the Witch's ring, slide arrows, the icebound marker), and
+  `frozen-sea-canvas-v7.ts`; `src/assets/sea-ice-v7.ts` cuts the ice tile
+  at open water and dusts permanent ice (`seaIceTileV7`), and
+  `src/assets/chibi-naval-submarine-art-manifest.ts` registers the faction
+  Submarines. The presentation reads the view with the engine's shared
+  predicates and public previews and decides no legality. The rules of the
+  two aimed actions are in
+  [board targeting sections 3.4 and 3.5](../ui/BOARD_TARGETING.md#34-board-the-bow-ram-and-the-submarine-bead-pulp_wars-5ti7),
+  the surfaces in the
+  [screen flow](../ui/SCREEN_FLOW.md#naval-branch-board-bow-ram-submarine-harbours-bead-pulp_wars-5ti7),
+  and the art in
+  [NAVAL_FACTIONS.md](../art/NAVAL_FACTIONS.md#the-naval-branch-art-bead-pulp_wars-5ti6).
+  Tests: `tests/unit/naval-presentation-render-v7.test.ts`,
+  `tests/unit/frozen-sea-presentation-render-v7.test.ts`,
+  `tests/integration/ruleset7-naval-dom.test.ts`,
+  `tests/integration/ruleset7-frozen-sea-dom.test.ts`, and
+  `tests/integration/ruleset7-naval-canvas.test.ts`, on the fixtures of
+  `tests/fixtures/v7-naval-ui.ts` and `tests/fixtures/v7-frozen-sea-ui.ts`;
+  `npm run smoke:naval-browser` plays both parts in the browser, the
+  frozen sea in the current look.
+- **Open.** Freeze has no registered action icon and the five Ice Folk
+  Naval technology cards show registered ice art as stand-ins
+  (`pulp_wars-5ti.10`).
 
 ## 0. Ruleset-6 replacement boundary
 

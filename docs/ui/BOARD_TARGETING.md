@@ -212,7 +212,7 @@ Monument stands on the selected tile, which is not a target on the map.
 ### 3.4 Board, the Bow Ram and the Submarine (bead `pulp_wars-5ti.7`)
 
 The naval branch
-([rules](../product/RULESET_7_NAVAL_BRANCH.md#4-seamanship-ram-and-boarding))
+([rules](../product/RULESET_7_CURRENT.md#14-naval-rules))
 adds one targeted action and three previews. Code:
 `src/render/naval-presentation-v7.ts` (the words),
 `src/render/canvas/naval-board-plan-v7.ts` (the plan) and
@@ -270,7 +270,7 @@ adds one targeted action and three previews. Code:
 ### 3.5 The frozen sea: Freeze, the slide, Icebound (bead `pulp_wars-5ti.7`)
 
 The Ice Folk
-([rules](../product/RULESET_7_NAVAL_BRANCH.md#8-ice-folk-the-frozen-sea))
+([rules](../product/RULESET_7_CURRENT.md#2116-the-frozen-sea))
 freeze the sea instead of sailing it. Code:
 `src/render/frozen-sea-presentation-v7.ts` (the words),
 `src/render/canvas/frozen-sea-board-plan-v7.ts` (the plan) and

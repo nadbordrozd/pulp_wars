@@ -9,8 +9,9 @@ factions (Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and
 Candy; `pulp_wars-t6s.7` folded the
 [Martian overlay](../product/RULESET_7_MARTIANS.md), `pulp_wars-7g3.8` the
 [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md), `pulp_wars-78i.8`
-the [Dwarf overlay](../product/RULESET_7_DWARVES.md), and `pulp_wars-jdb.8`
-the [Candy overlay](../product/RULESET_7_CANDY.md) into
+the [Dwarf overlay](../product/RULESET_7_DWARVES.md), `pulp_wars-jdb.8`
+the [Candy overlay](../product/RULESET_7_CANDY.md), and `pulp_wars-5ti.9`
+the [naval branch overlay](../product/RULESET_7_NAVAL_BRANCH.md) into
 it). The headless CLI
 accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r44`
 (plus `pulp-wars-poc-6` and `pulp-wars-poc-5`). Since
@@ -229,7 +230,8 @@ seat; `src/headless/ice-folk-telemetry-v7.ts`), computed from the events of
 the accepted commands and the states around them:
 
 - Chill: `chillEvents` and `chillApplications` by source (`BOLAS`,
-  `COLD_SNAP`, `COLD_AURA`), `newFreezes`, `reapplications`, targets by
+  `COLD_SNAP`, `COLD_AURA`, and, since `pulp-wars-poc-7r44`, `BLACK_ICE`),
+  `newFreezes`, `reapplications`, targets by
   faction and role, `sluggishTurns` and `sluggishTurnsWithoutAction`, and
   `tendCures`;
 - Shatter: `shatters` by attacker role, victim faction and role, the source
@@ -522,6 +524,40 @@ once the four neutral Candy combat-preview fields are removed
 (`tests/unit/ruleset-v7-candy-headless.test.ts`) play Normal matches with a
 Candy seat against every faction in both seat orders, a four-seat mix, and
 a Showcase without errors or stalls.
+
+## The naval branch (`pulp_wars-5ti.2` and `5ti.3`)
+
+The naval branch
+([current rules section 14](../product/RULESET_7_CURRENT.md#14-naval-rules)
+and [section 21.16](../product/RULESET_7_CURRENT.md#2116-the-frozen-sea))
+needs no flag: it is in every match with water, and a Dry Land match
+forbids it. The water map types take the usual options, and an Ice Folk
+seat plays them without ships:
+
+```bash
+npm run headless -- match --ruleset pulp-wars-poc-7r44 --map-type continents --factions ice,original --seed 3 --max-rounds 20
+```
+
+- **What a result shows today.** `commandsByKind` counts `BOARD` and
+  `FREEZE` like every command kind (both are zero in most Normal-policy
+  matches: the policy picks a `BOARD` only when its general scoring
+  happens to and never a `FREEZE`,
+  [Normal AI](NORMAL_AI.md#the-naval-branch-pulp_wars-5ti2-and-5ti3)), and
+  the `iceFolk` block counts the Chills of Black Ice under the source
+  `BLACK_ICE`. The Showcase with every technology is the quickest way to
+  see Submarines in a headless match.
+- **What it does not show yet.** The naval telemetry of the overlay's
+  [section 15.2](../product/RULESET_7_NAVAL_BRANCH.md#152-measurement)
+  (rams and shoves, boardings and the prize's fate, Submarine kills by
+  victim, Harbour population, Freezes, ice tiles, slides, crossings,
+  ships frozen in, crush damage) is not implemented; it belongs to the
+  coarse balance bead `pulp_wars-5ti.8`, which waits for the naval Normal
+  AI.
+- **Tests.** `tests/unit/ruleset-v7-naval-branch-headless.test.ts` and
+  `tests/unit/ruleset-v7-frozen-sea-headless.test.ts` run bounded water
+  matches of every faction, and of the Ice Folk against every faction, and
+  a Showcase each, and require no error, stall, or rejected command (and,
+  for an Ice Folk seat, no ship).
 
 ## Normal AI pressure telemetry (`pulp_wars-9s0.1`)
 

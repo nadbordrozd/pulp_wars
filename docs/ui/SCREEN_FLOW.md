@@ -100,7 +100,9 @@ are in [BOARD_TARGETING.md](BOARD_TARGETING.md). In short:
 ### Naval branch: Board, Bow Ram, Submarine, Harbours (bead `pulp_wars-5ti.7`)
 
 The first part of the naval interface (the frozen sea of the Ice Folk is
-its second part). The targeting rules are in
+its second part). The rules it shows are
+[current rules section 14](../product/RULESET_7_CURRENT.md#14-naval-rules)
+(folded by `pulp_wars-5ti.9`). The targeting rules are in
 [BOARD_TARGETING.md section 3.4](BOARD_TARGETING.md#34-board-the-bow-ram-and-the-submarine-bead-pulp_wars-5ti7).
 
 - **Board.** A ship's dock has one Board button (a grappling hook). It
@@ -142,8 +144,10 @@ its second part). The targeting rules are in
 
 ### Frozen sea: Freeze, ice, the slide, Icebound (bead `pulp_wars-5ti.7`)
 
-The second part of the naval interface: the Ice Folk
-[frozen sea](../product/RULESET_7_NAVAL_BRANCH.md#8-ice-folk-the-frozen-sea).
+The second part of the naval interface: the Ice Folk frozen sea
+([current rules section 21.16](../product/RULESET_7_CURRENT.md#2116-the-frozen-sea),
+folded by `pulp_wars-5ti.9`; the design is the
+[naval branch overlay](../product/RULESET_7_NAVAL_BRANCH.md#8-ice-folk-the-frozen-sea)).
 The targeting rules are in
 [BOARD_TARGETING.md section 3.5](BOARD_TARGETING.md#35-the-frozen-sea-freeze-the-slide-icebound-bead-pulp_wars-5ti7).
 

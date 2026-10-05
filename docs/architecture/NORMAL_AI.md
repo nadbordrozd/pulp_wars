@@ -49,6 +49,10 @@ decide as before. The Candy engine step (`pulp_wars-jdb.3`) added the
 later kind's ordinal by three; that changes only the `-ordinal` tie-break
 value of the pinned decisions (their revision-12-ordinal hashes are
 unchanged).
+The naval branch (`pulp_wars-5ti.2` and `pulp_wars-5ti.3`,
+`pulp-wars-poc-7r43` and `7r44`) has no play of its own yet: the policy
+stays legal with it and uses none of it on purpose
+([summarized below](#the-naval-branch-pulp_wars-5ti2-and-5ti3)).
 The campaign plan (`pulp_wars-9s0.1`, `src/ai/v7-campaign.ts`) is
 [summarized below](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01):
 every land unit has one job (a village, an invader, the frontier, or a known
@@ -2411,6 +2415,57 @@ user's direction, with no number changed
 ([balance record](../product/RULESET_7_CANDY.md#195-balance-record-pulp_wars-jdb7));
 it predates the Grunt's 8 HP of `7r39`, the village density of `7r40`, and
 the 3 starting Coins and tier 3 base cost of 9 of `7r41`.
+
+## The naval branch (`pulp_wars-5ti.2` and `5ti.3`)
+
+**Status: legal, not clever.** The two engine steps of the
+[naval branch](../product/RULESET_7_NAVAL_BRANCH.md) (folded into
+[current rules section 14](../product/RULESET_7_CURRENT.md#14-naval-rules)
+and [section 21.16](../product/RULESET_7_CURRENT.md#2116-the-frozen-sea) by
+`pulp_wars-5ti.9`) changed the policy only where it had to stay correct.
+The play the overlay asks for is two open beads.
+
+What the policy does today (`src/ai/v7.ts`):
+
+- **Submarines count as naval units** for the two-ship training cap of the
+  naval plan; the plan never asks for one. A seat may still research
+  Seamanship or Submersibles, train a Submarine, ram (by moving a Patrol
+  Boat and then attacking), or pick an offered `BOARD` as its general
+  scoring happens to; nothing values them on purpose.
+- **An Ice Folk seat makes no naval plan** (it has no ships and cannot
+  embark) and **`FREEZE` is never a policy candidate**, so it does not
+  cross water on purpose. Its units reach what they can walk to, ice that
+  exists included: an offered Move onto ice is an ordinary candidate, and
+  its slide is the engine's.
+- **Estimates.** Every seat's threat estimate treats known ice as ground
+  for a land-form unit and closed to a unit afloat, ends a slipping unit's
+  reach on the first ice tile, and gives an icebound unit no threat (it
+  cannot move or attack). It does not follow an Ice Folk unit's slide (the
+  unit walks the ice in the estimate), so its reach on ice is understated.
+- **Dry Land is unchanged:** nothing of the branch is offered there.
+
+Checks: `tests/unit/ruleset-v7-naval-branch-headless.test.ts` (short water
+matches of every faction and a Showcase finish without an error, a stall,
+or a rejected command) and `tests/unit/ruleset-v7-frozen-sea-headless.test.ts`
+(the same for the Ice Folk against every faction, with no ship).
+
+Open:
+
+- **`pulp_wars-5ti.4`, the seafaring seats**
+  ([overlay section 13.1](../product/RULESET_7_NAVAL_BRANCH.md#131-seafaring-seats-bead-5ti4)):
+  research of Seamanship and Submersibles, Submarine training against
+  visible Battleships, the Ram read from the preview, Board valued against
+  the best attack, Submarine targets and safety, and the Submerged and
+  torpedo threat estimates. Each rule comes with a modest head-to-head
+  test, as the user asked for every change of AI strategy.
+- **`pulp_wars-5ti.5`, the frozen sea**
+  ([overlay sections 13.2 and 13.3](../product/RULESET_7_NAVAL_BRANCH.md#132-the-ice-folk-bead-5ti5)):
+  the Ice Folk ice plan (crossings, builders, the wave, Icebound, home
+  ice) and every seat's play against the ice (landings off enemy ice,
+  ships out of Freeze reach, slide reach in the threat map). Until it
+  lands an Ice Folk seat stays on its own landmass on Continents and
+  Archipelago.
+- The coarse balance on water maps (`pulp_wars-5ti.8`) waits for both.
 
 ## The Rift (`pulp_wars-9s0.5`)
 

@@ -329,6 +329,14 @@ kind, role)` names them (the shared subject for the Humans);
 
 ## The naval branch art (bead `pulp_wars-5ti.6`)
 
+**Status (`pulp_wars-5ti.9`):** the naval branch is folded into the current
+rules, which state what this art draws
+([section 14](../product/RULESET_7_CURRENT.md#14-naval-rules), the ships;
+[section 21.16](../product/RULESET_7_CURRENT.md#2116-the-frozen-sea), the
+frozen sea). The art and its wiring below are live; a Freeze action icon
+and dedicated icons for the five Ice Folk Naval technologies are open
+(`pulp_wars-5ti.10`).
+
 Art of the [naval branch](../product/RULESET_7_NAVAL_BRANCH.md#143-what-the-art-bead-must-draw-bead-5ti6):
 the Submarine of every seafaring faction and of the Classic look, with its
 portrait; the two technology icons and the Ram, Board and Torpedo icons;
