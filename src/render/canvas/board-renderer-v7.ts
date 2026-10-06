@@ -328,6 +328,18 @@ import {
 } from "./coast-sand-v7";
 import { drawSettlementShadowV7 } from "./settlement-shadow-v7";
 import {
+  drawFogEdgeV7,
+  drawFogV7,
+  fogCellsOfV7,
+  type FogArtV7,
+} from "./fog-of-war-v7";
+import { drawStarfieldV7 } from "./starfield-v7";
+import {
+  drawWaterBlendV7,
+  waterBlendCellsOfV7,
+  type WaterBlendArtV7,
+} from "./water-blend-v7";
+import {
   factionForestCellsOfV7,
   factionForestPlanMemberV7,
   type FactionForestIdV7,
@@ -1934,6 +1946,18 @@ export function drawBoardV7(input: {
   /** The shoreline (pulp_wars-2yc.5, coast-sand-v7.ts); the live look only. */
   readonly coastArt?: CoastSandArtV7;
   /**
+   * The atmosphere (pulp_wars-2yc.17, docs/art/ATMOSPHERE.md), each in the
+   * live look only and each omitted with its switch off: the soft edge
+   * between shallow and deep water (water-blend-v7.ts), the cloud fog of
+   * war (fog-of-war-v7.ts) and the night sky behind the board
+   * (starfield-v7.ts).
+   */
+  readonly waterBlendArt?: WaterBlendArtV7;
+  readonly fogArt?: FogArtV7;
+  readonly starfield?: boolean;
+  /** The fog's drift and the stars' twinkle clock in ms (0: still). */
+  readonly atmosphereTimeMs?: number;
+  /**
    * The Mind Control revision: the control halo's pulse clock in ms (0, the
    * default, and reduced motion draw it static in the faction colour).
    */
@@ -2125,11 +2149,23 @@ export function drawBoardV7(input: {
       context.restore();
     }
   };
+  const atmosphereTime =
+    input.reducedMotion === true ? 0 : (input.atmosphereTimeMs ?? 0);
   context.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
   if (input.clear !== false) {
     context.clearRect(0, 0, viewport.width, viewport.height);
-    context.fillStyle = "#173632";
-    context.fillRect(0, 0, viewport.width, viewport.height);
+    if (input.starfield === true && direction !== undefined)
+      // The night sky (pulp_wars-2yc.17), in the live look only.
+      drawStarfieldV7(context, {
+        viewport,
+        camera,
+        devicePixelRatio,
+        timeMs: atmosphereTime,
+      });
+    else {
+      context.fillStyle = "#173632";
+      context.fillRect(0, 0, viewport.width, viewport.height);
+    }
   }
   context.save();
   context.globalAlpha = sceneAlpha;
@@ -2210,6 +2246,23 @@ export function drawBoardV7(input: {
   const coastArt = direction === undefined ? null : (input.coastArt ?? null);
   const coastCells =
     coastArt === null ? null : coastCellsOfV7(input.plan.entries);
+  // The atmosphere (pulp_wars-2yc.17), in the live look only: the soft
+  // edge between the two waters, and the cloud fog of war.
+  const waterBlendArt =
+    direction === undefined ? null : (input.waterBlendArt ?? null);
+  const waterBlendCells =
+    waterBlendArt === null ? null : waterBlendCellsOfV7(input.plan.entries);
+  const fogArt = direction === undefined ? null : (input.fogArt ?? null);
+  const fogCells = fogArt === null ? null : fogCellsOfV7(input.plan.entries);
+  const fogFrame = {
+    camera,
+    devicePixelRatio,
+    sceneAlpha,
+    viewport,
+    timeMs: atmosphereTime,
+  };
+  if (fogArt !== null && fogCells !== null)
+    drawFogV7(context, fogFrame, fogArt, fogCells);
   // Composed forests on Snow: caps go on cell by cell, so a piece that
   // spans a Snow border is capped only over its Snow cells.
   const forestSnowCells = new Set<string>();
@@ -2365,6 +2418,8 @@ export function drawBoardV7(input: {
       const left = x - size / 2;
       const top = y - size / 2;
       if (entry.kind === "FOG") {
+        // The cloud fog (pulp_wars-2yc.17) is drawn whole, before the loop.
+        if (fogArt !== null) continue;
         context.fillStyle = "#1c2a2e";
         context.fillRect(left, top, size, size);
         context.strokeStyle = "#33464b";
@@ -2628,6 +2683,22 @@ export function drawBoardV7(input: {
                       image: layers.ground,
                     }),
             });
+          // The other depth's water over a shallow or deep cell's edge
+          // (pulp_wars-2yc.17), under ice, sand and surf.
+          if (pass === "GROUND" && waterBlendArt !== null)
+            drawWaterBlendV7(
+              context,
+              forestFrame,
+              waterBlendArt,
+              entry,
+              waterBlendCells,
+              (subject) => {
+                const other = resolveChibi({ ...entry, artSubject: subject });
+                return other?.kind === "READY" && other.asset.height === 80
+                  ? other
+                  : null;
+              },
+            );
           if (pass === "GROUND")
             drawFactionGrassV7(
               context,
@@ -2668,6 +2739,9 @@ export function drawBoardV7(input: {
           // The shoreline (pulp_wars-2yc.5): sand and surf over the ground.
           if (pass === "GROUND")
             drawCoastSandV7(context, forestFrame, coastArt, entry, coastCells);
+          // The fog's cloud edge over the ground beside it.
+          if (pass === "GROUND")
+            drawFogEdgeV7(context, fogFrame, fogArt, entry, fogCells);
           continue;
         }
         if (pass === "GROUND") {

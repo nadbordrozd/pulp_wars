@@ -172,6 +172,17 @@ import {
   type CoastSandArtV7,
 } from "./coast-sand-v7";
 import { settlementShadowEnabledV7 } from "./settlement-shadow-v7";
+import {
+  createFogArtV7,
+  fogStyleEnabledV7,
+  type FogArtV7,
+} from "./fog-of-war-v7";
+import { starfieldEnabledV7 } from "./starfield-v7";
+import {
+  createWaterBlendArtV7,
+  waterBlendStyleV7,
+  type WaterBlendArtV7,
+} from "./water-blend-v7";
 import { FACTION_FOREST_ART_SETS_V7 } from "../../assets/faction-forest-pieces-manifest";
 import {
   createFactionForestArtV7,
@@ -255,6 +266,9 @@ export interface BoardHostV7 {
   ): void;
   destroy(): void;
 }
+
+/** The most the atmosphere's clock advances in one drawn frame. */
+const ATMOSPHERE_STEP_MS = 50;
 
 export class CanvasBoardHostV7 implements BoardHostV7 {
   readonly #document: Document;
@@ -345,6 +359,18 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   readonly #settlementShadow = settlementShadowEnabledV7();
   /** The shoreline (pulp_wars-2yc.5): undefined with the switch off. */
   readonly #coastArt?: CoastSandArtV7;
+  /** The atmosphere (pulp_wars-2yc.17): each undefined with its switch off. */
+  readonly #waterBlendArt?: WaterBlendArtV7;
+  readonly #fogArt?: FogArtV7;
+  readonly #starfield = starfieldEnabledV7();
+  /**
+   * The fog's drift and the stars' twinkle clock. It advances only with
+   * frames that are drawn anyway, by at most ATMOSPHERE_STEP_MS a frame, so
+   * the atmosphere never asks for a frame of its own and never jumps after
+   * a pause.
+   */
+  #atmosphereClockMs = 0;
+  #atmosphereDrawnAt: number | null = null;
   /** The Blizzard's slow ambient redraw (a timer, not every frame). */
   #blizzardTimer: number | null = null;
   /** The unit being shattered on the board, cased in ice until it bursts. */
@@ -482,6 +508,16 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           });
     if (coastSandEnabledV7())
       this.#coastArt = createCoastSandArtV7(
+        browserChibiRasterEnvironmentV7(documentRoot),
+      );
+    const waterBlend = waterBlendStyleV7();
+    if (waterBlend !== "OFF")
+      this.#waterBlendArt = createWaterBlendArtV7(
+        waterBlend,
+        browserChibiRasterEnvironmentV7(documentRoot),
+      );
+    if (fogStyleEnabledV7())
+      this.#fogArt = createFogArtV7(
         browserChibiRasterEnvironmentV7(documentRoot),
       );
     if (factionGrassEnabledV7())
@@ -1544,6 +1580,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (model === null || context === null) return;
     this.#drawSerial += 1;
     const now = this.#now();
+    if (model.motion !== "REDUCED" && this.#atmosphereDrawnAt !== null)
+      this.#atmosphereClockMs += Math.min(
+        ATMOSPHERE_STEP_MS,
+        Math.max(0, now - this.#atmosphereDrawnAt),
+      );
+    this.#atmosphereDrawnAt = now;
     const jump = this.#selectionJump;
     // Preview labels stay clear of the HUD and the open dock (the band the
     // start-camera framing uses); measured only when a preview is offered.
@@ -1624,6 +1666,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         mountainArt: this.#mountainArt,
         ...(this.#coastArt === undefined ? {} : { coastArt: this.#coastArt }),
         settlementShadow: this.#settlementShadow,
+        ...(this.#waterBlendArt === undefined
+          ? {}
+          : { waterBlendArt: this.#waterBlendArt }),
+        ...(this.#fogArt === undefined ? {} : { fogArt: this.#fogArt }),
+        starfield: this.#starfield,
+        atmosphereTimeMs:
+          model.motion === "REDUCED" ? 0 : this.#atmosphereClockMs,
         ...(this.#factionGrassArt === undefined
           ? {}
           : { factionGrassArt: this.#factionGrassArt }),

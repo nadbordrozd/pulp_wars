@@ -16,6 +16,13 @@
  * `<name>-pair.png` (the shot's part of both pages side by side, and under
  * it the shot's `zoom` rectangle of both enlarged 3x). No PixelLab call.
  *
+ * A scenes module that serves several switches is run once per switch with
+ * `SWITCH_PARAMETER` in the environment (it overrides the module's);
+ * `SWITCH_AFTER_VALUE` gives the "after" side a value other than the
+ * default (a variant such as `water-blend=gradient`), and
+ * `SWITCH_FIXED_QUERY` (`a=0&b=0`) holds other switches the same on both
+ * sides.
+ *
  * For a change that has no switch, `SWITCH_BEFORE_URL` names a second
  * server for the "before" side: a checkout of the commit before the change,
  * with the scenes module copied to the same path.
@@ -174,6 +181,13 @@ async function capture(
   const url = new URL(base);
   url.searchParams.set("art", "chibi");
   if (!on) url.searchParams.set(parameter, "0");
+  else if (process.env.SWITCH_AFTER_VALUE !== undefined)
+    url.searchParams.set(parameter, process.env.SWITCH_AFTER_VALUE);
+  // Further switches held the same on both sides, as a query string.
+  for (const [name, value] of new URLSearchParams(
+    process.env.SWITCH_FIXED_QUERY ?? "",
+  ))
+    url.searchParams.set(name, value);
   await connection.send("Emulation.setDeviceMetricsOverride", {
     width: shot.size?.[0] ?? 1440,
     height: shot.size?.[1] ?? 900,
@@ -304,7 +318,7 @@ async function main(): Promise<void> {
     readonly SWITCH_PARAMETER: string;
     readonly REVIEW_SHOTS: readonly LookSwitchShot[];
   };
-  const parameter = loaded.SWITCH_PARAMETER;
+  const parameter = process.env.SWITCH_PARAMETER ?? loaded.SWITCH_PARAMETER;
   const shots = loaded.REVIEW_SHOTS;
   const chrome = process.env.CHROME_PATH;
   if (!chrome) throw new Error("Set CHROME_PATH");
