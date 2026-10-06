@@ -86,6 +86,8 @@ try {
     `document.querySelector('[data-v7-setup]') !== null`,
   );
   // Setup defaults to "New map"; a fixed seed needs "Use seed" first.
+  // The main menu's New game opens the setup form (pulp_wars-2yc.18).
+  await click(connection, '[data-action="new-game"]');
   await click(connection, '[data-action="seed-mode-seed"]');
   await click(connection, "#v7-seed");
   await key(connection, "a", "KeyA", 2);

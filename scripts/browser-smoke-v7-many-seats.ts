@@ -25,8 +25,13 @@ const HUMAN_TURN = `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.
 export async function probeManySeatsV7(
   driver: ManySeatsSmokeDriverV7,
 ): Promise<string> {
+  // The main menu (pulp_wars-2yc.18): New game opens the setup form.
   await driver.waitForExpression(
-    `document.querySelector('[data-v7-setup] #v7-ai-count') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
+    `document.querySelector('nav.v7-main-menu [data-action="new-game"]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
+  );
+  await driver.pointerClick('[data-action="new-game"]');
+  await driver.waitForExpression(
+    `document.querySelector('[data-v7-front="setup"] .v7-front-panel #v7-ai-count') !== null && document.querySelector('.v7-main-menu') === null`,
   );
   const counts = await driver.evaluate<readonly string[]>(
     `[...document.querySelectorAll('#v7-ai-count option')].map((option) => option.value)`,

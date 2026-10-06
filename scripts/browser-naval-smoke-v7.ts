@@ -125,10 +125,9 @@ try {
         clickVisibleEnabled(selector);
       };
       for (const [index, mapType] of mapTypes.entries()) {
-        if (index > 0) {
-          click('[data-action="show-replace"]');
-          await waitFor(() => document.querySelector('#v7-map-type') !== null, 'replace setup');
-        }
+        // The main menu's New game opens the setup form (pulp_wars-2yc.18).
+        click('[data-action="new-game"]');
+        await waitFor(() => document.querySelector('[data-v7-front="setup"] #v7-map-type') !== null, 'setup ' + index);
         const mapTypeSelect = document.querySelector('#v7-map-type');
         if (!(mapTypeSelect instanceof HTMLSelectElement))
           throw new Error('map type select missing');
@@ -144,7 +143,7 @@ try {
         launched.push(mapType);
         await openCompactMenuItem('main-menu');
         await waitFor(
-          () => controller.snapshot().phase === 'RESUMABLE' && document.querySelector('[data-action="show-replace"]') !== null,
+          () => controller.snapshot().phase === 'RESUMABLE' && document.querySelector('[data-action="new-game"]') !== null,
           'main menu ' + mapType,
         );
       }

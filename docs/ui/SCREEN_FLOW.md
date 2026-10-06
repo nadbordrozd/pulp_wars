@@ -1552,56 +1552,94 @@ repeated in the interface.
 
 ## Current Ruleset 7 title scene and menu
 
-This overlay (`pulp_wars-2yc.4`, `pulp_wars-2yc.9`) restyles the front
-screens of the current Ruleset 7 route (setup, campaign, Continue, save
-recovery). No control was removed or moved in the reading order.
+This overlay (`pulp_wars-2yc.4`, `pulp_wars-2yc.9`, `pulp_wars-2yc.18`)
+defines the front screens of the current Ruleset 7 route: the main menu and
+the screens it opens (new game, campaign, Settings, save recovery). Ruleset
+5 and 6 routes are unchanged.
 
-- **Title and menu are one screen.** The logo stands over the title scene
-  and the menu is beside it (a wide screen: the scene fills the left side,
-  fixed, and the menu is a column on the right) or under it (a tablet or a
-  phone: the scene is a band across the top). Play, Continue (the Resume
-  screen, when a save exists), the Skirmish / Campaign switch, Gallery and
-  Settings are all on it; nothing has to be clicked through first.
-- **Title scene.** A diorama drawn on a canvas from the game's art by the
-  board's own art chain, behind the logo: a sky with drifting clouds, the
-  mountain range (the massif pieces), woods (the composed Forest pieces), a
-  Human city, Grass, a coast with a Battleship, and two ranks of units, the
-  flagship (Juggernaut) and the Fighter of the factions, read from the
-  faction list. It re-flows with its size instead of scaling: a wide scene
-  shows all eight factions in both ranks and two columns of sea, a phone
-  three flagships, six Fighters and one column; a short band draws its
-  rows closer together. Art is drawn at a whole number of screen pixels
-  per art pixel (1 to 3). With full motion the clouds drift and each unit
-  bobs by one art pixel, ten frames a second; with reduced motion (the
-  setting, which starts from the system preference) it is a still picture.
-  It is hidden from assistive technology, takes no input and makes no
-  sound; it stops while a match or the Gallery is shown. The LEGACY art
-  set (`?art=legacy`) keeps the plain logo.
-- **Menu.** The setup form is one card with three groups in the old
-  order: **Players** (Opponents, Mode), **Map** (Size, Map, the village
-  and Crowded line, the map's sentence, Curiosities, New map / Use seed)
-  and **Factions**, where each seat is a card in its faction's colour with
-  a large emblem. **Play** is the one primary button, full width. Under
-  it, side by side, **Gallery** and **Settings**, then the Classic rules
-  link.
-- **Settings on the front screens.** The Settings button opens a panel
-  under it (and closes it again) with Motion, Animation speed, UI size,
-  High contrast and the sound toggle and volume, the same controls as a
-  match's Settings; the front screens follow UI size and contrast too.
-  The match-only actions (Restart, Delete save, the map seed, developer
-  tools) stay in a match's Settings.
-- **Continue.** The Resume screen shows the same scene, the summary in a
-  card, Resume as the primary button, New game and Delete, then Gallery and
+- **Main menu.** The title screen of a video game: the title scene fills
+  the screen, the logo stands on it, and the actions are large buttons laid
+  directly over the picture, never in a panel, a side column or a dialog. In
+  order: **Continue** (only when a saved game is waiting; under the word,
+  its summary: "Turn 7 · 12 coins · 2 players · Continents", or "Mission 2 ·
+  The Warrens · Turn 7"), **New game**, **Campaign**, **Gallery**,
+  **Settings**. Each button is an icon and one or two words. The first
+  button is the primary one (Continue, else New game). On a wide screen the
+  logo is top left and the stack bottom left, and the scene's units stand
+  clear of it; on a phone or an upright tablet the logo and the stack are
+  centred in the sky above the scene. A soft dark vignette behind the stack
+  keeps it legible. Nothing overflows and the page never scrolls sideways,
+  from a phone to a large desktop; a short window tightens the stack.
+- **Buttons.** A cream plate with an ink edge and the logo's red drop; the
+  primary one is the game's orange. Selected (pointer over it, or keyboard
+  focus, which also draws a light ring) a button turns gold and steps
+  forward; pressed, it sinks onto its drop. The step is animated only with
+  full motion (the setting and the system preference). Every click makes
+  the interface's click sound, like any button.
+- **Keyboard.** The menu is entered with its first button focused, so Enter
+  starts at once. Arrow Up and Down move through the stack and wrap, Home
+  and End go to its ends, Tab moves on as usual, Enter or Space activates.
+  A match's shortcuts (T, G, ?, E) do nothing on the front screens.
+- **Screens opened from the menu.** New game, Campaign and Settings each
+  open one panel over the dimmed scene, with the small logo above it. The
+  panel starts with a **Menu** button (accessible name "Main menu") and the
+  screen's title ("New game", "Campaign", "Settings"). Focus moves to the
+  Menu button on open; Menu or Escape returns to the main menu with focus
+  on the button that opened the screen (in a mission briefing Escape first
+  steps back to the mission list). Gallery opens the Gallery screen; its
+  Back returns to the menu with focus on Gallery.
+- **New game.** The setup form in three groups in the old order:
+  **Players** (Opponents, Mode), **Map** (Size, Map, the village and
+  Crowded line, the map's sentence, Curiosities, New map / Use seed) and
+  **Factions**, where each seat is a card in its faction's colour with a
+  large emblem. **Play** is the one primary button, full width; it reads
+  **Start new game** when it replaces a saved game, which stays untouched
+  until then. While the menu is shown the form is already built and kept
+  hidden, so opening it is instant.
+- **Settings.** Motion, Animation speed, UI size, High contrast and the
+  sound toggle and volume, the same controls as a match's Settings; the
+  front screens follow UI size and contrast too. The match-only actions
+  (Restart, Delete save, the map seed, developer tools) stay in a match's
   Settings.
+- **Foot of the menu.** Small and out of the stack: **Delete save** (only
+  with a saved game; it deletes at once, as before) and the Classic rules
+  link.
+- **Save can't be loaded.** One panel with the sentence, the diagnostic
+  under Details, Delete save and the Classic rules link; no Menu button
+  (there is nothing else to do until the save is deleted).
+- **Title scene.** A diorama drawn on a canvas from the game's art by the
+  board's own art chain, behind every front screen: a sky with drifting
+  clouds, the mountain range (the massif pieces), woods (the composed
+  Forest pieces), a Human city, Grass, a coast with a Battleship, and two
+  ranks of units, the flagship (Juggernaut) and the Fighter of the factions,
+  read from the faction list. It re-flows with its size instead of scaling:
+  a wide scene shows more factions in both ranks and two columns of sea, a
+  phone three flagships, six Fighters and one column; a short one draws its
+  rows closer together. The ranks and the city keep east of the menu's
+  stack where it stands at the west edge. Art is drawn at a whole number of
+  screen pixels per art pixel (1 to 4, the largest that keeps a wide
+  picture). With full motion the clouds drift and each unit bobs by one art
+  pixel, ten frames a second; with reduced motion (the setting, which starts
+  from the system preference) it is a still picture. It is hidden from
+  assistive technology, takes no input and makes no sound; it stops while a
+  match or the Gallery is shown. The LEGACY art set (`?art=legacy`) keeps
+  the plain logo and the same menu on the plain background.
+- **Leaving a match.** A match's menu ends with **Save & quit**, which
+  saves and shows the main menu with Continue focused. Every end dialog has
+  **Main menu** after its other actions (Victory and Defeat: Play again,
+  Main menu; a mission: Next mission or Retry, Campaign, Main menu). Main
+  menu clears the finished match from the autosave slot (there is nothing
+  in it to continue; a mission's win is already recorded) and shows the
+  main menu without Continue, focus on New game.
 
 ## Current Ruleset 7 Gallery
 
 This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset
 7 route. Ruleset 5 and 6 routes are unchanged.
 
-- **Entry.** The setup screen and the resume screen have a **Gallery**
-  button under their main actions (above the Classic rules link). Back (or
-  Escape) returns to the front screen with focus on the Gallery button.
+- **Entry.** The main menu has a **Gallery** button
+  ([title scene and menu](#current-ruleset-7-title-scene-and-menu)). Back
+  (or Escape) returns to the main menu with focus on the Gallery button.
   The Gallery never touches the save.
 - **Look.** Always the live CHIBI look, whatever the art set: each cell is
   one board tile drawn like the board draws it (Grass, or Shallow Water
@@ -1858,8 +1896,8 @@ both art sets. Where an older section below disagrees, this overlay wins.
   (`pulp_wars-737.6`).
 - **Map seed.** Settings shows `Map seed: N` for the current match (selectable
   text), so a map can be replayed by choosing Use seed in a new game. Restart
-  and Play again keep the current match's seed; a new game from the resume
-  screen offers the same New map / Use seed choice.
+  and Play again keep the current match's seed; a new game over a saved
+  one offers the same New map / Use seed choice.
 - **Popups dim the screen.** The tech tree, Leaderboard, Achievements, Help,
   Settings, unit info (`?`), recruit help, the reward choice, the achievement
   notice, results and the error panel all sit over a dim scrim that covers
@@ -1905,12 +1943,12 @@ reuses the front-screen frame, buttons, and type; the faction emblems are the
 faction's Fighter portrait (no new art). Text follows the no-coordinates,
 minimal-text rule above: the pulp flavour is confined to the story blurbs.
 
-- **Skirmish / Campaign.** Under the brand, a two-state control in a group
-  labelled "Game mode", styled like New map / Use seed: **Skirmish**
-  (default; the setup form below it is unchanged) and **Campaign**. The
-  choice lasts for the page session and is not saved. On the resume
-  screen's **New game** the form shows the same switch.
-- **Campaign screen** (in place of the setup form): the chapter title
+- **Campaign entry.** The main menu's **Campaign** button
+  ([title scene and menu](#current-ruleset-7-title-scene-and-menu),
+  `pulp_wars-2yc.18`) opens the campaign screen; **New game** opens the
+  skirmish setup. The earlier Skirmish / Campaign switch under the brand is
+  gone.
+- **Campaign screen** (a panel titled "Campaign"): the chapter title
   ("Chapter One: The Hollow Frontier"), the chapter's story, then one card
   per mission in order: its number, name, the emblem(s) of the faction you
   lead, "vs", the opponent's emblem, and a state line: **Open**, **Win the
@@ -1931,26 +1969,30 @@ minimal-text rule above: the pulp flavour is confined to the story blurbs.
   mission that offers a choice, a "You lead" select listing only unlocked
   factions (mission 4: Human, and Goblin once mission 2 is won). Buttons
   **Start mission** and **Back**. Focus moves to the mission name on open
-  and back to the card on Back. Start mission from the resume screen's
-  **New game** replaces the saved game (the existing replace flow).
+  and back to the card on Back. Start mission while a saved game waits
+  replaces it (the existing replace flow).
 - **In a mission.** The match screen is unchanged. Settings shows
   "Mission: Goblins at the Gate" and "Objective: Capture every enemy city."
   in place of "Map seed"; forbidden technologies read "Unavailable in this
-  mission" in the tree. The resume screen reads "Mission 1 · Goblins at the
-  Gate · Turn 7".
+  mission" in the tree. The main menu's Continue reads "Mission 1 · Goblins
+  at the Gate · Turn 7".
 - **Victory** (a chapter mission): "Mission N" and **Mission complete**, the
   story's closing line, a gold notice per faction the win unlocked ("New
   faction: Goblin", with its emblem; shown only for the win that first
-  unlocked it), then **Next mission** (opens its briefing) and **Campaign**.
-  After the last mission the chapter's "To be continued…" replaces Next
-  mission. Achievement notices of the final turn still come first.
+  unlocked it), then **Next mission** (opens its briefing), **Campaign** and
+  **Main menu**. After the last mission the chapter's "To be continued…"
+  replaces Next mission. Achievement notices of the final turn still come
+  first.
 - **Defeat** (a chapter mission): "Mission N" and **Mission failed**, then
-  **Retry** (the existing restart of the same setup) and **Campaign**.
+  **Retry** (the existing restart of the same setup), **Campaign** and
+  **Main menu**.
 - **Leaving a finished mission.** Next mission and Campaign clear the
   finished match from the autosave slot (its win is already recorded; a
   mission is started again from the campaign) and open the campaign screen.
+  Main menu clears it the same way and opens the main menu
+  (`pulp_wars-2yc.18`).
 - A hidden fixture mission (in no chapter) and every skirmish keep the
-  ordinary Victory and Defeat dialog.
+  ordinary Victory and Defeat dialog: **Play again** and **Main menu**.
 
 ## 0. Ruleset-6 replacement contract
 

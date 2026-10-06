@@ -206,7 +206,7 @@ describe("Ruleset 7 setup seed choice", () => {
     requiredButton('[data-action="compact-menu"]').click();
     requiredButton('[data-action="main-menu"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
-    requiredButton('[data-action="show-replace"]').click();
+    requiredButton('[data-action="new-game"]').click();
     // The replacement form remembers this session's choice.
     expect(
       document.querySelector<HTMLElement>(".v7-seed-choice")?.dataset.seedMode,

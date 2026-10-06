@@ -492,7 +492,10 @@ short and plain, with the pulp flavour confined to the story blurbs.
 1. **Front screen.** Under the brand, a two-state control like "New map / Use
    seed": **Skirmish** (default; the existing setup form, unchanged) and
    **Campaign**. The choice lasts for the page session. The resume screen is
-   unchanged except the mission label.
+   unchanged except the mission label. (Superseded by the main menu,
+   `pulp_wars-2yc.18`: Campaign is a button of the menu, and the mission
+   label is under its Continue; see
+   [the title scene and menu](../ui/SCREEN_FLOW.md#current-ruleset-7-title-scene-and-menu).)
 2. **Campaign screen** (in place of the setup form): the chapter title
    ("Chapter One: The Hollow Frontier"), then one card per mission in order:
    number, name, the faction emblem(s) you lead (the faction's `FIGHTER`

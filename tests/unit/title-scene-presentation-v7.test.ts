@@ -89,11 +89,67 @@ describe("title scene", () => {
   });
 
   it("draws at a whole number of screen pixels per art pixel", () => {
-    expect(titleSceneScaleV7(390, 304)).toBe(1);
-    expect(titleSceneScaleV7(640, 425)).toBe(1);
-    expect(titleSceneScaleV7(784, 900)).toBe(2);
-    expect(titleSceneScaleV7(1300, 1000)).toBe(3);
-    expect(titleSceneScaleV7(2400, 380)).toBe(1);
+    // The scene fills the screen behind the main menu (pulp_wars-2yc.18).
+    expect(titleSceneScaleV7(390, 844)).toBe(1);
+    expect(titleSceneScaleV7(844, 390)).toBe(1);
+    expect(titleSceneScaleV7(768, 1024)).toBe(3);
+    expect(titleSceneScaleV7(1024, 768)).toBe(2);
+    expect(titleSceneScaleV7(1280, 720)).toBe(2);
+    expect(titleSceneScaleV7(1920, 1080)).toBe(3);
+    expect(titleSceneScaleV7(2560, 1440)).toBe(4);
+    expect(titleSceneScaleV7(3840, 2160)).toBe(4);
+  });
+
+  it("keeps the ranks and the city clear of the menu at the west edge", () => {
+    const plain = titleSceneV7({ width: 640, height: 360 });
+    const cleared = titleSceneV7({ width: 640, height: 360, clearLeft: 220 });
+    const west = (scene: typeof plain): number =>
+      Math.min(
+        ...scene.items.flatMap((item) =>
+          item.kind === "SUBJECT" &&
+          (item.unit !== undefined || item.subject === "CITY:3")
+            ? [item.cx]
+            : [],
+        ),
+      );
+    expect(west(plain)).toBeLessThan(60);
+    // A unit is drawn about its centre: half a sprite stays east of the menu.
+    expect(west(cleared)).toBeGreaterThanOrEqual(220 + 30);
+    // Fewer stand on the land that is left, and all of them on land: the
+    // sea gives up its second column to the ranks.
+    expect(cleared.fighters.length).toBeLessThan(plain.fighters.length);
+    expect(cleared.flagships.length).toBeGreaterThanOrEqual(2);
+    const coast = (scene: typeof plain): number =>
+      Math.min(
+        ...scene.items.flatMap((item) =>
+          item.kind === "SUBJECT" && item.subject === "TERRAIN:SHALLOW_WATER"
+            ? [item.cx - 40]
+            : [],
+        ),
+      );
+    expect(coast(plain)).toBe(640 - 160);
+    expect(coast(cleared)).toBe(640 - 80);
+    for (const item of cleared.items)
+      if (item.kind === "SUBJECT" && item.unit?.afloat === false)
+        expect(item.cx).toBeLessThanOrEqual(coast(cleared) - 20);
+    // A tight strip still holds a flagship, two Fighters and the city.
+    const tight = titleSceneV7({ width: 512, height: 300, clearLeft: 310 });
+    expect(tight.flagships.length).toBe(1);
+    expect(tight.fighters.length).toBe(2);
+    expect(west(tight)).toBeGreaterThanOrEqual(310 + 30);
+    for (const item of tight.items)
+      if (item.kind === "SUBJECT") expect(Number.isFinite(item.cx)).toBe(true);
+    // The ground and the horizon still span the whole picture.
+    const ground = (scene: typeof plain): number =>
+      scene.items.filter(
+        (item) =>
+          item.kind === "SUBJECT" && item.subject.startsWith("TERRAIN:"),
+      ).length;
+    expect(ground(cleared)).toBe(ground(plain));
+    // A menu that would leave the ranks no room is ignored (a phone).
+    expect(titleSceneV7({ width: 390, height: 844, clearLeft: 300 })).toEqual(
+      titleSceneV7({ width: 390, height: 844 }),
+    );
   });
 
   it("uses only art the preloader loads, read from the manifests", () => {

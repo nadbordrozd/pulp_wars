@@ -58,7 +58,11 @@ export type UiIconIdV7 =
   // crossed out, and a play triangle for the sound test.
   | "sound"
   | "sound-off"
-  | "play";
+  | "play"
+  // The main menu (bead pulp_wars-2yc.18): a pennant for the campaign and
+  // a chevron for the way back.
+  | "flag"
+  | "back";
 
 /** The Mind Control brain's two lobes (shared by its outline and parts). */
 const BRAIN_LOBES =
@@ -155,6 +159,8 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
     "M4 9.5h3.5L12 5.5v13l-4.5-4H4ZM15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11",
   "sound-off": "M4 9.5h3.5L12 5.5v13l-4.5-4H4ZM16 9.5l5 5M21 9.5l-5 5",
   play: "M8 5.5v13l10.5-6.5Z",
+  flag: "M6 21V3.5M6 4.5h12.5l-3 4 3 4H6",
+  back: "M14.5 5 7.5 12l7 7",
 };
 
 /** One shape of a multi-part icon; `fill` may be a fixed colour. */

@@ -216,7 +216,7 @@ describe("Ruleset 7 application route", () => {
       storage: window.localStorage,
     });
     expect(resumed.controller.snapshot().phase).toBe("RESUMABLE");
-    requiredButton('[data-action="show-replace"]').click();
+    requiredButton('[data-action="new-game"]').click();
     const count = requiredSelect("v7-ai-count");
     count.value = "2";
     count.dispatchEvent(new Event("change", { bubbles: true }));

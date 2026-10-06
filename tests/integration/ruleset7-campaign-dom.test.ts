@@ -58,39 +58,39 @@ function seedProgress(completed: Record<string, unknown>): void {
 }
 
 async function openCampaign(): Promise<void> {
-  requiredButton('[data-action="mode-campaign"]').click();
+  requiredButton('[data-action="campaign"]').click();
   await settle();
 }
 
 describe("Ruleset 7 campaign front screen", () => {
-  it("defaults to Skirmish; the switch shows the campaign and back, keeping focus", async () => {
+  it("opens from the main menu's Campaign button; Menu returns, keeping focus", async () => {
     const app = bootstrapRuleset7App(document);
-    const skirmish = requiredButton('[data-action="mode-skirmish"]');
-    expect(skirmish.getAttribute("aria-pressed")).toBe("true");
-    expect(
-      requiredButton('[data-action="mode-campaign"]').getAttribute(
-        "aria-pressed",
-      ),
-    ).toBe("false");
+    expect(document.querySelector(".v7-main-menu")).not.toBeNull();
+    expect(document.querySelector("[data-v7-campaign]")).toBeNull();
+    // The old Skirmish / Campaign switch is gone: the menu has both.
     expect(
       document.querySelector('[role="group"][aria-label="Game mode"]'),
-    ).not.toBeNull();
-    expect(document.querySelector("[data-v7-setup]")).not.toBeNull();
+    ).toBeNull();
     await openCampaign();
+    expect(document.querySelector(".v7-main-menu")).toBeNull();
     expect(document.querySelector("[data-v7-setup]")).toBeNull();
     expect(document.querySelector("[data-v7-campaign]")).not.toBeNull();
     expect(document.activeElement?.getAttribute("data-action")).toBe(
-      "mode-campaign",
+      "front-back",
+    );
+    expect(document.querySelector("#v7-front-title")?.textContent).toBe(
+      "Campaign",
     );
     expect(document.querySelector(".v7-campaign-title")?.textContent).toBe(
       "Chapter One: The Hollow Frontier",
     );
     expect(document.querySelectorAll(".v7-mission-card")).toHaveLength(4);
-    requiredButton('[data-action="mode-skirmish"]').click();
+    requiredButton('[data-action="front-back"]').click();
     await settle();
-    expect(document.querySelector("[data-v7-setup]")).not.toBeNull();
+    expect(document.querySelector("[data-v7-campaign]")).toBeNull();
+    expect(document.querySelector(".v7-main-menu")).not.toBeNull();
     expect(document.activeElement?.getAttribute("data-action")).toBe(
-      "mode-skirmish",
+      "campaign",
     );
     app.destroy();
   });
@@ -156,25 +156,20 @@ describe("Ruleset 7 campaign front screen", () => {
     app.destroy();
   });
 
-  it("keeps the switch, the cards and the briefing in keyboard reading order", async () => {
+  it("keeps the way back, the cards and the briefing in keyboard reading order", async () => {
     const app = bootstrapRuleset7App(document);
     await openCampaign();
     const order = focusables().map(
       (node) => node.getAttribute("data-action") ?? node.tagName.toLowerCase(),
     );
+    // Gallery and Settings are on the main menu (pulp_wars-2yc.18).
     expect(order).toEqual([
-      "mode-skirmish",
-      "mode-campaign",
+      "front-back",
       "mission-frontier_1",
       "mission-frontier_2",
       "mission-frontier_3",
       "mission-frontier_4",
       "summary",
-      // The Gallery entry (pulp_wars-ic8) stays on the campaign screen.
-      "gallery",
-      // The front-screen Settings entry (pulp_wars-2yc.9) follows it.
-      "front-settings",
-      "a",
     ]);
     app.destroy();
   });
@@ -215,15 +210,18 @@ describe("Ruleset 7 campaign front screen", () => {
     );
     expect(
       focusables().map((node) => node.getAttribute("data-action")),
-    ).toEqual([
-      "mode-skirmish",
-      "mode-campaign",
-      "campaign-start",
-      "campaign-back",
-      "gallery",
-      "front-settings",
-      null,
-    ]);
+    ).toEqual(["front-back", "campaign-start", "campaign-back"]);
+    // Escape steps back from the briefing to its card, then to the menu.
+    document.activeElement?.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+    );
+    await settle();
+    expect(document.querySelector("[data-v7-region='briefing']")).toBeNull();
+    expect(document.activeElement?.getAttribute("data-action")).toBe(
+      "mission-frontier_1",
+    );
+    requiredButton('[data-action="mission-frontier_1"]').click();
+    await settle();
     requiredButton('[data-action="campaign-back"]').click();
     await settle();
     expect(document.querySelector("[data-v7-region='briefing']")).toBeNull();
@@ -314,8 +312,8 @@ describe("Ruleset 7 campaign front screen", () => {
     expect(document.querySelector(".v7-resume-summary")?.textContent).toBe(
       "Mission 1 · Goblins at the Gate · Turn 1",
     );
-    // A new game from the resume screen replaces the saved mission.
-    requiredButton('[data-action="show-replace"]').click();
+    // A mission started from the menu's Campaign replaces the saved one.
+    requiredButton('[data-action="campaign"]').click();
     await settle();
     expect(document.querySelector("[data-v7-campaign]")).not.toBeNull();
     requiredButton('[data-action="mission-frontier_1"]').click();
@@ -356,7 +354,7 @@ describe("Ruleset 7 mission dialogs", () => {
     expect(notice.textContent).toBe("New faction: Goblin");
     expect(
       [...dialog.querySelectorAll("button")].map((node) => node.textContent),
-    ).toEqual(["Next mission", "Campaign"]);
+    ).toEqual(["Next mission", "Campaign", "Main menu"]);
     expect(
       JSON.parse(
         window.localStorage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7) ?? "",
@@ -463,7 +461,7 @@ describe("Ruleset 7 mission dialogs", () => {
     expect(dialog.querySelector("h2")?.textContent).toBe("Mission failed");
     expect(
       [...dialog.querySelectorAll("button")].map((node) => node.textContent),
-    ).toEqual(["Retry", "Campaign"]);
+    ).toEqual(["Retry", "Campaign", "Main menu"]);
     requiredButton('[data-action="mission-retry"]').click();
     await settle();
     expect(fake.calls).toEqual(["restart"]);
@@ -475,7 +473,42 @@ describe("Ruleset 7 mission dialogs", () => {
     view.destroy();
   });
 
-  it("after the last mission: the unlock, To be continued…, and only Campaign", () => {
+  it("Main menu on a mission's end dialog leaves for the title screen", async () => {
+    for (const outcome of ["VICTORY", "DEFEAT"] as const) {
+      const fake = new FakeController(
+        completeView("FRONTIER_1", "ORIGINAL", (view) =>
+          outcome === "VICTORY"
+            ? { kind: "VICTORY", winnerId: view.humanPlayerId }
+            : {
+                kind: "DEFEAT",
+                humanId: view.humanPlayerId,
+                defeatedByPlayerId: required(
+                  view.turnOrder.find((id) => id !== view.humanPlayerId),
+                ),
+              },
+        ),
+      );
+      const view = mount(fake);
+      const menu = requiredButton(
+        "[data-v7-region='results'] [data-action=\"results-menu\"]",
+      );
+      expect(menu.textContent).toBe("Main menu");
+      menu.click();
+      await settle();
+      // The finished mission leaves the save slot, like Campaign does.
+      expect(fake.calls).toEqual(["deleteStoredSave"]);
+      expect(document.querySelector("[data-v7-region='results']")).toBeNull();
+      expect(document.querySelector("[data-v7-campaign]")).toBeNull();
+      expect(document.querySelector(".v7-main-menu")).not.toBeNull();
+      expect(document.querySelector('[data-action="resume"]')).toBeNull();
+      expect(document.activeElement?.getAttribute("data-action")).toBe(
+        "new-game",
+      );
+      view.destroy();
+    }
+  });
+
+  it("after the last mission: the unlock, To be continued…, Campaign and Main menu", () => {
     const fake = new FakeController(
       completeView("FRONTIER_4", "GOBLIN", (view) => ({
         kind: "VICTORY",
@@ -510,7 +543,7 @@ describe("Ruleset 7 mission dialogs", () => {
     );
     expect(
       [...dialog.querySelectorAll("button")].map((node) => node.textContent),
-    ).toEqual(["Campaign"]);
+    ).toEqual(["Campaign", "Main menu"]);
     view.destroy();
   });
 
@@ -531,6 +564,60 @@ describe("Ruleset 7 mission dialogs", () => {
     ).toBe("Victory");
     expect(document.querySelector(".v7-mission-results")).toBeNull();
     view.destroy();
+  });
+
+  it("an ordinary Victory or Defeat offers Play again and Main menu", async () => {
+    const setup = required(
+      missionMatchSetupV7(required(missionByIdV7("TEST_GROUNDS"))),
+    );
+    const created = createPlayableGameV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    const base = viewForV7(created.state, created.state.humanPlayerId);
+    const outcomes: MatchOutcomeV7[] = [
+      { kind: "VICTORY", winnerId: base.humanPlayerId },
+      {
+        kind: "DEFEAT",
+        humanId: base.humanPlayerId,
+        defeatedByPlayerId: required(
+          base.turnOrder.find((id) => id !== base.humanPlayerId),
+        ),
+      },
+    ];
+    for (const outcome of outcomes) {
+      const fake = new FakeController({ ...base, outcome });
+      const view = mount(fake);
+      const dialog = required(
+        document.querySelector<HTMLElement>("[data-v7-region='results']"),
+      );
+      expect(dialog.querySelector("h2")?.textContent).toBe(
+        outcome.kind === "VICTORY" ? "Victory" : "Defeat",
+      );
+      expect(
+        [...dialog.querySelectorAll("button")].map((node) => node.textContent),
+      ).toEqual(["Play again", "Main menu"]);
+      // Tab order inside the dialog: Play again, Main menu, Classic rules.
+      expect(
+        [...dialog.querySelectorAll<HTMLElement>("button, a")].map(
+          (node) => node.dataset.action ?? node.tagName,
+        ),
+      ).toEqual(["restart", "results-menu", "A"]);
+      requiredButton('[data-action="results-menu"]').click();
+      await settle();
+      // The finished match leaves the save slot: the menu has no Continue.
+      expect(fake.calls).toEqual(["deleteStoredSave"]);
+      expect(document.querySelector("[data-v7-region='results']")).toBeNull();
+      expect(document.querySelector(".v7-match-root")).toBeNull();
+      const menu = required(
+        document.querySelector<HTMLElement>(".v7-main-menu"),
+      );
+      expect(
+        [...menu.querySelectorAll("button")].map((node) => node.dataset.action),
+      ).toEqual(["new-game", "campaign", "gallery", "front-settings"]);
+      expect(document.activeElement?.getAttribute("data-action")).toBe(
+        "new-game",
+      );
+      view.destroy();
+    }
   });
 });
 

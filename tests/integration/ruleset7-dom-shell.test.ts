@@ -446,7 +446,11 @@ describe("Ruleset 7 DOM shell", () => {
     openMenuItem("main-menu");
     await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
     expect(document.querySelector(".v7-match-root")).toBeNull();
-    expect(requiredButton('[data-action="resume"]').textContent).toBe("Resume");
+    expect(
+      requiredButton('[data-action="resume"]').querySelector(
+        ".v7-menu-button-label",
+      )?.textContent,
+    ).toBe("Continue");
     expect(app.controller.snapshot().view?.commandIndex).toBe(commandIndex);
 
     requiredButton('[data-action="resume"]').click();
@@ -456,14 +460,18 @@ describe("Ruleset 7 DOM shell", () => {
 
     openMenuItem("main-menu");
     await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
-    requiredButton('[data-action="show-replace"]').click();
+    requiredButton('[data-action="new-game"]').click();
     requiredInput("v7-seed").value = "2";
     chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     openMenuItem("main-menu");
     await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
-    expect(requiredButton('[data-action="resume"]').textContent).toBe("Resume");
+    expect(
+      requiredButton('[data-action="resume"]').querySelector(
+        ".v7-menu-button-label",
+      )?.textContent,
+    ).toBe("Continue");
     app.destroy();
   });
 

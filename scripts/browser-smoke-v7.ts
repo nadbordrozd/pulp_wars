@@ -98,6 +98,8 @@ const FACTION_OPTIONS_V7 = [
  * its own key, which the storage-isolation check seeds and expects to
  * survive the obsolete-save cleanup and Delete save.
  */
+/** The setup form is open (the main menu's New game, pulp_wars-2yc.18). */
+const SETUP_OPEN_V7 = `document.querySelector('[data-v7-front="setup"] .v7-front-panel .v7-setup-form') !== null && document.querySelector('.v7-main-menu') === null && document.querySelector('.v7-setup-form').closest('[hidden]') === null`;
 const CAMPAIGN_KEY_V7 = "pulpWars.campaign.v1";
 const SEEDED_CAMPAIGN_PROGRESS_V7 = JSON.stringify({
   format: "pulp-wars-campaign-progress",
@@ -228,6 +230,73 @@ try {
     "obsolete-save cleanup",
     `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller !== undefined`,
   );
+  // The title screen (pulp_wars-2yc.18): the menu's buttons lie over the
+  // scene, New game is selected, the arrow keys move and Enter opens the
+  // setup form with focus on its way back.
+  const titleScreen = await evaluate<{
+    readonly actions: readonly string[];
+    readonly focused: string | null;
+    readonly overScene: boolean;
+    readonly inside: boolean;
+    readonly formHidden: boolean;
+    readonly overflow: number;
+  }>(
+    connection,
+    `(() => {
+      const menu = document.querySelector('nav.v7-main-menu');
+      const buttons = [...(menu?.querySelectorAll('button') ?? [])];
+      const scene = document.querySelector('.v7-title-scene')?.getBoundingClientRect();
+      const rects = buttons.map((button) => button.getBoundingClientRect());
+      return {
+        actions: buttons.map((button) => button.dataset.action ?? ''),
+        focused: document.activeElement?.dataset?.action ?? null,
+        overScene: scene !== undefined && scene.width >= innerWidth && scene.height >= innerHeight && rects.every((rect) => rect.left >= scene.left && rect.right <= scene.right && rect.top >= scene.top && rect.bottom <= scene.bottom),
+        inside: rects.every((rect) => rect.width >= 200 && rect.height >= 44 && rect.left >= 0 && rect.top >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight),
+        formHidden: document.querySelector('.v7-setup-form')?.closest('[hidden]') !== null && document.querySelector('.v7-front-panel') === null,
+        overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      };
+    })()`,
+  );
+  if (
+    titleScreen.actions.join() !== "new-game,campaign,gallery,front-settings" ||
+    titleScreen.focused !== "new-game" ||
+    !titleScreen.overScene ||
+    !titleScreen.inside ||
+    !titleScreen.formHidden ||
+    titleScreen.overflow > 0
+  )
+    throw new Error(
+      `title screen is not a menu over the scene: ${JSON.stringify(titleScreen)}`,
+    );
+  await pressKey(connection, "ArrowDown", "ArrowDown");
+  await pressKey(connection, "ArrowUp", "ArrowUp");
+  await pressKey(connection, "ArrowUp", "ArrowUp");
+  const wrapped = await evaluate<string | null>(
+    connection,
+    `document.activeElement?.dataset?.action ?? null`,
+  );
+  if (wrapped !== "front-settings")
+    throw new Error(`menu arrow keys did not wrap to Settings: ${wrapped}`);
+  await pressKey(connection, "Home", "Home");
+  await connection.send("Input.dispatchKeyEvent", {
+    type: "keyDown",
+    key: "Enter",
+    code: "Enter",
+    text: "\r",
+    windowsVirtualKeyCode: 13,
+    nativeVirtualKeyCode: 13,
+  });
+  await connection.send("Input.dispatchKeyEvent", {
+    type: "keyUp",
+    key: "Enter",
+    code: "Enter",
+    windowsVirtualKeyCode: 13,
+    nativeVirtualKeyCode: 13,
+  });
+  await waitForExpression(
+    connection,
+    `${SETUP_OPEN_V7} && document.activeElement?.dataset?.action === 'front-back'`,
+  );
   await evaluate(
     connection,
     `(() => {
@@ -255,10 +324,7 @@ try {
       });
     })()`,
   );
-  // The Skirmish / Campaign switch (pulp_wars-68k.5) comes first in the
-  // reading order: Skirmish, Campaign, then Opponents.
-  await pressKey(connection, "Tab", "Tab");
-  await pressKey(connection, "Tab", "Tab");
+  // The way back ("Menu") comes first in the reading order, then Opponents.
   await pressKey(connection, "Tab", "Tab");
   await typeSelectValue(connection, "#v7-ai-count", "2");
   await pressKey(connection, "Tab", "Tab");
@@ -466,7 +532,7 @@ try {
   await openCompactMenuItem(connection, "main-menu");
   await waitForExpression(
     connection,
-    `(() => { const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const panel = document.querySelector('.v7-front-screen'); const resume = document.querySelector('[data-action="resume"]'); if (snapshot?.phase !== 'RESUMABLE' || snapshot.view === null || !(panel instanceof HTMLElement) || !(resume instanceof HTMLButtonElement) || resume.disabled) return false; const rect = resume.getBoundingClientRect(); return panel.contains(resume) && resume.textContent?.trim() === 'Resume' && rect.width >= 44 && rect.height >= 44 && rect.left >= 0 && rect.top >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight; })()`,
+    `(() => { const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const panel = document.querySelector('.v7-front-screen'); const resume = document.querySelector('[data-action="resume"]'); if (snapshot?.phase !== 'RESUMABLE' || snapshot.view === null || !(panel instanceof HTMLElement) || !(resume instanceof HTMLButtonElement) || resume.disabled) return false; const rect = resume.getBoundingClientRect(); return panel.contains(resume) && resume.closest('nav.v7-main-menu') !== null && resume.querySelector('.v7-menu-button-label')?.textContent === 'Continue' && document.activeElement === resume && rect.width >= 44 && rect.height >= 44 && rect.left >= 0 && rect.top >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight; })()`,
   );
   const resumableBoundary = await evaluate<{
     readonly commandIndex: number;
@@ -636,6 +702,7 @@ try {
   let outcome: OutcomeEvidenceV7 | null = null;
   let pendingReleaseEvidence: string | null = null;
   if (!deployed) {
+    await openNewGame(connection);
     await replaceSeedInput(connection, "6");
     await launchWithFastForward(connection);
     outcome = await driveDefaultMatchToOutcome(connection);
@@ -650,6 +717,21 @@ try {
       "the default match",
     );
     await capture(connection, "default-v7-outcome-desktop.png");
+    // Bead pulp_wars-2yc.18: the end dialog offers Play again and Main
+    // menu; Main menu clears the finished match and shows the title screen.
+    const endActions = await evaluate<readonly string[]>(
+      connection,
+      `[...document.querySelectorAll('[data-v7-region="results"] button')].map((button) => \`\${button.dataset.action}:\${button.textContent}\`)`,
+    );
+    if (endActions.join() !== "restart:Play again,results-menu:Main menu")
+      throw new Error(
+        `end dialog actions are wrong: ${JSON.stringify(endActions)}`,
+      );
+    await pointerClick(connection, '[data-action="results-menu"]');
+    await waitForExpression(
+      connection,
+      `(() => { const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return snapshot?.phase === 'EMPTY' && snapshot.view === null && localStorage.getItem('pulpWars.save.v7r48.current') === null && document.querySelector('.v7-match-root') === null && document.querySelector('[data-v7-region="results"]') === null && document.querySelector('nav.v7-main-menu [data-action="new-game"]') !== null && document.querySelector('[data-action="resume"]') === null && document.activeElement?.dataset?.action === 'new-game'; })()`,
+    );
     const artifacts = {
       "desktop-ai-return.png": await fileSha256(
         path.join(reviewRoot, "desktop-ai-return.png"),
@@ -942,6 +1024,7 @@ async function probeChibiArtSet(connection: Connection): Promise<string> {
     `localStorage.removeItem(${JSON.stringify(saveKey)}); localStorage.removeItem(${JSON.stringify(artKey)})`,
   );
   await navigateFresh(artUrl(null), freshSetup);
+  await openNewGame(connection);
   await pointerClick(connection, launchSelector);
   await waitForExpression(connection, activeWithArt("CHIBI"), 900);
   // Wait until accepted art has loaded and painted beyond the flat fills.
@@ -989,6 +1072,7 @@ async function probeChibiArtSet(connection: Connection): Promise<string> {
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
   );
   await navigateFresh(artUrl("legacy"), freshSetup);
+  await openNewGame(connection);
   await pointerClick(connection, launchSelector);
   await waitForExpression(connection, activeWithArt("LEGACY"), 900);
   const legacy = await evaluate<{
@@ -1066,6 +1150,7 @@ async function probeUndeadSetup(connection: Connection): Promise<string> {
     defaultUrl(),
     `document.querySelector('[data-v7-factions]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
   );
+  await openNewGame(connection);
   const labels = await evaluate<readonly string[]>(
     connection,
     `Array.from(document.querySelectorAll('[data-v7-factions] label')).map((label) => label.firstChild?.textContent ?? '')`,
@@ -1327,6 +1412,7 @@ async function probeGoblinMatch(connection: Connection): Promise<string> {
     defaultUrl(),
     `document.querySelector('[data-v7-factions]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
   );
+  await openNewGame(connection);
   const options = await evaluate<readonly string[]>(
     connection,
     `Array.from(document.querySelectorAll('#v7-faction-1 option')).map((option) => option.textContent ?? '')`,
@@ -1564,6 +1650,7 @@ async function probeDinosaurMatch(connection: Connection): Promise<string> {
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
   );
   await navigateFresh(freshSetup);
+  await openNewGame(connection);
   const options = await evaluate<readonly string[]>(
     connection,
     `Array.from(document.querySelectorAll('#v7-faction-1 option')).map((option) => option.textContent ?? '')`,
@@ -1888,6 +1975,7 @@ async function probeMartianMatch(connection: Connection): Promise<string> {
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
   );
   await navigateFresh(freshSetup);
+  await openNewGame(connection);
   const options = await evaluate<readonly string[]>(
     connection,
     `Array.from(document.querySelectorAll('#v7-faction-1 option')).map((option) => option.textContent ?? '')`,
@@ -2275,6 +2363,7 @@ async function probeIceFolkMatch(connection: Connection): Promise<string> {
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
   );
   await navigateFresh(freshSetup);
+  await openNewGame(connection);
   const options = await evaluate<readonly string[]>(
     connection,
     `Array.from(document.querySelectorAll('#v7-faction-1 option')).map((option) => option.textContent ?? '')`,
@@ -2485,6 +2574,7 @@ async function probeDwarfMatch(connection: Connection): Promise<string> {
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
   );
   await navigateFresh(freshSetup);
+  await openNewGame(connection);
   const options = await evaluate<readonly string[]>(
     connection,
     `Array.from(document.querySelectorAll('#v7-faction-1 option')).map((option) => option.textContent ?? '')`,
@@ -2678,6 +2768,7 @@ async function probeShowcaseMatch(connection: Connection): Promise<string> {
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
   );
   await navigateFresh(freshSetup);
+  await openNewGame(connection);
   const options = await evaluate<readonly string[]>(
     connection,
     `Array.from(document.querySelectorAll('#v7-map-type option')).map((option) => option.textContent ?? '')`,
@@ -2780,7 +2871,7 @@ async function probeShowcaseMatch(connection: Connection): Promise<string> {
 
 /**
  * The campaign (pulp_wars-68k.5, docs/product/CAMPAIGN.md section 7.3): the
- * front-screen switch opens the campaign with mission 1 open and mission 2
+ * main menu's Campaign opens it with mission 1 open and mission 2
  * locked; mission 1's briefing; Start puts the board on the human's turn;
  * Settings names the mission and a Naval node is unavailable in this
  * mission; the resume screen carries the mission label. On the development
@@ -2811,10 +2902,10 @@ async function probeCampaign(connection: Connection): Promise<string> {
   const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
   const humanTurn = `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v.humanPlayerId; })()`;
   const openCampaign = async (): Promise<void> => {
-    await pointerClick(connection, '[data-action="mode-campaign"]');
+    await pointerClick(connection, '[data-action="campaign"]');
     await waitForExpression(
       connection,
-      `document.querySelector('[data-v7-campaign]') !== null && document.querySelector('[data-action="mode-campaign"]')?.getAttribute('aria-pressed') === 'true'`,
+      `document.querySelector('[data-v7-campaign] .v7-front-panel') !== null && document.querySelector('.v7-main-menu') === null && document.activeElement?.dataset?.action === 'front-back'`,
     );
   };
   await evaluate(
@@ -3156,6 +3247,22 @@ async function typeSelectKeys(
     connection,
     `(() => { const select = document.querySelector(${JSON.stringify(selector)}); return select instanceof HTMLSelectElement && !select.matches(':open') && select.value === ${JSON.stringify(value)}; })()`,
   );
+}
+
+/**
+ * The front screen is the main menu: New game (a real click) opens the
+ * setup form. Does nothing when the form is already open.
+ */
+async function openNewGame(connection: Connection): Promise<void> {
+  const front = await evaluate<string>(
+    connection,
+    `document.querySelector('.v7-front-screen')?.dataset.v7Front ?? 'none'`,
+  );
+  if (front === "setup") return;
+  if (front !== "menu")
+    throw new Error(`New game needs the main menu, not: ${front}`);
+  await pointerClick(connection, '[data-action="new-game"]');
+  await waitForExpression(connection, SETUP_OPEN_V7);
 }
 
 async function launchWithFastForward(connection: Connection): Promise<void> {

@@ -21,6 +21,10 @@ import { CHIBI_MOUNTAIN_ART_SET_V7 } from "../assets/chibi-mountain-ranges-manif
  * The layout re-flows instead of scaling: a narrow canvas has fewer
  * columns and units and no second column of sea, a short one squeezes its
  * rows together so the far rows peek over the near ones.
+ *
+ * The main menu stands over the scene (bead pulp_wars-2yc.18): `clearLeft`
+ * is the width at the west edge its buttons cover, and the ranks and the
+ * city keep east of it, on the land that is left.
  */
 export type TitleSceneItemV7 =
   /** A registered raster, its owning cell's centre at (`cx`, `cy`). */
@@ -84,6 +88,8 @@ function spread(count: number, reversed: boolean): FactionIdV7[] {
 export function titleSceneV7(size: {
   readonly width: number;
   readonly height: number;
+  /** Master pixels at the west edge to keep free of units (the menu). */
+  readonly clearLeft?: number;
 }): TitleSceneV7 {
   const width = Math.max(160, Math.floor(size.width));
   const height = Math.max(120, Math.floor(size.height));
@@ -102,10 +108,17 @@ export function titleSceneV7(size: {
   const offset = Math.round((columns * CELL - width) / 2);
   const columnCentre = (column: number): number =>
     column * CELL - offset + HALF;
-  // The coast: the sea takes the east, one column on a narrow canvas.
-  const seaColumns = width >= 480 ? 2 : 1;
+  const wanted = Math.max(0, Math.floor(size.clearLeft ?? 0));
+  // The coast: the sea takes the east, one column on a narrow canvas or
+  // where the menu leaves the ranks little land.
+  const seaColumns =
+    width >= 480 && (wanted === 0 || width - 2 * CELL - wanted >= 280) ? 2 : 1;
   const firstSea = columns - seaColumns;
   const landWidth = columnCentre(firstSea) - HALF;
+  // The ranks stand between the menu and the coast; a menu that would
+  // leave them no room (a narrow canvas) is ignored: it sits in the sky.
+  const west = landWidth - wanted >= 120 ? wanted : 0;
+  const rankWidth = landWidth - west;
 
   const items: TitleSceneItemV7[] = [];
   const ground = (subject: ArtSubjectV7, column: number, cy: number): void => {
@@ -165,20 +178,30 @@ export function titleSceneV7(size: {
     return piece.width;
   };
   // Two ranks: the flagships behind, the Fighters in front.
-  const flagships = spread(clamp(Math.floor(landWidth / 84), 2, 8), false);
-  const fighters = spread(clamp(Math.floor(landWidth / 50), 3, 8), true);
+  // Beside the menu a short rank may be one flagship and two Fighters.
+  const flagships = spread(
+    clamp(Math.floor(rankWidth / 84), west > 0 ? 1 : 2, 8),
+    false,
+  );
+  const fighters = spread(
+    clamp(Math.floor(rankWidth / 50), west > 0 ? 2 : 3, 8),
+    true,
+  );
   const FLAGSHIP_MARGIN = 46;
   // The city shows through a gap of the back rank, near the middle.
   const gap = Math.floor((flagships.length - 2) / 2);
   const cityX = Math.round(
-    FLAGSHIP_MARGIN +
-      ((landWidth - 2 * FLAGSHIP_MARGIN) * (gap + 0.5)) /
-        (flagships.length - 1),
+    flagships.length < 2
+      ? west + rankWidth * 0.22
+      : west +
+          FLAGSHIP_MARGIN +
+          ((rankWidth - 2 * FLAGSHIP_MARGIN) * (gap + 0.5)) /
+            (flagships.length - 1),
   );
   const woodWidth = Math.max(0, cityX - 56);
   for (
     let x = -offset - 8, index = 0;
-    x + 60 < woodWidth && index < 6;
+    x + 60 < woodWidth && index < 6 + Math.ceil(west / 60);
     index += 1
   )
     x += wood(x, woods.length - 1 - index) - 6;
@@ -203,14 +226,15 @@ export function titleSceneV7(size: {
     cy: number,
     margin: number,
   ): void => {
-    const span = landWidth - 2 * margin;
+    const span = rankWidth - 2 * margin;
     factions.forEach((faction, index) => {
       items.push({
         kind: "SUBJECT",
         subject: unitArtSubjectV7({ role, form: "LAND", faction }),
         at: { x: 0, y: 0 },
         cx: Math.round(
-          margin +
+          west +
+            margin +
             (factions.length === 1
               ? span / 2
               : (span * index) / (factions.length - 1)),

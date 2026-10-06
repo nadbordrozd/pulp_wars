@@ -812,7 +812,14 @@ const NO_CAMPAIGN_PROGRESS_V7: Ruleset7CampaignProgressV7 = Object.freeze({
 });
 
 /** The front screen's two modes (CAMPAIGN.md section 5, item 1). */
-type FrontModeV7 = "SKIRMISH" | "CAMPAIGN";
+/**
+ * The front screens (bead pulp_wars-2yc.18): the main menu over the title
+ * scene, and the screens its buttons open.
+ */
+type FrontPageV7 = "MENU" | "SETUP" | "CAMPAIGN" | "SETTINGS";
+
+/** The main menu's first button, focused when the menu is entered. */
+const MENU_FIRST_V7 = ".v7-main-menu button";
 
 interface DraftV7 {
   /** Opponents: 1 up to one less than the faction count (map scale 6.1). */
@@ -962,7 +969,6 @@ export class Ruleset7DomAppView {
     readonly kind: "info" | "error";
   } | null = null;
   #toastSequence = 0;
-  #replacing = false;
   #matchInstance = 0;
   #presentationActive = false;
   #presentationQueue: {
@@ -995,11 +1001,16 @@ export class Ruleset7DomAppView {
   readonly #chibiDomEnvironment: ChibiDomEnvironmentV7 | null;
   #developerToolsOpen = false;
   /**
-   * Campaign screens (pulp_wars-68k.5): the front screen's mode for the
-   * page session, the mission whose briefing is open (null: the list), the
-   * faction chosen in it, and whether Reset progress awaits confirmation.
+   * The front screen shown (pulp_wars-2yc.18), and the campaign screens
+   * (pulp_wars-68k.5): the mission whose briefing is open (null: the
+   * list), the faction chosen in it, and whether Reset progress awaits
+   * confirmation.
    */
-  #frontMode: FrontModeV7 = "SKIRMISH";
+  #frontPage: FrontPageV7 = "MENU";
+  /** The menu takes keyboard focus the first time it is shown. */
+  #menuFocusPending = true;
+  /** CSS pixels the menu last covered at the title scene's west edge. */
+  #menuClearWidth = 0;
   #briefingMissionId: string | null = null;
   #briefingFaction: FactionIdV7 | null = null;
   #confirmCampaignReset = false;
@@ -1016,8 +1027,6 @@ export class Ruleset7DomAppView {
    * and kept across their redraws.
    */
   #titleScene: TitleSceneViewV7 | null = null;
-  /** The front screen's Settings panel is open (bead pulp_wars-2yc.9). */
-  #frontSettingsOpen = false;
   /** The Gallery screen (bead pulp_wars-ic8), built when first opened. */
   #gallery: GalleryViewV7 | null = null;
   #galleryOpen = false;
@@ -1194,6 +1203,11 @@ export class Ruleset7DomAppView {
   readonly #onKeyDown = (event: KeyboardEvent): void => {
     // The Gallery handles its own keys (grid, dialog, Escape).
     if (this.#galleryOpen) return;
+    // The front screens have keys of their own, and none of a match's.
+    if (this.#root.querySelector(".v7-front-shell") !== null) {
+      this.#onFrontKey(event);
+      return;
+    }
     const target = event.target;
     const modal = this.#root.querySelector<HTMLElement>('[aria-modal="true"]');
     if (modal !== null) {
@@ -1420,7 +1434,6 @@ export class Ruleset7DomAppView {
         this.#snapshot.phase === "ERROR")
     ) {
       this.#titleScene?.stop();
-      this.#frontSettingsOpen = false;
       this.#renderStableMatch(this.#snapshot.view);
       return;
     }
@@ -1438,6 +1451,7 @@ export class Ruleset7DomAppView {
     // The front screens follow the display settings too.
     shell.dataset.contrast = this.#highContrast ? "high" : "standard";
     shell.style.setProperty("--ui-scale", String(this.#uiScale));
+    shell.dataset.motion = this.#motion.toLowerCase();
     shell.append(
       live(this.#document, "v7-live", this.#notice, "polite"),
       live(this.#document, "v7-alert", this.#error, "assertive"),
@@ -1451,12 +1465,11 @@ export class Ruleset7DomAppView {
           "v7-warning",
         ),
       );
-    if (this.#snapshot.phase === "EMPTY") shell.append(this.#front(false));
-    else if (this.#snapshot.phase === "RESUMABLE")
-      shell.append(this.#replacing ? this.#front(true) : this.#resume());
-    else if (this.#snapshot.phase === "RECOVERY")
-      shell.append(this.#recovery());
-    else shell.append(this.#front(false));
+    shell.append(
+      this.#snapshot.phase === "RECOVERY"
+        ? this.#recovery()
+        : this.#front(this.#snapshot.phase === "RESUMABLE"),
+    );
     // A front screen is rebuilt whole (a settled portrait re-renders it
     // too): keep keyboard focus on the same control.
     const active = this.#document.activeElement;
@@ -1482,8 +1495,19 @@ export class Ruleset7DomAppView {
       if (shell.contains(scene.root)) scene.start();
       else scene.stop();
     }
-    const focus = this.#frontFocus ?? kept;
+    // The menu is entered with its first button selected, like a game's
+    // title screen: Enter starts, the arrow keys move.
+    const onMenu = shell.querySelector(".v7-main-menu") !== null;
+    const focus =
+      this.#frontFocus ??
+      kept ??
+      (onMenu &&
+      this.#menuFocusPending &&
+      (active === null || active === this.#document.body)
+        ? MENU_FIRST_V7
+        : null);
     this.#frontFocus = null;
+    if (onMenu) this.#menuFocusPending = false;
     if (focus !== null)
       queueMicrotask(() => {
         if (this.#destroyed) return;
@@ -1491,46 +1515,219 @@ export class Ruleset7DomAppView {
       });
   }
 
-  /** The setup form or, in Campaign mode, the campaign screen. */
-  #front(replace: boolean): HTMLElement {
-    return this.#frontMode === "CAMPAIGN"
-      ? this.#campaignScreen(replace)
-      : this.#setup(replace);
+  /**
+   * The front screen shown: the main menu, or the screen one of its
+   * buttons opened. `resumable`: a saved game is waiting (a new game
+   * replaces it).
+   */
+  #front(resumable: boolean): HTMLElement {
+    switch (this.#frontPage) {
+      case "SETUP":
+        return this.#setup(resumable);
+      case "CAMPAIGN":
+        return this.#campaignScreen(resumable);
+      case "SETTINGS":
+        return this.#frontSettings();
+      default:
+        return this.#mainMenu(resumable);
+    }
   }
 
   /**
-   * The Skirmish / Campaign switch under the brand (CAMPAIGN.md section 5,
-   * item 1), styled like "New map / Use seed". It lasts for the page
-   * session.
+   * The main menu (bead pulp_wars-2yc.18): the title scene fills the
+   * screen, the logo stands on it, and the actions are large buttons laid
+   * over the picture. The arrow keys move between them.
    */
-  #modeSwitch(): HTMLElement {
-    const group = el(this.#document, "div", "v7-mode-choice");
-    group.setAttribute("role", "group");
-    group.setAttribute("aria-label", "Game mode");
-    group.dataset.mode = this.#frontMode.toLowerCase();
-    const toggle = el(this.#document, "div", "v7-seed-toggle v7-mode-toggle");
-    for (const mode of ["SKIRMISH", "CAMPAIGN"] as const) {
-      const action = `mode-${mode.toLowerCase()}`;
-      const option = button(
-        this.#document,
-        mode === "SKIRMISH" ? "Skirmish" : "Campaign",
-        action,
-        "v7-seed-option",
-      );
-      option.setAttribute("aria-pressed", String(mode === this.#frontMode));
-      option.onclick = () => {
-        if (this.#frontMode === mode) return;
-        this.#frontFocus = `[data-action="${action}"]`;
-        this.#frontMode = mode;
-        this.#briefingMissionId = null;
-        this.#confirmCampaignReset = false;
-        this.#error = "";
-        this.#render();
-      };
-      toggle.append(option);
+  #mainMenu(resumable: boolean): HTMLElement {
+    const main = el(this.#document, "main", "v7-front-screen v7-menu-screen");
+    main.dataset.v7Front = "menu";
+    main.append(this.#brand());
+    const nav = el(this.#document, "nav", "v7-main-menu");
+    nav.setAttribute("aria-label", "Main menu");
+    if (resumable) {
+      const view = this.#snapshot.view;
+      // A campaign mission is labelled by its number and name (CAMPAIGN.md
+      // section 4.2): "Mission 2 · The Warrens · Turn 7".
+      const mission =
+        view?.setup.mission === undefined
+          ? null
+          : campaignMissionV7(view.setup.mission.id);
+      const resume = this.#menuButton("Continue", "resume", "skip", true);
+      if (view !== null && view !== undefined) {
+        const summary = text(
+          this.#document,
+          "span",
+          mission !== null
+            ? `Mission ${mission.entry.number} · ${mission.entry.name} · Turn ${view.round}`
+            : `Turn ${view.round} · ${view.viewer.coins} coins · ${playerCountLabelV7(view)} · ${MAP_TYPE_LABELS[view.setup.mapType] ?? title(view.setup.mapType)}`,
+          "v7-resume-summary",
+        );
+        if (mission !== null)
+          summary.dataset.missionId = mission.entry.missionId;
+        resume.append(summary);
+      }
+      resume.onclick = () => void this.#resumeMatch();
+      nav.append(resume);
     }
-    group.append(toggle);
-    return group;
+    const play = this.#menuButton("New game", "new-game", "play", !resumable);
+    play.onclick = () => this.#openFrontPage("SETUP");
+    const campaign = this.#menuButton("Campaign", "campaign", "flag");
+    campaign.onclick = () => this.#openFrontPage("CAMPAIGN");
+    const gallery = this.#menuButton("Gallery", "gallery", "sight");
+    gallery.onclick = () => this.#openGallery();
+    const settings = this.#menuButton("Settings", "front-settings", "gear");
+    settings.onclick = () => this.#openFrontPage("SETTINGS");
+    nav.append(play, campaign, gallery, settings);
+    main.append(nav);
+    if (!resumable) {
+      // The setup form is built with the menu and shown by New game, so a
+      // settled portrait or a script finds it at once.
+      main.dataset.v7Setup = "true";
+      const prebuilt = el(this.#document, "div", "v7-front-prebuilt");
+      prebuilt.hidden = true;
+      prebuilt.append(this.#setupForm(false));
+      main.append(prebuilt);
+    }
+    const footer = el(this.#document, "div", "v7-menu-footer");
+    if (resumable) {
+      const remove = button(
+        this.#document,
+        "Delete save",
+        "delete-save",
+        "v7-menu-footer-action destructive",
+      );
+      remove.onclick = () => void this.#deleteSave();
+      footer.append(remove);
+    }
+    footer.append(this.#ruleset6Link());
+    main.append(footer);
+    return main;
+  }
+
+  #menuButton(
+    label: string,
+    action: string,
+    icon: UiIconIdV7,
+    primary = false,
+  ): HTMLButtonElement {
+    const node = button(
+      this.#document,
+      "",
+      action,
+      primary ? "v7-menu-button is-primary" : "v7-menu-button",
+    );
+    node.append(
+      uiIconV7(this.#document, icon),
+      text(this.#document, "span", label, "v7-menu-button-label"),
+    );
+    return node;
+  }
+
+  /** Opens a screen of the menu, or (MENU) returns to it. */
+  #openFrontPage(page: FrontPageV7): void {
+    const from = this.#frontPage;
+    this.#frontPage = page;
+    this.#briefingMissionId = null;
+    this.#confirmCampaignReset = false;
+    this.#error = "";
+    this.#frontFocus =
+      page !== "MENU"
+        ? '[data-action="front-back"]'
+        : from === "SETUP"
+          ? '[data-action="new-game"]'
+          : from === "CAMPAIGN"
+            ? '[data-action="campaign"]'
+            : from === "SETTINGS"
+              ? '[data-action="front-settings"]'
+              : MENU_FIRST_V7;
+    this.#render();
+  }
+
+  /**
+   * A screen opened from the menu: the title scene behind, and one panel
+   * with a "Menu" button (back to the main menu; Escape does the same) and
+   * the screen's title.
+   */
+  #frontPanelScreen(
+    page: "setup" | "campaign" | "settings" | "recovery",
+    titleText: string,
+  ): { main: HTMLElement; panel: HTMLElement } {
+    const main = el(this.#document, "main", "v7-front-screen v7-front-page");
+    main.dataset.v7Front = page;
+    const panel = el(this.#document, "section", "v7-front-panel");
+    const bar = el(this.#document, "div", "v7-front-panel-bar");
+    if (page !== "recovery") {
+      const back = button(this.#document, "", "front-back", "v7-front-back");
+      back.append(
+        uiIconV7(this.#document, "back"),
+        text(this.#document, "span", "Menu"),
+      );
+      back.setAttribute("aria-label", "Main menu");
+      back.onclick = () => this.#openFrontPage("MENU");
+      bar.append(back);
+    }
+    const heading = text(this.#document, "h2", titleText, "v7-front-title");
+    heading.id = "v7-front-title";
+    panel.setAttribute("aria-labelledby", heading.id);
+    bar.append(heading);
+    panel.append(bar);
+    main.append(this.#brand(), panel);
+    return { main, panel };
+  }
+
+  /** The front screens' keys: the menu's arrows, and Escape to go back. */
+  #onFrontKey(event: KeyboardEvent): void {
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
+    const target = event.target;
+    if (event.key === "Escape") {
+      if (
+        this.#frontPage === "MENU" ||
+        this.#snapshot.phase === "RECOVERY" ||
+        target instanceof HTMLSelectElement
+      )
+        return;
+      event.preventDefault();
+      const missionId = this.#briefingMissionId;
+      if (this.#frontPage === "CAMPAIGN" && missionId !== null) {
+        // A briefing steps back to its card first.
+        this.#briefingMissionId = null;
+        this.#frontFocus = `[data-action="mission-${missionId.toLowerCase()}"]`;
+        this.#render();
+      } else this.#openFrontPage("MENU");
+      return;
+    }
+    const menu = this.#root.querySelector<HTMLElement>(".v7-main-menu");
+    if (menu === null) return;
+    const items = [
+      ...menu.querySelectorAll<HTMLButtonElement>("button:not(:disabled)"),
+    ];
+    const at = items.findIndex((item) => item === this.#document.activeElement);
+    // The arrows belong to the menu and to a page nothing is focused on.
+    if (
+      items.length === 0 ||
+      (at < 0 &&
+        target instanceof Element &&
+        target !== this.#document.body &&
+        target !== this.#document.documentElement)
+    )
+      return;
+    const next =
+      event.key === "ArrowDown"
+        ? at < 0
+          ? 0
+          : (at + 1) % items.length
+        : event.key === "ArrowUp"
+          ? at < 0
+            ? items.length - 1
+            : (at - 1 + items.length) % items.length
+          : event.key === "Home"
+            ? 0
+            : event.key === "End"
+              ? items.length - 1
+              : null;
+    if (next === null) return;
+    event.preventDefault();
+    items[next]?.focus();
   }
 
   #campaignProgress(): Ruleset7CampaignProgressV7 {
@@ -1542,16 +1739,15 @@ export class Ruleset7DomAppView {
    * chapter and its mission cards, or the open mission's briefing.
    */
   #campaignScreen(replace: boolean): HTMLElement {
-    const main = el(this.#document, "main", "v7-front-screen v7-campaign");
+    const { main, panel } = this.#frontPanelScreen("campaign", "Campaign");
+    main.classList.add("v7-campaign");
     main.dataset.v7Campaign = "true";
-    main.append(this.#brand(), this.#modeSwitch());
     const progress = this.#campaignProgress();
     if (progress.status === "UNREADABLE")
-      main.append(this.#campaignUnreadable(progress));
+      panel.append(this.#campaignUnreadable(progress));
     else if (this.#briefingMissionId !== null)
-      main.append(this.#briefing(this.#briefingMissionId, progress, replace));
-    else main.append(this.#campaignList(progress));
-    main.append(this.#frontEntries(), this.#ruleset6Link());
+      panel.append(this.#briefing(this.#briefingMissionId, progress, replace));
+    else panel.append(this.#campaignList(progress));
     return main;
   }
 
@@ -1740,7 +1936,7 @@ export class Ruleset7DomAppView {
       this.#briefingMissionId = null;
       this.#notice = "Campaign progress reset.";
       this.#error = "";
-      this.#frontFocus = '[data-action="mode-campaign"]';
+      this.#frontFocus = '[data-action="front-back"]';
     } else this.#error = "Campaign progress couldn't be reset.";
     this.#render();
   }
@@ -1930,6 +2126,7 @@ export class Ruleset7DomAppView {
       this.#titleScene ??= new TitleSceneViewV7(this.#document, {
         environment: this.#chibiDomEnvironment,
         motion: this.#motion,
+        menuWidth: () => this.#menuClear(),
       });
       header.classList.add("v7-title");
       header.append(this.#titleScene.root);
@@ -1939,47 +2136,44 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * The entries under a front screen's main action (bead pulp_wars-2yc.9):
-   * Gallery and Settings side by side, and the Settings panel when open.
+   * The width the main menu covers at the title scene's west edge, where
+   * the scene keeps its units clear. The last menu's width is kept while
+   * another screen is open, so the picture does not shift behind it.
    */
-  #frontEntries(): HTMLElement {
-    const section = el(this.#document, "div", "v7-front-entries");
-    const row = el(this.#document, "div", "v7-front-entry-row");
-    const settings = button(
-      this.#document,
-      "",
-      "front-settings",
-      "secondary-action v7-front-settings-entry",
-    );
-    settings.append(uiIconV7(this.#document, "gear"), "Settings");
-    settings.setAttribute("aria-expanded", String(this.#frontSettingsOpen));
-    settings.setAttribute("aria-controls", "v7-front-settings");
-    settings.onclick = () => {
-      this.#frontSettingsOpen = !this.#frontSettingsOpen;
-      this.#frontFocus = '[data-action="front-settings"]';
-      this.#render();
-      // The panel opens under the button: bring it into view.
-      this.#root
-        .querySelector<HTMLElement>("#v7-front-settings")
-        ?.scrollIntoView?.({ block: "nearest" });
-    };
-    row.append(this.#galleryEntry(), settings);
-    section.append(row);
-    if (this.#frontSettingsOpen) {
-      const panel = el(this.#document, "section", "v7-front-settings");
-      panel.id = "v7-front-settings";
-      panel.setAttribute("aria-label", "Settings");
-      panel.append(this.#displaySettings());
-      section.append(panel);
+  #menuClear(): number {
+    const menu = this.#root.querySelector<HTMLElement>(".v7-main-menu");
+    if (menu !== null) {
+      const right = menu.getBoundingClientRect().right;
+      this.#menuClearWidth = right > 0 ? Math.ceil(right) + 24 : 0;
     }
-    return section;
+    return this.#menuClearWidth;
+  }
+
+  /**
+   * Settings on the front screens (bead pulp_wars-2yc.9): Motion,
+   * Animation speed, UI size, High contrast and sound, the controls of a
+   * match's Settings without its match-only actions.
+   */
+  #frontSettings(): HTMLElement {
+    const { main, panel } = this.#frontPanelScreen("settings", "Settings");
+    const body = el(this.#document, "div", "v7-front-settings");
+    body.id = "v7-front-settings";
+    body.append(this.#displaySettings());
+    panel.append(body);
+    return main;
   }
 
   #setup(replace: boolean): HTMLElement {
-    const main = el(this.#document, "main", "v7-front-screen");
+    const { main, panel } = this.#frontPanelScreen("setup", "New game");
     main.dataset.v7Setup = "true";
-    main.append(this.#brand(), this.#modeSwitch());
-    const form = el(this.#document, "form", "v7-setup-form");
+    panel.append(this.#setupForm(replace));
+    return main;
+  }
+
+  /** The setup form: Players, Map, Factions and Play. */
+  #setupForm(replace: boolean): HTMLFormElement {
+    const form = this.#document.createElement("form");
+    form.className = "v7-setup-form";
     form.append(
       setupHeading(this.#document, "units", "Players"),
       select(
@@ -2077,8 +2271,7 @@ export class Ruleset7DomAppView {
       }
       void this.#launch(setup, replace);
     });
-    main.append(form, this.#frontEntries(), this.#ruleset6Link());
-    return main;
+    return form;
   }
 
   /**
@@ -2302,52 +2495,12 @@ export class Ruleset7DomAppView {
     return fieldset;
   }
 
-  #resume(): HTMLElement {
-    const main = el(this.#document, "main", "v7-front-screen");
-    const view = this.#snapshot.view;
-    // A campaign mission is labelled by its number and name (CAMPAIGN.md
-    // section 4.2): "Mission 2 · The Warrens · Turn 7".
-    const mission =
-      view?.setup.mission === undefined
-        ? null
-        : campaignMissionV7(view.setup.mission.id);
-    const summary = text(
-      this.#document,
-      "p",
-      view === null
-        ? "A saved game is waiting."
-        : mission !== null
-          ? `Mission ${mission.entry.number} · ${mission.entry.name} · Turn ${view.round}`
-          : `Turn ${view.round} · ${view.viewer.coins} coins · ${playerCountLabelV7(view)} · ${MAP_TYPE_LABELS[view.setup.mapType] ?? title(view.setup.mapType)}`,
-      "v7-resume-summary",
-    );
-    if (mission !== null) summary.dataset.missionId = mission.entry.missionId;
-    main.append(this.#brand(), text(this.#document, "h2", "Continue"), summary);
-    const actions = el(this.#document, "div", "button-row");
-    const resume = button(this.#document, "Resume", "resume", "primary-action");
-    resume.onclick = () => void this.#resumeMatch();
-    const replace = button(this.#document, "New game", "show-replace");
-    replace.onclick = () => {
-      this.#replacing = true;
-      this.#render();
-    };
-    const remove = button(
-      this.#document,
-      "Delete",
-      "delete-save",
-      "destructive",
-    );
-    remove.onclick = () => void this.#deleteSave();
-    actions.append(resume, replace, remove);
-    main.append(actions, this.#frontEntries(), this.#ruleset6Link());
-    return main;
-  }
-
   #recovery(): HTMLElement {
-    const main = el(this.#document, "main", "v7-front-screen");
-    main.append(
-      this.#brand(),
-      text(this.#document, "h2", "Save can't be loaded"),
+    const { main, panel } = this.#frontPanelScreen(
+      "recovery",
+      "Save can't be loaded",
+    );
+    panel.append(
       text(
         this.#document,
         "p",
@@ -2363,7 +2516,7 @@ export class Ruleset7DomAppView {
         text(this.#document, "summary", "Details"),
         text(this.#document, "p", diagnostic),
       );
-      main.append(details);
+      panel.append(details);
     }
     const remove = button(
       this.#document,
@@ -2372,23 +2525,8 @@ export class Ruleset7DomAppView {
       "destructive",
     );
     remove.onclick = () => void this.#deleteSave();
-    main.append(remove, this.#ruleset6Link());
+    panel.append(remove, this.#ruleset6Link());
     return main;
-  }
-
-  /**
-   * The front screen's Gallery entry (bead pulp_wars-ic8): every faction's
-   * units and buildings side by side, in the live CHIBI look.
-   */
-  #galleryEntry(): HTMLButtonElement {
-    const entry = button(
-      this.#document,
-      "Gallery",
-      "gallery",
-      "secondary-action v7-gallery-entry",
-    );
-    entry.onclick = () => this.#openGallery();
-    return entry;
   }
 
   #openGallery(): void {
@@ -6727,7 +6865,7 @@ export class Ruleset7DomAppView {
       "primary-action",
     );
     restart.onclick = () => void this.#restart();
-    actions.append(restart);
+    actions.append(restart, this.#resultsMenuButton());
     result.append(actions, this.#ruleset6Link());
     return result;
   }
@@ -6877,9 +7015,43 @@ export class Ruleset7DomAppView {
     }
     const campaign = button(this.#document, "Campaign", "campaign-menu");
     campaign.onclick = () => void this.#leaveFinishedMission(null);
-    actions.append(campaign);
+    actions.append(campaign, this.#resultsMenuButton());
     result.append(actions);
     return result;
+  }
+
+  /** "Main menu" on every end dialog (bead pulp_wars-2yc.18). */
+  #resultsMenuButton(): HTMLButtonElement {
+    const menu = button(this.#document, "Main menu", "results-menu");
+    menu.onclick = () => void this.#leaveFinishedMatch();
+    return menu;
+  }
+
+  /**
+   * Leaves a finished match for the main menu. Like a finished mission
+   * left for the campaign, the match is cleared from the autosave slot:
+   * there is nothing in it to continue.
+   */
+  async #leaveFinishedMatch(): Promise<void> {
+    this.#cancelPresentations();
+    this.#frontPage = "MENU";
+    this.#confirmCampaignReset = false;
+    this.#briefingMissionId = null;
+    this.#briefingFaction = null;
+    this.#selection = null;
+    this.#screen = "MATCH";
+    this.#compactMenuOpen = false;
+    this.#achievementNotices = [];
+    this.#notice = "";
+    const deleted = await this.#controller.deleteStoredSave();
+    if (this.#destroyed) return;
+    if (!deleted) {
+      this.#error = "The finished game couldn't be closed.";
+      this.#render();
+      return;
+    }
+    this.#frontFocus = MENU_FIRST_V7;
+    this.#render();
   }
 
   /**
@@ -6892,8 +7064,7 @@ export class Ruleset7DomAppView {
     this.#cancelPresentations();
     // Set before the controller empties the slot, so its snapshot already
     // renders the campaign screen.
-    this.#frontMode = "CAMPAIGN";
-    this.#replacing = false;
+    this.#frontPage = "CAMPAIGN";
     this.#confirmCampaignReset = false;
     this.#briefingMissionId = nextMissionId;
     this.#briefingFaction = null;
@@ -6910,7 +7081,7 @@ export class Ruleset7DomAppView {
     }
     this.#frontFocus =
       nextMissionId === null
-        ? '[data-action="mode-campaign"]'
+        ? '[data-action="front-back"]'
         : "#v7-briefing-title";
     this.#render();
   }
@@ -7038,7 +7209,7 @@ export class Ruleset7DomAppView {
       return;
     }
     this.#matchInstance += 1;
-    this.#replacing = false;
+    this.#frontPage = "MENU";
     this.#briefingMissionId = null;
     this.#selection = null;
     this.#notice = "Game started.";
@@ -7080,6 +7251,8 @@ export class Ruleset7DomAppView {
     this.#screen = "MATCH";
     this.#compactMenuOpen = false;
     this.#notice = "Game saved.";
+    this.#frontPage = "MENU";
+    this.#frontFocus = MENU_FIRST_V7;
     this.#render();
   }
   /** Resolves true when the command was accepted and its presentation ran. */
@@ -7220,6 +7393,8 @@ export class Ruleset7DomAppView {
       this.#selection = null;
       this.#screen = "MATCH";
       this.#notice = "Save deleted.";
+      this.#frontPage = "MENU";
+      this.#frontFocus = MENU_FIRST_V7;
     } else this.#error = "The save couldn't be deleted.";
     this.#render();
   }

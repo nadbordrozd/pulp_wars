@@ -26,13 +26,31 @@ export type TitleSceneStateV7 = "EMPTY" | "LOADING" | "READY";
 /** Frames a second of the idle motion: pixel art moves in steps. */
 const TICKS_PER_SECOND = 10;
 
-/** Screen pixels per art pixel for a canvas of this CSS size. */
+/**
+ * Screen pixels per art pixel for a canvas of this CSS size. The scene
+ * fills the screen behind the main menu (bead pulp_wars-2yc.18), so the
+ * scale is the largest that still leaves a wide picture: room for the
+ * ranks beside the menu, and sky above the range.
+ */
 export function titleSceneScaleV7(width: number, height: number): number {
-  // The largest scale that still leaves room for the ranks and the rows.
-  let scale = 3;
-  while (scale > 1 && (width / scale < 360 || height / scale < 200)) scale -= 1;
+  let scale = 4;
+  for (; scale > 1; scale -= 1) {
+    const rows = height / scale;
+    // A wide picture on a landscape screen; an upright one may be narrower.
+    if (
+      rows >= 300 &&
+      width / scale >= Math.min(480, Math.max(240, rows * 0.45))
+    )
+      break;
+  }
   return scale;
 }
+
+/**
+ * The share of the scene's width the menu may claim at the west edge; a
+ * wider menu (a phone's, centred) is not cleared for: it sits in the sky.
+ */
+const MENU_CLEAR_LIMIT = 0.5;
 
 export class TitleSceneViewV7 {
   readonly root: HTMLElement;
@@ -51,17 +69,24 @@ export class TitleSceneViewV7 {
   #redrawQueued = false;
   #observer: ResizeObserver | null = null;
   #destroyed = false;
+  readonly #menuWidth: () => number;
 
   constructor(
     documentRoot: Document,
     options: {
       readonly environment: ChibiRasterEnvironmentV7;
       readonly motion: "FULL" | "REDUCED";
+      /**
+       * CSS pixels the menu covers at the scene's west edge (0: none); the
+       * units keep clear of it.
+       */
+      readonly menuWidth?: () => number;
     },
   ) {
     this.#document = documentRoot;
     this.#environment = options.environment;
     this.#motion = options.motion;
+    this.#menuWidth = options.menuWidth ?? (() => 0);
     this.root = documentRoot.createElement("div");
     this.root.className = "v7-title-scene";
     this.root.setAttribute("aria-hidden", "true");
@@ -173,9 +198,12 @@ export class TitleSceneViewV7 {
     const scale = titleSceneScaleV7(cssWidth, cssHeight);
     const dpr = Math.max(1, this.#document.defaultView?.devicePixelRatio ?? 1);
     const deviceScale = scale * dpr;
+    const menu = this.#menuWidth();
     const scene = titleSceneV7({
       width: cssWidth / scale,
       height: cssHeight / scale,
+      clearLeft:
+        menu > 0 && menu <= cssWidth * MENU_CLEAR_LIMIT ? menu / scale : 0,
     });
     // Resolve everything first: a context is asked for only with something
     // to draw (a DOM without canvas support draws nothing).

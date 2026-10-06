@@ -714,7 +714,66 @@ describe("Ruleset 7 browser smoke script", () => {
       "Curiosities ${curiosities}. Many players ${manySeats}; asset preload ${preload}. Evidence:",
     );
   });
-  it("probes the campaign: switch, list, briefing, mission start, a fixture win and the filtered choice", () => {
+  it("drives the title screen: the menu over the scene, its keys, New game, and Main menu after a match", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    // The opening checks the menu's buttons, focus and place over the scene.
+    expect(source).toContain(
+      'titleScreen.actions.join() !== "new-game,campaign,gallery,front-settings"',
+    );
+    expect(source).toContain('titleScreen.focused !== "new-game"');
+    expect(source).toContain("!titleScreen.overScene");
+    expect(source).toContain("titleScreen.overflow > 0");
+    // Arrow keys wrap; Enter on New game opens the setup with focus on Menu.
+    expect(source).toContain(
+      'await pressKey(connection, "ArrowUp", "ArrowUp")',
+    );
+    expect(source).toContain('wrapped !== "front-settings"');
+    expect(source).toContain(
+      "${SETUP_OPEN_V7} && document.activeElement?.dataset?.action === 'front-back'",
+    );
+    // Every probe that drives the setup form opens it with a real click.
+    const helper = source.slice(
+      source.indexOf("async function openNewGame("),
+      source.indexOf("async function launchWithFastForward("),
+    );
+    expect(helper).toContain(
+      `await pointerClick(connection, '[data-action="new-game"]')`,
+    );
+    expect(source.split("await openNewGame(connection);").length - 1).toBe(10);
+    // Save & quit shows Continue, selected, in the menu.
+    expect(source).toContain(
+      "resume.querySelector('.v7-menu-button-label')?.textContent === 'Continue' && document.activeElement === resume",
+    );
+    // The natural match's end dialog: Play again and Main menu, which
+    // clears the finished match and returns to the title screen.
+    const end = source.slice(
+      source.indexOf(
+        'await capture(connection, "default-v7-outcome-desktop.png")',
+      ),
+      source.indexOf("const artifacts = {"),
+    );
+    expect(end).toContain('"restart:Play again,results-menu:Main menu"');
+    expect(end).toContain(
+      `await pointerClick(connection, '[data-action="results-menu"]')`,
+    );
+    expect(end).toContain("snapshot?.phase === 'EMPTY'");
+    expect(end).toContain(
+      "localStorage.getItem('pulpWars.save.v7r48.current') === null",
+    );
+    expect(end).toContain(
+      "document.querySelector('[data-action=\"resume\"]') === null",
+    );
+    // The many-players probe opens New game from the menu too.
+    const manySeats = readFileSync(
+      "scripts/browser-smoke-v7-many-seats.ts",
+      "utf8",
+    );
+    expect(manySeats).toContain(
+      `await driver.pointerClick('[data-action="new-game"]')`,
+    );
+  });
+
+  it("probes the campaign: menu button, list, briefing, mission start, a fixture win and the filtered choice", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     const probe = source.slice(
       source.indexOf("async function probeCampaign("),
@@ -722,14 +781,10 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     expect(source).toContain("await probeCampaign(connection)");
     expect(source).toContain("; Campaign ${campaign}; art sets");
-    // The switch is first in the setup's reading order.
-    expect(source).toContain(
-      "The Skirmish / Campaign switch (pulp_wars-68k.5) comes first",
-    );
     // The campaign key survives the obsolete-key cleanup and Delete save.
     expect(source).toContain("keys.campaign !== SEEDED_CAMPAIGN_PROGRESS_V7");
     expect(probe).toContain(
-      `await pointerClick(connection, '[data-action="mode-campaign"]')`,
+      `await pointerClick(connection, '[data-action="campaign"]')`,
     );
     expect(probe).toContain('"Mission 1, Goblins at the Gate, open"');
     expect(probe).toContain('"Mission 2, The Warrens, locked"');

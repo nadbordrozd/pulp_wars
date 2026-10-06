@@ -331,7 +331,7 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
       );
       const app = bootstrapRuleset7App(document);
       document
-        .querySelector<HTMLButtonElement>('[data-action="mode-campaign"]')
+        .querySelector<HTMLButtonElement>('[data-action="campaign"]')
         ?.click();
       await settle();
       check("campaign list");
@@ -363,7 +363,7 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
     window.localStorage.clear();
     const app = bootstrapRuleset7App(document);
     document
-      .querySelector<HTMLButtonElement>('[data-action="mode-campaign"]')
+      .querySelector<HTMLButtonElement>('[data-action="campaign"]')
       ?.click();
     await settle();
     document
