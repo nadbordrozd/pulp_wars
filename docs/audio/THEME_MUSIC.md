@@ -1,7 +1,7 @@
 # Faction theme music
 
-Bead `pulp_wars-2yc.21`. Every faction gets a theme: a short instrumental
-loop. The user generates the music in Suno or ElevenLabs Music; this
+Beads `pulp_wars-2yc.21` and `pulp_wars-2yc.23` (the Suno Styles-field
+form). Every faction gets a theme: a short instrumental loop. The user generates the music in Suno or ElevenLabs Music; this
 document holds the direction, the prompts and the process, so that eight
 themes made on different days sound like one soundtrack and a ninth can
 join them later.
@@ -11,7 +11,9 @@ here has been run through a service: expect to adjust wording after the
 first takes, and record the change ([Changing a prompt](#changing-a-prompt)).
 The service descriptions below are written from general knowledge of the
 two products as of October 2026 and were not checked against their live
-interfaces ([What to check first](#what-to-check-in-the-service-first)).
+interfaces ([What to check first](#what-to-check-in-the-service-first)),
+with one exception: the user checked on 2026-10-06 that Suno's Styles field
+takes up to 1000 characters.
 
 The prompts live in [`theme-prompts.json`](theme-prompts.json). The section
 [The prompts](#the-prompts) is generated from that file by
@@ -146,23 +148,44 @@ scale colour, and the mood. Two rules keep the themes apart:
 ## How to prompt each service
 
 Both services change their fields, limits and model names often. The
-prompts are stored in two forms so that one of them fits whatever the
-service offers:
+prompts are stored in three forms that describe the same piece, so that
+one of them fits whatever the service offers:
 
-- a **short tag form** (a comma-separated list within a tight character
-  budget), with a separate list of things to exclude and a block of section
-  tags;
-- a **long descriptive form** (one self-contained paragraph).
+- a **Suno Styles-field form**: one line of comma-separated phrases and
+  short clauses, at most 1000 characters. It is the primary Suno prompt. It
+  is complete as stored and pasted as it is: it says "instrumental, no
+  vocals" near its start and carries the tempo, the metre, the mode, the
+  instruments and what they do, the A-B-A form with its middle section, the
+  opening call, the map pulse, the open ending, the mix and the tone;
+- a **short tag form** (a comma-separated list within 200 characters), for
+  a tool with a small style field and as a fallback;
+- a **long descriptive form** (one self-contained paragraph), for
+  ElevenLabs Music. At 1300 to 1500 characters it does not fit Suno's
+  field.
 
-If a field is shorter than the budget used here, cut tags from the **end**
-of a style string: the faction's own tags come first because they matter
-most, and the shared ones come last.
+The Suno forms come with a separate list of things to exclude and a block
+of section tags.
+
+The Styles field takes up to 1000 characters, per the user's check in the
+Suno interface on 2026-10-06. Field limits change: verify the limit in the
+interface before pasting. The strings are written to 940 to 980 characters
+(the two seven-second stingers are shorter: there is less to say), so a
+small edit still fits; the check counts code points, as a field does.
+
+If a field is shorter than the budget used here, cut from the **end** of a
+string. In the Styles-field form the genre, the instrumental statement, the
+tempo, the metre, the mood and the instruments come first and the shared
+mix and tone phrases come last; in the short tags the faction's own tags
+come first and the shared ones last. If the field is much shorter, use the
+short tags.
 
 ### What to check in the service first
 
-- The **character limit** of the style field and of the exclude field. The
-  budget here is 200 characters for each, chosen to be conservative. Every
-  string shows its length.
+- The **character limit** of the Styles field and of the exclude field. The
+  budget here is 1000 characters for the Styles field (the user's check on
+  2026-10-06) and 200 for the short tags and for the exclude field (the
+  exclude limit was not checked and 200 is conservative). Every string
+  shows its length.
 - Whether there is an **instrumental** switch, and whether turning it on
   hides the lyrics field (see [Suno](#suno)).
 - Which **model or version** is selected. Write it down: it goes into the
@@ -180,14 +203,14 @@ most, and the shared ones come last.
 
 Use the custom (advanced) mode, which has separate fields.
 
-| Field in Suno               | What to paste                                                               |
-| --------------------------- | --------------------------------------------------------------------------- |
-| Style of music              | The faction's "Suno, style of music" block                                  |
-| Instrumental switch         | On                                                                          |
-| Lyrics                      | The faction's "structure tags" block, if the field is available (see below) |
-| Exclude styles              | The faction's "Suno, exclude styles" block                                  |
-| Title                       | The theme id, for example `theme.undead`, so that takes are easy to find    |
-| Weirdness and style sliders | Leave at their defaults for the first takes; record any change              |
+| Field in Suno               | What to paste                                                                                                                         |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Styles                      | The faction's "Suno — Styles field (up to 1000 characters)" block, as it is. Where the field is shorter, the "Suno, short tags" block |
+| Instrumental switch         | On                                                                                                                                    |
+| Lyrics                      | The faction's "structure tags" block, if the field is available (see below)                                                           |
+| Exclude styles              | The faction's "Suno, exclude styles" block                                                                                            |
+| Title                       | The theme id, for example `theme.undead`, so that takes are easy to find                                                              |
+| Weirdness and style sliders | Leave at their defaults for the first takes; record any change                                                                        |
 
 About the lyrics field. The structure block contains only bracketed tags
 (`[Intro: …]`, `[A: …]`, `[B: …]`) and no words outside brackets, so there
@@ -198,8 +221,12 @@ on the current interface:
   paste the block there.
 - If the switch hides the field, generate first with the switch on and no
   block. If the result ignores the A, B, A form, turn the switch off, paste
-  the block (it begins with `[Instrumental]`), and keep `instrumental` in
-  the style field. Reject any take with a voice in it.
+  the block (it begins with `[Instrumental]`); the Styles field already
+  says "instrumental, no vocals". Reject any take with a voice in it.
+
+The Styles-field string names the form too (A-B-A, what the middle
+section does, the open last bar), so the structure block reinforces it
+and is not required.
 
 Tags are hints, not commands. Expect some takes to ignore the form, add an
 intro or end with a flourish; that is what several takes and the checklist
@@ -235,8 +262,9 @@ length give the section lengths.
   "1950s space-age sci-fi", never a film title. The Candy faction began
   from a television cartoon; its prompt describes sweets and toy
   instruments and never names it.
-- **No request for a voice** anywhere but the exclude tags and the one
-  sentence that forbids it.
+- **No request for a voice** anywhere but the exclude tags, the one
+  sentence that forbids it and the Styles-field string's "instrumental, no
+  vocals".
 - **No imitation phrases** such as "in the style of" or "sounds like".
 - **Concrete instruments over adjectives.** "Wheezy reed organ" does more
   than "spooky".
@@ -244,8 +272,12 @@ length give the section lengths.
 
 The unit test `tests/unit/theme-prompts.test.ts` enforces the first three
 against word lists kept in `scripts/audio/theme-prompts.ts`, along with
-the character budgets. The name list catches the obvious names only; the
-rule is no names at all.
+the character budgets. For the Styles-field string it also checks that
+"instrumental, no vocals" comes within the first 200 characters, that the
+entry's tempo in BPM (and no other) and its metre are stated, that the
+rising three-note call is named, that a looping piece says "loopable", and
+that the string is one line. The name list catches the obvious names only;
+the rule is no names at all.
 
 ## The prompts
 
@@ -254,17 +286,20 @@ edit [`theme-prompts.json`](theme-prompts.json) and run
 `npm run audio:theme-prompts -- render`
 ([Changing a prompt](#changing-a-prompt)).
 
-In the data file a faction stores only its own tags and its own paragraph.
-The blocks below are the complete texts to paste: the shared fragments are
-already joined on.
+In the data file a faction stores its Styles-field string complete
+(`sunoStyleLong`), and only its own short tags and its own paragraph. The
+blocks below are the complete texts to paste: the shared fragments are
+already joined on to the short tags, the exclude tags and the paragraph.
 
 <!-- theme-prompts:begin (generated by scripts/audio/theme-prompts.ts from theme-prompts.json; do not edit by hand) -->
 
 ### Shared fragments
 
-Schema version 1; shared fragments version 1. Budgets: Suno style 200 characters, Suno exclude 200 characters, long prompt 1800 characters. Length: 100 seconds, accept 90–120. The shared opening: a rising three-note call.
+Schema version 2; shared fragments version 1. Budgets: Suno Styles field 1000 characters, Suno short tags 200 characters, Suno exclude 200 characters, long prompt 1800 characters. Length: 100 seconds, accept 90–120. The shared opening: a rising three-note call.
 
-Appended to every faction's Suno style tags:
+The Styles-field string is stored complete for every entry; nothing below is added to it.
+
+Appended to every faction's Suno short tags:
 
 ```text
 instrumental, playful strategy game theme, clear melody, steady tempo, loopable
@@ -301,7 +336,7 @@ A tidy storybook-kingdom march: the town band of a practical realm of settlers, 
 
 | Field          | Value                                        |
 | -------------- | -------------------------------------------- |
-| Prompt version | `ORIGINAL@1+s1`                              |
+| Prompt version | `ORIGINAL@2+s1`                              |
 | Theme id       | `theme.human`                                |
 | Output file    | `public/audio/theme-human.ogg`               |
 | Tempo          | 116 BPM, accept 112–120                      |
@@ -313,7 +348,13 @@ A tidy storybook-kingdom march: the town band of a practical realm of settlers, 
 | Mood           | proud, confident, good-humoured, orderly     |
 | Duration       | 100 seconds                                  |
 
-**Suno, style of music** (190 characters):
+**Suno — Styles field (up to 1000 characters)** (940 characters):
+
+```text
+Storybook medieval kingdom march, playful strategy game theme, instrumental, no vocals, 116 BPM, crisp 4/4 march, bright major key with a Mixolydian lift at the cadence, proud, confident, good-humoured, orderly, toy-soldier pomp, trumpet and French horn lead open at once with a short rising three-note call then carry a catchy fanfare melody, crisp snare drum, soft timpani, walking pizzicato bass, lute keeps a steady plucked map pulse like footsteps, recorder colour, A-B-A form, B section drops the brass for a gentle recorder and lute duet, then the full town band returns with the fanfare, steady tempo, melody starts within two seconds, no long intro, no fade-out, last bar is a snare turnaround left open to loop straight back to bar one, loopable, about 100 seconds, small ensemble, close and fairly dry mix with headroom, light background music under sound effects, bright adventurous tongue-in-cheek pulp tone, never dark or grim
+```
+
+**Suno, short tags (fallback, up to 200 characters)** (190 characters):
 
 ```text
 storybook medieval march, bright trumpet and horn fanfare, snare, timpani, recorder, lute, major key, 116 bpm, instrumental, playful strategy game theme, clear melody, steady tempo, loopable
@@ -349,7 +390,7 @@ A spooky-fun graveyard waltz from a Halloween picture book: creaky, mock-solemn 
 
 | Field          | Value                                             |
 | -------------- | ------------------------------------------------- |
-| Prompt version | `UNDEAD@1+s1`                                     |
+| Prompt version | `UNDEAD@2+s1`                                     |
 | Theme id       | `theme.undead`                                    |
 | Output file    | `public/audio/theme-undead.ogg`                   |
 | Tempo          | 96 BPM, accept 90–100                             |
@@ -361,7 +402,13 @@ A spooky-fun graveyard waltz from a Halloween picture book: creaky, mock-solemn 
 | Mood           | spooky-fun, mock-solemn, creepy-cute, sly         |
 | Duration       | 100 seconds                                       |
 
-**Suno, style of music** (197 characters):
+**Suno — Styles field (up to 1000 characters)** (965 characters):
+
+```text
+Spooky-fun graveyard waltz, playful strategy game theme, instrumental, no vocals, 96 BPM, creaky 3/4 waltz, harmonic minor played with a wink, mock-solemn, creepy-cute, sly, harpsichord lead opens at once with a short rising three-note call then plays the tune answered by a wheezy reed organ, bass clarinet and plucked double bass plod the oom-pah-pah, dry xylophone rattles like bones on the offbeats, pizzicato strings keep a steady plucked map pulse like slow footsteps, A-B-A form, B section sinks to a lone music box playing the tune, very quiet, then the instruments creak back in one by one for the full waltz, steady tempo, melody starts within two seconds, no long intro, no fade-out, last bar is a one-bar turnaround left open to loop straight back to bar one, loopable, about 100 seconds, small ensemble, close and fairly dry mix with headroom, light background music under sound effects, bright adventurous tongue-in-cheek pulp tone, never dark or grim
+```
+
+**Suno, short tags (fallback, up to 200 characters)** (197 characters):
 
 ```text
 spooky-fun creaky waltz, harpsichord, wheezy reed organ, bone xylophone, music box, bass clarinet, minor 3/4, 96 bpm, instrumental, playful strategy game theme, clear melody, steady tempo, loopable
@@ -397,7 +444,7 @@ A rowdy, ramshackle horde shuffle on junk percussion that always sounds about to
 
 | Field          | Value                                                       |
 | -------------- | ----------------------------------------------------------- |
-| Prompt version | `GOBLIN@1+s1`                                               |
+| Prompt version | `GOBLIN@2+s1`                                               |
 | Theme id       | `theme.goblin`                                              |
 | Output file    | `public/audio/theme-goblin.ogg`                             |
 | Tempo          | 138 BPM, accept 132–144                                     |
@@ -409,7 +456,13 @@ A rowdy, ramshackle horde shuffle on junk percussion that always sounds about to
 | Mood           | mischievous, rowdy, scrappy, reckless                       |
 | Duration       | 100 seconds                                                 |
 
-**Suno, style of music** (187 characters):
+**Suno — Styles field (up to 1000 characters)** (966 characters):
+
+```text
+Rowdy ramshackle goblin shuffle, playful strategy game theme, instrumental, no vocals, 138 BPM, swung 4/4 shuffle with a lurching offbeat, minor key with chromatic slips, mischievous, scrappy, reckless, funny not menacing, squawking bassoon and bass clarinet lead open at once with a short rising three-note call then trade a cheeky melody, junk percussion of pots, pans, tin cans and chain, off-key tuba on the offbeats, detuned banjo keeps a steady plucked map pulse like small feet, A-B-A form, B section goes sneaky and quiet, tiptoeing pizzicato and a hissing fuse, a firecracker pop brings the whole gang back louder, steady tempo, melody starts within two seconds, no long intro, no fade-out, last bar is a junk drum fill left open to loop straight back to bar one, loopable, about 100 seconds, small ensemble, close and fairly dry mix with headroom, light background music under sound effects, bright adventurous tongue-in-cheek pulp tone, never dark or grim
+```
+
+**Suno, short tags (fallback, up to 200 characters)** (187 characters):
 
 ```text
 rowdy goblin shuffle, squawking bassoon, bass clarinet, junk percussion, tuba, banjo, swung minor, 138 bpm, instrumental, playful strategy game theme, clear melody, steady tempo, loopable
@@ -446,7 +499,7 @@ A cheerful lost-world stomp: a sunny ocarina tune over the footsteps of somethin
 
 | Field          | Value                                    |
 | -------------- | ---------------------------------------- |
-| Prompt version | `DINOSAUR@1+s1`                          |
+| Prompt version | `DINOSAUR@2+s1`                          |
 | Theme id       | `theme.dinosaur`                         |
 | Output file    | `public/audio/theme-dinosaur.ogg`        |
 | Tempo          | 104 BPM, accept 100–108                  |
@@ -458,7 +511,13 @@ A cheerful lost-world stomp: a sunny ocarina tune over the footsteps of somethin
 | Mood           | primal, sunny, goofy, lumbering          |
 | Duration       | 100 seconds                              |
 
-**Suno, style of music** (195 characters):
+**Suno — Styles field (up to 1000 characters)** (961 characters):
+
+```text
+Cheerful lost-world primal stomp, playful strategy game theme, instrumental, no vocals, 104 BPM, 4/4 half-time stomp on beats one and three, major pentatonic, primal, sunny, goofy, lumbering, playful not savage, ocarina lead opens at once with a short rising three-note call then pipes a sunny tune answered by a tuba and trombone riff, big toms and log drums pound the stomp, shakers, stone clicks, kalimba keeps a steady plucked map pulse like footsteps, A-B-A form, B section shrinks to kalimba, shaker and soft egg-shell taps, small and quiet, a drum fill cracks the egg and the stomp returns bigger with full low brass, steady tempo, melody starts within two seconds, no long intro, no fade-out, last bar is a tom fill left open to loop straight back to bar one, loopable, about 100 seconds, small ensemble, close and fairly dry mix with headroom, light background music under sound effects, bright adventurous tongue-in-cheek pulp tone, never dark or grim
+```
+
+**Suno, short tags (fallback, up to 200 characters)** (195 characters):
 
 ```text
 cheerful primal stomp, big toms and log drums, ocarina, tuba and trombone riff, kalimba, major pentatonic, 104 bpm, instrumental, playful strategy game theme, clear melody, steady tempo, loopable
@@ -495,7 +554,7 @@ A campy 1950s pulp sci-fi invasion: a wobbling theremin over a strict machine pu
 
 | Field          | Value                                                             |
 | -------------- | ----------------------------------------------------------------- |
-| Prompt version | `MARTIAN@1+s1`                                                    |
+| Prompt version | `MARTIAN@2+s1`                                                    |
 | Theme id       | `theme.martian`                                                   |
 | Output file    | `public/audio/theme-martian.ogg`                                  |
 | Tempo          | 126 BPM, accept 122–130                                           |
@@ -507,7 +566,13 @@ A campy 1950s pulp sci-fi invasion: a wobbling theremin over a strict machine pu
 | Mood           | campy, ominous, smug, retro-futurist                              |
 | Duration       | 100 seconds                                                       |
 
-**Suno, style of music** (198 characters):
+**Suno — Styles field (up to 1000 characters)** (966 characters):
+
+```text
+Campy 1950s space-age sci-fi invasion, retro-futurist, playful strategy game theme, instrumental, no vocals, 126 BPM, straight mechanical 4/4 pulse, eerie whole-tone and chromatic, ominous, smug, menace played for laughs, wobbling theremin lead opens at once with a short rising three-note call then glides through the tune shadowed by vibraphone, analogue synth bass ticks a strict machine pulse, bongos, brushed cymbal, bleeping sequencer keeps a steady map pulse like radar blips, A-B-A form, B section hovers, no drums, electric organ drone, ray-gun zaps and rising sweeps, then the pulse snaps back with the theremin, steady tempo, melody starts within two seconds, no long intro, no fade-out, last bar is one bar of bleeps left open to loop straight back to bar one, loopable, about 100 seconds, small ensemble, close and fairly dry mix with headroom, light background music under sound effects, bright adventurous tongue-in-cheek pulp tone, never dark or grim
+```
+
+**Suno, short tags (fallback, up to 200 characters)** (198 characters):
 
 ```text
 campy 1950s space-age sci-fi, wobbly theremin lead, analog synth pulse, vibraphone, bongos, eerie whole-tone, 126 bpm, instrumental, playful strategy game theme, clear melody, steady tempo, loopable
@@ -543,7 +608,7 @@ A calm, crystalline winter picture book from the high peaks: glassy bells and a 
 
 | Field          | Value                                      |
 | -------------- | ------------------------------------------ |
-| Prompt version | `ICE_FOLK@1+s1`                            |
+| Prompt version | `ICE_FOLK@2+s1`                            |
 | Theme id       | `theme.ice-folk`                           |
 | Output file    | `public/audio/theme-ice-folk.ogg`          |
 | Tempo          | 66 BPM (dotted quarter beat), accept 60–72 |
@@ -555,7 +620,13 @@ A calm, crystalline winter picture book from the high peaks: glassy bells and a 
 | Mood           | calm, crystalline, spacious, friendly      |
 | Duration       | 100 seconds                                |
 
-**Suno, style of music** (199 characters):
+**Suno — Styles field (up to 1000 characters)** (968 characters):
+
+```text
+Calm crystalline winter mountain tune, playful strategy game theme, instrumental, no vocals, 66 BPM on the dotted quarter, gently rocking 6/8 lilt in two, bright cold Dorian mode, spacious, friendly, peaceful not bleak, celesta lead opens at once with a short rising three-note call then plays a slow clear melody doubled by glass harmonica, distant long wooden mountain horn answers low, soft frame drum heartbeat, sleigh bells, cello drone, harp keeps a steady plucked map pulse like footsteps in snow, A-B-A form, B section thins to bowed glass and single icy bells, no drum, hushed, then the celesta returns with the horn, steady tempo, melody starts within two seconds, no long intro, no fade-out, last bar is one bar of harp left open to loop straight back to bar one, loopable, about 100 seconds, small ensemble, close and fairly dry mix with headroom, light background music under sound effects, bright adventurous tongue-in-cheek pulp tone, never dark or grim
+```
+
+**Suno, short tags (fallback, up to 200 characters)** (199 characters):
 
 ```text
 calm crystalline winter tune, celesta, glass harmonica, distant alphorn, soft frame drum, sleigh bells, harp, slow 6/8, instrumental, playful strategy game theme, clear melody, steady tempo, loopable
@@ -591,7 +662,7 @@ A sturdy steam-and-forge work tune: low brass in unison, an anvil on the backbea
 
 | Field          | Value                                                             |
 | -------------- | ----------------------------------------------------------------- |
-| Prompt version | `DWARF@1+s1`                                                      |
+| Prompt version | `DWARF@2+s1`                                                      |
 | Theme id       | `theme.dwarf`                                                     |
 | Output file    | `public/audio/theme-dwarf.ogg`                                    |
 | Tempo          | 84 BPM, accept 80–88                                              |
@@ -603,7 +674,13 @@ A sturdy steam-and-forge work tune: low brass in unison, an anvil on the backbea
 | Mood           | sturdy, heavy, cheerful, industrious                              |
 | Duration       | 100 seconds                                                       |
 
-**Suno, style of music** (192 characters):
+**Suno — Styles field (up to 1000 characters)** (976 characters):
+
+```text
+Sturdy steampunk forge work tune, playful strategy game theme, instrumental, no vocals, 84 BPM, heavy 4/4 hammer-and-anvil tread, major key with a flat seventh, cheerful, industrious, toy-like, tuba and euphonium lead in unison open at once with a short rising three-note call then carry a broad melody, concertina fills, anvil on beats two and four, bass drum on one and three, steam hiss as the hi-hat, ticking clockwork and ratchet keep a steady map pulse like turning gears, A-B-A form, B section goes underground with muffled low brass, tremolo double bass rumble and ticking alone, a steam whistle brings the full workshop back, steady tempo, melody starts within two seconds, no long intro, no fade-out, last bar is anvil and steam left open to loop straight back to bar one, loopable, about 100 seconds, small ensemble, close and fairly dry mix with headroom, light background music under sound effects, bright adventurous tongue-in-cheek pulp tone, never dark or grim
+```
+
+**Suno, short tags (fallback, up to 200 characters)** (192 characters):
 
 ```text
 sturdy steampunk work tune, tuba and euphonium, concertina, anvil, ticking clockwork, steam hiss, heavy, 84 bpm, instrumental, playful strategy game theme, clear melody, steady tempo, loopable
@@ -640,7 +717,7 @@ A sugary, bouncy polka on toy instruments with a warm chocolate-rich bass, a gid
 
 | Field          | Value                                                  |
 | -------------- | ------------------------------------------------------ |
-| Prompt version | `CANDY@1+s1`                                           |
+| Prompt version | `CANDY@2+s1`                                           |
 | Theme id       | `theme.candy`                                          |
 | Output file    | `public/audio/theme-candy.ogg`                         |
 | Tempo          | 156 BPM, accept 150–162                                |
@@ -652,7 +729,13 @@ A sugary, bouncy polka on toy instruments with a warm chocolate-rich bass, a gid
 | Mood           | sugary, giddy, bouncy, silly                           |
 | Duration       | 100 seconds                                            |
 
-**Suno, style of music** (197 characters):
+**Suno — Styles field (up to 1000 characters)** (963 characters):
+
+```text
+Sugary toy-instrument polka, playful strategy game theme, instrumental, no vocals, 156 BPM, bouncy 2/4 polka, bright major key, giddy, silly, fizzy, toy piano and glockenspiel lead open at once with a short rising three-note call then skip through the melody, kazoo and slide whistle butt in, ukulele strums the offbeats, round rubbery synth bass, warm chocolate-rich low end, popping woodblocks, light brushed snare, marimba keeps a steady map pulse like hopping, A-B-A form, B section is the sugar crash, same tempo in a woozy half-time feel, drooping slide whistle, a pop and the full bounce fizzes back with kazoo, steady tempo, melody starts within two seconds, no long intro, no fade-out, last bar is a glockenspiel run left open to loop straight back to bar one, loopable, about 100 seconds, small ensemble, close and fairly dry mix with headroom, light background music under sound effects, bright adventurous tongue-in-cheek pulp tone, never dark or grim
+```
+
+**Suno, short tags (fallback, up to 200 characters)** (197 characters):
 
 ```text
 sugary bouncy polka, toy piano, glockenspiel, ukulele, kazoo, slide whistle, round synth bass, bright major, 156 bpm, instrumental, playful strategy game theme, clear melody, steady tempo, loopable
@@ -693,14 +776,20 @@ Title screen and menus. Not a faction theme: the manifest's theme entry is per f
 
 | Field          | Value                          |
 | -------------- | ------------------------------ |
-| Prompt version | `theme.title@1+s1`             |
+| Prompt version | `theme.title@2+s1`             |
 | Output file    | `public/audio/theme-title.ogg` |
 | Tempo          | 132 BPM, accept 128–136        |
 | Metre          | 4/4, galloping triplets        |
 | Loops          | yes                            |
 | Duration       | 100 seconds                    |
 
-**Suno, style of music** (142 characters):
+**Suno — Styles field (up to 1000 characters)** (940 characters):
+
+```text
+Pulp adventure title-screen overture, playful strategy game theme, instrumental, no vocals, 132 BPM, galloping 4/4 with a triplet feel, bright major key, bold, adventurous, a little mischievous, small pit orchestra, trumpets and trombones lead open at once with a short rising three-note call then play a bold swashbuckling melody, xylophone doubles the tune, galloping strings keep a steady map pulse underneath, crisp snare drum, A-B-A form, B section passes the melody to playful woodwinds, xylophone and pizzicato strings, lighter, no brass, then the full orchestra returns with the theme, steady tempo, melody starts within two seconds, no long intro, no fade-out, last bar is a one-bar turnaround left open to loop straight back to bar one, loopable, about 100 seconds, small ensemble, close and fairly dry mix with headroom, light background music under sound effects, bright adventurous tongue-in-cheek pulp tone, never dark or grim
+```
+
+**Suno, short tags (fallback, up to 200 characters)** (142 characters):
 
 ```text
 instrumental, pulp adventure overture, small pit orchestra, bold brass melody, galloping strings, xylophone, snare, playful, loopable, 132 bpm
@@ -736,14 +825,20 @@ Replaces the synthesised Victory tune (sound id match.victory) by changing that 
 
 | Field          | Value                            |
 | -------------- | -------------------------------- |
-| Prompt version | `match.victory@1+s1`             |
+| Prompt version | `match.victory@2+s1`             |
 | Output file    | `public/audio/match-victory.ogg` |
 | Tempo          | 132 BPM, accept 128–136          |
 | Metre          | 4/4, fanfare                     |
 | Loops          | no                               |
 | Duration       | 7 seconds                        |
 
-**Suno, style of music** (128 characters):
+**Suno — Styles field (up to 1000 characters)** (782 characters):
+
+```text
+Short triumphant victory fanfare stinger, playful turn-based strategy game jingle, instrumental, no vocals, 132 BPM, 4/4 fanfare, bright major key, triumphant, good-humoured, toy-soldier pomp, never solemn, about 7 seconds long, trumpets and trombones start immediately with a short rising three-note call, repeat it one step higher over a snare roll with a xylophone doubling the brass, then land on a big happy major chord with a cymbal crash, one single phrase, no intro, no middle section, no second tune, ends on that final chord with a clean full stop and a short natural ring, does not repeat, no fade-out, no crowd noise, small ensemble, close and fairly dry mix with headroom, sits beside game sound effects, bright adventurous tongue-in-cheek pulp tone, never dark or grim
+```
+
+**Suno, short tags (fallback, up to 200 characters)** (128 characters):
 
 ```text
 instrumental, short triumphant fanfare stinger, bright brass, snare roll, xylophone, cymbal crash, major key, playful, 7 seconds
@@ -776,14 +871,20 @@ Replaces the synthesised Defeat tune (sound id match.defeat) by changing that en
 
 | Field          | Value                           |
 | -------------- | ------------------------------- |
-| Prompt version | `match.defeat@1+s1`             |
+| Prompt version | `match.defeat@2+s1`             |
 | Output file    | `public/audio/match-defeat.ogg` |
 | Tempo          | 80 BPM, accept 76–84            |
 | Metre          | 4/4, drooping                   |
 | Loops          | no                              |
 | Duration       | 7 seconds                       |
 
-**Suno, style of music** (133 characters):
+**Suno — Styles field (up to 1000 characters)** (758 characters):
+
+```text
+Short comic defeat stinger, playful turn-based strategy game jingle, instrumental, no vocals, 80 BPM, slow drooping 4/4, ends on a gentle minor chord, rueful, funny, gentle, better luck next time, never tragic or gloomy, about 7 seconds long, muted trumpet starts immediately with a short rising three-note call, loses heart and droops down in a comic wah-wah fall, bassoon answers with a low shrug, soft timpani thud closes it on the gentle minor chord, one single phrase, no intro, no middle section, no second tune, ends with a clean full stop and a short natural ring, does not repeat, no fade-out, small ensemble, close and fairly dry mix with headroom, sits beside game sound effects, bright tongue-in-cheek pulp tone, light-hearted, never dark or grim
+```
+
+**Suno, short tags (fallback, up to 200 characters)** (133 characters):
 
 ```text
 instrumental, short comic defeat stinger, muted trumpet wah-wah falling phrase, bassoon, soft timpani thud, rueful, gentle, 7 seconds
@@ -899,7 +1000,7 @@ loop.
 | Date                  | The day it was generated                                                                                              |
 | Service               | Suno or ElevenLabs Music                                                                                              |
 | Model or version      | Exactly as the interface shows it                                                                                     |
-| Prompt version        | The id in the faction's table, for example `UNDEAD@1+s1`, and the Git commit of `theme-prompts.json` it was read from |
+| Prompt version        | The id in the faction's table, for example `UNDEAD@2+s1`, and the Git commit of `theme-prompts.json` it was read from |
 | Fields used           | Which blocks went into which fields, every switch and slider that was not at its default, the duration set, any seed  |
 | Changes to the prompt | Any word that differs from the stored text. Better: change the data file, bump the version, and write "none" here     |
 | Takes generated       | How many                                                                                                              |
@@ -943,7 +1044,10 @@ When a theme is replaced, add a new record and leave the old one, marked
 
 ### Changing a prompt
 
-1. Edit the entry in [`theme-prompts.json`](theme-prompts.json).
+1. Edit the entry in [`theme-prompts.json`](theme-prompts.json). The three
+   forms describe one piece: a change to an instrument, the tempo, the
+   metre or the middle section goes into `sunoStyleLong`, the short tags,
+   the structure block and the paragraph together.
 2. Add 1 to that entry's `promptVersion`. If a shared fragment changed
    (`shared.sunoCommonStyle`, `shared.sunoCommonExclude`,
    `shared.instrumentalSentence`, `shared.longPromptTail`), add 1 to
@@ -957,6 +1061,15 @@ A record cites the version it was made from (`UNDEAD@2+s1`: entry version
 2, shared version 1), and Git has the text of every version. Themes
 accepted under an older version stay valid; they are not regenerated
 because a prompt changed.
+
+Versions so far:
+
+| Version                           | Date       | What changed                                                                                                                                                                                                                                                                            |
+| --------------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Entry version 1, schema version 1 | 2026-10-06 | The first prompts (`pulp_wars-2yc.21`).                                                                                                                                                                                                                                                 |
+| Entry version 2, schema version 2 | 2026-10-06 | Adds the 1000-character Suno Styles-field form (`sunoStyleLong`, budget `sunoStyleLongChars`) to all eight factions and the three extras (`pulp_wars-2yc.23`). It changes no musical decision: the short tags, structure blocks, exclude tags and paragraphs are word for word as in 1. |
+
+The shared fragments are still version 1: none of them changed.
 
 ## Adding a future faction
 
@@ -1001,7 +1114,7 @@ prompt entry, so the work cannot be forgotten.
    instrument to theirs (a change to their prompts: bump their versions).
 
 6. **Add the entry** to [`theme-prompts.json`](theme-prompts.json), keyed
-   by the game's faction id, with `promptVersion` 1. Add the obvious
+   by the game's faction id, with `promptVersion` 1 and all three forms. Add the obvious
    artist and franchise names for the faction's genre to
    `THEME_NAME_DENYLIST_V1` in `scripts/audio/theme-prompts.ts`.
 7. **Render and check:** `npm run audio:theme-prompts -- render`, then the
@@ -1012,7 +1125,14 @@ prompt entry, so the work cannot be forgotten.
 
 ### Prompt template
 
-The faction's own tags, to which the shared ones are added (keep the
+The Styles-field string, complete as stored (one line, at most 1000
+characters, aim for 850 to 980; the check reports what is missing):
+
+```text
+<genre or scene in three to six words>, playful strategy game theme, instrumental, no vocals, <tempo> BPM, <feel> <metre>, <mode or key colour>, <three or four mood words>, <lead instruments> lead open at once with a short rising three-note call then <how the melody goes>, <rhythm instrument and what it plays>, <rhythm instrument>, <plucked or struck instrument> keeps a steady map pulse like <footsteps or the faction's own image>, A-B-A form, B section <what drops out and what is left>, <the comic sound or event> and <the theme returns>, steady tempo, melody starts within two seconds, no long intro, no fade-out, last bar is <the turnaround sound> left open to loop straight back to bar one, loopable, about 100 seconds, small ensemble, close and fairly dry mix with headroom, light background music under sound effects, bright adventurous tongue-in-cheek pulp tone, never dark or grim
+```
+
+The faction's own short tags, to which the shared ones are added (keep the
 joined string within the budget; the check reports the length):
 
 ```text
