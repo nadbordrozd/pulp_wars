@@ -2535,8 +2535,7 @@ export class Ruleset7DomAppView {
     this.#gallery ??= new GalleryViewV7(this.#document, {
       storage: this.#settingsStorage,
       onBack: () => this.#closeGallery(),
-      soundPanel: () =>
-        soundTestPanelV7(this.#document, this.#audio, { withControls: true }),
+      audio: this.#audio,
       motion: () => this.#motion,
       ...(this.#chibiDomEnvironment === null
         ? {}

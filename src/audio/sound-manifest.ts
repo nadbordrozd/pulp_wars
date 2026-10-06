@@ -1,3 +1,4 @@
+import type { FactionIdV7 } from "../engine/index";
 import type { SynthLayerV1, SynthRecipeV1, SynthWaveV1 } from "./synth";
 
 /**
@@ -74,12 +75,17 @@ export const SOUND_IDS_V1 = [
 
 export type SoundIdV1 = (typeof SOUND_IDS_V1)[number];
 
-/** The mixer's groups; each has its own level. Ambience has no sound yet. */
+/**
+ * The mixer's groups; each has its own level. Ambience has no sound yet.
+ * Music is the faction themes' group (`SOUND_THEMES_V1`): one music voice
+ * plays at a time.
+ */
 export const SOUND_CATEGORIES_V1 = [
   "combat",
   "economy",
   "ui",
   "ambience",
+  "music",
 ] as const;
 export type SoundCategoryV1 = (typeof SOUND_CATEGORIES_V1)[number];
 
@@ -103,6 +109,34 @@ export interface SoundEntryV1 {
   /** Random detune per play, in cents either way (0 for tunes). */
   readonly jitterCents: number;
 }
+
+/** A faction theme's id: "theme." and a name of its own. */
+export type SoundThemeIdV1 = `theme.${string}`;
+
+/**
+ * A faction's theme music (bead pulp_wars-2yc.19, docs/ui/SOUND.md "Faction
+ * themes"). It plays in the "music" category, never detuned. The Gallery's
+ * Sounds tab shows one row per faction; a faction with an entry here has a
+ * playable row, the others read "Coming soon".
+ */
+export interface SoundThemeEntryV1 {
+  readonly id: SoundThemeIdV1;
+  /** The faction it belongs to; at most one theme per faction. */
+  readonly faction: FactionIdV7;
+  /** Whether it repeats until it is stopped. */
+  readonly loop: boolean;
+  /** A recording, or a synth recipe, exactly like an effect's source. */
+  readonly source: SoundSourceV1;
+}
+
+/**
+ * The registered faction themes. None has been written yet: adding an entry
+ * here is all it takes for the audio to play it and the Gallery to offer it.
+ */
+export const SOUND_THEMES_V1: readonly SoundThemeEntryV1[] = [];
+
+/** Anything the audio can play: an effect or a theme. */
+export type SoundKeyV1 = SoundIdV1 | SoundThemeIdV1;
 
 /** Equal-tempered pitch of a MIDI note (69 is A above middle C, 440 Hz). */
 export function midiHzV1(note: number): number {

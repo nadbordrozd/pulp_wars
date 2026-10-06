@@ -79,7 +79,13 @@ export const GALLERY_FACTIONS_V7: readonly FactionIdV7[] = FACTION_IDS_V7;
  * no faction: the Giant Spider, its lair, the Fountain of Youth, the Shrine
  * and the Sunken Wreck.
  */
-export type GalleryTabV7 = "UNITS" | "BUILDINGS" | "TERRAIN" | "CURIOSITIES";
+export type GalleryTabV7 =
+  | "UNITS"
+  | "BUILDINGS"
+  | "TERRAIN"
+  | "CURIOSITIES"
+  /** Every sound of the game (bead pulp_wars-2yc.19, docs/ui/SOUND.md). */
+  | "SOUNDS";
 
 /** A Curiosities cell: the neutral Giant Spider or a tile overlay. */
 export type GalleryCuriosityRowIdV7 = "SPIDER" | CuriosityOverlayIdV7;
@@ -739,7 +745,8 @@ export function parseGalleryFiltersV7(
     tab:
       record.tab === "BUILDINGS" ||
       record.tab === "TERRAIN" ||
-      record.tab === "CURIOSITIES"
+      record.tab === "CURIOSITIES" ||
+      record.tab === "SOUNDS"
         ? record.tab
         : "UNITS",
     factions:

@@ -27,6 +27,7 @@ const CATEGORY_LABELS: Readonly<Record<SoundCategoryV1, string>> = {
   economy: "Economy",
   ui: "Interface",
   ambience: "Ambience",
+  music: "Music",
 };
 
 /** Draws the toggle's icon, state and name for the current preference. */
@@ -103,14 +104,11 @@ export function soundControlsV7(
 export function soundTestPanelV7(
   documentRoot: Document,
   audio: GameAudioV1,
-  options: { readonly withControls?: boolean } = {},
 ): HTMLElement {
   const panel = documentRoot.createElement("section");
   panel.className = "v7-sound-test";
   panel.dataset.v7SoundTest = "true";
   panel.setAttribute("aria-label", "Sounds");
-  if (options.withControls === true)
-    panel.append(soundControlsV7(documentRoot, audio, { idSuffix: "-test" }));
   for (const category of SOUND_CATEGORIES_V1) {
     const ids = SOUND_IDS_V1.filter(
       (id) => SOUND_MANIFEST_V1[id].category === category,

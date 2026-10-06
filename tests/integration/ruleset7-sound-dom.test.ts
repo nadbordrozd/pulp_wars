@@ -225,34 +225,37 @@ describe("sound test", () => {
     expect(requested(app)).toEqual(["match.victory"]);
   });
 
-  it("opens from the Gallery, with the toggle and volume above it", () => {
+  it("is a tab of the Gallery, with the toggle and volume above it", () => {
+    // The Sounds tab itself: tests/integration/ruleset7-gallery-sounds-dom.
     const app = bootstrapRuleset7App(document, {
       storage: null,
       settingsStorage: window.localStorage,
       galleryDemoHost: () => new RecordingBoardHost(),
     });
     requiredButton("gallery").click();
-    const sounds = requiredButton("gallery-sounds");
-    expect(sounds.textContent).toBe("Sounds");
-    expect(sounds.getAttribute("aria-pressed")).toBe("false");
-    expect(document.querySelector("[data-v7-sound-test]")).toBeNull();
-    sounds.click();
-    const panel = requiredElement<HTMLElement>("[data-v7-sound-test]");
-    expect(panel.querySelectorAll("[data-sound-id]").length).toBe(
-      SOUND_IDS_V1.length,
-    );
+    // The header button of pulp_wars-2yc.10 became the tab.
+    expect(document.querySelector('[data-action="gallery-sounds"]')).toBeNull();
+    const tab = requiredButton("gallery-tab-sounds");
+    expect(tab.textContent).toBe("Sounds");
+    expect(tab.getAttribute("aria-selected")).toBe("false");
+    expect(document.querySelector("[data-v7-gallery-sounds]")).toBeNull();
+    tab.click();
+    const panel = requiredElement<HTMLElement>("[data-v7-gallery-sounds]");
+    expect(
+      [...panel.querySelectorAll<HTMLElement>("[data-sound-play]")]
+        .map((card) => card.dataset.soundId)
+        .filter((id) => id !== undefined)
+        .sort(),
+    ).toEqual([...SOUND_IDS_V1].sort());
     expect(panel.querySelector("[data-v7-sound-controls]")).not.toBeNull();
-    expect(document.querySelector('[role="tablist"]')).toBeNull();
-    expect(requiredButton("gallery-sounds").getAttribute("aria-pressed")).toBe(
-      "true",
-    );
     app.view.audio.clearLog();
-    requiredButton("sound-test-impact.hit").click();
+    requiredElement<HTMLButtonElement>(
+      '[data-sound-play="impact.hit"]',
+    ).click();
+    // The card plays its own sound, and no interface click on top.
     expect(app.view.audio.log.map((entry) => entry.id)).toEqual(["impact.hit"]);
-    // The same button returns to the tables.
-    requiredButton("gallery-sounds").click();
-    expect(document.querySelector("[data-v7-sound-test]")).toBeNull();
-    expect(document.querySelector('[role="tablist"]')).not.toBeNull();
+    requiredButton("gallery-tab-units").click();
+    expect(document.querySelector("[data-v7-gallery-sounds]")).toBeNull();
     app.destroy();
   });
 });

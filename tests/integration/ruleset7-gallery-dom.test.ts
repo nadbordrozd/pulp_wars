@@ -621,6 +621,8 @@ describe("Ruleset 7 Gallery: Curiosities (pulp_wars-737.6)", () => {
       "Buildings",
       "Terrain",
       "Curiosities",
+      // Bead pulp_wars-2yc.19 (ruleset7-gallery-sounds-dom.test.ts).
+      "Sounds",
     ]);
     required<HTMLButtonElement>(
       '[data-action="gallery-tab-curiosities"]',

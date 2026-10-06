@@ -27,6 +27,7 @@ export {
   SoundMixerV1,
   type SoundMixerOptionsV1,
   type SoundOutputV1,
+  type SoundPlayOptionsV1,
   type SoundPlayOutcomeV1,
   type SoundStartV1,
 } from "./mixer";
@@ -34,14 +35,25 @@ export {
   SOUND_CATEGORIES_V1,
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
+  SOUND_THEMES_V1,
   midiHzV1,
   soundRecipeV1,
   type SoundCategoryV1,
   type SoundEntryV1,
   type SoundIdV1,
+  type SoundKeyV1,
   type SoundSourceV1,
+  type SoundThemeEntryV1,
+  type SoundThemeIdV1,
 } from "./sound-manifest";
 export {
+  playableRecipeV1,
+  playableSoundIdsV1,
+  playableSoundV1,
+  type PlayableSoundV1,
+} from "./playable-sound";
+export {
+  OTHER_PLAYER_BUILD_GAIN_V7,
   soundCuesForBoundaryV7,
   soundCuesForStepV7,
   type BoundarySoundCuesV7,

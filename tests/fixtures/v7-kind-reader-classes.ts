@@ -269,6 +269,14 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/dom/gallery-v7.ts::GalleryViewV7.#terrainCell": "SEAT",
   "src/render/dom/gallery-v7.ts::GalleryViewV7.#terrainDetail": "SEAT",
   "src/render/dom/gallery-v7.ts::GalleryViewV7.#startSample": "SEAT",
+  // Bead pulp_wars-2yc.19: the Gallery's Sounds tab reads the faction of a
+  // theme's manifest entry and of a card's picture (whose portrait, in
+  // whose colour): registry factions, never a live unit, so there is no
+  // kind to resolve.
+  "src/render/gallery-sounds-presentation-v7.ts::themeEntry": "SEAT",
+  "src/render/gallery-sounds-presentation-v7.ts::gallerySoundPlayLabelV7":
+    "SEAT",
+  "src/render/dom/gallery-sounds-v7.ts::gallerySoundsPanelV7": "SEAT",
   // Bead pulp_wars-2yc.4 (classified by pulp_wars-2yp): the title scene
   // draws authored figures, each the registry faction its layout names
   // (title-scene-v7.ts builds the art subject from that faction; `#draw`

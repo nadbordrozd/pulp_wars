@@ -1,10 +1,14 @@
+import { SOUND_IDS_V1 } from "../src/audio/index";
+
 /**
  * The Gallery step of the Ruleset 7 browser smoke (bead pulp_wars-ic8):
  * from a fresh front screen it opens the Gallery with a pointer click,
  * checks the full unit table, hides a faction and a set of rows with the
  * filter chips (remembered in localStorage), opens a unit's detail and
  * waits for its animation preview to play on the real board host, closes
- * it with Escape and goes Back. Kept apart from the smoke's main file so a
+ * it with Escape and goes Back. On the way it opens the Sounds tab (bead
+ * pulp_wars-2yc.19), checks that every manifest sound has a card and plays
+ * one with a pointer click. Kept apart from the smoke's main file so a
  * reviewer can run it alone against a dev server.
  */
 
@@ -161,9 +165,10 @@ export async function probeGalleryV7(
   await driver.waitForExpression(
     `document.querySelector('.v7-gallery-detail') === null && document.activeElement?.dataset.row === 'FOREST'`,
   );
+  const sounds = await probeGallerySoundsV7(driver, table.factions.length);
   await driver.pointerClick('[data-action="gallery-tab-units"]');
   await driver.waitForExpression(
-    `document.querySelector('.v7-gallery-cell[data-row="CATAPULT"]') !== null`,
+    `document.querySelector('.v7-gallery-cell[data-row="CATAPULT"]') !== null && document.querySelector('[data-v7-gallery-sounds]') === null`,
   );
   // Reset the remembered filters, then go Back to the front screen.
   await driver.pointerClick('[data-action="gallery-factions-all"]');
@@ -175,5 +180,78 @@ export async function probeGalleryV7(
   await driver.evaluate(
     `localStorage.removeItem(${JSON.stringify(GALLERY_SMOKE_STORAGE_KEY_V7)})`,
   );
-  return `${table.cells} unit cells in ${table.factions.length} faction columns, filtered to ${filtered.cells.length} and remembered, Lich detail played its attack, Terrain tab with ${terrain.rows.length} rows and a Forest sample board over ${pieces} pieces, Escape and Back returned focus`;
+  return `${table.cells} unit cells in ${table.factions.length} faction columns, filtered to ${filtered.cells.length} and remembered, Lich detail played its attack, Terrain tab with ${terrain.rows.length} rows and a Forest sample board over ${pieces} pieces, ${sounds}, Escape and Back returned focus`;
+}
+
+const SOUNDS_AUDIO = "globalThis.__PULP_WARS_APP__.view.audio";
+const SOUNDS_PLAYED = "match.victory";
+
+/**
+ * The Sounds tab (bead pulp_wars-2yc.19, docs/ui/SOUND.md): a card for
+ * every sound of the manifest, a pending theme row per faction, and one
+ * sound played by a pointer click: the audio is asked for it, the card
+ * shows that it plays, and its stop control ends it. A browser without a
+ * sound device shows the tab's notice instead of a playing card.
+ */
+async function probeGallerySoundsV7(
+  driver: GallerySmokeDriverV7,
+  factions: number,
+): Promise<string> {
+  await driver.pointerClick('[data-action="gallery-tab-sounds"]');
+  await driver.waitForExpression(
+    `document.querySelector('[data-v7-gallery-sounds]') !== null && document.querySelector('[data-action="gallery-tab-sounds"]')?.getAttribute('aria-selected') === 'true'`,
+  );
+  const listed = await driver.evaluate<{
+    readonly ids: readonly string[];
+    readonly groups: number;
+    readonly pending: number;
+    readonly themes: number;
+    readonly enabled: boolean;
+    readonly noticeHidden: boolean;
+    readonly overflow: number;
+  }>(
+    `({ ids: [...document.querySelectorAll('[data-v7-gallery-sounds] [data-sound-play][data-sound-id]')].map((card) => card.dataset.soundId), groups: document.querySelectorAll('.v7-gallery-sound-group').length, pending: document.querySelectorAll('.v7-gallery-sound-group[data-group="themes"] .v7-gallery-sound[data-pending="true"] [aria-disabled="true"]').length, themes: document.querySelectorAll('.v7-gallery-sound-group[data-group="themes"] .v7-gallery-sound').length, enabled: ${SOUNDS_AUDIO}.settings.enabled, noticeHidden: document.querySelector('.v7-gallery-sounds-notice')?.hidden === true, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth })`,
+  );
+  // Every manifest sound once; one theme row per faction column, none of
+  // them playable while the manifest has no theme; sound is on.
+  if (
+    [...listed.ids].sort().join() !== [...SOUND_IDS_V1].sort().join() ||
+    listed.groups < 2 ||
+    listed.themes !== factions ||
+    listed.pending !== factions ||
+    !listed.enabled ||
+    !listed.noticeHidden ||
+    listed.overflow > 0
+  )
+    throw new Error(`Gallery sounds are incomplete: ${JSON.stringify(listed)}`);
+  await driver.evaluate(`${SOUNDS_AUDIO}.clearLog()`);
+  await driver.pointerClick(`[data-sound-play="${SOUNDS_PLAYED}"]`);
+  // The card's own sound, and no interface click on top of it.
+  await driver.waitForExpression(
+    `${SOUNDS_AUDIO}.log.some((entry) => entry.id === '${SOUNDS_PLAYED}' && (entry.outcome === 'PLAYED' || document.querySelector('.v7-gallery-sounds-notice')?.hidden === false))`,
+  );
+  const played = await driver.evaluate<{
+    readonly log: readonly string[];
+    readonly playing: readonly string[];
+    readonly stopHidden: boolean;
+  }>(
+    `({ log: ${SOUNDS_AUDIO}.log.map((entry) => entry.id + ':' + entry.outcome), playing: [...document.querySelectorAll('.v7-gallery-sound[data-playing="true"]')].map((row) => row.dataset.soundRow), stopHidden: document.querySelector('[data-sound-row="${SOUNDS_PLAYED}"] .v7-gallery-sound-stop')?.hidden === true })`,
+  );
+  const heard = played.log.includes(`${SOUNDS_PLAYED}:PLAYED`);
+  if (
+    played.log.some((entry) => !entry.startsWith(`${SOUNDS_PLAYED}:`)) ||
+    played.log.some((entry) => entry.endsWith(":MUTED")) ||
+    (heard && (played.playing.join() !== SOUNDS_PLAYED || played.stopHidden))
+  )
+    throw new Error(`Gallery sound did not play: ${JSON.stringify(played)}`);
+  await driver.capture("gallery-sounds.png");
+  if (heard) {
+    await driver.pointerClick(
+      `[data-sound-row="${SOUNDS_PLAYED}"] .v7-gallery-sound-stop`,
+    );
+    await driver.waitForExpression(
+      `document.querySelectorAll('.v7-gallery-sound[data-playing="true"]').length === 0 && ${SOUNDS_AUDIO}.remainingMs('${SOUNDS_PLAYED}') === 0`,
+    );
+  }
+  return `Sounds tab with ${listed.ids.length} sounds in ${listed.groups} groups and ${listed.pending} pending themes, Victory ${heard ? "played and stopped" : "asked for (no sound device)"}`;
 }

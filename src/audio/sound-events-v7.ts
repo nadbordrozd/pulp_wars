@@ -66,6 +66,12 @@ const SUPPORT_SOUNDS: Readonly<Record<SupportEffectV7, SoundIdV1>> = {
   BOUNTY: "economy.coin",
 };
 
+/**
+ * Another player's building in the viewer's sight is heard at this share
+ * of the level of the viewer's own.
+ */
+export const OTHER_PLAYER_BUILD_GAIN_V7 = 0.6;
+
 /** The lunge reaches its target at this share of a melee step. */
 const MELEE_HIT_SHARE = 0.56;
 /** A death is heard just after the blow that caused it. */
@@ -180,7 +186,9 @@ export function soundCuesForStepV7(
       return [{ id: "impact.explosion", delayMs: 0 }];
     case "BUILD":
       // Another player's building, seen by the viewer: quieter than one's own.
-      return [{ id: "economy.build", delayMs: 0, gain: 0.6 }];
+      return [
+        { id: "economy.build", delayMs: 0, gain: OTHER_PLAYER_BUILD_GAIN_V7 },
+      ];
     case "SUPPORT":
       return [{ id: SUPPORT_SOUNDS[step.effect], delayMs: 0 }];
     case "WINDMILL_HEALING":

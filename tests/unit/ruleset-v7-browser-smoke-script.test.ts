@@ -621,6 +621,47 @@ describe("Ruleset 7 browser smoke script", () => {
       expect(probe).toContain(`await driver.capture("${name}")`);
     expect(probe).not.toContain("/tests/fixtures/");
   });
+  it("opens the Gallery's Sounds tab, checks the manifest's cards and plays one", () => {
+    const probe = readFileSync("scripts/browser-smoke-v7-gallery.ts", "utf8");
+
+    // Bead pulp_wars-2yc.19: between the Terrain tab and the way back.
+    const sounds = probe.indexOf(
+      "await probeGallerySoundsV7(driver, table.factions.length)",
+    );
+    expect(sounds).toBeGreaterThan(
+      probe.indexOf(`pointerClick('[data-action="gallery-tab-terrain"]')`),
+    );
+    expect(sounds).toBeLessThan(
+      probe.indexOf(`pointerClick('[data-action="gallery-tab-units"]')`),
+    );
+    expect(probe).toContain(
+      `pointerClick('[data-action="gallery-tab-sounds"]')`,
+    );
+    // The cards are compared with the manifest, not with a number.
+    expect(probe).toContain(
+      'import { SOUND_IDS_V1 } from "../src/audio/index"',
+    );
+    expect(probe).toContain(
+      "[...listed.ids].sort().join() !== [...SOUND_IDS_V1].sort().join()",
+    );
+    // One pending theme row per faction column.
+    expect(probe).toContain("listed.themes !== factions");
+    expect(probe).toContain("listed.pending !== factions");
+    // A trusted pointer click plays the victory tune: the audio's log, the
+    // card's playing state and its stop control.
+    expect(probe).toContain('const SOUNDS_PLAYED = "match.victory"');
+    expect(probe).toContain(
+      'pointerClick(`[data-sound-play="${SOUNDS_PLAYED}"]`)',
+    );
+    expect(probe).toContain("played.log.includes(`${SOUNDS_PLAYED}:PLAYED`)");
+    expect(probe).toContain("played.playing.join() !== SOUNDS_PLAYED");
+    expect(probe).toContain('entry.endsWith(":MUTED")');
+    expect(probe).toContain(
+      '`[data-sound-row="${SOUNDS_PLAYED}"] .v7-gallery-sound-stop`',
+    );
+    expect(probe).toContain(".remainingMs('${SOUNDS_PLAYED}') === 0");
+    expect(probe).toContain('await driver.capture("gallery-sounds.png")');
+  });
   it("launches the most players on the smallest Dry Land board and plays one End Turn", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     const probe = readFileSync(

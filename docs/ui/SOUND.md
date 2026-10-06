@@ -22,9 +22,9 @@ relative loudness still need a human ear
   sound with a play button.
 - **Mute in a match.** The match menu's first item is **Sound**, a toggle with
   the same loudspeaker icon. It changes in place, so the menu stays open.
-- **Gallery.** The Gallery header has a **Sounds** button. It swaps the tables
-  for the same sound test, with the toggle and the volume slider above it, so
-  the sounds can be auditioned without starting a match.
+- **Gallery.** The Gallery has a **Sounds** tab: every sound as a card with a
+  picture, grouped, and a row per faction for its theme
+  ([The Gallery's Sounds tab](#the-gallerys-sounds-tab)).
 - **Hidden tab.** No sound starts while the tab is hidden, and the sounds
   playing when it is hidden are cut.
 - **Reduced motion** does not turn sound off. The sounds of a step play when
@@ -43,7 +43,8 @@ Everything is in `src/audio/`. Importing it creates nothing.
 
 | File                  | What it does                                                                                                                                                                                  |
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sound-manifest.ts`   | The list of sound ids and, for each, its label, category, priority, detune range and source (a synth recipe or a file).                                                                       |
+| `sound-manifest.ts`   | The list of sound ids and, for each, its label, category, priority, detune range and source (a synth recipe or a file). Also the list of faction themes.                                      |
+| `playable-sound.ts`   | One lookup for the mixer and the device over both lists: an effect or a theme by its id.                                                                                                      |
 | `synth.ts`            | Renders a recipe to samples with plain arithmetic: oscillators (sine, triangle, band-limited square and saw), seeded noise, pitch glides, vibrato, simple FM, envelopes and one-pole filters. |
 | `mixer.ts`            | Decides which requested sounds start: coalescing, the voice limit, category levels and detune.                                                                                                |
 | `web-audio-output.ts` | The WebAudio device: one `AudioBuffer` per sound, a master gain and a limiter. The `AudioContext` is created in `unlock`, never earlier.                                                      |
@@ -70,9 +71,19 @@ can be measured in a test that has no sound card.
 - **Detune.** Effects are played up to 20–90 cents sharp or flat at random, so
   repeats do not sound mechanical. Tunes are never detuned.
 - **Levels.** Category gains are 0.9 for combat, 0.8 for economy and 0.7 for
-  the interface. Ambience has a category (0.5) and no sound yet. The volume
-  slider is squared before it becomes the master gain, and a limiter sits
-  after the master gain.
+  the interface. Ambience (0.5) and music (0.5) have a category and no sound
+  yet. The volume slider is squared before it becomes the master gain, and a
+  limiter sits after the master gain.
+- **Music.** One music voice plays at a time: a theme that starts ends the
+  theme that was playing. Effects play over it. A looping theme holds its
+  voice until it is stopped.
+- **One sound.** `stop(id)` ends every voice of one sound and lets it start
+  again at once (without it, a replay inside the coalescing window is
+  dropped). `remainingMs(id)` is the time until it is over: 0 when it is not
+  playing, infinite for a loop. The Gallery uses both.
+- **Fixed detune.** `play(id, { detune })` plays at a fixed share of the
+  sound's detune range, from -1 (flat end) to 1 (sharp end), instead of a
+  random one. The game never passes it; the Gallery does.
 
 ### Timing and fog
 
@@ -186,6 +197,114 @@ match plays its tune alone.
 | Sound toggle, volume slider let go | `ui.toggle` |
 | A command the game rejects         | `ui.error`  |
 
+## The Gallery's Sounds tab
+
+Bead `pulp_wars-2yc.19`. The tab is the last of the Gallery's tabs and is
+remembered with the others. It replaces the header's Sounds button of
+`pulp_wars-2yc.10`. The collapsed Sound test in Settings is unchanged.
+
+- **What it lists.** Every id of `SOUND_IDS_V1`, once, and nothing else. The
+  list is computed (`src/render/gallery-sounds-presentation-v7.ts`), so a
+  sound added to the manifest appears without any Gallery change. Two tests
+  compare the cards with the manifest.
+- **Groups.** By the first part of the manifest id, in this order:
+
+  | Group              | Id parts                                           |
+  | ------------------ | -------------------------------------------------- |
+  | Attacks            | `attack`                                           |
+  | Hits               | `impact`                                           |
+  | Units              | `unit`                                             |
+  | Abilities          | `support`, `special`                               |
+  | Cities and economy | `city`, `village`, `reward`, `research`, `economy` |
+  | Turn and match     | `turn`, `achievement`, `match`                     |
+  | Interface          | `ui`                                               |
+  | Themes             | one row per faction                                |
+
+  An id whose first part is not in the table goes to a group named Other,
+  which is shown only when it has a sound.
+
+- **A card.** A picture, the manifest's label, a few words on when the sound
+  plays, and a play mark. The picture is the portrait of the unit that makes
+  the sound where one does (the Lich for `attack.magic`), other game art (a
+  city, the coin), or an interface glyph. Until the art has loaded the card
+  shows a loudspeaker. No manifest id is shown. A sound without a note still
+  gets a card, with the loudspeaker and no words; a test names it.
+- **Playing.** The whole card is the play button. It plays through the
+  game's own audio and mixer, at the player's volume. A second press starts
+  the sound again from its beginning. Another card plays over it, as effects
+  do in a match. While a sound plays its card is outlined in gold and three
+  bars replace the play mark; the bars move only with full motion (the
+  `prefers-reduced-motion` setting and the game's own Motion setting both
+  still them). A sound of one second or longer, and every theme, shows a
+  stop button while it plays. Leaving the tab or the Gallery stops what the
+  tab was playing.
+- **Variants.** A sound the mixer detunes has two small buttons beside its
+  card, ♭ and ♯: the flat and the sharp end of its range. The card itself
+  plays it as a match does, at a random pitch in between. **Build** has a
+  third, an eye: the quieter level of another player's building in sight.
+  No sound differs by faction; a unit with a sound of its own has its own
+  card.
+- **Volume and mute.** The toggle and the slider of Settings are at the top
+  of the tab and change the same stored preference. With sound off the tab
+  reads "Sound is off" with a **Turn on** button; with the volume at zero,
+  "Volume is at 0" with **Turn up**, which sets 70%. While either shows, a
+  card plays nothing and points at the notice. In a browser that cannot
+  play sound the notice reads "No sound on this device".
+- **Autoplay.** The press on a card is the gesture that opens the audio
+  device. When that press is the first of the session the device may need a
+  moment; the card tries once more 150 ms later.
+- **Keyboard.** Every card is a tab stop. Up and Down move to the card
+  above or below, Left and Right through every control in order, including
+  a card's variants and stop, Home and End go to the first and last card. Enter or Space
+  plays. Each control has a name: "Play: Hit", "Play lower: Hit", "Stop:
+  Victory", "Play: Undead theme, coming soon".
+- **Phone.** One card per row; the page does not scroll sideways.
+
+## Faction themes
+
+The game has no faction theme music yet. The manifest has the place for it,
+and the audio and the Gallery already use it.
+
+```ts
+// src/audio/sound-manifest.ts
+export interface SoundThemeEntryV1 {
+  readonly id: `theme.${string}`; // "theme.undead"
+  readonly faction: FactionIdV7; // at most one theme per faction
+  readonly loop: boolean; // repeats until it is stopped
+  readonly source: SoundSourceV1; // a FILE (or a SYNTH recipe), as for effects
+}
+
+export const SOUND_THEMES_V1: readonly SoundThemeEntryV1[] = [];
+```
+
+To add a theme, put the recording under `public/audio/` and add one entry:
+
+```ts
+{
+  id: "theme.undead",
+  faction: "UNDEAD",
+  loop: true,
+  source: {
+    kind: "FILE",
+    url: `${import.meta.env.BASE_URL}audio/theme-undead.ogg`,
+  },
+},
+```
+
+Nothing else changes:
+
+- The audio plays it by its id (`audio.play("theme.undead")`), in the music
+  category, never detuned, with the priority of a tune. The file is fetched
+  and decoded after the first gesture, like an effect's.
+- The Gallery's **Themes** group has one row per faction of the game (eight
+  today), with the faction's Fighter portrait in its colour. A faction
+  without an entry reads "Coming soon" and cannot be played. A faction with
+  an entry has a playable row with a stop button.
+
+Nothing in a match plays a theme yet. When a theme should play (on the
+faction's turn, on the title screen) is a product decision that has not
+been made.
+
 ## Recipes
 
 Pitch is the range of the tonal layers in Hz. Length is in ms and includes a
@@ -293,6 +412,10 @@ full scale). A unit test compares this table with the manifest.
 
 ## Test hook
 
+`tests/fixtures/fake-audio-context.ts` is a recording `AudioContext` for
+jsdom: the sources started, with their rate, level and loop flag, and
+whether each was stopped.
+
 `GameAudioV1.log` holds the last 64 requests as `{ id, outcome }`. The outcome
 is `PLAYED`, `COALESCED`, `DROPPED`, `UNAVAILABLE`, `MUTED`, `HIDDEN` or
 `LOCKED` (no gesture yet, or no device). The app view exposes its audio as
@@ -310,3 +433,5 @@ is logged as `LOCKED` and nothing else happens.
   coalescing window.
 - Timing by ear against the animations, and behaviour on iOS Safari, where
   the audio device follows the mute switch and its own unlock rules.
+- A theme played from a real recording. The tests play a theme through the
+  manifest with a stand-in device; no recording exists to listen to.

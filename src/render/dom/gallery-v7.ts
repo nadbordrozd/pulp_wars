@@ -1,5 +1,6 @@
 import type { FactionIdV7, PlayerViewV7 } from "../../engine/index";
 import type { StorageAdapter } from "../../persistence/index";
+import type { GameAudioV1 } from "../../audio/index";
 import {
   chibiFallbackSubjectV7,
   type ArtSubjectV7,
@@ -33,6 +34,10 @@ import {
   type ChibiDomBoxV7,
   type ChibiDomEnvironmentV7,
 } from "./chibi-dom-art-v7";
+import {
+  gallerySoundsPanelV7,
+  type GallerySoundsPanelV7,
+} from "./gallery-sounds-v7";
 import { uiIconV7, type UiIconIdV7 } from "./ui-icons-v7";
 import {
   GALLERY_BUILDING_ROWS_V7,
@@ -112,10 +117,10 @@ export interface GalleryViewOptionsV7 {
   /** The animation preview's board host (tests inject a fake). */
   readonly createDemoHost?: () => BoardHostV7;
   /**
-   * The sound test (bead pulp_wars-2yc.10): with it the header shows a
-   * Sounds button, which swaps the tables for this panel and back.
+   * The game's audio (bead pulp_wars-2yc.19): with it the Gallery has a
+   * Sounds tab that plays every sound of the manifest.
    */
-  readonly soundPanel?: () => HTMLElement;
+  readonly audio?: GameAudioV1;
 }
 
 type GalleryDetailV7 =
@@ -149,8 +154,10 @@ const TAB_LABELS: Readonly<Record<GalleryTabV7, string>> = {
   BUILDINGS: "Buildings",
   TERRAIN: "Terrain",
   CURIOSITIES: "Curiosities",
+  SOUNDS: "Sounds",
 };
-const TABS: readonly GalleryTabV7[] = [
+/** The tabs with pictures; Sounds follows them when there is audio. */
+const PICTURE_TABS: readonly GalleryTabV7[] = [
   "UNITS",
   "BUILDINGS",
   "TERRAIN",
@@ -170,6 +177,7 @@ const ROW_NOUNS: Readonly<Record<GalleryTabV7, string>> = {
   BUILDINGS: "building",
   TERRAIN: "terrain",
   CURIOSITIES: "curiosity",
+  SOUNDS: "sound",
 };
 
 /** The board model of a Gallery board: a picture, never interactive. */
@@ -345,8 +353,9 @@ export class GalleryViewV7 {
   readonly #scenes = new Map<string, GalleryDemoSceneV7 | null>();
   readonly #cues = new Map<string, readonly GalleryDemoCueV7[]>();
   #destroyed = false;
-  /** The sound test is shown in place of the tables. */
-  #soundsOpen = false;
+  /** The open Sounds tab; it holds timers and plays sounds. */
+  #sounds: GallerySoundsPanelV7 | null = null;
+  readonly #tabList: readonly GalleryTabV7[];
   /** The filter panel starts open, except on a phone, where it is tall. */
   #filtersOpen: boolean;
 
@@ -367,7 +376,13 @@ export class GalleryViewV7 {
       // Restricted storage: the default filters, kept for this page.
       stored = null;
     }
-    this.#filters = parseGalleryFiltersV7(stored);
+    this.#tabList =
+      options.audio === undefined ? PICTURE_TABS : [...PICTURE_TABS, "SOUNDS"];
+    const filters = parseGalleryFiltersV7(stored);
+    // A remembered Sounds tab without audio opens on Units.
+    this.#filters = this.#tabList.includes(filters.tab)
+      ? filters
+      : { ...filters, tab: "UNITS" };
     const rasterEnvironment =
       options.rasterEnvironment ??
       browserChibiRasterEnvironmentV7(documentRoot);
@@ -398,12 +413,15 @@ export class GalleryViewV7 {
   /** Leaves the screen: the detail closes and its preview stops. */
   suspend(): void {
     this.#closeDetail(false);
+    this.#sounds?.silence();
   }
 
   destroy(): void {
     if (this.#destroyed) return;
     this.#destroyed = true;
     this.#closeDetail(false);
+    this.#sounds?.destroy();
+    this.#sounds = null;
     this.root.removeEventListener("keydown", this.#onKeyDown);
     this.root.replaceChildren();
   }
@@ -451,11 +469,11 @@ export class GalleryViewV7 {
     this.#swatches = this.#swatches.filter(
       (entry) => this.#dialog?.contains(entry.canvas) === true,
     );
+    // A rebuilt Sounds tab starts silent.
+    this.#sounds?.destroy();
+    this.#sounds = null;
     const content = el(this.#document, "div", "v7-gallery-content");
-    const soundPanel = this.#soundsOpen ? this.#options.soundPanel : undefined;
-    if (soundPanel === undefined)
-      content.append(this.#header(), this.#tabs(), this.#panel());
-    else content.append(this.#header(), soundPanel());
+    content.append(this.#header(), this.#tabs(), this.#panel());
     if (this.#dialog !== null) content.setAttribute("inert", "");
     const previous = this.#content;
     this.#content = content;
@@ -482,21 +500,6 @@ export class GalleryViewV7 {
     const heading = text(this.#document, "h1", "Gallery");
     heading.id = "v7-gallery-title";
     header.append(back, heading);
-    if (this.#options.soundPanel !== undefined) {
-      const sounds = button(
-        this.#document,
-        "",
-        "gallery-sounds",
-        "v7-gallery-sounds",
-      );
-      sounds.append(uiIconV7(this.#document, "sound"), "Sounds");
-      sounds.setAttribute("aria-pressed", String(this.#soundsOpen));
-      sounds.onclick = () => {
-        this.#soundsOpen = !this.#soundsOpen;
-        this.#renderContent();
-      };
-      header.append(sounds);
-    }
     return header;
   }
 
@@ -504,7 +507,7 @@ export class GalleryViewV7 {
     const list = el(this.#document, "div", "v7-gallery-tabs");
     list.setAttribute("role", "tablist");
     list.setAttribute("aria-label", "Gallery");
-    for (const tab of TABS) {
+    for (const tab of this.#tabList) {
       const label = TAB_LABELS[tab];
       const selected = this.#filters.tab === tab;
       const node = button(
@@ -526,9 +529,10 @@ export class GalleryViewV7 {
     list.addEventListener("keydown", (event) => {
       if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
       event.preventDefault();
-      const step = event.key === "ArrowRight" ? 1 : TABS.length - 1;
+      const tabs = this.#tabList;
+      const step = event.key === "ArrowRight" ? 1 : tabs.length - 1;
       this.#selectTab(
-        TABS[(TABS.indexOf(this.#filters.tab) + step) % TABS.length] ?? "UNITS",
+        tabs[(tabs.indexOf(this.#filters.tab) + step) % tabs.length] ?? "UNITS",
       );
       this.#content
         ?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]')
@@ -551,6 +555,16 @@ export class GalleryViewV7 {
       `v7-gallery-tab-${this.#filters.tab.toLowerCase()}`,
     );
     panel.dataset.tab = this.#filters.tab.toLowerCase();
+    // Sounds (bead pulp_wars-2yc.19): cards that play, no table.
+    const audio = this.#options.audio;
+    if (this.#filters.tab === "SOUNDS" && audio !== undefined) {
+      this.#sounds = gallerySoundsPanelV7(this.#document, audio, {
+        fillArt: (slot, subject, box, ownerColor) =>
+          this.#fillArt(slot, subject, box, ownerColor),
+      });
+      panel.append(this.#sounds.root);
+      return panel;
+    }
     // Curiosities belong to no faction: five cells and no filters.
     if (this.#filters.tab === "CURIOSITIES")
       panel.append(this.#curiosityTable());

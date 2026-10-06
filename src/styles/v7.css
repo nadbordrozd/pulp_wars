@@ -4714,10 +4714,18 @@
     font-size: 0.75rem;
   }
 
-  /* Four tabs on one line (the Terrain tab, pulp_wars-2yc.3). */
+  /*
+   * Five tabs (Terrain, pulp_wars-2yc.3; Sounds, pulp_wars-2yc.19): they
+   * share the row, and wrap rather than push the page sideways.
+   */
+  .v7-gallery-tabs {
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+
   .v7-gallery-tab {
-    padding: 0 0.55rem;
-    font-size: 0.85rem;
+    padding: 0 0.5rem;
+    font-size: 0.82rem;
   }
 
   /*
@@ -5235,25 +5243,318 @@
   color: var(--gold);
 }
 
-.v7-gallery-sounds {
-  display: inline-flex;
-  gap: 0.4rem;
+/* The Gallery's Sounds tab (bead pulp_wars-2yc.19, docs/ui/SOUND.md):
+   cards that play a sound, grouped, with the volume above them. */
+.v7-gallery-sounds-panel {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.v7-gallery-sounds-bar {
+  max-width: 28rem;
+}
+
+.v7-gallery-sounds-notice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
   align-items: center;
+  justify-self: start;
+  margin: 0;
+  padding: 0.4rem 0.5rem 0.4rem 0.8rem;
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--paper);
+}
+
+.v7-gallery-sounds-notice[hidden] {
+  display: none;
+}
+
+.v7-gallery-sounds-notice[data-nudged="true"] {
+  box-shadow: 0 0 0 3px var(--gold);
+}
+
+.v7-gallery-sounds-notice .v7-ui-icon {
+  width: 22px;
+  height: 22px;
+  color: var(--gold);
+}
+
+.v7-gallery-sounds-unmute {
   min-height: 44px;
-  margin-left: auto;
-  padding: 0 0.9rem;
+  padding: 0 1rem;
 }
 
-.v7-gallery-sounds .v7-ui-icon {
-  width: 20px;
-  height: 20px;
+.v7-gallery-sound-group h2 {
+  margin: 0 0 0.45rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
 }
 
-.v7-gallery-sounds[aria-pressed="true"] {
+.v7-gallery-sound-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.v7-gallery-sound {
+  display: flex;
+  gap: 0.3rem;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.v7-gallery-sound-play {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 2.75rem minmax(0, 1fr) 1.4rem;
+  gap: 0.6rem;
+  align-items: center;
+  min-width: 0;
+  min-height: 56px;
+  padding: 0.3rem 0.7rem 0.3rem 0.4rem;
+  border: 1px solid var(--v7-edge);
+  border-radius: 12px;
+  background: var(--v7-glass);
+  text-align: left;
+}
+
+.v7-gallery-sound-play:hover:not([aria-disabled="true"]) {
+  border-color: var(--v7-edge-strong);
+}
+
+.v7-gallery-sound-play:focus-visible,
+.v7-gallery-sound-variant:focus-visible,
+.v7-gallery-sound-stop:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.v7-gallery-sound[data-playing="true"] .v7-gallery-sound-play {
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 16%, var(--panel));
+}
+
+/* With sound off the cards are dimmed: the notice is the way on. */
+.v7-gallery-sounds-panel[data-muted="true"] .v7-gallery-sound-list {
+  opacity: 0.6;
+}
+
+.v7-gallery-sound[data-pending="true"] .v7-gallery-sound-play {
+  border-style: dashed;
+  cursor: default;
+}
+
+.v7-gallery-sound[data-pending="true"] .v7-gallery-sound-picture {
+  filter: grayscale(0.7);
+  opacity: 0.6;
+}
+
+.v7-gallery-sound-picture {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgb(0 0 0 / 22%);
+  color: var(--paper);
+}
+
+.v7-gallery-sound-picture > * {
+  grid-area: 1 / 1;
+}
+
+.v7-gallery-sound-picture .v7-ui-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.v7-gallery-sound-picture[style*="--faction"] {
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--faction) 28%, var(--panel));
+  box-shadow: inset 0 0 0 2px var(--faction);
+}
+
+.v7-gallery-sound-art {
+  display: grid;
+  place-items: center;
+}
+
+.v7-gallery-sound-fallback {
+  opacity: 0.45;
+}
+
+.v7-gallery-sound-picture:has(.v7-gallery-sound-art > *)
+  .v7-gallery-sound-fallback {
+  display: none;
+}
+
+.v7-gallery-sound-words {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.v7-gallery-sound-name {
+  overflow: hidden;
+  color: var(--paper);
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.v7-gallery-sound-when {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.v7-gallery-sound-mark {
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  color: var(--gold);
+}
+
+.v7-gallery-sound-mark > * {
+  grid-area: 1 / 1;
+}
+
+.v7-gallery-sound-mark .v7-ui-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* Three bars stand in for the play triangle while the sound plays. */
+.v7-gallery-sound-bars {
+  display: none;
+  gap: 2px;
+  align-items: end;
+  height: 1.1rem;
+}
+
+.v7-gallery-sound-bars i {
+  width: 4px;
+  height: 100%;
+  border-radius: 2px;
+  background: currentColor;
+  transform-origin: bottom;
+}
+
+.v7-gallery-sound-bars i:nth-child(1) {
+  transform: scaleY(0.55);
+}
+
+.v7-gallery-sound-bars i:nth-child(3) {
+  transform: scaleY(0.75);
+}
+
+.v7-gallery-sound[data-playing="true"] .v7-gallery-sound-bars {
+  display: flex;
+}
+
+.v7-gallery-sound[data-playing="true"] .v7-gallery-sound-mark .v7-ui-icon {
+  display: none;
+}
+
+@keyframes v7-gallery-sound-bar {
+  from {
+    transform: scaleY(0.3);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .v7-app-shell:not([data-motion="reduced"])
+    .v7-gallery-sound[data-playing="true"]
+    .v7-gallery-sound-bars
+    i {
+    animation: v7-gallery-sound-bar 0.42s ease-in-out infinite alternate;
+  }
+
+  .v7-app-shell:not([data-motion="reduced"])
+    .v7-gallery-sound[data-playing="true"]
+    .v7-gallery-sound-bars
+    i:nth-child(2) {
+    animation-delay: -0.21s;
+  }
+
+  .v7-app-shell:not([data-motion="reduced"])
+    .v7-gallery-sound[data-playing="true"]
+    .v7-gallery-sound-bars
+    i:nth-child(3) {
+    animation-delay: -0.33s;
+  }
+}
+
+.v7-gallery-sound-extras {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.v7-gallery-sound-variant,
+.v7-gallery-sound-stop {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  min-height: 44px;
+  padding: 0;
+  border: 1px solid var(--v7-edge);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  /* A face that has the flat and sharp signs. */
+  font-family:
+    system-ui, "Apple Symbols", "Segoe UI Symbol", "Noto Sans Symbols2",
+    sans-serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.v7-gallery-sound-variant:hover,
+.v7-gallery-sound-stop:hover {
+  border-color: var(--v7-edge-strong);
+  color: var(--paper);
+}
+
+.v7-gallery-sound-variant .v7-ui-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.v7-gallery-sound-stop {
   border-color: var(--gold);
   color: var(--gold);
 }
 
-.v7-gallery .v7-sound-test {
-  margin-top: 1rem;
+.v7-gallery-sound-stop[hidden] {
+  display: none;
+}
+
+.v7-gallery-sound-stop-mark {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+@media (max-width: 720px) {
+  .v7-gallery-sound-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

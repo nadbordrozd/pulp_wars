@@ -1663,6 +1663,16 @@ This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset
   cell is named as that faction has the building ("Graveyard", "Solar
   Array"; "Farm" for a faction that keeps the shared one), and an Undead
   cell stands on the Undead ground.
+- **Sounds tab** (`pulp_wars-2yc.19`,
+  [Sound](SOUND.md#the-gallerys-sounds-tab)). The last tab has no table and
+  no filters: the Settings sound toggle and volume slider, then every sound
+  of the game as a card (picture, name, when it plays) that plays it, in
+  the groups Attacks, Hits, Units, Abilities, Cities and economy, Turn and
+  match and Interface, and a **Themes** group with one row per faction
+  ("Coming soon" until a theme exists). A playing card is outlined, a long
+  sound has a stop button, and with sound off the tab says so and offers
+  to turn it on. Every card is a tab stop; the arrow keys move between
+  cards and their controls.
 - **Filters.** A "Filters" disclosure (open on a wide screen, closed on a
   phone) holds a chip per faction and a chip per row, each group with All
   and None. The tab and both selections are remembered per viewer in this
@@ -2658,7 +2668,8 @@ current Ruleset 7 Settings: a loudspeaker toggle and a volume slider (0–100%,
 default on at 70%), with no separate music or effects volume. A collapsed
 **Sound test** below lists every sound with a play button. The match menu's
 first item, **Sound**, mutes and unmutes without closing the menu. The
-Gallery header has a **Sounds** button that shows the same sound test. Reduced
+Gallery has a **Sounds** tab with every sound and the faction themes
+([Sound](SOUND.md#the-gallerys-sounds-tab)). Reduced
 motion does not turn sound off. The preference is stored under
 `pulpWars.audio.v1`, outside the shared settings envelope.
 

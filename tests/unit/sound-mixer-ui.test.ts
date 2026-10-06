@@ -13,6 +13,7 @@ import {
   parseStoredAudioSettingsV1,
   storeAudioSettingsV1,
   type SoundIdV1,
+  type SoundKeyV1,
   type SoundStartV1,
   type WebAudioOutputV1,
 } from "../../src/audio/index";
@@ -25,7 +26,7 @@ import {
 
 class FakeOutput implements WebAudioOutputV1 {
   readonly started: SoundStartV1[] = [];
-  readonly stopped: SoundIdV1[] = [];
+  readonly stopped: SoundKeyV1[] = [];
   unlockCalls = 0;
   volume = -1;
   closed = false;
@@ -204,6 +205,56 @@ describe("sound mixer", () => {
     mixer.stopAll();
     expect(output.stopped).toEqual(ids);
     expect(mixer.activeVoices).toBe(0);
+  });
+
+  it("plays a fixed detune instead of the random one on request", () => {
+    // The Gallery's "lower" and "higher": the two ends of the range.
+    const { mixer, output, advance } = mixerRig({ random: 0.5 });
+    mixer.play("impact.hit", { detune: -1 });
+    advance(100);
+    mixer.play("impact.hit", { detune: 1 });
+    advance(100);
+    mixer.play("impact.hit", { detune: 7 });
+    advance(100);
+    // A tune has no range: it keeps its pitch.
+    mixer.play("match.victory", { detune: 1 });
+    const [low, high, clamped, tune] = output.started.map(
+      (start) => start.rate,
+    );
+    expect(low).toBeCloseTo(Math.pow(2, -70 / 1200), 6);
+    expect(high).toBeCloseTo(Math.pow(2, 70 / 1200), 6);
+    expect(clamped).toBe(high);
+    expect(tune).toBe(1);
+  });
+
+  it("stops one sound so that it can start again at once", () => {
+    const { mixer, output, advance } = mixerRig();
+    expect(mixer.remainingMs("match.victory")).toBe(0);
+    expect(mixer.play("match.victory")).toBe("PLAYED");
+    expect(mixer.play("impact.hit")).toBe("PLAYED");
+    // The fake device says every sound lasts 200 ms.
+    expect(mixer.remainingMs("match.victory")).toBe(200);
+    advance(50);
+    expect(mixer.remainingMs("match.victory")).toBe(150);
+    // Within the coalescing window a plain replay would be dropped.
+    expect(mixer.play("match.victory")).toBe("COALESCED");
+    mixer.stop("match.victory");
+    expect(output.stopped).toEqual(["match.victory"]);
+    expect(mixer.remainingMs("match.victory")).toBe(0);
+    expect(mixer.activeVoices).toBe(1);
+    expect(mixer.play("match.victory")).toBe("PLAYED");
+    expect(mixer.remainingMs("match.victory")).toBe(200);
+    advance(200);
+    expect(mixer.remainingMs("match.victory")).toBe(0);
+    // Stopping a sound that is not playing does nothing.
+    mixer.stop("ui.click");
+    expect(output.stopped).toEqual(["match.victory"]);
+  });
+
+  it("does not know an id that is in neither manifest list", () => {
+    const { mixer, output } = mixerRig();
+    expect(mixer.play("theme.nobody")).toBe("UNAVAILABLE");
+    expect(output.started).toEqual([]);
   });
 
   it("reports a device that cannot start", () => {

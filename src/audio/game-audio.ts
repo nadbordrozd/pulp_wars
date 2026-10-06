@@ -5,8 +5,12 @@ import {
   storeAudioSettingsV1,
   type AudioSettingsV1,
 } from "./audio-settings";
-import { SoundMixerV1, type SoundPlayOutcomeV1 } from "./mixer";
-import type { SoundIdV1 } from "./sound-manifest";
+import {
+  SoundMixerV1,
+  type SoundPlayOptionsV1,
+  type SoundPlayOutcomeV1,
+} from "./mixer";
+import type { SoundKeyV1 } from "./sound-manifest";
 import type { SoundCueV1 } from "./sound-events-v7";
 import {
   createWebAudioOutputV1,
@@ -35,7 +39,7 @@ export type SoundRequestOutcomeV1 =
   | "LOCKED";
 
 export interface SoundLogEntryV1 {
-  readonly id: SoundIdV1;
+  readonly id: SoundKeyV1;
   readonly outcome: SoundRequestOutcomeV1;
 }
 
@@ -145,8 +149,8 @@ export class GameAudioV1 {
   }
 
   play(
-    id: SoundIdV1,
-    options: { readonly delayMs?: number; readonly gain?: number } = {},
+    id: SoundKeyV1,
+    options: SoundPlayOptionsV1 = {},
   ): SoundRequestOutcomeV1 {
     if (this.#destroyed) return "LOCKED";
     const outcome: SoundRequestOutcomeV1 = !this.#settings.enabled
@@ -169,6 +173,22 @@ export class GameAudioV1 {
         delayMs: cue.delayMs * timeScale,
         ...(cue.gain === undefined ? {} : { gain: cue.gain }),
       });
+  }
+
+  /**
+   * Stops one sound wherever it plays, so that it can start again at once
+   * (the Gallery's "play again" and its stop control).
+   */
+  stop(id: SoundKeyV1): void {
+    this.#mixer?.stop(id);
+  }
+
+  /**
+   * Milliseconds until a sound that is playing is over: 0 when it is not
+   * playing, Infinity while a looping sound plays.
+   */
+  remainingMs(id: SoundKeyV1): number {
+    return this.#mixer?.remainingMs(id) ?? 0;
   }
 
   /** Cuts every sound, delayed ones included (the tab was hidden). */

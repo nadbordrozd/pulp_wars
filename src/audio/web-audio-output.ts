@@ -1,10 +1,10 @@
 import type { SoundOutputV1, SoundStartV1, SoundStopV1 } from "./mixer";
 import {
-  SOUND_IDS_V1,
-  SOUND_MANIFEST_V1,
-  soundRecipeV1,
-  type SoundIdV1,
-} from "./sound-manifest";
+  playableRecipeV1,
+  playableSoundIdsV1,
+  playableSoundV1,
+} from "./playable-sound";
+import type { SoundKeyV1 } from "./sound-manifest";
 import {
   SYNTH_SAMPLE_RATE_V1,
   renderSynthRecipeV1,
@@ -16,7 +16,8 @@ import {
  * docs/ui/SOUND.md). Nothing is created when this module is imported or the
  * output is built: the `AudioContext` appears in `unlock`, which the app
  * calls from a user gesture (browser autoplay rules). Each synthesised
- * sound is rendered once into an `AudioBuffer`, on first use; a manifest
+ * sound (an effect or a faction theme) is rendered once into an
+ * `AudioBuffer`, on first use; a manifest
  * entry that names a file is fetched and decoded after the unlock and takes
  * over from its fallback recipe when it is ready.
  *
@@ -48,14 +49,14 @@ export function createWebAudioOutputV1(
   let master: GainNode | null = null;
   let volume = 1;
   let closed = false;
-  const buffers = new Map<SoundIdV1, AudioBuffer>();
-  const loadedFiles = new Set<SoundIdV1>();
+  const buffers = new Map<SoundKeyV1, AudioBuffer>();
+  const loadedFiles = new Set<SoundKeyV1>();
 
-  const bufferOf = (id: SoundIdV1): AudioBuffer | null => {
+  const bufferOf = (id: SoundKeyV1): AudioBuffer | null => {
     if (context === null) return null;
     const cached = buffers.get(id);
     if (cached !== undefined) return cached;
-    const recipe = soundRecipeV1(id);
+    const recipe = playableRecipeV1(id);
     if (recipe === null) return null;
     const samples = renderSynthRecipeV1(recipe, SYNTH_SAMPLE_RATE_V1);
     const buffer = context.createBuffer(
@@ -69,9 +70,9 @@ export function createWebAudioOutputV1(
   };
 
   const loadFiles = (target: AudioContext): void => {
-    for (const id of SOUND_IDS_V1) {
-      const source = SOUND_MANIFEST_V1[id].source;
-      if (source.kind !== "FILE") continue;
+    for (const id of playableSoundIdsV1()) {
+      const source = playableSoundV1(id)?.source;
+      if (source?.kind !== "FILE") continue;
       void browser
         .fetch(source.url)
         .then((response) => {
@@ -136,6 +137,7 @@ export function createWebAudioOutputV1(
         const source = context.createBufferSource();
         source.buffer = buffer;
         source.playbackRate.value = request.rate;
+        source.loop = request.loop === true;
         const gain = context.createGain();
         gain.gain.value = request.gain;
         source.connect(gain);
@@ -159,9 +161,9 @@ export function createWebAudioOutputV1(
         return null;
       }
     },
-    durationMs(id: SoundIdV1): number {
+    durationMs(id: SoundKeyV1): number {
       if (loadedFiles.has(id)) return (buffers.get(id)?.duration ?? 0) * 1000;
-      const recipe = soundRecipeV1(id);
+      const recipe = playableRecipeV1(id);
       return recipe === null ? 0 : synthRecipeDurationMsV1(recipe);
     },
     close(): void {
