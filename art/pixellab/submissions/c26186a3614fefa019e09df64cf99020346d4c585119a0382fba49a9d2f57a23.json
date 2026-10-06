@@ -1,0 +1,37 @@
+{
+  "id": "swordsman-c",
+  "jobId": "458d6b2f-924c-4921-908d-09c553b95c4d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-swordsman",
+    "subject": "UNIT:SWORDSMAN",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 490903,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the shield and the spear completely. He stands with a huge two-handed greatsword point-down in front of him, blade between his feet, both gauntlets on the gold crossguard; a short crimson tabard with a gold cross over full steel plate. The kettle helmet becomes a closed steel great helm with a dark eye slit, gold band and tall crimson plume. Keep proportions, big head, pauldrons, feet, outline and style the same, transparent background. Sun at the bottom left."
+      }
+    ],
+    "prompt": "Remove the shield and the spear completely. He stands with a huge two-handed greatsword point-down in front of him, blade between his feet, both gauntlets on the gold crossguard; a short crimson tabard with a gold cross over full steel plate. The kettle helmet becomes a closed steel great helm with a dark eye slit, gold band and tall crimson plume. Keep proportions, big head, pauldrons, feet, outline and style the same, transparent background. Sun at the bottom left.",
+    "negativePrompt": "",
+    "description": "Remove the shield and the spear completely. He stands with a huge two-handed greatsword point-down in front of him, blade between his feet, both gauntlets on the gold crossguard; a short crimson tabard with a gold cross over full steel plate. The kettle helmet becomes a closed steel great helm with a dark eye slit, gold band and tall crimson plume. Keep proportions, big head, pauldrons, feet, outline and style the same, transparent background. Sun at the bottom left.",
+    "editInstruction": "Remove the shield and the spear completely. He stands with a huge two-handed greatsword point-down in front of him, blade between his feet, both gauntlets on the gold crossguard; a short crimson tabard with a gold cross over full steel plate. The kettle helmet becomes a closed steel great helm with a dark eye slit, gold band and tall crimson plume. Keep proportions, big head, pauldrons, feet, outline and style the same, transparent background. Sun at the bottom left.",
+    "source": {
+      "recipe": "guard-r6-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "1034bb97d22cc38860ed6adc7a4dd2207e8054e34560b0845d0099463f861378"
+    }
+  }
+}

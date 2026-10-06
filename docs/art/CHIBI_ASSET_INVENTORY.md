@@ -375,10 +375,10 @@ change until bead `pulp_wars-3tq.6`. None has an owner mask.
 
 | Subject                                                                                 | Asset id                          | Canvas   | Class           | Notes                                                           |
 | --------------------------------------------------------------------------------------- | --------------------------------- | -------- | --------------- | --------------------------------------------------------------- |
-| `UNIT:FIGHTER`, `MARKSMAN`, `GUARD`, `CAPTAIN`                                          | `chibi-direction-<role>`          | 56 x 80  | `STANDARD_UNIT` | edits of the accepted sprites; `fixedColours`                   |
+| `UNIT:FIGHTER`, `MARKSMAN`, `GUARD`, `CAPTAIN`, `SWORDSMAN`                             | `chibi-direction-<role>`          | 56 x 80  | `STANDARD_UNIT` | edits of the accepted sprites; `fixedColours`                   |
 | `UNIT:RAIDER`, `KNIGHT`, `CATAPULT`                                                     | `chibi-direction-<role>`          | 72 x 88  | `LARGE_UNIT`    | as above                                                        |
 | `UNIT:JUGGERNAUT`                                                                       | `chibi-direction-juggernaut`      | 88 x 104 | `GIANT_UNIT`    | as above                                                        |
-| `PORTRAIT:<ROLE>` (the 8 land roles)                                                    | `chibi-direction-portrait-<role>` | 48 x 48  | `PORTRAIT`      | edits of the batch-5 portraits; `fixedColours`                  |
+| `PORTRAIT:<ROLE>` (the 8 land roles, the Swordsman)                                     | `chibi-direction-portrait-<role>` | 48 x 48  | `PORTRAIT`      | edits of the batch-5 portraits; `fixedColours`                  |
 | `IMPROVEMENT:FARM`                                                                      | `chibi-direction-farm`            | 80 x 80  | `BUILDING`      | three beds of mixed vegetables; seamless, a gap on the centre   |
 | `IMPROVEMENT:WINDMILL`                                                                  | `chibi-direction-windmill`        | 64 x 72  | `BUILDING`      | calm style, seated                                              |
 | `IMPROVEMENT:LUMBER_CAMP`, `SAWMILL`, `FORGE`, `WORKSHOP`, `MARKET`, `PORT`, `SHIPYARD` | `chibi-direction-<name>`          | 72 x 72  | `BUILDING`      | calm style, seated; Port and Shipyard fly a code-drawn pennant  |
@@ -441,7 +441,7 @@ WAAAGH! icons (batch `5-goblin`, unchanged) and the shared ships.
 | 3                  | 6 resources, Treasure, Farm, Lumber Camp, Port, Monument, Mined Mountain; Roads and Field Defense      | about 17 plus 2–3 mined mountains; Roads and Field Defense need a decision first                                                                      |
 | 4                  | Windmill, Sawmill, Forge, Workshop, Market, Shipyard, Patrol Boat, Battleship, Embarked form           | 9                                                                                                                                                     |
 | 5                  | portraits, 23 technology icons, action, reward and HUD art                                             | 8 portraits, 3 dedicated technology icons plus 5 reused portraits or actions, 13 action icons, 3 reward icons, 2 HUD icons; vector glyphs by decision |
-| `direction-human`  | the 8 Human land units and their portraits, the 10 improvements, City 1–3, the Village (new direction) | 30                                                                                                                                                    |
+| `direction-human`  | the 9 Human land units and their portraits, the 10 improvements, City 1–3, the Village (new direction) | 32                                                                                                                                                    |
 | `direction-goblin` | the 8 Goblin land units and their portraits, Goblin City 1–3 (new direction)                           | 19                                                                                                                                                    |
 
 ## Flags the plan did not foresee

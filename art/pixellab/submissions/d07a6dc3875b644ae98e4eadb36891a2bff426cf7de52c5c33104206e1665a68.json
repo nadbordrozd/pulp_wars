@@ -1,0 +1,36 @@
+{
+  "id": "swordsman-f",
+  "jobId": "ea87ecc8-7432-4a89-9aac-2bfc6132b3d6",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-swordsman",
+    "subject": "UNIT:SWORDSMAN",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 490906,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the sword he holds point-down a much bigger two-handed greatsword: a broad steel blade twice as wide, reaching the ground between his feet, with a wide gold crossguard at his chest. Do not redraw anything else: keep the plumed helmet, face, plate armour, pauldrons, crimson tabard, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the sword he holds point-down a much bigger two-handed greatsword: a broad steel blade twice as wide, reaching the ground between his feet, with a wide gold crossguard at his chest. Do not redraw anything else: keep the plumed helmet, face, plate armour, pauldrons, crimson tabard, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the sword he holds point-down a much bigger two-handed greatsword: a broad steel blade twice as wide, reaching the ground between his feet, with a wide gold crossguard at his chest. Do not redraw anything else: keep the plumed helmet, face, plate armour, pauldrons, crimson tabard, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the sword he holds point-down a much bigger two-handed greatsword: a broad steel blade twice as wide, reaching the ground between his feet, with a wide gold crossguard at his chest. Do not redraw anything else: keep the plumed helmet, face, plate armour, pauldrons, crimson tabard, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "swordsman-c",
+      "candidate": 0,
+      "sha256": "ea63a7b7f410dc2dec46789cda8acd9e4ee70ba584b3a76ee5949aa2f59e779c"
+    }
+  }
+}

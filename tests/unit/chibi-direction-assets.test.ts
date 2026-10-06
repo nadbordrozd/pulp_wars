@@ -100,6 +100,10 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
     const subjects: ArtSubjectV7[] = [
       ...HUMAN_ROLES.map((role) => `UNIT:${role}` as const),
       ...HUMAN_ROLES.map((role) => `PORTRAIT:${role}` as const),
+      // The Swordsman (ruleset 7r48, bead pulp_wars-w49.9) has direction
+      // art only: the classic set below has no such unit.
+      "UNIT:SWORDSMAN",
+      "PORTRAIT:SWORDSMAN",
       ...IMPROVEMENTS.map((id) => `IMPROVEMENT:${id}` as const),
       "CITY:1",
       "CITY:2",

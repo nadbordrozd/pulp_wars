@@ -1,0 +1,36 @@
+{
+  "id": "swordsman-h",
+  "jobId": "0dd69979-4d36-4c40-95d3-ef00d785616a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-swordsman",
+    "subject": "UNIT:SWORDSMAN",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 490908,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change the sword and his arms only: he grips the huge greatsword in both gauntlets and holds it diagonally across his body, the gold crossguard at his waist on the left, the long broad steel blade slanting up to the right, its point above his pauldron on the right. Do not redraw anything else: keep the helmet with its crest, face, plate armour, crimson tabard with the gold cross, proportions, feet, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change the sword and his arms only: he grips the huge greatsword in both gauntlets and holds it diagonally across his body, the gold crossguard at his waist on the left, the long broad steel blade slanting up to the right, its point above his pauldron on the right. Do not redraw anything else: keep the helmet with its crest, face, plate armour, crimson tabard with the gold cross, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change the sword and his arms only: he grips the huge greatsword in both gauntlets and holds it diagonally across his body, the gold crossguard at his waist on the left, the long broad steel blade slanting up to the right, its point above his pauldron on the right. Do not redraw anything else: keep the helmet with its crest, face, plate armour, crimson tabard with the gold cross, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change the sword and his arms only: he grips the huge greatsword in both gauntlets and holds it diagonally across his body, the gold crossguard at his waist on the left, the long broad steel blade slanting up to the right, its point above his pauldron on the right. Do not redraw anything else: keep the helmet with its crest, face, plate armour, crimson tabard with the gold cross, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "swordsman-e",
+      "candidate": 0,
+      "sha256": "b67bd8c8ef4242aa6b1f7f1f0675702cf12aacec8497296402aaeb6b64414d16"
+    }
+  }
+}

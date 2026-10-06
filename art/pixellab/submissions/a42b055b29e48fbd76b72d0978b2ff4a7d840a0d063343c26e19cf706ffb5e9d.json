@@ -1,0 +1,37 @@
+{
+  "id": "portrait-swordsman-b",
+  "jobId": "1583e274-241d-4754-926a-b08e24bd32d0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-swordsman",
+    "subject": "PORTRAIT:SWORDSMAN",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 490922,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change three things only. The helmet: a closed great helm covering the face, with a narrow dark eye slit and a gold cross on its front under the crimson crest; no face shows. The shield: removed completely; in its place a big round steel pauldron rimmed in gold and steel plate. The sword: a broader, longer greatsword blade with a gold crossguard. Do not redraw anything else: keep the crimson tabard with the gold cross, proportions, outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change three things only. The helmet: a closed great helm covering the face, with a narrow dark eye slit and a gold cross on its front under the crimson crest; no face shows. The shield: removed completely; in its place a big round steel pauldron rimmed in gold and steel plate. The sword: a broader, longer greatsword blade with a gold crossguard. Do not redraw anything else: keep the crimson tabard with the gold cross, proportions, outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change three things only. The helmet: a closed great helm covering the face, with a narrow dark eye slit and a gold cross on its front under the crimson crest; no face shows. The shield: removed completely; in its place a big round steel pauldron rimmed in gold and steel plate. The sword: a broader, longer greatsword blade with a gold crossguard. Do not redraw anything else: keep the crimson tabard with the gold cross, proportions, outline and art style the same, on a transparent background.",
+    "editInstruction": "Change three things only. The helmet: a closed great helm covering the face, with a narrow dark eye slit and a gold cross on its front under the crimson crest; no face shows. The shield: removed completely; in its place a big round steel pauldron rimmed in gold and steel plate. The sword: a broader, longer greatsword blade with a gold crossguard. Do not redraw anything else: keep the crimson tabard with the gold cross, proportions, outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-fighter-r6-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "0aa4df657182e00ca3054381e0630f355b2b80d4d29b0cbe2b0e1db6f29b71c0"
+    }
+  }
+}

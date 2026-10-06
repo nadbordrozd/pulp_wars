@@ -1,0 +1,36 @@
+{
+  "id": "portrait-swordsman-e",
+  "jobId": "22d46d34-7109-4787-9dd6-7001c7d87340",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-swordsman",
+    "subject": "PORTRAIT:SWORDSMAN",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 490925,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change two small shading details only. On the steel helm, put the brightest pale highlight on its left cheek and the left of the face plate, and make its right edge one tone darker. On the crimson tabard, move the dark shadow strip from its left edge to its right edge. Do not change any shape or any other colour: keep the helm, gold cross, dark crimson crest, pauldron, gauntlets, the pale steel sword, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change two small shading details only. On the steel helm, put the brightest pale highlight on its left cheek and the left of the face plate, and make its right edge one tone darker. On the crimson tabard, move the dark shadow strip from its left edge to its right edge. Do not change any shape or any other colour: keep the helm, gold cross, dark crimson crest, pauldron, gauntlets, the pale steel sword, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change two small shading details only. On the steel helm, put the brightest pale highlight on its left cheek and the left of the face plate, and make its right edge one tone darker. On the crimson tabard, move the dark shadow strip from its left edge to its right edge. Do not change any shape or any other colour: keep the helm, gold cross, dark crimson crest, pauldron, gauntlets, the pale steel sword, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change two small shading details only. On the steel helm, put the brightest pale highlight on its left cheek and the left of the face plate, and make its right edge one tone darker. On the crimson tabard, move the dark shadow strip from its left edge to its right edge. Do not change any shape or any other colour: keep the helm, gold cross, dark crimson crest, pauldron, gauntlets, the pale steel sword, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-swordsman-c",
+      "candidate": 0,
+      "sha256": "0903461754db95c0f04899b980b9ab5cc1c8fca20c70c34997fffad3800d6aa5"
+    }
+  }
+}

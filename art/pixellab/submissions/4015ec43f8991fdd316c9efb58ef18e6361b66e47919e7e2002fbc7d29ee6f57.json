@@ -1,0 +1,36 @@
+{
+  "id": "portrait-swordsman-f",
+  "jobId": "09cf5567-b84a-4dd1-85b6-2b27d6a6d890",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-swordsman",
+    "subject": "PORTRAIT:SWORDSMAN",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 490926,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change the steel helm's shading only: the side of the helm left of the eye slit becomes pale bright polished steel, and the face plate right of the gold cross and the helm's right edge become mid-grey steel in soft shadow. Keep the gold cross fully gold-yellow. Do not change anything else: keep the dark crimson crest, the pale steel sword, pauldron, gauntlets, crimson tabard, every shape, the thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change the steel helm's shading only: the side of the helm left of the eye slit becomes pale bright polished steel, and the face plate right of the gold cross and the helm's right edge become mid-grey steel in soft shadow. Keep the gold cross fully gold-yellow. Do not change anything else: keep the dark crimson crest, the pale steel sword, pauldron, gauntlets, crimson tabard, every shape, the thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change the steel helm's shading only: the side of the helm left of the eye slit becomes pale bright polished steel, and the face plate right of the gold cross and the helm's right edge become mid-grey steel in soft shadow. Keep the gold cross fully gold-yellow. Do not change anything else: keep the dark crimson crest, the pale steel sword, pauldron, gauntlets, crimson tabard, every shape, the thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change the steel helm's shading only: the side of the helm left of the eye slit becomes pale bright polished steel, and the face plate right of the gold cross and the helm's right edge become mid-grey steel in soft shadow. Keep the gold cross fully gold-yellow. Do not change anything else: keep the dark crimson crest, the pale steel sword, pauldron, gauntlets, crimson tabard, every shape, the thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-swordsman-c",
+      "candidate": 0,
+      "sha256": "0903461754db95c0f04899b980b9ab5cc1c8fca20c70c34997fffad3800d6aa5"
+    }
+  }
+}

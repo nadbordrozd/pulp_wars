@@ -1,0 +1,36 @@
+{
+  "id": "portrait-swordsman-d",
+  "jobId": "eda2af6a-1ddd-4941-9208-eb3ac30206d9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-swordsman",
+    "subject": "PORTRAIT:SWORDSMAN",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 490924,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change the shading only, so that he is lit from the left: the left half of the steel helm and of its face plate is the brightest pale polished steel, the right half is darker steel in shadow; the left side of the crimson crest is brighter red and its right side darker; the left edge of the sword blade is bright and its right edge dark. Do not change any shape: keep the helm, gold cross, crest, pauldron, gauntlets, tabard, sword, outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change the shading only, so that he is lit from the left: the left half of the steel helm and of its face plate is the brightest pale polished steel, the right half is darker steel in shadow; the left side of the crimson crest is brighter red and its right side darker; the left edge of the sword blade is bright and its right edge dark. Do not change any shape: keep the helm, gold cross, crest, pauldron, gauntlets, tabard, sword, outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change the shading only, so that he is lit from the left: the left half of the steel helm and of its face plate is the brightest pale polished steel, the right half is darker steel in shadow; the left side of the crimson crest is brighter red and its right side darker; the left edge of the sword blade is bright and its right edge dark. Do not change any shape: keep the helm, gold cross, crest, pauldron, gauntlets, tabard, sword, outline and art style the same, on a transparent background.",
+    "editInstruction": "Change the shading only, so that he is lit from the left: the left half of the steel helm and of its face plate is the brightest pale polished steel, the right half is darker steel in shadow; the left side of the crimson crest is brighter red and its right side darker; the left edge of the sword blade is bright and its right edge dark. Do not change any shape: keep the helm, gold cross, crest, pauldron, gauntlets, tabard, sword, outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-swordsman-c",
+      "candidate": 0,
+      "sha256": "0903461754db95c0f04899b980b9ab5cc1c8fca20c70c34997fffad3800d6aa5"
+    }
+  }
+}

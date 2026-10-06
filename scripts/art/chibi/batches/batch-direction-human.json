@@ -104,6 +104,18 @@
       "subjectKey": "UNIT:JUGGERNAUT/HERALDIC"
     },
     {
+      "id": "chibi-direction-swordsman",
+      "subject": "UNIT:SWORDSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:SWORDSMAN/HERALDIC"
+    },
+    {
       "id": "chibi-direction-portrait-fighter",
       "subject": "PORTRAIT:FIGHTER",
       "assetClass": "PORTRAIT",
@@ -198,6 +210,18 @@
       },
       "ownerColour": false,
       "subjectKey": "PORTRAIT:JUGGERNAUT/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-portrait-swordsman",
+      "subject": "PORTRAIT:SWORDSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:SWORDSMAN/HERALDIC"
     },
     {
       "id": "chibi-direction-windmill",
@@ -1447,6 +1471,235 @@
       },
       "editInstruction": "Change only his shield and armour: the shield becomes a bigger rectangular tower shield with a flat top, as wide as his body, covering him from his chin to the bottom of the image, crimson with a gold cross and a thick steel border; he wears polished steel plate with one big round steel pauldron on his shoulder. Do not redraw anything else: keep the kettle helmet with its gold band, the face, the upright spear, proportions, outline and art style exactly the same, on a transparent background.",
       "notes": "Bead pulp_wars-2o7.3: the Guard's portrait with the tower shield and plate pauldron of the redesigned map sprite (guard-r6-d)."
+    },
+    {
+      "id": "swordsman-a",
+      "asset": "chibi-direction-swordsman",
+      "endpoint": "edit-image-pixen",
+      "seed": 490901,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "fighter-r6-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw him as a heavy armoured swordsman with no shield at all: full polished steel plate with two big round pauldrons, a short crimson tabard with the gold cross, plate legs; a heavier steel helmet with cheek guards, gold band and tall crimson plume; one huge two-handed greatsword with a gold crossguard held upright in both hands. Keep face, proportions, feet, black outline and style the same, transparent background. Sun at the bottom left: left sides lit, right sides in shadow.",
+      "notes": "Bead pulp_wars-w49.9: the Human Swordsman (ruleset 7r48), first sample: the Fighter in full plate with a two-handed greatsword upright in both hands and no shield."
+    },
+    {
+      "id": "swordsman-b",
+      "asset": "chibi-direction-swordsman",
+      "endpoint": "edit-image-pixen",
+      "seed": 490902,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "guard-r6-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Remove the shield and the spear completely. Instead he carries one huge two-handed greatsword with a broad steel blade and gold crossguard resting on his shoulder, blade slanting up behind his head; a short crimson tabard with a gold cross over his breastplate. The kettle helmet becomes a rounded helmet with cheek guards, gold band and tall crimson plume. Keep face, plate armour, pauldrons, proportions, feet, outline and style the same, transparent background. Sun at the bottom left.",
+      "notes": "Bead pulp_wars-w49.9: second sample: the plate-armoured soldier of guard-r6-a with no shield or spear, a greatsword on the shoulder and a plumed helmet."
+    },
+    {
+      "id": "swordsman-c",
+      "asset": "chibi-direction-swordsman",
+      "endpoint": "edit-image-pixen",
+      "seed": 490903,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "guard-r6-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Remove the shield and the spear completely. He stands with a huge two-handed greatsword point-down in front of him, blade between his feet, both gauntlets on the gold crossguard; a short crimson tabard with a gold cross over full steel plate. The kettle helmet becomes a closed steel great helm with a dark eye slit, gold band and tall crimson plume. Keep proportions, big head, pauldrons, feet, outline and style the same, transparent background. Sun at the bottom left.",
+      "notes": "Bead pulp_wars-w49.9: third sample: a closed great helm with a plume and the greatsword planted point-down in both hands."
+    },
+    {
+      "id": "swordsman-d",
+      "asset": "chibi-direction-swordsman",
+      "endpoint": "edit-image-pixen",
+      "seed": 490904,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "swordsman-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the greatsword on his shoulder bigger: a longer and broader steel blade with a lit left edge. Do not redraw anything else: keep the plumed helmet, face, plate armour, crimson tabard with the gold cross, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background with nothing under or beside the feet.",
+      "notes": "Bead pulp_wars-w49.9: swordsman-b reads well (greatsword on the shoulder, plume, tabard) but the words 'Sun at the bottom left' drew a sun beside the feet: the same soldier without it, with a bigger blade."
+    },
+    {
+      "id": "swordsman-e",
+      "asset": "chibi-direction-swordsman",
+      "endpoint": "edit-image-pixen",
+      "seed": 490905,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "swordsman-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change three things only. Erase the glowing yellow ball at the bottom left completely, leaving that area transparent. His sword becomes a huge two-handed greatsword: the blade twice as broad and taller than his plume, with a big gold crossguard. Add a short crimson tabard with a bold gold cross over his breastplate. Do not redraw anything else: keep the plumed helmet, face, plate armour, pose, proportions, feet, black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-w49.9: swordsman-a is the Fighter in plate but its sword is no bigger than the Fighter's, there is no crimson on the chest and a glowing ball stands beside the feet: a real greatsword, a tabard and no ball."
+    },
+    {
+      "id": "swordsman-f",
+      "asset": "chibi-direction-swordsman",
+      "endpoint": "edit-image-pixen",
+      "seed": 490906,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "swordsman-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the sword he holds point-down a much bigger two-handed greatsword: a broad steel blade twice as wide, reaching the ground between his feet, with a wide gold crossguard at his chest. Do not redraw anything else: keep the plumed helmet, face, plate armour, pauldrons, crimson tabard, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-w49.9: swordsman-c (sword planted point-down) has a thin short sword and a sun beside the feet: a broad greatsword and no sun."
+    },
+    {
+      "id": "swordsman-g",
+      "asset": "chibi-direction-swordsman",
+      "endpoint": "edit-image-pixen",
+      "seed": 490907,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "swordsman-e",
+        "candidate": 0
+      },
+      "editInstruction": "Change the helmet only: it becomes a closed steel great helm, a big rounded bucket helm that hides the whole face, with a narrow dark eye slit, a gold cross-shaped band on its front and a tall crimson plume standing on top. No face shows. Do not redraw anything else: keep the greatsword, plate armour, pauldron, crimson tabard with the gold cross, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-w49.9: swordsman-e is heavy and in the family but shares the Fighter's helmet, crest and sword-up pose: the same soldier under a closed great helm with a plume."
+    },
+    {
+      "id": "swordsman-h",
+      "asset": "chibi-direction-swordsman",
+      "endpoint": "edit-image-pixen",
+      "seed": 490908,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "swordsman-e",
+        "candidate": 0
+      },
+      "editInstruction": "Change the sword and his arms only: he grips the huge greatsword in both gauntlets and holds it diagonally across his body, the gold crossguard at his waist on the left, the long broad steel blade slanting up to the right, its point above his pauldron on the right. Do not redraw anything else: keep the helmet with its crest, face, plate armour, crimson tabard with the gold cross, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-w49.9: swordsman-e holds its sword up at the left exactly as the Fighter does: the same soldier with the greatsword in both hands diagonally across the body."
+    },
+    {
+      "id": "portrait-swordsman-a",
+      "asset": "chibi-direction-portrait-swordsman",
+      "endpoint": "edit-image-pixen",
+      "seed": 490921,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-fighter-r6-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Remove the round wooden shield completely. His helmet becomes a closed steel great helm that hides the whole face: a rounded bucket helm with a dark eye slit and a gold cross on its front, the crimson crest kept on top. Polished steel plate with a big round pauldron rimmed in gold over the crimson tabard with the gold cross. The sword becomes a huge greatsword with a broad blade and gold crossguard. Keep proportions, black outline and style the same, transparent background.",
+      "notes": "Bead pulp_wars-w49.9: the Swordsman's bust from the Fighter's, to match the accepted map sprite (swordsman-g): closed great helm with a gold cross and crimson crest, plate pauldron, greatsword, no shield."
+    },
+    {
+      "id": "portrait-swordsman-b",
+      "asset": "chibi-direction-portrait-swordsman",
+      "endpoint": "edit-image-pixen",
+      "seed": 490922,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-fighter-r6-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Change three things only. The helmet: a closed great helm covering the face, with a narrow dark eye slit and a gold cross on its front under the crimson crest; no face shows. The shield: removed completely; in its place a big round steel pauldron rimmed in gold and steel plate. The sword: a broader, longer greatsword blade with a gold crossguard. Do not redraw anything else: keep the crimson tabard with the gold cross, proportions, outline and art style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-w49.9: second portrait sample, the same three changes stated as the only changes."
+    },
+    {
+      "id": "portrait-swordsman-c",
+      "asset": "chibi-direction-portrait-swordsman",
+      "endpoint": "edit-image-pixen",
+      "seed": 490923,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-swordsman-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change his hands only: the bare skin-coloured fist at the bottom left becomes a polished steel plate gauntlet, and the brown leather glove holding the sword becomes a polished steel plate gauntlet. Do not redraw anything else: keep the closed great helm with its gold cross and crimson crest, the round steel pauldron, the crimson tabard with the gold cross, the sword, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-w49.9: portrait-swordsman-a matches the map sprite but keeps the Fighter's bare fist and brown glove: steel gauntlets, as on the sprite."
+    },
+    {
+      "id": "portrait-swordsman-d",
+      "asset": "chibi-direction-portrait-swordsman",
+      "endpoint": "edit-image-pixen",
+      "seed": 490924,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-swordsman-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change the shading only, so that he is lit from the left: the left half of the steel helm and of its face plate is the brightest pale polished steel, the right half is darker steel in shadow; the left side of the crimson crest is brighter red and its right side darker; the left edge of the sword blade is bright and its right edge dark. Do not change any shape: keep the helm, gold cross, crest, pauldron, gauntlets, tabard, sword, outline and art style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-w49.9: portrait-swordsman-c is the right bust but lighting-qa reads it as lit from the right (faces -21.7: the pale face plate is right of centre and the crest is darkest at the left): the same bust relit from the left."
+    },
+    {
+      "id": "portrait-swordsman-e",
+      "asset": "chibi-direction-portrait-swordsman",
+      "endpoint": "edit-image-pixen",
+      "seed": 490925,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-swordsman-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change two small shading details only. On the steel helm, put the brightest pale highlight on its left cheek and the left of the face plate, and make its right edge one tone darker. On the crimson tabard, move the dark shadow strip from its left edge to its right edge. Do not change any shape or any other colour: keep the helm, gold cross, dark crimson crest, pauldron, gauntlets, the pale steel sword, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-w49.9: portrait-swordsman-d relit the bust too hard (a near-black sword and right half, a half-brown cross). A gentle relight of portrait-swordsman-c: only the helm highlight and the tabard's shadow strip change sides."
+    },
+    {
+      "id": "portrait-swordsman-f",
+      "asset": "chibi-direction-portrait-swordsman",
+      "endpoint": "edit-image-pixen",
+      "seed": 490926,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-swordsman-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change the steel helm's shading only: the side of the helm left of the eye slit becomes pale bright polished steel, and the face plate right of the gold cross and the helm's right edge become mid-grey steel in soft shadow. Keep the gold cross fully gold-yellow. Do not change anything else: keep the dark crimson crest, the pale steel sword, pauldron, gauntlets, crimson tabard, every shape, the thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-w49.9: third relight of portrait-swordsman-c, the helm's steel only: pale at the left of the eye slit, mid-grey at the right of the cross; the cross, crest and sword are named as unchanged."
     }
   ]
 }

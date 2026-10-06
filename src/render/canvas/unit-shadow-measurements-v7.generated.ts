@@ -114,6 +114,17 @@ export const UNIT_SHADOW_MEASUREMENTS_V7: Readonly<
     baseLeft: 8,
     baseRight: 53,
   },
+  "UNIT:SWORDSMAN": {
+    assetId: "chibi-direction-swordsman",
+    assetClass: "STANDARD_UNIT",
+    width: 56,
+    height: 80,
+    contactY: 76,
+    footLeft: 17,
+    footRight: 41,
+    baseLeft: 17,
+    baseRight: 47,
+  },
   "UNIT:GOBLIN:FIGHTER": {
     assetId: "chibi-direction-goblin-goblin",
     assetClass: "STANDARD_UNIT",

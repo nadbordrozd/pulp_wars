@@ -105,6 +105,48 @@ portraits; 10 PixelLab calls.
 - The Fighter's portrait is also the Human emblem of the setup form; it
   keeps the helmet, crest and cross and shows the round shield.
 
+### Swordsman (bead `pulp_wars-w49.9`)
+
+The Swordsman of ruleset `7r48` (the heavy line infantryman, unlocked by
+Engineering) borrowed the Guard's sprite and portrait under an "S" badge.
+It has its own art now, in the Fighter's and Guard's style, canvas, scale
+and colours: `chibi-direction-swordsman` (56 x 80, `STANDARD_UNIT`) and
+`chibi-direction-portrait-swordsman` (48 x 48), fixed colours, no mask.
+Recipes `swordsman-*` and `portrait-swordsman-*` in batch
+`direction-human`, all `edit-image-pixen`; 14 PixelLab calls.
+
+- **Sprite** (`swordsman-g`, 49 x 73 px, feet on row 75): a closed steel
+  great helm with a gold cross on its front and a crimson crest, full steel
+  plate with a big round gold-rimmed pauldron, a short crimson tabard with
+  a gold cross, and a broad greatsword held upright; no shield. It is the
+  plate-armoured edit of the Fighter (`swordsman-a`, then `-e`) under a
+  new helm, so the body, feet and scale are the Fighter's.
+- **Told apart at board size:** the Fighter shows a face and a round
+  wooden shield; the Guard is a crimson rectangle with a head and a spear;
+  the Swordsman is the only one with a faceless steel head, a gold cross
+  on it, and no shield.
+- **Portrait** (`portrait-swordsman-f`): the same helm, crest, pauldron,
+  steel gauntlets and greatsword, from the Fighter's bust.
+- **Light.** The sprite is lit from the left (`lighting-qa` faces +29.5).
+  The portrait's face plate is pale left of the cross and in shadow right
+  of it, but the measure reads -15.5 (the Guard's portrait: -21.5): its
+  rows run from the dark crest and the receding side of the helm into the
+  pale face plate, so there it follows the layout, as the
+  [art direction](../ART_DIRECTION.md) says it can on a unit.
+- **Rejected.** A light sentence that named the sun drew a sun beside the
+  feet (`swordsman-a`, `-b`, `-c`): an edit instruction describes shading,
+  never the sun. A greatsword on the shoulder (`-d`: a smaller, slighter
+  soldier); the plate soldier under the Fighter's own helmet (`-e`: too
+  close to the Fighter); a sword planted point-down (`-f`: narrow, and the
+  sword did not read); the greatsword held across the body (`-h`: it
+  covered the face and the tabard). Portraits: one kept the Fighter's bare
+  fist (`-a`), one kept a round shield (`-b`), one was lit from the right
+  (`-c`), and two relights were too hard or drew a cream bar on the helm
+  (`-d`, `-e`).
+- LEGACY (`?art=legacy`) and the developer option "Classic look" have no
+  Swordsman art: LEGACY draws the Guard's legacy raster, as it draws the
+  Patrol Boat for the Submarine.
+
 The other factions are **not** converted: Undead, Goblin and Dinosaur units,
 cities and portraits still carry the owner colour on a mask.
 

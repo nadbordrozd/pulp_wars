@@ -116,6 +116,15 @@ export const CHIBI_DIRECTION_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     fixedColours: true,
   },
   {
+    id: "chibi-direction-swordsman",
+    subject: "UNIT:SWORDSMAN",
+    assetClass: "STANDARD_UNIT",
+    width: 56,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/units/chibi-direction-swordsman.png"),
+    fixedColours: true,
+  },
+  {
     id: "chibi-direction-portrait-captain",
     subject: "PORTRAIT:CAPTAIN",
     assetClass: "PORTRAIT",
@@ -200,6 +209,17 @@ export const CHIBI_DIRECTION_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     height: 48,
     url: chibiArtUrl(
       "assets/chibi/portraits/chibi-direction-portrait-raider.png",
+    ),
+    fixedColours: true,
+  },
+  {
+    id: "chibi-direction-portrait-swordsman",
+    subject: "PORTRAIT:SWORDSMAN",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-direction-portrait-swordsman.png",
     ),
     fixedColours: true,
   },

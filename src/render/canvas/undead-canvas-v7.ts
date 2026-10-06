@@ -88,42 +88,6 @@ const BONE = "#efe8cf";
 const BADGE_FILL = "#231a2c";
 
 /**
- * Tuning 5 (`pulp_wars-w49.4`): the mark of a unit drawn with STAND-IN art
- * (the Human Swordsman, drawn as the Guard until its art exists): the
- * letter in a steel disc where the faction badges go, so the two units
- * can be told apart on the board.
- */
-export function drawStandInBadgeV7(
-  context: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  zoom: number,
-  chibi: boolean,
-  letter: string,
-): void {
-  const frame = chibi
-    ? UNDEAD_BADGE_FRAME_V7.chibi
-    : UNDEAD_BADGE_FRAME_V7.legacy;
-  const size = frame.size * zoom;
-  const cx = x + (frame.left + frame.size / 2) * zoom;
-  const cy = y + (frame.top + frame.size / 2) * zoom;
-  context.save();
-  context.fillStyle = "#c9d2dc";
-  context.strokeStyle = "#171722";
-  context.lineWidth = Math.max(1, 1.6 * zoom);
-  context.beginPath();
-  context.arc(cx, cy, size / 2, 0, Math.PI * 2);
-  context.fill();
-  context.stroke();
-  context.fillStyle = "#171722";
-  context.font = `${800} ${Math.max(6, size * 0.62)}px system-ui`;
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-  context.fillText(letter, cx, cy + size * 0.04);
-  context.restore();
-}
-
-/**
  * Grave corner marker frames, relative to the cell centre in world units
  * (128 = one cell). The marker sits in the bottom-right corner, which no
  * unit overlay uses: the seat badge and HP bar are on the left or below the

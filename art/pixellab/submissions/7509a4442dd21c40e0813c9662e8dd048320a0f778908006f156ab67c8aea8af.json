@@ -1,0 +1,36 @@
+{
+  "id": "portrait-swordsman-c",
+  "jobId": "7daf9091-ac9b-4aba-b424-1d78ea05bc06",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-swordsman",
+    "subject": "PORTRAIT:SWORDSMAN",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 490923,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change his hands only: the bare skin-coloured fist at the bottom left becomes a polished steel plate gauntlet, and the brown leather glove holding the sword becomes a polished steel plate gauntlet. Do not redraw anything else: keep the closed great helm with its gold cross and crimson crest, the round steel pauldron, the crimson tabard with the gold cross, the sword, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change his hands only: the bare skin-coloured fist at the bottom left becomes a polished steel plate gauntlet, and the brown leather glove holding the sword becomes a polished steel plate gauntlet. Do not redraw anything else: keep the closed great helm with its gold cross and crimson crest, the round steel pauldron, the crimson tabard with the gold cross, the sword, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change his hands only: the bare skin-coloured fist at the bottom left becomes a polished steel plate gauntlet, and the brown leather glove holding the sword becomes a polished steel plate gauntlet. Do not redraw anything else: keep the closed great helm with its gold cross and crimson crest, the round steel pauldron, the crimson tabard with the gold cross, the sword, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change his hands only: the bare skin-coloured fist at the bottom left becomes a polished steel plate gauntlet, and the brown leather glove holding the sword becomes a polished steel plate gauntlet. Do not redraw anything else: keep the closed great helm with its gold cross and crimson crest, the round steel pauldron, the crimson tabard with the gold cross, the sword, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-swordsman-a",
+      "candidate": 0,
+      "sha256": "1ed80d9f3754405eb70c4741b1acb81971d58b54e8167133e749e0b9f510ab6d"
+    }
+  }
+}

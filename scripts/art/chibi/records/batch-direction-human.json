@@ -3897,6 +3897,410 @@
         "reviewedAt": "2026-10-02T08:51:36.011Z"
       }
     },
+    "portrait-swordsman-a": {
+      "id": "portrait-swordsman-a",
+      "asset": "chibi-direction-portrait-swordsman",
+      "jobId": "5206f18e-085f-48ca-be5b-6bf036ac41d3",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-portrait-swordsman",
+        "subject": "PORTRAIT:SWORDSMAN",
+        "faction": "ORIGINAL",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 490921,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove the round wooden shield completely. His helmet becomes a closed steel great helm that hides the whole face: a rounded bucket helm with a dark eye slit and a gold cross on its front, the crimson crest kept on top. Polished steel plate with a big round pauldron rimmed in gold over the crimson tabard with the gold cross. The sword becomes a huge greatsword with a broad blade and gold crossguard. Keep proportions, black outline and style the same, transparent background."
+          }
+        ],
+        "prompt": "Remove the round wooden shield completely. His helmet becomes a closed steel great helm that hides the whole face: a rounded bucket helm with a dark eye slit and a gold cross on its front, the crimson crest kept on top. Polished steel plate with a big round pauldron rimmed in gold over the crimson tabard with the gold cross. The sword becomes a huge greatsword with a broad blade and gold crossguard. Keep proportions, black outline and style the same, transparent background.",
+        "negativePrompt": "",
+        "description": "Remove the round wooden shield completely. His helmet becomes a closed steel great helm that hides the whole face: a rounded bucket helm with a dark eye slit and a gold cross on its front, the crimson crest kept on top. Polished steel plate with a big round pauldron rimmed in gold over the crimson tabard with the gold cross. The sword becomes a huge greatsword with a broad blade and gold crossguard. Keep proportions, black outline and style the same, transparent background.",
+        "editInstruction": "Remove the round wooden shield completely. His helmet becomes a closed steel great helm that hides the whole face: a rounded bucket helm with a dark eye slit and a gold cross on its front, the crimson crest kept on top. Polished steel plate with a big round pauldron rimmed in gold over the crimson tabard with the gold cross. The sword becomes a huge greatsword with a broad blade and gold crossguard. Keep proportions, black outline and style the same, transparent background.",
+        "source": {
+          "recipe": "portrait-fighter-r6-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "0aa4df657182e00ca3054381e0630f355b2b80d4d29b0cbe2b0e1db6f29b71c0"
+        }
+      },
+      "submittedAt": "2026-10-06T12:09:57.963Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/portrait-swordsman-a.png",
+      "rawSheetSha256": "79848a4f95a4844572b51cc0186a20c18fcea29646e49d6e53f12e0bfc88e680",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.0177,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.0177,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:10:30.531Z",
+      "usageUsd": 0.007481317599614462,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right bust (closed great helm with a gold cross, crest, pauldron, greatsword, no shield), but it keeps the Fighter's bare fist and brown leather glove where the sprite has steel gauntlets. Source of portrait-swordsman-c.",
+        "reviewedAt": "2026-10-06T12:17:31.207Z"
+      }
+    },
+    "portrait-swordsman-b": {
+      "id": "portrait-swordsman-b",
+      "asset": "chibi-direction-portrait-swordsman",
+      "jobId": "1583e274-241d-4754-926a-b08e24bd32d0",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-portrait-swordsman",
+        "subject": "PORTRAIT:SWORDSMAN",
+        "faction": "ORIGINAL",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 490922,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change three things only. The helmet: a closed great helm covering the face, with a narrow dark eye slit and a gold cross on its front under the crimson crest; no face shows. The shield: removed completely; in its place a big round steel pauldron rimmed in gold and steel plate. The sword: a broader, longer greatsword blade with a gold crossguard. Do not redraw anything else: keep the crimson tabard with the gold cross, proportions, outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change three things only. The helmet: a closed great helm covering the face, with a narrow dark eye slit and a gold cross on its front under the crimson crest; no face shows. The shield: removed completely; in its place a big round steel pauldron rimmed in gold and steel plate. The sword: a broader, longer greatsword blade with a gold crossguard. Do not redraw anything else: keep the crimson tabard with the gold cross, proportions, outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change three things only. The helmet: a closed great helm covering the face, with a narrow dark eye slit and a gold cross on its front under the crimson crest; no face shows. The shield: removed completely; in its place a big round steel pauldron rimmed in gold and steel plate. The sword: a broader, longer greatsword blade with a gold crossguard. Do not redraw anything else: keep the crimson tabard with the gold cross, proportions, outline and art style the same, on a transparent background.",
+        "editInstruction": "Change three things only. The helmet: a closed great helm covering the face, with a narrow dark eye slit and a gold cross on its front under the crimson crest; no face shows. The shield: removed completely; in its place a big round steel pauldron rimmed in gold and steel plate. The sword: a broader, longer greatsword blade with a gold crossguard. Do not redraw anything else: keep the crimson tabard with the gold cross, proportions, outline and art style the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-fighter-r6-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "0aa4df657182e00ca3054381e0630f355b2b80d4d29b0cbe2b0e1db6f29b71c0"
+        }
+      },
+      "submittedAt": "2026-10-06T12:10:30.541Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/portrait-swordsman-b.png",
+      "rawSheetSha256": "66b30e3bde29cecfb64b32be054f0079c7fa65c3aec38609702fc05e03411421",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.0485,
+          "footprintWidthShare": 0.9091,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.0485,
+          "footprintWidthShare": 0.9091,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:11:43.451Z",
+      "usageUsd": 0.01217492323451572,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The round shield stays (now steel) and the helm is a visored sallet with no gold cross: not the map sprite's soldier.",
+        "reviewedAt": "2026-10-06T12:17:31.341Z"
+      }
+    },
+    "portrait-swordsman-c": {
+      "id": "portrait-swordsman-c",
+      "asset": "chibi-direction-portrait-swordsman",
+      "jobId": "7daf9091-ac9b-4aba-b424-1d78ea05bc06",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-portrait-swordsman",
+        "subject": "PORTRAIT:SWORDSMAN",
+        "faction": "ORIGINAL",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 490923,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change his hands only: the bare skin-coloured fist at the bottom left becomes a polished steel plate gauntlet, and the brown leather glove holding the sword becomes a polished steel plate gauntlet. Do not redraw anything else: keep the closed great helm with its gold cross and crimson crest, the round steel pauldron, the crimson tabard with the gold cross, the sword, proportions, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change his hands only: the bare skin-coloured fist at the bottom left becomes a polished steel plate gauntlet, and the brown leather glove holding the sword becomes a polished steel plate gauntlet. Do not redraw anything else: keep the closed great helm with its gold cross and crimson crest, the round steel pauldron, the crimson tabard with the gold cross, the sword, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change his hands only: the bare skin-coloured fist at the bottom left becomes a polished steel plate gauntlet, and the brown leather glove holding the sword becomes a polished steel plate gauntlet. Do not redraw anything else: keep the closed great helm with its gold cross and crimson crest, the round steel pauldron, the crimson tabard with the gold cross, the sword, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change his hands only: the bare skin-coloured fist at the bottom left becomes a polished steel plate gauntlet, and the brown leather glove holding the sword becomes a polished steel plate gauntlet. Do not redraw anything else: keep the closed great helm with its gold cross and crimson crest, the round steel pauldron, the crimson tabard with the gold cross, the sword, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-swordsman-a",
+          "candidate": 0,
+          "sha256": "1ed80d9f3754405eb70c4741b1acb81971d58b54e8167133e749e0b9f510ab6d"
+        }
+      },
+      "submittedAt": "2026-10-06T12:12:07.963Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/portrait-swordsman-c.png",
+      "rawSheetSha256": "acc28d71316207845d3212f61d617a19c9eedeaada184c99f838a597cad2f975",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.0325,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.0325,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:12:42.281Z",
+      "usageUsd": 0.007505211671193441,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Steel gauntlets and the right bust, but the face plate is palest right of centre: lighting-qa faces -21.7. Source of the relights portrait-swordsman-d, -e and -f.",
+        "reviewedAt": "2026-10-06T12:17:31.478Z"
+      }
+    },
+    "portrait-swordsman-d": {
+      "id": "portrait-swordsman-d",
+      "asset": "chibi-direction-portrait-swordsman",
+      "jobId": "eda2af6a-1ddd-4941-9208-eb3ac30206d9",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-portrait-swordsman",
+        "subject": "PORTRAIT:SWORDSMAN",
+        "faction": "ORIGINAL",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 490924,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change the shading only, so that he is lit from the left: the left half of the steel helm and of its face plate is the brightest pale polished steel, the right half is darker steel in shadow; the left side of the crimson crest is brighter red and its right side darker; the left edge of the sword blade is bright and its right edge dark. Do not change any shape: keep the helm, gold cross, crest, pauldron, gauntlets, tabard, sword, outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change the shading only, so that he is lit from the left: the left half of the steel helm and of its face plate is the brightest pale polished steel, the right half is darker steel in shadow; the left side of the crimson crest is brighter red and its right side darker; the left edge of the sword blade is bright and its right edge dark. Do not change any shape: keep the helm, gold cross, crest, pauldron, gauntlets, tabard, sword, outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change the shading only, so that he is lit from the left: the left half of the steel helm and of its face plate is the brightest pale polished steel, the right half is darker steel in shadow; the left side of the crimson crest is brighter red and its right side darker; the left edge of the sword blade is bright and its right edge dark. Do not change any shape: keep the helm, gold cross, crest, pauldron, gauntlets, tabard, sword, outline and art style the same, on a transparent background.",
+        "editInstruction": "Change the shading only, so that he is lit from the left: the left half of the steel helm and of its face plate is the brightest pale polished steel, the right half is darker steel in shadow; the left side of the crimson crest is brighter red and its right side darker; the left edge of the sword blade is bright and its right edge dark. Do not change any shape: keep the helm, gold cross, crest, pauldron, gauntlets, tabard, sword, outline and art style the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-swordsman-c",
+          "candidate": 0,
+          "sha256": "0903461754db95c0f04899b980b9ab5cc1c8fca20c70c34997fffad3800d6aa5"
+        }
+      },
+      "submittedAt": "2026-10-06T12:13:27.412Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/portrait-swordsman-d.png",
+      "rawSheetSha256": "7b63b5e5059e596467f45de77bbc24f3b02301a820664f9d929ab6777100b9fd",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.1083,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.1083,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:13:58.805Z",
+      "usageUsd": 0.007388680431577895,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Relit too hard: a near-black sword and right half, a half-brown cross; out of the family of the Fighter and Guard portraits.",
+        "reviewedAt": "2026-10-06T12:17:31.616Z"
+      }
+    },
+    "portrait-swordsman-e": {
+      "id": "portrait-swordsman-e",
+      "asset": "chibi-direction-portrait-swordsman",
+      "jobId": "22d46d34-7109-4787-9dd6-7001c7d87340",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-portrait-swordsman",
+        "subject": "PORTRAIT:SWORDSMAN",
+        "faction": "ORIGINAL",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 490925,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change two small shading details only. On the steel helm, put the brightest pale highlight on its left cheek and the left of the face plate, and make its right edge one tone darker. On the crimson tabard, move the dark shadow strip from its left edge to its right edge. Do not change any shape or any other colour: keep the helm, gold cross, dark crimson crest, pauldron, gauntlets, the pale steel sword, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change two small shading details only. On the steel helm, put the brightest pale highlight on its left cheek and the left of the face plate, and make its right edge one tone darker. On the crimson tabard, move the dark shadow strip from its left edge to its right edge. Do not change any shape or any other colour: keep the helm, gold cross, dark crimson crest, pauldron, gauntlets, the pale steel sword, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change two small shading details only. On the steel helm, put the brightest pale highlight on its left cheek and the left of the face plate, and make its right edge one tone darker. On the crimson tabard, move the dark shadow strip from its left edge to its right edge. Do not change any shape or any other colour: keep the helm, gold cross, dark crimson crest, pauldron, gauntlets, the pale steel sword, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change two small shading details only. On the steel helm, put the brightest pale highlight on its left cheek and the left of the face plate, and make its right edge one tone darker. On the crimson tabard, move the dark shadow strip from its left edge to its right edge. Do not change any shape or any other colour: keep the helm, gold cross, dark crimson crest, pauldron, gauntlets, the pale steel sword, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-swordsman-c",
+          "candidate": 0,
+          "sha256": "0903461754db95c0f04899b980b9ab5cc1c8fca20c70c34997fffad3800d6aa5"
+        }
+      },
+      "submittedAt": "2026-10-06T12:14:21.693Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/portrait-swordsman-e.png",
+      "rawSheetSha256": "703cf426a923b8b95ada703d9687d0d66e7e20f928b1358cb230e12a4d5bcd22",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.0361,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.0361,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:15:25.692Z",
+      "usageUsd": 0.01062125817934672,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The helm highlight became a cream bar on the left cheek that reads as another material, not polished steel.",
+        "reviewedAt": "2026-10-06T12:17:31.751Z"
+      }
+    },
+    "portrait-swordsman-f": {
+      "id": "portrait-swordsman-f",
+      "asset": "chibi-direction-portrait-swordsman",
+      "jobId": "09cf5567-b84a-4dd1-85b6-2b27d6a6d890",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-portrait-swordsman",
+        "subject": "PORTRAIT:SWORDSMAN",
+        "faction": "ORIGINAL",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 490926,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change the steel helm's shading only: the side of the helm left of the eye slit becomes pale bright polished steel, and the face plate right of the gold cross and the helm's right edge become mid-grey steel in soft shadow. Keep the gold cross fully gold-yellow. Do not change anything else: keep the dark crimson crest, the pale steel sword, pauldron, gauntlets, crimson tabard, every shape, the thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change the steel helm's shading only: the side of the helm left of the eye slit becomes pale bright polished steel, and the face plate right of the gold cross and the helm's right edge become mid-grey steel in soft shadow. Keep the gold cross fully gold-yellow. Do not change anything else: keep the dark crimson crest, the pale steel sword, pauldron, gauntlets, crimson tabard, every shape, the thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change the steel helm's shading only: the side of the helm left of the eye slit becomes pale bright polished steel, and the face plate right of the gold cross and the helm's right edge become mid-grey steel in soft shadow. Keep the gold cross fully gold-yellow. Do not change anything else: keep the dark crimson crest, the pale steel sword, pauldron, gauntlets, crimson tabard, every shape, the thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change the steel helm's shading only: the side of the helm left of the eye slit becomes pale bright polished steel, and the face plate right of the gold cross and the helm's right edge become mid-grey steel in soft shadow. Keep the gold cross fully gold-yellow. Do not change anything else: keep the dark crimson crest, the pale steel sword, pauldron, gauntlets, crimson tabard, every shape, the thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-swordsman-c",
+          "candidate": 0,
+          "sha256": "0903461754db95c0f04899b980b9ab5cc1c8fca20c70c34997fffad3800d6aa5"
+        }
+      },
+      "submittedAt": "2026-10-06T12:16:19.515Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/portrait-swordsman-f.png",
+      "rawSheetSha256": "e56904f3db4515563df6da005f1262a7e8005363d00ffd1ae402cd7f682d7a03",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.0361,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.0361,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:17:00.597Z",
+      "usageUsd": 0.008266955746544732,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-w49.9: the Swordsman's bust, matching the map sprite (swordsman-g): closed steel great helm with a gold cross and a crimson crest, a round gold-rimmed steel pauldron, steel gauntlets, crimson tabard with a gold cross, greatsword raised beside the helm, no shield (40 x 44 px). The face plate is pale left of the cross and in shadow right of it, as on the sprite. lighting-qa still reads faces -15.5 (the Guard's portrait -21.5): its rows run from the dark crimson crest and the receding dark side of the helm at the left into the pale face plate, so the number follows the layout, not the light.",
+        "reviewedAt": "2026-10-06T12:17:31.889Z"
+      }
+    },
     "raider-heraldic-edit": {
       "id": "raider-heraldic-edit",
       "asset": "chibi-direction-raider",
@@ -4576,6 +4980,542 @@
         "candidate": 0,
         "notes": "Re-accepted from the Human demo: boathouse, crane and a half-built hull.",
         "reviewedAt": "2026-10-02T08:51:45.724Z"
+      }
+    },
+    "swordsman-a": {
+      "id": "swordsman-a",
+      "asset": "chibi-direction-swordsman",
+      "jobId": "93c15932-ae0b-480c-b7c2-e07e6d40eaad",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-swordsman",
+        "subject": "UNIT:SWORDSMAN",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 490901,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw him as a heavy armoured swordsman with no shield at all: full polished steel plate with two big round pauldrons, a short crimson tabard with the gold cross, plate legs; a heavier steel helmet with cheek guards, gold band and tall crimson plume; one huge two-handed greatsword with a gold crossguard held upright in both hands. Keep face, proportions, feet, black outline and style the same, transparent background. Sun at the bottom left: left sides lit, right sides in shadow."
+          }
+        ],
+        "prompt": "Redraw him as a heavy armoured swordsman with no shield at all: full polished steel plate with two big round pauldrons, a short crimson tabard with the gold cross, plate legs; a heavier steel helmet with cheek guards, gold band and tall crimson plume; one huge two-handed greatsword with a gold crossguard held upright in both hands. Keep face, proportions, feet, black outline and style the same, transparent background. Sun at the bottom left: left sides lit, right sides in shadow.",
+        "negativePrompt": "",
+        "description": "Redraw him as a heavy armoured swordsman with no shield at all: full polished steel plate with two big round pauldrons, a short crimson tabard with the gold cross, plate legs; a heavier steel helmet with cheek guards, gold band and tall crimson plume; one huge two-handed greatsword with a gold crossguard held upright in both hands. Keep face, proportions, feet, black outline and style the same, transparent background. Sun at the bottom left: left sides lit, right sides in shadow.",
+        "editInstruction": "Redraw him as a heavy armoured swordsman with no shield at all: full polished steel plate with two big round pauldrons, a short crimson tabard with the gold cross, plate legs; a heavier steel helmet with cheek guards, gold band and tall crimson plume; one huge two-handed greatsword with a gold crossguard held upright in both hands. Keep face, proportions, feet, black outline and style the same, transparent background. Sun at the bottom left: left sides lit, right sides in shadow.",
+        "source": {
+          "recipe": "fighter-r6-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "268caf9457d453f10632ea9d1fd57bb37dcdc9db89ab3b44e5943f29f857a20f"
+        }
+      },
+      "submittedAt": "2026-10-06T11:59:47.231Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/swordsman-a.png",
+      "rawSheetSha256": "437c5ae0fd055a52cdb05362e76dd33452fc86f60faf99c68768192846206590",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.0113,
+          "footprintWidthShare": 0.6122,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.0113,
+          "footprintWidthShare": 0.6122,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:00:35.071Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The Fighter in full plate, but the sword is no bigger than the Fighter's, no crimson on the chest, and the words 'Sun at the bottom left' drew a glowing ball beside the feet. Source of swordsman-e.",
+        "reviewedAt": "2026-10-06T12:17:19.084Z"
+      }
+    },
+    "swordsman-b": {
+      "id": "swordsman-b",
+      "asset": "chibi-direction-swordsman",
+      "jobId": "326bdbc4-ef47-4cb1-a4d5-9cca32f68997",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-swordsman",
+        "subject": "UNIT:SWORDSMAN",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 490902,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove the shield and the spear completely. Instead he carries one huge two-handed greatsword with a broad steel blade and gold crossguard resting on his shoulder, blade slanting up behind his head; a short crimson tabard with a gold cross over his breastplate. The kettle helmet becomes a rounded helmet with cheek guards, gold band and tall crimson plume. Keep face, plate armour, pauldrons, proportions, feet, outline and style the same, transparent background. Sun at the bottom left."
+          }
+        ],
+        "prompt": "Remove the shield and the spear completely. Instead he carries one huge two-handed greatsword with a broad steel blade and gold crossguard resting on his shoulder, blade slanting up behind his head; a short crimson tabard with a gold cross over his breastplate. The kettle helmet becomes a rounded helmet with cheek guards, gold band and tall crimson plume. Keep face, plate armour, pauldrons, proportions, feet, outline and style the same, transparent background. Sun at the bottom left.",
+        "negativePrompt": "",
+        "description": "Remove the shield and the spear completely. Instead he carries one huge two-handed greatsword with a broad steel blade and gold crossguard resting on his shoulder, blade slanting up behind his head; a short crimson tabard with a gold cross over his breastplate. The kettle helmet becomes a rounded helmet with cheek guards, gold band and tall crimson plume. Keep face, plate armour, pauldrons, proportions, feet, outline and style the same, transparent background. Sun at the bottom left.",
+        "editInstruction": "Remove the shield and the spear completely. Instead he carries one huge two-handed greatsword with a broad steel blade and gold crossguard resting on his shoulder, blade slanting up behind his head; a short crimson tabard with a gold cross over his breastplate. The kettle helmet becomes a rounded helmet with cheek guards, gold band and tall crimson plume. Keep face, plate armour, pauldrons, proportions, feet, outline and style the same, transparent background. Sun at the bottom left.",
+        "source": {
+          "recipe": "guard-r6-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "1034bb97d22cc38860ed6adc7a4dd2207e8054e34560b0845d0099463f861378"
+        }
+      },
+      "submittedAt": "2026-10-06T12:00:35.086Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/swordsman-b.png",
+      "rawSheetSha256": "9ecec5a3c3c33adf2a6c902c53f5d8c3214e78a8d7e31885342740dd8cb3ed96",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5091,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5091,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:01:37.832Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A greatsword on the shoulder, a plume and a tabard, but a sun is drawn beside the feet (the light sentence read as a subject). Source of swordsman-d.",
+        "reviewedAt": "2026-10-06T12:17:19.219Z"
+      }
+    },
+    "swordsman-c": {
+      "id": "swordsman-c",
+      "asset": "chibi-direction-swordsman",
+      "jobId": "458d6b2f-924c-4921-908d-09c553b95c4d",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-swordsman",
+        "subject": "UNIT:SWORDSMAN",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 490903,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove the shield and the spear completely. He stands with a huge two-handed greatsword point-down in front of him, blade between his feet, both gauntlets on the gold crossguard; a short crimson tabard with a gold cross over full steel plate. The kettle helmet becomes a closed steel great helm with a dark eye slit, gold band and tall crimson plume. Keep proportions, big head, pauldrons, feet, outline and style the same, transparent background. Sun at the bottom left."
+          }
+        ],
+        "prompt": "Remove the shield and the spear completely. He stands with a huge two-handed greatsword point-down in front of him, blade between his feet, both gauntlets on the gold crossguard; a short crimson tabard with a gold cross over full steel plate. The kettle helmet becomes a closed steel great helm with a dark eye slit, gold band and tall crimson plume. Keep proportions, big head, pauldrons, feet, outline and style the same, transparent background. Sun at the bottom left.",
+        "negativePrompt": "",
+        "description": "Remove the shield and the spear completely. He stands with a huge two-handed greatsword point-down in front of him, blade between his feet, both gauntlets on the gold crossguard; a short crimson tabard with a gold cross over full steel plate. The kettle helmet becomes a closed steel great helm with a dark eye slit, gold band and tall crimson plume. Keep proportions, big head, pauldrons, feet, outline and style the same, transparent background. Sun at the bottom left.",
+        "editInstruction": "Remove the shield and the spear completely. He stands with a huge two-handed greatsword point-down in front of him, blade between his feet, both gauntlets on the gold crossguard; a short crimson tabard with a gold cross over full steel plate. The kettle helmet becomes a closed steel great helm with a dark eye slit, gold band and tall crimson plume. Keep proportions, big head, pauldrons, feet, outline and style the same, transparent background. Sun at the bottom left.",
+        "source": {
+          "recipe": "guard-r6-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "1034bb97d22cc38860ed6adc7a4dd2207e8054e34560b0845d0099463f861378"
+        }
+      },
+      "submittedAt": "2026-10-06T12:01:37.845Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/swordsman-c.png",
+      "rawSheetSha256": "c4f1f53a67d8ec6e91142ffd4dfac1b7fc932a5deae36d9a6ef14cca80d28a5a",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7556,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7556,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:02:30.642Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Sword planted point-down under an open plumed helm, but the sword is short and thin and a sun is drawn beside the feet. Source of swordsman-f.",
+        "reviewedAt": "2026-10-06T12:17:19.350Z"
+      }
+    },
+    "swordsman-d": {
+      "id": "swordsman-d",
+      "asset": "chibi-direction-swordsman",
+      "jobId": "0522895b-d8d2-4ab4-b9a1-4eb53e8a5ea3",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-swordsman",
+        "subject": "UNIT:SWORDSMAN",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 490904,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the greatsword on his shoulder bigger: a longer and broader steel blade with a lit left edge. Do not redraw anything else: keep the plumed helmet, face, plate armour, crimson tabard with the gold cross, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background with nothing under or beside the feet."
+          }
+        ],
+        "prompt": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the greatsword on his shoulder bigger: a longer and broader steel blade with a lit left edge. Do not redraw anything else: keep the plumed helmet, face, plate armour, crimson tabard with the gold cross, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background with nothing under or beside the feet.",
+        "negativePrompt": "",
+        "description": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the greatsword on his shoulder bigger: a longer and broader steel blade with a lit left edge. Do not redraw anything else: keep the plumed helmet, face, plate armour, crimson tabard with the gold cross, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background with nothing under or beside the feet.",
+        "editInstruction": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the greatsword on his shoulder bigger: a longer and broader steel blade with a lit left edge. Do not redraw anything else: keep the plumed helmet, face, plate armour, crimson tabard with the gold cross, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background with nothing under or beside the feet.",
+        "source": {
+          "recipe": "swordsman-b",
+          "candidate": 0,
+          "sha256": "fd84a2f22cb1cecb2e1b2e6d0736ec9ffd0e804061182353854748106f60936d"
+        }
+      },
+      "submittedAt": "2026-10-06T12:03:17.523Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/swordsman-d.png",
+      "rawSheetSha256": "70f7cc7a4f6ea017f09c6bf09adc93c111c14070df84fb89c4d1c1ff573039c5",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4151,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4151,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:04:01.247Z",
+      "usageUsd": 0.008229050609800552,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Clean, with a distinct diagonal greatsword, but the head and body are smaller and slighter than the Fighter's and the Guard's: it reads as a lighter soldier, not the heavy one; lighting-qa FLAT (faces -1.4).",
+        "reviewedAt": "2026-10-06T12:17:19.482Z"
+      }
+    },
+    "swordsman-e": {
+      "id": "swordsman-e",
+      "asset": "chibi-direction-swordsman",
+      "jobId": "c7783602-e1c6-49cd-a8da-8299eb32db10",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-swordsman",
+        "subject": "UNIT:SWORDSMAN",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 490905,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change three things only. Erase the glowing yellow ball at the bottom left completely, leaving that area transparent. His sword becomes a huge two-handed greatsword: the blade twice as broad and taller than his plume, with a big gold crossguard. Add a short crimson tabard with a bold gold cross over his breastplate. Do not redraw anything else: keep the plumed helmet, face, plate armour, pose, proportions, feet, black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change three things only. Erase the glowing yellow ball at the bottom left completely, leaving that area transparent. His sword becomes a huge two-handed greatsword: the blade twice as broad and taller than his plume, with a big gold crossguard. Add a short crimson tabard with a bold gold cross over his breastplate. Do not redraw anything else: keep the plumed helmet, face, plate armour, pose, proportions, feet, black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change three things only. Erase the glowing yellow ball at the bottom left completely, leaving that area transparent. His sword becomes a huge two-handed greatsword: the blade twice as broad and taller than his plume, with a big gold crossguard. Add a short crimson tabard with a bold gold cross over his breastplate. Do not redraw anything else: keep the plumed helmet, face, plate armour, pose, proportions, feet, black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change three things only. Erase the glowing yellow ball at the bottom left completely, leaving that area transparent. His sword becomes a huge two-handed greatsword: the blade twice as broad and taller than his plume, with a big gold crossguard. Add a short crimson tabard with a bold gold cross over his breastplate. Do not redraw anything else: keep the plumed helmet, face, plate armour, pose, proportions, feet, black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "swordsman-a",
+          "candidate": 0,
+          "sha256": "6e9da19df7c3edea82e52fe0722f9f92c2e6560d1a37813eda6d0bc8a6b2c20a"
+        }
+      },
+      "submittedAt": "2026-10-06T12:04:01.261Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/swordsman-e.png",
+      "rawSheetSha256": "98343c916e92a325ce2d33c185bebbf7524b8b85020550da8ea6e439f68bdb28",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6327,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6327,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:04:23.940Z",
+      "usageUsd": 0.007036302910910713,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Heavy and in the family (plate, pauldron, tabard, broad sword, lit from the left), but it keeps the Fighter's helmet, crest, face and sword-up pose: at board size it is too close to the Fighter. Source of the accepted swordsman-g.",
+        "reviewedAt": "2026-10-06T12:17:19.613Z"
+      }
+    },
+    "swordsman-f": {
+      "id": "swordsman-f",
+      "asset": "chibi-direction-swordsman",
+      "jobId": "ea87ecc8-7432-4a89-9aac-2bfc6132b3d6",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-swordsman",
+        "subject": "UNIT:SWORDSMAN",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 490906,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the sword he holds point-down a much bigger two-handed greatsword: a broad steel blade twice as wide, reaching the ground between his feet, with a wide gold crossguard at his chest. Do not redraw anything else: keep the plumed helmet, face, plate armour, pauldrons, crimson tabard, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the sword he holds point-down a much bigger two-handed greatsword: a broad steel blade twice as wide, reaching the ground between his feet, with a wide gold crossguard at his chest. Do not redraw anything else: keep the plumed helmet, face, plate armour, pauldrons, crimson tabard, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the sword he holds point-down a much bigger two-handed greatsword: a broad steel blade twice as wide, reaching the ground between his feet, with a wide gold crossguard at his chest. Do not redraw anything else: keep the plumed helmet, face, plate armour, pauldrons, crimson tabard, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the sword he holds point-down a much bigger two-handed greatsword: a broad steel blade twice as wide, reaching the ground between his feet, with a wide gold crossguard at his chest. Do not redraw anything else: keep the plumed helmet, face, plate armour, pauldrons, crimson tabard, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "swordsman-c",
+          "candidate": 0,
+          "sha256": "ea63a7b7f410dc2dec46789cda8acd9e4ee70ba584b3a76ee5949aa2f59e779c"
+        }
+      },
+      "submittedAt": "2026-10-06T12:04:23.958Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/swordsman-f.png",
+      "rawSheetSha256": "bdbdf521c6d2dd03d50b209248b08847feb08c0692b1ab131c684fef9b3cc863",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7368,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7368,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:06:14.168Z",
+      "usageUsd": 0.015342796749538846,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A distinct symmetrical silhouette, but only 38 px wide (narrower than the Fighter and the Guard, so less heavy), the planted sword is a stubby wedge that does not read at board size, and lighting-qa reads it as lit from the right (faces -12.0).",
+        "reviewedAt": "2026-10-06T12:17:19.743Z"
+      }
+    },
+    "swordsman-g": {
+      "id": "swordsman-g",
+      "asset": "chibi-direction-swordsman",
+      "jobId": "9ff08c7e-7329-4dec-995a-cbc98b681b68",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-swordsman",
+        "subject": "UNIT:SWORDSMAN",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 490907,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change the helmet only: it becomes a closed steel great helm, a big rounded bucket helm that hides the whole face, with a narrow dark eye slit, a gold cross-shaped band on its front and a tall crimson plume standing on top. No face shows. Do not redraw anything else: keep the greatsword, plate armour, pauldron, crimson tabard with the gold cross, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change the helmet only: it becomes a closed steel great helm, a big rounded bucket helm that hides the whole face, with a narrow dark eye slit, a gold cross-shaped band on its front and a tall crimson plume standing on top. No face shows. Do not redraw anything else: keep the greatsword, plate armour, pauldron, crimson tabard with the gold cross, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change the helmet only: it becomes a closed steel great helm, a big rounded bucket helm that hides the whole face, with a narrow dark eye slit, a gold cross-shaped band on its front and a tall crimson plume standing on top. No face shows. Do not redraw anything else: keep the greatsword, plate armour, pauldron, crimson tabard with the gold cross, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change the helmet only: it becomes a closed steel great helm, a big rounded bucket helm that hides the whole face, with a narrow dark eye slit, a gold cross-shaped band on its front and a tall crimson plume standing on top. No face shows. Do not redraw anything else: keep the greatsword, plate armour, pauldron, crimson tabard with the gold cross, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "swordsman-e",
+          "candidate": 0,
+          "sha256": "b67bd8c8ef4242aa6b1f7f1f0675702cf12aacec8497296402aaeb6b64414d16"
+        }
+      },
+      "submittedAt": "2026-10-06T12:07:16.853Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/swordsman-g.png",
+      "rawSheetSha256": "b4a6605bff09f10d41987b5b31bf44b70a83f412d0cb8c7f0773b5214d40cee0",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6327,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6327,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:08:10.691Z",
+      "usageUsd": 0.010129086282518174,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-w49.9: the Human Swordsman (ruleset 7r48), the heavy line infantryman. A closed steel great helm with a gold cross on its front and a crimson crest, full steel plate with a big round gold-rimmed pauldron, a short crimson tabard with a gold cross, and a broad greatsword held upright, no shield (49 x 73 px, feet on row 75; Fighter 53 x 72, Guard 51 x 73). Told from the Fighter by the faceless steel helm with its gold cross and by having no round wooden shield, from the Guard by the sword, the crest and having no tower shield. Lit from the left (lighting-qa faces +29.5); the two candidates are identical.",
+        "reviewedAt": "2026-10-06T12:17:20.010Z"
+      }
+    },
+    "swordsman-h": {
+      "id": "swordsman-h",
+      "asset": "chibi-direction-swordsman",
+      "jobId": "0dd69979-4d36-4c40-95d3-ef00d785616a",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-swordsman",
+        "subject": "UNIT:SWORDSMAN",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 490908,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change the sword and his arms only: he grips the huge greatsword in both gauntlets and holds it diagonally across his body, the gold crossguard at his waist on the left, the long broad steel blade slanting up to the right, its point above his pauldron on the right. Do not redraw anything else: keep the helmet with its crest, face, plate armour, crimson tabard with the gold cross, proportions, feet, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change the sword and his arms only: he grips the huge greatsword in both gauntlets and holds it diagonally across his body, the gold crossguard at his waist on the left, the long broad steel blade slanting up to the right, its point above his pauldron on the right. Do not redraw anything else: keep the helmet with its crest, face, plate armour, crimson tabard with the gold cross, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change the sword and his arms only: he grips the huge greatsword in both gauntlets and holds it diagonally across his body, the gold crossguard at his waist on the left, the long broad steel blade slanting up to the right, its point above his pauldron on the right. Do not redraw anything else: keep the helmet with its crest, face, plate armour, crimson tabard with the gold cross, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change the sword and his arms only: he grips the huge greatsword in both gauntlets and holds it diagonally across his body, the gold crossguard at his waist on the left, the long broad steel blade slanting up to the right, its point above his pauldron on the right. Do not redraw anything else: keep the helmet with its crest, face, plate armour, crimson tabard with the gold cross, proportions, feet, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "swordsman-e",
+          "candidate": 0,
+          "sha256": "b67bd8c8ef4242aa6b1f7f1f0675702cf12aacec8497296402aaeb6b64414d16"
+        }
+      },
+      "submittedAt": "2026-10-06T12:08:10.700Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/swordsman-h.png",
+      "rawSheetSha256": "42933f39879a1629abc860c78c7f50958be5d1a05ea8402e74fb10db9ee56fb0",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.0116,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0116,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:08:47.398Z",
+      "usageUsd": 0.008214662763807508,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The greatsword held diagonally across the body covers the face and the tabard: a cluttered middle, and the Fighter's helmet and crest stay.",
+        "reviewedAt": "2026-10-06T12:17:19.873Z"
       }
     },
     "veg-flux-a": {
@@ -6304,6 +7244,50 @@
       "notes": "Crimson hood and cloak with a gold trim over a cream tunic; hand axe kept: matches the map Raider.",
       "acceptedAt": "2026-10-02T08:51:36.011Z"
     },
+    "chibi-direction-portrait-swordsman": {
+      "id": "chibi-direction-portrait-swordsman",
+      "subject": "PORTRAIT:SWORDSMAN",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-swordsman-f",
+      "candidate": 0,
+      "candidateSha256": "9acaaf7cd47d410afb129663eba4c5a7917e8bb72bc8443c8cf77cc543cb8f02",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-direction-portrait-swordsman.png",
+        "sha256": "9acaaf7cd47d410afb129663eba4c5a7917e8bb72bc8443c8cf77cc543cb8f02",
+        "pixelSha256": "76f148a78e2fee44c311fe74dc106b442ffb28330452d8136d74b8726b62de05",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0361,
+        "footprintWidthShare": 0.85,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Bead pulp_wars-w49.9: the Swordsman's bust, matching the map sprite (swordsman-g): closed steel great helm with a gold cross and a crimson crest, a round gold-rimmed steel pauldron, steel gauntlets, crimson tabard with a gold cross, greatsword raised beside the helm, no shield (40 x 44 px). The face plate is pale left of the cross and in shadow right of it, as on the sprite. lighting-qa still reads faces -15.5 (the Guard's portrait -21.5): its rows run from the dark crimson crest and the receding dark side of the helm at the left into the pale face plate, so the number follows the layout, not the light.",
+      "acceptedAt": "2026-10-06T12:17:31.889Z"
+    },
     "chibi-direction-raider": {
       "id": "chibi-direction-raider",
       "subject": "UNIT:RAIDER",
@@ -6429,6 +7413,50 @@
       },
       "notes": "Re-accepted from the Human demo: boathouse, crane and a half-built hull.",
       "acceptedAt": "2026-10-02T08:51:45.724Z"
+    },
+    "chibi-direction-swordsman": {
+      "id": "chibi-direction-swordsman",
+      "subject": "UNIT:SWORDSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "swordsman-g",
+      "candidate": 0,
+      "candidateSha256": "9c9e7457e914ef949e5b7bbeb152e71bb2e7638273745aa46731067ff2cbfd7a",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-direction-swordsman.png",
+        "sha256": "9c9e7457e914ef949e5b7bbeb152e71bb2e7638273745aa46731067ff2cbfd7a",
+        "pixelSha256": "d3ad09333cf5542f7399b1de9abbedd4ad32c23e69fbaa966884cfd838ddcb7b",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0,
+        "footprintWidthShare": 0.6327,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Bead pulp_wars-w49.9: the Human Swordsman (ruleset 7r48), the heavy line infantryman. A closed steel great helm with a gold cross on its front and a crimson crest, full steel plate with a big round gold-rimmed pauldron, a short crimson tabard with a gold cross, and a broad greatsword held upright, no shield (49 x 73 px, feet on row 75; Fighter 53 x 72, Guard 51 x 73). Told from the Fighter by the faceless steel helm with its gold cross and by having no round wooden shield, from the Guard by the sword, the crest and having no tower shield. Lit from the left (lighting-qa faces +29.5); the two candidates are identical.",
+      "acceptedAt": "2026-10-06T12:17:20.010Z"
     },
     "chibi-direction-village": {
       "id": "chibi-direction-village",

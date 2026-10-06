@@ -1,0 +1,37 @@
+{
+  "id": "portrait-swordsman-a",
+  "jobId": "5206f18e-085f-48ca-be5b-6bf036ac41d3",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-swordsman",
+    "subject": "PORTRAIT:SWORDSMAN",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 490921,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the round wooden shield completely. His helmet becomes a closed steel great helm that hides the whole face: a rounded bucket helm with a dark eye slit and a gold cross on its front, the crimson crest kept on top. Polished steel plate with a big round pauldron rimmed in gold over the crimson tabard with the gold cross. The sword becomes a huge greatsword with a broad blade and gold crossguard. Keep proportions, black outline and style the same, transparent background."
+      }
+    ],
+    "prompt": "Remove the round wooden shield completely. His helmet becomes a closed steel great helm that hides the whole face: a rounded bucket helm with a dark eye slit and a gold cross on its front, the crimson crest kept on top. Polished steel plate with a big round pauldron rimmed in gold over the crimson tabard with the gold cross. The sword becomes a huge greatsword with a broad blade and gold crossguard. Keep proportions, black outline and style the same, transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the round wooden shield completely. His helmet becomes a closed steel great helm that hides the whole face: a rounded bucket helm with a dark eye slit and a gold cross on its front, the crimson crest kept on top. Polished steel plate with a big round pauldron rimmed in gold over the crimson tabard with the gold cross. The sword becomes a huge greatsword with a broad blade and gold crossguard. Keep proportions, black outline and style the same, transparent background.",
+    "editInstruction": "Remove the round wooden shield completely. His helmet becomes a closed steel great helm that hides the whole face: a rounded bucket helm with a dark eye slit and a gold cross on its front, the crimson crest kept on top. Polished steel plate with a big round pauldron rimmed in gold over the crimson tabard with the gold cross. The sword becomes a huge greatsword with a broad blade and gold crossguard. Keep proportions, black outline and style the same, transparent background.",
+    "source": {
+      "recipe": "portrait-fighter-r6-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "0aa4df657182e00ca3054381e0630f355b2b80d4d29b0cbe2b0e1db6f29b71c0"
+    }
+  }
+}

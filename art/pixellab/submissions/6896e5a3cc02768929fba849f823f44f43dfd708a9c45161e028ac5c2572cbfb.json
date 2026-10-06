@@ -1,0 +1,36 @@
+{
+  "id": "swordsman-e",
+  "jobId": "c7783602-e1c6-49cd-a8da-8299eb32db10",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-swordsman",
+    "subject": "UNIT:SWORDSMAN",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 490905,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change three things only. Erase the glowing yellow ball at the bottom left completely, leaving that area transparent. His sword becomes a huge two-handed greatsword: the blade twice as broad and taller than his plume, with a big gold crossguard. Add a short crimson tabard with a bold gold cross over his breastplate. Do not redraw anything else: keep the plumed helmet, face, plate armour, pose, proportions, feet, black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change three things only. Erase the glowing yellow ball at the bottom left completely, leaving that area transparent. His sword becomes a huge two-handed greatsword: the blade twice as broad and taller than his plume, with a big gold crossguard. Add a short crimson tabard with a bold gold cross over his breastplate. Do not redraw anything else: keep the plumed helmet, face, plate armour, pose, proportions, feet, black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change three things only. Erase the glowing yellow ball at the bottom left completely, leaving that area transparent. His sword becomes a huge two-handed greatsword: the blade twice as broad and taller than his plume, with a big gold crossguard. Add a short crimson tabard with a bold gold cross over his breastplate. Do not redraw anything else: keep the plumed helmet, face, plate armour, pose, proportions, feet, black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change three things only. Erase the glowing yellow ball at the bottom left completely, leaving that area transparent. His sword becomes a huge two-handed greatsword: the blade twice as broad and taller than his plume, with a big gold crossguard. Add a short crimson tabard with a bold gold cross over his breastplate. Do not redraw anything else: keep the plumed helmet, face, plate armour, pose, proportions, feet, black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "swordsman-a",
+      "candidate": 0,
+      "sha256": "6e9da19df7c3edea82e52fe0722f9f92c2e6560d1a37813eda6d0bc8a6b2c20a"
+    }
+  }
+}

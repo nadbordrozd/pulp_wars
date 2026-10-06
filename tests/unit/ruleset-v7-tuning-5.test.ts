@@ -11,6 +11,7 @@ import {
   publicProjectedDamageForPolicyV7,
 } from "../../src/ai/v7";
 import { chibiFallbackSubjectV7 } from "../../src/assets/chibi-art-v7";
+import { CHIBI_DIRECTION_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-art-manifest";
 import {
   BARRACKS_CAPACITY_V7,
   COMMAND_KIND_ORDER_V7,
@@ -419,9 +420,15 @@ describe("the Swordsman", () => {
     });
   });
 
-  it("stands in with the Guard's art, and no other faction has the unit", () => {
-    expect(chibiFallbackSubjectV7("UNIT:SWORDSMAN")).toBe("UNIT:GUARD");
-    expect(chibiFallbackSubjectV7("PORTRAIT:SWORDSMAN")).toBe("PORTRAIT:GUARD");
+  it("has its own sprite and portrait, and no other faction has the unit", () => {
+    // Bead `pulp_wars-w49.9`: the Guard no longer stands in.
+    expect(chibiFallbackSubjectV7("UNIT:SWORDSMAN")).toBeNull();
+    expect(chibiFallbackSubjectV7("PORTRAIT:SWORDSMAN")).toBeNull();
+    const registered = CHIBI_DIRECTION_ART_ASSETS_V7.map(
+      (asset) => asset.subject,
+    );
+    expect(registered).toContain("UNIT:SWORDSMAN");
+    expect(registered).toContain("PORTRAIT:SWORDSMAN");
     expect(galleryUnitCellV7("SWORDSMAN", "ORIGINAL")).toMatchObject({
       kind: "UNIT",
       name: "Swordsman",

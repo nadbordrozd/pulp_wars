@@ -1,0 +1,36 @@
+{
+  "id": "swordsman-d",
+  "jobId": "0522895b-d8d2-4ab4-b9a1-4eb53e8a5ea3",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-swordsman",
+    "subject": "UNIT:SWORDSMAN",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 490904,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the greatsword on his shoulder bigger: a longer and broader steel blade with a lit left edge. Do not redraw anything else: keep the plumed helmet, face, plate armour, crimson tabard with the gold cross, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background with nothing under or beside the feet."
+      }
+    ],
+    "prompt": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the greatsword on his shoulder bigger: a longer and broader steel blade with a lit left edge. Do not redraw anything else: keep the plumed helmet, face, plate armour, crimson tabard with the gold cross, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background with nothing under or beside the feet.",
+    "negativePrompt": "",
+    "description": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the greatsword on his shoulder bigger: a longer and broader steel blade with a lit left edge. Do not redraw anything else: keep the plumed helmet, face, plate armour, crimson tabard with the gold cross, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background with nothing under or beside the feet.",
+    "editInstruction": "Change two things only. Erase the yellow sun at the bottom left completely, leaving that area transparent. Make the greatsword on his shoulder bigger: a longer and broader steel blade with a lit left edge. Do not redraw anything else: keep the plumed helmet, face, plate armour, crimson tabard with the gold cross, pose, proportions, feet, thick black outline and art style exactly the same, on a transparent background with nothing under or beside the feet.",
+    "source": {
+      "recipe": "swordsman-b",
+      "candidate": 0,
+      "sha256": "fd84a2f22cb1cecb2e1b2e6d0736ec9ffd0e804061182353854748106f60936d"
+    }
+  }
+}

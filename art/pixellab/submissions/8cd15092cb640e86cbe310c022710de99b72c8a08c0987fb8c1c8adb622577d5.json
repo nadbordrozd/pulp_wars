@@ -1,0 +1,37 @@
+{
+  "id": "swordsman-b",
+  "jobId": "326bdbc4-ef47-4cb1-a4d5-9cca32f68997",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-swordsman",
+    "subject": "UNIT:SWORDSMAN",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 490902,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the shield and the spear completely. Instead he carries one huge two-handed greatsword with a broad steel blade and gold crossguard resting on his shoulder, blade slanting up behind his head; a short crimson tabard with a gold cross over his breastplate. The kettle helmet becomes a rounded helmet with cheek guards, gold band and tall crimson plume. Keep face, plate armour, pauldrons, proportions, feet, outline and style the same, transparent background. Sun at the bottom left."
+      }
+    ],
+    "prompt": "Remove the shield and the spear completely. Instead he carries one huge two-handed greatsword with a broad steel blade and gold crossguard resting on his shoulder, blade slanting up behind his head; a short crimson tabard with a gold cross over his breastplate. The kettle helmet becomes a rounded helmet with cheek guards, gold band and tall crimson plume. Keep face, plate armour, pauldrons, proportions, feet, outline and style the same, transparent background. Sun at the bottom left.",
+    "negativePrompt": "",
+    "description": "Remove the shield and the spear completely. Instead he carries one huge two-handed greatsword with a broad steel blade and gold crossguard resting on his shoulder, blade slanting up behind his head; a short crimson tabard with a gold cross over his breastplate. The kettle helmet becomes a rounded helmet with cheek guards, gold band and tall crimson plume. Keep face, plate armour, pauldrons, proportions, feet, outline and style the same, transparent background. Sun at the bottom left.",
+    "editInstruction": "Remove the shield and the spear completely. Instead he carries one huge two-handed greatsword with a broad steel blade and gold crossguard resting on his shoulder, blade slanting up behind his head; a short crimson tabard with a gold cross over his breastplate. The kettle helmet becomes a rounded helmet with cheek guards, gold band and tall crimson plume. Keep face, plate armour, pauldrons, proportions, feet, outline and style the same, transparent background. Sun at the bottom left.",
+    "source": {
+      "recipe": "guard-r6-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "1034bb97d22cc38860ed6adc7a4dd2207e8054e34560b0845d0099463f861378"
+    }
+  }
+}
