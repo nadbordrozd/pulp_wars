@@ -1,0 +1,338 @@
+{
+  "schemaVersion": 1,
+  "shared": {
+    "version": 1,
+    "budgets": {
+      "sunoStyleChars": 200,
+      "sunoExcludeChars": 200,
+      "longPromptChars": 1800
+    },
+    "length": {
+      "targetSeconds": 100,
+      "minSeconds": 90,
+      "maxSeconds": 120
+    },
+    "outputFilePattern": "public/audio/theme-<name>.ogg",
+    "motif": "rising three-note call",
+    "sunoCommonStyle": "instrumental, playful strategy game theme, clear melody, steady tempo, loopable",
+    "sunoCommonExclude": "vocals, singing, choir, lyrics, spoken word, dark, grim, horror, epic trailer, heavy metal, long intro, fade out",
+    "instrumentalSentence": "Instrumental only, no vocals, no lyrics, no spoken words.",
+    "longPromptTail": "About 100 seconds in three parts: the main theme, a contrasting middle section, and the main theme again. The melody starts within the first two seconds and the tempo never changes; there is no long intro, no slowing down and no fade-out, and the last bar is an open turnaround that leads straight back to the first bar so the track can loop. Small ensemble, clear melody, close and fairly dry, with headroom: light, uncluttered background music that sits under sound effects. Bright, adventurous, slightly tongue-in-cheek pulp tone, never dark or grim."
+  },
+  "factions": {
+    "ORIGINAL": {
+      "name": "Human",
+      "themeId": "theme.human",
+      "outputFile": "public/audio/theme-human.ogg",
+      "promptVersion": 1,
+      "identity": "A tidy storybook-kingdom march: the town band of a practical realm of settlers, soldiers and builders.",
+      "palette": {
+        "lead": ["trumpet", "French horn"],
+        "rhythm": ["snare drum", "soft timpani", "pizzicato bass"],
+        "colour": ["recorder", "lute"]
+      },
+      "tempo": { "min": 112, "max": 120, "target": 116, "beat": "quarter" },
+      "metre": { "signature": "4/4", "feel": "crisp march" },
+      "mode": "major, with a Mixolydian lift at the cadence",
+      "mood": ["proud", "confident", "good-humoured", "orderly"],
+      "sunoStyle": "storybook medieval march, bright trumpet and horn fanfare, snare, timpani, recorder, lute, major key, 116 bpm",
+      "sunoStructure": [
+        "[Instrumental]",
+        "[Intro: one-bar snare pickup]",
+        "[A: trumpet and horn fanfare theme over a march]",
+        "[B: recorder and lute duet, softer, no brass]",
+        "[A: full town band, fanfare returns]",
+        "[Turnaround: one bar of snare, open ending]",
+        "[End]"
+      ],
+      "sunoExclude": "synthesizer, electric guitar, drum machine, sad, slow",
+      "longPrompt": "A bright storybook-kingdom march for a turn-based strategy game: the theme of a practical, well-organised medieval realm of settlers, soldiers and builders, with no magic in it. A trumpet and a French horn open at once with a short rising three-note call and carry a confident, catchy fanfare melody over a crisp snare drum, soft timpani and a walking pizzicato bass. A lute keeps a steady plucked pattern underneath, like footsteps across a map. The middle section drops the brass for a recorder and lute duet, gentle and homely, a village at work, and then the full town band returns with the fanfare. Major key, 4/4 march, steady 116 BPM. Proud but good-humoured, toy-soldier pomp rather than an epic."
+    },
+    "UNDEAD": {
+      "name": "Undead",
+      "themeId": "theme.undead",
+      "outputFile": "public/audio/theme-undead.ogg",
+      "promptVersion": 1,
+      "identity": "A spooky-fun graveyard waltz from a Halloween picture book: creaky, mock-solemn and creepy-cute.",
+      "palette": {
+        "lead": ["harpsichord", "wheezy reed organ"],
+        "rhythm": ["bass clarinet", "plucked double bass", "dry xylophone"],
+        "colour": ["music box", "pizzicato strings"]
+      },
+      "tempo": { "min": 90, "max": 100, "target": 96, "beat": "quarter" },
+      "metre": { "signature": "3/4", "feel": "creaky waltz" },
+      "mode": "harmonic minor, played with a wink",
+      "mood": ["spooky-fun", "mock-solemn", "creepy-cute", "sly"],
+      "sunoStyle": "spooky-fun creaky waltz, harpsichord, wheezy reed organ, bone xylophone, music box, bass clarinet, minor 3/4, 96 bpm",
+      "sunoStructure": [
+        "[Instrumental]",
+        "[Intro: one bar of oom-pah-pah]",
+        "[A: harpsichord waltz theme, xylophone bones]",
+        "[B: lone music box plays the theme, very quiet]",
+        "[A: instruments creep back one by one, full waltz]",
+        "[Turnaround: one bar, open ending]",
+        "[End]"
+      ],
+      "sunoExclude": "theremin, synthesizer, screams, jump scare, funeral dirge",
+      "longPrompt": "A spooky-fun graveyard waltz for a turn-based strategy game: a children's Halloween picture book of grinning skeletons and sleepy zombies, creepy-cute and never horror. A harpsichord opens at once with a short rising three-note call and plays a mock-solemn minor-key melody, answered by a wheezy little reed organ. A dry xylophone rattles like bones on the offbeats, a bass clarinet and a plucked double bass plod the oom-pah-pah, and pizzicato strings keep a steady plucked pattern underneath, like slow footsteps across a map. In the middle section everything sinks away to a lone music box playing the tune sweetly, as if the graveyard had gone to sleep, and then the band creaks back up out of the ground, one instrument at a time, for the waltz again. Lilting 3/4, steady 96 BPM, harmonic minor played with a wink."
+    },
+    "GOBLIN": {
+      "name": "Goblin",
+      "themeId": "theme.goblin",
+      "outputFile": "public/audio/theme-goblin.ogg",
+      "promptVersion": 1,
+      "identity": "A rowdy, ramshackle horde shuffle on junk percussion that always sounds about to fall apart and never does.",
+      "palette": {
+        "lead": ["squawking bassoon", "bass clarinet"],
+        "rhythm": [
+          "junk percussion (pots, pans, tin cans, chain)",
+          "off-key tuba"
+        ],
+        "colour": ["detuned banjo", "fuse hiss and firecracker pops"]
+      },
+      "tempo": { "min": 132, "max": 144, "target": 138, "beat": "quarter" },
+      "metre": {
+        "signature": "4/4",
+        "feel": "swung shuffle, lurching offbeat"
+      },
+      "mode": "minor with cheeky chromatic slips",
+      "mood": ["mischievous", "rowdy", "scrappy", "reckless"],
+      "sunoStyle": "rowdy goblin shuffle, squawking bassoon, bass clarinet, junk percussion, tuba, banjo, swung minor, 138 bpm",
+      "sunoStructure": [
+        "[Instrumental]",
+        "[Intro: one-bar clatter of pots and pans]",
+        "[A: bassoon and bass clarinet trade a cheeky minor theme]",
+        "[B: sneaky tiptoe, pizzicato and a hissing fuse, quiet]",
+        "[Break: firecracker pop]",
+        "[A: whole gang piles back in, louder]",
+        "[Turnaround: one-bar junk drum fill, open ending]",
+        "[End]"
+      ],
+      "sunoExclude": "polished, lush strings, synth pads, piano ballad, slow",
+      "longPrompt": "A rowdy, ramshackle goblin-horde tune for a turn-based strategy game: cheeky, loud and held together with string, always sounding as if it might fall apart and never quite doing so. A squawking bassoon and a bass clarinet open at once with a short rising three-note call, then trade a mischievous minor-key melody full of chromatic slips. Under them clatters a kit of junk percussion, pots, pans, tin cans and a rattling chain, with an off-key tuba honking the offbeats and a detuned banjo keeping a steady plucked pattern, like many small feet across a map. The middle section goes sneaky and quiet, tiptoeing pizzicato and a hissing fuse, and ends in a firecracker pop that throws the whole gang back into the tune. Swung 4/4 shuffle with a lurching offbeat, steady 138 BPM. Funny and unruly, never menacing."
+    },
+    "DINOSAUR": {
+      "name": "Dinosaur",
+      "themeId": "theme.dinosaur",
+      "outputFile": "public/audio/theme-dinosaur.ogg",
+      "promptVersion": 1,
+      "identity": "A cheerful lost-world stomp: a sunny ocarina tune over the footsteps of something huge and friendly.",
+      "palette": {
+        "lead": ["ocarina", "tuba and trombone riff"],
+        "rhythm": ["big toms", "log drums", "shakers"],
+        "colour": ["kalimba", "stone clicks and egg-shell taps"]
+      },
+      "tempo": { "min": 100, "max": 108, "target": 104, "beat": "quarter" },
+      "metre": {
+        "signature": "4/4",
+        "feel": "half-time stomp on one and three"
+      },
+      "mode": "major pentatonic",
+      "mood": ["primal", "sunny", "goofy", "lumbering"],
+      "sunoStyle": "cheerful primal stomp, big toms and log drums, ocarina, tuba and trombone riff, kalimba, major pentatonic, 104 bpm",
+      "sunoStructure": [
+        "[Instrumental]",
+        "[Intro: two heavy tom stomps]",
+        "[A: ocarina theme over stomping toms, low brass answers]",
+        "[B: kalimba, shaker and soft egg-shell taps, small and quiet]",
+        "[Break: drum fill, the egg cracks]",
+        "[A: stomp returns bigger, full low brass]",
+        "[Turnaround: one-bar tom fill, open ending]",
+        "[End]"
+      ],
+      "sunoExclude": "synthesizer, electric guitar, aggressive, war drums, jungle ambience",
+      "longPrompt": "A cheerful lost-world stomp for a turn-based strategy game: friendly cavemen and their big goofy dinosaurs, a toy box rather than a nature documentary. An ocarina opens at once with a short rising three-note call and pipes a sunny major-pentatonic tune, answered by a lumbering tuba and trombone riff, the sound of something huge and good-natured walking past. Big toms and hollow log drums pound a heavy stomp on beats one and three with shakers and stone clicks, and a kalimba keeps a steady plucked pattern, like footsteps across a map. The middle section shrinks to the kalimba, a shaker and soft egg-shell taps, small and expectant, and then a drum fill cracks it open and the stomp returns bigger than before. 4/4 with a half-time stomp, steady 104 BPM. Primal but playful, never savage."
+    },
+    "MARTIAN": {
+      "name": "Martian",
+      "themeId": "theme.martian",
+      "outputFile": "public/audio/theme-martian.ogg",
+      "promptVersion": 1,
+      "identity": "A campy 1950s pulp sci-fi invasion: a wobbling theremin over a strict machine pulse, menace played for laughs.",
+      "palette": {
+        "lead": ["theremin", "vibraphone"],
+        "rhythm": ["analogue synth bass pulse", "bongos", "brushed cymbal"],
+        "colour": [
+          "bleeping sequencer",
+          "electric organ drone",
+          "ray-gun zaps and sweeps"
+        ]
+      },
+      "tempo": { "min": 122, "max": 130, "target": 126, "beat": "quarter" },
+      "metre": { "signature": "4/4", "feel": "straight mechanical pulse" },
+      "mode": "whole-tone and chromatic, eerie",
+      "mood": ["campy", "ominous", "smug", "retro-futurist"],
+      "sunoStyle": "campy 1950s space-age sci-fi, wobbly theremin lead, analog synth pulse, vibraphone, bongos, eerie whole-tone, 126 bpm",
+      "sunoStructure": [
+        "[Instrumental]",
+        "[Intro: one bar of sequencer bleeps]",
+        "[A: theremin theme over a strict synth pulse, vibraphone shadows]",
+        "[B: hovering organ drone, ray-gun zaps, rising sweeps, no drums]",
+        "[A: pulse snaps back, theremin returns]",
+        "[Turnaround: one bar of bleeps, open ending]",
+        "[End]"
+      ],
+      "sunoExclude": "acoustic guitar, orchestra, techno, EDM drop, dubstep, modern pop",
+      "longPrompt": "A campy 1950s pulp sci-fi invasion theme for a turn-based strategy game: smug little big-headed invaders in bubble helmets and toy flying saucers, a tin-toy invasion that is ominous on the surface and plainly silly underneath. A wobbling theremin opens at once with a short rising three-note call and glides through an eerie melody built on whole-tone and chromatic steps, shadowed by a vibraphone. A vintage analogue synthesizer bass ticks out a strict, machine-like pulse with bongos and a brushed cymbal, and a bleeping sequencer keeps a steady pattern, like blips crossing a radar map. The middle section hovers: a droning electric organ chord, ray-gun zaps and rising sweeps, as if something were beaming down, and then the pulse snaps back and the theremin returns. Straight mechanical 4/4, steady 126 BPM. Retro-futurist space-age lounge, with the menace played for laughs."
+    },
+    "ICE_FOLK": {
+      "name": "Ice Folk",
+      "themeId": "theme.ice-folk",
+      "outputFile": "public/audio/theme-ice-folk.ogg",
+      "promptVersion": 1,
+      "identity": "A calm, crystalline winter picture book from the high peaks: glassy bells and a far-off mountain horn.",
+      "palette": {
+        "lead": ["celesta", "glass harmonica"],
+        "rhythm": ["soft frame drum", "sleigh bells", "cello drone"],
+        "colour": ["long wooden mountain horn", "harp", "icy bells"]
+      },
+      "tempo": { "min": 60, "max": 72, "target": 66, "beat": "dotted quarter" },
+      "metre": { "signature": "6/8", "feel": "gentle rocking lilt in two" },
+      "mode": "Dorian, bright and cold",
+      "mood": ["calm", "crystalline", "spacious", "friendly"],
+      "sunoStyle": "calm crystalline winter tune, celesta, glass harmonica, distant alphorn, soft frame drum, sleigh bells, harp, slow 6/8",
+      "sunoStructure": [
+        "[Instrumental]",
+        "[Intro: one bar of frame drum and sleigh bells]",
+        "[A: celesta theme, glass harmonica shimmer, distant horn answers]",
+        "[B: bowed glass and single icy bells, no drum, hushed]",
+        "[A: celesta theme returns with the horn]",
+        "[Turnaround: one bar of harp, open ending]",
+        "[End]"
+      ],
+      "sunoExclude": "drum kit, brass fanfare, synth bass, fast, Christmas carol, bleak",
+      "longPrompt": "A calm, crystalline mountain theme for a turn-based strategy game: yetis, ice-age hunters and a woolly mammoth from the high peaks, friendly and unhurried, a winter picture book. A celesta opens at once with a short rising three-note call and plays a slow, clear melody, doubled by the glassy shimmer of a glass harmonica. Far off, a long wooden mountain horn answers with low calls, like a mammoth across a valley. A soft frame drum beats like a slow heartbeat, sleigh bells mark the lilt, a cello holds a low drone, and a harp keeps a steady plucked pattern, like footsteps in fresh snow across a map. The middle section thins to bowed glass and single icy bell notes, a hush under falling snow, and then the celesta tune returns with the horn. Gently rocking 6/8 counted in two, steady 66 BPM, bright and cold Dorian colour. Spacious and peaceful, the quietest theme of the set, never bleak."
+    },
+    "DWARF": {
+      "name": "Dwarf",
+      "themeId": "theme.dwarf",
+      "outputFile": "public/audio/theme-dwarf.ogg",
+      "promptVersion": 1,
+      "identity": "A sturdy steam-and-forge work tune: low brass in unison, an anvil on the backbeat and ticking clockwork.",
+      "palette": {
+        "lead": ["tuba and euphonium in unison", "concertina"],
+        "rhythm": ["anvil on two and four", "bass drum", "steam hiss"],
+        "colour": [
+          "ticking clockwork and ratchet",
+          "steam whistle",
+          "tremolo double bass"
+        ]
+      },
+      "tempo": { "min": 80, "max": 88, "target": 84, "beat": "quarter" },
+      "metre": { "signature": "4/4", "feel": "heavy hammer-and-anvil tread" },
+      "mode": "major, sturdy, with a flat seventh",
+      "mood": ["sturdy", "heavy", "cheerful", "industrious"],
+      "sunoStyle": "sturdy steampunk work tune, tuba and euphonium, concertina, anvil, ticking clockwork, steam hiss, heavy, 84 bpm",
+      "sunoStructure": [
+        "[Instrumental]",
+        "[Intro: one bar of ticking clockwork and an anvil hit]",
+        "[A: tuba and euphonium theme, anvil backbeat, concertina fills]",
+        "[B: underground, muffled low brass, drilling rumble, ticking only]",
+        "[Break: steam whistle]",
+        "[A: full workshop returns]",
+        "[Turnaround: one bar of anvil and steam, open ending]",
+        "[End]"
+      ],
+      "sunoExclude": "male choir, drinking chant, bagpipes, electric guitar, synthesizer, fast",
+      "longPrompt": "A sturdy steam-and-forge work tune for a turn-based strategy game: short, broad, big-bearded engineers in goggles and leather aprons, soot-black iron machines with copper boilers puffing white steam, and wind-up clockwork constructs; heavy, slow, cheerful and toy-like. A tuba and a euphonium open at once with a short rising three-note call and carry a broad, rolling major-key melody in unison, with a concertina filling the gaps. An anvil rings on beats two and four, a bass drum thuds on one and three, steam hisses where a hi-hat would be, and ticking clockwork with a ratchet keeps a steady pattern, like gears turning under a map. The middle section goes underground: muffled low brass, a drilling rumble of tremolo double bass and the ticking alone, and then a steam whistle blows and the full workshop bursts back up. Heavy 4/4, steady 84 BPM, the weightiest theme of the set. Built to last, never grim."
+    },
+    "CANDY": {
+      "name": "Candy",
+      "themeId": "theme.candy",
+      "outputFile": "public/audio/theme-candy.ogg",
+      "promptVersion": 1,
+      "identity": "A sugary, bouncy polka on toy instruments with a warm chocolate-rich bass, a giddy rush and a woozy crash.",
+      "palette": {
+        "lead": ["toy piano", "glockenspiel"],
+        "rhythm": [
+          "ukulele offbeats",
+          "round rubbery synth bass",
+          "woodblocks"
+        ],
+        "colour": ["kazoo", "slide whistle", "marimba"]
+      },
+      "tempo": { "min": 150, "max": 162, "target": 156, "beat": "quarter" },
+      "metre": { "signature": "2/4", "feel": "bouncy polka" },
+      "mode": "bright major",
+      "mood": ["sugary", "giddy", "bouncy", "silly"],
+      "sunoStyle": "sugary bouncy polka, toy piano, glockenspiel, ukulele, kazoo, slide whistle, round synth bass, bright major, 156 bpm",
+      "sunoStructure": [
+        "[Instrumental]",
+        "[Intro: one bar of woodblock pops]",
+        "[A: toy piano and glockenspiel theme, bouncing bass, ukulele]",
+        "[B: sugar crash, woozy half-time feel, drooping slide whistle]",
+        "[Break: pop]",
+        "[A: full bounce returns, kazoo joins]",
+        "[Turnaround: one-bar glockenspiel run, open ending]",
+        "[End]"
+      ],
+      "sunoExclude": "sad, slow, distorted, hyperpop, trap beat, orchestral, lullaby",
+      "longPrompt": "A sugary, bouncy polka for a turn-based strategy game: a kingdom of living sweets, gumdrops, marshmallows and a chocolate bunny, the silliest army on the map, glossy, round and cheerful. A toy piano and a glockenspiel open at once with a short rising three-note call and skip through a bright major-key melody, with a kazoo and a slide whistle butting in for comic effect. A ukulele strums the offbeats, a round, rubbery synth bass bounces underneath with a warm, chocolate-rich low end, a light brushed snare and popping woodblocks keep time, and a marimba keeps a steady pattern, like hopping across a map. The middle section is the sugar crash: the same tempo in a woozy half-time feel, the slide whistle drooping and the toy piano yawning, and then a pop and the rush comes fizzing back at full bounce. Bouncy 2/4, steady 156 BPM. Sweet, fizzy and giddy, never slow or syrupy."
+    }
+  },
+  "extras": [
+    {
+      "id": "theme.title",
+      "name": "Title theme",
+      "use": "Title screen and menus. Not a faction theme: the manifest's theme entry is per faction, so playing it needs a small manifest change.",
+      "outputFile": "public/audio/theme-title.ogg",
+      "loop": true,
+      "durationSeconds": 100,
+      "promptVersion": 1,
+      "tempo": { "min": 128, "max": 136, "target": 132, "beat": "quarter" },
+      "metre": { "signature": "4/4", "feel": "galloping triplets" },
+      "sunoStyle": "instrumental, pulp adventure overture, small pit orchestra, bold brass melody, galloping strings, xylophone, snare, playful, loopable, 132 bpm",
+      "sunoStructure": [
+        "[Instrumental]",
+        "[Intro: one-bar snare roll]",
+        "[A: bold brass theme over galloping strings]",
+        "[B: playful woodwinds and xylophone, lighter]",
+        "[A: full orchestra, theme returns]",
+        "[Turnaround: one bar, open ending]",
+        "[End]"
+      ],
+      "sunoExclude": "vocals, singing, choir, lyrics, spoken word, dark, grim, horror, epic trailer, heavy metal, long intro, fade out, synthesizer",
+      "longPrompt": "A pulp-adventure overture for the title screen of a bright, silly turn-based strategy game in which knights, goblins, skeletons, dinosaurs, invaders from space and living sweets all share one map. A small pit orchestra: trumpets and trombones open at once with a short rising three-note call and play a bold, swashbuckling major-key melody over galloping strings and a crisp snare, with a xylophone doubling the tune. The middle section passes the melody to playful woodwinds and pizzicato strings, lighter and a little mischievous, and then the full orchestra returns. Galloping 4/4 with a triplet feel, steady 132 BPM. Instrumental only, no vocals, no lyrics, no spoken words. About 100 seconds in three parts: the main theme, a contrasting middle section, and the main theme again. The melody starts within the first two seconds and the tempo never changes; there is no long intro, no slowing down and no fade-out, and the last bar is an open turnaround that leads straight back to the first bar so the track can loop. Clear melody, with headroom. Adventurous and tongue-in-cheek, never dark or grim."
+    },
+    {
+      "id": "match.victory",
+      "name": "Victory stinger",
+      "use": "Replaces the synthesised Victory tune (sound id match.victory) by changing that entry's source to a file.",
+      "outputFile": "public/audio/match-victory.ogg",
+      "loop": false,
+      "durationSeconds": 7,
+      "promptVersion": 1,
+      "tempo": { "min": 128, "max": 136, "target": 132, "beat": "quarter" },
+      "metre": { "signature": "4/4", "feel": "fanfare" },
+      "sunoStyle": "instrumental, short triumphant fanfare stinger, bright brass, snare roll, xylophone, cymbal crash, major key, playful, 7 seconds",
+      "sunoStructure": [
+        "[Instrumental]",
+        "[Fanfare: rising brass call, snare roll]",
+        "[Final chord: cymbal crash, full stop]",
+        "[End]"
+      ],
+      "sunoExclude": "vocals, singing, choir, lyrics, spoken word, cheering crowd, dark, grim, epic trailer, long intro, fade out, loop",
+      "longPrompt": "A seven-second victory fanfare for a bright, silly turn-based strategy game. Trumpets and trombones play a short rising three-note call, repeat it one step higher over a snare roll with a xylophone doubling, and land on a big, happy major chord with a cymbal crash. It starts immediately, ends on that final chord with a clean full stop and a short natural ring, and does not loop or fade. Instrumental only, no vocals, no lyrics, no spoken words. No crowd noise. Triumphant and good-humoured, toy-soldier pomp, never solemn."
+    },
+    {
+      "id": "match.defeat",
+      "name": "Defeat stinger",
+      "use": "Replaces the synthesised Defeat tune (sound id match.defeat) by changing that entry's source to a file.",
+      "outputFile": "public/audio/match-defeat.ogg",
+      "loop": false,
+      "durationSeconds": 7,
+      "promptVersion": 1,
+      "tempo": { "min": 76, "max": 84, "target": 80, "beat": "quarter" },
+      "metre": { "signature": "4/4", "feel": "drooping" },
+      "sunoStyle": "instrumental, short comic defeat stinger, muted trumpet wah-wah falling phrase, bassoon, soft timpani thud, rueful, gentle, 7 seconds",
+      "sunoStructure": [
+        "[Instrumental]",
+        "[Falling phrase: muted trumpet droops, bassoon answers]",
+        "[Final note: soft timpani thud, full stop]",
+        "[End]"
+      ],
+      "sunoExclude": "vocals, singing, choir, lyrics, spoken word, tragic, funeral, dark, grim, horror, long intro, fade out, loop",
+      "longPrompt": "A seven-second defeat sting for a bright, silly turn-based strategy game. A muted trumpet starts the same short rising three-note call, loses heart and droops down in a comic wah-wah fall, a bassoon answers with a low shrug, and a soft timpani thud closes it on a gentle minor chord. It starts immediately, ends with a clean full stop and does not loop or fade. Instrumental only, no vocals, no lyrics, no spoken words. Rueful and funny, better luck next time, never tragic or gloomy."
+    }
+  ]
+}

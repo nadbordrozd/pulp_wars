@@ -13,6 +13,11 @@ buildings alike.
 One or two sentences on who this faction is and how it should feel. This is
 for people; it is not sent to PixelLab.
 
+**Theme music:** a new faction also needs a theme prompt. Follow
+[Adding a future faction](../../audio/THEME_MUSIC.md#adding-a-future-faction);
+a unit test fails while a faction of the game has no entry in
+`docs/audio/theme-prompts.json`.
+
 ## Prompt fragment
 
 The exact text inserted as layer 3 of every prompt (see

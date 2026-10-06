@@ -263,7 +263,10 @@ remembered with the others. It replaces the header's Sounds button of
 ## Faction themes
 
 The game has no faction theme music yet. The manifest has the place for it,
-and the audio and the Gallery already use it.
+and the audio and the Gallery already use it. The music direction, the
+prompt for every faction's theme and the process for generating, choosing
+and recording one are in
+[Faction theme music](../audio/THEME_MUSIC.md) (bead `pulp_wars-2yc.21`).
 
 ```ts
 // src/audio/sound-manifest.ts
@@ -303,7 +306,8 @@ Nothing else changes:
 
 Nothing in a match plays a theme yet. When a theme should play (on the
 faction's turn, on the title screen) is a product decision that has not
-been made.
+been made; the options and a proposal are in
+[Where themes play](../audio/THEME_MUSIC.md#where-themes-play-proposal).
 
 ## Recipes
 
