@@ -47,7 +47,7 @@
         "file": "public/assets/chibi/terrain/chibi-forest-1.body.png"
       },
       "notes": "Dead and dying trees, styled from the default Forest clump.",
-      "review": "Bare crooked trunks, two with thin dark crowns and pale leaves: the look. Only 3 (75 x 83) fits well and is a clump of the set; 1 is 71 x 86, 0 is 102 px tall and 2 is 87: over or at the 86 px a clump may be."
+      "review": "Bare crooked trunks, two with thin dark crowns and pale leaves: the look. Only 3 (75 x 83) fits well and is a clump of the set; 1 is 71 x 86, 0 is 102 px tall and 2 is 87: over or at the 86 px a clump may be. Superseded in bead pulp_wars-2yc.14: the set is stamped from undead-d and undead-e."
     },
     {
       "id": "goblin-a",
@@ -109,7 +109,7 @@
         "candidate": 3
       },
       "notes": "More Undead clumps that fit the 86 px a clump may be tall, styled from undead-a-3.",
-      "review": "Four lower clumps in the same hand, 71 to 83 px tall, all lit from the left (faces +5.1 to +14.1): 0 and 2 keep a tattered dark crown, 1 and 3 are bare. 0, 2 and 3 are clumps of the set."
+      "review": "Four lower clumps in the same hand, 71 to 83 px tall, all lit from the left (faces +5.1 to +14.1): 0 and 2 keep a tattered dark crown, 1 and 3 are bare. 0, 2 and 3 are clumps of the set. Superseded in bead pulp_wars-2yc.14: the set is stamped from undead-d and undead-e."
     },
     {
       "id": "candy-b",
@@ -174,6 +174,49 @@
       },
       "notes": "Bead pulp_wars-2yc.13. Batch: a chocolate-stick trunk with a swirl sweet, one cane and gumdrop bushes, styled from candy-c-0.",
       "review": "0: a chocolate trunk under a big caramel swirl, the best single shape, but it measures -6.4 (dark trunk left of pale gumdrops) and the bake refuses it. 1: three canes, busy, -6.7. 2 (+8.8) is nearly candy-c-0 again. 3 (69 x 84, +17.5): a thick chocolate-stick trunk, a lollipop each side, a plain cane and big gumdrops, drawn a little larger than the others; it is the set's fourth clump."
+    },
+    {
+      "id": "undead-c",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93203,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text, leaves, green, face, eyes",
+      "subject": "Subject: a low spooky clump of four dead trees, no taller than it is wide: thick gnarled twisted trunks of pale ashen grey bark (#8f8c98, shade #625f6c) with a few short bare clawed branches and no leaves at all, one broken hollow stump, pale grey cobwebs (#d9dce2) hung between two branches, and a low wisp of pale lilac-grey mist (#bdbbd0) round the roots; cold ash greys only, no brown, no green; the outline is a dark slate tone, never pure black; the whole clump with space above it.",
+      "notes": "Bead pulp_wars-2yc.14 (the user, 2026-10-06: 'make undead ... forest more spooky'): the first set was thin brown twigs with dark tufts. Thicker ashen trunks, cobwebs and mist, without a style image so the brown palette is not copied.",
+      "review": "Four clumps of thick ashen trunks with clawed branches, cobwebs and (2) a ring of mist: the look. None is used: all four measure lit from the right (faces -1.7 to -8.2; the pale cobwebs hang on the right), which the bake refuses. 0 is the style image of undead-e."
+    },
+    {
+      "id": "undead-d",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93204,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text, leaves, green",
+      "subject": "Subject: a low spooky clump of three or four dead trees, no taller than it is wide: thick gnarled trunks of pale ashen grey bark with short bare clawed branches, no leaves; every trunk is lighter on its left side (#a5a2ad) and darker on its right (#5d5a67); one small pale cobweb between two branches on the left, a low wisp of pale lilac-grey mist round the roots; cold ash greys only; dark slate outline, never black; space above the clump.",
+      "notes": "undead-c is the look, but every clump measures lit from the right. The same clump with the light named per trunk and the cobweb on the left.",
+      "review": "Four clumps in the same hand, 56 to 71 px tall, none lit from the right (faces +0.1 to +5.5). 0 (a tangle with a cobweb), 2 (broken trunks with a cobweb) and 3 (the tallest, bare) are clumps of the set. 1 is three thin trees standing apart, too sparse for a wood. The mist came out as pale feet only."
+    },
+    {
+      "id": "undead-e",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93205,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text, leaves, green",
+      "subject": "Subject: a low spooky clump of three or four dead trees, the same as the style image, no taller than it is wide: thick gnarled trunks of pale ashen grey bark with short bare clawed branches, no leaves, one broken hollow stump; every trunk is lighter on its left side and darker on its right; one small pale cobweb between two branches on the left; cold ash greys only; space above the clump.",
+      "styleImage": {
+        "recipe": "undead-c",
+        "candidate": 0
+      },
+      "notes": "The same, styled from undead-c-0 so the hand, the outline and the greys stay.",
+      "review": "Four clumps with a hollow stump each, styled from undead-c-0. 3 (faces +3.9, a cobweb at the top) is a clump of the set. 0 and 2 measure lit from the right (-4.3, -20.7); 1 (+0.3) has dark hollows that read as faces."
     }
   ]
 }

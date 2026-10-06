@@ -1,0 +1,1 @@
+ground plate, platform, grass square, soil patch, mound, slab, isometric block, base, snow, background, buildings, people, fence, skull, bones

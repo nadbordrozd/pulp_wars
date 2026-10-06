@@ -72,6 +72,13 @@ export type ChibiRecipeClass =
    * Farm, complete sprites on their tile and no longer rows of crops.
    */
   | "calm-plot"
+  /**
+   * A few things standing straight on the tile's own ground, with nothing
+   * under them, in the calm style (bead pulp_wars-2yc.14, the user: the
+   * graveyard "shouldn't be on a plate. it should be tomb stones directly
+   * on grass").
+   */
+  | "calm-markers"
   /** The Farm as a seamless full-cell pattern of crop rows with gaps. */
   | "crop-rows"
   /**
@@ -100,7 +107,16 @@ export type ChibiRecipeClass =
   | "naval-overlay";
 
 export type ChibiEndpoint =
-  "create-image-pixen" | "create-image-pixflux" | "edit-image-pixen";
+  | "create-image-pixen"
+  | "create-image-pixflux"
+  | "edit-image-pixen"
+  /**
+   * The generator of the forest clumps and the mountain pieces (bead
+   * pulp_wars-2yc.14): several candidates per call, no option, a description
+   * of at most 2000 characters. It draws free-standing things with nothing
+   * under them, where Pixen stands them on an isometric slab.
+   */
+  | "generate-image-v2";
 
 /** How the accepted candidate becomes the DPR 1 master. */
 export type ChibiDerivation =
@@ -150,6 +166,11 @@ export interface ChibiClassRecipe {
   readonly style?: ChibiStyleName;
   /** Terrain is faction-neutral: factions never restyle the ground. */
   readonly factionLayer: boolean;
+  /**
+   * The light layer (`light-south-west.txt`, the user 2026-10-05: the sun
+   * is at the bottom left) follows the camera layer.
+   */
+  readonly light?: true;
   readonly assetClasses: readonly ChibiAssetClassV7[];
   /** Endpoints allowed for the first (text-to-image) generation. */
   readonly generators: readonly ChibiEndpoint[];
@@ -447,6 +468,33 @@ export const CHIBI_CLASS_RECIPES: Readonly<
       "create-image-pixen": { ...PIECE_OPTIONS, outline: "selective outline" },
     },
   },
+  // The Graveyard as tombstones standing straight on the tile's ground (bead
+  // pulp_wars-2yc.14): the calm-plot text asks for a patch of earth, which
+  // is the plate the user wants gone, so this class asks for free-standing
+  // things with nothing under them and states the light. Pixen drew them on
+  // a slab all the same (graveyard-stones-a to -d and two edits), so the
+  // class generates with generate-image-v2, as the forest clumps do, in the
+  // chibi style layer (its text is the clumps': "calmer and less saturated
+  // than units"). Seated like a calm plot. Pixen and Pixflux are listed
+  // only for the rejected samples and the retired crop-rows recipes the
+  // Graveyard keeps as history.
+  "calm-markers": {
+    camera: "three-quarter",
+    factionLayer: false,
+    light: true,
+    assetClasses: ["BUILDING"],
+    generators: [
+      "generate-image-v2",
+      "create-image-pixen",
+      "create-image-pixflux",
+    ],
+    editPass: true,
+    noBackground: true,
+    derivation: "seated",
+    options: {
+      "create-image-pixen": { ...PIECE_OPTIONS, outline: "selective outline" },
+    },
+  },
   // The Rift (bead pulp_wars-9s0.5): a crack drawn into a strip of three
   // ground tiles. An edit of the ground strip (recipe `groundStrip`) keeps
   // the grass; the rift-strip derivation keeps only the crack over the
@@ -614,10 +662,14 @@ const OPTION_VALUES: Readonly<Record<string, readonly string[]>> = {
   ],
 };
 
+/** PixelLab answers HTTP 422 over this length (bead pulp_wars-2yc.14). */
+export const GENERATE_V2_DESCRIPTION_LIMIT = 2000;
+
 const ENDPOINT_OPTIONS: Readonly<Record<ChibiEndpoint, readonly string[]>> = {
   "create-image-pixen": ["outline", "detail", "view", "direction"],
   "create-image-pixflux": ["outline", "shading", "detail", "view", "direction"],
   "edit-image-pixen": [],
+  "generate-image-v2": [],
 };
 
 export interface MaskOverrideSpec {
@@ -834,6 +886,8 @@ export interface FragmentLibrary {
   readonly styles?: Readonly<Partial<Record<ChibiStyleName, Fragment>>>;
   readonly camera: Readonly<Record<ChibiCamera, Fragment>>;
   readonly owner: Fragment;
+  /** `light-south-west.txt`, for classes that state the light. */
+  readonly light?: Fragment;
   readonly classes: Readonly<Record<ChibiRecipeClass, Fragment>>;
   readonly editRemoveGround: Fragment;
   readonly factions: Readonly<Record<string, Fragment>>;
@@ -854,7 +908,14 @@ export interface Fragment {
 }
 
 export type PromptLayerName =
-  "style" | "camera" | "faction" | "class" | "owner" | "subject" | "recipe";
+  | "style"
+  | "camera"
+  | "light"
+  | "faction"
+  | "class"
+  | "owner"
+  | "subject"
+  | "recipe";
 
 export interface PromptLayerRecord {
   readonly layer: PromptLayerName;
@@ -936,6 +997,11 @@ export function layeredPrompt(
     throw new Error(`Unknown style fragment ${classRecipe.style}`);
   push("style", style);
   push("camera", fragments.camera[classRecipe.camera]);
+  if (classRecipe.light === true) {
+    if (fragments.light === undefined)
+      throw new Error("the light fragment is missing");
+    push("light", fragments.light);
+  }
   if (classRecipe.factionLayer) {
     const faction = fragments.factions[manifest.faction];
     if (faction === undefined)
@@ -1209,6 +1275,11 @@ function sizeProblems(
     // PixelLab answers HTTP 422 below this area (vkq.14, a 16 x 16 marker).
     if (width * height < 32 * 32)
       problems.push(`${label}: Pixflux area must be at least 32x32`);
+  } else if (endpoint === "generate-image-v2") {
+    if (width % 4 !== 0 || height % 4 !== 0)
+      problems.push(`${label}: generate-image-v2 sides must be multiples of 4`);
+    if (width < 16 || height < 16 || width > 768 || height > 768)
+      problems.push(`${label}: generate-image-v2 sides must be 16..768`);
   } else if (width < 1 || height < 1)
     problems.push(`${label}: edit size must be positive`);
   return problems;
@@ -1607,6 +1678,14 @@ export function batchManifestProblems(
         recipe.groundStrip !== undefined
       )
         problems.push(`${label}: only edits take a source or instruction`);
+      if (
+        recipe.endpoint === "generate-image-v2" &&
+        layeredPrompt(fragments, manifest, asset, recipe).description.length >
+          GENERATE_V2_DESCRIPTION_LIMIT
+      )
+        problems.push(
+          `${label}: a generate-image-v2 description is at most ${GENERATE_V2_DESCRIPTION_LIMIT} characters`,
+        );
     }
     if (recipe.colorImage !== undefined) {
       if (recipe.endpoint !== "create-image-pixflux")

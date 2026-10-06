@@ -189,24 +189,29 @@ describe("faction building batches", () => {
   });
 
   it("redid the Graveyard and the Mushroom Farm as yards, not rows", async () => {
-    for (const [batch, id, recipe, retired] of [
+    // The Graveyard was redone again in bead pulp_wars-2yc.14 (the user: "it
+    // shouldn't be on a plate. it should be tomb stones directly on grass"):
+    // the class calm-markers; its fenced plot stays in the batch as history.
+    for (const [batch, id, recipe, retired, recipeClass] of [
       [
         BATCHES.UNDEAD,
         "chibi-undead-graveyard",
+        "graveyard-stones-e",
         "graveyard-plot-c-edit",
-        "graveyard-pixen-a",
+        "calm-markers",
       ],
       [
         BATCHES.DWARF,
         "chibi-dwarf-mushroom-farm",
         "mushroom-patch-b-edit",
         "mushroom-flux-b-edit",
+        "calm-plot",
       ],
     ] as const) {
       const manifest = await loadBatchManifest(ROOT, batch);
       const records = await loadRecords(productionLayout(ROOT, batch), batch);
       const asset = manifest.assets.find((spec) => spec.id === id);
-      expect(asset?.recipeClass, id).toBe("calm-plot");
+      expect(asset?.recipeClass, id).toBe(recipeClass);
       expect(asset?.cropRows, id).toBeUndefined();
       expect(records.assets[id]?.recipe, id).toBe(recipe);
       expect(records.assets[id]?.derivation.kind, id).toBe("seated");
@@ -254,14 +259,96 @@ describe("faction building batches", () => {
   });
 });
 
+describe("the Undead Graveyard", () => {
+  it("was generated with the light stated and nothing asked under it", async () => {
+    const records = await loadRecords(
+      productionLayout(ROOT, BATCHES.UNDEAD),
+      BATCHES.UNDEAD,
+    );
+    const request = records.recipes["graveyard-stones-e"]?.request;
+    if (request === undefined) throw new Error("no record");
+    expect(request.endpoint).toBe("generate-image-v2");
+    expect(request.noBackground).toBe(true);
+    expect(request.layers.map((layer) => layer.layer)).toEqual([
+      "style",
+      "camera",
+      "light",
+      "class",
+      "subject",
+    ]);
+    expect(
+      request.layers.find((layer) => layer.layer === "light")?.source,
+    ).toBe("scripts/art/chibi/fragments/light-south-west.txt");
+    expect(request.description).toContain("at the bottom left of the image");
+    expect(request.description).toContain("nothing drawn under or between");
+    expect(request.description.length).toBeLessThanOrEqual(2000);
+  });
+
+  it("is tombstones standing apart on the tile's ground, with no plate under them", async () => {
+    const master = await readRaster(
+      path.join(
+        ROOT,
+        "public/assets/chibi/buildings/chibi-undead-graveyard.png",
+      ),
+    );
+    const { width, height, data } = master;
+    const painted = (index: number): boolean => (data[index * 4 + 3] ?? 0) > 0;
+    // A plate joins everything on it into one piece; stones on the ground
+    // are pieces of their own (4-connected, specks left out).
+    const seen = new Uint8Array(width * height);
+    let pieces = 0;
+    for (let start = 0; start < width * height; start += 1) {
+      if (!painted(start) || seen[start] === 1) continue;
+      let size = 0;
+      const stack = [start];
+      seen[start] = 1;
+      while (stack.length > 0) {
+        const at = stack.pop() as number;
+        size += 1;
+        const x = at % width;
+        for (const next of [
+          x > 0 ? at - 1 : -1,
+          x < width - 1 ? at + 1 : -1,
+          at - width,
+          at + width,
+        ]) {
+          if (next < 0 || next >= width * height) continue;
+          if (!painted(next) || seen[next] === 1) continue;
+          seen[next] = 1;
+          stack.push(next);
+        }
+      }
+      if (size >= 40) pieces += 1;
+    }
+    expect(pieces).toBeGreaterThanOrEqual(4);
+    // Ground shows between them: under half of the sprite's box is paint.
+    const box = opaqueBounds(master);
+    if (box === null) throw new Error("empty");
+    let paint = 0;
+    for (let index = 0; index < width * height; index += 1)
+      if (painted(index)) paint += 1;
+    expect(
+      paint / ((box.right - box.left + 1) * (box.bottom - box.top + 1)),
+    ).toBeLessThan(0.5);
+  });
+});
+
 describe("the Undead territory ground masters", () => {
-  it("are the gloam recolour of the Grass masters, pixel for pixel", async () => {
+  it("are what the ashen recipe derives from the Grass masters, pixel for pixel", async () => {
     expect(await gloamGrassProblems(ROOT)).toEqual([]);
     const recorded = JSON.parse(
       await readFile(path.join(ROOT, GLOAM_GRASS_RECORD), "utf8"),
     ) as GloamGrassRecord;
-    expect(recorded.variant).toBe("gloam");
-    expect(recorded.colours["#8ab85c"]).toBe("#749b76");
+    // The ashen ground of bead pulp_wars-2yc.14 (the first was the gloam).
+    expect(recorded.variant).toBe("ashen");
+    expect(recorded.colours["#8ab85c"]).toBe("#7a8a9d");
+    expect(recorded.motifs.map((motif) => motif.kind)).toEqual([
+      "patch",
+      "tufts",
+      "pebble",
+      "stamp",
+      "stamp",
+    ]);
     expect(recorded.masters.map((master) => master.id)).toEqual(
       GLOAM_MASTERS.map((master) => master.id),
     );
@@ -286,7 +373,7 @@ describe("the Undead territory ground masters", () => {
     }
   });
 
-  it("keeps the texture of each Grass tile: only the four colours change", async () => {
+  it("keeps the joins of each Grass tile: within 3 px of an edge only the four colours change", async () => {
     for (const index of [1, 2, 3]) {
       const before = await readRaster(
         path.join(ROOT, `public/assets/chibi/terrain/chibi-grass-${index}.png`),
@@ -299,17 +386,27 @@ describe("the Undead territory ground masters", () => {
       );
       expect([after.width, after.height]).toEqual([80, 80]);
       const map = new Map<string, string>();
+      let changedInside = 0;
       for (let offset = 0; offset < before.data.length; offset += 4) {
+        const x = (offset / 4) % 80;
+        const y = Math.floor(offset / 4 / 80);
         const key = (data: Uint8Array) =>
           `${data[offset]},${data[offset + 1]},${data[offset + 2]},${data[offset + 3]}`;
         const from = key(before.data);
         const to = key(after.data);
-        // One colour in, one colour out, everywhere: the same tufts.
-        expect(map.get(from) ?? to).toBe(to);
-        map.set(from, to);
+        expect(after.data[offset + 3]).toBe(255);
+        if (x < 3 || y < 3 || x >= 77 || y >= 77) {
+          // One colour in, one colour out: the same tufts on every edge,
+          // so every variant still joins every other.
+          expect(map.get(from) ?? to).toBe(to);
+          map.set(from, to);
+        } else if (map.has(from) && map.get(from) !== to) changedInside += 1;
       }
       expect(map.size).toBeLessThanOrEqual(5);
-      expect(new Set(map.values()).size).toBe(map.size);
+      // The motifs (mist, dry tufts, stones, a bone) are a small share of
+      // the tile: it stays ground, not a picture.
+      expect(changedInside).toBeGreaterThan(0);
+      expect(changedInside / (80 * 80)).toBeLessThan(0.08);
     }
   });
 });

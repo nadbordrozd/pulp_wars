@@ -63,23 +63,24 @@ the Human-era owner text they were generated with.
 
 ## Class recipes
 
-| Recipe class      | Endpoint                                                                    | Master                                                                                                 |
-| ----------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `unit`            | `create-image-pixen`, south-east, low detail                                | the candidate, generated at the master size                                                            |
-| `ship`            | as `unit`, then optional edit                                               | as `unit`; a boat class text (no water, waves or plate under the hull) for ships and the embarked form |
-| `settlement`      | Pixen, then optional `edit-image-pixen`                                     | the candidate; the edit removes a plate ("Remove all ground …")                                        |
-| `building`        | Pixen, then optional edit                                                   | as settlement                                                                                          |
-| `crop-field`      | Pixen, then optional edit, no faction layer                                 | as settlement: an unowned field of crops registered as a building (the Farm, bead `pulp_wars-6gd.5`)   |
-| `resource`        | Pixen, then optional edit                                                   | as settlement                                                                                          |
-| `terrain`         | `create-image-pixflux` (flat shading) or Pixen                              | a field at least 2x the tile; the seamless 80 x 80 window is cropped, optionally inside a `cropRegion` |
-| `tall-terrain`    | Pixen, then optional edit                                                   | the transparent body drawn over an accepted ground tile's bottom cell                                  |
-| `portrait`        | Pixen, `side` view, south-east, low detail                                  | the candidate: a 48 x 48 head-and-shoulders interface portrait with an owner mask (batch 5)            |
-| `icon`            | Pixen, low top-down, no direction                                           | the candidate: a 48 x 48 (HUD 32 x 32) interface item sprite; also whole ships, the Catapult, the Egg  |
-| `status`          | Pixen, flat camera, side view                                               | the candidate palette-mapped: a 32 x 32 board status marker                                            |
-| `effect`          | Pixen, icon camera, side view                                               | the candidate palette-mapped: an ability effect sprite up to 48 x 48                                   |
-| `calm-building`   | Pixen (selective outline), then optional edit; calm style, no faction layer | **seated**: the calm improvement set of the new direction                                              |
-| `calm-settlement` | as `calm-building`                                                          | **seated**: cities and the Village in the calm style                                                   |
-| `crop-rows`       | Pixen or Pixflux, crops on strips of soil, then edits; no faction layer     | **crop-rows**: the Farm as a seamless pattern of crop rows                                             |
+| Recipe class      | Endpoint                                                                    | Master                                                                                                   |
+| ----------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `unit`            | `create-image-pixen`, south-east, low detail                                | the candidate, generated at the master size                                                              |
+| `ship`            | as `unit`, then optional edit                                               | as `unit`; a boat class text (no water, waves or plate under the hull) for ships and the embarked form   |
+| `settlement`      | Pixen, then optional `edit-image-pixen`                                     | the candidate; the edit removes a plate ("Remove all ground …")                                          |
+| `building`        | Pixen, then optional edit                                                   | as settlement                                                                                            |
+| `crop-field`      | Pixen, then optional edit, no faction layer                                 | as settlement: an unowned field of crops registered as a building (the Farm, bead `pulp_wars-6gd.5`)     |
+| `resource`        | Pixen, then optional edit                                                   | as settlement                                                                                            |
+| `terrain`         | `create-image-pixflux` (flat shading) or Pixen                              | a field at least 2x the tile; the seamless 80 x 80 window is cropped, optionally inside a `cropRegion`   |
+| `tall-terrain`    | Pixen, then optional edit                                                   | the transparent body drawn over an accepted ground tile's bottom cell                                    |
+| `portrait`        | Pixen, `side` view, south-east, low detail                                  | the candidate: a 48 x 48 head-and-shoulders interface portrait with an owner mask (batch 5)              |
+| `icon`            | Pixen, low top-down, no direction                                           | the candidate: a 48 x 48 (HUD 32 x 32) interface item sprite; also whole ships, the Catapult, the Egg    |
+| `status`          | Pixen, flat camera, side view                                               | the candidate palette-mapped: a 32 x 32 board status marker                                              |
+| `effect`          | Pixen, icon camera, side view                                               | the candidate palette-mapped: an ability effect sprite up to 48 x 48                                     |
+| `calm-building`   | Pixen (selective outline), then optional edit; calm style, no faction layer | **seated**: the calm improvement set of the new direction                                                |
+| `calm-settlement` | as `calm-building`                                                          | **seated**: cities and the Village in the calm style                                                     |
+| `crop-rows`       | Pixen or Pixflux, crops on strips of soil, then edits; no faction layer     | **crop-rows**: the Farm as a seamless pattern of crop rows                                               |
+| `calm-markers`    | `generate-image-v2`, chibi style, light layer, no faction layer             | **seated**: free-standing things with nothing under them (the Undead Graveyard, bead `pulp_wars-2yc.14`) |
 
 "Generate at the display size" is enforced: a non-terrain request must
 equal its master canvas. Pixen sizes must be multiples of 4.
@@ -1427,8 +1428,9 @@ art/explorations/faction-buildings-2026-10 --ids …`); a chain's first
   `mushroom-flux-b`, `bone-mill-edit-a`) are recorded as rejected with the
   reason. The Bone Mill's `bone-mill-edit-c` and `bone-mill-edit-d` were
   generated in the production batch.
-- **The Undead ground is not a batch.** The gloam Grass is an exact colour
-  swap of the accepted Grass masters, so it has no recipe:
+- **The Undead ground is not a batch.** It is derived in code from the
+  accepted Grass masters (a colour swap and a few motifs since bead
+  `pulp_wars-2yc.14`, a colour swap alone before), so it has no recipe:
   [`gloam-grass.ts`](../../scripts/art/faction-buildings/gloam-grass.ts)
   bakes `chibi-undead-grass-1..3` and `chibi-undead-forest-1..2` into
   `public/assets/chibi/terrain/` and records the swap and every hash in
@@ -1483,6 +1485,24 @@ What PixelLab did, for the next yard:
 `npm run art:faction-buildings-review` also writes `farms-sawmills-x3.png`
 and `farms-sawmills-1x.png`: every Farm and Sawmill look on Grass, on Snow
 and on its faction's territory ground.
+
+### Free-standing markers (bead `pulp_wars-2yc.14`)
+
+The Undead Graveyard as tombstones on the tile's own ground
+([what and why](FACTION_BUILDINGS.md#10-the-graveyard-without-a-plate-and-the-ashen-ground-bead-pulp_wars-2yc14)).
+Three pipeline pieces:
+
+- **The light layer.** A class recipe with `light: true` puts
+  `light-south-west.txt` after the camera layer (layer name `light`). Only
+  `calm-markers` has it; every other class builds the prompt it built.
+- **`generate-image-v2`** is a fourth endpoint: no options, sides that are
+  multiples of 4, several candidates per call (16 at 80 x 80), and a
+  description of at most 2000 characters (the manifest check refuses a
+  longer one, as PixelLab does). It is not deterministic.
+- **The `calm-markers` class**: the chibi style layer (not the calm one),
+  the light layer, a class text that asks for a few upright things with
+  nothing under or between them, seated, no faction layer. Pixen and
+  Pixflux are listed only for the rejected samples and the retired rows.
 
 ## The Candy batches (bead `pulp_wars-jdb.5`)
 

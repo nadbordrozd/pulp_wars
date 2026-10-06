@@ -5,19 +5,19 @@
       "grass": "public/assets/chibi/terrain/chibi-undead-grass-1.png",
       "clumps": [
         {
-          "recipe": "undead-a",
-          "candidate": 3
-        },
-        {
-          "recipe": "undead-b",
+          "recipe": "undead-d",
           "candidate": 0
         },
         {
-          "recipe": "undead-b",
+          "recipe": "undead-d",
           "candidate": 2
         },
         {
-          "recipe": "undead-b",
+          "recipe": "undead-d",
+          "candidate": 3
+        },
+        {
+          "recipe": "undead-e",
           "candidate": 3
         }
       ],

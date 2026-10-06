@@ -108,6 +108,12 @@ type Motif =
       /** This share of the tufts (of 100) takes these colours. */
       readonly kind: "tufts";
       readonly share: number;
+      /**
+       * Only tufts that keep 3 px from every edge (bead pulp_wars-2yc.14):
+       * a tuft at an edge keeps the ground's own colours, so the edge
+       * band of the tile is the colour swap alone.
+       */
+      readonly inside?: true;
       readonly light: string;
       readonly mid: string;
       readonly dark: string;
@@ -118,7 +124,18 @@ const STAMPS = {
   fern: ["...#...", ".#.#.#.", "+#.#.#+", ".+###+.", "..+#+..", "...#..."],
   fernSmall: ["#.#.#", "+###+", ".+#+.", "..#.."],
   sprout: [".+.", "+#+", ".#."],
+  /** A stray bone (bead pulp_wars-2yc.14): `+` the bone, `#` its shade. */
+  bone: ["+.....+", "+++++++", "#.....#"],
+  boneSmall: ["+...+", "+++++", "#...#"],
 } as const;
+
+export type FactionGrassMotif = Motif;
+
+/** What a tile is derived from: four colours and the motifs. */
+export type GrassRecipeColours = Pick<
+  FactionGrassRecipe,
+  "base" | "light" | "mid" | "dark" | "motifs"
+>;
 
 export interface FactionGrassRecipe {
   readonly id: Exclude<FactionGrassIdV7, "UNDEAD">;
@@ -297,7 +314,7 @@ export function tonedGrass(master: RgbaRaster): Uint8ClampedArray {
 /** One faction tile from one Grass master (`variant` is 0-based). */
 export function deriveFactionGrassTile(
   master: RgbaRaster,
-  recipe: FactionGrassRecipe,
+  recipe: GrassRecipeColours,
   variant: number,
   seedOf: number,
 ): RgbaRaster {
@@ -386,10 +403,19 @@ export function deriveFactionGrassTile(
 
   for (const motif of recipe.motifs) {
     if (motif.kind === "tufts") {
+      const atEdge = new Set<number>();
+      if (motif.inside === true)
+        for (let index = 0; index < roles.length; index += 1) {
+          const x = index % CELL;
+          const y = Math.floor(index / CELL);
+          if (x < 3 || y < 3 || x >= CELL - 3 || y >= CELL - 3)
+            atEdge.add(tuftOf[index] ?? -1);
+        }
       for (let index = 0; index < roles.length; index += 1) {
         const tuft = tuftOf[index] ?? -1;
         const role = roles[index];
         if (tuft < 0 || role === undefined || role === "base") continue;
+        if (atEdge.has(tuft)) continue;
         if (hash(seedOf, variant, tuft, 0x71) % 100 >= motif.share) continue;
         put(index % CELL, Math.floor(index / CELL), motif[role]);
       }

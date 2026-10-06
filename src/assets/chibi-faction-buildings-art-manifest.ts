@@ -10,15 +10,17 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * `-dinosaur`, `-ice-folk` and `-dwarf` (imported from the exploration run
  * `art/explorations/faction-buildings-2026-10`; the Bone Mill was redone
  * with a lighter slate tower). Since bead pulp_wars-2o7.2 every Farm look
- * is one whole sprite with ground round it: the Graveyard (a fenced plot)
+ * is one whole sprite with ground round it: the Graveyard (tombstones on
+ * the tile's own ground since bead pulp_wars-2yc.14, a fenced plot before)
  * and the Mushroom Farm (big mushrooms on a mulch bed) were redrawn, the
  * Hydroponic Farm and the Frost Garden refitted. Like the shared calm set they carry no owner
  * colour and no mask. Their subjects are `IMPROVEMENT:<FACTION>:<ID>`
  * (factionImprovementSubjectV7): the board asks with the faction that owns
  * the improvement's territory, so a captured city's buildings change look.
  *
- * The ground is the "gloam" recolour of the three Grass masters and the two
- * Forest masters over it (scripts/art/faction-buildings/gloam-grass.ts, no
+ * The ground is the "ashen" look of the three Grass masters (bead
+ * pulp_wars-2yc.14; the "gloam" recolour before) and the two Forest
+ * masters over it (scripts/art/faction-buildings/gloam-grass.ts, no
  * PixelLab call), under `TERRAIN:UNDEAD:GRASS` and `TERRAIN:UNDEAD:FOREST`
  * (territoryTerrainSubjectV7). The Forest entries reuse the body layers of
  * the shared Forest.

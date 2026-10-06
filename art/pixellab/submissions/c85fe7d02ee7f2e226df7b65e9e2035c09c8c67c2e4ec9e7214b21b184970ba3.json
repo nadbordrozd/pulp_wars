@@ -1,0 +1,36 @@
+{
+  "id": "graveyard-stones-a-edit",
+  "jobId": "275e3a38-4da6-42f0-b2d9-e4698f6be5ad",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "buildings-undead",
+    "asset": "chibi-undead-graveyard",
+    "subject": "IMPROVEMENT:UNDEAD:FARM",
+    "faction": "UNDEAD",
+    "recipeClass": "calm-markers",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 21404,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground and all snow: erase the square slab of earth, grass and snow under the gravestones, with its side walls, so that the gravestones and the dead shrub stand directly on a transparent background with nothing at all under or between them. Keep every gravestone, the cross, the dead shrub, their slate-grey colours, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground and all snow: erase the square slab of earth, grass and snow under the gravestones, with its side walls, so that the gravestones and the dead shrub stand directly on a transparent background with nothing at all under or between them. Keep every gravestone, the cross, the dead shrub, their slate-grey colours, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground and all snow: erase the square slab of earth, grass and snow under the gravestones, with its side walls, so that the gravestones and the dead shrub stand directly on a transparent background with nothing at all under or between them. Keep every gravestone, the cross, the dead shrub, their slate-grey colours, the outline and the art style exactly the same.",
+    "editInstruction": "Remove all ground and all snow: erase the square slab of earth, grass and snow under the gravestones, with its side walls, so that the gravestones and the dead shrub stand directly on a transparent background with nothing at all under or between them. Keep every gravestone, the cross, the dead shrub, their slate-grey colours, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "graveyard-stones-a",
+      "candidate": 0,
+      "sha256": "f2b4b5d755c57b745b8b42fe538919919efdcec720a1ebf89a0072f2eebb4808"
+    }
+  }
+}

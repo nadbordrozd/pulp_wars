@@ -25,7 +25,7 @@ are unchanged.
 
 With the switch off the board plan carries no `factionGrass` member, the
 board host loads no tile, and the board is drawn exactly as before the
-bead: the Undead gloam Grass with its straight border and Ice Folk Snow
+bead: the Undead ground with its straight border and Ice Folk Snow
 included.
 
 The inserted lines are in `board-renderer-v7.ts` (the plan member, the
@@ -39,7 +39,7 @@ the tiles) and `package.json` (two script names). Each is marked
 | Faction   | Ground                                                                                           | Base      |
 | --------- | ------------------------------------------------------------------------------------------------ | --------- |
 | Humans    | The default Grass.                                                                               | `#8ab85c` |
-| Undead    | The gloam Grass of bead `pulp_wars-xdh.2`, unchanged. Its border is now soft.                    | `#7ba56d` |
+| Undead    | Ashen ground (bead `pulp_wars-2yc.14`): cold grey-green, slate tufts, mist, ash stones, a bone.  | `#7f9a86` |
 | Goblins   | Scrubland: yellowed, trampled turf, a third of the tufts dry straw, one or two mud patches.      | `#a9ac5c` |
 | Dinosaurs | Jungle floor: a darker, bluer green with ferns.                                                  | `#5f9f58` |
 | Martians  | Red dust: ochre-red ground with teal lichen patches and pale stones.                             | `#b98c6a` |
@@ -47,9 +47,25 @@ the tiles) and `package.json` (two script names). Each is marked
 | Candy     | Sugar meadow: pastel mint with sprinkles in pink, yellow, white, blue and lilac.                 | `#9cd4b6` |
 | Ice Folk  | Snow. Every land tile of Ice Folk territory is Snow by rule, so they need no grass of their own. | n/a       |
 
-**The Undead gloam was reviewed and kept.** It is the calmest of the set
-and reads as dusk beside every other ground; its weak point was the
-straight colour step at the border, which the spill below removes.
+**The Undead ground was redone in bead `pulp_wars-2yc.14`** (the user,
+2026-10-06: "make undead grass ... more spooky"). The first one, the
+"gloam" of bead `pulp_wars-xdh.2`, was a cooler green and a colour swap
+alone. The ashen ground is a cold grey-green (`#7f9a86`) with slate tufts
+(`#97ad9c`, `#647a72`, `#535f66`), and on each tile: a third of the inner
+tufts dry (`#b9b79e`), one or two pale mist patches (`#92a79c`), one or two
+ash stones, and on some tiles a stray bone (`#d6d4c0`). It is still the
+terrain tile itself (`chibi-undead-grass-1..3`), baked by
+[`gloam-grass.ts`](../../scripts/art/faction-buildings/gloam-grass.ts) with
+the tile derivation of this page (`deriveFactionGrassTile`), and the board
+tones it like every Grass tile, so its recipe is written in master colours
+(a board colour c is the master colour pivot + (c - pivot) / 0.65). A tuft
+within 3 px of an edge keeps the ground's own colours, so the edge band of
+a tile is the colour swap alone and the three variants join as before.
+
+```sh
+npx tsx scripts/art/faction-buildings/gloam-grass.ts bake    # then faction-forests bake
+npx tsx scripts/art/faction-buildings/gloam-grass.ts check   # also in art:validate
+```
 
 ### How the tiles are made
 
@@ -88,7 +104,7 @@ hash of every source and tile.
 | Ground    | Luma  | Saturation | Luma spread | Pixels off the base colour |
 | --------- | ----- | ---------- | ----------- | -------------------------- |
 | Default   | 62.4% | 50.0%      | 1.9%        | 2.5%                       |
-| Undead    | 57.0% | 33.8%      | 2.1%        | 2.5%                       |
+| Undead    | 56.2% | 17.4%      | 2.8%        | 5.1%                       |
 | Goblins   | 63.0% | 46.5%      | 2.6%        | 4.4%                       |
 | Dinosaurs | 51.3% | 44.7%      | 2.8%        | 5.2%                       |
 | Martians  | 58.3% | 42.6%      | 2.5%        | 4.9%                       |
@@ -96,7 +112,8 @@ hash of every source and tile.
 | Candy     | 75.0% | 26.6%      | 2.4%        | 3.8%                       |
 
 Every ground is as flat as the default Grass (a luma spread under 3%). The
-Dinosaur ground is the darkest and Candy the lightest.
+Dinosaur ground is the darkest and Candy the lightest; the Undead ground is
+the greyest.
 
 ## On the board
 
@@ -133,6 +150,10 @@ Where it applies:
 
 ## Review
 
+The Undead ground, wood and Graveyard are reviewed together by
+`scripts/art/undead-terrain/review-scenes.ts` (and `review-scenes-grass.ts`
+for this switch) through `scripts/art/look-switch-review.ts`.
+
 `npm run art:faction-grass-review -- <out-dir>` (a dev server on port 6593,
 `CHROME_PATH` set) captures the real game over drawn scenes: for each
 faction, its capital and territory beside the Human one with Forest,
@@ -151,9 +172,12 @@ overview scenes with `?faction-grass=0`.
 - **Shared Farms keep their own look** on Goblin, Dinosaur and Candy
   ground: brown beds with green crops, which read well on all three.
 - **The tile dock, the Gallery and Help** show the default Grass (and the
-  Undead gloam, as before).
+  Undead ground, which is a terrain tile).
 - **Candy is the loudest ground**: light mint over a large territory is a
   bright area on the map. **The Dwarf ground is the dullest**, and beside
   the rocky Mountain ground it can read as bare land.
-- Undead against default Grass is a low-contrast border, so its spill is
-  hard to see; that is the gloam's accepted calm.
+- **The Undead motifs are drawn by the script**, like the others: a bone
+  is a 7 x 3 stamp, the mist a noisy ellipse. With three variants a bone
+  or a mist patch repeats every few cells of a large territory.
+- **The Undead ground is grey beside the default green**: the border is a
+  clear step in colour, softened only by the spill.

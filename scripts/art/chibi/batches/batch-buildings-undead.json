@@ -10,13 +10,13 @@
       "id": "chibi-undead-graveyard",
       "subject": "IMPROVEMENT:UNDEAD:FARM",
       "assetClass": "BUILDING",
-      "recipeClass": "calm-plot",
+      "recipeClass": "calm-markers",
       "canvas": {
         "width": 80,
         "height": 80
       },
       "ownerColour": false,
-      "subjectKey": "IMPROVEMENT:UNDEAD:FARM/PLOT",
+      "subjectKey": "IMPROVEMENT:UNDEAD:FARM/STONES",
       "bottomMargin": 5
     },
     {
@@ -162,6 +162,101 @@
       },
       "promptAddendum": "The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of pale dusty earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about nine tenths of the image wide and touches no edge of the image.",
       "notes": "The text of graveyard-plot-d at the tile size, asked nine tenths wide (the 80 x 80 samples came out 48 to 62 px wide)."
+    },
+    {
+      "id": "graveyard-stones-a",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 21401,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "The whole group is drawn large, about three quarters of the image wide, and touches no edge of the image.",
+      "notes": "Bead pulp_wars-2yc.14 (the user, 2026-10-06: 're-generate the undead graveyard. it shouldn't be on a plate. it should be tomb stones directly on grass'): first sample of the class calm-markers, five different stones and a dead shrub with nothing under them, lit from the bottom left."
+    },
+    {
+      "id": "graveyard-stones-b",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 21402,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "The whole group is drawn large, about three quarters of the image wide, and touches no edge of the image.",
+      "notes": "Second seed of graveyard-stones-a."
+    },
+    {
+      "id": "graveyard-stones-c",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 21403,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "The whole group is drawn large, about three quarters of the image wide, and touches no edge of the image.",
+      "notes": "Third seed of graveyard-stones-a."
+    },
+    {
+      "id": "graveyard-stones-a-edit",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "edit-image-pixen",
+      "seed": 21404,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "graveyard-stones-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground and all snow: erase the square slab of earth, grass and snow under the gravestones, with its side walls, so that the gravestones and the dead shrub stand directly on a transparent background with nothing at all under or between them. Keep every gravestone, the cross, the dead shrub, their slate-grey colours, the outline and the art style exactly the same.",
+      "notes": "graveyard-stones-a has five good different stones and a shrub, but Pixen stood them on an isometric slab with snow on it (the light text names snow)."
+    },
+    {
+      "id": "graveyard-stones-b-edit",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "edit-image-pixen",
+      "seed": 21405,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "graveyard-stones-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground and all snow: erase the square slab of earth, grass and snow under the gravestones, with its side walls, so that the gravestones and the dead shrub stand directly on a transparent background with nothing at all under or between them. Keep every gravestone, the cross, the dead shrub, their slate-grey colours, the outline and the art style exactly the same.",
+      "notes": "graveyard-stones-b: the biggest stones, on a slab with snow."
+    },
+    {
+      "id": "graveyard-stones-d",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 21406,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "view": "side"
+      },
+      "promptAddendum": "The whole group is drawn large, about three quarters of the image wide, and touches no edge of the image. There is no snow anywhere.",
+      "negativeAddendum": "snow, ice, frost",
+      "notes": "The side view instead of low top-down, which is what draws the isometric slab; no snow."
+    },
+    {
+      "id": "graveyard-stones-e",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "generate-image-v2",
+      "seed": 21411,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "notes": "Pixen stands the gravestones on an isometric slab whatever the text says (graveyard-stones-a to -d and the two edits). The generator of the forest clumps draws free-standing things with nothing under them: the class calm-markers now generates with it, in the chibi style layer. The same request was first tried once through scripts/art/chibi-mountain-ranges.ts in a scratch run; those sixteen candidates were not kept (the generator is not deterministic, this call drew others)."
     },
     {
       "id": "bone-mill-edit-a",

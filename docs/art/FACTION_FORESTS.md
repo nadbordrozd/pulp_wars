@@ -24,7 +24,7 @@ board host builds no faction art, and every Forest is drawn as before.
 | Faction   | Forest                                                                                                                                                   | Clumps | Softening |
 | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | --------- |
 | Humans    | The default Forest.                                                                                                                                      | 4      | default   |
-| Undead    | Dead and dying trees: bare crooked grey-brown trunks, a few tattered dark crowns.                                                                        | 4      | calmer    |
+| Undead    | A dead wood (bead `pulp_wars-2yc.14`): thick gnarled trunks of ashen grey bark with clawed bare branches, broken stumps and a few pale cobwebs.          | 4      | calmer    |
 | Goblins   | Scrub: crooked half-dead trees with sparse olive leaves, dry twig bushes, sawn stumps.                                                                   | 4      | calmer    |
 | Dinosaurs | Jungle: leaning palms, cycads and fern fronds in deep greens.                                                                                            | 3      | default   |
 | Martians  | Alien growths: red-ochre fungal stalks with teal caps and teal bulbs at the foot.                                                                        | 3      | calmer    |
@@ -41,7 +41,7 @@ that a clearing keeps a single clump are the default Forest's.
 
 ### How the sets are made
 
-The clumps are PixelLab candidates: 11 calls, 4 candidates each, 21 used.
+The clumps are PixelLab candidates: 14 calls, 4 candidates each, 21 used.
 The recipes, the credential-free requests, the hash and the review of every
 candidate are in `art/pixellab/faction-forests/` (`recipes.json`,
 `records.json`, `raw/`), made with the style-image generator of the mountain
@@ -63,6 +63,15 @@ npm run art:faction-forests -- sheet <out.png>
   style image, because the generator copies the style image's palette; the
   words alone gave the same pixel density and outline weight. The second
   Undead and Candy calls were styled from an accepted clump of their own.
+- **The Undead set was redone** in bead `pulp_wars-2yc.14` (the user,
+  2026-10-06: "make undead ... forest more spooky"). The first set
+  (`undead-a`, `undead-b`: thin brown twigs with dark tufts) is superseded;
+  its candidates stay in the run. `undead-c` (no style image, so the brown
+  is not copied) gave the look, but its four clumps measure lit from the
+  right, the pale cobwebs hanging on that side. `undead-d` names the light
+  per trunk and puts the cobweb on the left: three of its clumps are used.
+  `undead-e`, styled from `undead-c-0`, gave the fourth. A description is
+  at most 2000 characters; a longer one is refused by PixelLab.
 - **The candy grove** (bead `pulp_wars-2yc.13`; the user, 2026-10-06: "make
   candy forest into candy canes and lollipops and such"). Recipes
   `candy-c`, `-d` and `-e` replace the sweet trees of `candy-a` and `-b`,
@@ -78,7 +87,8 @@ npm run art:faction-forests -- sheet <out.png>
 - **Lighting QA.** `scripts/art/lighting-qa.ts` measures every clump (left
   half minus right half of every run of paint, in luma points). The bake
   refuses a clump lit from the right (-1.5 or less). The 21 clumps measure
-  -1.5 to +30.5: 14 from the left, 7 flat, none from the right. On foliage
+  -1.5 to +30.5: 14 from the left, 7 flat, none from the right (the Undead
+  four: +0.1, +5.5, +4.9, +3.9). On foliage
   the measure is weak (the default clumps themselves measure -4.9 to +5.0)
   and on sweets of two colours it reads colour as light (three of the
   candy grove's four clumps are flat on it): five of its twelve candidates
@@ -146,11 +156,20 @@ Human one with a wood across the border, and an eight-seat map.
   default clump it always drew, also inside a faction's territory.
 - **The Undead and Goblin forests are the busiest.** Bare branches and twig
   scrub are many thin lines; even softened they are less calm than a
-  canopy. The Candy grove is the lightest, and its caramel is near the
+  canopy. The Undead trunks are thicker than the first set's twigs, but a
+  large wood is still a tangle of branches.
+- **The Undead trees are a cold lilac grey.** The softening lifts a set
+  toward its ground tile's master colours, and the Undead master is toned
+  by the board afterwards (its master base is `#7a8a9d`, the board's
+  `#7f9a86`). The trees stand off the grey-green ground by that tint.
+- **The mist did not come.** The recipes ask for a wisp of mist round the
+  roots; the used clumps have pale feet at most.
+- **The Candy grove is the lightest**, and its caramel is near the
   Candy units' own toffee; the softening keeps it paler than they are.
 - **Fewer clumps than the default set draws from** (three or four, never
   mirrored, against four mirrored), so a large wood repeats sooner.
 - **The Ice Folk have no set.** Their forest is the default one under snow
   caps.
-- The Undead ground under their trees is still the default Forest master's
-  gloam tile (bead `pulp_wars-xdh.2`); only the trees are new.
+- The Undead ground under their trees is the Undead terrain tile (the
+  ashen ground, see [faction grass](FACTION_GRASS.md)), and the shade under
+  them is the default dark green.

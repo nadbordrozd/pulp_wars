@@ -670,5 +670,180 @@
         "sha256": "dbf9010ca5cd4ca60221ed432dc73f32422ee182ae77ceeac1f0f647becd6305"
       }
     ]
+  },
+  "undead-c": {
+    "id": "undead-c",
+    "jobId": "3309a010-47fb-41e7-b320-b282488ea0c6",
+    "at": "2026-10-06T10:29:41.429Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a low spooky clump of four dead trees, no taller than it is wide: thick gnarled twisted trunks of pale ashen grey bark (#8f8c98, shade #625f6c) with a few short bare clawed branches and no leaves at all, one broken hollow stump, pale grey cobwebs (#d9dce2) hung between two branches, and a low wisp of pale lilac-grey mist (#bdbbd0) round the roots; cold ash greys only, no brown, no green; the outline is a dark slate tone, never pure black; the whole clump with space above it. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, background, buildings, people, leaves, green, face, eyes.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93203,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a low spooky clump of four dead trees, no taller than it is wide: thick gnarled twisted trunks of pale ashen grey bark (#8f8c98, shade #625f6c) with a few short bare clawed branches and no leaves at all, one broken hollow stump, pale grey cobwebs (#d9dce2) hung between two branches, and a low wisp of pale lilac-grey mist (#bdbbd0) round the roots; cold ash greys only, no brown, no green; the outline is a dark slate tone, never pure black; the whole clump with space above it."
+        }
+      ]
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-c-0.png",
+        "sha256": "13dec3ddd7a68847b2e2783b9eeaaae43a97815b374602fc0fdb7674b4c2bb1f"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-c-1.png",
+        "sha256": "1d68ebe51b889007a73eac1588d79bb2badea31711b10a6899cddcd619bef4cf"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-c-2.png",
+        "sha256": "13e83c7d9cebc00be9dfc39d7a3e03ead6c17e32aaf3d7cac904aa288c5a0ab8"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-c-3.png",
+        "sha256": "452e85cf7afcacfd9679ebfa7ed20707e1f5fd895b74859fb044c168cf6be2d3"
+      }
+    ]
+  },
+  "undead-d": {
+    "id": "undead-d",
+    "jobId": "82195a11-b49e-4c69-a1ab-3a9125dcbe44",
+    "at": "2026-10-06T10:31:31.585Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a low spooky clump of three or four dead trees, no taller than it is wide: thick gnarled trunks of pale ashen grey bark with short bare clawed branches, no leaves; every trunk is lighter on its left side (#a5a2ad) and darker on its right (#5d5a67); one small pale cobweb between two branches on the left, a low wisp of pale lilac-grey mist round the roots; cold ash greys only; dark slate outline, never black; space above the clump. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, background, buildings, people, leaves, green.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93204,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a low spooky clump of three or four dead trees, no taller than it is wide: thick gnarled trunks of pale ashen grey bark with short bare clawed branches, no leaves; every trunk is lighter on its left side (#a5a2ad) and darker on its right (#5d5a67); one small pale cobweb between two branches on the left, a low wisp of pale lilac-grey mist round the roots; cold ash greys only; dark slate outline, never black; space above the clump."
+        }
+      ]
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-d-0.png",
+        "sha256": "e5588a253f3af93d74edfac721676c992dbd72bcaf8ee8e5af242b52420c1c14"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-d-1.png",
+        "sha256": "3a7aa71f301c79a23afc6151949c6b762f0eaeeef0cc0302c9e8f5136f6651fc"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-d-2.png",
+        "sha256": "e39fcfd9ad62ddd00f5c765a009c816819e76b4a34ffcfeae915f0f6098c839f"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-d-3.png",
+        "sha256": "55181cd78bbe1cd8ab2e5a5478fb6ed79c60c64198eb04256effc690ad38fcab"
+      }
+    ]
+  },
+  "undead-e": {
+    "id": "undead-e",
+    "jobId": "effc48bd-0ebf-4403-915e-f7a06df7aa3e",
+    "at": "2026-10-06T10:32:19.345Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a low spooky clump of three or four dead trees, the same as the style image, no taller than it is wide: thick gnarled trunks of pale ashen grey bark with short bare clawed branches, no leaves, one broken hollow stump; every trunk is lighter on its left side and darker on its right; one small pale cobweb between two branches on the left; cold ash greys only; space above the clump. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, background, buildings, people, leaves, green.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93205,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a low spooky clump of three or four dead trees, the same as the style image, no taller than it is wide: thick gnarled trunks of pale ashen grey bark with short bare clawed branches, no leaves, one broken hollow stump; every trunk is lighter on its left side and darker on its right; one small pale cobweb between two branches on the left; cold ash greys only; space above the clump."
+        }
+      ],
+      "style_image": "recipe undead-c#0 sha256 13dec3ddd7a68847b2e2783b9eeaaae43a97815b374602fc0fdb7674b4c2bb1f",
+      "style_options": {
+        "color_palette": true,
+        "outline": true,
+        "detail": true,
+        "shading": true
+      }
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-e-0.png",
+        "sha256": "051439cdfc424ae17f8236a642dcb1cf705f1b8c6f62dcdee8fdf2481d0749b2"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-e-1.png",
+        "sha256": "2956063393b3e2cf83096c08f066b63e442aedc6908001d103b3ef0cb94b2a2c"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-e-2.png",
+        "sha256": "25f28a2a421136b010d337e6ddc801fe2c146444b6b12af0dda32af0d0ca3d6b"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-e-3.png",
+        "sha256": "fd09aa29cddd07192dc0593412073ec7c0da37febed29726f211888117d9ed32"
+      }
+    ]
   }
 }

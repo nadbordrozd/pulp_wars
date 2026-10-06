@@ -23,78 +23,78 @@
       "clumps": [
         {
           "id": "chibi-forest-undead-1",
-          "path": "art/pixellab/faction-forests/raw/undead-a-3.png",
-          "sha256": "e97a02c148681989438310d305f0edeba31a9fc602f4d61fc7cbd1ec497f72c6",
+          "path": "art/pixellab/faction-forests/raw/undead-d-0.png",
+          "sha256": "e5588a253f3af93d74edfac721676c992dbd72bcaf8ee8e5af242b52420c1c14",
           "trim": {
-            "x": 3,
-            "y": 3,
-            "w": 75,
-            "h": 83
+            "x": 5,
+            "y": 20,
+            "w": 71,
+            "h": 66
           },
-          "up": 21,
+          "up": 4,
           "seam": {
             "path": "public/assets/chibi/forest/undead/chibi-forest-undead-seam-1.png",
-            "width": 75,
-            "height": 83,
-            "sha256": "5bd5cf2dd6e5e11828a99fa7f580e283ce934ed643d2921863b6e7e44cd69b3c",
-            "pixelSha256": "0c41dcf0c3593faa4c699cf176e875b5864cc5c6046c93988596946559c3d372"
+            "width": 71,
+            "height": 66,
+            "sha256": "6ee9ad9bec5ff9a9a60b3119727d1ceac4cc8acfb8faca7de65cbc9a700bf360",
+            "pixelSha256": "34d0498ef13e98d69f5f713d6977c30e518829c70adb42cb6ded978fda28271e"
           }
         },
         {
           "id": "chibi-forest-undead-2",
-          "path": "art/pixellab/faction-forests/raw/undead-b-0.png",
-          "sha256": "e74be5c9779e1043d7139b39917d148c54ae2532336d4e031964eab80c6bed1c",
+          "path": "art/pixellab/faction-forests/raw/undead-d-2.png",
+          "sha256": "e39fcfd9ad62ddd00f5c765a009c816819e76b4a34ffcfeae915f0f6098c839f",
           "trim": {
-            "x": 3,
-            "y": 3,
-            "w": 75,
-            "h": 83
+            "x": 4,
+            "y": 30,
+            "w": 72,
+            "h": 56
           },
-          "up": 21,
+          "up": 0,
           "seam": {
             "path": "public/assets/chibi/forest/undead/chibi-forest-undead-seam-2.png",
-            "width": 75,
-            "height": 83,
-            "sha256": "31c369c3aa508fd0a7c9f71af32709e4a8c0d33a35697e2b36f2dcd45c0e11aa",
-            "pixelSha256": "6974a5caf544f9cc5a9023c0adeac9a63ae469e4205bd3cb9befed916b3721a8"
+            "width": 72,
+            "height": 56,
+            "sha256": "0c7f81382393df51098f641b818da35f5bb0d80cfdf896f9125b100cf49f4257",
+            "pixelSha256": "2e7c579e521596e277e176cdfb61006787564312b59dc5dd4e830044039cffca"
           }
         },
         {
           "id": "chibi-forest-undead-3",
-          "path": "art/pixellab/faction-forests/raw/undead-b-2.png",
-          "sha256": "26b4d5b9403959202c214d6473ceae25a60787fe0bc236869bb94ff66cfcf37c",
+          "path": "art/pixellab/faction-forests/raw/undead-d-3.png",
+          "sha256": "55181cd78bbe1cd8ab2e5a5478fb6ed79c60c64198eb04256effc690ad38fcab",
           "trim": {
             "x": 4,
-            "y": 3,
-            "w": 73,
-            "h": 83
+            "y": 14,
+            "w": 72,
+            "h": 72
           },
-          "up": 21,
+          "up": 10,
           "seam": {
             "path": "public/assets/chibi/forest/undead/chibi-forest-undead-seam-3.png",
-            "width": 73,
-            "height": 83,
-            "sha256": "25143dc6d9403a7a419de6b3a4e1462d15863b0f3fcd3eb108ab49ab15f2545c",
-            "pixelSha256": "1e8e3423238842fc0a3a0d7910c83e418532e493855c08bcfc1bfbc29e8f0c88"
+            "width": 72,
+            "height": 72,
+            "sha256": "50cc73428cca6e8fc829d5f07289ce61a633a5c882327983345ae4e7dfc54fb4",
+            "pixelSha256": "b853835d3ec7cbedb56eb8bc6df6c74bf4ca6e25ee09a1e7ea8708eaf26289ff"
           }
         },
         {
           "id": "chibi-forest-undead-4",
-          "path": "art/pixellab/faction-forests/raw/undead-b-3.png",
-          "sha256": "209323406abac7f927f277fe7788de5d068f40c5410b2429483d058ac732f581",
+          "path": "art/pixellab/faction-forests/raw/undead-e-3.png",
+          "sha256": "fd09aa29cddd07192dc0593412073ec7c0da37febed29726f211888117d9ed32",
           "trim": {
-            "x": 6,
-            "y": 15,
-            "w": 69,
-            "h": 71
+            "x": 9,
+            "y": 22,
+            "w": 62,
+            "h": 64
           },
-          "up": 9,
+          "up": 2,
           "seam": {
             "path": "public/assets/chibi/forest/undead/chibi-forest-undead-seam-4.png",
-            "width": 69,
-            "height": 71,
-            "sha256": "b75d01ec30eabc2cf18ce7933d6defcc8378eef7cb1b99dbbf2d21db11a7ffca",
-            "pixelSha256": "54162002a36794d5e323d7572eaddd77e67a96ff4296d3b09388378eb6cd9c99"
+            "width": 62,
+            "height": 64,
+            "sha256": "f61d630e716beeb9557cb05b37e56568b80cadda80da6642fae2e178858a42b5",
+            "pixelSha256": "64fd29b1387c5d5a6c9abdf45c8438a4e3f74726c44b33b0c8ff75597a9bc4cf"
           }
         }
       ],
@@ -107,8 +107,8 @@
           "width": 80,
           "height": 104,
           "seed": 9100,
-          "sha256": "43b2a69c71b0204a077076cc542e011266273bb6d65955ea50c5dac046af45d8",
-          "pixelSha256": "68fb99baa7095f1e36e24f602048216c332debc1dd8021a2d13609514dc77491"
+          "sha256": "8995eef3318ee5abf701afb216e1107cdb837ae22221990ccd948a1253d91b81",
+          "pixelSha256": "e367cbcf59183b7300096780959a61a0bac0bcd0010cc4cf468bade18f429032"
         },
         {
           "id": "chibi-forest-undead-piece-1x1-b",
@@ -118,8 +118,8 @@
           "width": 80,
           "height": 104,
           "seed": 9107,
-          "sha256": "245dfd964ea037c53c7c07e11ee2401f9bf4cad660ba5713a062aa010fdb085c",
-          "pixelSha256": "34179806336cb1fa64a1bafce521f3cc3a06ceb79e7acdb1a67365736589b84e"
+          "sha256": "79db6cb76a54fe41dc49bb3949d44033e18f1520491d1f2dce504c8817c41c35",
+          "pixelSha256": "b7ff3e845e6921f13de6d42b440949055627b3276aac541347e90d63e9c48326"
         },
         {
           "id": "chibi-forest-undead-piece-1x1-c",
@@ -129,8 +129,8 @@
           "width": 80,
           "height": 104,
           "seed": 9114,
-          "sha256": "019444d7c81bd44af0b5c987086561e0d50835bb79579e40f98e8d92b2fbfd55",
-          "pixelSha256": "e6fe674961eb8c56b3ee4c1e0a9b5caa72960bb0d4b318bb3ffaf13006b9efc6"
+          "sha256": "d67c4fc9aad76404ceeed2ca3f7586a746ba4bbfe46ccc615a9da4af46197e28",
+          "pixelSha256": "3c1fc6da64251f41ce347f38f7ad6b4a254fa84210b83549a56bbcdd1a2ca2a7"
         },
         {
           "id": "chibi-forest-undead-piece-2x1-a",
@@ -140,8 +140,8 @@
           "width": 160,
           "height": 104,
           "seed": 9121,
-          "sha256": "bcce5dab8380232f3838a6a71e4a11d2b4659ece30b431539d9401a122e32924",
-          "pixelSha256": "11a0899ad4cdfdab5c7979a5bc5ea0f9954d56735737b42f020d0aa6d440267b"
+          "sha256": "4cdb94b5049914c35581b66f4c7be25ba9d41d362b2db55c30c56e6f86beb1b4",
+          "pixelSha256": "02d0ea0e349240a2bc39fabd93b9aa105c510af8713059691514e73fccd25703"
         },
         {
           "id": "chibi-forest-undead-piece-2x1-b",
@@ -151,8 +151,8 @@
           "width": 160,
           "height": 104,
           "seed": 9128,
-          "sha256": "2bd440cf514c2649b3d09e7c9aeefab77536ec50a3a9a7de9af0099fe1c71dfa",
-          "pixelSha256": "d0118772177aa8e7343de9907f6e59a58043d20e79fe6a6ded1fcf83e7e5684e"
+          "sha256": "22005fe62e64da2e2559843f81e4f12c4b2743ad85c90c966db235d38f68325f",
+          "pixelSha256": "7b11660fd47e9f3656bfb2dbb6687bc4540642dcb55f306d0d8c36d0b5378a79"
         },
         {
           "id": "chibi-forest-undead-piece-2x1-c",
@@ -162,8 +162,8 @@
           "width": 160,
           "height": 104,
           "seed": 9135,
-          "sha256": "ddc737ff935e951fdfa13f5956a8b5fd4b4271ae04009347e14e8d55d57d8fa2",
-          "pixelSha256": "bbe0e270a0d551939fceb9b08e9d799f7bfad5ab66577a52e37392e1bbc47dec"
+          "sha256": "62143b87527435302ae014515d5bf7a64d493256b5a489ae9134fe6dec7fa87d",
+          "pixelSha256": "6df2dfa054fd229c482366a4858a9c166ae9ea08706fbf820d2cd838cf503974"
         },
         {
           "id": "chibi-forest-undead-piece-1x2-a",
@@ -173,8 +173,8 @@
           "width": 80,
           "height": 184,
           "seed": 9142,
-          "sha256": "0e1038ef4584bc2c2892eb65e44471c5b0be214a9bf37f43c9c4cd02cd1a7197",
-          "pixelSha256": "22b275cf2ad5e911241c677d4515fc3b45966f8952e0d645e7ac086305968ef6"
+          "sha256": "c320f07225fbd720123f35981fc45abb3df05d3b63b3ecac97ab876989b7b66b",
+          "pixelSha256": "12a219246a0efca3a917fd711b0c44e1af55c30c3d7dd30e788ad12a3b18e9ec"
         },
         {
           "id": "chibi-forest-undead-piece-1x2-b",
@@ -184,8 +184,8 @@
           "width": 80,
           "height": 184,
           "seed": 9149,
-          "sha256": "5852a1c1a84201eaf5e7f003d48960bce36114170e4560cff16367c4f75e02c8",
-          "pixelSha256": "7b2be7aa5a05f586f96291899baa6a6a8464fd5c941a196f674d54f475543b10"
+          "sha256": "053dcde56840e5652bf06b9730736fb6b9f407b16de7ac2e57c6613a619e315a",
+          "pixelSha256": "803302743554ff8951e8a5b6c8f7f3f81b2a11d5dcc1d65ed05f906ca821fb6e"
         },
         {
           "id": "chibi-forest-undead-piece-1x2-c",
@@ -195,8 +195,8 @@
           "width": 80,
           "height": 184,
           "seed": 9156,
-          "sha256": "cea186068afd603f48e7826667482671f58df120c4698682ef87a7bee512cc72",
-          "pixelSha256": "4484f2c3634d53ad49b92b8f869bae389d8cd9fd4e9b7228a8c6d04afee5cf8e"
+          "sha256": "cb4c84348e9e8fc97fa156057bee546a8858d5bd4863089d3beb5da4b1c99c8d",
+          "pixelSha256": "4bb7486962a23a8ebd9dc2ea004fb835d7e106a9ec03f726a3ed7d84af57046f"
         },
         {
           "id": "chibi-forest-undead-piece-2x2-a",
@@ -206,8 +206,8 @@
           "width": 160,
           "height": 184,
           "seed": 9163,
-          "sha256": "352467b61ab730d8388a7ba1ea4ae87d9d91bcb0b53aacba20c42a60c18a69ae",
-          "pixelSha256": "4d1ec442ab2b5e102edd6df9c46d1c9e35bcc3deb861a426d04fec456b7a0cd7"
+          "sha256": "4ff17366f220cda2675e69c34a2597e942f8ea5121f974b58badd8bbb525365d",
+          "pixelSha256": "a824602022d74caeece4bc72bc85ee6281e77280661fe3ced4b5c7587a210b07"
         },
         {
           "id": "chibi-forest-undead-piece-2x2-b",
@@ -217,8 +217,8 @@
           "width": 160,
           "height": 184,
           "seed": 9170,
-          "sha256": "e7a8b66d4f8b665b844f57ea899cb7837b9a3f5a339e6e4115f012e4df1962fa",
-          "pixelSha256": "7501f101129aca72c54f544c0946f81dfab6450f495ec6d77d91ce365194db62"
+          "sha256": "4a9ed086b4861f84d471ad7ff6e9838e67ea73ef038f2df3e14cb8782d6047e6",
+          "pixelSha256": "263604b2b589a3f033071abeebc46dd3423f395d90987b0cfcc546ba46a8c27f"
         },
         {
           "id": "chibi-forest-undead-piece-2x2-c",
@@ -228,8 +228,8 @@
           "width": 160,
           "height": 184,
           "seed": 9177,
-          "sha256": "4997f4f4ebc85effcea759f4f64da83f242eea141e5347d200093a02c0b25b6b",
-          "pixelSha256": "2ed3fde658dbdacb16b5bcb1cbffe2a15d3f52dc4099f110324c8663338ad7cb"
+          "sha256": "38e2346bcb9be6c105de12397b28174a8d427b47e4c0f9ca94423ae6cec3a69a",
+          "pixelSha256": "85a7f9fab7acbed496b555e0c9c64125b2f379d43cd8010b5bb5189f6b1a95ba"
         },
         {
           "id": "chibi-forest-undead-piece-l-nw-a",
@@ -239,8 +239,8 @@
           "width": 160,
           "height": 184,
           "seed": 9184,
-          "sha256": "9b126f3807c307ab814f436976233e90157b20039b461706ec0e9d7e522f5b7a",
-          "pixelSha256": "ab607cdab8d6810ae439ab2349b820517c57b02b362e34b2b1494bc9ae153eb7"
+          "sha256": "ccc7e1abd56d934e1c214a8b732523736a786fb6e2b3cc8feab441efaa51d5cf",
+          "pixelSha256": "f277756898ab3dfcfe47ea6bc979d6e8c93fd6eb78255207c2ad158e45fb791c"
         },
         {
           "id": "chibi-forest-undead-piece-l-nw-b",
@@ -250,8 +250,8 @@
           "width": 160,
           "height": 184,
           "seed": 9191,
-          "sha256": "a22af189a07ea33a474055bcde925f6b1d80762a9d173e1d43d3695cd3eaf446",
-          "pixelSha256": "a448e7b69125b760d1cf9745eb2c0fba65d33fabd5044925e463df179f45934a"
+          "sha256": "a858305452152b611ea1eb96eb53e7d2b9cbcfd8a9c98e07a8374ca04a580490",
+          "pixelSha256": "f85f30401871c570870ec5ff93b61cb9a441ed63bd8c7ae4639e043c03e2aabb"
         },
         {
           "id": "chibi-forest-undead-piece-l-ne-a",
@@ -261,8 +261,8 @@
           "width": 160,
           "height": 184,
           "seed": 9198,
-          "sha256": "c4361f0edb5624db5291d406e69d109a0dd74dfd3a1d18f435c9ee40847f9771",
-          "pixelSha256": "3769f43d90cdd300ce82e7e7ae1385c8ec45fda750d09aa8cd6540cc68dc4865"
+          "sha256": "4962819f28fad8fc221fcbccba0453f4b443552dc801c6ee4eb16ad41e7a4ad4",
+          "pixelSha256": "2bd991858c4cae4d67ee010b147c2aafb03a79c95fb360606ae3a40383c176d8"
         },
         {
           "id": "chibi-forest-undead-piece-l-ne-b",
@@ -272,8 +272,8 @@
           "width": 160,
           "height": 184,
           "seed": 9205,
-          "sha256": "94e1a7ad260d41c9281ff2f5ee4f8319b145144064bf8f0c9c7d4e033c5e931f",
-          "pixelSha256": "ab00961f2cd0444e555fe05fa44033bbf1e8b94c226de94854e4a3d4afed5e58"
+          "sha256": "7e45394de69058d11849824963ff74432112bed7cceb390c3748c34f5c421a9c",
+          "pixelSha256": "58fae06c05dc1f5e0531c670b1aaa854ea6926e05348e3e600122b6cc5d04ffd"
         },
         {
           "id": "chibi-forest-undead-piece-l-sw-a",
@@ -283,8 +283,8 @@
           "width": 160,
           "height": 184,
           "seed": 9212,
-          "sha256": "6762147a06b9490a6549569bb199ecd0ac790cb87fea079b3b386275a1d83955",
-          "pixelSha256": "553a58b501eeab17a042c33bb819ce56a95fb89660360b8bb8ba51bafee1d1b0"
+          "sha256": "fc1a5ece82b77d624a045cf0790a841c3556d7f24d3c38fabca8a159796bfc60",
+          "pixelSha256": "92363c6ea6cbfcf8f2b0e524e9a3491ca26feecd128651548998211f0c019321"
         },
         {
           "id": "chibi-forest-undead-piece-l-sw-b",
@@ -294,8 +294,8 @@
           "width": 160,
           "height": 184,
           "seed": 9219,
-          "sha256": "a8e9b37e8fdd3d4b1ab3988893ee3d274ce306ecf77b842a7022eeef6f63ae15",
-          "pixelSha256": "87a573fdc2cefc937502cfe2422df9c829408f20bbb539fb81fa0744e3a5b5fa"
+          "sha256": "ea739ad62bf5ae4fec820f32e6608ae326648d48308088a76a13ec8589950ce0",
+          "pixelSha256": "54b9dc1f7706ee0c4ad52bea6e69098ab0289a9f626ed5fa2fdd4589c0f19cc6"
         },
         {
           "id": "chibi-forest-undead-piece-l-se-a",
@@ -305,8 +305,8 @@
           "width": 160,
           "height": 184,
           "seed": 9226,
-          "sha256": "9899c7be413f01534f64350c5afd20302dd9d79219ef9921de086390c8463fa8",
-          "pixelSha256": "4bdd38f489f8a398f1aac085448500c4c869990bb5c412b8c236536271a8943b"
+          "sha256": "66f6e750b2c311b125852e303e6e16bd932268f0ff4887c656f3d75506a77f0e",
+          "pixelSha256": "51302b11253b0a8090eee00e935088b09e7dc7b214d727df0e749b326e225d4f"
         },
         {
           "id": "chibi-forest-undead-piece-l-se-b",
@@ -316,8 +316,8 @@
           "width": 160,
           "height": 184,
           "seed": 9233,
-          "sha256": "ccd0c5e4213bca38f496f415f29d0b31656b82e96b37dc86c4adb81a9a970619",
-          "pixelSha256": "b52ea194db27793dc1404d0db92a15b748534da89ff32e7345b9fe31b7bd9dac"
+          "sha256": "46591c7f48ec0f491782297b3255cd247fa4c9527feb1c6b0f28f6bd6e7a54e1",
+          "pixelSha256": "19007bed090aff7b17896f273d6d5faab3af0a95f5624a433141c3304949bc98"
         }
       ]
     },

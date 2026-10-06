@@ -440,13 +440,13 @@ with ground on every side (a test checks at least 3 px). Neighbouring Farms
 do not join. Canvas (80 x 80), subjects, names, flavour lines and every
 rule are unchanged; nothing in the renderer changed.
 
-| Faction                        | Farm shows                                                                                                                                     | How                                                                           |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Human, Goblin, Dinosaur, Candy | Farm: three raised beds of four leafy vegetables each, 67 x 72                                                                                 | the same candidate (`veg-flux-a`) as drawn, seated; no PixelLab call          |
-| Martian                        | Hydroponic Farm: three chrome troughs of four plants under glass domes, 67 x 73                                                                | the same candidate (`hydroponic-edit-a`) as drawn, seated; no PixelLab call   |
-| Ice Folk                       | Frost Garden: three snow banks of four frost cabbages, 64 x 68                                                                                 | the same candidate (`frost-garden-edit-a`) as drawn, seated; no PixelLab call |
-| Undead                         | Graveyard: a low plot of pale earth inside a dark iron fence, a stone cross and two slabs in light slate, a bare tree, a violet flame; 62 x 51 | new: `graveyard-plot-c` → `graveyard-plot-c-edit` (class `calm-plot`)         |
-| Dwarf                          | Mushroom Farm: four big spotted mushrooms of different heights, a spade and a crooked post on a round bed of mulch; 54 x 59                    | new: `mushroom-patch-b` → `mushroom-patch-b-edit` (class `calm-plot`)         |
+| Faction                        | Farm shows                                                                                                                                     | How                                                                                           |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Human, Goblin, Dinosaur, Candy | Farm: three raised beds of four leafy vegetables each, 67 x 72                                                                                 | the same candidate (`veg-flux-a`) as drawn, seated; no PixelLab call                          |
+| Martian                        | Hydroponic Farm: three chrome troughs of four plants under glass domes, 67 x 73                                                                | the same candidate (`hydroponic-edit-a`) as drawn, seated; no PixelLab call                   |
+| Ice Folk                       | Frost Garden: three snow banks of four frost cabbages, 64 x 68                                                                                 | the same candidate (`frost-garden-edit-a`) as drawn, seated; no PixelLab call                 |
+| Undead                         | Graveyard: a low plot of pale earth inside a dark iron fence, a stone cross and two slabs in light slate, a bare tree, a violet flame; 62 x 51 | new: `graveyard-plot-c` → `graveyard-plot-c-edit` (class `calm-plot`); replaced in section 10 |
+| Dwarf                          | Mushroom Farm: four big spotted mushrooms of different heights, a spade and a crooked post on a round bed of mulch; 54 x 59                    | new: `mushroom-patch-b` → `mushroom-patch-b-edit` (class `calm-plot`)                         |
 
 | Faction                    | Sawmill shows                                                                                                          | How                                                   |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
@@ -496,3 +496,45 @@ Weak spots:
   `CONNECTED_FARM_VISUALS` effect), which is true only where Farms are
   drawn joined. The card now shows that line in the Classic look and the
   LEGACY art set only (`farmsJoinInLookV7`); the effect stays in the tree.
+
+## 10. The Graveyard without a plate, and the ashen ground (bead `pulp_wars-2yc.14`)
+
+The user, 2026-10-06: "re-generate the undead graveyard. it shouldn't be on
+a plate. it should be tomb stones directly on grass."
+
+The Graveyard is now a stone cross, a round-topped headstone, a slab and a
+leaning slab in light slate with dark slate outlines and a little moss, and
+a bare dead shrub, each standing on the tile's own ground: 60 x 58 in the
+same 80 x 80 canvas, seated 5 px above the bottom edge as before
+(`graveyard-stones-e`, candidate 4 of 16). Name, flavour line, subject
+(`IMPROVEMENT:UNDEAD:FARM`) and every rule are unchanged; nothing in the
+renderer changed.
+
+- **Class `calm-markers`** (`class-calm-markers.txt`): a few free-standing
+  things with nothing under them. It is the first chibi class with the
+  light layer (`light-south-west.txt`, after the camera) and the first that
+  generates with `generate-image-v2`, the generator of the forest clumps.
+- **Why not Pixen.** Six Pixen calls (`graveyard-stones-a` to `-d`, two
+  ground-removal edits) all stood the stones on an isometric slab, whatever
+  the class text and the negative list said; the edits turned the slab into
+  stone or snow. The light text names snow, and Pixen then drew snow.
+- **PixelLab calls: 8** (4 Pixen creations, 2 Pixen edits, and the
+  `generate-image-v2` request twice: once through the mountain generator to
+  try it, whose candidates were not kept, and once through the chibi
+  pipeline, recorded). The generator is not deterministic: the same request
+  and seed gave different candidates.
+- Lighting QA: faces +7.8 (lit from the left).
+
+The Undead ground under it is the ashen ground of the same bead (see
+[faction grass](FACTION_GRASS.md)); the "gloam" of section 4 is history.
+`farms-sawmills-*.png` and `buildings-*.png` now draw the production ground
+masters in the territory column. They are masters: the board tones them, so
+the ground is greener in the game than on the sheet.
+
+Weak spots:
+
+- **The stones are small on the board** and the group is four stones, not
+  five: the fifth, broken stone of the subject did not come in the chosen
+  candidate.
+- **Light slate on ashen grey-green is a calm pair**; the dark outlines
+  carry the shapes. On default Grass and on Snow the stones stand out more.

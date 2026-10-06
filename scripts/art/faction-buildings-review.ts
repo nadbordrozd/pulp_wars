@@ -261,10 +261,16 @@ async function onGround(
     .toBuffer();
 }
 
+/**
+ * The Undead ground as produced (the ashen masters of bead
+ * pulp_wars-2yc.14); the study's candidates stay in the grass sheet.
+ */
+const UNDEAD_GROUND = [1, 2, 3].map(
+  (index) => `public/assets/chibi/terrain/chibi-undead-grass-${index}.png`,
+);
+
 function factionGround(faction: FactionIdV7): readonly string[] {
-  return faction === "UNDEAD"
-    ? [1, 2, 3].map((index) => undeadGrassFile(RECOMMENDED_UNDEAD_GRASS, index))
-    : GRASS_TODAY;
+  return faction === "UNDEAD" ? UNDEAD_GROUND : GRASS_TODAY;
 }
 
 async function buildingsSheet(
@@ -494,9 +500,7 @@ async function farmsSawmillsSheet(scale: number, name: string): Promise<void> {
     });
     x += column.width + gap;
   }
-  const gloam = [1, 2, 3].map((index) =>
-    undeadGrassFile(RECOMMENDED_UNDEAD_GRASS, index),
-  );
+  const gloam = UNDEAD_GROUND;
   for (const [index, look] of FARM_SAWMILL_LOOKS.entries()) {
     const top = header + index * rowHeight;
     composites.push({

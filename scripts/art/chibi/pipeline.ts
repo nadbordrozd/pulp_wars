@@ -244,6 +244,7 @@ export async function loadFragments(root: string): Promise<FragmentLibrary> {
     styles,
     camera,
     owner: await fragmentFile(root, "owner", false),
+    light: await fragmentFile(root, "light-south-west", false),
     classes,
     editRemoveGround: await fragmentFile(root, "edit-remove-ground", false),
     factions: await factionFragments(root),
