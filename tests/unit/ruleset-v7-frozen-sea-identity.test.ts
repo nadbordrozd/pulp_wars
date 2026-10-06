@@ -71,17 +71,17 @@ const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
 // last prior identities here.
 describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix, then 7r46 and 7r47 for tunings 1 and 2)", () => {
   it("is 7r47 with 7r44 to 7r46 last in the gap-free prior list and their save keys obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
-    expect(PRIOR_RULESET_7_IDS.slice(-4)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
+    expect(PRIOR_RULESET_7_IDS.slice(-5, -1)).toEqual([
       "pulp-wars-poc-7r43",
       "pulp-wars-poc-7r44",
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(46);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(47);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r47.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r48.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -1)).toEqual([
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
       "pulpWars.save.v7r46.current",
@@ -94,7 +94,7 @@ describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r47");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r48");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r44" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(
@@ -331,7 +331,13 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
         expect(
           effectiveRoleRuleV7(role, faction).abilities.includes("FREEZE"),
           `${faction} ${role}`,
-        ).toBe(faction === "ICE_FOLK" && !isNavalRoleV7(role));
+        ).toBe(
+          faction === "ICE_FOLK" &&
+            !isNavalRoleV7(role) &&
+            // The Human Swordsman's role (tuning 5), which the Ice Folk
+            // table only copies and never fields.
+            role !== "SWORDSMAN",
+        );
   });
 
   it("shows the branch in the public technology tree and forbids it on Dry Land", () => {

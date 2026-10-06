@@ -1,9 +1,11 @@
-# Ruleset 7: the Human tech tree, rounds 3 and 4
+# Ruleset 7: the Human tech tree, rounds 3 to 5
 
-**Status:** implemented on `pulp-wars-poc-7r47` (bead `pulp_wars-w49.3`).
-Round 3 (sections 1 to 10) was played by hand three times;
-[round 4](#11-round-4) (section 11) is what those games changed, and has
-not been played yet. Where the two differ, section 11 is the rule. [Tuning 1 and its round 2](RULESET_7_TUNING_1.md)
+**Status:** rounds 3 and 4 were implemented on `pulp-wars-poc-7r47` (bead
+`pulp_wars-w49.3`); [round 5](#12-round-5) (section 12, bead
+`pulp_wars-w49.4`) is implemented on `pulp-wars-poc-7r48` and has not been
+played yet. Round 3 (sections 1 to 10) was played by hand three times;
+[round 4](#11-round-4) (section 11) is what those games changed, and was
+played four times. Where they differ, the later section is the rule. [Tuning 1 and its round 2](RULESET_7_TUNING_1.md)
 changed numbers and two rules after eight hand-played games. This round
 starts from the other end: a unit-by-unit and technology-by-technology
 analysis of the Human faction, then the changes it calls for, then three
@@ -622,22 +624,22 @@ adds three staged positions for that.
 
 ### 11.2 The changes
 
-| #   | Rule                                 | Round 3                                                                                     | Round 4                                                                                                                                                                                                 | Shared with other factions                   |
-| --- | ------------------------------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| 1   | Commerce: land trade                 | +2 Coins for every Road-linked city                                                         | **+1**                                                                                                                                                                                                  | yes (not the Goblins)                        |
-| 2   | Research price                       | tier base 5 / 7 / 9 plus 1 / 2 / 2 for each city owned beyond the first                     | tier base 5 / 7 / 9 **plus 2 for each technology already owned beyond the first**; the number of cities does not matter                                                                                 | **yes**: one formula for every faction       |
-| 3   | Level 2 reward                       | Survey or Stockpile (4 Coins)                                                               | **Scouts** (the survey and a free Raider) or Stockpile (4)                                                                                                                                              | no: the other factions keep the plain Survey |
-| 4   | Level 3 reward: Militia              | two Fighters                                                                                | **one** Fighter                                                                                                                                                                                         | no                                           |
-| 5   | Level 4 reward                       | Boom or Treasury (6)                                                                        | Boom, Treasury (6), or **Barracks**                                                                                                                                                                     | **yes**                                      |
-| 6   | Level 5 and above                    | the reward unit, once per city, or Treasury (12)                                            | **Barracks or Treasury (6)**; the reward unit is offered **only in the player's first capital, once**                                                                                                   | **yes** (every faction's giant)              |
-| 7   | Barracks (new reward)                | none                                                                                        | +1 unit capacity in the city, and its center drills (row 8); a city may take it at every level from 4                                                                                                   | **yes**                                      |
-| 8   | Drill (new command)                  | none                                                                                        | a unit on the center of an own city with a Barracks that has not acted becomes a **veteran for 10 Coins** (+5 HP and maximum HP, no heal); its turn ends                                                | **yes** (not a Dinosaur unit, which grows)   |
-| 9   | Raider                               | stopped by zones of control like every unit                                                 | **not stopped by enemy zones of control**                                                                                                                                                               | no (the Human Raider only)                   |
-| 10  | Raiding: Pillage                     | +1 Coin; the unit's turn ends                                                               | **+3 Coins**; a unit with Escape (the Raider) keeps one Move after it                                                                                                                                   | the 3 Coins: yes                             |
-| 11  | Fieldcraft                           | Replant Forest; Raider and Marksman ignore Forest stops; Marksman sight 2                   | also **Forest march**: no ground unit of the owner stops on entering Forest                                                                                                                             | **yes**: every faction's tree                |
-| 12  | Field Defense                        | +1 Defense                                                                                  | **+2 Defense** (two fortification levels, like City Walls; the two add up to +4 on a walled center); still ignored by siege and Breach, still never in the retaliation                                  | **yes**: every unit that may stand on one    |
-| 13  | Land Grant                           | claims every neutral tile of the 5 × 5 area; unexplored ones free                           | claims **explored tiles only**, 2 Coins each, at least 6; unexplored tiles stay neutral                                                                                                                 | yes                                          |
-| 14  | Blast Mountain: what the player sees | no price outside the territory; no warning on Ore; the event showed only the player's units | the exact price everywhere; "Ore here: blasting it gives up a Mine (+2 population)"; the explosion is shown to its player and to every player who has explored the tile, with every visible unit it hit | yes                                          |
+| #   | Rule                                 | Round 3                                                                                     | Round 4                                                                                                                                                                                                                               | Shared with other factions                   |
+| --- | ------------------------------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| 1   | Commerce: land trade                 | +2 Coins for every Road-linked city                                                         | **+1**                                                                                                                                                                                                                                | yes (not the Goblins)                        |
+| 2   | Research price                       | tier base 5 / 7 / 9 plus 1 / 2 / 2 for each city owned beyond the first                     | tier base 5 / 7 / 9 **plus 2 for each technology already owned beyond the first**; the number of cities does not matter                                                                                                               | **yes**: one formula for every faction       |
+| 3   | Level 2 reward                       | Survey or Stockpile (4 Coins)                                                               | **Scouts** (the survey and a free Raider) or Stockpile (4)                                                                                                                                                                            | no: the other factions keep the plain Survey |
+| 4   | Level 3 reward: Militia              | two Fighters                                                                                | **one** Fighter                                                                                                                                                                                                                       | no                                           |
+| 5   | Level 4 reward                       | Boom or Treasury (6)                                                                        | Boom, Treasury (6), or **Barracks**                                                                                                                                                                                                   | **yes**                                      |
+| 6   | Level 5 and above                    | the reward unit, once per city, or Treasury (12)                                            | **Barracks or Treasury (6)**; the reward unit is offered **only in the player's first capital, once**                                                                                                                                 | **yes** (every faction's giant)              |
+| 7   | Barracks (new reward)                | none                                                                                        | +1 unit capacity in the city, and its center drills (row 8); a city may take it at every level from 4                                                                                                                                 | **yes**                                      |
+| 8   | Drill (new command)                  | none                                                                                        | a unit on the center of an own city with a Barracks that has not acted becomes a **veteran for 10 Coins** (+5 HP and maximum HP, no heal); its turn ends                                                                              | **yes** (not a Dinosaur unit, which grows)   |
+| 9   | Raider                               | stopped by zones of control like every unit                                                 | **not stopped by enemy zones of control**                                                                                                                                                                                             | no (the Human Raider only)                   |
+| 10  | Raiding: Pillage                     | +1 Coin; the unit's turn ends                                                               | **+3 Coins**; a unit with Escape (the Raider) keeps one Move after it                                                                                                                                                                 | the 3 Coins: yes                             |
+| 11  | Fieldcraft                           | Replant Forest; Raider and Marksman ignore Forest stops; Marksman sight 2                   | also **Forest march**: no ground unit of the owner stops on entering Forest                                                                                                                                                           | **yes**: every faction's tree                |
+| 12  | Field Defense                        | +1 Defense                                                                                  | **+2 Defense** (two fortification levels, like City Walls; the two add up to +4 on a walled center); a siege shot is made against it and then destroys it, a Breach ignores and destroys it, and it is still never in the retaliation | **yes**: every unit that may stand on one    |
+| 13  | Land Grant                           | claims every neutral tile of the 5 × 5 area; unexplored ones free                           | claims **explored tiles only**, 2 Coins each, at least 6; unexplored tiles stay neutral                                                                                                                                               | yes                                          |
+| 14  | Blast Mountain: what the player sees | no price outside the territory; no warning on Ore; the event showed only the player's units | the exact price everywhere; "Ore here: blasting it gives up a Mine (+2 population)"; the explosion is shown to its player and to every player who has explored the tile, with every visible unit it hit                               | yes                                          |
 
 Unchanged on purpose: Stockpile 4 (the user's decision), Blast Mountain at
 5 damage for 3 Coins and +1 population, Breach, the Knight, the Catapult,
@@ -949,3 +951,361 @@ changed rules were updated in place, each with a note; the recorded
 AI-against-AI matches that tests read were recomputed, and seven of them
 moved to another seed because the old one no longer showed what the test
 needs.
+
+## 12. Round 5
+
+Round 4 was played by hand four times. The games were slow: armies of
+Guards stood in front of each other, few units died, and the Normal AI
+trained a unit every third turn and spent on its economy with an enemy at
+its gates. The user's direction of 2026-10-06 for this round: **more
+units, more deaths, more turnover**, by two levers in this order. First a
+Normal AI that fields an army and attacks with it. Second the Guard, which
+should hold against a Fighter, a Raider, and perhaps a Knight, and be an
+easy target for Marksmen and Catapults ("a Guard softened by a couple of
+Marksmen can be killed by a Fighter"). A third, optional lever: one more
+heavy melee unit at tier 2 of the industry branch. The Knight and its
+Overrun are not weakened, and the Fighter is unchanged. Only Humans
+against Goblins or Undead are in view.
+
+Round 5 is implemented on `pulp-wars-poc-7r48` (bead `pulp_wars-w49.4`).
+Where this section and sections 1 to 11 differ, this section is the rule.
+Nothing of it was played by hand yet.
+
+### 12.1 The changes
+
+| #   | Rule                 | Round 4                                                                  | Round 5                                                                                                                    | Other factions                                                                            |
+| --- | -------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 1   | Normal AI            | trains when the economy has nothing better; research by economic value   | **army play** (section 12.2)                                                                                               | Undead and Goblin seats play it too, with their own units; the other five factions do not |
+| 2   | Human Guard          | Defense 3 against everything                                             | **Defense 1 against an attack from two or more tiles**; 3 next to its attacker and in its retaliation                      | their Guard-role units are unchanged; their ranged attacks hit a Human Guard harder       |
+| 3   | Swordsman (new unit) | none                                                                     | **5 Coins, 15 HP, Attack 3.5, Defense 2.5, Move 1**, melee, captures; unlocked by **Engineering**                          | Human only: no other tree unlocks it                                                      |
+| 4   | Drill                | a unit on a Barracks center becomes a veteran for 10 Coins               | **removed**; a Barracks is +1 unit slot                                                                                    | shared                                                                                    |
+| 5   | Land Grant           | 2 Coins a tile, at least 6                                               | **1 Coin a tile**, no minimum                                                                                              | shared                                                                                    |
+| 6   | Blast Mountain       | 5 damage to every unit on and around the tile, the blasting player's too | the same, except **the unit that sets it**: the player's weakest land unit next to the Mountain is not hit                 | shared                                                                                    |
+| 7   | Labs                 | `LAB_BACKLINE` and `LAB_LATE` at revision 1                              | revision 2: a Swordsman in each line of `LAB_BACKLINE` (both sides own Engineering), one in every front city of `LAB_LATE` | —                                                                                         |
+
+One role (`SWORDSMAN`, the last role ID) is new and one command
+(`DRILL_UNIT`) is gone, so every command kind after `PROMOTE` is back at
+its tuning-3 ordinal. The state shape did not change. The invariant that a
+veteran has three kills (except through a Shrine) is back.
+
+Not changed: the Fighter, the Knight, Overrun, the Catapult, the Marksman,
+every price of round 4, and **Metallurgy** (a Forge, and 1 Coin off land
+training in a city with a Forge). Engineering now gives a unit, so the
+branch reads Drill (Guard), Engineering (Swordsman), Metallurgy (cheaper
+units).
+
+### 12.2 The Normal AI plays an army
+
+What the four games and one idle-seat run showed, and the rule that
+answers each. The numbers are
+in `src/ai/v7-army.ts`; the detail is in
+[Normal AI: army play](../architecture/NORMAL_AI.md#army-play-pulp_wars-w494).
+
+| Problem                                                                | Rule                                                                                                                                                                                                        |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| a unit every third turn; Coins went to buildings and research          | Once an enemy city is known or a hostile unit is within six tiles of a center, every city with a free slot **trains before any research or building**, the best unit the Coins buy.                         |
+| cities that could not train because their garrison stood on the center | The unit on the center **steps beside it and the city trains in the same turn**, also with an enemy near. Without the Coins for a unit it stays.                                                            |
+| armies of Guards                                                       | A **mixed army**: about 35% line units (the dearest it can pay for), 15% defenders, 20% ranged, 15% siege, 15% breakthrough (25% against an enemy with ranged or siege units); never only defenders.        |
+| economy technologies with enemies at the gates                         | **Research goes to the cheapest fighting unit it cannot train yet** (Marksman, Catapult, Knight, Swordsman, and their Undead and Goblin counterparts), and other research waits while that one is in reach. |
+| single units fed into pairs                                            | A melee unit moves in for **a kill or an exchange clearly in its favor**, and nobody walks alone into more enemies than it has friends beside it.                                                           |
+| ranged units with no shot; Catapults left behind                       | A ranged unit with a target **shoots**. A Marksman or Catapult without one **moves to where it has a shot** (a Catapult: next turn, on a tile it survives on) and stays behind its own line.                |
+| attacks that wounded many and killed nobody                            | **Focus fire**: every visible enemy unit is checked for a kill by several units in one turn; the ranged hits go first, the melee unit that finishes goes last. Wounded units first.                         |
+| the garrison walked off a walled center                                | The unit on a center **stays** while an enemy is within six tiles (apart from the step that lets the city train).                                                                                           |
+| a healthy unit could be disbanded for its refund                       | A unit at half HP or more is never disbanded.                                                                                                                                                               |
+
+Knights go for fragile units through the ordinary attack values (a kill of
+a Marksman or Catapult is worth its price) and the larger breakthrough
+share. City attacks and captures of weak centers are the campaign plan of
+`pulp_wars-9s0.1`, unchanged; with more units trained it has more to send.
+
+The play is on for a Human, Undead, or Goblin seat **in a match whose
+every seat is one of those three**. With any other faction present both
+sides keep the older policy, so the five other factions' AI and its tests
+are as they were. It is also off while the seat's naval plan is active and
+during the opening harvest.
+
+How it was checked: constructed positions in
+`tests/unit/ruleset-v7-tuning-5.test.ts` (section 12.9), the three labs
+through the text harness, and three short single matches of at most 25
+rounds on an 11 x 11 dry-land map, read for one thing only, whether both
+seats train and attack. Units trained per round, Humans then the other
+seat:
+
+- Humans against Goblins, seed 7 (before the besieged-city rule): Humans
+  0 1 1 0 1 2 1 0 0 0 1 0; Goblins 0 1 0 0 0 0 0 0 0 0 0 0. The Goblin's
+  only unit stood on its center with a Human Fighter two tiles away, so
+  its city never trained. This is what the step beside the center fixes.
+- The same match after it: Humans 0 1 1 0 1 2 1 0 1 1 0 0 2 0; Goblins
+  0 1 0 1 1 1 0 1 1 0 0 0 0 0. Both sides attack from round 7.
+- Humans against Undead, seed 3: Humans 0 1 1 0 0 0 2 2 0 0 0 2 2 0 2 1 1
+  2 2 3 0; Undead 0 1 1 0 0 1 1 0 0 0 1 0 0 1 0 1 0 0 0 0 0. The Humans
+  train Fighters, Marksmen, Swordsmen, and Guards; both sides attack in
+  most rounds from round 6.
+
+No outcome was counted. In the first rounds a seat earns 3 Coins a turn
+and has two unit slots, so "a unit every turn" means "whenever a slot and
+the Coins are there".
+
+### 12.3 The Guard
+
+**The rule, as the card says it: "Open to ranged: Defense 1 against
+attacks from 2 or more tiles."** The Guard keeps Defense 3
+against a unit next to it, and its retaliation (which only a neighbor
+takes) is unchanged. Fortification and cover add to the 1 as they add to
+the 3. It is one number on one unit; the three places that compute damage
+(the engine, the public preview, the AI's estimate) read it through one
+function.
+
+Damage to a full-HP Guard from a full-HP attacker, before and after:
+
+| Attacker                 | Open         | Forest with Forestry | Field Defense | Walls     | Walls and Field Defense |
+| ------------------------ | ------------ | -------------------- | ------------- | --------- | ----------------------- |
+| Marksman, from two tiles | 4 → **6**    | 3 → **5**            | 3 → **4**     | 3 → **4** | 2 → **3**               |
+| Catapult                 | 7 → **10**   | 5 → **9**            | 5 → **7**     | 5 → **7** | 4 → **5**               |
+| Marksman, adjacent       | 4            | 3                    | 3             | 3         | 2                       |
+| Fighter                  | 4 (takes 8)  | 3                    | 3             | 3         | 2                       |
+| Raider with Charge       | 7 (takes 7)  | 5                    | 5             | 5         | 4                       |
+| Swordsman                | 8 (takes 6)  | 7                    | 6             | 6         | 5                       |
+| Knight                   | 10 (takes 6) | 8                    | 8             | 8         | 7                       |
+
+The user's test, **two Marksmen and then one Fighter on a full-HP Guard**
+(`scripts/human-tuning-analysis-v7.ts round5`):
+
+| Ground                  | After two Marksmen | The Fighter        | Guard left |
+| ----------------------- | ------------------ | ------------------ | ---------- |
+| open                    | 17 → 11 → 4        | deals 4, **kills** | dead       |
+| Forest with Forestry    | 17 → 12 → 6        | deals 5, takes 5   | 1          |
+| Field Defense           | 17 → 13 → 9        | deals 4, takes 6   | 5          |
+| Walls                   | 17 → 13 → 9        | deals 4, takes 6   | 5          |
+| Walls and Field Defense | 17 → 14 → 11       | deals 3, takes 7   | 8          |
+
+**Two Catapults:** they kill a Guard in the open (10, then 7) and in
+Forest (9, then 8), leave 1 HP on a Field Defense or on a walled center
+(7, then 9), and leave 6 HP on a walled center with a Field Defense (5,
+then 6). A Catapult's shot is made against the Field Defense and then
+destroys it; the Walls stay.
+
+So cover, a Field Defense, and Walls each buy the Guard one more attacker,
+and a walled center with a Field Defense still takes a real siege.
+
+**Is 3 Coins still right?** Against melee nothing changed: a Fighter (2
+Coins) deals 4 and takes 8, a Raider with Charge trades 7 for 7 and has 12
+HP to the Guard's 17, a Knight (9 Coins) needs two attacks and takes 6 of
+its 13 HP on the first. It is still the cheapest way to stop anything that
+has to walk up to it, and it is no longer a wall against an army with two
+Marksmen (8 Coins) behind its line. The recommendation is to keep 3 Coins.
+
+**The same rule in other matches.** A Human Guard is hit harder by every
+faction's attack from two or more tiles: a Banshee's Wail, a Bomb
+Chucker's bomb (and its splash on the units around), a Ray Gunner (10, was
+7), a Tripod (14, was 10), a Grunt (6, was 4), a Pie Launcher (10, was 7),
+a Boulder (10, was 7), Acid (6, was 4). Those factions' own Guard-role
+units are unchanged, and their tests state the new numbers.
+
+### 12.4 The Swordsman
+
+A heavy melee unit at **Engineering**, tier 2 of the industry branch (the
+technology that also gives Mines and Workshops; it needs Drill and costs 7
+Coins as the second technology).
+
+| Unit      | Cost | HP  | Attack | Defense | Move |
+| --------- | ---- | --- | ------ | ------- | ---- |
+| Fighter   | 2    | 12  | 2      | 2       | 1    |
+| Guard     | 3    | 17  | 1.5    | 3       | 1    |
+| Swordsman | 5    | 15  | 3.5    | 2.5     | 1    |
+| Knight    | 9    | 13  | 4      | 1       | 3    |
+
+Its job is to kill what a Fighter cannot and a Knight should not: the
+Guard in the line.
+
+- A Swordsman deals 8 to a full-HP Guard and takes 6; its second attack
+  kills. Two Swordsmen kill a Guard in one turn.
+- A Knight deals it 11 of 15 and takes 4; a second Knight kills it. A
+  Swordsman is a bad target for a lone Knight and no wall against two.
+- Two Catapults kill it (7, then 8). Two Marksmen deal 4 and 5.
+- Three Fighters (6 Coins) kill it (4, 5, 6) and the first two take 6 and
+  5: Fighters in numbers still answer it.
+
+It builds no Field Defense and has no ability, so its card is its numbers.
+**Metallurgy is unchanged.** With Arms Industry a Swordsman costs 4 in a
+city with a Forge.
+
+**Art.** The Swordsman is drawn with the Guard's sprite and portrait and
+the board marks it with a small "S"; the Gallery lists it as a stand-in.
+The art bead must generate, for the Human faction in the approved unit
+style: the map sprite `UNIT:SWORDSMAN`, the portrait `PORTRAIT:SWORDSMAN`,
+and its own two entries in `src/assets/ruleset7-ui-art.ts` (they name the
+Guard's files now); then remove the two fallback lines in
+`src/assets/chibi-art-v7.ts` and the
+stand-in badge in the board renderer, and, if wanted, add the unit to the
+Showcase (it is left out so that the Showcase's 44 units and its tests did
+not move).
+
+### 12.5 Decisions that are forks, for the user to overrule
+
+1. **The Guard's weakness is a Defense number, not HP.** Defense 1 from
+   two or more tiles is one line on the card and leaves the Guard exactly
+   as it was against melee. The alternatives were fewer HP (weaker against
+   everything) or a damage multiplier for ranged units (a rule on every
+   ranged card). It also means the other factions' ranged units hit a
+   Human Guard harder than their own tuning assumed.
+2. **The Swordsman is at Engineering, and Metallurgy was left alone.**
+   Engineering is the tier 2 industry node that had no unit. Metallurgy
+   still pays only with a Forge; making its discount unconditional would
+   make the third industry technology a plain army technology and is a
+   one-line change if wanted.
+3. **Army play is for Humans, Undead, and Goblins only**, and only when
+   every seat is one of them. It kept the other five factions' AI and
+   tests untouched, as asked. A Human seat against Dinosaurs plays the old
+   policy.
+4. **A besieged city trains by stepping its garrison off the center.**
+   The trained unit takes the center in the same turn, so the center is
+   never empty; the unit that stepped out stands in the open. The
+   alternative, a garrison that never moves, trained one unit in twelve
+   rounds in the first confirmation run.
+5. **The AI no longer saves for a plan.** An army seat spends on units
+   first; the old savings plan (hold Coins for a technology or a city
+   level) is off for it.
+6. **A Blast Mountain spares one unit**, the weakest own land unit next to
+   the Mountain; a second own unit next to it is still hit. Sparing every
+   own unit would make the blast a one-sided weapon.
+7. **Land Grant has no minimum.** One explored neutral tile costs 1 Coin.
+8. **Drill is gone and nothing replaces it as a late Coin sink.** Late
+   Coins buy hires (at 1.5 times the price) and, now, armies the AI
+   actually fields.
+9. **The Showcase has no Swordsman** until it has art.
+
+### 12.6 How a unit gets HP back
+
+The complete list (the rules are in
+[current rules, section 10](RULESET_7_CURRENT.md#10-recovery-and-support)):
+
+| Source             | Amount                                                                 | Who                                          |
+| ------------------ | ---------------------------------------------------------------------- | -------------------------------------------- |
+| Recover            | 4 in own territory, 2 elsewhere; the unit does nothing else            | every land unit (Undead: own territory only) |
+| Idle recovery      | the same, by itself at End Turn, for a unit that did not move or act   | the same                                     |
+| Windmill           | up to 6 at Start Turn, next to an own Windmill                         | every faction (Milling builds it)            |
+| Tend Wounded       | up to 2 to each own unit next to the Captain; cures afflictions        | Human Captain (the Orc Warboss has none)     |
+| Promotion          | full heal and +5 maximum HP, once, after three kills                   | every non-growing unit                       |
+| Fountain of Youth  | 12 at Start Turn on the Fountain                                       | map curiosity                                |
+| Troll regeneration | up to 4 at Start Turn                                                  | Goblin Troll                                 |
+| Lifesteal, Devour  | a Vampire heals by the damage it deals; a Ghoul on a Grave heals fully | Undead                                       |
+
+For turnover the two that matter are idle recovery (a unit that steps out
+of the fight for a turn in its own land gets 4 back for nothing) and the
+Windmill (6 a turn for units standing next to one). Neither was changed
+this round; if battles still do not kill enough, idle recovery outside a
+city's own territory is the first candidate.
+
+### 12.7 What a city earns against what a unit costs
+
+A city pays 1 Coin per level **up to level 4**; a higher level adds unit
+slots and rewards and no income (the cap keeps one large city from paying
+for an army by itself). On top: +1 for a founded capital, +1 with a Road
+to another own city (Commerce), +1 by sea, and its Market (up to 3). So a
+level-3 city earns 3 to 7 Coins and a level-4 or higher city 4 to 8.
+
+| City                                    | Income |
+| --------------------------------------- | ------ |
+| level 3, no Market, no trade            | 3      |
+| level 3, land trade                     | 4      |
+| level 3, Market 2, land trade           | 6      |
+| level 4 or higher, no Market, no trade  | 4      |
+| level 4 or higher, land trade           | 5      |
+| level 4 or higher, Market 2, land trade | 7      |
+| level 4 or higher, Market 3, land trade | 8      |
+
+"Pays for one a turn" below: a city of income 3 / 5 / 7.
+
+**Human units**
+
+| Unit      | Technology (tier)  | Cost | HP  | Attack / Defense | 3 / 5 / 7       |
+| --------- | ------------------ | ---- | --- | ---------------- | --------------- |
+| Fighter   | —                  | 2    | 12  | 2 / 2            | yes / yes / yes |
+| Guard     | Drill (1)          | 3    | 17  | 1.5 / 3          | yes / yes / yes |
+| Raider    | Scouting (1)       | 4    | 12  | 2 / 1            | no / yes / yes  |
+| Marksman  | Marksmanship (2)   | 4    | 12  | 2 / 1            | no / yes / yes  |
+| Captain   | Administration (2) | 5    | 10  | 1 / 1            | no / yes / yes  |
+| Swordsman | Engineering (2)    | 5    | 15  | 3.5 / 2.5        | no / yes / yes  |
+| Catapult  | Sawmilling (3)     | 8    | 10  | 3 / 0.5          | no / no / no    |
+| Knight    | Chivalry (3)       | 9    | 13  | 4 / 1            | no / no / no    |
+
+**Goblin units**
+
+| Unit         | Technology (tier)  | Cost | HP  | Attack / Defense | 3 / 5 / 7       |
+| ------------ | ------------------ | ---- | --- | ---------------- | --------------- |
+| Goblin       | —                  | 1    | 6   | 1.5 / 0.5        | yes / yes / yes |
+| Orc Brute    | Drill (1)          | 3    | 15  | 2 / 2.5          | yes / yes / yes |
+| Wolf Rider   | Scouting (1)       | 3    | 10  | 2 / 1            | yes / yes / yes |
+| Bomb Chucker | Marksmanship (2)   | 3    | 8   | 2 / 1            | yes / yes / yes |
+| Orc Warboss  | Administration (2) | 5    | 12  | 2 / 1            | no / yes / yes  |
+| Rocket Cart  | Sawmilling (3)     | 7    | 8   | 3.5 / 0.5        | no / no / yes   |
+| Scrap Buggy  | Chivalry (3)       | 8    | 10  | 3 / 1            | no / no / no    |
+
+**Undead units**
+
+| Unit        | Technology (tier)  | Cost | HP  | Attack / Defense | 3 / 5 / 7       |
+| ----------- | ------------------ | ---- | --- | ---------------- | --------------- |
+| Skeleton    | —                  | 2    | 10  | 2 / 2            | yes / yes / yes |
+| Zombie      | Drill (1)          | 3    | 18  | 2 / 2            | yes / yes / yes |
+| Ghoul       | Scouting (1)       | 3    | 10  | 2 / 1            | yes / yes / yes |
+| Banshee     | Marksmanship (2)   | 3    | 8   | 1 / 1            | yes / yes / yes |
+| Necromancer | Administration (2) | 5    | 10  | 1 / 1            | no / yes / yes  |
+| Lich        | Sawmilling (3)     | 8    | 10  | 3 / 1            | no / no / no    |
+| Vampire     | Chivalry (3)       | 9    | 10  | 3 / 1            | no / no / no    |
+
+What it says. A plain level-3 city buys a Fighter or a Guard every turn
+and a Marksman or Swordsman every second turn. Two cities with a Road
+between them buy a Swordsman a turn. A Catapult or Knight a turn needs a
+level-4 city with a full Market and trade, or two cities' income; they
+stay the units a player saves for. The Goblin army is the cheapest per
+body (three of its units cost 3 or less, its line unit 1), the Undead one
+in between. The one-unit-per-city-per-turn rule and the unit slots, not
+the Coins, are what limit an army from the middle of the game on, which is
+why the AI's "every city trains every turn" matters more than any price.
+
+### 12.8 Clarity fixes from the games
+
+| Seen                                                            | Now                                                                                                                                     |
+| --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| the reward read "Survey" and gave a Raider                      | the text harness calls it **Scouts** and says "free Raider, reveals the area" (`c1.reward.SCOUTS`; the old id is still accepted)        |
+| the Explorer achievement stood at 110 of 100 and never unlocked | it needs **Scouting** as well as the explored tiles; the harness line now says so (the browser already showed it as locked)             |
+| a city showed population "-1/5"                                 | a city that lost live population below its level's start really is below zero and pays less; the city line now says so                  |
+| the Raider's Charge applied sometimes                           | the unit line says "Charge: +1 Attack after a move of 2 tiles (needs Raiding)"                                                          |
+| a Knight's "attacks left" counter                               | replaced by "Overrun: attacks again after this kill" on the attack that grants it                                                       |
+| the Field Defense line said a siege shot ignores it             | a Catapult's shot is made against the Field Defense and then destroys it; the text, the harness line, and row 12 of section 11.2 say so |
+| income stopped rising at level 4                                | the city line says that a level pays 4 Coins at most and that higher levels add unit slots and rewards                                  |
+| a blast hurt the unit that set it                               | rule 6 of section 12.1; the preview names the unit that is not hit                                                                      |
+
+No tile coordinates were added to any player-facing text.
+
+### 12.9 Tests
+
+`tests/unit/ruleset-v7-tuning-5.test.ts`: the identity; the Guard's rule
+(Human only; Defense 1 from two tiles and 3 next to the attacker; two
+Marksmen and a Fighter; Walls and a Field Defense add to the 1); the
+Swordsman (last role, Human tree only, trained for 5 Coins with
+Engineering, its exchanges with a Guard, a Knight, and two Catapults, the
+stand-in art); Drill removed and the veteran invariant; Land Grant at 1
+Coin; the unit that sets a blast; the labs; and the army play in
+constructed positions: who plays it, the composition shares, never only
+defenders, Knights against fragile enemies, units before research and
+buildings for each of the three factions, training in every city with a
+free slot, a ranged unit shoots, two ranged hits and a Fighter that
+finishes a Guard, a melee unit that moves in for a good exchange and not
+for a bad one, the garrison (the step beside the center with a Knight or a
+Fighter near, no Move without Coins, an ordinary Move with nobody near),
+a Catapult that stays out of an enemy Catapult's reach and one that moves
+to a firing position, and a Field Defense under a Catapult's shot.
+
+The older tests of the changed rules were updated in place, each with a
+note: the Guard's damage from ranged attacks in the Martian, Ice Folk,
+Candy, Dinosaur, and Goblin tests; Land Grant, Blast Mountain, hires, and
+Drill in the tuning 1, 3, and 4 tests and the DOM and text-harness tests;
+the reader audits. The recorded matches and decision pins that tests read
+were recomputed. Three tests that need something to happen in a recorded
+match moved to another seed or pairing, found by running the candidate
+seeds once each and reading only whether the event occurs: the Undead
+Frenzy and Lich splash tests, the Infect and Lifesteal round trip (seed
+2), and the income-cap match (now Humans against Dinosaurs, seed 7,
+because a Human mirror on that small map no longer runs 30 rounds).

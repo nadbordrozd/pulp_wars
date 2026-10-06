@@ -15,7 +15,7 @@ import {
   GROWTH_HP_V7,
   GROWTH_KILLS_V7,
   MILITIA_FIGHTERS_V7,
-  ORIGINAL_BASELINE_V5_NODES,
+  SHARED_BASELINE_NODES_V7,
   ORIGINAL_ROLE_RULES_V7,
   PRIOR_RULESET_7_IDS,
   RULESET_7,
@@ -123,23 +123,23 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 ];
 
 describe("ruleset-7 revision-19 identity", () => {
-  it("keeps r18 among the gap-free prior identities after the r47 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r47");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r47.current");
+  it("keeps r18 among the gap-free prior identities after the r48 identity, and the save key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r48");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r48.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 45 },
+        { length: 46 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-29)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-30)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 45 },
+        { length: 46 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -177,7 +177,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r47");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r48");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -622,6 +622,26 @@ describe("ruleset-7 Dinosaur roster", () => {
       ["ATTACK", "SUBMERGED", "TORPEDO"],
       "NAVAL_HUNTER",
     ],
+    // Tuning 5 (`pulp_wars-w49.4`): the Human Swordsman's role, which the
+    // Dinosaur tree never unlocks and no Dinosaur seat trains (no cost).
+    [
+      "Swordsman",
+      "SWORDSMAN",
+      "ENGINEERING",
+      null,
+      null,
+      1,
+      15,
+      7,
+      5,
+      1,
+      1,
+      1,
+      1,
+      true,
+      ["ATTACK", "CAPTURE"],
+      "LINE",
+    ],
   ];
 
   it("registers every value of the section 3 table", () => {
@@ -696,6 +716,7 @@ describe("ruleset-7 Dinosaur roster", () => {
       ["PATROL_BOAT", 1, null, 0, 0, false, true, false],
       ["BATTLESHIP", 1, null, 0, 0, false, true, true],
       ["SUBMARINE", 1, null, 0, 0, false, true, false],
+      ["SWORDSMAN", 1, null, 0, 0, false, true, false],
     ]);
     for (const faction of ["ORIGINAL", "UNDEAD", "GOBLIN"] as const)
       for (const role of UNIT_ROLE_IDS_V7) {
@@ -839,9 +860,9 @@ describe("ruleset-7 Dinosaur roster", () => {
 describe("ruleset-7 Dinosaur technology", () => {
   it("differs from the Human graph only in the Fortification and Explosives unlocks", () => {
     expect(DINOSAUR_BASELINE_V1_NODES).toHaveLength(
-      ORIGINAL_BASELINE_V5_NODES.length,
+      SHARED_BASELINE_NODES_V7.length,
     );
-    ORIGINAL_BASELINE_V5_NODES.forEach((human, index) => {
+    SHARED_BASELINE_NODES_V7.forEach((human, index) => {
       const dinosaur = DINOSAUR_BASELINE_V1_NODES[index];
       if (dinosaur === undefined) throw new Error("node missing");
       expect([
@@ -913,7 +934,10 @@ describe("ruleset-7 Dinosaur technology", () => {
     // Everything else is the Human table.
     const dinosaur = technologyCapabilitiesV7(all, "DINOSAUR");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
-    expect(dinosaur.trainableRoles).toEqual(human.trainableRoles);
+    // (The Swordsman of tuning 5 is the Humans' alone.)
+    expect(dinosaur.trainableRoles).toEqual(
+      human.trainableRoles.filter((role) => role !== "SWORDSMAN"),
+    );
     expect(dinosaur.roleSightRadius).toEqual({ RAIDER: 2, MARKSMAN: 2 });
     expect(dinosaur.forestMovementFreedomRoles).toEqual(["RAIDER", "MARKSMAN"]);
     // Tuning 4: Commerce pays 1 Coin per linked city (2 since tuning 1).
@@ -979,12 +1003,12 @@ describe("ruleset-7 Dinosaur technology", () => {
       "Eggs have +4 HP and hatch one turn sooner; +1 unit slot in every city",
     ]);
     expect(text(0, "EXPLOSIVES")).toEqual([
-      "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too; in your territory its city gains +1 population",
+      "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too except the one that sets it; in your territory its city gains +1 population",
       "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
       "Dinosaurs ignore City Walls",
     ]);
     expect(text(1, "EXPLOSIVES")).toEqual([
-      "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too; in your territory its city gains +1 population",
+      "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too except the one that sets it; in your territory its city gains +1 population",
       "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
     ]);
     expect(text(0, "SAWMILLING")).toContain("Triceratops Egg (Charge!)");

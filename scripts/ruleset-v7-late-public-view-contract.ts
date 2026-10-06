@@ -59,6 +59,12 @@ export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;
  * `ASSEMBLE`, so the `-ordinal` tie-break of every candidate whose kind
  * follows `ASSEMBLE` moves by three. The command, the candidate count, and
  * the hash with revision-12 ordinals are unchanged.
+ *
+ * Tuning 5 (`pulp_wars-w49.4`): the command was the training of a Guard in
+ * city 16. The view owns Engineering, so the city now offers the Swordsman,
+ * and the Normal AI's army play (a match of Human seats with an enemy in
+ * sight) trains the best line unit it can pay for instead of a Guard.
+ * `DRILL_UNIT` is removed, so every kind after `PROMOTE` moves back by one.
  */
 export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   /** `canonicalHash` of the retained fixture as read from disk. */
@@ -75,15 +81,19 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // Tuning 4 (`pulp_wars-w49.3`) inserts DRILL_UNIT after PROMOTE and
     // prices research by the technologies owned, so the view's one RESEARCH
     // candidate is gone (was 28c2e6…c05b).
-    "0cd4ad50b12681243918cca7dd119b4ff76a6ab3cd6a1915af43bda3f6f05ea7",
+    // Tuning 5 (`pulp_wars-w49.4`): army play and the Swordsman, as in the
+    // comment above (was 0cd4ad…5ea7).
+    "d083c1e72e371b989ede7964d4ec8a8a13624f9a72b70287efad47e23f9d4725",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
-    role: "GUARD",
+    role: "SWORDSMAN",
   }),
   // Tuning 4 (`pulp_wars-w49.3`): 27 (28 before): the view's 12 Coins no
   // longer buy a technology (a tier 1 as the sixth costs 13).
-  candidateCount: 27,
+  // Tuning 5: 21. Two Train Swordsman candidates are new, and the army
+  // play's garrison and formation rules leave fewer Moves as candidates.
+  candidateCount: 21,
 });
 
 /**
@@ -155,10 +165,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r47",
+    rulesetId: "pulp-wars-poc-7r48",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r47",
+      rulesetId: "pulp-wars-poc-7r48",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

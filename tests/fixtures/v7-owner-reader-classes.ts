@@ -95,7 +95,6 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/reducer.ts::applyHire": "PLAYER_ONLY",
   // Tuning 4: a command of a player, and a city's owner (a city is never
   // the neutral owner's).
-  "src/engine/v7/reducer.ts::applyDrillUnit": "PLAYER_ONLY",
   "src/engine/v7/economy.ts::isOwnersFirstCapitalV7": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyLandGrant": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyLayEgg": "PLAYER_ONLY",

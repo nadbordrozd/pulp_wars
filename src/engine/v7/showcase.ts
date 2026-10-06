@@ -5,6 +5,7 @@ import {
   type UnitId,
 } from "../model/ids";
 import {
+  HUMAN_ONLY_ROLES_V7,
   dockPopulationV7,
   effectiveRoleRuleV7,
   technologyCapabilitiesV7,
@@ -170,6 +171,15 @@ export const SHOWCASE_UNIT_TEMPLATES_V7: readonly {
   // one Submarine on the free Deep Water tile east of the Battleship.
   { role: "SUBMARINE", dx: 1, y: 13, home: "COAST" },
 ]);
+/**
+ * Tuning 5 (`pulp_wars-w49.4`): the Showcase fields the roles every faction
+ * has, so that every seat has the same units on the same tiles. A role
+ * only the Human tree unlocks (the Swordsman) is not in it; the Gallery
+ * shows that unit.
+ */
+export const SHOWCASE_ROLE_IDS_V7: readonly UnitRoleIdV7[] = Object.freeze(
+  UNIT_ROLE_IDS_V7.filter((role) => !HUMAN_ONLY_ROLES_V7.includes(role)),
+);
 
 /**
  * The center column of a seat's strip: seat 0 uses strip 0 and AI seat `i`
@@ -491,9 +501,9 @@ export function createShowcaseEntitiesV7(
   });
   ice.sort((left, right) => left.at.y - right.at.y || left.at.x - right.at.x);
   if (
-    SHOWCASE_UNIT_TEMPLATES_V7.length !== UNIT_ROLE_IDS_V7.length ||
+    SHOWCASE_UNIT_TEMPLATES_V7.length !== SHOWCASE_ROLE_IDS_V7.length ||
     SHOWCASE_UNIT_TEMPLATES_V7.some(
-      (template, index) => template.role !== UNIT_ROLE_IDS_V7[index],
+      (template, index) => template.role !== SHOWCASE_ROLE_IDS_V7[index],
     )
   )
     throw new RangeError("Showcase unit roles out of sync with the role list");

@@ -5,7 +5,10 @@ import {
   roleMechanicsV7,
   type UnitRoleIdV7,
 } from "../engine/index";
-import { RAIDER_SLIPS_TEXT_V7 } from "./technology-unlock-text-v7";
+import {
+  RAIDER_SLIPS_TEXT_V7,
+  openToRangedTextV7,
+} from "./technology-unlock-text-v7";
 import {
   undeadAbilityDescriptionV7,
   undeadAbilityNameV7,
@@ -84,6 +87,10 @@ export function recruitmentRolePresentationV7(
     roleMechanicsV7(roleId, faction).ignoresZocStops
   )
     restrictions.push(`${RAIDER_SLIPS_TEXT_V7}.`);
+  // Tuning 5 (`pulp_wars-w49.4`): the Human Guard is open to ranged attacks.
+  const rangedDefense2 = roleMechanicsV7(roleId, faction).rangedDefense2;
+  if (rangedDefense2 !== null && !ship)
+    restrictions.push(`${openToRangedTextV7(rangedDefense2)}.`);
   if (ship) restrictions.push("Built at ports. Heals only near your ports.");
   if (roleId === "BATTLESHIP")
     restrictions.push(

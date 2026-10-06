@@ -78,6 +78,7 @@ import {
   drawPreviewTextStackV7,
   type PreviewTextBoxV7,
   drawGraveCornerMarkerV7,
+  drawStandInBadgeV7,
   drawUndeadBadgeV7,
   type AbilityPreviewStyleV7,
   type AfflictionSubjectV7,
@@ -3379,6 +3380,14 @@ export function drawBoardV7(input: {
         }
         if (entry.kind === "UNIT" && entry.faction === "UNDEAD" && !factionArt)
           drawUndeadBadgeV7(context, x, y, camera.zoom, chibiPiece);
+        // Tuning 5 (`pulp_wars-w49.4`): the Swordsman is drawn with the
+        // Guard's art until its own exists, and marked so.
+        if (
+          entry.kind === "UNIT" &&
+          entry.artSubject === "UNIT:SWORDSMAN" &&
+          !factionArt
+        )
+          drawStandInBadgeV7(context, x, y, camera.zoom, chibiPiece, "S");
         if (entry.kind === "UNIT" && entry.faction === "GOBLIN" && !factionArt)
           drawGoblinBadgeV7(context, x, y, camera.zoom, chibiPiece);
         // The Egg has its own sprite and no Human counterpart, so it never

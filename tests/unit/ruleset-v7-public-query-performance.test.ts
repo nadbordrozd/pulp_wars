@@ -35,9 +35,11 @@ describe("ruleset-7 late public query performance", () => {
 
     // Tuning 4 (`pulp_wars-w49.3`): 63, without the one RESEARCH the view
     // could afford (12 Coins, five technologies: a tier 1 now costs 13).
-    expect(commands).toHaveLength(63);
+    // Tuning 5 (`pulp_wars-w49.4`): 65, with the Swordsman on offer in the
+    // view's two cities that can train (it owns Engineering).
+    expect(commands).toHaveLength(65);
     expect(canonicalHash(commands)).toBe(
-      "3d4141c353e8efe1e70a7884ec1e8304e3be76b6e79c3743267ff865aab4d50f",
+      "83c9a2dd6aa17b01f061cf3a5a0c4b4d0145a28902398e2d48aeb76a0378466e",
     );
     expect(
       commands.flatMap((command) =>
@@ -68,7 +70,7 @@ describe("ruleset-7 late public query performance", () => {
     expect(commands.filter(isRevision8MergedUnlockCommand)).toHaveLength(2);
     expect(commands.filter(isNavalExpansionCommand)).toEqual([]);
     expect(canonicalHash(commands.filter(isRetainedLandCommand))).toBe(
-      "3d4141c353e8efe1e70a7884ec1e8304e3be76b6e79c3743267ff865aab4d50f",
+      "83c9a2dd6aa17b01f061cf3a5a0c4b4d0145a28902398e2d48aeb76a0378466e",
     );
     const ready = queryAiReadyCommandsV7(view);
     // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
@@ -94,12 +96,12 @@ describe("ruleset-7 late public query performance", () => {
       // moving every later kind forward by one (was 056a9c…21e1).
       // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL, moving every later command kind forward by one
       // (was b3c666…2787).
-      "b9a5419e67a1e2e9f424b0ffe06b4f4c653851c40eeee4d9dbba02e91fb26f3b",
+      "8926e8e22f5ef85f017380a9849f6d8ea35f5ccccb4fd8f4c86ec6aa6def9159",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.
     expect(canonicalHash(withRevision12AiReadyOrdinalsV7(ready))).toBe(
-      "cb1626094ca10512c0c61eccd065214bcaa4ff4c7f38dd030745596893f22de3",
+      "b9b0a8c18ebea9a27e955fc1fc9d2cfdceeba8556e84fa107c7d534d22ab40cb",
     );
     expect(
       canonicalHash(
@@ -108,7 +110,7 @@ describe("ruleset-7 late public query performance", () => {
           result: previewEconomicV7(view, command),
         })),
       ),
-    ).toBe("43bf2dfdb3dd0909050369dcf774e5600a0ac427f0f8da60ffbc770e7b9d2121");
+    ).toBe("df13938a3dac6c6d51573f24d7ac74e481aed6626aaff886cf7efd07c39c1331");
     expect(
       canonicalHash(
         commands.filter(isRetainedLandCommand).map((command) => ({
@@ -116,7 +118,7 @@ describe("ruleset-7 late public query performance", () => {
           result: previewEconomicV7(view, command),
         })),
       ),
-    ).toBe("43bf2dfdb3dd0909050369dcf774e5600a0ac427f0f8da60ffbc770e7b9d2121");
+    ).toBe("df13938a3dac6c6d51573f24d7ac74e481aed6626aaff886cf7efd07c39c1331");
     expect(elapsed).toBeLessThan(250);
 
     const incrementalView = structuredClone(RETAINED_VIEW);
@@ -214,7 +216,7 @@ describe("ruleset-7 late public query performance", () => {
         "46e69d22f7561de4a04018da1efd36af083d79750c5846a3eb973d1b5c0ee6ee",
       );
       expect(canonicalHash(leftResult.scores)).toBe(
-        "ba0671079ac01d41a893518f2a5954fd7a36ad157927b731c3037429e0cfaf52",
+        "ed2aad7943952a011fcc725a1c4c24ab4c384d4a461f382e9390372224d546f9",
       );
       const revision8Scores = leftResult.scores.filter(({ command }) =>
         isRevision8MergedUnlockCommand(command),
@@ -228,7 +230,7 @@ describe("ruleset-7 late public query performance", () => {
           ),
         ),
       ).toBe(
-        "ba0671079ac01d41a893518f2a5954fd7a36ad157927b731c3037429e0cfaf52",
+        "ed2aad7943952a011fcc725a1c4c24ab4c384d4a461f382e9390372224d546f9",
       );
       expect(queryPublicEconomicPotentialsV7(leftView)).toBe(
         leftResult.potentials,
@@ -289,7 +291,7 @@ describe("ruleset-7 late public query performance", () => {
   it("keys movement preparation to the exact changed public view", () => {
     const original = structuredClone(RETAINED_VIEW);
     expect(canonicalHash(queryPlayerCommandsV7(original))).toBe(
-      "3d4141c353e8efe1e70a7884ec1e8304e3be76b6e79c3743267ff865aab4d50f",
+      "83c9a2dd6aa17b01f061cf3a5a0c4b4d0145a28902398e2d48aeb76a0378466e",
     );
     const firstMove = required(
       queryPlayerCommandsV7(original).find(
@@ -313,10 +315,10 @@ describe("ruleset-7 late public query performance", () => {
       canonicalHash(queryPlayerCommandsV7(structuredClone(changed))),
     );
     expect(canonicalHash(changedCommands)).toBe(
-      "a34034238411164c3b341bd6153b787a4db609a0f4588f27ee0755b65286df9f",
+      "0bfa820b9f6ef1b5e6d9e0f2997c8138ff9c6b6ea61b50c4c2d6cc520bd88f93",
     );
     expect(canonicalHash(changedCommands.filter(isRetainedLandCommand))).toBe(
-      "a34034238411164c3b341bd6153b787a4db609a0f4588f27ee0755b65286df9f",
+      "0bfa820b9f6ef1b5e6d9e0f2997c8138ff9c6b6ea61b50c4c2d6cc520bd88f93",
     );
   });
 

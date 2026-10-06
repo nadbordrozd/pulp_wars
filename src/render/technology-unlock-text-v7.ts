@@ -28,10 +28,15 @@ export const BREACH_UNLOCK_TEXT_V7 =
  * every unit on the Mountain and around it, and may be set off next to an
  * own unit outside the player's territory.
  */
-export const BLAST_MOUNTAIN_UNLOCK_TEXT_V7 = `Blast Mountain (${BLAST_MOUNTAIN_COST_V7} Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes ${BLAST_MOUNTAIN_DAMAGE_V7} damage, yours too; in your territory its city gains +${BLAST_MOUNTAIN_POPULATION_V7} population`;
+export const BLAST_MOUNTAIN_UNLOCK_TEXT_V7 = `Blast Mountain (${BLAST_MOUNTAIN_COST_V7} Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes ${BLAST_MOUNTAIN_DAMAGE_V7} damage, yours too except the one that sets it; in your territory its city gains +${BLAST_MOUNTAIN_POPULATION_V7} population`;
 
 /** Tuning 3: the short reminder on a Blast Mountain button and preview. */
-export const BLAST_MOUNTAIN_DAMAGE_NOTE_V7 = `${BLAST_MOUNTAIN_DAMAGE_V7} damage on and around the tile, to your units too`;
+export const BLAST_MOUNTAIN_DAMAGE_NOTE_V7 = `${BLAST_MOUNTAIN_DAMAGE_V7} damage on and around the tile, to your units too except the one that sets it`;
+/**
+ * Tuning 5 (`pulp_wars-w49.4`): the unit that sets the charge (the
+ * player's weakest land unit next to the Mountain) is not hit.
+ */
+export const BLAST_MOUNTAIN_SETTER_NOTE_V7 = "sets the charge and is not hit";
 
 /** Tuning 4: the warning on a Blast Mountain of an Ore Mountain. */
 export const BLAST_ORE_WARNING_V7 =
@@ -45,16 +50,11 @@ export const FOREST_COVER_UNLOCK_TEXT_V7 =
 export const FOREST_MARCH_UNLOCK_TEXT_V7 =
   "Forest march: none of your units stops on entering Forest";
 
-/** Tuning 4: the Barracks and Scouts reward lines. */
-export const BARRACKS_REWARD_TEXT_V7 =
-  "+1 unit in this city; units on its center can Drill";
-/** The Drill button's label and tooltip (`DRILL_UNIT`). */
-export function drillLabelV7(cost: number): string {
-  return `Drill (${cost} Coins)`;
-}
-export function drillTooltipV7(cost: number, hp: number): string {
-  return `Drill: for ${cost} Coins the unit becomes a veteran, +${hp} HP and maximum HP, and its turn ends`;
-}
+/**
+ * Tuning 4: the Barracks and Scouts reward lines. Tuning 5
+ * (`pulp_wars-w49.4`): a Barracks no longer drills.
+ */
+export const BARRACKS_REWARD_TEXT_V7 = "+1 unit in this city";
 export const SCOUTS_REWARD_TEXT_V7 = "Reveal the area and a free Raider";
 
 /** Raiding, the `PILLAGE` command (tuning 4). */
@@ -65,6 +65,17 @@ export function pillageUnlockTextV7(escaperLabel: string | null): string {
 /** Tuning 4: the Human Raider's own rule (role help and unit lines). */
 export const RAIDER_SLIPS_TEXT_V7 =
   "Slips past: enemy zones of control do not stop it";
+
+/**
+ * Tuning 5 (`pulp_wars-w49.4`): the Human Guard's rule, with its Defense in
+ * half-points against an attack from two or more tiles.
+ */
+export function openToRangedTextV7(rangedDefense2: number): string {
+  return `Open to ranged: Defense ${rangedDefense2 / 2} against attacks from 2 or more tiles`;
+}
+/** Tuning 5: when a Charge applies, on the unit line of a charging unit. */
+export const CHARGE_CONDITION_TEXT_V7 =
+  "Charge: +1 Attack after a move of 2 tiles (needs Raiding)";
 
 /** Tuning 4: the unit-line reminders of two role rules. */
 export const NO_MOVE_AND_ATTACK_TEXT_V7 =

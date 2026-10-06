@@ -505,7 +505,9 @@ describe("dense Goblin preview labels never overlap (pulp_wars-0ao.12)", () => {
         name: "bomb-splash",
         plan: bombPlan,
         focus: GOBLIN_SHOWCASE_V7.bombTarget,
-        hitLabels: ["Yours −4"],
+        // (−4 before tuning 5: the bomb's target is a Human Guard, which
+        // a ranged attack hits harder, and the splash is half of it.)
+        hitLabels: ["Yours −5"],
       },
     ];
   }

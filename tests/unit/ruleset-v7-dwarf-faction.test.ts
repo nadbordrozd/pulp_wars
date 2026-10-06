@@ -19,7 +19,7 @@ import {
   FACTION_TREE_IDS_V7,
   GUNNER_UNMOVED_SHOTS_V7,
   MILITIA_FIGHTERS_V7,
-  ORIGINAL_BASELINE_V5_NODES,
+  SHARED_BASELINE_NODES_V7,
   ORIGINAL_ROLE_RULES_V7,
   PLATED_CAP_V7,
   PLAYER_EVENT_KIND_ORDER_V7,
@@ -152,8 +152,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
 
   it("has 53 command kinds and 81 event kinds, with the new kinds at the stated positions", () => {
     // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL (59), and
-    // tuning 4 DRILL_UNIT after PROMOTE (60).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(60);
+    // tuning 4 DRILL_UNIT after PROMOTE (60), which tuning 5
+    // (`pulp_wars-w49.4`) removes again (59).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(59);
     const snap = COMMAND_KIND_ORDER_V7.indexOf("FREEZE");
     expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 4)).toEqual([
       "FREEZE", // the frozen sea (pulp_wars-5ti.3), after COLD_SNAP
@@ -902,9 +903,9 @@ describe("Dwarf roster (section 3)", () => {
 describe("Dwarf technology (section 4)", () => {
   it("differs from the Human graph in six unlock entries and two display names", () => {
     expect(DWARF_BASELINE_V1_NODES).toHaveLength(
-      ORIGINAL_BASELINE_V5_NODES.length,
+      SHARED_BASELINE_NODES_V7.length,
     );
-    ORIGINAL_BASELINE_V5_NODES.forEach((human, index) => {
+    SHARED_BASELINE_NODES_V7.forEach((human, index) => {
       const dwarf = must(DWARF_BASELINE_V1_NODES[index], "node");
       expect([
         dwarf.id,
@@ -999,7 +1000,10 @@ describe("Dwarf technology (section 4)", () => {
     expect(some("SCOUTING", "RAIDING")).toMatchObject({ bombDamage: 6 });
     const dwarf = technologyCapabilitiesV7(all, "DWARF");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
-    expect(dwarf.trainableRoles).toEqual(human.trainableRoles);
+    // (The Swordsman of tuning 5 is the Humans' alone.)
+    expect(dwarf.trainableRoles).toEqual(
+      human.trainableRoles.filter((role) => role !== "SWORDSMAN"),
+    );
     expect(dwarf.commands).toEqual(
       human.commands.filter((command) => command !== "BUILD_FIELD_DEFENSE"),
     );

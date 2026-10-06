@@ -444,12 +444,19 @@ describe("ruleset-7 revision-13 Normal AI facing Undead", () => {
     };
     const rule = effectiveRoleRuleV7("CAPTAIN", "UNDEAD");
     const base = (rule.cost ?? 0) * 4 + rule.maxHp;
-    // Retained target value plus the Necromancer bonus (+4 per raisable Grave).
+    // Tuning 5 (`pulp_wars-w49.4`): a hit that does not kill is valued by
+    // the share of the target's HP it takes (the Fighter's 6 of 10); the
+    // Necromancer bonus (+4 per raisable Grave) stays whole.
+    const dealt =
+      queryCombatPreviewV7(viewFor(plain), command.unitId, command.targetUnitId)
+        ?.damageToDefender ?? 0;
+    expect(dealt).toBe(6);
+    const share = Math.floor((base * dealt) / rule.maxHp);
     expect(scoreCommandV7(viewFor(plain), command).strategicValue).toBe(
-      base + 12,
+      share + 12,
     );
     expect(scoreCommandV7(viewFor(graves), command).strategicValue).toBe(
-      base + 12 + 8,
+      share + 12 + 8,
     );
   });
 
@@ -574,6 +581,10 @@ describe("ruleset-7 revision-13 Normal AI determinism and headless play", () => 
       // Dry Land match Wails 20 times (the only one of seeds 0-9, either
       // seat order, that Wails).
       { factions: ["UNDEAD", "ORIGINAL"], seed: 9, mapType: "DRY_LAND" },
+      // Tuning 5 (`pulp_wars-w49.4`): with the army play of the Normal AI
+      // none of the cases above reaches a Frenzy (the Undead Rally) any
+      // more; this Dry Land match has five.
+      { factions: ["UNDEAD", "ORIGINAL"], seed: 8, mapType: "DRY_LAND" },
     ];
     const used: Record<string, number> = {
       RAISE_DEAD: 0,

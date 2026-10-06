@@ -87,6 +87,7 @@ import {
   queryLandGrantPreviewV7,
   queryPlayerCommandsV7,
   queryTechnologyTreeV7,
+  roleMechanicsV7,
   seatCountAllowedV7,
   unitCapacitySlotsV7,
   unitRoleMechanicsV7,
@@ -114,13 +115,15 @@ import {
   previewBlastMountainV7,
   publicHireCostV7,
   cityBarracksV7,
-  DRILL_COST_V7,
   BLAST_MOUNTAIN_COST_V7,
   CITY_REWARD_COINS_V7,
   PILLAGE_COINS_V7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
   MILITIA_FIGHTERS_V7,
   SURVEY_RAIDERS_V7,
+  ACHIEVEMENT_REQUIRED_TECH_V7,
+  CITY_LEVEL_INCOME_CAP_V7,
+  LAND_GRANT_COST_PER_TILE_V7,
   publicLandGrantPriceV7,
   unitIgnoresZocStopsV7,
   missionByIdV7,
@@ -143,6 +146,9 @@ import {
   SCOUTS_REWARD_TEXT_V7,
   pillageUnlockTextV7,
   RAIDER_SLIPS_TEXT_V7,
+  CHARGE_CONDITION_TEXT_V7,
+  BLAST_MOUNTAIN_SETTER_NOTE_V7,
+  openToRangedTextV7,
   NO_MOVE_AND_ATTACK_TEXT_V7,
   OVERRUN_BUDGET_TEXT_V7,
 } from "../src/render/technology-unlock-text-v7";
@@ -237,7 +243,7 @@ const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; st
 
 Command ids (case-insensitive, valid while offered; see docs/validation/TEXT_PLAY.md):
   u12.m.4,5        move unit 12 to x=4,y=5      u12.a.u31     attack unit 31
-  u12.capture | .recover | .promote | .drill | .fortify | .pillage | .disband | .wait | .rally | .tend
+  u12.capture | .recover | .promote | .fortify | .pillage | .disband | .wait | .rally | .tend
   c1.t.FIGHTER     train in city 1               c1.grant      Land Grant
   c1.reward.WALLS  choose a pending city reward  r.FARMING     research
   t.4,5.build_farm tile action at 4,5            t.4,5.monument.EXPLORER
@@ -698,16 +704,21 @@ function trainingCostV7(
 function roleNotesV7(
   rule: EffectiveRoleRuleV7,
   slipsPast = false,
+  rangedDefense2: number | null = null,
 ): readonly string[] {
   const notes: string[] = [];
   if (!rule.mayUsePrimaryActionAfterMove && rule.range > 0)
     notes.push(NO_MOVE_AND_ATTACK_TEXT_V7);
   if (rule.abilities.includes("OVERRUN")) notes.push(OVERRUN_BUDGET_TEXT_V7);
   if (slipsPast) notes.push(RAIDER_SLIPS_TEXT_V7);
+  // Tuning 5 (`pulp_wars-w49.4`): the Guard's ranged Defense, and when a
+  // Charge applies.
+  if (rangedDefense2 !== null) notes.push(openToRangedTextV7(rangedDefense2));
+  if (rule.abilities.includes("CHARGE")) notes.push(CHARGE_CONDITION_TEXT_V7);
   return notes;
 }
 
-function roleStatsV7(rule: EffectiveRoleRuleV7): string {
+function roleStatsV7(rule: EffectiveRoleRuleV7, faction?: FactionIdV7): string {
   const range =
     rule.minimumRange > 1
       ? `${rule.minimumRange}-${rule.range}`
@@ -715,6 +726,10 @@ function roleStatsV7(rule: EffectiveRoleRuleV7): string {
   const abilities = rule.abilities.filter((ability) => ability !== "ATTACK");
   return `hp ${rule.maxHp} atk ${halfV7(rule.attack2)} def ${halfV7(rule.defense2)} mov ${rule.move} rng ${range} sight ${rule.sightRadius}${abilities.length === 0 ? "" : ` abilities ${abilities.join(",")}`}${roleNotesV7(
     rule,
+    false,
+    faction === undefined
+      ? null
+      : roleMechanicsV7(rule.role, faction).rangedDefense2,
   )
     .map((note) => ` | ${note}`)
     .join("")}`;
@@ -795,8 +810,6 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.${command.kind.toLowerCase()}`;
     case "BUILD_FIELD_DEFENSE":
       return `u${command.unitId}.fortify`;
-    case "DRILL_UNIT":
-      return `u${command.unitId}.drill`;
     case "LAY_EGG":
       return `c${command.cityId}.egg.${command.role}.${xyV7(command.at)}`;
     case "LAND_GRANT":
@@ -825,11 +838,50 @@ interface OfferedV7 {
   readonly command: CommandV7;
 }
 
+/**
+ * Tuning 5 (`pulp_wars-w49.4`): the name a seat sees for a level reward.
+ * The engine's `SURVEY` is Scouts for a faction whose survey also gives a
+ * Raider (the Humans); `SURVEY` stays accepted as an id.
+ */
+function rewardNameV7(faction: FactionIdV7, reward: string): string {
+  return reward === "SURVEY" && SURVEY_RAIDERS_V7[faction] === 1
+    ? "SCOUTS"
+    : reward;
+}
+function rewardIdV7(
+  faction: FactionIdV7,
+  cityId: number,
+  reward: string,
+): string {
+  return `c${cityId}.reward.${rewardNameV7(faction, reward)}`;
+}
+/** A pending choice's ids, each with what it gives in a few words. */
+function rewardChoicesTextV7(
+  view: PlayerViewV7,
+  choice: PlayerViewV7["pendingChoices"][number],
+): string {
+  return choice.candidates
+    .map((reward) => {
+      const name = rewardNameV7(view.viewer.faction, reward);
+      const gives =
+        name === "SCOUTS"
+          ? `free ${effectiveRoleRuleV7("RAIDER", view.viewer.faction).label}, reveals the area`
+          : (REWARD_TEXT_V7[reward] ?? null);
+      return `c${choice.cityId}.reward.${name}${gives === null ? "" : ` (${gives})`}`;
+    })
+    .join(" | ");
+}
+
 /** The offered commands with their ids, in the public query's order. */
 function offeredV7(view: PlayerViewV7): readonly OfferedV7[] {
   const used = new Map<string, number>();
   return queryPlayerCommandsV7(view).map((command) => {
-    const base = textPlayCommandIdV7(command);
+    // Tuning 5 (`pulp_wars-w49.4`): a seat whose Survey gives a Raider
+    // sees the reward under its name, Scouts.
+    const base =
+      command.kind === "CHOOSE_CITY_REWARD"
+        ? rewardIdV7(view.viewer.faction, command.cityId, command.reward)
+        : textPlayCommandIdV7(command);
     const count = (used.get(base) ?? 0) + 1;
     used.set(base, count);
     // Two offers with one meaning (two paths to one tile) stay distinct.
@@ -918,7 +970,7 @@ function offeredSummaryV7(offered: readonly OfferedV7[]): string {
 const REWARD_TEXT_V7: Readonly<Record<string, string>> = {
   SURVEY: "reveal the area around the city",
   // Tuning 4 (`pulp_wars-w49.3`).
-  BARRACKS: `Barracks: ${BARRACKS_REWARD_TEXT_V7} (${DRILL_COST_V7}c: a veteran, +${PROMOTION_HP_V7} hp and max hp)`,
+  BARRACKS: `Barracks: ${BARRACKS_REWARD_TEXT_V7}`,
   STOCKPILE: "+4 Coins",
   WALLS: "City Walls: stronger defense on the city center",
   MILITIA: "free basic unit(s) of your faction",
@@ -1021,8 +1073,11 @@ function combatTextV7(
       : `no retaliation${preview.noRetaliationReason === null ? "" : ` (${preview.noRetaliationReason})`}`,
     `atk ${halfV7(preview.attack2)} vs def ${halfV7(preview.defense2)}${preview.defenseBonusNumerator === preview.defenseBonusDenominator ? "" : ` x${preview.defenseBonusNumerator}/${preview.defenseBonusDenominator}`}${preview.fortificationLevel > 0 ? ` fort ${preview.fortificationLevel}` : ""}`,
   ];
-  if (preview.attacksRemaining > 0)
-    parts.push(`attacks left ${preview.attacksRemaining}`);
+  // Tuning 5 (`pulp_wars-w49.4`): Overrun has no budget, so no count is
+  // shown ("attacks left 1" never changed); the line says what the kill
+  // earns.
+  if (preview.attacksRemaining > 0 && preview.defenderDies)
+    parts.push("Overrun: attacks again after this kill");
   if (preview.push !== "BLOCKED") parts.push(`push ${preview.push}`);
   // Tuning 2 (7r47): whether the attacker takes the target's tile (after a
   // kill, or following a Charge! push); a ranged unit never does.
@@ -1090,7 +1145,7 @@ function unlockTextV7(
     }
     case "UNIT_ROLE": {
       const rule = effectiveRoleRuleV7(unlock.role, faction);
-      return `unit ${rule.label} [${unlock.role}] ${rule.cost === null ? "not trainable" : `${rule.cost}c`} ${roleStatsV7(rule)}`;
+      return `unit ${rule.label} [${unlock.role}] ${rule.cost === null ? "not trainable" : `${rule.cost}c`} ${roleStatsV7(rule, faction)}`;
     }
     case "RESOURCE_REVEAL":
       return `reveals ${unlock.resources.join(",").toLowerCase()}`;
@@ -1217,9 +1272,6 @@ function describeCommandV7(
     }
     case "PROMOTE":
       return `promote to veteran: max hp +${PROMOTION_HP_V7} and a full heal`;
-    case "DRILL_UNIT":
-      // Tuning 4 (`pulp_wars-w49.3`): the Barracks' paid Promotion.
-      return `drill at the Barracks for ${DRILL_COST_V7}c (coins ${view.viewer.coins}->${view.viewer.coins - DRILL_COST_V7}): the unit becomes a veteran, hp and max hp +${PROMOTION_HP_V7} (no heal), and its turn ends`;
     case "WAIT":
       return "mark the unit as handled (no effect on the game)";
     case "DISBAND":
@@ -1229,7 +1281,7 @@ function describeCommandV7(
         ? "pillage the improvement under the unit"
         : `pillage (${tileBriefV7(view, unit.at)}): destroys the improvement, +${PILLAGE_COINS_V7} Coins${unitRoleRuleV7(view, unit).abilities.includes("ESCAPE") ? "; this unit may still move afterwards (Escape)" : ""}`;
     case "BUILD_FIELD_DEFENSE":
-      return `build a Field Defense on this tile (3c): +${FIELD_DEFENSE_FORTIFICATION_LEVELS_V7} Defense for the unit standing here (siege and Breach attacks ignore it; it never raises what the defender hits back with) | the unit keeps its move and its action`;
+      return `build a Field Defense on this tile (3c): +${FIELD_DEFENSE_FORTIFICATION_LEVELS_V7} Defense for the unit standing here (a siege shot is made against it and then destroys it; a Breach ignores and destroys it; it never raises what the defender hits back with) | the unit keeps its move and its action`;
     case "RALLY":
       return "rally: inspires own units in reach (bonus on their next attack)";
     case "TEND_WOUNDED":
@@ -1277,7 +1329,7 @@ function describeCommandV7(
       );
       const slots = city === undefined ? null : citySlotsV7(view, city);
       const cost = trainingCostV7(view, command.cityId, command.role);
-      return `train ${rule.label} for ${cost}c (coins ${view.viewer.coins}->${view.viewer.coins - cost}) | ${roleStatsV7(rule)}${slots === null ? "" : ` | city slots ${slots.used}/${slots.capacity} before`} | uses the city action`;
+      return `train ${rule.label} for ${cost}c (coins ${view.viewer.coins}->${view.viewer.coins - cost}) | ${roleStatsV7(rule, view.viewer.faction)}${slots === null ? "" : ` | city slots ${slots.used}/${slots.capacity} before`} | uses the city action`;
     }
     case "TRAIN_NAVAL": {
       const rule = effectiveRoleRuleV7(command.role, view.viewer.faction);
@@ -1291,7 +1343,7 @@ function describeCommandV7(
       );
       const slots = city === undefined ? null : citySlotsV7(view, city);
       const cost = publicHireCostV7(view, command.cityId, command.role) ?? 0;
-      return `hire ${rule.label} on the Market at ${xyV7(command.at)} for ${cost}c, 1.5x its price (coins ${view.viewer.coins}->${view.viewer.coins - cost}) | ${roleStatsV7(rule)}${slots === null ? "" : ` | city slots ${slots.used}/${slots.capacity} before (a hire may go 1 above the limit)`} | does not use the city action; the unit arrives spent | rule: the hired unit stands on the Market tile, so this Market hires again only when the tile is empty`;
+      return `hire ${rule.label} on the Market at ${xyV7(command.at)} for ${cost}c, 1.5x its price (coins ${view.viewer.coins}->${view.viewer.coins - cost}) | ${roleStatsV7(rule, view.viewer.faction)}${slots === null ? "" : ` | city slots ${slots.used}/${slots.capacity} before (a hire may go 1 above the limit)`} | does not use the city action; the unit arrives spent | rule: the hired unit stands on the Market tile, so this Market hires again only when the tile is empty`;
     }
     case "BLAST_MOUNTAIN": {
       // Tuning 3: the blast is an explosion; its exact public preview.
@@ -1315,7 +1367,7 @@ function describeCommandV7(
         blastTile.territoryOwnerId !== view.viewer.id
           ? ` (coins ${view.viewer.coins}->${view.viewer.coins - BLAST_MOUNTAIN_COST_V7}; not your territory, so no population)`
           : "";
-      return `blast mountain at ${xyV7(command.at)} (${tileBriefV7(view, command.at)}) | ${economicTextV7(view, command)}${foreign}${ore} | BLAST ${BLAST_MOUNTAIN_DAMAGE_NOTE_V7}: ${hits.length === 0 ? "hits no visible unit" : hits.join(", ")}${blast?.touchesUnexplored === true ? " | part of the area is unexplored" : ""}`;
+      return `blast mountain at ${xyV7(command.at)} (${tileBriefV7(view, command.at)}) | ${economicTextV7(view, command)}${foreign}${ore} | BLAST ${BLAST_MOUNTAIN_DAMAGE_NOTE_V7}: ${hits.length === 0 ? "hits no visible unit" : hits.join(", ")}${blast === null || blast.setterUnitId === null ? "" : ` | ${context.memory.tag(blast.setterUnitId)} ${BLAST_MOUNTAIN_SETTER_NOTE_V7}`}${blast?.touchesUnexplored === true ? " | part of the area is unexplored" : ""}`;
     }
     case "LAY_EGG": {
       const rule = effectiveRoleRuleV7(command.role, view.viewer.faction);
@@ -1478,7 +1530,20 @@ function eventTextV7(
       break;
     }
     default: {
-      const text = `${event.kind} ${compactFieldsV7(event as unknown as Record<string, unknown>, context)}`;
+      // Tuning 5: an own Scouts reward is printed under its name.
+      const scouts =
+        (event.kind === "CITY_REWARD_QUEUED" ||
+          event.kind === "CITY_REWARD_CHOSEN") &&
+        "playerId" in event &&
+        event.playerId === me &&
+        SURVEY_RAIDERS_V7[context.view.viewer.faction] === 1;
+      const raw = `${event.kind} ${compactFieldsV7(event as unknown as Record<string, unknown>, context)}`;
+      const text = scouts
+        ? raw.replace(
+            /\bSURVEY\b/g,
+            `SCOUTS (free ${effectiveRoleRuleV7("RAIDER", context.view.viewer.faction).label})`,
+          )
+        : raw;
       lines.push(text.trimEnd());
       const mine = "playerId" in event && event.playerId === me;
       if (
@@ -1723,11 +1788,11 @@ function integerFlagV7(args: ArgsV7, name: string, fallback: number): number {
  */
 export const TEXT_PLAY_LABS_V7: Readonly<Record<string, string>> = {
   LAB_SIEGE:
-    "assault a walled level-4 capital: Guard on the center, three Guards in front (Forest cover, a Field Defense), a Marksman and two Catapults behind, a Mountain touching the screen; you have 6 units, 60c and the prerequisites of Sawmilling, Chivalry, Explosives and Fieldcraft (23c the first)",
+    "assault a walled level-4 capital: Guard on the center, three Guards in front (Forest cover, a Field Defense), a Marksman and two Catapults behind, a Mountain touching the screen; you have 6 units, 60c and the prerequisites of Sawmilling, Chivalry, Explosives and Fieldcraft (23c the first) and of Engineering (Swordsmen, 21c)",
   LAB_BACKLINE:
-    "the AI advances with four Catapults and three Marksmen behind two Guards and three Fighters; you have three Knights, two Raiders, three Fighters, two Marksmen, a Catapult and 40c",
+    "the AI advances with four Catapults and three Marksmen behind two Guards, a Swordsman and two Fighters; you have three Knights, two Raiders, a Swordsman, two Fighters, two Marksmen, a Catapult and 40c",
   LAB_LATE:
-    "the late game: six road-linked cities a side, 16 technologies, armies at the unit limit, 100c each; two of your cities have a Barracks",
+    "the late game: six road-linked cities a side, 16 technologies, armies at the unit limit (a Swordsman in every front city), 100c each; two of your cities have a Barracks",
 };
 
 function commandLabV7(args: ArgsV7): string {
@@ -1904,6 +1969,7 @@ const ROLE_CODE_V7: Readonly<Record<UnitRoleIdV7, string>> = {
   PATROL_BOAT: "Pb",
   BATTLESHIP: "Bs",
   SUBMARINE: "Sb",
+  SWORDSMAN: "Sw",
 };
 
 const LEGEND_V7 = [
@@ -2154,6 +2220,9 @@ function unitLineV7(
   for (const note of roleNotesV7(
     unitRule,
     unit.form === "LAND" && unitIgnoresZocStopsV7(view, unit),
+    unit.form === "LAND"
+      ? unitRoleMechanicsV7(view, unit).rangedDefense2
+      : null,
   ))
     parts.push(`| ${note}`);
   if (full && stats !== undefined) {
@@ -2194,7 +2263,7 @@ function headerLinesV7(session: SessionV7, view: PlayerViewV7): string[] {
   if (view.outcome !== null) lines.push(outcomeLineV7(view));
   for (const choice of view.pendingChoices)
     lines.push(
-      `PENDING CHOICE: city c${choice.cityId} reached level ${choice.reachedLevel}; choose one with do: ${choice.candidates.map((reward) => `c${choice.cityId}.reward.${reward}`).join(" | ")} (nothing else is offered until you choose)`,
+      `PENDING CHOICE: city c${choice.cityId} reached level ${choice.reachedLevel}; choose one with do: ${rewardChoicesTextV7(view, choice)} (nothing else is offered until you choose)`,
     );
   return lines;
 }
@@ -2293,6 +2362,19 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
     lines.push(
       `c${city.id} ${city.isCapital ? "CAPITAL" : "city"} @${xyV7(city.at)} L${city.level} pop ${city.population}/${city.level + 1} income +${cityIncomeV7(view, city)} slots ${slots.used}/${slots.capacity} action ${city.cityActionAvailable === true ? "ready" : "used"}${cityBesiegedV7(view, city) ? " BESIEGED" : ""}${city.landGrantUsed ? " land-grant-used" : ""}${city.rewards.length === 0 ? "" : ` rewards ${city.rewards.map((entry) => entry.reward).join(",")}`}`,
     );
+    // Tuning 5 (`pulp_wars-w49.4`): two things the numbers do not say.
+    // The level term of income stops at 4, so more population past level 4
+    // buys unit slots and rewards and no Coins; and a city that lost
+    // population it had already spent on a level shows a negative meter
+    // and pays that much less until it regrows.
+    if (city.level >= CITY_LEVEL_INCOME_CAP_V7)
+      lines.push(
+        `   income: a level pays ${CITY_LEVEL_INCOME_CAP_V7} Coins at most; higher levels add unit slots and rewards`,
+      );
+    if (city.population < 0)
+      lines.push(
+        `   population ${city.population}: a level's population was lost (a destroyed building, a cut Road); income ${city.population} until it is regrown`,
+      );
     lines.push(`   train: ${trainable.join(" | ")}`);
     // Tuning 4: the Land Grant and its price, also while it is too dear.
     const grantPrice = publicLandGrantPriceV7(view, city.id);
@@ -2309,12 +2391,12 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
             ? "city action used"
             : "not offered now";
       lines.push(
-        `   land grant: ${grantPrice.cost}c for ${grantPrice.tiles.length} explored neutral tiles (2c each, at least 6c) ${grantId === undefined ? `(${why})` : `[${grantId}]`}`,
+        `   land grant: ${grantPrice.cost}c for ${grantPrice.tiles.length} explored neutral tiles (${LAND_GRANT_COST_PER_TILE_V7}c each) ${grantId === undefined ? `(${why})` : `[${grantId}]`}`,
       );
     }
     if (cityBarracksV7(city) > 0)
       lines.push(
-        `   barracks x${cityBarracksV7(city)}: +${cityBarracksV7(city)} unit slot(s); a unit on the center may drill for ${DRILL_COST_V7}c [uN.drill]`,
+        `   barracks x${cityBarracksV7(city)}: +${cityBarracksV7(city)} unit slot(s)`,
       );
     // Tuning 2 (7r47): Commerce's capital rule, city by city.
     const landTrade = landTradeStatusV7(view, city.id);
@@ -2383,7 +2465,17 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
           entry.achievement === "SLAYER"
             ? " (most kills by one living unit)"
             : "";
-        return `${entry.achievement} ${progress}${meaning}${entitlement?.spent === true ? " built" : entitlement?.unlocked === true ? " UNLOCKED (monument available)" : ""}`;
+        // Tuning 5 (`pulp_wars-w49.4`): Explorer, Engineer, and Muster
+        // count before their technology is researched but unlock only
+        // with it (a meter read 139/100 and nothing said why).
+        const tech = ACHIEVEMENT_REQUIRED_TECH_V7[entry.achievement];
+        const needs =
+          tech !== null &&
+          entitlement?.unlocked !== true &&
+          !view.viewer.researchedTechs.includes(tech)
+            ? ` (needs ${techNameV7(view.viewer.faction, tech)})`
+            : "";
+        return `${entry.achievement} ${progress}${meaning}${needs}${entitlement?.spent === true ? " built" : entitlement?.unlocked === true ? " UNLOCKED (monument available)" : ""}`;
       })
       .join(" | ")}`,
   );
@@ -2737,10 +2829,15 @@ function commandDoV7(args: ArgsV7): string {
     const view = viewForV7(session.state, session.playerId);
     memory.remember(view);
     const offered = offeredV7(view);
-    const wanted = id.toLowerCase();
-    const entry = offered.find(
-      (candidate) => candidate.id.toLowerCase() === wanted,
-    );
+    // The engine's name of the Scouts reward stays a valid id.
+    const wanted = id
+      .toLowerCase()
+      .replace(/\.reward\.survey$/, ".reward.scouts");
+    const entry =
+      offered.find((candidate) => candidate.id.toLowerCase() === wanted) ??
+      offered.find(
+        (candidate) => candidate.id.toLowerCase() === id.toLowerCase(),
+      );
     if (wanted === "end" || entry?.command.kind === "END_TURN") {
       rejection = `REJECTED ${id}: end the turn with the end command`;
     } else if (view.outcome !== null) {
@@ -2811,7 +2908,7 @@ function commandDoV7(args: ArgsV7): string {
   );
   for (const choice of view.pendingChoices)
     lines.push(
-      `PENDING CHOICE: city c${choice.cityId} reached level ${choice.reachedLevel}; choose one with do: ${choice.candidates.map((reward) => `c${choice.cityId}.reward.${reward}`).join(" | ")}`,
+      `PENDING CHOICE: city c${choice.cityId} reached level ${choice.reachedLevel}; choose one with do: ${rewardChoicesTextV7(view, choice)}`,
     );
   if (view.outcome !== null) lines.push(outcomeLineV7(view));
   else lines.push(offeredSummaryV7(offeredV7(view)));

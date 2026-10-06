@@ -571,7 +571,7 @@ describe("text-mode play harness", () => {
     );
     expect(row(hire)).toContain("does not use the city action");
     expect(row(blast)).toContain(
-      "BLAST 5 damage on and around the tile, to your units too:",
+      "BLAST 5 damage on and around the tile, to your units too except the one that sets it:",
     );
     const hired = ok("do", "--session", session, hire);
     expect(hired).toContain(`OK ${hire}`);
@@ -655,28 +655,15 @@ describe("text-mode play harness", () => {
     expect(options).toMatch(/^t\.x,y\.build_road {2}x\d+ at /m);
     expect(options).toMatch(/^t\.x,y\.monument\.EXPLORER {2}x\d+ at /m);
     expect(options).toMatch(
-      /^c\d+\.hire\.ROLE\.\d+,\d+ {2}x7 hire on the Market at .*KNIGHT 14c/m,
+      /^c\d+\.hire\.ROLE\.\d+,\d+ {2}x8 hire on the Market at .*KNIGHT 14c \| SWORDSMAN 8c/m,
     );
     // Every grouped offer is still an id the harness accepts.
     const road = /^t\.x,y\.build_road {2}x\d+ at (\d+,\d+)/m.exec(options)?.[1];
     expect(offeredIds(session)).toContain(`t.${road}.build_road`);
-    // Drill at a Barracks: the unit on the capital's center.
-    const state = sessionState(session);
-    const capital = state.cities.find(
-      (city) => city.ownerId === state.humanPlayerId && city.isCapital,
+    // Tuning 5 (`pulp_wars-w49.4`) removed Drill.
+    expect(ok("options", "--session", session, "--all")).not.toContain(
+      ".drill",
     );
-    const garrison = state.units.find(
-      (unit) => unit.at.x === capital?.at.x && unit.at.y === capital.at.y,
-    );
-    const drill = `u${garrison?.id}.drill`;
-    const all = ok("options", "--session", session, "--all");
-    expect(all).toContain(
-      `${drill}  drill at the Barracks for 10c (coins 143->133): the unit becomes a veteran, hp and max hp +5 (no heal), and its turn ends`,
-    );
-    expect(ok("do", "--session", session, drill)).toContain(`OK ${drill}`);
-    expect(
-      sessionState(session).units.find((unit) => unit.id === garrison?.id),
-    ).toMatchObject({ veteran: true, maxHp: 17, hp: 17 });
     // Research is priced by the technologies owned.
     const tech = ok("tech", "--session", session);
     expect(tech).toContain(
@@ -700,14 +687,15 @@ describe("text-mode play harness", () => {
     ok("do", "--session", session, "r.EXPLOSIVES", "u2.m.5,5", "--end");
     const blast = ok("options", "--session", session, "--tile", "6,5");
     expect(blast).toContain(
-      "t.6,5.blast_mountain  blast mountain at 6,5 (mountain neutral) | cost 3c (coins 53->50; not your territory, so no population) | BLAST 5 damage on and around the tile, to your units too:",
+      "t.6,5.blast_mountain  blast mountain at 6,5 (mountain neutral) | cost 3c (coins 53->50; not your territory, so no population) | BLAST 5 damage on and around the tile, to your units too except the one that sets it:",
     );
     expect(blast).not.toContain("no exact public preview");
-    // Three Guards and the Fighter that sets the charge.
-    expect(blast.match(/ -5/g)).toHaveLength(4);
+    // Three Guards; the Fighter that sets the charge is not hit (tuning 5).
+    expect(blast.match(/ -5/g)).toHaveLength(3);
+    expect(blast).toContain("sets the charge and is not hit");
     const done = ok("do", "--session", session, "t.6,5.blast_mountain");
     expect(done).toContain("EXPLOSION_RESOLVED");
-    expect(done.match(/damage=5 shieldDamage=0/g)).toHaveLength(4);
+    expect(done.match(/damage=5 shieldDamage=0/g)).toHaveLength(3);
     expect(done).toContain("FIELD_DEFENSE_DESTROYED at=7,6 reason=EXPLOSION");
     // An Ore Mountain: the line says what the blast gives up.
     patchState(session, (state) => ({

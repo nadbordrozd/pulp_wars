@@ -114,13 +114,13 @@ describe("tuning 1 identity", () => {
   // Tuning 1 took 7r46; tuning 2 (tests/unit/ruleset-v7-tuning-2.test.ts)
   // took 7r47, so 7r46 is the last prior identity.
   it("was 7r46, after 7r45 in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r47.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r48.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(46);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(47);
   });
 });
 
@@ -661,7 +661,9 @@ describe("E: the level-reward loop", () => {
     ).toMatchObject({ population: 2 });
   });
 
-  describe("Land Grant costs 2 Coins per explored tile it claims, at least 6", () => {
+  // Tuning 5 (`pulp_wars-w49.4`): 1 Coin a tile and no minimum above it
+  // (tuning 1 made it 2 Coins a tile and at least 6).
+  describe("Land Grant costs 1 Coin per explored tile it claims", () => {
     /** A level-5 capital at (8, 8): 16 neutral tiles in its 5 x 5. */
     const grantState = (coins = 100): GameStateV7 => {
       const fixture = pendingLevelFive();
@@ -695,7 +697,7 @@ describe("E: the level-reward loop", () => {
 
     it("states the formula", () => {
       expect([0, 1, 3, 4, 8, 13, 16].map(landGrantCostV7)).toEqual([
-        6, 6, 6, 8, 16, 26, 32,
+        1, 1, 3, 4, 8, 13, 16,
       ]);
     });
 
@@ -708,27 +710,27 @@ describe("E: the level-reward loop", () => {
         viewForV7(state, actor),
         cityOfV7(state, 0).id,
       );
-      expect(preview).toMatchObject({ cost: 32 });
+      expect(preview).toMatchObject({ cost: 16 });
       expect(preview?.tiles).toHaveLength(16);
       const result = applied(state, 0, grant(state));
       expect(result.events[0]).toMatchObject({
         kind: "LAND_GRANTED",
-        cost: 32,
+        cost: 16,
       });
       const coins = (value: GameStateV7) =>
         value.players.find((player) => player.id === actor)?.coins ?? 0;
-      expect(coins(state) - coins(result.state)).toBe(32);
+      expect(coins(state) - coins(result.state)).toBe(16);
     });
 
     // Tuning 4: unexplored tiles are neither claimed nor charged (tuning 1
     // claimed them free, which told the player what lay in the fog).
-    it("leaves unexplored neutral tiles alone and never goes below 6 Coins", () => {
+    it("leaves unexplored neutral tiles alone and charges the explored ones", () => {
       const open = grantState();
       const actor = seatIdV7(open, 0);
       const tiles = footprint(open);
       for (const [hidden, cost] of [
-        [4, 24],
-        [14, 6],
+        [4, 12],
+        [14, 2],
       ] as const) {
         const state = unexploreV7(open, 0, tiles.slice(0, hidden));
         const preview = queryLandGrantPreviewV7(
@@ -749,7 +751,7 @@ describe("E: the level-reward loop", () => {
     });
 
     it("is not offered and is refused below its cost", () => {
-      const state = grantState(31);
+      const state = grantState(15);
       const actor = seatIdV7(state, 0);
       expect(offered(state, 0)).not.toContainEqual(grant(state));
       expect(
@@ -760,9 +762,9 @@ describe("E: the level-reward loop", () => {
       if (!result.accepted)
         expect(result.error).toMatchObject({
           code: "INSUFFICIENT_COINS",
-          params: { cost: 32 },
+          params: { cost: 16 },
         });
-      expect(offered(grantState(32), 0)).toContainEqual(grant(state));
+      expect(offered(grantState(16), 0)).toContainEqual(grant(state));
     });
   });
 
@@ -898,7 +900,7 @@ describe("F: Commerce, Explosives, and Field Defense", () => {
       );
     };
     expect(card("EXPLOSIVES")).toEqual([
-      "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too; in your territory its city gains +1 population",
+      "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too except the one that sets it; in your territory its city gains +1 population",
       "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
     ]);
     expect(card("COMMERCE")).toContain(

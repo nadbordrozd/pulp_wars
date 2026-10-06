@@ -7,7 +7,7 @@
  *
  *   npx tsx scripts/human-tuning-analysis-v7.ts            (everything)
  *   npx tsx scripts/human-tuning-analysis-v7.ts matrix     (one part:
- *     matrix | scenarios | technology | economy | round4)
+ *     matrix | scenarios | technology | economy | round4 | round5)
  *
  * Output is Markdown on stdout.
  */
@@ -36,8 +36,6 @@ import {
   type UnitRoleIdV7,
   type UnitStateV7,
   BARRACKS_CAPACITY_V7,
-  DRILL_COST_V7,
-  PROMOTION_HP_V7,
   playerTechnologyResearchCostV7,
 } from "../src/engine/index";
 import { goblinArenaV7 } from "../tests/fixtures/v7-goblin-arena";
@@ -60,13 +58,22 @@ const HUMAN: readonly KindV7[] = [
   { faction: "ORIGINAL", role: "CATAPULT" },
   { faction: "ORIGINAL", role: "KNIGHT" },
   { faction: "ORIGINAL", role: "JUGGERNAUT" },
+  // Tuning 5 (`pulp_wars-w49.4`): the heavy line unit, last so that the
+  // older columns keep their order.
+  { faction: "ORIGINAL", role: "SWORDSMAN" },
 ];
-/** A cheap swarm unit, a Guard-type, a fragile ranged unit, and a heavy. */
+/**
+ * A cheap swarm unit, a Guard-type, a fragile ranged unit, and a heavy;
+ * tuning 5 adds the Undead line and defender (the Skeleton and the Zombie),
+ * the other pairing the round plays.
+ */
 const REFERENCE: readonly KindV7[] = [
   { faction: "GOBLIN", role: "FIGHTER" },
   { faction: "GOBLIN", role: "GUARD" },
   { faction: "CANDY", role: "MARKSMAN" },
   { faction: "DINOSAUR", role: "KNIGHT" },
+  { faction: "UNDEAD", role: "FIGHTER" },
+  { faction: "UNDEAD", role: "GUARD" },
 ];
 const ATTACKERS: readonly KindV7[] = [
   ...HUMAN.slice(0, 3),
@@ -337,6 +344,11 @@ function sequence(
   start: readonly PieceV7[],
   attacks: readonly (readonly [CoordV7, CoordV7])[],
   walls = false,
+  /** Tuning 5: Forest and Field Defense tiles (seat 1 has Forestry). */
+  ground: {
+    readonly forest?: readonly CoordV7[];
+    readonly fieldDefense?: readonly CoordV7[];
+  } = {},
 ): string[] {
   const lines = [`- **${title}**`];
   const pieces = start.map((piece) => ({ ...piece }));
@@ -368,19 +380,31 @@ function sequence(
       ),
       board: {
         ...base.board,
-        tiles: base.board.tiles.map((tile) =>
-          tile.site === null
+        tiles: base.board.tiles.map((tile) => {
+          const on = (list: readonly CoordV7[] | undefined): boolean =>
+            list?.some((at) => same(at, tile.at)) === true;
+          const flat =
+            tile.site === null
+              ? {
+                  ...tile,
+                  biome: "PLAINS" as const,
+                  terrain: "GRASS" as const,
+                  resource: null,
+                  improvement: null,
+                  road: false,
+                  fieldDefense: false,
+                }
+              : tile;
+          return on(ground.forest)
             ? {
-                ...tile,
-                biome: "PLAINS" as const,
-                terrain: "GRASS" as const,
-                resource: null,
-                improvement: null,
-                road: false,
-                fieldDefense: false,
+                ...flat,
+                terrain: "FOREST" as const,
+                biome: "WOODLAND" as const,
               }
-            : tile,
-        ),
+            : on(ground.fieldDefense)
+              ? { ...flat, fieldDefense: true }
+              : flat;
+        }),
       },
     };
     const actor = state.turnOrder[state.activeSeatIndex];
@@ -699,18 +723,227 @@ function round4(): string[] {
     "| --- | --- | --- | --- |",
     `| 2 | 2 | Scouts (survey + Raider, worth 4 Coins) or Stockpile | ${CITY_REWARD_COINS_V7.STOCKPILE} |`,
     "| 3 | 3 | Walls or Militia (one Fighter, worth 2 Coins) | — |",
-    `| 4 | 4 | Boom (+3 population), Treasury or Barracks (+${BARRACKS_CAPACITY_V7} unit, Drill) | ${CITY_REWARD_COINS_V7.TREASURY_6} |`,
+    `| 4 | 4 | Boom (+3 population), Treasury or Barracks (+${BARRACKS_CAPACITY_V7} unit) | ${CITY_REWARD_COINS_V7.TREASURY_6} |`,
     `| 5+ | 5, 6, … | Barracks or Treasury; the first capital once: the Juggernaut | ${CITY_REWARD_COINS_V7.TREASURY} |`,
     "",
     `A population point costs 2 to 3 Coins (the price list above), so level 5 costs 10 to 15 Coins of population and returns at most ${CITY_REWARD_COINS_V7.TREASURY}.`,
     "",
     "#### Sinks at 100 Coins and 40 income (LAB_LATE)",
     "",
-    `- Drill: ${DRILL_COST_V7} Coins a unit, one unit a turn per Barracks city (the unit must stand on the center and ends its turn): +${PROMOTION_HP_V7} HP and maximum HP. A Fighter 12→17, a Knight 13→18, a Catapult 10→15.`,
     `- Hire: one unit a turn per Market at 1.5× (a Knight ${hireCostV7(9)}, a Catapult ${hireCostV7(8)}), one above the city's limit.`,
     `- Research: the 17th to 20th technologies cost ${[16, 17, 18, 19].map((owned) => playerTechnologyResearchCostV7(3, owned)).join(", ")} Coins.`,
     "",
   );
+  return lines;
+}
+
+/**
+ * Tuning 5 (`pulp_wars-w49.4`): the Guard against ranged attackers, the
+ * Swordsman, and what a city earns against what a unit costs.
+ */
+function round5(): string[] {
+  const at = (x: number, y: number): CoordV7 => ({ x, y });
+  const lines: string[] = [
+    "#### A Guard, two Marksmen, then a Fighter",
+    "",
+    "Seat 1 holds the Guard (it has Forestry); every attacker is at full HP. The Field Defense and Walls tiles are in the Guard's own territory.",
+    "",
+  ];
+  // Seat 1's territory is x 1-3, y 7-9 with its center at (2, 8).
+  const softened = (
+    title: string,
+    guardAt: CoordV7,
+    walls: boolean,
+    ground: Parameters<typeof sequence>[5],
+    shooter: UnitRoleIdV7,
+    finisher: UnitRoleIdV7 | null,
+  ): string[] => {
+    const first = at(guardAt.x - 1, guardAt.y - 2);
+    const second = at(guardAt.x + 1, guardAt.y - 2);
+    const range = shooter === "CATAPULT" ? 3 : 2;
+    const shooters = [
+      at(first.x, guardAt.y - range),
+      at(second.x, guardAt.y - range),
+    ] as const;
+    const melee = at(guardAt.x, guardAt.y - 1);
+    return sequence(
+      title,
+      ["ORIGINAL", "ORIGINAL"],
+      [
+        { seat: 0, role: shooter, at: shooters[0] },
+        { seat: 0, role: shooter, at: shooters[1] },
+        ...(finisher === null
+          ? []
+          : [{ seat: 0, role: finisher, at: melee } as PieceV7]),
+        { seat: 1, role: "GUARD", at: guardAt },
+      ],
+      [
+        [shooters[0], guardAt],
+        [shooters[1], guardAt],
+        ...(finisher === null ? [] : [[melee, guardAt] as const]),
+      ],
+      walls,
+      ground,
+    );
+  };
+  const grounds: readonly {
+    readonly name: string;
+    readonly guardAt: CoordV7;
+    readonly walls: boolean;
+    readonly ground: Parameters<typeof sequence>[5];
+  }[] = [
+    { name: "in the open", guardAt: at(5, 5), walls: false, ground: {} },
+    {
+      name: "in Forest with Forestry",
+      guardAt: at(5, 5),
+      walls: false,
+      ground: { forest: [at(5, 5)] },
+    },
+    {
+      name: "on a Field Defense",
+      guardAt: at(2, 7),
+      walls: false,
+      ground: { fieldDefense: [at(2, 7)] },
+    },
+    { name: "on a walled center", guardAt: at(2, 8), walls: true, ground: {} },
+    {
+      name: "on a walled center with a Field Defense",
+      guardAt: at(2, 8),
+      walls: true,
+      ground: { fieldDefense: [at(2, 8)] },
+    },
+  ];
+  for (const ground of grounds)
+    lines.push(
+      ...softened(
+        `Two Marksmen, then a Fighter, on a Guard ${ground.name}`,
+        ground.guardAt,
+        ground.walls,
+        ground.ground,
+        "MARKSMAN",
+        "FIGHTER",
+      ),
+    );
+  lines.push("", "#### A Guard and two Catapults", "");
+  for (const ground of grounds)
+    lines.push(
+      ...softened(
+        `Two Catapults on a Guard ${ground.name}`,
+        ground.guardAt,
+        ground.walls,
+        ground.ground,
+        "CATAPULT",
+        null,
+      ),
+    );
+  lines.push("", "#### The Swordsman", "");
+  lines.push(
+    ...sequence(
+      "A Swordsman attacks a Guard in the open on two turns (the Guard does not answer between them)",
+      ["ORIGINAL", "ORIGINAL"],
+      [
+        { seat: 0, role: "SWORDSMAN", at: at(5, 4) },
+        { seat: 1, role: "GUARD", at: at(5, 5) },
+      ],
+      [
+        [at(5, 4), at(5, 5)],
+        [at(5, 4), at(5, 5)],
+      ],
+    ),
+    ...sequence(
+      "A Knight attacks a Swordsman in the open, then a second Knight",
+      ["ORIGINAL", "ORIGINAL"],
+      [
+        { seat: 0, role: "KNIGHT", at: at(5, 4) },
+        { seat: 0, role: "KNIGHT", at: at(4, 4) },
+        { seat: 1, role: "SWORDSMAN", at: at(5, 5) },
+      ],
+      [
+        [at(5, 4), at(5, 5)],
+        [at(4, 4), at(5, 5)],
+      ],
+    ),
+    ...sequence(
+      "Two Catapults fire at a Swordsman in the open",
+      ["ORIGINAL", "ORIGINAL"],
+      [
+        { seat: 0, role: "CATAPULT", at: at(4, 2) },
+        { seat: 0, role: "CATAPULT", at: at(6, 2) },
+        { seat: 1, role: "SWORDSMAN", at: at(5, 5) },
+      ],
+      [
+        [at(4, 2), at(5, 5)],
+        [at(6, 2), at(5, 5)],
+      ],
+    ),
+    ...sequence(
+      "Three Fighters attack a Swordsman in the open (6 Coins against 5)",
+      ["ORIGINAL", "ORIGINAL"],
+      [
+        { seat: 0, role: "FIGHTER", at: at(4, 4) },
+        { seat: 0, role: "FIGHTER", at: at(5, 4) },
+        { seat: 0, role: "FIGHTER", at: at(6, 4) },
+        { seat: 1, role: "SWORDSMAN", at: at(5, 5) },
+      ],
+      [
+        [at(4, 4), at(5, 5)],
+        [at(5, 4), at(5, 5)],
+        [at(6, 4), at(5, 5)],
+      ],
+    ),
+  );
+  lines.push("", "#### What a city earns against what a unit costs", "");
+  lines.push(
+    "A city pays min(level, 4), +1 for a founded capital, +1 with a Road link to another own city (Commerce; +1 by sea), plus its Market (up to 3). So a level-3 city earns 3 to 7 Coins and a level-4 or higher city 4 to 8 (9 for a capital with every bonus).",
+    "",
+    "| City | Income |",
+    "| --- | --- |",
+    "| level 3, no Market, no trade | 3 |",
+    "| level 3, land trade | 4 |",
+    "| level 3, Market 2, land trade | 6 |",
+    "| level 4 or higher, no Market, no trade | 4 |",
+    "| level 4 or higher, land trade | 5 |",
+    "| level 4 or higher, Market 2, land trade | 7 |",
+    "| level 4 or higher, Market 3, land trade | 8 |",
+    "",
+  );
+  for (const faction of ["ORIGINAL", "GOBLIN", "UNDEAD"] as const) {
+    const tree = factionTreeV7(faction);
+    const roles = (
+      [
+        "FIGHTER",
+        "GUARD",
+        "RAIDER",
+        "MARKSMAN",
+        "CAPTAIN",
+        "SWORDSMAN",
+        "CATAPULT",
+        "KNIGHT",
+      ] as const
+    ).filter(
+      (role) =>
+        role === "FIGHTER" ||
+        tree.nodes.some((node) => node.unlockedRoles.includes(role)),
+    );
+    lines.push(
+      `**${faction === "ORIGINAL" ? "Human" : faction === "GOBLIN" ? "Goblin" : "Undead"} units**`,
+      "",
+      "| Unit | Role | Technology (tier) | Cost | HP | Atk / Def | Cities of income 3 / 5 / 7 that pay for one a turn |",
+      "| --- | --- | --- | --- | --- | --- | --- |",
+    );
+    for (const role of roles) {
+      const value = effectiveRoleRuleV7(role, faction);
+      const cost = value.cost ?? 0;
+      const tier =
+        value.technology === null
+          ? "—"
+          : `${value.technology} (${String(tree.nodes.find((node) => node.id === value.technology)?.tier ?? "?")})`;
+      lines.push(
+        `| ${value.label} | ${role} | ${tier} | ${cost} | ${value.maxHp} | ${half(value.attack2)} / ${half(value.defense2)} | ${[3, 5, 7].map((income) => (cost <= income ? "yes" : "no")).join(" / ")} |`,
+      );
+    }
+    lines.push("");
+  }
   return lines;
 }
 
@@ -729,4 +962,6 @@ if (part === "all" || part === "economy")
   out.push("### Economy price list", "", ...economy(), "");
 if (part === "all" || part === "round4")
   out.push("### Round 4", "", ...round4(), "");
+if (part === "all" || part === "round5")
+  out.push("### Round 5", "", ...round5(), "");
 process.stdout.write(`${out.join("\n")}\n`);

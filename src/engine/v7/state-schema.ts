@@ -7,6 +7,7 @@ import {
   MIND_CONTROL_COOLDOWN_TURNS_V7,
   MIND_CONTROL_LIMIT_V7,
   PROMOTION_HP_V7,
+  PROMOTION_KILLS_V7,
   NEUTRAL_MONSTER_ROLE_RULE_V7,
   BOOM_POPULATION_V7,
   MONUMENT_POPULATION_V7,
@@ -196,6 +197,8 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   // The Mind Control revision (section 2.1): a unit's role rule resolves
   // through its kind, so the controlled list is read first.
   const mindControlled = parseMindControlled(input.mindControlled);
+  // Map curiosities (section 6): a Shrine promotes without the kills.
+  const shrinePromotions = setup !== null && setupHasCuriositiesV7(setup);
   // Map curiosities (section 10.2): the Monsters, read before the units so
   // that exactly the listed units may have the neutral owner.
   const monsters = setup === null ? null : parseMonsters(input.monsters, setup);
@@ -206,6 +209,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
           input.units,
           players,
           mindControlled,
+          shrinePromotions,
           new Set(monsters.map((entry) => entry.unitId)),
         );
   const treasureChests = parseSortedCoords(input.treasureChests);
@@ -230,7 +234,12 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const burrowed =
     players === null || mindControlled === null
       ? null
-      : parseBurrowed(input.burrowed, players, mindControlled);
+      : parseBurrowed(
+          input.burrowed,
+          players,
+          mindControlled,
+          shrinePromotions,
+        );
   const surfacedThisTurn = parseSortedUnitIds(input.surfacedThisTurn);
   const bombedThisTurn = parseSortedUnitIds(input.bombedThisTurn);
   // The Martian balance revision (`pulp_wars-1wy.3`): the per-turn lists of
@@ -834,12 +843,19 @@ function parseUnits(
   input: unknown,
   players: readonly PlayerStateV7[],
   mindControlled: readonly MindControlledStatusV7[],
+  shrinePromotions: boolean,
   neutralUnitIds: ReadonlySet<number>,
 ): readonly UnitStateV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: UnitStateV7[] = [];
   for (const candidate of input) {
-    const unit = parseUnit(candidate, players, mindControlled, neutralUnitIds);
+    const unit = parseUnit(
+      candidate,
+      players,
+      mindControlled,
+      shrinePromotions,
+      neutralUnitIds,
+    );
     if (unit === null || (values.at(-1)?.id ?? 0) >= unit.id) return null;
     values.push(unit);
   }
@@ -847,9 +863,11 @@ function parseUnits(
 }
 
 /**
- * One unit. A veteran may have fewer than `PROMOTION_KILLS_V7` kills: a
- * Shrine (docs/product/RULESET_7_MAP_CURIOSITIES.md section 6) and, since
- * tuning 4 (`pulp_wars-w49.3`), a Barracks Drill promote without them.
+ * One unit. `shrinePromotions` (map curiosities,
+ * docs/product/RULESET_7_MAP_CURIOSITIES.md section 6): in a match whose
+ * board can carry a Shrine, a veteran may have fewer than
+ * `PROMOTION_KILLS_V7` kills (the Shrine promotes without them). Tuning 5
+ * (`pulp_wars-w49.4`) removed Drill, the other promotion without kills.
  * `neutralUnitIds` (section 10.2): the units listed in `monsters`, exactly
  * the ones that have the neutral owner.
  */
@@ -857,6 +875,7 @@ function parseUnit(
   input: unknown,
   players: readonly PlayerStateV7[],
   mindControlled: readonly MindControlledStatusV7[],
+  shrinePromotions: boolean,
   neutralUnitIds: ReadonlySet<number>,
 ): UnitStateV7 | null {
   if (
@@ -963,6 +982,7 @@ function parseUnit(
         input.maxHp !==
           rule.maxHp + GROWTH_HP_V7 * growthStageForKillsV7(input.kills)
       : input.maxHp !== rule.maxHp + (input.veteran ? PROMOTION_HP_V7 : 0)) ||
+    (input.veteran && !shrinePromotions && input.kills < PROMOTION_KILLS_V7) ||
     (input.captureEligible && !rule.abilities.includes("CAPTURE")) ||
     // The Dwarf revision section 7.3: an unmoved Clockwork Gunner fires
     // twice.
@@ -1423,12 +1443,19 @@ function parseBurrowed(
   input: unknown,
   players: readonly PlayerStateV7[],
   mindControlled: readonly MindControlledStatusV7[],
+  shrinePromotions: boolean,
 ): readonly BurrowedEntryV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: BurrowedEntryV7[] = [];
   for (const candidate of input) {
     if (!hasExactKeysV7(candidate, ["moleUnitId", "unit"])) return null;
-    const unit = parseUnit(candidate.unit, players, mindControlled, new Set());
+    const unit = parseUnit(
+      candidate.unit,
+      players,
+      mindControlled,
+      shrinePromotions,
+      new Set(),
+    );
     const moleUnitId =
       candidate.moleUnitId === null
         ? null

@@ -2,14 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
   BARRACKS_CAPACITY_V7,
   CITY_REWARD_COINS_V7,
-  DRILL_COST_V7,
   FACTION_IDS_V7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
   LAND_TRADE_INCOME_COINS_V7,
   MILITIA_FIGHTERS_V7,
   MISSION_REGISTRY_V7,
   PILLAGE_COINS_V7,
-  PROMOTION_HP_V7,
   RULESET_7_ID,
   SURVEY_RAIDERS_V7,
   TECHNOLOGY_IDS_V7,
@@ -111,7 +109,7 @@ const moveTargets = (state: GameStateV7, from: CoordV7): readonly string[] => {
 
 describe("tuning 4 keeps the unpublished identity", () => {
   it("is 7r47", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
   });
 });
 
@@ -328,92 +326,25 @@ describe("the reward ladder", () => {
   });
 });
 
-describe("Drill: the paid Promotion at a Barracks", () => {
-  const CENTER = at(8, 8);
-  const barracks = (coins = 100): GameStateV7 => {
+// Tuning 5 (`pulp_wars-w49.4`, 7r48) removed Drill, the paid Promotion at a
+// Barracks (`DRILL_UNIT`, 10 Coins); tests/unit/ruleset-v7-tuning-5.test.ts
+// covers the removal. A Barracks is the unit slot of the test above.
+describe("Drill is gone", () => {
+  it("offers nothing more to the unit on the center of a Barracks city", () => {
     const fixture = rewardStateV7("JUGGERNAUT", "ORIGINAL", [
-      { role: "FIGHTER", at: CENTER },
+      { role: "FIGHTER", at: at(8, 8) },
     ]);
-    const chosen = applied(fixture.state, {
-      ...fixture.command,
-      reward: "BARRACKS",
-    }).state;
-    return withCoins(chosen, coins);
-  };
-  const drill = (state: GameStateV7, where: CoordV7 = CENTER): CommandV7 => ({
-    kind: "DRILL_UNIT",
-    unitId: unitAtV7(state, where).id,
-  });
-
-  it("makes the unit on the center a veteran for 10 Coins and ends its turn", () => {
-    const state = barracks();
-    expect(DRILL_COST_V7).toBe(10);
-    expect(offered(state)).toContainEqual(drill(state));
-    const before = unitAtV7(state, CENTER);
-    const result = applied(state, drill(state));
-    const after = unitAtV7(result.state, CENTER);
-    expect(result.events).toEqual([
-      {
-        kind: "UNIT_PROMOTED",
-        unitId: before.id,
-        maxHp: before.maxHp + PROMOTION_HP_V7,
-      },
-    ]);
-    expect(after).toMatchObject({
-      veteran: true,
-      maxHp: before.maxHp + PROMOTION_HP_V7,
-      hp: before.hp + PROMOTION_HP_V7,
-    });
-    expect(coinsOf(state) - coinsOf(result.state)).toBe(DRILL_COST_V7);
-    // Its turn is over, and a veteran is not drilled again.
-    expect(
-      offered(result.state).filter(
-        (command) =>
-          "unitId" in command &&
-          command.unitId === before.id &&
-          command.kind !== "WAIT" &&
-          command.kind !== "DISBAND",
-      ),
-    ).toEqual([]);
-  });
-
-  it("needs the Barracks, the center, the Coins, and an unused action", () => {
-    const state = barracks();
-    // Without the Coins.
-    const poor = barracks(DRILL_COST_V7 - 1);
-    expect(offered(poor)).not.toContainEqual(drill(poor));
-    const refused = applyOkOrCode(poor, drill(poor));
-    expect(refused).toContain("INSUFFICIENT_COINS");
-    // Without a Barracks (the same city before its reward is chosen).
-    const fixture = rewardStateV7("JUGGERNAUT", "ORIGINAL", [
-      { role: "FIGHTER", at: CENTER },
-    ]);
-    const walled = applied(fixture.state, {
-      ...fixture.command,
-      reward: "TREASURY",
-    }).state;
-    expect(offered(walled)).not.toContainEqual(drill(walled));
-    expect(applyOkOrCode(walled, drill(walled))).toContain(
-      "PROMOTION_NOT_ELIGIBLE",
+    const chosen = withCoins(
+      applied(fixture.state, { ...fixture.command, reward: "BARRACKS" }).state,
+      100,
     );
-    // After an attack or a Recover the unit cannot drill this turn.
-    const spent = checkedV7({
-      ...state,
-      units: state.units.map((unit) =>
-        unit.id === unitAtV7(state, CENTER).id
-          ? {
-              ...unit,
-              activation: {
-                ...unit.activation,
-                attacked: true,
-                attacksUsed: 1,
-              },
-            }
-          : unit,
-      ),
-    });
-    expect(offered(spent)).not.toContainEqual(drill(spent));
-    expect(applyOkOrCode(spent, drill(spent))).toContain("UNIT_ALREADY_ACTED");
+    const unit = unitAtV7(chosen, at(8, 8));
+    expect(
+      offered(chosen)
+        .filter((command) => "unitId" in command && command.unitId === unit.id)
+        .map((command) => command.kind)
+        .filter((kind) => kind !== "MOVE"),
+    ).toEqual(["DISBAND", "WAIT", "BUILD_FIELD_DEFENSE"]);
   });
 });
 
@@ -593,7 +524,8 @@ describe("Land Grant claims and charges explored tiles only", () => {
       city.id,
     );
     expect(preview?.tiles).toHaveLength(tiles.length - 4);
-    expect(preview?.cost).toBe(2 * (tiles.length - 4));
+    // 1 Coin a tile since tuning 5 (`pulp_wars-w49.4`; 2 before).
+    expect(preview?.cost).toBe(tiles.length - 4);
     const result = applied(state, { kind: "LAND_GRANT", cityId: city.id });
     const granted = result.events[0];
     if (granted?.kind !== "LAND_GRANTED") throw new Error("no grant");
@@ -620,7 +552,7 @@ describe("Land Grant claims and charges explored tiles only", () => {
     });
     expect(queryLandGrantPreviewV7(view, city.id)).toBeNull();
     const price = publicLandGrantPriceV7(view, city.id);
-    expect(price?.cost).toBe(2 * footprint(state).length);
+    expect(price?.cost).toBe(footprint(state).length);
     expect(price?.tiles).toHaveLength(footprint(state).length);
     // Used, or below level 3: no price.
     const rich = grantState();
@@ -672,8 +604,13 @@ describe("Blast Mountain outside the territory", () => {
       if (explosion?.kind !== "EXPLOSION_RESOLVED")
         throw new Error(`seat ${seat} sees no explosion`);
       expect(explosion.cause).toBe("BLAST");
+      // Every unit but the one that set the charge (tuning 5,
+      // `pulp_wars-w49.4`: the Fighter next to the Mountain is not hit).
       expect(explosion.results.map((entry) => entry.unitId).sort()).toEqual(
-        before.units.map((unit) => unit.id).sort(),
+        before.units
+          .filter((unit) => unit.ownerId !== seatIdV7(before, 0))
+          .map((unit) => unit.id)
+          .sort(),
       );
     }
   });
@@ -726,7 +663,7 @@ describe("the Human labs", () => {
     }
   });
 
-  it("LAB_LATE starts both sides at the unit limit with a Drill on offer", () => {
+  it("LAB_LATE starts both sides at the unit limit with hires on offer", () => {
     const mission = labs.find((item) => item.id === "LAB_LATE");
     if (mission === undefined) throw new Error("no LAB_LATE");
     const setup = missionMatchSetupV7(mission);
@@ -742,18 +679,6 @@ describe("the Human labs", () => {
     const commands = queryPlayerCommandsV7(
       viewForV7(state, state.humanPlayerId),
     );
-    expect(
-      commands.filter((command) => command.kind === "DRILL_UNIT"),
-    ).toHaveLength(2);
     expect(commands.some((command) => command.kind === "HIRE")).toBe(true);
   });
 });
-
-function applyOkOrCode(state: GameStateV7, command: CommandV7): string {
-  try {
-    applyOkV7(state, seatIdV7(state, 0), command);
-    return "ACCEPTED";
-  } catch (cause) {
-    return cause instanceof Error ? cause.message : "UNKNOWN";
-  }
-}

@@ -507,6 +507,13 @@ export interface RoleMechanicsV7 {
    * had not moved at its first shot (2 for the Clockwork Gunner), or 1.
    */
   readonly unmovedShots: 1 | 2;
+  /**
+   * Tuning 5 (`pulp_wars-w49.4`): Open to ranged. The role's Defense in
+   * half-points against an attack from two or more tiles, in place of
+   * `defense2` (fortification and cover apply on top as usual); null for a
+   * role that defends alike at every distance. Only the Human Guard has it.
+   */
+  readonly rangedDefense2: number | null;
   /** The Dwarf revision (section 10.1): the Steam Cannon's Knockback. */
   readonly knockback: boolean;
   /**
@@ -710,17 +717,15 @@ export const BARRACKS_CAPACITY_V7 = 1 as const;
  */
 export const PILLAGE_COINS_V7 = 3 as const;
 export const FIELD_DEFENSE_FORTIFICATION_LEVELS_V7 = 2 as const;
+// Tuning 5 (`pulp_wars-w49.4`, 7r48): Drill, the paid Promotion at a
+// Barracks (`DRILL_UNIT`, 10 Coins), is removed. A Barracks is +1 unit.
 /**
- * Tuning 4: Drill (`DRILL_UNIT`), the paid Promotion of a unit that stands
- * on the center of an own city with a Barracks: for these Coins the unit
- * becomes a veteran (the Promotion's maximum HP, and as many HP; it is not
- * healed otherwise) and its turn ends. Every faction's Barracks drills; a
- * unit that grows instead of being promoted cannot.
+ * Land Grant: 1 Coin per explored tile it claims (tuning 5,
+ * `pulp_wars-w49.4`; 2 Coins a tile and at least 6 since tuning 1, a flat 6
+ * before that). The minimum is one tile's price.
  */
-export const DRILL_COST_V7 = 10 as const;
-/** Land Grant: 2 Coins per explored tile it claims, at least 6 (flat 6 before). */
-export const LAND_GRANT_COST_PER_TILE_V7 = 2 as const;
-export const LAND_GRANT_MINIMUM_COST_V7 = 6 as const;
+export const LAND_GRANT_COST_PER_TILE_V7 = 1 as const;
+export const LAND_GRANT_MINIMUM_COST_V7 = 1 as const;
 export function landGrantCostV7(exploredClaimableTiles: number): number {
   if (
     !Number.isSafeInteger(exploredClaimableTiles) ||
@@ -971,6 +976,9 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
         improvement: "WORKSHOP",
         formula: "DISTINCT_BASIC_TYPES",
       },
+      // Tuning 5 (`pulp_wars-w49.4`): the Human heavy line unit. The other
+      // trees drop this unlock (`SHARED_BASELINE_NODES_V7`).
+      { kind: "UNIT_ROLE", role: "SWORDSMAN" },
     ],
   ),
   node(
@@ -1073,6 +1081,32 @@ export function embarkedMovementSpentV7(activation: {
 }): number {
   return activation.moved ? activation.movedPathLength : 0;
 }
+
+/**
+ * Tuning 5 (`pulp_wars-w49.4`): the roles only the Human tree unlocks, and
+ * the Human nodes without those unlocks. Every other faction's tree is
+ * derived from this list, so a Human-only unit never appears in it.
+ */
+export const HUMAN_ONLY_ROLES_V7: readonly UnitRoleIdV7[] = Object.freeze([
+  "SWORDSMAN",
+]);
+export const SHARED_BASELINE_NODES_V7: readonly TechnologyNodeV7[] = deepFreeze(
+  ORIGINAL_BASELINE_V5_NODES.map((original) =>
+    node(
+      original.id,
+      original.branch,
+      original.tier,
+      original.prerequisites,
+      original.unlocks.filter(
+        (unlock) =>
+          !(
+            unlock.kind === "UNIT_ROLE" &&
+            HUMAN_ONLY_ROLES_V7.includes(unlock.role)
+          ),
+      ),
+    ),
+  ),
+);
 
 const role = (input: EffectiveRoleRuleV7): EffectiveRoleRuleV7 =>
   deepFreeze(input);
@@ -1271,6 +1305,27 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "SUBMERGED", "TORPEDO"],
   }),
+  // Tuning 5 (`pulp_wars-w49.4`): the heavy line unit of the Industry
+  // branch (Engineering, tier 2). Attack 3.5 kills a Guard in two attacks
+  // and a Fighter in two; 15 HP at Defense 2.5 survives one Knight attack
+  // (11) and two Marksman shots, and falls to two Catapult shots. Move 1,
+  // no ability of its own. No other faction's tree unlocks the role.
+  SWORDSMAN: role({
+    role: "SWORDSMAN",
+    label: "Swordsman",
+    tacticalRole: "LINE",
+    cost: 5,
+    maxHp: 15,
+    attack2: 7,
+    defense2: 5,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "ENGINEERING",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE"],
+  }),
 });
 
 const mechanics = (
@@ -1314,6 +1369,7 @@ const mechanics = (
           ridesTunnel: false,
           bombs: false,
           unmovedShots: 1,
+          rangedDefense2: null,
           knockback: false,
           plated: null,
           heavyTractorBeam: false,
@@ -1332,6 +1388,28 @@ const mechanics = (
  * reach that an ability adds to a range-1 role (Rockfall) does not make it
  * ranged; such an attack is from distance 2 and never advanced.
  */
+/**
+ * Tuning 5 (`pulp_wars-w49.4`): the Human Guard's Defense against an attack
+ * from two or more tiles (1; its Defense is 3). Two Marksmen leave a Guard
+ * in the open at 4 HP, which one Fighter kills.
+ */
+export const GUARD_RANGED_DEFENSE2_V7 = 2 as const;
+
+/**
+ * Tuning 5: a land-form defender's base Defense in half-points against an
+ * attack from `distance` tiles: the role's `rangedDefense2` from two or
+ * more tiles when it has one, else its `defense2`.
+ */
+export function roleDefense2AtDistanceV7(
+  rule: Pick<EffectiveRoleRuleV7, "defense2">,
+  mechanics: Pick<RoleMechanicsV7, "rangedDefense2">,
+  distance: number,
+): number {
+  return distance >= 2 && mechanics.rangedDefense2 !== null
+    ? mechanics.rangedDefense2
+    : rule.defense2;
+}
+
 export function isRangedRoleRuleV7(
   rule: Pick<EffectiveRoleRuleV7, "range">,
 ): boolean {
@@ -1344,6 +1422,8 @@ export const ORIGINAL_ROLE_MECHANICS_V7 = mechanics({
   MARKSMAN: { advancesAfterKill: false },
   CATAPULT: { advancesAfterKill: false },
   BATTLESHIP: { splash: true },
+  // Tuning 5 (`pulp_wars-w49.4`): Open to ranged, the Human Guard only.
+  GUARD: { rangedDefense2: GUARD_RANGED_DEFENSE2_V7 },
   // Tuning 4 (`pulp_wars-w49.3`): a Human Raider is not stopped by hostile
   // zones of control (the Sabretooth's Prowl mechanic), so it slips past a
   // screen to the units behind it.
@@ -1365,7 +1445,7 @@ export const ORIGINAL_BASELINE_V5_TREE: FactionTechnologyTreeV7 = deepFreeze({
  * support and Chivalry grants no Overrun.
  */
 export const UNDEAD_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
-  ORIGINAL_BASELINE_V5_NODES.map((original) =>
+  SHARED_BASELINE_NODES_V7.map((original) =>
     node(
       original.id,
       original.branch,
@@ -1509,6 +1589,9 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // Tuning 5: the Human Swordsman's role, which this tree never unlocks;
+  // with no cost it is never trained or hired by this faction.
+  SWORDSMAN: role({ ...ORIGINAL_ROLE_RULES_V7.SWORDSMAN, cost: null }),
 });
 
 /**
@@ -1539,7 +1622,7 @@ export const UNDEAD_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
  * trade. Chivalry keeps Overrun (displayed as Ram).
  */
 export const GOBLIN_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
-  ORIGINAL_BASELINE_V5_NODES.map((original) =>
+  SHARED_BASELINE_NODES_V7.map((original) =>
     node(
       original.id,
       original.branch,
@@ -1691,6 +1774,9 @@ export const GOBLIN_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // Tuning 5: the Human Swordsman's role, which this tree never unlocks;
+  // with no cost it is never trained or hired by this faction.
+  SWORDSMAN: role({ ...ORIGINAL_ROLE_RULES_V7.SWORDSMAN, cost: null }),
 });
 
 /**
@@ -1737,7 +1823,7 @@ export const GOBLIN_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
  */
 export const DINOSAUR_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
   deepFreeze(
-    ORIGINAL_BASELINE_V5_NODES.map((original) =>
+    SHARED_BASELINE_NODES_V7.map((original) =>
       node(
         original.id,
         original.branch,
@@ -1900,6 +1986,9 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // Tuning 5: the Human Swordsman's role, which this tree never unlocks;
+  // with no cost it is never trained or hired by this faction.
+  SWORDSMAN: role({ ...ORIGINAL_ROLE_RULES_V7.SWORDSMAN, cost: null }),
 });
 
 /**
@@ -1942,7 +2031,7 @@ export const DINOSAUR_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
  */
 export const MARTIAN_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
   deepFreeze(
-    ORIGINAL_BASELINE_V5_NODES.map((original) =>
+    SHARED_BASELINE_NODES_V7.map((original) =>
       node(
         original.id,
         original.branch,
@@ -2115,6 +2204,9 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // Tuning 5: the Human Swordsman's role, which this tree never unlocks;
+  // with no cost it is never trained or hired by this faction.
+  SWORDSMAN: role({ ...ORIGINAL_ROLE_RULES_V7.SWORDSMAN, cost: null }),
 });
 
 /**
@@ -2178,7 +2270,7 @@ const ICE_FOLK_NAVAL_UNLOCKS_V7: Readonly<
 /** The Ice Folk technology nodes (see the comment above). */
 export const ICE_FOLK_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
   deepFreeze(
-    ORIGINAL_BASELINE_V5_NODES.map((original) =>
+    SHARED_BASELINE_NODES_V7.map((original) =>
       node(
         original.id,
         original.branch,
@@ -2354,6 +2446,9 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // Tuning 5: the Human Swordsman's role, which this tree never unlocks;
+  // with no cost it is never trained or hired by this faction.
+  SWORDSMAN: role({ ...ORIGINAL_ROLE_RULES_V7.SWORDSMAN, cost: null }),
 });
 
 /**
@@ -2411,7 +2506,7 @@ export const ICE_FOLK_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
  * Blasting Charges) keeps both of its unlocks and adds `BLASTING_CHARGES`.
  */
 export const DWARF_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
-  ORIGINAL_BASELINE_V5_NODES.map((original) =>
+  SHARED_BASELINE_NODES_V7.map((original) =>
     node(original.id, original.branch, original.tier, original.prerequisites, [
       ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
         unlock.kind === "CAPTAIN_SUPPORT"
@@ -2572,6 +2667,9 @@ export const DWARF_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // Tuning 5: the Human Swordsman's role, which this tree never unlocks;
+  // with no cost it is never trained or hired by this faction.
+  SWORDSMAN: role({ ...ORIGINAL_ROLE_RULES_V7.SWORDSMAN, cost: null }),
 });
 
 /** The Dwarf revision (section 10.2): the Steam Tank's Plated cap. */
@@ -2648,7 +2746,7 @@ export const DWARF_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
  * `PEPPERMINT_SURPRISE`. Raiding keeps `CHARGE_BONUS`.
  */
 export const CANDY_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
-  ORIGINAL_BASELINE_V5_NODES.map((original) =>
+  SHARED_BASELINE_NODES_V7.map((original) =>
     node(original.id, original.branch, original.tier, original.prerequisites, [
       ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
         unlock.kind === "CAPTAIN_SUPPORT"
@@ -2809,6 +2907,9 @@ export const CANDY_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // Tuning 5: the Human Swordsman's role, which this tree never unlocks;
+  // with no cost it is never trained or hired by this faction.
+  SWORDSMAN: role({ ...ORIGINAL_ROLE_RULES_V7.SWORDSMAN, cost: null }),
 });
 
 /** The Candy revision (section 5.2): a Rushed unit's extra Move. */

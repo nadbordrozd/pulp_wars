@@ -90,6 +90,8 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "../engine/v7/types",
       "../engine/v7/spatial-economy",
       "../engine/v7/view",
+      // Tuning 5 (`pulp_wars-w49.4`): army play (numbers and composition).
+      "./v7-army",
       "./v7-campaign",
       "./v7-endgame",
       // pulp_wars-68k.6: the siege of a single-file front (public view only).
@@ -325,7 +327,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // numbers (was 0a83be…b889).
       // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL, moving every later command kind forward by one
       // (was 65a17d…443f).
-      "bbf1abc3294f19706551de5c1880c793a99fed7a2cb32396ff984c5cd0dab503",
+      // Tuning 5 (`pulp_wars-w49.4`): the Normal AI's army play scores the
+      // candidates of a Human match (was bbf1ab…b503).
+      "59c61a9d57a52ebc5d7a7ca25f4e0fd87b0029182ee0ec5597e456ff411f4603",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -1016,7 +1020,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // cause), and de28fd…a6e4 before the pulp_wars-0hi.3 Human HP (same
     // comment: two Train Guard candidates and Research Scouting).
     expect(canonicalHash(withRevision12DecisionOrdinalsV7(sliced))).toBe(
-      "40c684dd355f0a96f2be20ad56fedeec73ddc493ea6788b72b1abf40071dc00c",
+      "0164394fab88ac447ec5eaacac28d8619abb88cb80d74cdb514a619303eb56f8",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -1069,11 +1073,16 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // 6b5002…9b1e).
       // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL, moving
       // every later command kind forward by one (was fb95f7…9f14).
-      "d5d6b7b018dc345a9f1d20c68d2352342df66ad5205f379eb8aa3f2103ad9a57",
+      // Tuning 5 (`pulp_wars-w49.4`): the view is a Human match with an
+      // enemy in sight, so the Normal AI's army play scores this subset
+      // (training at 1215, the hunts of visible units, research held
+      // behind units); was d5d6b7…9a57, and b8ab4b…15d7 with revision-12
+      // ordinals.
+      "abe516a52349ee792d8febde107056ab14c3fb755a4315f25d8179fe82b0c405",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
-    ).toBe("b8ab4b5022177b7713636746f64e3a309f2451cb3d8dd0dfc582e96e29e215d7");
+    ).toBe("afe478d95e34329f7f99bb450012b99cc8ff2dd0ce477482f39ccdeef33907ac");
     expect(canonicalHash(sync)).toBe(canonicalHash(sliced));
     expect(sync).toEqual(sliced);
   }, 15_000);
@@ -1086,7 +1095,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r47");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r48");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(
@@ -1334,8 +1343,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       ),
     ).toBe(false);
 
+    // Tuning 5 (`pulp_wars-w49.4`): an army seat's unit at half its HP or
+    // more fights on, so the surrounded unit here is a wounded one (5 of
+    // 12; a 10-HP one was disbanded before).
     const direct = fixtureState([
-      ["FIGHTER", ownAt, true, 10],
+      ["FIGHTER", ownAt, true, 5],
       ["FIGHTER", { x: 4, y: 4 }, false, 10],
       ["FIGHTER", { x: 4, y: 5 }, false, 10],
       ["FIGHTER", { x: 4, y: 6 }, false, 10],
@@ -1360,7 +1372,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const healthy = fixtureState([
       ["CATAPULT", { x: 3, y: 5 }, true, 10],
       ["CATAPULT", { x: 3, y: 6 }, true, 10],
-      ["GUARD", { x: 5, y: 5 }, false, 12],
+      // A Fighter (a Guard before tuning 5, `pulp_wars-w49.4`, which made
+      // the Guard so soft to shots that even the injured pair kills it).
+      ["FIGHTER", { x: 5, y: 5 }, false, 12],
     ]);
     const injured = checkedV7({
       ...healthy,

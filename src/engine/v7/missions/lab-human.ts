@@ -14,6 +14,12 @@ import type {
  * match reaches too late or too rarely to judge by hand. They are ordinary
  * mission definitions (no rule of their own), registered for the text
  * harness (`play:text -- lab`) and tests, and belong to no chapter.
+ *
+ * Tuning 5 (`pulp_wars-w49.4`, `7r48`): `LAB_BACKLINE` and `LAB_LATE` are
+ * revision 2: both sides have Engineering and field Swordsmen (the middle
+ * Fighter of each screen in `LAB_BACKLINE`, one Fighter of every front
+ * city in `LAB_LATE`). `LAB_SIEGE` is unchanged: its player can research
+ * Engineering (21 Coins) and train Swordsmen as a fifth way in.
  */
 const DRY_NAVAL_V7: readonly TechnologyIdV7[] = [
   "SHORECRAFT",
@@ -152,10 +158,11 @@ export const LAB_SIEGE_V7: MissionDefinitionV7 = {
 
 /**
  * `LAB_BACKLINE`: an army that leads with its screen. The AI advances
- * (`RUSH`) with four Catapults and three Marksmen behind two Guards and
- * three Fighters, one tile short of the player's line. The player has three
- * Knights, two Raiders, three Fighters, two Marksmen, a Catapult, and 40
- * Coins: the question is what reaches the Catapults.
+ * (`RUSH`) with four Catapults and three Marksmen behind two Guards, a
+ * Swordsman, and two Fighters, one tile short of the player's line. The
+ * player has three Knights, two Raiders, a Swordsman, two Fighters, two
+ * Marksmen, a Catapult, and 40 Coins: the question is what reaches the
+ * Catapults.
  *
  * ```text
  *      x 0123456789ABCD
@@ -177,7 +184,7 @@ export const LAB_SIEGE_V7: MissionDefinitionV7 = {
  */
 export const LAB_BACKLINE_V7: MissionDefinitionV7 = {
   id: "LAB_BACKLINE",
-  revision: 1,
+  revision: 2,
   hidden: true,
   mirror: true,
   size: 14,
@@ -216,6 +223,7 @@ export const LAB_BACKLINE_V7: MissionDefinitionV7 = {
         "RAIDING",
         "CHIVALRY",
         "DRILL",
+        "ENGINEERING",
         "FORTIFICATION",
       ],
       cities: [
@@ -232,7 +240,7 @@ export const LAB_BACKLINE_V7: MissionDefinitionV7 = {
         { role: "KNIGHT", at: { x: 4, y: 6 } },
         { role: "KNIGHT", at: { x: 4, y: 8 } },
         { role: "FIGHTER", at: { x: 5, y: 4 } },
-        { role: "FIGHTER", at: { x: 5, y: 6 } },
+        { role: "SWORDSMAN", at: { x: 5, y: 6 } },
         { role: "FIGHTER", at: { x: 5, y: 7 }, home: 1 },
         { role: "RAIDER", at: { x: 4, y: 3 }, home: 1 },
         { role: "RAIDER", at: { x: 4, y: 9 }, home: 1 },
@@ -254,6 +262,7 @@ export const LAB_BACKLINE_V7: MissionDefinitionV7 = {
         "SCOUTING",
         "ROADS",
         "DRILL",
+        "ENGINEERING",
       ],
       cities: [
         { at: { x: 11, y: 6 }, level: 4, rewards: ["SURVEY", "WALLS", "BOOM"] },
@@ -264,7 +273,7 @@ export const LAB_BACKLINE_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 7, y: 5 } },
         { role: "GUARD", at: { x: 7, y: 7 } },
         { role: "FIGHTER", at: { x: 7, y: 4 } },
-        { role: "FIGHTER", at: { x: 7, y: 6 } },
+        { role: "SWORDSMAN", at: { x: 7, y: 6 } },
         { role: "FIGHTER", at: { x: 7, y: 8 }, home: 1 },
         { role: "MARKSMAN", at: { x: 8, y: 5 } },
         { role: "MARKSMAN", at: { x: 8, y: 6 }, home: 1 },
@@ -310,7 +319,8 @@ type LateUnitV7 = readonly [UnitRoleIdV7, number, number];
 const LATE_FRONT_UNITS_V7: readonly LateUnitV7[] = [
   ["GUARD", 0, 0],
   ["FIGHTER", 1, -1],
-  ["FIGHTER", 1, 1],
+  // Tuning 5: Engineering is among the sixteen technologies.
+  ["SWORDSMAN", 1, 1],
   ["MARKSMAN", 0, -1],
   ["CATAPULT", 0, 1],
 ];
@@ -450,7 +460,7 @@ const LATE_TERRAIN_V7 = [
  */
 export const LAB_LATE_V7: MissionDefinitionV7 = {
   id: "LAB_LATE",
-  revision: 1,
+  revision: 2,
   hidden: true,
   mirror: true,
   size: 16,

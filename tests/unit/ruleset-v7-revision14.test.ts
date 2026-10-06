@@ -101,10 +101,10 @@ interface ArenaOptions {
 }
 
 describe("ruleset-7 revision-14 identity and roster", () => {
-  it("keeps rejecting r13 after the r47 identity and cleans the r13 through r46 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r47.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-34)).toEqual([
+  it("keeps rejecting r13 after the r48 identity and cleans the r13 through r47 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r48.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-35)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
@@ -139,6 +139,7 @@ describe("ruleset-7 revision-14 identity and roster", () => {
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
       "pulpWars.save.v7r46.current",
+      "pulpWars.save.v7r47.current",
     ]);
     const state = arena(["UNDEAD", "ORIGINAL"], []);
     expect(

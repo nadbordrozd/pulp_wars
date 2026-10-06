@@ -604,8 +604,10 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain(
       "ORIGINAL,UNDEAD,GOBLIN,DINOSAUR,MARTIAN,ICE_FOLK,DWARF,CANDY",
     );
-    expect(probe).toContain("table.cells !== 93");
-    expect(probe).toContain("table.empty !== 11");
+    // Tuning 5 (`pulp_wars-w49.4`): the Swordsman's row adds one unit and
+    // seven empty cells (93 and 11 before).
+    expect(probe).toContain("table.cells !== 94");
+    expect(probe).toContain("table.empty !== 18");
     expect(probe).toContain("filtered.cells.length !== 7");
     expect(probe).toContain(`.v7-gallery-chip[data-value="GOBLIN"]`);
     expect(probe).toContain('storedFilters.unitRows?.join() !== "CATAPULT"');
@@ -979,7 +981,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
       fastForwardObserved: true,
       hostTicks: 2,
     },
-    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r47", commandIndex: 3 },
+    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r48", commandIndex: 3 },
     ordinaryBoundary: {
       controllerOwnProperties: [],
       snapshotHasStateHash: false,

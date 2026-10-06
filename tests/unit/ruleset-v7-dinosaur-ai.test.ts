@@ -504,7 +504,7 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: signature research", () 
     ).priority;
   };
   const without = (
-    factions: readonly ["DINOSAUR" | "ORIGINAL", "ORIGINAL"],
+    factions: readonly ["DINOSAUR" | "ORIGINAL", "DINOSAUR" | "ORIGINAL"],
     ...techs: Parameters<typeof dinosaurTechsWithoutV7>
   ): GameStateV7 =>
     dinosaurFieldV7(factions, [own("FIGHTER", 8, 8), foe("FIGHTER", 1, 1)], {
@@ -553,9 +553,18 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: signature research", () 
   });
 
   it("changes nothing for a Human seat", () => {
-    const human = without(["ORIGINAL", "ORIGINAL"], "SAWMILLING", "CHIVALRY");
+    // Against a Dinosaur seat a Human seat keeps the old research order
+    // (below the signature priority). In a Human mirror its army play
+    // (tuning 5, `pulp_wars-w49.4`) researches toward its fighting roles at
+    // a priority of its own, never the Dinosaur one.
+    const human = without(["ORIGINAL", "DINOSAUR"], "SAWMILLING", "CHIVALRY");
     for (const tech of ["SAWMILLING", "CHIVALRY"] as const)
       expect(priority(human, 2, research(tech))).toBeLessThan(
+        SIGNATURE_RESEARCH_PRIORITY_V7,
+      );
+    const mirror = without(["ORIGINAL", "ORIGINAL"], "SAWMILLING", "CHIVALRY");
+    for (const tech of ["SAWMILLING", "CHIVALRY"] as const)
+      expect(priority(mirror, 2, research(tech))).not.toBe(
         SIGNATURE_RESEARCH_PRIORITY_V7,
       );
   });

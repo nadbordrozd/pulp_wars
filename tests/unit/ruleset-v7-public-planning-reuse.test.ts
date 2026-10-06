@@ -33,7 +33,7 @@ describe("ruleset-7 exact public planning reuse", () => {
     expect(warm.operations).toBeLessThan(cold.operations);
     expect(warm.result).toEqual(cold.result);
     expect(canonicalHash(warm.result)).toBe(
-      "6461cad4ba33a3092fda17a0a47a57e95259c2046724318b60f9f4b908304c86",
+      "fadb84607b2ce160b46f1f906d29868b117507da5630b9b8b3beb186a8ee4dc8",
     );
   });
 

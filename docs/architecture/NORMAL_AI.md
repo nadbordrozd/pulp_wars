@@ -1,5 +1,64 @@
 # Greedy Normal AI
 
+## Army play (`pulp_wars-w49.4`)
+
+**The Human tuning, round 5**
+([round 5](../product/RULESET_7_TUNING_HUMAN.md#12-round-5)). In four
+hand-played games the policy trained a unit every third turn, bought
+economy technologies with enemies at its gates, walked its garrison off
+walled centers, fed single units into pairs, and left its ranged units
+where they had no shot. Army play is the answer: field an army and use it.
+The numbers and the composition are in `src/ai/v7-army.ts`; the hooks are
+in `src/ai/v7.ts` (`context.army`, `armyAlertV7`, `armyMoveValueV7`,
+`armyHuntTargetsV7`, `armyResearchTargetV7`, `armyGarrisonHoldsV7`,
+`armyVacatesCenterV7`).
+
+**Who.** A Human, Undead, or Goblin seat in a match whose every seat is
+one of those three (`ARMY_PLAY_FACTIONS_V7`). A match with any other
+faction keeps that faction's pass and the older policy on both sides, so
+no pin or test of the other five factions moved for this reason. It is off
+while the seat's naval plan is active (it must cross water to reach
+anyone) and while the opening growth harvest is due.
+
+**Alert.** The seat is alert once an enemy city is known or a hostile land
+unit is visible within 6 tiles of an own center
+(`ARMY_ALERT_RADIUS_V7`). The rules below that say "while alert" are off
+before that, so the opening (villages, the free technology, the first
+harvests) is the campaign plan's as before.
+
+| Rule                  | What the policy does                                                                                                                                                                                                                                                                                                                                | Priority                                                     |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Units first           | While alert, `TRAIN` in a city with a free slot ranks above a city level, every building, and every research. The savings plan (hold Coins for a technology or a level) is off for an army seat.                                                                                                                                                    | 1215 (`ARMY_TRAINING_PRIORITY_V7`)                           |
+| Step aside            | The unit on an own center moves to a tile next to it when the city has a free slot, its action, and the Coins for the basic unit, so that the city trains in the same turn. A hostile unit near does not forbid it (the trained unit takes the center); it is exempt from the sole-defender rule.                                                   | 1216 (`ARMY_VACATE_PRIORITY_V7`)                             |
+| Composition           | The role trained is the offered one whose class is furthest below its share (`ARMY_SHARES_V7`: line 35, defender 15, ranged 20, siege 15, breakthrough 15; with two or more visible hostile ranged, siege, or support units: 30, 10, 20, 15, 25), the dearer role first in a class; one skirmisher from 5 units; one support unit per 4, at most 2. | the training utility                                         |
+| Research toward units | While alert and a fighting role of the tree is locked, the cheapest chain to one (support roles last, skirmishers never) is the research; any other research is not a candidate while that chain costs at most the Coins in hand plus 4 turns of income.                                                                                            | 1165 (`ARMY_RESEARCH_PRIORITY_V7`)                           |
+| Combined kills        | The hunt of `pulp_wars-9s0.8` takes every visible hostile land unit as a target (wounded first, at most 12): the units that can hit it this turn, moving in first where they must, attack when together they kill it. Ranged hunters go first; a hit that would be lethal to the hunter is left out; a faction's own rejections are honoured.       | 1171 a hunter's Move, 1172 its hit; a direct kill stays 1180 |
+| Engage                | A unit that may attack after moving moves to the tile from which its attack is a kill or deals clearly more than it takes (10 per HP dealt against 8 per HP taken).                                                                                                                                                                                 | 950 (`ARMY_ENGAGE_PRIORITY_V7`), above a chip attack (900)   |
+| Firing position       | A siege unit with no shot moves to a tile from which it has one next turn, if the visible enemies cannot kill it there in between (so not inside the reach of an enemy siege unit that would).                                                                                                                                                      | 740                                                          |
+| Approach              | A fighting unit at half HP or more with no errand walks toward the nearest visible hostile land unit within 5 tiles; a ranged unit stops at its range.                                                                                                                                                                                              | 720                                                          |
+| Together              | A routine Move does not take a melee unit alone into the heavy reach of more enemies (within 3) than it has friends beside it (within 2), nor a ranged, siege, or support unit into lethal reach or into any reach without an own melee unit nearer to the enemy.                                                                                   | a filter                                                     |
+| Garrison              | The unit on an own center makes no Move, and no attack that kills it or advances it off the center, while a hostile land unit is visible within 6 tiles, except the step aside and an action the tactical plan allows because another unit takes its place.                                                                                         | a filter                                                     |
+| Chip attacks          | The strategic value of an attack that does not kill is scaled by the share of the target's HP it removes, so two units prefer the same target.                                                                                                                                                                                                      | 900                                                          |
+| Disband               | A unit at half HP or more is never disbanded.                                                                                                                                                                                                                                                                                                       | a filter                                                     |
+
+**The damage estimate** reads the Human Guard's Defense 1 against an
+attack from two or more tiles (`roleDefense2AtDistanceV7`) with the
+attacker's longest range, so a melee threat is not overrated. The
+Swordsman is a `LINE` role in every role order; a faction without it never
+counts it as a missing role.
+
+**What it does not do.** It does not hire, does not blast as a weapon,
+does not build a Field Defense in answer to ranged units, and does not
+retreat a wounded unit to a Windmill. City attacks are the campaign
+plan's, unchanged. Nothing reads hidden state, draws from the PRNG, or
+depends on elapsed time.
+
+**Tests.** `tests/unit/ruleset-v7-tuning-5.test.ts` holds one constructed
+position for each rule above. The pins of recorded Human, Undead, and
+Goblin matches and of the retained late view were recomputed; the late
+view's decision is now the training of a Swordsman (21 candidates, 27
+before), stated in `scripts/ruleset-v7-late-public-view-contract.ts`.
+
 **The Human tuning, round 4** (`pulp_wars-w49.3`;
 [round 4](../product/RULESET_7_TUNING_HUMAN.md#11-round-4)): the policy was
 kept legal. It never uses `DRILL_UNIT`. At a level-5+ reward it takes the
@@ -26,7 +85,7 @@ Forest tile. It does not value Forestry for the cover.
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r47`. Role facts resolve through the unit's
+previews under `pulp-wars-poc-7r48`. Role facts resolve through the unit's
 kind (`unitFactionV7`: its owner's faction registration, or its original
 owner's while it is mind-controlled,
 [Mind Control revision](../product/RULESET_7_MIND_CONTROL.md)); the revision-13 Undead tactics, the revision-14

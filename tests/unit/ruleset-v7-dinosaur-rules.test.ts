@@ -1089,7 +1089,9 @@ describe("ruleset-7 Dinosaur Acid", () => {
       : next;
   };
 
-  it("ignores Walls and Field Defense: 4 damage instead of 2 (section 8.1)", () => {
+  // The numbers were 4 instead of 2 before
+  // tuning 5 (`pulp_wars-w49.4`): the Human Guard has Defense 1 against an attack from two or more tiles.
+  it("ignores Walls and Field Defense: 6 damage instead of 3 (section 8.1)", () => {
     const state = walled("DINOSAUR", true);
     expect(
       fortificationLevelForUnitV7(state, unitAtV7(state, { x: 8, y: 8 })),
@@ -1098,11 +1100,11 @@ describe("ruleset-7 Dinosaur Acid", () => {
     expect(combat(result.events)).toMatchObject({
       acid: true,
       attack2: 4,
-      defense2: 6,
+      defense2: 2,
       fortificationLevel: 0,
       defenseBonusNumerator: 1,
       defenseBonusDenominator: 1,
-      damageToDefender: 4,
+      damageToDefender: 6,
       retaliation: false,
     });
     // Acid destroys nothing: the Walls and the Field Defense stay.
@@ -1113,15 +1115,15 @@ describe("ruleset-7 Dinosaur Acid", () => {
         unitAtV7(result.state, { x: 8, y: 8 }),
       ),
     ).toBe(4);
-    // The Human Marksman of the same position deals 2 through the same forts.
+    // The Human Marksman of the same position deals 3 through the same forts.
     const human = walled("ORIGINAL", true);
     expect(
       combat(attack(human, { x: 6, y: 8 }, { x: 8, y: 8 }).events),
     ).toMatchObject({
       acid: false,
-      defense2: 14,
+      defense2: 10,
       fortificationLevel: 4,
-      damageToDefender: 2,
+      damageToDefender: 3,
     });
     // Each fortification source alone is ignored as well.
     const wallsOnly = walled("DINOSAUR", false);
@@ -1133,7 +1135,7 @@ describe("ruleset-7 Dinosaur Acid", () => {
     ).toBe(2);
     expect(
       combat(attack(wallsOnly, { x: 6, y: 8 }, { x: 8, y: 8 }).events),
-    ).toMatchObject({ acid: true, fortificationLevel: 0, damageToDefender: 4 });
+    ).toMatchObject({ acid: true, fortificationLevel: 0, damageToDefender: 6 });
   });
 
   it("ignores Forest and Mountain cover: 5 damage instead of 4 (section 8.1)", () => {

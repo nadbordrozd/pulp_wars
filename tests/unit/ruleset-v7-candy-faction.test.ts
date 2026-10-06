@@ -8,7 +8,7 @@ import {
   HOME_SWEET_HOME_RADIUS_V7,
   MILITIA_FIGHTERS_V7,
   MIND_CONTROLLED_LOST_ABILITIES_V7,
-  ORIGINAL_BASELINE_V5_NODES,
+  SHARED_BASELINE_NODES_V7,
   ORIGINAL_ROLE_RULES_V7,
   PEPPERMINT_DAMAGE_V7,
   RULESET_7,
@@ -609,8 +609,9 @@ describe("Candy roster (section 3)", () => {
   });
 
   it("has the Candy Showcase roster: one unit per role", () => {
+    // (Every role but the Human Swordsman of tuning 5.)
     expect(SHOWCASE_UNIT_TEMPLATES_V7.map((entry) => entry.role)).toEqual(
-      UNIT_ROLE_IDS_V7,
+      UNIT_ROLE_IDS_V7.filter((role) => role !== "SWORDSMAN"),
     );
     expect(TRAINABLE).toHaveLength(7);
   });
@@ -619,9 +620,9 @@ describe("Candy roster (section 3)", () => {
 describe("Candy technology (section 4)", () => {
   it("differs from the Human graph in four unlock entries and two display names", () => {
     expect(CANDY_BASELINE_V1_NODES).toHaveLength(
-      ORIGINAL_BASELINE_V5_NODES.length,
+      SHARED_BASELINE_NODES_V7.length,
     );
-    ORIGINAL_BASELINE_V5_NODES.forEach((human, index) => {
+    SHARED_BASELINE_NODES_V7.forEach((human, index) => {
       const candy = must(CANDY_BASELINE_V1_NODES[index], "node");
       expect([
         candy.id,
@@ -696,7 +697,10 @@ describe("Candy technology (section 4)", () => {
     });
     const candy = technologyCapabilitiesV7(all, "CANDY");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
-    expect(candy.trainableRoles).toEqual(human.trainableRoles);
+    // (The Swordsman of tuning 5 is the Humans' alone.)
+    expect(candy.trainableRoles).toEqual(
+      human.trainableRoles.filter((role) => role !== "SWORDSMAN"),
+    );
     expect(candy.commands).toEqual(
       human.commands.filter((command) => command !== "BUILD_FIELD_DEFENSE"),
     );

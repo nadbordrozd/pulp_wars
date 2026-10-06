@@ -58,35 +58,39 @@ describe("ruleset-7 exact public-planning performance", () => {
       id: "retained-command-1100",
       view: () => retained,
       commandHash:
-        "3d4141c353e8efe1e70a7884ec1e8304e3be76b6e79c3743267ff865aab4d50f",
+        "83c9a2dd6aa17b01f061cf3a5a0c4b4d0145a28902398e2d48aeb76a0378466e",
       resultHash:
-        "6461cad4ba33a3092fda17a0a47a57e95259c2046724318b60f9f4b908304c86",
-      // 4 097 since tuning 4 (one RESEARCH fewer in the retained view).
-      operations: 4_097,
+        "fadb84607b2ce160b46f1f906d29868b117507da5630b9b8b3beb186a8ee4dc8",
+      // 4 097 since tuning 4 (one RESEARCH fewer in the retained view);
+      // 4 099 since tuning 5 (`pulp_wars-w49.4`: two cities offer the
+      // Swordsman).
+      operations: 4_099,
     },
     {
       id: "captured-command-300",
       view: () => captured(300),
       commandHash:
-        "68b640b47cff455890b0d253cbbdf1dfe7a23bd38e7665d5d0cd7032a1e31651",
+        "5502396344ada787c473598f15d01569b7daa3a89e9b738b9ff630bb6ce4aa61",
       // Tuning 1 (`pulp_wars-w49.3`, 7r46): one contributor counts for one
       // Windmill, Sawmill, Forge, and Market and a Monument gives 2, so the
       // planned values differ (was b32cb8…1f5b and 66 235 operations).
       resultHash:
-        "29fefcd36ee4f6ae94c1bf36337092aeaa0128ca1613d96c07625c40edbc2f1e",
-      operations: 66_233,
+        "031d3bd645842f7a24e147b058472b9581adf801ee59c9f6489160458916d3bb",
+      // Tuning 5: the Swordsman offers (was 66 233).
+      operations: 66_236,
     },
     {
       id: "captured-command-425",
       view: () => captured(425),
       commandHash:
-        "1effba1c7759d740bb58c232774d2a9a88bf4f344ee97396ea094b6eabf3be6a",
+        "d632419ff73726f593d81042df870993e1671ab644636d9076bd203334f67344",
       // Revision 16 caps a Market at 3 Coins; with the cap at 4 the
       // revision-15 value 209b3326… returns.
       // Tuning 1 (7r46), as above (was c92698…dbc5 and 94 442 operations).
       resultHash:
-        "f6506196d5588ff09f07bcc463b96cc23effec774d2322931c097284c450a4a3",
-      operations: 94_438,
+        "2e06bb76fc5e1d219909cb43fb5a9f8783b2e6380228f040311ec3cac0f8623a",
+      // Tuning 5: the Swordsman offer (was 94 438).
+      operations: 94_439,
     },
   ] as const;
 

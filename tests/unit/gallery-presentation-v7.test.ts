@@ -43,8 +43,12 @@ describe("Gallery presentation", () => {
       for (const role of UNIT_ROLE_IDS_V7) {
         const cell = galleryUnitCellV7(role, faction);
         // The frozen sea: the Ice Folk have no ships (an empty cell).
+        // Tuning 5 (`pulp_wars-w49.4`): only the Humans have a Swordsman.
         expect(cell.kind).toBe(
-          faction === "ICE_FOLK" && isNavalRoleV7(role) ? "EMPTY" : "UNIT",
+          (faction === "ICE_FOLK" && isNavalRoleV7(role)) ||
+            (role === "SWORDSMAN" && faction !== "ORIGINAL")
+            ? "EMPTY"
+            : "UNIT",
         );
         if (cell.kind !== "UNIT") continue;
         expect(cell.name).toBe(effectiveRoleRuleV7(role, faction).label);

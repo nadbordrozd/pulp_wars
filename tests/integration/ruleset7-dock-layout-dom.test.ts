@@ -282,6 +282,8 @@ describe("Ruleset 7 selection dock layout", () => {
       "Hire Captain for 8 Coins",
       "Hire Catapult for 12 Coins",
       "Hire Knight for 14 Coins",
+      // Tuning 5 (`pulp_wars-w49.4`).
+      "Hire Swordsman for 8 Coins",
     ]);
     expect(hires[0]?.querySelector(".v7-action-label")?.textContent).toBe(
       "Hire Fighter",
@@ -291,21 +293,22 @@ describe("Ruleset 7 selection dock layout", () => {
       '[data-action="command-blast_mountain"]',
     );
     expect(blast.title).toBe(
-      "Blast · 5 damage on and around the tile, to your units too",
+      "Blast · 5 damage on and around the tile, to your units too except the one that sets it",
     );
-    // The own Fighter and the enemy Guard next to the Mountain.
-    expect(blast.dataset.blastHits).toBe("2");
+    // The enemy Guard next to the Mountain; the own Fighter sets the
+    // charge and is not hit (tuning 5, `pulp_wars-w49.4`).
+    expect(blast.dataset.blastHits).toBe("1");
     expect(blast.getAttribute("aria-label")).toContain(
-      "5 damage on and around the tile, to your units too",
+      "5 damage on and around the tile, to your units too except the one that sets it",
     );
-    expect(blast.querySelector('[data-friendly-fire="true"]')).not.toBeNull();
+    expect(blast.querySelector('[data-friendly-fire="true"]')).toBeNull();
     app.destroy();
   });
 
   // Tuning 4 (`pulp_wars-w49.3`): the Drill button of a unit on a Barracks
   // center, the price of a Land Grant the player cannot pay for yet, and
   // what a Blast Mountain of an Ore Mountain gives up.
-  it("shows Drill at a Barracks, a Land Grant that is too dear, and the Ore a blast gives up", () => {
+  it("shows no Drill at a Barracks, a Land Grant that is too dear, and the Ore a blast gives up", () => {
     const fixture = rewardStateV7("JUGGERNAUT", "ORIGINAL", [
       { role: "FIGHTER", at: at(8, 8) },
     ]);
@@ -314,18 +317,13 @@ describe("Ruleset 7 selection dock layout", () => {
       ...fixture.command,
       reward: "BARRACKS",
     }).state;
+    // Tuning 5 (`pulp_wars-w49.4`) removed Drill: no such button.
     const host = new RecordingBoardHost();
     const app = mount(withBarracks, host);
     selectUnitAt(withBarracks, host, at(8, 8));
-    const drill = requiredElement<HTMLElement>(
-      '[data-action="command-drill_unit"]',
-    );
-    expect(drill.querySelector(".v7-action-label")?.textContent).toBe(
-      "Drill (10 Coins)",
-    );
-    expect(drill.title).toBe(
-      "Drill: for 10 Coins the unit becomes a veteran, +5 HP and maximum HP, and its turn ends",
-    );
+    expect(
+      document.querySelector('[data-action="command-drill_unit"]'),
+    ).toBeNull();
     app.destroy();
 
     // 5 Coins: the Land Grant is not offered, and the panel says its price.
@@ -348,7 +346,7 @@ describe("Ruleset 7 selection dock layout", () => {
       requiredElement<HTMLElement>(
         '.v7-city-stats > [data-disabled-reason="land-grant-coins"]',
       ).textContent,
-    ).toBe("Land grant: 32 Coins for 16 tiles. Not enough Coins");
+    ).toBe("Land grant: 16 Coins for 16 tiles. Not enough Coins");
     expect(
       document.querySelector('[data-action="command-land_grant"]'),
     ).toBeNull();

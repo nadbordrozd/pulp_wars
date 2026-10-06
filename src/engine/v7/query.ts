@@ -54,6 +54,7 @@ import {
   unitMovementModeV7,
   unitRoleMechanicsV7,
   isRangedRoleRuleV7,
+  roleDefense2AtDistanceV7,
   unitRoleRuleV7,
   unitTakesCoverV7,
   cityUnitCapacityForV7,
@@ -78,7 +79,6 @@ import {
   BLAST_MOUNTAIN_COST_V7,
   cityBarracksV7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
-  DRILL_COST_V7,
 } from "../rules/ruleset-v7";
 import {
   attackGrantsEscapeV7,
@@ -134,6 +134,7 @@ import {
 } from "./dwarf";
 import {
   blastAreaV7,
+  blastSetterV7,
   isExplodingUnitV7,
   resolveExplosionChainV7,
   type BlastUnitV7,
@@ -1134,23 +1135,6 @@ function appendPublicUnitCommandsV7(
     !unitGrowsV7(view, unit)
   )
     candidates.push({ kind: "PROMOTE", unitId: unit.id });
-  // Tuning 4 (`pulp_wars-w49.3`): Drill, the paid Promotion on the center
-  // of an own city with a Barracks.
-  if (
-    !crashed &&
-    unit.form === "LAND" &&
-    !unit.veteran &&
-    !primaryUsedForQuery(unit) &&
-    !unitGrowsV7(view, unit) &&
-    player.coins >= DRILL_COST_V7 &&
-    view.cities.some(
-      (city) =>
-        city.ownerId === player.id &&
-        same(city.at, unit.at) &&
-        cityBarracksV7(city) > 0,
-    )
-  )
-    candidates.push({ kind: "DRILL_UNIT", unitId: unit.id });
   const tile = tileAtView(view, unit.at);
   if (
     player.researchedTechs.includes("RAIDING") &&
@@ -3416,6 +3400,11 @@ export function previewKaboomV7(
 /** Tuning 3: the previewed explosion of an offered Blast Mountain. */
 export interface BlastMountainPreviewV7 extends ExplosionChainPreviewV7 {
   readonly at: CoordV7;
+  /**
+   * Tuning 5 (`pulp_wars-w49.4`): the viewer's unit that sets the charge
+   * and is not hit (`blastSetterV7`), or null.
+   */
+  readonly setterUnitId: UnitId | null;
 }
 
 /**
@@ -3437,9 +3426,13 @@ export function previewBlastMountainV7(
   )
     return null;
   const simulation = createPublicChainSimulationV7(view);
+  const units = view.units.map(simulation.blastUnit);
+  // The viewer's own units are always visible, so the setter is exact.
+  const setter = blastSetterV7(units, view.viewer.id, at);
   return {
     at,
-    ...simulation.run(view.units.map(simulation.blastUnit), [
+    setterUnitId: setter?.id ?? null,
+    ...simulation.run(units, [
       {
         unit: {
           id: 0 as UnitId,
@@ -3450,6 +3443,7 @@ export function previewBlastMountainV7(
           hp: 0,
         },
         cause: "BLAST",
+        spared: setter?.id,
       },
     ]),
   };
@@ -7551,7 +7545,13 @@ function publicCombatPreviewCore(
       ? 2
       : target.form === "EGG"
         ? EGG_DEFENSE2_V7
-        : defenderRule.defense2 + fortificationLevel * 2;
+        : // Tuning 5: the Human Guard is open to ranged attacks.
+          roleDefense2AtDistanceV7(
+            defenderRule,
+            unitRoleMechanicsV7(view, target),
+            distance,
+          ) +
+          fortificationLevel * 2;
   // The Ice Folk revision section 6.2: Snow cover from the public Snow flag
   // (a hidden Witch's Blizzard is not known; `hiddenBlizzardPossible`).
   // `pulp_wars-1wy.3`: Snow cover is x 1.25 and yields to the x 1.5 of a
@@ -8113,6 +8113,7 @@ interface PublicChainSimulationV7 {
     initial: readonly {
       readonly unit: BlastUnitV7;
       readonly cause: ExplosionCauseV7;
+      readonly spared?: UnitId | undefined;
     }[],
     dependsOnUnexplored?: boolean,
     /** Field Defense the previewed command removed before the chain. */

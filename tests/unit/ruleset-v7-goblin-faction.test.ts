@@ -7,7 +7,7 @@ import {
   GOBLIN_BASELINE_V1_NODES,
   GOBLIN_ROLE_MECHANICS_V7,
   GOBLIN_ROLE_RULES_V7,
-  ORIGINAL_BASELINE_V5_NODES,
+  SHARED_BASELINE_NODES_V7,
   ORIGINAL_ROLE_MECHANICS_V7,
   ORIGINAL_ROLE_RULES_V7,
   PRIOR_RULESET_7_IDS,
@@ -81,12 +81,12 @@ import {
 // 9, and 13).
 
 describe("ruleset-7 revision-17 identity", () => {
-  it("keeps r16 among the prior identities after the r47 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r47.current");
-    expect(PRIOR_RULESET_7_IDS.at(-31)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(46);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-31)).toBe(
+  it("keeps r16 among the prior identities after the r48 identity and cleans the r16 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r48.current");
+    expect(PRIOR_RULESET_7_IDS.at(-32)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(47);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-32)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -507,6 +507,25 @@ describe("ruleset-7 Goblin roster", () => {
       null,
       null,
     ],
+    // Tuning 5 (`pulp_wars-w49.4`): the Human Swordsman's role, which the
+    // Goblin tree never unlocks and no Goblin seat trains (no cost).
+    SWORDSMAN: [
+      "Swordsman",
+      "LINE",
+      "ENGINEERING",
+      null,
+      15,
+      7,
+      5,
+      1,
+      1,
+      1,
+      1,
+      true,
+      ["ATTACK", "CAPTURE"],
+      null,
+      null,
+    ],
   };
 
   it("registers every value of the section-3 table", () => {
@@ -535,12 +554,20 @@ describe("ruleset-7 Goblin roster", () => {
       ]).toEqual(ROSTER[role]);
       expect(rule.tacticalRole).toBe(ORIGINAL_ROLE_RULES_V7[role].tacticalRole);
     }
-    // Capture: Goblin, Wolf Rider, Bomb Chucker, Orc Brute, Troll.
+    // Capture: Goblin, Wolf Rider, Bomb Chucker, Orc Brute, Troll (and the
+    // copied Human Swordsman role, which no Goblin seat fields).
     expect(
       UNIT_ROLE_IDS_V7.filter((role) =>
         GOBLIN_ROLE_RULES_V7[role].abilities.includes("CAPTURE"),
       ),
-    ).toEqual(["FIGHTER", "RAIDER", "MARKSMAN", "GUARD", "JUGGERNAUT"]);
+    ).toEqual([
+      "FIGHTER",
+      "RAIDER",
+      "MARKSMAN",
+      "GUARD",
+      "JUGGERNAUT",
+      "SWORDSMAN",
+    ]);
     // Boats are the Human boats.
     expect(GOBLIN_ROLE_RULES_V7.PATROL_BOAT).toEqual(
       ORIGINAL_ROLE_RULES_V7.PATROL_BOAT,
@@ -584,6 +611,7 @@ describe("ruleset-7 Goblin roster", () => {
       ["PATROL_BOAT", true, false, "HOSTILE", false, 1, false, 0],
       ["BATTLESHIP", true, true, "HOSTILE", false, 1, false, 0],
       ["SUBMARINE", true, false, "HOSTILE", false, 1, false, 0],
+      ["SWORDSMAN", true, false, "HOSTILE", false, 1, false, 0],
     ]);
     for (const table of [ORIGINAL_ROLE_MECHANICS_V7, UNDEAD_ROLE_MECHANICS_V7])
       for (const role of UNIT_ROLE_IDS_V7)
@@ -671,9 +699,9 @@ describe("ruleset-7 Goblin roster", () => {
 describe("ruleset-7 Goblin technology", () => {
   it("differs from the Human graph only in the Administration and Commerce unlocks", () => {
     expect(GOBLIN_BASELINE_V1_NODES).toHaveLength(
-      ORIGINAL_BASELINE_V5_NODES.length,
+      SHARED_BASELINE_NODES_V7.length,
     );
-    ORIGINAL_BASELINE_V5_NODES.forEach((human, index) => {
+    SHARED_BASELINE_NODES_V7.forEach((human, index) => {
       const goblin = GOBLIN_BASELINE_V1_NODES[index];
       if (goblin === undefined) throw new Error("node missing");
       expect([
@@ -736,7 +764,10 @@ describe("ruleset-7 Goblin technology", () => {
     ]);
     const goblin = technologyCapabilitiesV7(all, "GOBLIN");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
-    expect(goblin.trainableRoles).toEqual(human.trainableRoles);
+    // (The Swordsman of tuning 5 is the Humans' alone.)
+    expect(goblin.trainableRoles).toEqual(
+      human.trainableRoles.filter((role) => role !== "SWORDSMAN"),
+    );
     expect(goblin.roleSightRadius).toEqual({ RAIDER: 2, MARKSMAN: 2 });
     expect(goblin.forestMovementFreedomRoles).toEqual(["RAIDER", "MARKSMAN"]);
     expect(technologyCapabilitiesV7(["ROADS"], "GOBLIN").plunderCoins).toBe(0);

@@ -35,6 +35,9 @@ export const RULESET7_UNIT_ART_IDS = {
   // The naval branch: LEGACY has no Submarine art of its own and keeps the
   // Patrol Boat's (the CHIBI set has the Submarine, bead pulp_wars-5ti.6).
   SUBMARINE: "unit-original-patrol-boat",
+  // Tuning 5 (`pulp_wars-w49.4`): STAND-IN. The Swordsman has no art yet
+  // and is drawn as the Guard until its art bead lands.
+  SWORDSMAN: "unit-original-guard",
 } as const satisfies Readonly<Record<UnitRoleIdV7, string>>;
 
 export const RULESET7_PORTRAIT_ART_IDS = {
@@ -50,6 +53,8 @@ export const RULESET7_PORTRAIT_ART_IDS = {
   BATTLESHIP: "unit-original-battleship",
   // LEGACY stand-in, as above.
   SUBMARINE: "unit-original-patrol-boat",
+  // Tuning 5: STAND-IN, the Guard's portrait (see the unit above).
+  SWORDSMAN: "portrait-original-guard",
 } as const satisfies Readonly<Record<UnitRoleIdV7, string>>;
 
 export const RULESET7_FARM_ART_IDS = {

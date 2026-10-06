@@ -438,7 +438,9 @@ describe("Boulders and Planted (section 7.6)", () => {
       fortificationIgnored: 2,
       plantedApplied: true,
       attack2: 6,
-      damageToDefender: 7,
+      // 7 (and 4 after a Move) before
+      // tuning 5 (`pulp_wars-w49.4`): the Human Guard has Defense 1 against an attack from two or more tiles.
+      damageToDefender: 10,
     });
     // After a Move: Attack 2, not Planted.
     const moved = walledV7({
@@ -449,7 +451,7 @@ describe("Boulders and Planted (section 7.6)", () => {
     expect(attackV7(walked, at(8, 6), at(8, 8)).combat).toMatchObject({
       plantedApplied: false,
       attack2: 4,
-      damageToDefender: 4,
+      damageToDefender: 6,
     });
   });
 

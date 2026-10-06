@@ -521,7 +521,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     "src/engine/v7/candy.ts": 6,
     "src/engine/v7/candy-reducer.ts": 1,
     "src/engine/v7/combat.ts": 1,
-    "src/engine/v7/explosions.ts": 1,
+    // Tuning 5 (`pulp_wars-w49.4`): the unit that sets a Blast Mountain and
+    // is not hit is a land-form unit (an Egg, an embarked unit, and a boat
+    // set no charge).
+    "src/engine/v7/explosions.ts": 2,
     "src/engine/v7/graves.ts": 1,
     // `pulp_wars-5ti.3` (the frozen sea): a boat or an embarked unit on ice is
     // Icebound and makes no Move (canonical and public validation; an Egg is
@@ -542,7 +545,8 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // the reducer. An Egg, an embarked unit, and a boat must still fail it.
     // `pulp_wars-5ti.3`: Freeze is used by a land-form unit only (an Egg, an
     // embarked unit, and a boat must fail it).
-    "src/engine/v7/reducer.ts": 18,
+    // Tuning 5 (`pulp_wars-w49.4`) removed Drill and its land-form gate.
+    "src/engine/v7/reducer.ts": 17,
     "src/engine/v7/martian.ts": 1,
     // `pulp_wars-9s0.5`: only a land-form flyer stands on a Rift (an Egg,
     // an embarked unit, and a boat must fail the state check).
@@ -604,7 +608,14 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // `pulp_wars-ykw.7`: the capturer that stays ashore because it can walk
     // to an endgame target is a land-form unit (an Egg never boards, and an
     // embarked unit is already afloat).
-    "src/ai/v7.ts": 24,
+    // Tuning 5 (`pulp_wars-w49.4`), army play: the unit that steps off a
+    // center so the city trains, the garrison, the unit an army Move is
+    // valued for, and a hunted unit are land-form units (an Egg never moves
+    // or garrisons, and an embarked unit keeps the naval rules).
+    "src/ai/v7.ts": 28,
+    // Tuning 5: the army count takes land-form units only (an Egg and an
+    // embarked unit are in no fighting class).
+    "src/ai/v7-army.ts": 1,
   };
 
   it("has no unaudited not-LAND form test in the engine or the Normal AI", () => {

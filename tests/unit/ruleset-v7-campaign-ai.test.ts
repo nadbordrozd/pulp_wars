@@ -157,7 +157,9 @@ describe("ruleset-7 Normal AI campaign (pulp_wars-9s0.1)", () => {
     // A level-1 capital holds two units: one of two is under two thirds.
     const short = arena({ pieces: one, coins: 20, cityAction: true });
     expect(campaign(short)).toMatchObject({ atWar: true, warTraining: true });
-    expect(trainPriority(short)).toBe(1205);
+    // Tuning 5 (`pulp_wars-w49.4`): an alert Human seat trains before
+    // every research and construction (1215; the standing share was 1205).
+    expect(trainPriority(short)).toBe(1215);
     // Before any enemy city is known, production keeps its old place.
     const peace = arena({
       pieces: one,

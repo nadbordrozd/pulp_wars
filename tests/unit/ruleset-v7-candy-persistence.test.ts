@@ -94,8 +94,9 @@ describe("Candy Showcase (section 2.6)", () => {
     const { state } = created;
     const candy = seatIdV7(state, 0);
     const own = state.units.filter((unit) => unit.ownerId === candy);
+    // (Every role but the Human Swordsman of tuning 5.)
     expect(own.map((unit) => unit.role).sort()).toEqual(
-      [...UNIT_ROLE_IDS_V7].sort(),
+      UNIT_ROLE_IDS_V7.filter((role) => role !== "SWORDSMAN").sort(),
     );
     for (const unit of own)
       expect([unit.hp, unit.kills], unit.role).toEqual([

@@ -400,11 +400,13 @@ describe("headless parity and the CLI flag", () => {
         factions: ["ORIGINAL", "UNDEAD"],
         seed: 3,
         // Tuning 4 (`pulp_wars-w49.3`): 18 rounds (17 before), recomputed.
+        // Tuning 5 (`pulp_wars-w49.4`, the Normal AI's army play):
+        // recomputed.
         rounds: 18,
         commandHash:
-          "41fa97bee9871e414ae96bb9aa11fc6f370d4ce593cf75f628c2971c8b33c34d",
+          "62f237a834524c5b707d432053c3202fa20e58aec784f109df65486db4529c08",
         eventHash:
-          "20c02dd89388825900f94bf63549c68f8617e2784a0ead0ed5e2327248d214e2",
+          "f7f0a1c36326f5c5d411a0c3b2f582e139a7849a7ceba3c9a8d2e7ec03c1ed97",
         mapHash:
           "1f6ad08d476884229d6cb8a7319ea209b8667cf4e28e24cd07352ebafc3055de",
         finalPrngHash:
@@ -445,11 +447,14 @@ describe("headless parity and the CLI flag", () => {
         mapType: "ARCHIPELAGO",
         factions: ["MARTIAN", "ORIGINAL", "GOBLIN"],
         seed: 7,
-        rounds: 15,
+        // Tuning 5 (`pulp_wars-w49.4`: the Human Guard open to ranged
+        // attacks, Land Grant at 1 Coin a tile, the Swordsman): 14 rounds
+        // (15 before), recomputed.
+        rounds: 14,
         commandHash:
-          "ef2e6f1b4e589bad07cb1ad406b9d05c6a3ba7f93f93a610c8fca176f489c98d",
+          "f122e0c7538cd1846ede1d843227b53ad781e6320df364348c41c5a7aa934bca",
         eventHash:
-          "d375ba20cf45f56e033d85dee32b03504c2f7b33a608b41f435a2b3d7c8a0b54",
+          "9ed26229a227307d3dd5d0ae78fef9da05512cd64d4d9c167704cb0b08d3ae07",
         mapHash:
           "be112bd78cfeb3f5ae72a6b67f8f91bd45b81814c5d0cdad9abe7f31f221be5d",
         finalPrngHash:

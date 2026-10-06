@@ -144,6 +144,13 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::hasReachableScreenAtV7": "BOARD",
     "src/ai/v7.ts::hasReplacementPathWorkV7": "BOARD",
     "src/ai/v7.ts::huntPlansV7": "BOARD",
+    // Tuning 5 (`pulp_wars-w49.4`), army play: the army count, the units
+    // next to a Move's tile, the hunted hostile units and the line in front
+    // of a ranged unit are what stands on the board in the public view.
+    "src/ai/v7-army.ts::armyCountsV7": "BOARD",
+    "src/ai/v7.ts::armySupportedV7": "BOARD",
+    "src/ai/v7.ts::armyHuntTargetsV7": "BOARD",
+    "src/ai/v7.ts::armyScreenedV7": "BOARD",
     "src/ai/v7.ts::iceFolkAttackAdjustmentV7": "BOARD",
     "src/ai/v7.ts::iceFolkWoundedAtHomeV7": "BOARD",
     "src/ai/v7.ts::isPolicyCandidate": "BOARD",
@@ -329,7 +336,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::applyBlastMountain": "BOARD",
     "src/engine/v7/reducer.ts::applyHire": "BOARD",
     // Tuning 4: the drilled unit stands on a city center.
-    "src/engine/v7/reducer.ts::applyDrillUnit": "BOARD",
     "src/engine/v7/reducer.ts::applyKaboom": "BOARD",
     "src/engine/v7/reducer.ts::applyLayEgg": "BOARD",
     "src/engine/v7/reducer.ts::applyMindControl": "BOARD",

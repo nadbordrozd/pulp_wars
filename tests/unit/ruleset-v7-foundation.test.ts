@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -105,6 +105,8 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "BATTLESHIP",
       // The naval branch (`pulp_wars-5ti.2`).
       "SUBMARINE",
+      // Tuning 5 (`pulp_wars-w49.4`): the Human heavy line unit, last.
+      "SWORDSMAN",
     ]);
     // The naval branch adds Seamanship and Submersibles (23 -> 25).
     expect(TECHNOLOGY_IDS_V7).toHaveLength(25);
@@ -115,8 +117,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // BOMB_RUN, and ASSEMBLE (53) and four event kinds (81); the Candy
     // revision three more commands (56); the naval branch BOARD (57).
     // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL (59), and
-    // tuning 4 DRILL_UNIT after PROMOTE (60).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(60);
+    // tuning 4 DRILL_UNIT after PROMOTE (60), which tuning 5
+    // (`pulp_wars-w49.4`) removes again (59).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(59);
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
     // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,

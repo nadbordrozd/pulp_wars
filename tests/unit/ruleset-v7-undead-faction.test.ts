@@ -4,7 +4,7 @@ import {
   FACTION_IDS_V7,
   FACTION_TREES_V7,
   FACTION_TREE_IDS_V7,
-  ORIGINAL_BASELINE_V5_NODES,
+  SHARED_BASELINE_NODES_V7,
   ORIGINAL_ROLE_RULES_V7,
   RULESET_7,
   RULESET_7_ID,
@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r47.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r48.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r46 and preserves the r47 save", () => {
+  it("cleans obsolete keys through v7r47 and preserves the r48 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r46.current",
+      "pulpWars.save.v7r47.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(46);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(47);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -184,6 +184,7 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r44.current", "r44"],
       ["pulpWars.save.v7r45.current", "r45"],
       ["pulpWars.save.v7r46.current", "r46"],
+      ["pulpWars.save.v7r47.current", "r47"],
       [SAVE_STORAGE_KEY_V7, "r47"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
@@ -225,8 +226,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r44.current",
         "pulpWars.save.v7r45.current",
         "pulpWars.save.v7r46.current",
+        "pulpWars.save.v7r47.current",
       ],
-      removedCount: 35,
+      removedCount: 36,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -677,6 +679,22 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         true,
         ["ATTACK", "SUBMERGED", "TORPEDO"],
       ],
+      // Tuning 5 (`pulp_wars-w49.4`): the Human Swordsman's role, which
+      // the Undead tree never unlocks and no Undead seat trains (no cost).
+      SWORDSMAN: [
+        "Swordsman",
+        null,
+        15,
+        7,
+        5,
+        1,
+        1,
+        1,
+        1,
+        "ENGINEERING",
+        true,
+        ["ATTACK", "CAPTURE"],
+      ],
     };
     for (const role of UNIT_ROLE_IDS_V7) {
       const rule = effectiveRoleRuleV7(role, "UNDEAD");
@@ -755,14 +773,16 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       ["Battleship", 16, 25, 12, 8, 2, 3, 1, "ATTACK"],
       // The naval branch (`pulp_wars-5ti.2`).
       ["Submarine", 9, 12, 8, 4, 2, 1, 1, "ATTACK+SUBMERGED+TORPEDO"],
+      // Tuning 5 (`pulp_wars-w49.4`).
+      ["Swordsman", 5, 15, 7, 5, 1, 1, 1, "ATTACK+CAPTURE"],
     ]);
   });
 
   it("differs from the Human graph only in the Administration and Chivalry unlocks", () => {
     expect(UNDEAD_BASELINE_V1_NODES).toHaveLength(
-      ORIGINAL_BASELINE_V5_NODES.length,
+      SHARED_BASELINE_NODES_V7.length,
     );
-    ORIGINAL_BASELINE_V5_NODES.forEach((human, index) => {
+    SHARED_BASELINE_NODES_V7.forEach((human, index) => {
       const undead = UNDEAD_BASELINE_V1_NODES[index];
       if (undead === undefined) throw new Error("node missing");
       expect([
@@ -801,14 +821,19 @@ describe("ruleset-7 Undead roster and technology registration", () => {
     expect(undead).toBe(
       technologyCapabilitiesV7(["SCOUTING", "CHIVALRY"], "UNDEAD"),
     );
-    expect(undead.trainableRoles).toEqual(human.trainableRoles);
+    // (The Swordsman of tuning 5 is the Humans' alone.)
+    expect(undead.trainableRoles).toEqual(
+      human.trainableRoles.filter((role) => role !== "SWORDSMAN"),
+    );
     expect(undead.roleSightRadius).toEqual({ RAIDER: 2 });
     const all = technologyCapabilitiesV7(
-      ORIGINAL_BASELINE_V5_NODES.map((node) => node.id),
+      SHARED_BASELINE_NODES_V7.map((node) => node.id),
       "UNDEAD",
     );
     expect(all.trainableRoles).toEqual(
-      UNIT_ROLE_IDS_V7.filter((role) => role !== "JUGGERNAUT"),
+      UNIT_ROLE_IDS_V7.filter(
+        (role) => role !== "JUGGERNAUT" && role !== "SWORDSMAN",
+      ),
     );
     expect(all.forestMovementFreedomRoles).toEqual(["RAIDER", "MARKSMAN"]);
   });
@@ -854,6 +879,8 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       SCOUTING: "Raider",
       CHIVALRY: "Knight",
       DRILL: "Guard",
+      // Tuning 5 (`pulp_wars-w49.4`): the Human tree alone.
+      ENGINEERING: "Swordsman",
       SHORECRAFT: "Patrol Boat",
       NAVAL_ENGINEERING: "Battleship",
       SUBMERSIBLES: "Submarine",
@@ -1487,6 +1514,8 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
         effectiveRoleRuleV7(role, faction).abilities.includes("CAPTURE"),
       );
     // Tuning 2 (7r47): the Human Knight captures; the Vampire does not.
+    // Tuning 5: the Swordsman captures (the Undead table only copies the
+    // Human role and never fields it).
     expect(captures("ORIGINAL")).toEqual([
       "FIGHTER",
       "RAIDER",
@@ -1494,6 +1523,7 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
       "GUARD",
       "KNIGHT",
       "JUGGERNAUT",
+      "SWORDSMAN",
     ]);
     expect(captures("UNDEAD")).toEqual([
       "FIGHTER",
@@ -1501,6 +1531,7 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
       "MARKSMAN",
       "GUARD",
       "JUGGERNAUT",
+      "SWORDSMAN",
     ]);
 
     const state = arena(
@@ -1689,21 +1720,24 @@ describe("ruleset-7 all-Human parity digests", () => {
       // Tuning 4 (`pulp_wars-w49.3`: research priced by the technologies
       // owned, the reward ladder, land trade 1): the match ends in round 19
       // (206 commands), and every digest below was recomputed.
-      acceptedCommands: 206,
-      rounds: 19,
+      // Tuning 5 (`pulp_wars-w49.4`: the Normal AI's army play, the Guard
+      // open to ranged attacks, the Swordsman): the match ends in round 23
+      // (301 commands), and every digest below was recomputed.
+      acceptedCommands: 301,
+      rounds: 23,
       termination: "OUTCOME",
       mapHash:
         "251ae814b9c22679f8ed6b288c0a9ae2a06574b84b5b719521970f6f24a3e51c",
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "2657d427724d3b923b719c79b52e572e09c2cbec549eaa76c8278e57ab834842",
+        "6705af943ee210eca934da08bc04740eccfa0358ae3e9211075943d3f099426e",
       eventHash:
-        "092800f0afbad446689ced5d2dc1cc5c276eb713a3fb4af32a602ada921bb826",
+        "a2bd80f36db0fcd31b610ec1e43ca66f1d8d259fdecabbf7813ab2318e9960f2",
       normalizedFinalStateHash:
-        "8b2457c3b7b5ba76c5561f8e342485ff16ec9f2297f3a7e5829572e9927962a3",
+        "c83b0b3d8ddca897eb5959a8cbaec6f9c66a970ae061f0953645165439ddef98",
       normalizedHumanViewHash:
-        "d5b61bbb72ed5cf16074e7a76b5312c19825eb4c88ef78f2cdc3726dd1f676dc",
+        "10b4ce8bdcc7ceda8a94f1504415dd1adfdf0beca449959c4b604ad18c86c2d8",
       normalizedHumanCommandsHash:
         "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     },
@@ -1715,7 +1749,8 @@ describe("ruleset-7 all-Human parity digests", () => {
       mapType: "ARCHIPELAGO",
       maxRounds: 18,
       // Tuning 4: 309 commands (337 before), recomputed.
-      acceptedCommands: 309,
+      // Tuning 5: 313 commands, recomputed.
+      acceptedCommands: 313,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1723,15 +1758,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "b11910d95aeab8c56bbf6f72f63d4e6f6b30f7e43f842d8354e7badf23e1050c",
       commandHash:
-        "d98a02cad32ded35a400e11e0d4c80833b28011d9bc3726ec98ba3701766afe3",
+        "b9e726de91a2dd853f727fc076ef93a38fa4bc4484c12d12b0bbff41f2a43c27",
       eventHash:
-        "adf2d4c3a9e4c422f2b8dc4b4feac2d42db545cb59bfd869f4203c419052f6d0",
+        "812b8d24bf7550c48d9a4bda3745adb8a169bc1da85dddfbb4dadda49c426a45",
       normalizedFinalStateHash:
-        "c015222c2399bc0fb1260e38ae98e2651ac9087d405c1e26dce29324a78c68cd",
+        "397852ad317d8f5d0aae25fdd8f0397529b4ff23d0467684731a09773c850529",
       normalizedHumanViewHash:
-        "6fd97a031a37387a75ccd127d71c4b654e2628ba9acc5f1d0570404c2b99e24d",
+        "18748aa1dddd2bde19c90a75e30aaed1f50a18903baafec33b95fc6ac6b4e02f",
       normalizedHumanCommandsHash:
-        "c5df31bef454f0337fc51d9df1098e06ebdf7b37f05985621753351e7730f3f7",
+        "569da8f860a3df041fd0bf5c7a6c9ce177a4c86d44b282736664465d0302dea3",
     },
   ] as const;
 

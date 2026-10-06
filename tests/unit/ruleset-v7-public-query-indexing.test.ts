@@ -60,7 +60,7 @@ describe("ruleset-7 exact public query indexing", () => {
     const commands = queryPlayerCommandsV7(measured.view);
 
     expect(canonicalHash(commands)).toBe(
-      "68b640b47cff455890b0d253cbbdf1dfe7a23bd38e7665d5d0cd7032a1e31651",
+      "5502396344ada787c473598f15d01569b7daa3a89e9b738b9ff630bb6ce4aa61",
     );
     const reads = measured.reads();
     expect(reads.tileReads).toBeLessThan(6_000);
@@ -85,10 +85,11 @@ describe("ruleset-7 exact public query indexing", () => {
 
     const planned = drain(measured.view, commands, 113);
     expect(planned.operations).toBe(
-      66_233 + publicPlanningFactScanOperations(measured.view),
+      // Tuning 5 (`pulp_wars-w49.4`): the Swordsman offers (was 66 233).
+      66_236 + publicPlanningFactScanOperations(measured.view),
     );
     expect(canonicalHash(planned.result)).toBe(
-      "29fefcd36ee4f6ae94c1bf36337092aeaa0128ca1613d96c07625c40edbc2f1e",
+      "031d3bd645842f7a24e147b058472b9581adf801ee59c9f6489160458916d3bb",
     );
   });
 
@@ -127,11 +128,12 @@ describe("ruleset-7 exact public query indexing", () => {
         queryPlayerCommandsV7(leftView).length,
     );
     expect(rightOperations).toBe(
-      // 4 097 since tuning 4 (one RESEARCH fewer in the retained view).
-      4_097 + publicPlanningFactScanOperations(rightView),
+      // 4 097 since tuning 4 (one RESEARCH fewer in the retained view);
+      // 4 099 since tuning 5 (two cities offer the Swordsman).
+      4_099 + publicPlanningFactScanOperations(rightView),
     );
     expect(canonicalHash(leftResult)).toBe(
-      "6461cad4ba33a3092fda17a0a47a57e95259c2046724318b60f9f4b908304c86",
+      "fadb84607b2ce160b46f1f906d29868b117507da5630b9b8b3beb186a8ee4dc8",
     );
     expect(rightResult).toEqual(leftResult);
   });

@@ -70,8 +70,6 @@ import {
   HIRE_EXTRA_CAPACITY_V7,
   BLAST_MOUNTAIN_COST_V7,
   PILLAGE_COINS_V7,
-  DRILL_COST_V7,
-  cityBarracksV7,
 } from "../rules/ruleset-v7";
 import { hasExactKeysV7 } from "./schema";
 import {
@@ -170,6 +168,7 @@ import { resolveStartTurnPlagueV7 } from "./plague";
 import {
   isExplodingUnitV7,
   resolveStateExplosionChainV7,
+  blastSetterV7,
   type CreditedDeathV7,
   type ExplosionCauseV7,
 } from "./explosions";
@@ -736,8 +735,6 @@ function applyCommandCoreV7(
     return applyRecover(stateInput, state, actor, command.unitId);
   if (command.kind === "PROMOTE")
     return applyPromote(stateInput, state, actor, command.unitId);
-  if (command.kind === "DRILL_UNIT")
-    return applyDrillUnit(stateInput, state, actor, command.unitId);
   if (command.kind === "WAIT")
     return applyWait(stateInput, state, actor, command.unitId);
   if (command.kind === "CAPTURE")
@@ -1434,6 +1431,9 @@ function applyBlastMountain(
             activation: exhaustedActivation(),
           },
           cause: "BLAST",
+          // Tuning 5 (`pulp_wars-w49.4`): the unit that sets the charge
+          // is not hit.
+          spared: blastSetterV7(state.units, actor, at)?.id,
         },
       ],
       events,
@@ -5406,74 +5406,6 @@ function applyPromote(
       units: state.units.map((candidate) =>
         candidate.id === unitId
           ? { ...candidate, veteran: true, maxHp, hp: maxHp }
-          : candidate,
-      ),
-    }),
-    [{ kind: "UNIT_PROMOTED", unitId, maxHp }],
-  );
-}
-
-/**
- * Tuning 4 (`pulp_wars-w49.3`): Drill, the paid Promotion. The unit stands
- * on the center of an own city whose reward history holds a Barracks, has
- * not used its primary action, and is not a veteran yet; for `DRILL_COST_V7`
- * Coins it becomes one (maximum HP and HP both rise by the Promotion's
- * amount; it is not healed) and its turn ends.
- */
-function applyDrillUnit(
-  original: GameStateV7,
-  state: GameStateV7,
-  actor: PlayerId,
-  unitId: UnitStateV7["id"],
-): ApplyCommandResultV7 {
-  const actorCheck = validateUnitActor(state, actor, unitId);
-  if (!actorCheck.ok)
-    return rejected(original, actorCheck.code, actorCheck.params);
-  const unit = actorCheck.unit;
-  if (unitIsCrashedV7(state, unit.id))
-    return rejected(original, "UNIT_CRASHED", { unitId });
-  if (primaryUsed(unit) || unit.activation.overrunActive)
-    return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
-  const city = state.cities.find(
-    (candidate) => candidate.ownerId === actor && same(candidate.at, unit.at),
-  );
-  if (
-    unit.form !== "LAND" ||
-    unit.veteran ||
-    unitGrowsV7(state, unit) ||
-    city === undefined ||
-    cityBarracksV7(city) === 0
-  )
-    return rejected(original, "PROMOTION_NOT_ELIGIBLE", { unitId });
-  const player = requirePlayer(state, actor);
-  if (player.coins < DRILL_COST_V7)
-    return rejected(original, "INSUFFICIENT_COINS", { cost: DRILL_COST_V7 });
-  const maxHp = unit.maxHp + PROMOTION_HP_V7;
-  if (
-    !Number.isSafeInteger(maxHp) ||
-    state.commandIndex >= Number.MAX_SAFE_INTEGER
-  )
-    return rejected(original, "INTEGER_OVERFLOW");
-  return accepted(
-    checked({
-      ...state,
-      commandIndex: nextSafe(state.commandIndex),
-      players: debit(state.players, actor, DRILL_COST_V7),
-      units: state.units.map((candidate) =>
-        candidate.id === unitId
-          ? {
-              ...candidate,
-              veteran: true,
-              maxHp,
-              hp: candidate.hp + PROMOTION_HP_V7,
-              activation: {
-                ...candidate.activation,
-                moved: true,
-                escapeAvailable: false,
-                specialActed: true,
-                handled: true,
-              },
-            }
           : candidate,
       ),
     }),

@@ -114,6 +114,8 @@ describe("ruleset-7 technology", () => {
       ["BATTLESHIP", 16, 25, 12, 8, 2, 3, 1, "NAVAL_ENGINEERING", false],
       // The naval branch (`pulp_wars-5ti.2`).
       ["SUBMARINE", 9, 12, 8, 4, 2, 1, 1, "SUBMERSIBLES", true],
+      // Tuning 5 (`pulp_wars-w49.4`).
+      ["SWORDSMAN", 5, 15, 7, 5, 1, 1, 1, "ENGINEERING", true],
     ]);
     expect(Object.isFrozen(ORIGINAL_ROLE_RULES_V7)).toBe(true);
   });
@@ -231,7 +233,8 @@ describe("ruleset-7 technology", () => {
     expect(
       tree.nodes.find((node) => node.id === "NAVAL_ENGINEERING")?.effects,
     ).toContainEqual({ kind: "NAVAL_TRAINING_DISCOUNT", coins: 2 });
-    expect(capabilities.trainableRoles).toHaveLength(10);
+    // Ten roles and, since tuning 5, the Swordsman.
+    expect(capabilities.trainableRoles).toHaveLength(11);
     expect(capabilities.commands).toEqual(
       expect.arrayContaining(["BUILD_MINE", "PILLAGE", "DISBAND"]),
     );

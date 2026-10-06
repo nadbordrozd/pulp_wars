@@ -154,6 +154,12 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7.ts::computeSavingsPlanV7": "SEAT",
   "src/ai/v7.ts::undeadAttackValueV7": "SEAT",
   "src/ai/v7.ts::sharedCityContextWorkV7": "SEAT",
+  // Tuning 5 (`pulp_wars-w49.4`), army play: the match gate (every seat's
+  // faction), the seat's training roster and prices, and its research.
+  "src/ai/v7-army.ts::armyRoleScoreV7": "SEAT",
+  "src/ai/v7.ts::bareContext": "SEAT",
+  "src/ai/v7.ts::armyResearchTargetV7": "SEAT",
+  "src/ai/v7.ts::armyVacatesCenterV7": "SEAT",
   "src/ai/v7.ts::sharedTrainingCostV7": "SEAT",
   "src/ai/v7.ts::scoreCommandWithContext": "SEAT",
   "src/ai/v7.ts::raisedSkeletonDoomedV7": "SEAT",

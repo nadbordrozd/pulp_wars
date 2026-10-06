@@ -605,11 +605,11 @@ describe("ruleset-7 revision-17 Normal AI: exploder spacing", () => {
       );
     const near = cart(at(4, 5));
     const rocket = unitAtV7(near.state, at(4, 2)).id;
-    // (3, 3) is next to the Goblin at (2, 4); (4, 3) is alone.
+    // (3, 3) is next to the Goblin at (2, 4); (4, 3) is alone. Tuning 5
+    // (`pulp_wars-w49.4`): army play walks no siege unit into lethal reach
+    // either, so the lone tile is refused as well (it was allowed).
     expect(scoreCommandV7(near.view, move(rocket, at(3, 3))).priority).toBe(-1);
-    expect(
-      scoreCommandV7(near.view, move(rocket, at(4, 3))).priority,
-    ).toBeGreaterThanOrEqual(0);
+    expect(scoreCommandV7(near.view, move(rocket, at(4, 3))).priority).toBe(-1);
     const far = cart(at(9, 0));
     expect(
       scoreCommandV7(far.view, move(rocket, at(3, 3))).priority,

@@ -143,7 +143,8 @@ describe("the naval branch shapes", () => {
     expect(NAVAL_TECHS_V7).toEqual(NAVAL_BRANCH);
     // Earlier indices are unchanged.
     expect(TECHNOLOGY_IDS_V7.indexOf("NAVAL_ENGINEERING")).toBe(22);
-    expect(UNIT_ROLE_IDS_V7.slice(-3)).toEqual([
+    // (Tuning 5 appended the Swordsman after the three ships.)
+    expect(UNIT_ROLE_IDS_V7.slice(-4, -1)).toEqual([
       "PATROL_BOAT",
       "BATTLESHIP",
       "SUBMARINE",

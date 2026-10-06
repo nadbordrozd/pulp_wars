@@ -80,8 +80,6 @@ export type CommandV7 =
         | "RECOVER"
         | "CAPTURE"
         | "PROMOTE"
-        /** Tuning 4: the paid Promotion on a city center with a Barracks. */
-        | "DRILL_UNIT"
         | "PILLAGE"
         | "DISBAND"
         | "WAIT"
@@ -304,7 +302,6 @@ const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
   "RECOVER",
   "CAPTURE",
   "PROMOTE",
-  "DRILL_UNIT",
   "PILLAGE",
   "DISBAND",
   "WAIT",

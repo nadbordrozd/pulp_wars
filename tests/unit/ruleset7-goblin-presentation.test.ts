@@ -573,10 +573,12 @@ describe("Revision 17 Goblin board previews", () => {
     expect(target.previewNote).toBe("Gang Up +1");
     expect(target.previewWarnings).toEqual(["Bomb splash hits your Goblin"]);
     expect(target.splash).toEqual([
-      { at: AT.bombHelper, damage: 4, dies: false, friendly: true },
+      // (4 before tuning 5: the target is a Human Guard, which a ranged
+      // attack hits harder, and the splash is half of it.)
+      { at: AT.bombHelper, damage: 5, dies: false, friendly: true },
     ]);
     expect(target.semanticLabel).toContain(
-      "Splash affects 1 adjacent unit (1 yours) for 4.",
+      "Splash affects 1 adjacent unit (1 yours) for 5.",
     );
   });
 

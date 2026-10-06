@@ -83,7 +83,7 @@ const coinsOf = (state: GameStateV7, seat = 0): number =>
 
 describe("tuning 3 keeps the unpublished identity of tuning 2", () => {
   it("is 7r47", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
   });
 });
 
@@ -373,9 +373,13 @@ describe("Blast Mountain explodes", () => {
 
   it("in the player's territory: 5 damage to every unit on the tile and around it, friend and foe, and +1 population", () => {
     // The Mountain (7, 7) of the capital's territory, a foe on it, a foe
-    // and an own unit next to it, and an own unit two tiles away.
+    // and two own units next to it, and an own unit two tiles away.
+    // Tuning 5 (`pulp_wars-w49.4`): one own unit next to the Mountain sets
+    // the charge and is not hit (the weaker one, here the wounded Guard at
+    // (6, 8)); the other is hit like anyone.
     const pieces: GoblinPieceV7[] = [
       { seat: 0, role: "FIGHTER", at: at(8, 7) },
+      { seat: 0, role: "GUARD", at: at(6, 8), hp: 4 },
       { seat: 0, role: "FIGHTER", at: at(9, 9) },
       { seat: 1, role: "GUARD", at: at(7, 7) },
       { seat: 1, role: "FIGHTER", at: at(6, 6) },
@@ -438,6 +442,7 @@ describe("Blast Mountain explodes", () => {
     expect(unitAtV7(result.state, at(7, 7)).hp).toBe(12);
     expect(unitAtV7(result.state, at(6, 6)).hp).toBe(7);
     expect(unitAtV7(result.state, at(8, 7)).hp).toBe(7);
+    expect(unitAtV7(result.state, at(6, 8)).hp).toBe(4);
     expect(unitAtV7(result.state, at(9, 9)).hp).toBe(12);
     expect(tileV7(result.state, at(7, 7)).terrain).toBe("GRASS");
     expect(coinsOf(result.state)).toBe(coinsOf(state) - 3);
@@ -467,11 +472,12 @@ describe("Blast Mountain explodes", () => {
       cityId: null,
     });
     sameAsPreview(state, at(5, 3), result.events);
-    // The Guard loses its Mountain and 5 HP; the unit that set the charge
-    // takes 5 as well.
+    // The Guard loses its Mountain and 5 HP. Tuning 5
+    // (`pulp_wars-w49.4`): the unit that set the charge is not hit (it
+    // took 5 as well before).
     expect(unitAtV7(result.state, at(5, 3)).hp).toBe(12);
     expect(unitAtV7(result.state, at(6, 4)).hp).toBe(7);
-    expect(unitAtV7(result.state, at(5, 2)).hp).toBe(7);
+    expect(unitAtV7(result.state, at(5, 2)).hp).toBe(12);
     expect(tileV7(result.state, at(5, 3)).terrain).toBe("GRASS");
     expect(result.state.cities.map((item) => item.population)).toEqual(
       state.cities.map((item) => item.population),
@@ -520,7 +526,7 @@ describe("Blast Mountain explodes", () => {
     ).toHaveLength(2);
     expect(
       result.state.units.map((unit) => [unit.role, unit.hp, unit.kills]),
-    ).toEqual([["FIGHTER", 7, 0]]);
+    ).toEqual([["FIGHTER", 12, 0]]);
     expect(previewed(state, at(5, 3)).totals.hostileKills).toBe(2);
   });
 
@@ -696,6 +702,8 @@ describe("Commerce: a Market hires", () => {
           "CAPTAIN",
           "CATAPULT",
           "KNIGHT",
+          // Tuning 5 (`pulp_wars-w49.4`).
+          "SWORDSMAN",
         ] as const
       ).map((role) => ({ kind: "HIRE", cityId: city.id, at: MARKET, role })),
     );
@@ -785,7 +793,7 @@ describe("Commerce: a Market hires", () => {
     expect(
       offered(state).filter((command) => command.kind === "TRAIN"),
     ).toEqual([]);
-    expect(hires(state).length).toBe(7);
+    expect(hires(state).length).toBe(8);
     const result = applied(state, {
       kind: "HIRE",
       cityId: city.id,

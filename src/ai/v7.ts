@@ -17,6 +17,7 @@ import {
   chargeRunUpAttack2V7,
   effectiveRoleRuleV7,
   cityUnitCapacityForV7,
+  HUMAN_ONLY_ROLES_V7,
   factionTreeV7,
   isRallyTargetV7,
   roleMechanicsV7,
@@ -36,6 +37,7 @@ import {
   unitMayActAfterMoveV7,
   unitMayEnterMountainV7,
   unitRoleMechanicsV7,
+  roleDefense2AtDistanceV7,
   unitRoleRuleV7,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   type BasicEconomicCommandKindV7,
@@ -96,6 +98,28 @@ import {
   type EconomyGraphV7,
 } from "../engine/v7/spatial-economy";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
+import {
+  ARMY_ALERT_RADIUS_V7,
+  ARMY_APPROACH_PRIORITY_V7,
+  ARMY_APPROACH_RADIUS_V7,
+  ARMY_ENGAGE_PRIORITY_V7,
+  ARMY_FIRING_POSITION_PRIORITY_V7,
+  ARMY_GARRISON_RADIUS_V7,
+  ARMY_HUNT_ATTACK_PRIORITY_V7,
+  ARMY_HUNT_MOVE_PRIORITY_V7,
+  ARMY_HUNT_REACH_V7,
+  ARMY_PRESSURE_RADIUS_V7,
+  ARMY_RESEARCH_HOLD_TURNS_V7,
+  ARMY_RESEARCH_PRIORITY_V7,
+  ARMY_SUPPORT_RADIUS_V7,
+  ARMY_TRAINING_PRIORITY_V7,
+  ARMY_VACATE_PRIORITY_V7,
+  armyClassV7,
+  armyCountsV7,
+  armyPlayFactionV7,
+  armyRoleScoreV7,
+  type ArmyCountsV7,
+} from "./v7-army";
 import {
   campaignHasWorkAtV7,
   campaignHoldsMoveV7,
@@ -614,6 +638,26 @@ interface PolicyContextV7 {
   savings: SavingsPlanV7 | null | undefined;
   /** `pulp_wars-9s0.8`: the hunt plans (undefined until computed). */
   hunts: readonly HuntPlanV7[] | undefined;
+  /**
+   * Tuning 5 (`pulp_wars-w49.4`, `src/ai/v7-army.ts`): the seat plays the
+   * army rules (a Human, Undead, or Goblin seat).
+   */
+  readonly army: boolean;
+  /** Army play: the seat is alert (cached). */
+  armyAlert: boolean | null;
+  /** Army play: the composition counts (cached). */
+  armyCounts: ArmyCountsV7 | null;
+  /** Army play: the research target (undefined until computed). */
+  armyResearch:
+    { readonly tech: TechnologyIdV7; readonly cost: number } | null | undefined;
+  /** Army play: the composition score of each city's preferred training. */
+  readonly armyTrainingScoreByCity: Map<CityId, number>;
+  /** Army play: the visible hostile land units (cached). */
+  armyHostiles: readonly PublicUnitV7[] | null;
+  /** Army play: the own units with an offered attack (cached). */
+  armyAttackers: ReadonlySet<UnitId> | null;
+  /** Army play: the engagement of each own unit by destination (cached). */
+  readonly armyEngagements: Map<UnitId, ReadonlyMap<string, ArmyEngagementV7>>;
   /** `pulp_wars-9s0.1`: embarked units with no way forward (cached). */
   readonly strandedTransports: Map<UnitId, boolean>;
   redevelopmentMayChangeImprovement: Map<string, boolean>;
@@ -789,6 +833,7 @@ type SharedCityCommandV7 =
 
 const THREATENED_ROLE_ORDER = [
   "GUARD",
+  "SWORDSMAN",
   "FIGHTER",
   "CAPTAIN",
   "KNIGHT",
@@ -804,6 +849,7 @@ const GENERAL_ROLE_ORDER = [
   "CAPTAIN",
   "CATAPULT",
   "KNIGHT",
+  "SWORDSMAN",
   "FIGHTER",
 ] as const satisfies readonly UnitRoleIdV7[];
 
@@ -1571,6 +1617,16 @@ function bareContext(
     warTraining: null,
     savings: undefined,
     hunts: undefined,
+    army:
+      armyPlayFactionV7(view.viewer.faction) &&
+      view.players.every((player) => armyPlayFactionV7(player.faction)),
+    armyAlert: null,
+    armyCounts: null,
+    armyResearch: undefined,
+    armyHostiles: null,
+    armyAttackers: null,
+    armyTrainingScoreByCity: new Map(),
+    armyEngagements: new Map(),
     strandedTransports: new Map(),
     redevelopmentMayChangeImprovement: new Map(),
     sharedCityContextPrepared: false,
@@ -2996,6 +3052,27 @@ function savingsPlanV7(context: PolicyContextV7): SavingsPlanV7 | null {
 
 function computeSavingsPlanV7(context: PolicyContextV7): SavingsPlanV7 | null {
   const view = context.view;
+  // Tuning 5 (`pulp_wars-w49.4`): an army seat trains every turn, so it
+  // never holds training for a unit; it saves for the technology of its
+  // next fighting role (construction that does not level a city waits
+  // while that is at most two turns of income away). A single-file front
+  // keeps its siege savings.
+  if (context.army && context.chokepoint === null) {
+    if (context.threats.length > 0 || context.openingGrowthHarvest) return null;
+    const target = armyResearchTargetV7(context);
+    if (target === null) return null;
+    if (view.viewer.coins >= target.cost)
+      return {
+        role: null,
+        tech: target.tech,
+        cost: target.cost,
+        affordable: true,
+      };
+    return view.viewer.coins + SAVINGS_TURNS_V7 * armyIncomeV7(context) >=
+      target.cost
+      ? { role: null, tech: target.tech, cost: target.cost, affordable: false }
+      : null;
+  }
   if (
     context.tactical.campaign?.atWar !== true ||
     context.threats.length > 0 ||
@@ -3079,6 +3156,602 @@ function savingsHoldsV7(
   if (plan === null || plan.affordable || cost <= 0) return false;
   if (command.kind === "RESEARCH" && command.tech === plan.tech) return false;
   return context.view.viewer.coins - cost < plan.cost;
+}
+
+/**
+ * Tuning 5 (`pulp_wars-w49.4`): army play, the hooks of
+ * `src/ai/v7-army.ts`. Every helper returns its neutral answer for a seat
+ * that does not play the army rules (`context.army`).
+ *
+ * The visible hostile land units army play counts (never a Monster).
+ */
+function armyHostilesV7(context: PolicyContextV7): readonly PublicUnitV7[] {
+  if (context.armyHostiles !== null) return context.armyHostiles;
+  context.armyHostiles = context.lookup.visibleHostiles.filter(
+    (unit) =>
+      unit.form === "LAND" &&
+      unit.hp > 0 &&
+      context.curiosities?.monsterById.has(unit.id) !== true,
+  );
+  return context.armyHostiles;
+}
+
+/** An enemy city is known, or a hostile land unit is near an own center. */
+function armyAlertV7(context: PolicyContextV7): boolean {
+  if (!context.army || context.naval.active || context.openingGrowthHarvest)
+    return false;
+  if (context.armyAlert !== null) return context.armyAlert;
+  const view = context.view;
+  let result = context.tactical.campaign?.atWar === true;
+  if (!result) {
+    const hostiles = armyHostilesV7(context);
+    result =
+      hostiles.length > 0 &&
+      view.cities.some(
+        (city) =>
+          city.ownerId === view.viewer.id &&
+          hostiles.some(
+            (unit) => distance(unit.at, city.at) <= ARMY_ALERT_RADIUS_V7,
+          ),
+      );
+  }
+  context.armyAlert = result;
+  return result;
+}
+
+function armyCountsForContextV7(context: PolicyContextV7): ArmyCountsV7 {
+  context.armyCounts ??= armyCountsV7(
+    context.view,
+    (unit) =>
+      isHostile(context.view, unit.ownerId) &&
+      context.curiosities?.monsterById.has(unit.id) !== true,
+  );
+  return context.armyCounts;
+}
+
+/**
+ * The technology an alert seat researches next: the first step of the
+ * cheapest chain to a fighting role its tree unlocks and it cannot train
+ * yet (line, defender, ranged, siege, or breakthrough; never a role the
+ * match forbids, nor the Banshee against no living seat); once it has
+ * those, the chain to its support role (the Captain, the Necromancer, the
+ * Warboss). `cost` is that first step's price now.
+ */
+function armyResearchTargetV7(
+  context: PolicyContextV7,
+): { readonly tech: TechnologyIdV7; readonly cost: number } | null {
+  if (context.armyResearch !== undefined) return context.armyResearch;
+  interface Target {
+    readonly tech: TechnologyIdV7;
+    readonly cost: number;
+    readonly total: number;
+  }
+  let best: Target | null = null;
+  let support: Target | null = null;
+  if (armyAlertV7(context)) {
+    const view = context.view;
+    const faction = view.viewer.faction;
+    const forbidden = forbiddenTechnologiesV7(view.setup);
+    const uselessBanshee =
+      faction === "UNDEAD" &&
+      !hasLivingHostileSeatV7(view, (owner) => isHostile(view, owner));
+    for (const role of UNIT_ROLE_IDS_V7) {
+      const rule = effectiveRoleRuleV7(role, faction);
+      const unitClass = armyClassV7(rule);
+      if (
+        unitClass === null ||
+        unitClass === "SKIRMISHER" ||
+        rule.technology === null ||
+        rule.cost === null ||
+        view.viewer.researchedTechs.includes(rule.technology) ||
+        !factionUnlocksRoleV7(faction, role) ||
+        (uselessBanshee && role === "MARKSMAN")
+      )
+        continue;
+      const chain = researchChain(view, rule.technology);
+      const first = chain[0];
+      if (first === undefined || chain.some((tech) => forbidden.has(tech)))
+        continue;
+      const total = totalResearchCost(view, chain);
+      const target = {
+        tech: first,
+        cost: totalResearchCost(view, [first]),
+        total,
+      };
+      if (unitClass === "SUPPORT") {
+        if (support === null || total < support.total) support = target;
+      } else if (best === null || total < best.total) best = target;
+    }
+  }
+  const chosen: Target | null = best ?? support;
+  context.armyResearch =
+    chosen === null ? null : { tech: chosen.tech, cost: chosen.cost };
+  return context.armyResearch;
+}
+
+/** The seat's public city income a turn. */
+function armyIncomeV7(context: PolicyContextV7): number {
+  return context.view.cities.reduce(
+    (total, city) =>
+      city.ownerId === context.view.viewer.id
+        ? total + attributableCityIncome(context.view, city)
+        : total,
+    0,
+  );
+}
+
+/**
+ * Other research waits while the army's next technology is within
+ * `ARMY_RESEARCH_HOLD_TURNS_V7` turns of income.
+ */
+function armyResearchHoldsV7(
+  context: PolicyContextV7,
+  tech: TechnologyIdV7,
+): boolean {
+  if (!context.army) return false;
+  const target = armyResearchTargetV7(context);
+  return (
+    target !== null &&
+    target.tech !== tech &&
+    target.cost <=
+      context.view.viewer.coins +
+        ARMY_RESEARCH_HOLD_TURNS_V7 * armyIncomeV7(context)
+  );
+}
+
+/**
+ * A step off an own center so that its city can train: the city has a free
+ * slot and its action, the seat has the Coins for its basic unit, and the
+ * step ends next to the center (never on another center). A hostile unit
+ * near the center does not forbid it: the city trains in the same turn, so
+ * the center is never left empty and the city has two defenders, where a
+ * garrison that stays put can never be reinforced.
+ */
+function armyVacatesCenterV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): boolean {
+  if (!armyAlertV7(context) || actor.form !== "LAND") return false;
+  const view = context.view;
+  const city = context.lookup.citiesByKey.get(coordKey(actor.at));
+  return (
+    city !== undefined &&
+    city.ownerId === view.viewer.id &&
+    distance(to, city.at) === 1 &&
+    city.cityActionAvailable !== false &&
+    freeCapacity(view, city.id) > 0 &&
+    view.viewer.coins >=
+      (effectiveRoleRuleV7("FIGHTER", view.viewer.faction).cost ?? 0) &&
+    !context.lookup.citiesByKey.has(coordKey(to))
+  );
+}
+
+/** The Move of `armyVacatesCenterV7`, as a command. */
+function armyStepsAsideToTrainV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" | "ATTACK" }>,
+): boolean {
+  if (command.kind !== "MOVE") return false;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const to = command.path.at(-1);
+  return (
+    actor !== undefined &&
+    to !== undefined &&
+    armyVacatesCenterV7(context, actor, to)
+  );
+}
+
+/**
+ * The garrison: the unit on an own center stays while a hostile land unit
+ * is visible within `ARMY_GARRISON_RADIUS_V7`. It does not move (except the
+ * step that lets the city train a second defender) and makes no attack that
+ * kills it or takes it off the center while another such unit is near.
+ */
+function armyGarrisonHoldsV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" | "ATTACK" }>,
+): boolean {
+  if (!context.army) return false;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  if (
+    actor === undefined ||
+    actor.form !== "LAND" ||
+    actor.ownerId !== view.viewer.id
+  )
+    return false;
+  const city = context.lookup.citiesByKey.get(coordKey(actor.at));
+  if (city === undefined || city.ownerId !== view.viewer.id) return false;
+  const near = armyHostilesV7(context).filter(
+    (unit) => distance(unit.at, city.at) <= ARMY_GARRISON_RADIUS_V7,
+  );
+  if (near.length === 0) return false;
+  // The tactical plan lets a threatened city's defender act when another
+  // own unit can take its place this turn; so does the garrison rule.
+  if (
+    context.tactical.defenderReplacementActionKeys.has(
+      policyCommandKeyV7(command),
+    )
+  )
+    return false;
+  if (command.kind === "MOVE") {
+    const to = command.path.at(-1);
+    return to === undefined || !armyVacatesCenterV7(context, actor, to);
+  }
+  const preview = queryCombatPreviewV7(
+    view,
+    command.unitId,
+    command.targetUnitId,
+  );
+  if (preview === null) return false;
+  if (preview.attackerDies) return true;
+  return (
+    preview.advances && near.some((unit) => unit.id !== command.targetUnitId)
+  );
+}
+
+/** What a unit's attack from a destination is worth (army play). */
+interface ArmyEngagementV7 {
+  readonly targetId: UnitId;
+  /** 10 per HP dealt, 8 per HP taken, and a kill's value. */
+  readonly value: number;
+  readonly kills: boolean;
+}
+
+/**
+ * The retaliation a unit attacking from `attacker.at` at `range` would take
+ * from `target`: the engine's formula on the target's base Defense and
+ * present HP, none outside the target's own range.
+ */
+function armyRetaliationV7(
+  context: PolicyContextV7,
+  attacker: PublicUnitV7,
+  target: PublicUnitV7,
+  range: number,
+): number {
+  const view = context.view;
+  const targetFacts = publicCombatFacts(view, target, context.lookup);
+  if (
+    range < targetFacts.minimumRange ||
+    range > targetFacts.maximumRange ||
+    targetFacts.attack2 <= 0
+  )
+    return 0;
+  const facts = publicCombatFacts(view, attacker, context.lookup);
+  if (!Number.isInteger(facts.attack2)) return 0;
+  // The engine's retaliation formula (current rules section 13.2) on the
+  // target's base Defense: force = Defense x HP / maximum HP on both sides.
+  const defense2 = unitRoleRuleV7(view, target).defense2;
+  const attackOnCommon =
+    BigInt(facts.attack2) * BigInt(attacker.hp) * 2n * BigInt(target.maxHp);
+  const defenseOnCommon =
+    BigInt(defense2) * BigInt(target.hp) * 2n * BigInt(attacker.maxHp);
+  const total = attackOnCommon + defenseOnCommon;
+  if (total <= 0n) return 0;
+  const numerator = defenseOnCommon * BigInt(defense2) * 9n;
+  const denominator = total * 4n;
+  return Math.min(
+    attacker.hp,
+    Number((2n * numerator + denominator) / (2n * denominator)),
+  );
+}
+
+const NO_ARMY_ENGAGEMENTS_V7: ReadonlyMap<string, ArmyEngagementV7> = new Map();
+
+/**
+ * For each offered destination of a fresh own land unit, its best attack
+ * from there on a visible hostile land unit, when that attack is an
+ * acceptable exchange: a kill, or more dealt than taken by the measure of
+ * the attack filter (10 per HP dealt against 8 per HP taken) without dying.
+ */
+function armyEngagementsForV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+): ReadonlyMap<string, ArmyEngagementV7> {
+  const cached = context.armyEngagements.get(actor.id);
+  if (cached !== undefined) return cached;
+  const view = context.view;
+  let result = NO_ARMY_ENGAGEMENTS_V7;
+  const hostiles = armyHostilesV7(context);
+  if (
+    hostiles.length > 0 &&
+    actor.ownerId === view.viewer.id &&
+    actor.form === "LAND" &&
+    !actor.activation.moved &&
+    primaryReadyForPolicyV7(actor)
+  ) {
+    const facts = publicCombatFacts(view, actor, context.lookup);
+    if (facts.abilities.includes("ATTACK") && facts.attack2 > 0) {
+      const found = new Map<string, ArmyEngagementV7>();
+      for (const to of context.lookup.moveDestinationsByUnit.get(actor.id) ??
+        []) {
+        const moved = { ...actor, at: to };
+        let best: ArmyEngagementV7 | null = null;
+        for (const target of hostiles) {
+          const range = distance(to, target.at);
+          if (range < facts.minimumRange || range > facts.maximumRange)
+            continue;
+          const dealt = publicProjectedDamageWithLookupV7(
+            view,
+            moved,
+            target,
+            target.at,
+            {},
+            context.lookup,
+          );
+          if (dealt <= 0) continue;
+          const kills = dealt >= target.hp;
+          const taken = kills
+            ? 0
+            : armyRetaliationV7(context, moved, target, range);
+          if (!kills && (taken >= actor.hp || 10 * dealt - 8 * taken <= 0))
+            continue;
+          const value =
+            10 * dealt -
+            8 * taken +
+            (kills
+              ? 20 + targetStrategicValue(view, target.id, context.lookup)
+              : 0);
+          if (
+            best === null ||
+            value > best.value ||
+            (value === best.value && target.id < best.targetId)
+          )
+            best = { targetId: target.id, value, kills };
+        }
+        if (best !== null) found.set(coordKey(to), best);
+      }
+      result = found;
+    }
+  }
+  context.armyEngagements.set(actor.id, result);
+  return result;
+}
+
+/**
+ * Whether a unit that ends on `to` has company: at least as many own
+ * attack-capable land units within `ARMY_SUPPORT_RADIUS_V7` of it, itself
+ * included, as visible hostile ones within `ARMY_PRESSURE_RADIUS_V7`.
+ */
+function armySupportedV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): boolean {
+  const view = context.view;
+  const fights = (unit: PublicUnitV7): boolean => {
+    const facts = publicCombatFacts(view, unit, context.lookup);
+    return facts.abilities.includes("ATTACK") && facts.attack2 > 0;
+  };
+  let pressure = 0;
+  for (const unit of armyHostilesV7(context))
+    if (distance(unit.at, to) <= ARMY_PRESSURE_RADIUS_V7 && fights(unit))
+      pressure += 1;
+  if (pressure <= 1) return true;
+  let support = 1;
+  for (const unit of view.units)
+    if (
+      unit.id !== actor.id &&
+      unit.ownerId === view.viewer.id &&
+      unit.form === "LAND" &&
+      distance(unit.at, to) <= ARMY_SUPPORT_RADIUS_V7 &&
+      fights(unit)
+    )
+      support += 1;
+  return support >= pressure;
+}
+
+/** The own units with an offered attack now. */
+function armyOfferedAttackersV7(context: PolicyContextV7): ReadonlySet<UnitId> {
+  if (context.armyAttackers !== null) return context.armyAttackers;
+  const attackers = new Set<UnitId>();
+  for (const command of context.commands)
+    if (command.kind === "ATTACK") attackers.add(command.unitId);
+  context.armyAttackers = attackers;
+  return attackers;
+}
+
+/** Puts a ranged hunter's Move ahead of every melee hunter's. */
+const ARMY_RANGED_FIRST_VALUE_V7 = 1000;
+
+/** Combined kills an army seat plans in one decision, the dearest first. */
+const ARMY_HUNT_TARGETS_V7 = 12;
+
+/**
+ * The targets army play adds to the hunts of `pulp_wars-9s0.8`: every
+ * visible hostile land unit with an own land unit within
+ * `ARMY_HUNT_REACH_V7`, the most valuable first.
+ */
+function armyHuntTargetsV7(
+  context: PolicyContextV7,
+  already: readonly PublicUnitV7[],
+): readonly PublicUnitV7[] {
+  if (!context.army) return [];
+  const view = context.view;
+  const own = view.units.filter(
+    (unit) => unit.ownerId === view.viewer.id && unit.form === "LAND",
+  );
+  return (
+    armyHostilesV7(context)
+      .filter(
+        (target) =>
+          !already.includes(target) &&
+          own.some(
+            (unit) => distance(unit.at, target.at) <= ARMY_HUNT_REACH_V7,
+          ),
+      )
+      .map((target) => ({
+        target,
+        value: targetStrategicValue(view, target.id, context.lookup),
+      }))
+      // A wounded unit first: the hits of this turn's earlier commands are
+      // followed up before a new target is opened.
+      .sort(
+        (left, right) =>
+          Number(right.target.hp < right.target.maxHp) -
+            Number(left.target.hp < left.target.maxHp) ||
+          right.value - left.value ||
+          left.target.id - right.target.id,
+      )
+      .slice(0, ARMY_HUNT_TARGETS_V7)
+      .map((entry) => entry.target)
+  );
+}
+
+/** Routine Moves: exploration, the objective, pickets, and siege staging. */
+const ARMY_ROUTINE_MOVE_MAXIMUM_V7 = 735;
+
+/**
+ * Army play for a land Move (`src/ai/v7-army.ts`): the step off a center
+ * that lets its city train; the Move into an acceptable exchange for a unit
+ * that may attack after it (not below half its HP unless it kills, and not
+ * alone into lethal reach); the Move of a unit that cannot (a siege unit)
+ * to a tile with a shot next turn that it survives until then, when it has
+ * no shot now; and the routine Move that would take a ranged, siege, or
+ * support unit into reach, or a melee unit alone into heavy reach, which
+ * waits for the others.
+ */
+function armyMoveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  priority: number,
+): { readonly priority: number; readonly strategic: number } {
+  const unchanged = { priority, strategic: 0 };
+  if (!context.army || actor.form !== "LAND") return unchanged;
+  if (armyVacatesCenterV7(context, actor, to))
+    return {
+      priority: Math.max(priority, ARMY_VACATE_PRIORITY_V7),
+      strategic: 1,
+    };
+  if (armyHostilesV7(context).length === 0) return unchanged;
+  const view = context.view;
+  // The garrison of a center with a hostile unit near goes nowhere on its
+  // own account (the candidate filter holds it; where the tactical plan
+  // lets it act because a replacement stands by, the old scores decide).
+  const center = context.lookup.citiesByKey.get(coordKey(actor.at));
+  if (
+    center !== undefined &&
+    center.ownerId === view.viewer.id &&
+    armyHostilesV7(context).some(
+      (unit) => distance(unit.at, center.at) <= ARMY_GARRISON_RADIUS_V7,
+    )
+  )
+    return unchanged;
+  const danger = visibleImmediateDamage(view, actor, to, context);
+  const engagement = armyEngagementsForV7(context, actor).get(coordKey(to));
+  if (engagement !== undefined) {
+    if (unitMayActAfterMoveV7(view, actor)) {
+      if (
+        engagement.kills ||
+        (actor.hp * 2 >= actor.maxHp &&
+          (danger < actor.hp || armySupportedV7(context, actor, to)))
+      )
+        return {
+          priority: Math.max(priority, ARMY_ENGAGE_PRIORITY_V7),
+          strategic: engagement.value - 4 * danger,
+        };
+    } else if (
+      publicCombatFacts(view, actor, context.lookup).maximumRange > 1 &&
+      danger < actor.hp &&
+      !armyOfferedAttackersV7(context).has(actor.id)
+    )
+      return {
+        priority: Math.max(priority, ARMY_FIRING_POSITION_PRIORITY_V7),
+        strategic: engagement.value - 4 * danger,
+      };
+  }
+  // Approach: toward the nearest visible hostile land unit.
+  let approach = 0;
+  const facts = publicCombatFacts(view, actor, context.lookup);
+  const job = context.tactical.campaign?.assignmentByUnitId.get(actor.id)?.job;
+  if (
+    facts.abilities.includes("ATTACK") &&
+    facts.attack2 > 0 &&
+    actor.hp * 2 >= actor.maxHp &&
+    job !== "VILLAGE" &&
+    job !== "CHEST" &&
+    job !== "EXPLORE" &&
+    job !== "RETURN"
+  ) {
+    const target = armyNearestHostileV7(context, actor.at);
+    if (target !== null) {
+      const from = distance(actor.at, target.at);
+      const next = distance(to, target.at);
+      if (
+        from <= ARMY_APPROACH_RADIUS_V7 &&
+        next < from &&
+        next >= facts.maximumRange
+      ) {
+        priority = Math.max(priority, ARMY_APPROACH_PRIORITY_V7);
+        approach = 1 + ARMY_APPROACH_RADIUS_V7 - next;
+      }
+    }
+  }
+  const moved = { priority, strategic: approach };
+  if (priority < 0 || priority > ARMY_ROUTINE_MOVE_MAXIMUM_V7 || danger <= 0)
+    return moved;
+  if (danger <= visibleImmediateDamage(view, actor, actor.at, context))
+    return moved;
+  const unitClass = armyClassV7(unitRoleRuleV7(view, actor));
+  const fragile =
+    unitClass === "RANGED" || unitClass === "SIEGE" || unitClass === "SUPPORT";
+  if (
+    fragile
+      ? danger >= actor.hp || !armyScreenedV7(context, actor, to)
+      : danger * 2 >= actor.hp && !armySupportedV7(context, actor, to)
+  )
+    return { priority: -1, strategic: 0 };
+  return moved;
+}
+
+/** The nearest visible hostile land unit (then the weakest, the lowest ID). */
+function armyNearestHostileV7(
+  context: PolicyContextV7,
+  at: CoordV7,
+): PublicUnitV7 | null {
+  let best: PublicUnitV7 | null = null;
+  for (const unit of armyHostilesV7(context))
+    if (
+      best === null ||
+      distance(unit.at, at) < distance(best.at, at) ||
+      (distance(unit.at, at) === distance(best.at, at) &&
+        (unit.hp < best.hp || (unit.hp === best.hp && unit.id < best.id)))
+    )
+      best = unit;
+  return best;
+}
+
+/**
+ * Whether a ranged, siege, or support unit on `to` stands behind its own
+ * line: an own melee unit (line, defender, or breakthrough) is nearer than
+ * `to` to the hostile land unit nearest to `to`.
+ */
+function armyScreenedV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): boolean {
+  const view = context.view;
+  const hostile = armyNearestHostileV7(context, to);
+  if (hostile === null) return true;
+  const gap = distance(to, hostile.at);
+  return view.units.some((unit) => {
+    if (
+      unit.id === actor.id ||
+      unit.ownerId !== view.viewer.id ||
+      unit.form !== "LAND" ||
+      distance(unit.at, hostile.at) >= gap
+    )
+      return false;
+    const unitClass = armyClassV7(unitRoleRuleV7(view, unit));
+    return (
+      unitClass === "LINE" ||
+      unitClass === "DEFENDER" ||
+      unitClass === "BREAKTHROUGH"
+    );
+  });
 }
 
 function* publicThreatenedTilesWorkV7(
@@ -3432,7 +4105,16 @@ function isPolicyCandidate(
   if (
     (command.kind === "MOVE" || command.kind === "ATTACK") &&
     leavesSoleThreatenedDefender(context, command) &&
-    !defenderActionException(context, command)
+    !defenderActionException(context, command) &&
+    // Tuning 5 (`pulp_wars-w49.4`): the step beside the center that lets
+    // the city train is no desertion; the trained unit takes the center.
+    !armyStepsAsideToTrainV7(context, command)
+  )
+    return false;
+  // Tuning 5 (`pulp_wars-w49.4`): the garrison of a center stays.
+  if (
+    (command.kind === "MOVE" || command.kind === "ATTACK") &&
+    armyGarrisonHoldsV7(context, command)
   )
     return false;
   // Map curiosities (`pulp_wars-737.4`): the Spider and the Fountain.
@@ -3461,13 +4143,27 @@ function isPolicyCandidate(
   // pulp_wars-68k.6: the fire on a single-file front goes to one holder.
   if (command.kind === "ATTACK" && chokepointOffFocusV7(context, command))
     return false;
-  if (
-    command.kind === "ATTACK" &&
-    isLowValueAttackV7(context, command) &&
+  if (command.kind === "ATTACK" && isLowValueAttackV7(context, command)) {
     // pulp_wars-9s0.8: a hunter's share of a planned kill is not low value.
-    huntOfV7(context, command.unitId)?.target.id !== command.targetUnitId
-  )
-    return false;
+    const hunt = huntOfV7(context, command.unitId);
+    if (hunt?.target.id !== command.targetUnitId) return false;
+    // Tuning 5: an army plan excuses a poor exchange, never an attack a
+    // faction rule rejects (friendly bomb splash, a fed Zombie, ...).
+    if (hunt.army) {
+      const preview = queryCombatPreviewV7(
+        context.view,
+        command.unitId,
+        command.targetUnitId,
+      );
+      const actor = context.lookup.unitsById.get(command.unitId);
+      if (
+        preview === null ||
+        actor === undefined ||
+        attackFactionRejectedV7(context, command, actor, preview)
+      )
+        return false;
+    }
+  }
   const autoembark = isAutoembarkMoveV7(context, command);
   if (autoembark && !context.naval.active) return false;
   // pulp_wars-ykw.7: the mirror of the endgame landing below: a capturer
@@ -3521,6 +4217,14 @@ function isPolicyCandidate(
     )
       return false;
   }
+  // Tuning 5 (`pulp_wars-w49.4`): research toward the army's next role
+  // first.
+  if (
+    command.kind === "RESEARCH" &&
+    !normalOpeningResearchPendingV7(context.view) &&
+    armyResearchHoldsV7(context, command.tech)
+  )
+    return false;
   // pulp_wars-9s0.8: the savings plan holds research it cannot spare.
   if (
     command.kind === "RESEARCH" &&
@@ -3544,8 +4248,7 @@ function isPolicyCandidate(
   // Tuning 3 (`pulp_wars-w49.3`): the Normal AI does not hire, and it
   // blasts a Mountain only as the economic action it was: in its own
   // territory, when the blast would hit none of its own or allied units.
-  // Tuning 4: nor does it Drill (the paid Promotion at a Barracks).
-  if (command.kind === "HIRE" || command.kind === "DRILL_UNIT") return false;
+  if (command.kind === "HIRE") return false;
   if (command.kind === "BLAST_MOUNTAIN") {
     const tile = findPublicTileV7(context.view, command.at);
     const blast = previewBlastMountainV7(context.view, command.at);
@@ -3729,17 +4432,17 @@ function preservesEstablishedImprovementV7(
   );
 }
 
-function isLowValueAttackV7(
+/**
+ * The attacks a faction's own rule rejects whatever the exchange: one that
+ * feeds a Zombie, exposes a Vampire, splashes own units with a bomb, and
+ * the Dinosaur, Martian, and Ice Folk rejections.
+ */
+function attackFactionRejectedV7(
   context: PolicyContextV7,
   command: Extract<CommandV7, { kind: "ATTACK" }>,
+  actor: PublicUnitV7,
+  preview: CombatPreviewV7,
 ): boolean {
-  const preview = queryCombatPreviewV7(
-    context.view,
-    command.unitId,
-    command.targetUnitId,
-  );
-  const actor = context.lookup.unitsById.get(command.unitId);
-  if (preview === null || actor === undefined) return true;
   if (context.undead && feedsZombieV7(context, command, preview)) return true;
   if (
     context.undead &&
@@ -3758,11 +4461,23 @@ function isLowValueAttackV7(
     martianAttackRejectedV7(context, command, actor, preview)
   )
     return true;
-  if (
-    context.iceFolk &&
-    iceFolkAttackRejectedV7(context, command, actor, preview)
-  )
-    return true;
+  return (
+    context.iceFolk && iceFolkAttackRejectedV7(context, command, actor, preview)
+  );
+}
+
+function isLowValueAttackV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+): boolean {
+  const preview = queryCombatPreviewV7(
+    context.view,
+    command.unitId,
+    command.targetUnitId,
+  );
+  const actor = context.lookup.unitsById.get(command.unitId);
+  if (preview === null || actor === undefined) return true;
+  if (attackFactionRejectedV7(context, command, actor, preview)) return true;
   const immediate =
     combatImmediateValue(preview, context.view) +
     (context.undead ? biteHarmAdjustmentV7(context, actor, preview) : 0);
@@ -4403,6 +5118,10 @@ function* sharedCityContextWorkV7(
       ? SPITTER_BIAS_V7
       : 0);
 
+  const armyCounts =
+    context.army && armyAlertV7(context)
+      ? armyCountsForContextV7(context)
+      : null;
   for (const [cityId, shared] of sharedByCity) {
     const city = citiesById.get(cityId);
     let neutral = 0;
@@ -4598,6 +5317,8 @@ function* sharedCityContextWorkV7(
         savings !== null &&
         !savings.affordable &&
         !threatened &&
+        // Tuning 5: an army seat's technology goal never holds training.
+        !(context.army && savings.role === null) &&
         command.kind !== "LAND_GRANT" &&
         !(
           command.kind === "TRAIN_NAVAL" &&
@@ -4631,39 +5352,56 @@ function* sharedCityContextWorkV7(
                 patrolBoats + battleships + submarines >= 2
               )));
       if (eligible) {
+        // Tuning 5 (`pulp_wars-w49.4`): an alert army seat trains the role
+        // its composition lacks most (`src/ai/v7-army.ts`), with the
+        // faction's own adjustments on top.
+        const armyScore =
+          armyCounts !== null && command.kind === "TRAIN"
+            ? armyRoleScoreV7(
+                view.viewer.faction,
+                command.role,
+                armyCounts,
+                threatened,
+              ) +
+              trainingAdjustment(command.role) +
+              10 * cityAdjustment(command.role)
+            : null;
         const utility =
-          command.kind === "LAND_GRANT"
-            ? neutral * 7 - 18
-            : command.kind === "TRAIN" || command.kind === "LAY_EGG"
-              ? (effectiveRoleRuleV7(command.role, view.viewer.faction).maxHp +
-                  Number(command.role === "GUARD" && threatened) * 20 +
-                  Number(siegeRole(command.role) && durableScreen) * 12 +
-                  trainingAdjustment(command.role) +
-                  cityAdjustment(command.role) +
-                  layEggAdjustmentV7(view, command, threatened) +
-                  dinosaurProductionAdjustmentV7(
-                    view,
-                    command,
-                    productionCity,
-                  ) +
-                  martianAdjustment(command.role, threatened, false) +
-                  iceAdjustment(command.role, threatened, false) +
-                  dwarfAdjustment(command.role, threatened, false) +
-                  candyAdjustment(command.role, threatened) +
-                  savingsValue(command.role) -
-                  (savingsRole === command.role
-                    ? 2 *
-                      (effectiveRoleRuleV7(command.role, view.viewer.faction)
-                        .cost ?? 0)
-                    : 0)) *
-                  3 -
-                cost * 4 +
-                (savingsRole === command.role ? cost * 4 : 0) +
-                Number(preferredLand?.role === command.role) * 18
-              : (command.role === "PATROL_BOAT" ? 32 : 38) -
-                cost * 4 +
-                Number(preferredNaval === command.role) * 125 -
-                Number(needsCenterDefender) * 100;
+          armyScore !== null
+            ? ARMY_TRAINING_UTILITY_V7 + armyScore
+            : command.kind === "LAND_GRANT"
+              ? neutral * 7 - 18
+              : command.kind === "TRAIN" || command.kind === "LAY_EGG"
+                ? (effectiveRoleRuleV7(command.role, view.viewer.faction)
+                    .maxHp +
+                    Number(command.role === "GUARD" && threatened) * 20 +
+                    Number(siegeRole(command.role) && durableScreen) * 12 +
+                    trainingAdjustment(command.role) +
+                    cityAdjustment(command.role) +
+                    layEggAdjustmentV7(view, command, threatened) +
+                    dinosaurProductionAdjustmentV7(
+                      view,
+                      command,
+                      productionCity,
+                    ) +
+                    martianAdjustment(command.role, threatened, false) +
+                    iceAdjustment(command.role, threatened, false) +
+                    dwarfAdjustment(command.role, threatened, false) +
+                    candyAdjustment(command.role, threatened) +
+                    savingsValue(command.role) -
+                    (savingsRole === command.role
+                      ? 2 *
+                        (effectiveRoleRuleV7(command.role, view.viewer.faction)
+                          .cost ?? 0)
+                      : 0)) *
+                    3 -
+                  cost * 4 +
+                  (savingsRole === command.role ? cost * 4 : 0) +
+                  Number(preferredLand?.role === command.role) * 18
+                : (command.role === "PATROL_BOAT" ? 32 : 38) -
+                  cost * 4 +
+                  Number(preferredNaval === command.role) * 125 -
+                  Number(needsCenterDefender) * 100;
         const tie = fallbackTie(view, command, city?.at);
         if (
           best === null ||
@@ -4678,6 +5416,11 @@ function* sharedCityContextWorkV7(
       yield;
     }
     context.preferredSharedCityActionByCity.set(cityId, best);
+    if (armyCounts !== null && best?.kind === "TRAIN")
+      context.armyTrainingScoreByCity.set(
+        cityId,
+        bestUtility - ARMY_TRAINING_UTILITY_V7,
+      );
     yield;
   }
   context.sharedCityContextPrepared = true;
@@ -4713,6 +5456,9 @@ function undeadTrainingAdjustmentsV7(
     adjustments.set("KNIGHT", 20);
   return adjustments;
 }
+
+/** Army play: a composition choice outranks every other shared city action. */
+const ARMY_TRAINING_UTILITY_V7 = 100_000;
 
 /** Coins at which expensive breakthrough units become worth training. */
 const RICH_TREASURY_COINS_V7 = 18;
@@ -5215,6 +5961,17 @@ function scoreCommandWithContext(
       priority = Math.max(priority, 1070);
   }
 
+  // Tuning 5 (`pulp_wars-w49.4`): the army's next fighting role.
+  if (
+    command.kind === "RESEARCH" &&
+    priority >= 0 &&
+    context.army &&
+    armyResearchTargetV7(context)?.tech === command.tech
+  ) {
+    priority = Math.max(priority, ARMY_RESEARCH_PRIORITY_V7);
+    strategicValue = Math.max(strategicValue, 100);
+  }
+
   // pulp_wars-9s0.8: the saved-for technology is researched first.
   if (
     command.kind === "RESEARCH" &&
@@ -5236,6 +5993,13 @@ function scoreCommandWithContext(
       priority = Math.max(priority, SAVINGS_BUY_PRIORITY_V7);
     immediateValue = -trainingCostV7(view, command);
     strategicValue = trainingStrategicValue(context, command);
+    // Tuning 5 (`pulp_wars-w49.4`): an alert army seat trains before any
+    // research and construction, the role it lacks most first.
+    if (command.kind === "TRAIN" && armyAlertV7(context)) {
+      priority = Math.max(priority, ARMY_TRAINING_PRIORITY_V7);
+      strategicValue =
+        1000 + (context.armyTrainingScoreByCity.get(command.cityId) ?? 0);
+    }
   }
 
   if (command.kind === "HATCH") {
@@ -5873,6 +6637,12 @@ function scoreCommandWithContext(
         priority = Math.max(priority, 1195);
         strategicValue += retreat;
       }
+    }
+    // Tuning 5 (`pulp_wars-w49.4`): army play (`src/ai/v7-army.ts`).
+    if (context.army && resultAt !== null && !autoembark && !chest) {
+      const army = armyMoveValueV7(context, actor, resultAt, priority);
+      priority = army.priority;
+      strategicValue += army.strategic;
     }
     if (autoembark) {
       priority = Math.max(priority, 1300);
@@ -6831,6 +7601,12 @@ const HUNT_TARGET_ABILITIES_V7 = [
 ] as const;
 
 interface HuntPlanV7 {
+  /**
+   * Tuning 5 (`pulp_wars-w49.4`): a combined kill of army play on an
+   * ordinary unit. Its Moves and hits rank below a direct kill, and an
+   * attack a faction rule rejects takes no part in it.
+   */
+  readonly army: boolean;
   readonly target: PublicUnitV7;
   /** The hunters; `true` for one that strikes from where it stands. */
   readonly hunters: ReadonlyMap<UnitId, boolean>;
@@ -6860,7 +7636,7 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
   // turn makes a plan. (No Monster has a hunt-target ability or stands on a
   // center, so without the curiosity facts the list is unchanged.)
   const monsters = context.curiosities?.monsterById ?? null;
-  const targets = [
+  const namedTargets = [
     ...context.lookup.visibleHostiles.filter(
       (unit) =>
         monsters?.has(unit.id) !== true &&
@@ -6868,21 +7644,31 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
     ),
     ...(context.curiosities?.monsters.map((monster) => monster.unit) ?? []),
   ];
+  // Tuning 5 (`pulp_wars-w49.4`, `src/ai/v7-army.ts`): an army seat plans a
+  // combined kill on every visible hostile land unit in reach. Such a
+  // target needs no capturer; and in every hunt of an army seat a hunter
+  // serves one kill, and one whose hit would be answered with its death
+  // takes no part.
+  const armyTargets = new Set(armyHuntTargetsV7(context, namedTargets));
+  const targets = [...namedTargets, ...armyTargets];
+  const armyHunters = new Set<UnitId>();
   // Indexed once per decision: the offered attacks and each unit's Moves
   // that a hunter may make (not boarding, not leaving a sole defender).
   const offeredAttacks = new Set<string>();
   const movesByUnit = new Map<UnitId, CoordV7[]>();
   if (targets.length > 0)
     for (const command of context.commands) {
-      if (command.kind === "ATTACK")
-        offeredAttacks.add(`${command.unitId}:${command.targetUnitId}`);
-      else if (command.kind === "MOVE") {
+      if (command.kind === "ATTACK") {
+        if (!armyGarrisonHoldsV7(context, command))
+          offeredAttacks.add(`${command.unitId}:${command.targetUnitId}`);
+      } else if (command.kind === "MOVE") {
         const to = command.path.at(-1);
         const boards = isAutoembarkMoveV7(context, command as CommandV7);
         if (
           to === undefined ||
           boards ||
-          leavesSoleThreatenedDefender(context, command)
+          leavesSoleThreatenedDefender(context, command) ||
+          armyGarrisonHoldsV7(context, command)
         )
           continue;
         const list = movesByUnit.get(command.unitId) ?? [];
@@ -6891,7 +7677,8 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
       }
     }
   for (const target of targets) {
-    const siege = siegeTargetV7(context, target);
+    const army = armyTargets.has(target);
+    const siege = !army && siegeTargetV7(context, target);
     const candidates: {
       readonly unit: PublicUnitV7;
       readonly damage: number;
@@ -6905,7 +7692,8 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
         unit.ownerId !== view.viewer.id ||
         unit.form !== "LAND" ||
         unit.hp <= 0 ||
-        !primaryReadyForPolicyV7(unit)
+        !primaryReadyForPolicyV7(unit) ||
+        armyHunters.has(unit.id)
       )
         continue;
       const facts = publicCombatFacts(view, unit, context.lookup);
@@ -6919,7 +7707,17 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
         if (
           preview !== null &&
           preview.damageToDefender > 0 &&
-          !(monster !== undefined && preview.attackerDies)
+          !(monster !== undefined && preview.attackerDies) &&
+          !(context.army && preview.attackerDies && !preview.defenderDies) &&
+          !(
+            army &&
+            attackFactionRejectedV7(
+              context,
+              { kind: "ATTACK", unitId: unit.id, targetUnitId: target.id },
+              unit,
+              preview,
+            )
+          )
         )
           candidates.push({
             unit,
@@ -6968,6 +7766,18 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
         {},
         context.lookup,
       );
+      if (
+        context.army &&
+        monster === undefined &&
+        damage < target.hp &&
+        armyRetaliationV7(
+          context,
+          { ...unit, at: firstTile },
+          target,
+          distance(firstTile, target.at),
+        ) >= unit.hp
+      )
+        continue;
       if (damage > 0)
         candidates.push({ unit, damage, stays: false, tiles, from: firstTile });
     }
@@ -7010,8 +7820,10 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
         view.units.some((unit) =>
           capturerNearV7(context, unit, target.at, hunters),
         ))
-    )
-      plans.push({ target, hunters, tiles });
+    ) {
+      plans.push({ army, target, hunters, tiles });
+      if (context.army) for (const id of hunters.keys()) armyHunters.add(id);
+    }
   }
   context.hunts = plans;
   return plans;
@@ -7098,8 +7910,15 @@ function huntMoveValueV7(
   )
     return null;
   return {
-    priority: Math.max(priority, HUNT_MOVE_PRIORITY_V7),
-    strategic: -visibleImmediateDamage(view, actor, to, context),
+    priority: Math.max(
+      priority,
+      plan.army ? ARMY_HUNT_MOVE_PRIORITY_V7 : HUNT_MOVE_PRIORITY_V7,
+    ),
+    strategic:
+      -visibleImmediateDamage(view, actor, to, context) +
+      // Tuning 5 (`pulp_wars-w49.4`): an army seat's ranged hunters move in
+      // (and so shoot) before its melee hunters: soften, then finish.
+      (context.army && facts.maximumRange > 1 ? ARMY_RANGED_FIRST_VALUE_V7 : 0),
   };
 }
 
@@ -7112,6 +7931,11 @@ function huntAttackPriorityV7(
   const plan = huntOfV7(context, command.unitId);
   if (plan === undefined || plan.target.id !== command.targetUnitId)
     return priority;
+  // An army plan's kill keeps the priority of any kill.
+  if (plan.army)
+    return preview.defenderDies
+      ? priority
+      : Math.max(priority, ARMY_HUNT_ATTACK_PRIORITY_V7);
   return Math.max(
     priority,
     preview.defenderDies ? HUNT_KILL_PRIORITY_V7 : HUNT_ATTACK_PRIORITY_V7,
@@ -12598,6 +13422,19 @@ function combatStrategicValue(
   const target = context.lookup.unitsById.get(command.targetUnitId);
   if (attacker === undefined || target === undefined) return 0;
   let value = targetStrategicValue(context.view, target.id, context.lookup);
+  // Tuning 5 (`pulp_wars-w49.4`): an army seat values a hit that does not
+  // kill by the share of the target's HP it takes, so its chips go to the
+  // unit they bring closest to dying.
+  if (context.army && !preview.defenderDies && target.hp > 0) {
+    const plain = Math.min(
+      value,
+      (unitRoleRuleV7(context.view, target).cost ?? 0) * 4 + target.hp,
+    );
+    value =
+      value -
+      plain +
+      Math.floor((plain * preview.damageToDefender) / target.hp);
+  }
   for (const splash of preview.splash) {
     const splashTarget = context.lookup.unitsById.get(splash.unitId);
     if (splashTarget === undefined) continue;
@@ -12709,6 +13546,12 @@ function researchValue(
     (role) =>
       role !== "JUGGERNAUT" &&
       !(uselessBanshee && role === "MARKSMAN") &&
+      // Tuning 5 (`pulp_wars-w49.4`): a role only the Human tree unlocks
+      // is no research goal of another faction.
+      !(
+        HUMAN_ONLY_ROLES_V7.includes(role) &&
+        !factionUnlocksRoleV7(context.view.viewer.faction, role)
+      ) &&
       !context.view.units.some(
         (unit) => unit.ownerId === context.view.viewer.id && unit.role === role,
       ),
@@ -13594,7 +14437,21 @@ function publicProjectedDamageWithLookupV7(
       ? 2
       : defender.form === "EGG"
         ? EGG_DEFENSE2_V7
-        : defenseRule.defense2 + fortificationLevel * 2;
+        : // Tuning 5: the Human Guard is open to ranged attacks.
+          roleDefense2AtDistanceV7(
+            defenseRule,
+            unitRoleMechanicsV7(view, defender),
+            // A unit that reaches only one tile strikes from there
+            // wherever it stands now (a threat estimate); a ranged unit
+            // from where it stands, or from its range.
+            attackFacts.maximumRange <= 1
+              ? 1
+              : distance(attacker.at, defenderAt) === 1 &&
+                  attackFacts.minimumRange <= 1
+                ? 1
+                : 2,
+          ) +
+          fortificationLevel * 2;
   // The Dwarf revision (`pulp_wars-78i.4`): a construct attacks with its
   // maximum HP (Unflinching; on attack only).
   const unflinching =
@@ -13843,6 +14700,9 @@ function usefulDisband(
   const { view } = context;
   const unit = context.lookup.unitsById.get(command.unitId);
   if (unit === undefined || isMindControlledV7(view, unit.id)) return false;
+  // Tuning 5 (`pulp_wars-w49.4`): an army seat's unit at half its HP or
+  // more fights on; it is never disbanded to deny the enemy a kill.
+  if (context.army && unit.hp * 2 >= unit.maxHp) return false;
   const refund = Math.floor((unitRoleRuleV7(view, unit).cost ?? 0) / 2);
   const danger = visibleImmediateDamage(
     view,

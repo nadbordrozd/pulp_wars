@@ -291,8 +291,10 @@ describe("Candy battle analysis, re-run by the engine (section 11)", () => {
     const table: readonly [UnitName, string, string, string, DuelOptions?][] = [
       // The Human Catapult has the Pie Launcher's Attack 3 since tuning 1.
       ["Fighter", "8 / -", "12, kill", "8 / -"],
-      ["Guard", "7 / -", "10 / -", "7 / -"],
-      ["Guard", "5 / -", "8 / -", "5 / -", { fieldDefense: true }],
+      // The Guard rows were 7 / 10 / 7 and 5 / 8 / 5 before
+      // tuning 5 (`pulp_wars-w49.4`): the Human Guard has Defense 1 against an attack from two or more tiles.
+      ["Guard", "10 / -", "14 / -", "10 / -"],
+      ["Guard", "7 / -", "10 / -", "7 / -", { fieldDefense: true }],
       ["Ankylosaurus", "6 / -", "9 / -", "6 / -"],
       ["Juggernaut", "6 / -", "9 / -", "6 / -"],
       ["T-Rex", "8 / -", "12 / -", "8 / -"],
@@ -348,8 +350,10 @@ describe("Candy battle analysis, re-run by the engine (section 11)", () => {
     // The Pie: 5 (7 Rushed), the Guard at 12; a Rushed Toffee Trooper deals 6 and
     // would take 6 without the Splat (10 before tuning 1); the second
     // Rushed Toffee Trooper kills.
-    expect(walled("CATAPULT", false, 17)).toBe("4 / -");
-    expect(walled("CATAPULT", true, 17)).toBe("7 / -");
+    // (The Pie rows were 4 and 7 before tuning 5, which opened the Human
+    // Guard to ranged attacks.)
+    expect(walled("CATAPULT", false, 17)).toBe("5 / -");
+    expect(walled("CATAPULT", true, 17)).toBe("8 / -");
     expect(walled("FIGHTER", true, 12)).toBe("5 / 6");
     expect(walled("FIGHTER", true, 6)).toBe("6, kill");
     // Without the Rush the Toffee Troopers deal 3; without the Pie a Rushed

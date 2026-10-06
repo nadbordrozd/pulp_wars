@@ -154,7 +154,9 @@ describe("Martian heat rays: full and half power (sections 6.1 and 6.3)", () => 
     ])[] = [
       // target, faction, Ray Gunner full/half, Tripod or Colossus full/half
       ["FIGHTER", "ORIGINAL", 8, 3, 12, 5],
-      ["GUARD", "ORIGINAL", 7, 2, 10, 4],
+      // (7, 2, 10, 4 before
+      // tuning 5 (`pulp_wars-w49.4`): the Human Guard has Defense 1 against an attack from two or more tiles.)
+      ["GUARD", "ORIGINAL", 10, 4, 14, 6],
       ["RAIDER", "ORIGINAL", 10, 4, 14, 6],
       ["KNIGHT", "ORIGINAL", 10, 4, 14, 6],
       ["MARKSMAN", "ORIGINAL", 10, 4, 14, 6],
@@ -188,12 +190,14 @@ describe("Martian heat rays: full and half power (sections 6.1 and 6.3)", () => 
     for (const [role, power, hit] of [
       // Tuning 4 (`pulp_wars-w49.3`): a Field Defense is two levels, so the
       // full-power rows lost a point (6 / 9 / 9 before).
-      ["MARKSMAN", "FULL", 5],
+      // (5 / 2 / 8 / 3 before tuning 5 opened the Human Guard to ranged
+      // attacks.)
+      ["MARKSMAN", "FULL", 7],
       ["MARKSMAN", "HALF", 2],
-      ["CATAPULT", "FULL", 8],
-      ["CATAPULT", "HALF", 3],
-      ["JUGGERNAUT", "FULL", 8],
-      ["JUGGERNAUT", "HALF", 3],
+      ["CATAPULT", "FULL", 10],
+      ["CATAPULT", "HALF", 4],
+      ["JUGGERNAUT", "FULL", 10],
+      ["JUGGERNAUT", "HALF", 4],
     ] as const) {
       const state = fieldDefenseV7(
         martianFieldV7(
@@ -217,12 +221,14 @@ describe("Martian heat rays: full and half power (sections 6.1 and 6.3)", () => 
     }
     // A Walled center: the Guard of seat 0 on (8, 8), the shooter on (5, 8).
     for (const [role, power, hit] of [
-      ["MARKSMAN", "FULL", 5],
+      // (5 / 2 / 8 / 3 before tuning 5 opened the Human Guard to ranged
+      // attacks.)
+      ["MARKSMAN", "FULL", 7],
       ["MARKSMAN", "HALF", 2],
-      ["CATAPULT", "FULL", 8],
-      ["CATAPULT", "HALF", 3],
-      ["JUGGERNAUT", "FULL", 8],
-      ["JUGGERNAUT", "HALF", 3],
+      ["CATAPULT", "FULL", 10],
+      ["CATAPULT", "HALF", 4],
+      ["JUGGERNAUT", "FULL", 10],
+      ["JUGGERNAUT", "HALF", 4],
     ] as const) {
       const walled = walledV7({
         attackerFaction: "MARTIAN",
@@ -579,7 +585,7 @@ describe("Martian heat rays: Pierce (section 6.4)", () => {
 
   // `pulp_wars-b5f.2`: the Tripod fires at range 2 only (minimum range 2),
   // so Pierce is tested at distance 2; the rule itself is not range-bound.
-  it("hits the unit behind the target in all eight directions at distance 2: a Guard (10) pierces for 5", () => {
+  it("hits the unit behind the target in all eight directions at distance 2: a Guard (14) pierces for 7", () => {
     for (const [dx, dy] of DIRECTIONS)
       for (const distance of [2]) {
         const target = at(TRIPOD.x + dx * distance, TRIPOD.y + dy * distance);
@@ -595,17 +601,19 @@ describe("Martian heat rays: Pierce (section 6.4)", () => {
         const victim = unitAtV7(state, behind);
         const run = attackV7(state, TRIPOD, target);
         const label = `${dx},${dy} x${distance}`;
-        expect(run.combat.damageToDefender, label).toBe(10);
+        // (10 and 5 before tuning 5 opened the Human Guard to ranged
+        // attacks.)
+        expect(run.combat.damageToDefender, label).toBe(14);
         expect(run.combat.splash, label).toEqual([
           {
             unitId: victim.id,
             at: behind,
-            damage: 5,
+            damage: 7,
             dies: false,
             shieldDamage: 0,
           },
         ]);
-        expect(unitAtV7(run.state, behind).hp, label).toBe(victim.hp - 5);
+        expect(unitAtV7(run.state, behind).hp, label).toBe(victim.hp - 7);
         // Nobody retaliates for a Pierce hit (nor, at range 2, the Guard).
         expect(shieldAtV7(run.state, TRIPOD), label).toBe(2);
       }
@@ -733,7 +741,7 @@ describe("Martian heat rays: Pierce (section 6.4)", () => {
       { water: [at(6, 2)], techs: NO_DISINTEGRATOR },
     );
     expect(attackV7(afloat, at(3, 2), at(5, 2)).combat.splash).toMatchObject([
-      { at: at(6, 2), damage: 5 },
+      { at: at(6, 2), damage: 7 },
     ]);
 
     const egg = martianFieldV7(
@@ -779,7 +787,7 @@ describe("Martian heat rays: Pierce (section 6.4)", () => {
       unitId: tripod.id,
       targetUnitId: target.id,
     });
-    expect(unitAtV7(result.state, at(6, 2)).hp).toBe(hidden.hp - 5);
+    expect(unitAtV7(result.state, at(6, 2)).hp).toBe(hidden.hp - 7);
   });
 
   it("a Tripod's attack destroys Field Defense on the target's tile only, and it never advances", () => {
@@ -878,8 +886,9 @@ describe("Martian heat rays: the Disintegrator (section 6.5)", () => {
 
   it("removes Field Defense for a ray, full or half, and reports the removed level", () => {
     for (const [role, without, withIt] of [
-      ["MARKSMAN", 5, 7],
-      ["CATAPULT", 8, 10],
+      // (5 / 7 and 8 / 10 before tuning 5.)
+      ["MARKSMAN", 7, 10],
+      ["CATAPULT", 10, 14],
     ] as const) {
       const plain = fieldDefenseV7(
         martianFieldV7(pieces(role), { techs: NO_DISINTEGRATOR }),
@@ -900,10 +909,12 @@ describe("Martian heat rays: the Disintegrator (section 6.5)", () => {
     }
   });
 
-  it("a Walled center with Field Defense: a Ray Gunner deals 7 instead of 5, a Tripod 10 instead of 7", () => {
+  // (4 / 7 and 7 / 10 before tuning 5 opened the Human Guard to ranged
+  // attacks.)
+  it("a Walled center with Field Defense: a Ray Gunner deals 10 instead of 5, a Tripod 14 instead of 8", () => {
     for (const [role, without, withIt] of [
-      ["MARKSMAN", 4, 7],
-      ["CATAPULT", 7, 10],
+      ["MARKSMAN", 5, 10],
+      ["CATAPULT", 8, 14],
     ] as const) {
       const plain = walledV7({
         attackerFaction: "MARTIAN",

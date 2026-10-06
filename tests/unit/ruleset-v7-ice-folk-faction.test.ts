@@ -19,7 +19,7 @@ import {
   ICE_FOLK_ROLE_MECHANICS_V7,
   ICE_FOLK_ROLE_RULES_V7,
   MILITIA_FIGHTERS_V7,
-  ORIGINAL_BASELINE_V5_NODES,
+  SHARED_BASELINE_NODES_V7,
   ORIGINAL_ROLE_RULES_V7,
   PLANTED_BONUS2_V7,
   PLAYER_EVENT_KIND_ORDER_V7,
@@ -163,8 +163,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
   // COLD_SNAP and four event kinds (ruleset-v7-dwarf-faction.test.ts).
   it("has 53 command kinds and 81 event kinds, with the new kinds at the stated positions", () => {
     // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL (59), and
-    // tuning 4 DRILL_UNIT after PROMOTE (60).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(60);
+    // tuning 4 DRILL_UNIT after PROMOTE (60), which tuning 5
+    // (`pulp_wars-w49.4`) removes again (59).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(59);
     const tractor = COMMAND_KIND_ORDER_V7.indexOf("TRACTOR_BEAM");
     expect(COMMAND_KIND_ORDER_V7.slice(tractor, tractor + 4)).toEqual([
       "TRACTOR_BEAM",
@@ -852,9 +853,9 @@ describe("Ice Folk roster (section 3)", () => {
 describe("Ice Folk technology (section 4)", () => {
   it("differs from the Human graph in four unlock entries and two display names", () => {
     expect(ICE_FOLK_BASELINE_V1_NODES).toHaveLength(
-      ORIGINAL_BASELINE_V5_NODES.length,
+      SHARED_BASELINE_NODES_V7.length,
     );
-    ORIGINAL_BASELINE_V5_NODES.forEach((human, index) => {
+    SHARED_BASELINE_NODES_V7.forEach((human, index) => {
       const ice = must(ICE_FOLK_BASELINE_V1_NODES[index], "node");
       expect([
         ice.id,
@@ -959,8 +960,11 @@ describe("Ice Folk technology (section 4)", () => {
     const ice = technologyCapabilitiesV7(all, "ICE_FOLK");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
     // The frozen sea (naval branch section 8.11): no ship and no Board.
+    // (And not the Swordsman of tuning 5, the Humans' alone.)
     expect(ice.trainableRoles).toEqual(
-      human.trainableRoles.filter((role) => !isNavalRoleV7(role)),
+      human.trainableRoles.filter(
+        (role) => !isNavalRoleV7(role) && role !== "SWORDSMAN",
+      ),
     );
     expect(ice.commands).toEqual(
       human.commands.filter(
@@ -1018,7 +1022,7 @@ describe("Ice Folk technology (section 4)", () => {
       if (
         tech !== "FORTIFICATION" &&
         tech !== "EXPLOSIVES" &&
-        ORIGINAL_BASELINE_V5_NODES.find((node) => node.id === tech)?.branch !==
+        SHARED_BASELINE_NODES_V7.find((node) => node.id === tech)?.branch !==
           "NAVAL"
       )
         expect(technologyNameV7(tech, "ICE_FOLK")).toBe(

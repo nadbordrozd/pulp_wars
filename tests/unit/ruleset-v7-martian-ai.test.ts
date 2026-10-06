@@ -444,8 +444,10 @@ describe("Normal AI against Martians", () => {
   });
 
   it("is unchanged without a Martian seat", () => {
-    // Two Fighters on a wounded Fighter that one hit does not kill: an
-    // ordinary chip (900), no Shield-break tier.
+    // Two Fighters on a wounded Fighter that one hit does not kill: no
+    // Shield-break tier (1179). Tuning 5 (`pulp_wars-w49.4`): in a Human
+    // mirror the two hits are a combined kill of army play (1172; an
+    // ordinary chip, 900, before).
     const state = martianFieldV7(
       [
         own("FIGHTER", 5, 5),
@@ -457,6 +459,6 @@ describe("Normal AI against Martians", () => {
     const best = candidatesV7(state).find(
       (item) => item.command.kind === "ATTACK",
     );
-    expect(best?.score.priority).toBe(900);
+    expect(best?.score.priority).toBe(1172);
   });
 });

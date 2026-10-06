@@ -75,10 +75,17 @@ const trainCandidates = (state: GameStateV7) =>
   );
 
 const ARMY = [own("FIGHTER", 9, 9), own("FIGHTER", 7, 9), own("FIGHTER", 9, 7)];
+/**
+ * Tuning 5 (`pulp_wars-w49.4`): in a match of Human, Undead, and Goblin
+ * seats only, a seat plays the army rules and saves for no unit (it trains
+ * every turn). The savings plan is the policy of every other match, so
+ * these positions face a Dinosaur seat.
+ */
+const SAVERS: readonly FactionIdV7[] = ["ORIGINAL", "DINOSAUR"];
 
 describe("Normal AI second pass: the savings plan", () => {
   it("buys the Chivalry-tier unit first once it can afford one", () => {
-    const state = field(ARMY, { coins: 9 });
+    const state = field(ARMY, { coins: 9, factions: SAVERS });
     const training = trainCandidates(state);
     expect(training).toHaveLength(1);
     expect(training[0]?.command).toMatchObject({ role: "KNIGHT" });
@@ -87,7 +94,7 @@ describe("Normal AI second pass: the savings plan", () => {
   });
 
   it("holds training and research while the goal is a turn or two away", () => {
-    const state = field(ARMY, { coins: 6 });
+    const state = field(ARMY, { coins: 6, factions: SAVERS });
     expect(trainCandidates(state)).toEqual([]);
     expect(
       candidatesV7(state).some(
@@ -97,7 +104,7 @@ describe("Normal AI second pass: the savings plan", () => {
   });
 
   it("does not save while the army is small", () => {
-    const state = field(ARMY.slice(0, 2), { coins: 6 });
+    const state = field(ARMY.slice(0, 2), { coins: 6, factions: SAVERS });
     expect(
       trainCandidates(state).some(
         (candidate) => candidate.command.kind === "TRAIN",
@@ -106,7 +113,10 @@ describe("Normal AI second pass: the savings plan", () => {
   });
 
   it("does not save while an own city is threatened", () => {
-    const state = field([...ARMY, foe("FIGHTER", 6, 7)], { coins: 6 });
+    const state = field([...ARMY, foe("FIGHTER", 6, 7)], {
+      coins: 6,
+      factions: SAVERS,
+    });
     expect(trainCandidates(state).length).toBeGreaterThan(0);
   });
 
@@ -114,7 +124,7 @@ describe("Normal AI second pass: the savings plan", () => {
     const techs = TECHNOLOGY_IDS_V7.filter((tech) => tech !== "CHIVALRY");
     // 60 Coins: as the 25th technology Chivalry costs 55 (tuning 4; 30
     // Coins bought it before).
-    const rich = field(ARMY, { coins: 60, techs });
+    const rich = field(ARMY, { coins: 60, techs, factions: SAVERS });
     const research = candidatesV7(rich).find(
       (candidate) =>
         candidate.command.kind === "RESEARCH" &&

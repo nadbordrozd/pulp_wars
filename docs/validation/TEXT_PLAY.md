@@ -47,6 +47,18 @@ npm run --silent play:text -- log --session S.json
 npm run --silent play:text -- debrief --session S.json --out debrief.txt
 ```
 
+The faction you play is the first of `--factions`; the others are Normal
+AI seats. The four pairings of the Human tuning on a dry-land map:
+
+```bash
+# You play the Humans against Goblins, then against Undead.
+npm run --silent play:text -- new --session hg.json --map dry-land --size 11 --seed 7 --factions original,goblin
+npm run --silent play:text -- new --session hu.json --map dry-land --size 11 --seed 7 --factions original,undead
+# You play the Goblins or the Undead against the Human AI.
+npm run --silent play:text -- new --session gh.json --map dry-land --size 11 --seed 7 --factions goblin,original
+npm run --silent play:text -- new --session uh.json --map dry-land --size 11 --seed 7 --factions undead,original
+```
+
 `--silent` keeps npm's own two header lines out of the output. An invocation
 takes about half a second (most of it starting `tsx`); `end` takes longer
 with many AI seats.
@@ -109,7 +121,9 @@ output before `debrief`.
 ## Labs
 
 Three staged positions for the Human tuning
-([round 4](../product/RULESET_7_TUNING_HUMAN.md#119-the-labs)). Each is a
+([round 4](../product/RULESET_7_TUNING_HUMAN.md#119-the-labs); `LAB_BACKLINE`
+and `LAB_LATE` are at revision 2 since
+[round 5](../product/RULESET_7_TUNING_HUMAN.md#12-round-5), with Swordsmen). Each is a
 hidden mirror mission (`src/engine/v7/missions/lab-human.ts`), so it is an
 ordinary match from a fixed start: every command, `verify`, and `debrief`
 work as in a generated match.
@@ -117,8 +131,8 @@ work as in a generated match.
 | Lab            | Position                                                                                                                                                                                                                                                                                                                                |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `LAB_SIEGE`    | 11 x 11. The AI's walled level-4 capital with a Guard on the center, three Guards in front (Forest cover, a Field Defense), a Marksman and two Catapults behind, and a Mountain touching the screen; the AI holds its formation. You have 6 units, 60 Coins, and the prerequisites of Sawmilling, Chivalry, Explosives, and Fieldcraft. |
-| `LAB_BACKLINE` | 14 x 14. The AI advances with four Catapults and three Marksmen behind two Guards and three Fighters. You have three Knights, two Raiders, three Fighters, two Marksmen, a Catapult, and 40 Coins.                                                                                                                                      |
-| `LAB_LATE`     | 16 x 16. Six road-linked cities a side, 16 technologies, armies at the unit limit, 100 Coins each, two of your cities with a Barracks.                                                                                                                                                                                                  |
+| `LAB_BACKLINE` | 14 x 14. The AI advances with four Catapults and three Marksmen behind two Guards, a Swordsman, and two Fighters. You have three Knights, two Raiders, a Swordsman, two Fighters, two Marksmen, a Catapult, and 40 Coins.                                                                                                               |
+| `LAB_LATE`     | 16 x 16. Six road-linked cities a side, 16 technologies (Engineering among them), armies at the unit limit with a Swordsman in every front city, 100 Coins each, two of your cities with a Barracks.                                                                                                                                    |
 
 ## Ids
 
@@ -133,13 +147,12 @@ it first. Ids are case-insensitive.
 | `u12.a.u31`                               | unit 12 attacks unit 31                              |
 | `u12.capture`                             | unit 12 captures the settlement it stands on         |
 | `u12.recover`, `u12.promote`, `u12.wait`  | recover HP, take a Promotion, mark the unit as done  |
-| `u12.drill`                               | Drill on a Barracks city's center (10 Coins)         |
 | `u12.fortify`, `u12.pillage`              | build a Field Defense, pillage the improvement       |
 | `u12.rally`, `u12.tend`, `u12.disband`    | Captain's Rally and Tend Wounded, disband            |
 | `c1.t.FIGHTER`                            | city 1 trains the role                               |
 | `c1.hire.KNIGHT.9,9`                      | city 1 hires the role on its Market at `9,9`         |
 | `c1.grant`                                | Land Grant for city 1                                |
-| `c1.reward.WALLS`                         | the pending reward choice of city 1                  |
+| `c1.reward.WALLS`, `c1.reward.SCOUTS`     | the pending reward choice of city 1                  |
 | `r.FARMING`                               | research                                             |
 | `t.4,5.build_farm`, `t.4,5.harvest_fruit` | the tile action at `4,5` (the engine's command name) |
 | `t.4,5.monument.EXPLORER`                 | build the monument of an unlocked achievement        |
@@ -176,7 +189,7 @@ $ npm run --silent play:text -- do --session S.json t.8,3.hunt_game c1.reward.ST
 OK t.8,3.hunt_game -> state #13
   GAME_HUNTED playerId=S0 cityId=c1 at=8,3 cost=2 permanentPopulationAdded=1
   CITY_LEVELED_UP c1 to level 2
-  CITY_REWARD_QUEUED cityId=c1 reachedLevel=2 candidates=[SURVEY; STOCKPILE]
+  CITY_REWARD_QUEUED cityId=c1 reachedLevel=2 candidates=[SCOUTS (free Raider); STOCKPILE]
 OK c1.reward.STOCKPILE -> state #14
   CITY_REWARD_CHOSEN playerId=S0 cityId=c1 reachedLevel=2 reward=STOCKPILE coinDelta=4
 OK u2.m.9,4 -> state #15
@@ -193,7 +206,7 @@ END OF YOUR TURN (round 2)
 -- your turn starts: coins 8 --
   INCOME S0 +3 (c1 +3)
 
-== state #20 | pulp-wars-poc-7r47 | dry_land 11x11 seed 7 ==
+== state #20 | pulp-wars-poc-7r48 | dry_land 11x11 seed 7 ==
 ROUND 3 | you are S0 Human | YOUR TURN | coins 8 | income +3/turn | cities 1 | units 2
 PLAYERS in turn order: S0 Human (you) active cities 1 units 2 > S1 Goblin (AI) active cities 1 units 2
 OFFERED 17: research 5 | train 1 | move 9 | unit 2 | end available
@@ -223,6 +236,15 @@ deals 2 (hp 10->8) | takes 5 (hp 17->12) | atk 1.5 vs def 2 x3/2`. `KILLS`
   Anything else that applies follows as `name=value`
   (`chargeApplied=yes`, `breachApplied=yes`, `attackerBitten=yes`, a
   `splash` list).
+- **Unit notes.** A unit line ends with what its card says and its
+  numbers do not: a Guard is `Open to ranged: Defense 1 against attacks from
+2 or more tiles`, a Raider's Charge states when it applies,
+  and an attack that grants an Overrun says `Overrun: attacks again after
+this kill`. A Blast Mountain line names the unit that `sets the charge and
+is not hit`.
+- **Reward names.** A Human seat's level-2 reward is printed as `SCOUTS`
+  (the engine's `SURVEY`, which also gives a Raider); `c1.reward.SURVEY`
+  is still accepted.
 - **Economy previews** give the cost, the population change of the city with
   its meter before and after, the income change, and `LEVEL UP to N` when the
   command levels the city. A level-up queues a reward choice, and nothing

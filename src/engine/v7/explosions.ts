@@ -109,6 +109,38 @@ export function isExplodingUnitV7(
   return blastDamageV7(roster, unit, "DEATH") !== null;
 }
 
+/**
+ * Tuning 5 (`pulp_wars-w49.4`): the unit that sets a Blast Mountain's
+ * charge and is not hit by it: of the blasting player's land-form units
+ * next to the Mountain (never the one standing on it), the one with the
+ * fewest HP, then the lowest ID. Null when there is none (a blast in the
+ * player's own territory needs no unit). Every other unit of the player in
+ * the area is hit like anyone else's.
+ */
+export function blastSetterV7<U extends BlastUnitV7>(
+  units: readonly U[],
+  ownerId: PlayerId,
+  at: CoordV7,
+): U | null {
+  let setter: U | null = null;
+  for (const unit of units) {
+    if (
+      unit.hp <= 0 ||
+      unit.ownerId !== ownerId ||
+      unit.form !== "LAND" ||
+      chebyshev(unit.at, at) !== 1
+    )
+      continue;
+    if (
+      setter === null ||
+      unit.hp < setter.hp ||
+      (unit.hp === setter.hp && unit.id < setter.id)
+    )
+      setter = unit;
+  }
+  return setter;
+}
+
 /** The 3 × 3 blast area around `center`, clipped to the board, in (y, x). */
 export function blastAreaV7(
   center: CoordV7,
@@ -132,6 +164,11 @@ export interface ExplosionChainInputV7<U extends BlastUnitV7> {
   readonly initial: readonly {
     readonly unit: U;
     readonly cause: ExplosionCauseV7;
+    /**
+     * Tuning 5 (`pulp_wars-w49.4`): a unit this explosion does not hit
+     * (the setter of a Blast Mountain, `blastSetterV7`).
+     */
+    readonly spared?: UnitId | undefined;
   }[];
   /** Field Defense on a tile before the chain. */
   readonly fieldDefense: (at: CoordV7) => boolean;
@@ -213,7 +250,11 @@ export function resolveExplosionChainV7<U extends BlastUnitV7>(
   const explosions: ExplosionV7[] = [];
   const shields = new Map<UnitId, number>(input.shields ?? []);
   let units: U[] = input.units.filter((unit) => unit.hp > 0);
-  let wave: { readonly unit: U; readonly cause: ExplosionCauseV7 }[] = [];
+  let wave: {
+    readonly unit: U;
+    readonly cause: ExplosionCauseV7;
+    readonly spared?: UnitId | undefined;
+  }[] = [];
   for (const item of [...input.initial].sort(
     (left, right) => left.unit.id - right.unit.id,
   ))
@@ -223,7 +264,7 @@ export function resolveExplosionChainV7<U extends BlastUnitV7>(
     }
   for (let waveNumber = 1; wave.length > 0; waveNumber += 1) {
     const next: { readonly unit: U; readonly cause: ExplosionCauseV7 }[] = [];
-    for (const { unit: exploder, cause } of wave) {
+    for (const { unit: exploder, cause, spared } of wave) {
       if (explosions.length >= maximum) throw new RangeError("INVALID_STATE");
       const damage = blastDamageV7(input.roster, exploder, cause);
       if (damage === null || damage <= 0) throw new RangeError("INVALID_STATE");
@@ -232,6 +273,7 @@ export function resolveExplosionChainV7<U extends BlastUnitV7>(
           (unit) =>
             unit.hp > 0 &&
             unit.id !== exploder.id &&
+            unit.id !== spared &&
             chebyshev(unit.at, exploder.at) <= 1,
         )
         .sort(compareUnitsByTile);
@@ -356,6 +398,7 @@ export function resolveStateExplosionChainV7(
   initial: readonly {
     readonly unit: UnitStateV7;
     readonly cause: ExplosionCauseV7;
+    readonly spared?: UnitId | undefined;
   }[],
   events: DomainEventV7[],
   maxExplosions?: number,

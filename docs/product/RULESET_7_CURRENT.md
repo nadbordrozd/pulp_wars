@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r47`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r48`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -199,6 +199,25 @@ balance on water maps, `pulp_wars-5ti.8`; and the polish items of
 a unit on ice has no fortification, so a Dwarf Hammerer or Steam Mole is
 never dug in on an ice tile ([section 22.7](#227-dig-in)). No shape changed,
 and a match without both a Dwarf and an Ice Folk seat plays as at `7r44`.
+`pulp-wars-poc-7r48` (`pulp_wars-w49.4`) is
+**[round 5 of the Human tuning](RULESET_7_TUNING_HUMAN.md#12-round-5)**, which followed four hand-played
+games on round 4. The Human **Guard** has Defense 1 against an attack from
+two or more tiles (3 next to its attacker), so two Marksmen leave it for a
+Fighter to kill ([sections 11](#11-unit-roster) and [13.2](#132-damage));
+the Humans have a heavy melee unit, the **Swordsman**, at Engineering
+([sections 6.2](#62-technology-tree) and [11](#11-unit-roster));
+**Drill is removed** (`DRILL_UNIT` is no command; a Barracks is one unit
+slot, [section 4.8](#48-city-rewards)); a **Land Grant** costs 1 Coin a
+cell with no minimum ([section 4.1](#41-territory)); and a **Blast
+Mountain** does not hit the unit that sets it
+([section 8.4](#84-terrain-and-infrastructure-actions)). The Guard and the
+Swordsman are Human units; the other rules are shared by every faction,
+whose own numbers are unchanged. The **Normal AI** of a Human, Undead, or
+Goblin seat plays an army ([section 16](#16-normal-ai-summary)). **Where
+another passage of this document, or a faction's revision document, still
+gives the damage of a ranged attack on a Human Guard at Defense 3, a Drill,
+or a Land Grant of 2 Coins a cell, this paragraph and the sections it names
+are the rule.**
 `pulp-wars-poc-7r47` (`pulp_wars-w49.3`) also holds
 **[round 4 of the Human tuning](RULESET_7_TUNING_HUMAN.md#11-round-4)**,
 which followed three hand-played games on round 3: land trade pays 1 Coin
@@ -209,8 +228,8 @@ the first, whatever the number of cities
 Stockpile, Walls or one Militia unit, Boom, Treasury, or Barracks, and from
 level 5 Barracks or a 6-Coin Treasury, with the reward unit offered once,
 in the player's first capital ([section 4.8](#48-city-rewards)); a unit on
-the center of a Barracks city may **Drill** for 10 Coins
-([section 4.8](#48-city-rewards)); the Human Raider is not stopped by
+the center of a Barracks city could **Drill** for 10 Coins (removed at
+`7r48`); the Human Raider is not stopped by
 zones of control, a Pillage pays 3 Coins and leaves a Raider its Move, and
 Fieldcraft lets every ground unit march through Forest
 ([sections 12.1](#121-movement) and [12.2](#122-activation)); a Field
@@ -350,7 +369,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r47`.
+resolved ones as of `pulp-wars-poc-7r48`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -451,10 +470,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r47`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r48`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r47.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r48.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -466,7 +485,7 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r43`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r47`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
   and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
   Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
@@ -616,7 +635,7 @@ separate [Ruleset 6](RULESET_6.md) route.
   match without an Ice Folk seat is the `7r43` match apart from the empty
   list.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r43.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r47.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
@@ -1930,10 +1949,12 @@ Gallery has a Curiosities tab.
   neither claimed nor charged and stay neutral (before, they were claimed
   for nothing and revealed), so the canonical rule and the offer read the
   same cells and the reducer refuses a grant with no explored neutral cell
-  (`INVALID_TILE`). **Cost** (tuning 1, `7r46`; a flat 6 Coins before):
-  **2 Coins for each claimed cell, at least 6** (`landGrantCostV7`,
-  `LAND_GRANT_COST_PER_TILE_V7` 2, `LAND_GRANT_MINIMUM_COST_V7` 6), so a
-  full ring of 16 explored cells costs 32.
+  (`INVALID_TILE`). **Cost** (round 5, `7r48`): **1 Coin for each claimed
+  cell** (`landGrantCostV7`, `LAND_GRANT_COST_PER_TILE_V7` 1,
+  `LAND_GRANT_MINIMUM_COST_V7` 1), so a full ring of 16 explored cells
+  costs 16. (Tuning 1, `7r46`, made it 2 Coins a cell and at least 6, 32
+  for the full ring, which no hand-played game paid; before that it was a
+  flat 6.)
   `publicLandGrantPriceV7(view, cityId)` returns the price and cells of the
   grant a city could take whether or not the player can pay (the city panel
   shows it when the Coins are short). The public command query offers Land Grant
@@ -2136,14 +2157,11 @@ Each reached level grants exactly one reward, chosen by the owner:
 - **Barracks** (`BARRACKS`, the last reward ID). A record in the city's
   reward history; each adds 1 to the city's unit capacity
   (`cityBarracksV7`, `BARRACKS_CAPACITY_V7`), stays with the city across a
-  capture, and may be taken at every level from 4. It also makes the city
-  center a drill ground: **Drill** (`DRILL_UNIT`, `DRILL_COST_V7` 10 Coins)
-  is offered for an own land-form unit that stands on the center of an own
-  city with a Barracks, is not a veteran, does not grow, is not Crashed,
-  and has not used its primary action. It becomes a veteran: maximum HP and
-  HP both rise by 5 (`PROMOTION_HP_V7`; it is not healed), the event is
-  `UNIT_PROMOTED`, and its turn ends. A veteran may therefore have fewer
-  than three kills in any match. The Normal AI never drills.
+  capture, and may be taken at every level from 4. **Round 5** (`7r48`)
+  removed **Drill**, the paid Promotion of round 4 on the center of a
+  Barracks city (`DRILL_UNIT`, 10 Coins): the command kind no longer
+  exists, and a veteran again has at least three kills except through a
+  Shrine ([section 2.7](#27-map-curiosities)).
 - **Reward units and the unit limit.** A level reward is never lost to a
   full city: the Scouts Raider, the Militia unit, and the reward unit are
   placed even when the city is at its limit, and count against it
@@ -2332,33 +2350,33 @@ ordinary formula applies to every technology.
 
 ### 6.2 Technology tree
 
-| Branch     | Tier | ID                  | Requires       | Exact unlocks                                                                            |
-| ---------- | ---: | ------------------- | -------------- | ---------------------------------------------------------------------------------------- |
-| Settlement |    1 | `GATHERING`         | —              | reveal Fertile Ground; Harvest Fruit                                                     |
-| Settlement |    2 | `FARMING`           | Gathering      | Farm; connected-Farm visuals                                                             |
-| Settlement |    3 | `MILLING`           | Farming        | Windmill; Windmill Start Turn healing (6 HP)                                             |
-| Settlement |    2 | `ADMINISTRATION`    | Gathering      | Captain (Rally, Tend Wounded); Market; Disband                                           |
-| Settlement |    3 | `PLANNING`          | Administration | +1 capacity in every owned city; Land Grant                                              |
-| Wilds      |    1 | `HUNTING`           | —              | Hunt Game                                                                                |
-| Wilds      |    2 | `FORESTRY`          | Hunting        | Lumber Camp; Clear Forest; Forest cover (round 3)                                        |
-| Wilds      |    3 | `SAWMILLING`        | Forestry       | Sawmill; Catapult                                                                        |
-| Wilds      |    2 | `MARKSMANSHIP`      | Hunting        | Marksman                                                                                 |
-| Wilds      |    3 | `FIELDCRAFT`        | Marksmanship   | Replant Forest; Forest march (round 4: no ground unit stops in Forest); Marksman Sight 2 |
-| Mobility   |    1 | `SCOUTING`          | —              | Raider; Raider Sight 2                                                                   |
-| Mobility   |    2 | `ROADS`             | Scouting       | Build Road; half-cost Road movement; connected-city Road population                      |
-| Mobility   |    3 | `COMMERCE`          | Roads          | +1 Coin land trade for every Road-linked city (round 4; 2 before); Hire at a Market      |
-| Mobility   |    2 | `RAIDING`           | Scouting       | Pillage (3 Coins; a Raider keeps its Move) for all trainable land roles; Raider Charge   |
-| Mobility   |    3 | `CHIVALRY`          | Raiding        | Knight; Overrun; Cultivate Forest                                                        |
-| Industry   |    1 | `DRILL`             | —              | reveal Ore; Guard; first-hostile-capture Spoils (2 Coins)                                |
-| Industry   |    2 | `ENGINEERING`       | Drill          | land units enter Mountain; +1 Sight on Mountain; Mine; Workshop; Redevelop               |
-| Industry   |    3 | `METALLURGY`        | Engineering    | Forge; Arms Industry (−1 land training cost)                                             |
-| Industry   |    2 | `FORTIFICATION`     | Drill          | Fighter/Guard Build Field Defense                                                        |
-| Industry   |    3 | `EXPLOSIVES`        | Fortification  | Blast Mountain (an explosion; +1 population in the territory); Breach                    |
-| Naval      |    1 | `SHORECRAFT`        | —              | Harvest Fish; Build Port; embarkation and Shallow Water transport; Patrol Boat           |
-| Naval      |    2 | `NAVIGATION`        | Shorecraft     | Deep Water movement; Gather Pearls; sea trade                                            |
-| Naval      |    3 | `NAVAL_ENGINEERING` | Navigation     | Battleship; Shipyard; −2 Coin naval training at a Shipyard                               |
-| Naval      |    2 | `SEAMANSHIP`        | Shorecraft     | Ram (Patrol Boats); Board (every ship)                                                   |
-| Naval      |    3 | `SUBMERSIBLES`      | Seamanship     | Submarine; Harbours (+1 population from every active Port and Shipyard)                  |
+| Branch     | Tier | ID                  | Requires       | Exact unlocks                                                                                                   |
+| ---------- | ---: | ------------------- | -------------- | --------------------------------------------------------------------------------------------------------------- |
+| Settlement |    1 | `GATHERING`         | —              | reveal Fertile Ground; Harvest Fruit                                                                            |
+| Settlement |    2 | `FARMING`           | Gathering      | Farm; connected-Farm visuals                                                                                    |
+| Settlement |    3 | `MILLING`           | Farming        | Windmill; Windmill Start Turn healing (6 HP)                                                                    |
+| Settlement |    2 | `ADMINISTRATION`    | Gathering      | Captain (Rally, Tend Wounded); Market; Disband                                                                  |
+| Settlement |    3 | `PLANNING`          | Administration | +1 capacity in every owned city; Land Grant                                                                     |
+| Wilds      |    1 | `HUNTING`           | —              | Hunt Game                                                                                                       |
+| Wilds      |    2 | `FORESTRY`          | Hunting        | Lumber Camp; Clear Forest; Forest cover (round 3)                                                               |
+| Wilds      |    3 | `SAWMILLING`        | Forestry       | Sawmill; Catapult                                                                                               |
+| Wilds      |    2 | `MARKSMANSHIP`      | Hunting        | Marksman                                                                                                        |
+| Wilds      |    3 | `FIELDCRAFT`        | Marksmanship   | Replant Forest; Forest march (round 4: no ground unit stops in Forest); Marksman Sight 2                        |
+| Mobility   |    1 | `SCOUTING`          | —              | Raider; Raider Sight 2                                                                                          |
+| Mobility   |    2 | `ROADS`             | Scouting       | Build Road; half-cost Road movement; connected-city Road population                                             |
+| Mobility   |    3 | `COMMERCE`          | Roads          | +1 Coin land trade for every Road-linked city (round 4; 2 before); Hire at a Market                             |
+| Mobility   |    2 | `RAIDING`           | Scouting       | Pillage (3 Coins; a Raider keeps its Move) for all trainable land roles; Raider Charge                          |
+| Mobility   |    3 | `CHIVALRY`          | Raiding        | Knight; Overrun; Cultivate Forest                                                                               |
+| Industry   |    1 | `DRILL`             | —              | reveal Ore; Guard; first-hostile-capture Spoils (2 Coins)                                                       |
+| Industry   |    2 | `ENGINEERING`       | Drill          | land units enter Mountain; +1 Sight on Mountain; Mine; Workshop; Redevelop; **Swordsman** (Human only, round 5) |
+| Industry   |    3 | `METALLURGY`        | Engineering    | Forge; Arms Industry (−1 land training cost)                                                                    |
+| Industry   |    2 | `FORTIFICATION`     | Drill          | Fighter/Guard Build Field Defense                                                                               |
+| Industry   |    3 | `EXPLOSIVES`        | Fortification  | Blast Mountain (an explosion; +1 population in the territory); Breach                                           |
+| Naval      |    1 | `SHORECRAFT`        | —              | Harvest Fish; Build Port; embarkation and Shallow Water transport; Patrol Boat                                  |
+| Naval      |    2 | `NAVIGATION`        | Shorecraft     | Deep Water movement; Gather Pearls; sea trade                                                                   |
+| Naval      |    3 | `NAVAL_ENGINEERING` | Navigation     | Battleship; Shipyard; −2 Coin naval training at a Shipyard                                                      |
+| Naval      |    2 | `SEAMANSHIP`        | Shorecraft     | Ram (Patrol Boats); Board (every ship)                                                                          |
+| Naval      |    3 | `SUBMERSIBLES`      | Seamanship     | Submarine; Harbours (+1 population from every active Port and Shipyard)                                         |
 
 There are 25 technologies. Since `pulp-wars-poc-7r43` the Naval branch has
 the shape of every other branch: one tier-1 root (Shorecraft), two tier-2
@@ -2783,6 +2801,13 @@ and no tile command changes a tile into water, a Rift, or a site.
     preview of that explosion (it is exact unless part of the area is
     unexplored, like a Kaboom preview); the button and the text harness
     list what it would hit.
+  - **The unit that sets it** (round 5, `7r48`). One of the blasting
+    player's land-form units next to the Mountain sets the charge and is
+    not hit: the one with the fewest HP, then the lowest ID
+    (`blastSetterV7`). Every other unit in the area is hit, the player's
+    own too. The preview names the unit (`setterUnitId`); with no own unit
+    next to the Mountain (a blast inside the territory) nobody is spared.
+    Chain explosions of the next waves spare nobody.
   - **Normal AI.** It blasts only in its own territory and only when the
     preview hits no unit of its own or of an ally.
 - Redevelop can remove Monuments, Ports, and Shipyards (Port or Shipyard only
@@ -3068,7 +3093,8 @@ Attack and Defense are shown in whole units (the code stores half-units).
 | Fighter     | start             |    2 | 12² |      2 |       2 |    1 |     1 |     1 | yes               | yes     | Field Defense                                                |
 | Raider      | Scouting          |    4 | 12² |      2 |       1 |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Escape; ignores zones of control (round 4) |
 | Marksman    | Marksmanship      |   4³ | 12² |      2 |       1 |    1 |   1–2 |    1¹ | yes               | yes     | never advances³                                              |
-| Guard       | Drill             |    3 | 17² |    1.5 |       3 |    1 |     1 |     1 | no                | yes     | Field Defense                                                |
+| Guard       | Drill             |    3 | 17² |    1.5 |      3⁶ |    1 |     1 |     1 | no                | yes     | Field Defense; open to ranged attacks⁶                       |
+| Swordsman⁷  | Engineering       |    5 |  15 |    3.5 |     2.5 |    1 |     1 |     1 | yes               | yes     | —                                                            |
 | Captain     | Administration    |    5 |  10 |      1 |       1 |    1 |     1 |     1 | yes               | no      | Rally; Tend Wounded                                          |
 | Catapult    | Sawmilling        |    8 |  10 |     3³ |     0.5 |    1 |   2–3 |     1 | no                | no      | —                                                            |
 | Knight      | Chivalry          |    9 | 13³ |     4⁵ |       1 |    3 |     1 |     1 | yes               | yes⁴    | Overrun                                                      |
@@ -3109,6 +3135,32 @@ attack, in the open and in cover, and a Fighter in the open (12 of 12); it
 deals 10 to a Fighter in cover, on a Field Defense, or on a walled center,
 and 10 of 17 to a Guard. The other factions' Knight-role units are
 unchanged.
+
+⁶ [Round 5](RULESET_7_TUNING_HUMAN.md#12-round-5) (`pulp_wars-w49.4`, `pulp-wars-poc-7r48`): **against an
+attack from two or more tiles the Human Guard has Defense 1**
+(`RoleMechanicsV7.rangedDefense2` 2 half-units, `roleDefense2AtDistanceV7`;
+3 against an attacker next to it, and 3 in its retaliation). Fortification
+and cover add to the 1 as they add to the 3. A full-HP Marksman deals 6 to
+a full-HP Guard in the open (4 before) and a Catapult 10 (7 before): two
+Marksmen leave it at 4 HP and a Fighter then kills it; two Catapults kill
+it. In Forest with Forestry the two Marksmen leave 6 and the Fighter 1; on
+a Field Defense or a walled center they leave 9 and the Fighter 5; on a
+walled center with a Field Defense 11 and 8. Two Catapults leave 1 HP on a
+Field Defense or a walled center and 6 on both. The rule is the Human
+Guard's alone: the Zombie, Orc Brute, Ankylosaurus, Shield Projector,
+Mammoth, Steam Mole, and Marshmallow are unchanged, and every faction's
+ranged attack (a heat ray, a bomb, a boulder, Acid, a Wail) reads it. A
+splash or Pierce that is a share of the hit on a Guard grows with it.
+
+⁷ [Round 5](RULESET_7_TUNING_HUMAN.md#12-round-5): the **Swordsman** (role `SWORDSMAN`, the last role ID,
+tactical role `LINE`) is the Humans' heavy melee unit: 5 Coins, 15 HP,
+Attack 3.5, Defense 2.5, Move 1, melee, captures, builds no Field Defense,
+no ability. It needs Engineering. It deals 8 to a full-HP Guard in the open
+and takes 6, and kills it with a second attack; a Knight deals it 11 and
+takes 4; two Catapults kill it; three Fighters kill it. No other faction
+has the role: their trees do not unlock it, their rule for it has no cost,
+and the Showcase and the Gallery have no unit for it. Its art is the
+Guard's until its own is made (the board marks the stand-in).
 
 The **Submarine** (role `SUBMARINE`, tactical label `NAVAL_HUNTER`;
 `pulp-wars-poc-7r43`) is the third ship: trained with `TRAIN_NAVAL` like the
@@ -4019,7 +4071,10 @@ attack  = base Attack (a half-power heat ray: half, rounded down;
         + 1 (Charge/Pounce/Strafe) + 1 (Inspired/Frenzied/WAAAGH!/War Drums/Psychic Command)
         + Gang Up (0–2) + 1 (Alpha) + run-up (Charge!: 0–2)
         + 1 (Planted) + 0.5 (Cold Blood) + 1 (Ram)
-defense = base Defense + fortification level          (embarked or Egg: 1)
+defense = base Defense + fortification level          (embarked or Egg: 1;
+                                                       a Human Guard hit from
+                                                       two or more tiles: 1
+                                                       + fortification level)
 cover   = 1.5 on a Mountain, and in a Forest when the defender's owner has
           Forestry, for land-form ground defenders
           (never a Martian walker or flyer), else 1.25 on Snow, or on ice
@@ -4909,6 +4964,30 @@ Harbours from it.
   of the unit slots are filled, land production comes before the economy.
   Details and measurements:
   [Normal AI campaign](../architecture/NORMAL_AI.md#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01).
+- **Army play** (`pulp_wars-w49.4`, round 5; `src/ai/v7-army.ts`). A
+  Human, Undead, or Goblin seat, in a match whose every seat is one of
+  those three, fields an army and uses it once an enemy city is known or a
+  hostile land unit is visible within six tiles of an own center. Every
+  city with a free unit slot trains before any research or construction,
+  and the unit on its center steps beside it so that the city can train in
+  the same turn. What it trains keeps a mixed army: about 35%% line units
+  (the dearest it can pay for), 15%% defenders, 20%% ranged, 15%% siege,
+  15%% breakthrough (25%% against an enemy with ranged or siege units), one
+  skirmisher from five units, one support unit per four; never only
+  defenders. Research goes first to the cheapest fighting role the seat
+  cannot train yet, and other research waits for it. Every visible hostile
+  land unit is a target of the combined kill of the second pass: ranged
+  hits first, then the melee unit that finishes. A melee unit moves in for
+  a kill or an exchange clearly in its favor and not otherwise; a ranged
+  or siege unit moves to where it has a shot (a siege unit: next turn, on a
+  tile it survives on) and never in front of its own line; nobody walks
+  alone into more enemies than it has friends beside it. The unit on a
+  center stays while a hostile unit is within six tiles, apart from the
+  step that lets the city train. A unit at half HP or more is never
+  disbanded. The play is off while the seat's naval plan is active, during
+  the opening growth harvest, and in a match with any other faction, where
+  both sides keep the older policy. Details:
+  [Normal AI army play](../architecture/NORMAL_AI.md#army-play-pulp_wars-w494).
 - **Second pass** (`pulp_wars-9s0.8`): at war, with no own city threatened
   and at least three attack-capable land units, Normal saves for its
   Chivalry-tier unit (fewer than two of them) or for Chivalry itself when the
@@ -9373,6 +9452,7 @@ has no Candy step.
 | Tuning      | `pulp-wars-poc-7r46` | `pulp_wars-w49.3` [tuning 1](RULESET_7_TUNING_1.md) after five hand-played games: the retaliation from the defender's base Defense, without fortification or cover; technology cost steps of 1 / 2 / 2 per extra city (were 1 / 3 / 5); the Catapult at Attack 3, the Knight at 13 HP, the Marksman at 4 Coins and never advancing; the level-5+ reward unit once per city, the Monument at +2 population, the level-4 Treasury at 6 Coins (reward ID `TREASURY_6`), Land Grant at 2 Coins per explored claimed tile and at least 6, one contributor for one Windmill, Sawmill, Forge, and Market; Commerce at 2 Coins per connected city, Breach and a Blast Mountain that pays +1 population with Explosives, Field Defense that keeps the builder's turn; no tier 3 chest unit before round 15; the preview query `queryLandGrantPreviewV7`; a pending reward may carry one candidate; the Candy `FIGHTER`-role unit displayed as Toffee Trooper (was Gumdrop), the `KNIGHT`-role unit as Chocolate Bunny (was Gummy Bear), and the `JUGGERNAUT`-role unit as Gingerbread Giant (was Rock Candy Golem), display names only; no balance measurement |
 | Tuning      | `pulp-wars-poc-7r47` | `pulp_wars-w49.3` [tuning 2](RULESET_7_TUNING_1.md#10-round-2-tuning-2-pulp-wars-poc-7r47) after three more hand-played games: a ranged unit of any faction never advances after a kill (the role's range above 1; the Spitter, Grunt, Ray Gunner, Colossus, Snow Hunter, and Gumball Gunner advanced after an adjacent kill before); the Human Knight has `CAPTURE`; no shape change; the capital rule of Commerce, the blocked training of a garrisoned city, and the advance of an attack preview are shown; no balance measurement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | Tuning      | `pulp-wars-poc-7r47` | `pulp_wars-w49.3` [round 3 of the Human tuning](RULESET_7_TUNING_HUMAN.md), unpublished together with tuning 2 under the same identity: the Human Knight at Attack 4; Forest cover only with the defender's Forestry (every faction); Blast Mountain as an explosion of 5 on and around the tile, also next to an own unit outside the territory (explosion cause `BLAST`, `MOUNTAIN_BLASTED.cityId` nullable); land trade for every Road-linked city without the capital rule; the `HIRE` command (a Market hires at 1.5 times the price, one unit above the capacity); a Human Militia of two Fighters; no state shape change; no balance measurement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Tuning      | `pulp-wars-poc-7r48` | `pulp_wars-w49.4` [round 5 of the Human tuning](RULESET_7_TUNING_HUMAN.md#12-round-5) after four hand-played games on round 4: the Human Guard at Defense 1 against an attack from two or more tiles (`rangedDefense2`); the Human Swordsman (role `SWORDSMAN`, 5 Coins, 15 HP, Attack 3.5, Defense 2.5) at Engineering; Drill removed (`DRILL_UNIT` is no command kind); Land Grant at 1 Coin a cell with no minimum; a Blast Mountain spares the blasting player's weakest land unit next to the Mountain (`setterUnitId` in its preview); `LAB_BACKLINE` and `LAB_LATE` at revision 2 with Swordsmen. The Normal AI of a Human, Undead, or Goblin seat plays an army (`src/ai/v7-army.ts`). A `7r47` save, replay, or command stream is incompatible.                                                                                                                                                                                                                                                                                                                                                                                              |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -9801,7 +9881,7 @@ and autosave key (it is `7r43`). The overlay's own corrections are in its
 
 ## 25. Known discrepancies
 
-As of `pulp-wars-poc-7r47` the rules in this document match the code for
+As of `pulp-wars-poc-7r48` the rules in this document match the code for
 the eight factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
 Martian overlay with the engine of the Mind Control overlay, the Ice Folk
@@ -9814,12 +9894,25 @@ village density of `7r40`, and the starting Coins and tier 3 technology base
 cost of `7r41`, and the many seats of `7r42`, and the naval branch of
 `7r43` and `7r44` with the ice fortification fix of `7r45`, and
 [tuning 1](RULESET_7_TUNING_1.md) of `7r46` and its round 2 of `7r47`,
+and [round 5 of the Human tuning](RULESET_7_TUNING_HUMAN.md#12-round-5) of `7r48`,
 with these
 open items: what is left of the naval branch after the fold, the Candy
 items left after the fold, and the pending balance steps below.
 
 **Open.**
 
+- **The Human tuning, round 5: what is open** (`pulp_wars-w49.4`, `7r48`;
+  [round 5](RULESET_7_TUNING_HUMAN.md#12-round-5)). Nothing of round 5 was played by hand yet. Its forks for
+  the user are in its section 12.5. The Swordsman has no art of its own
+  (the Guard's stands in). The worked examples of the faction sections
+  below, and the faction revision documents, still give the damage of a
+  ranged attack on a Human Guard at Defense 3 (a Ray Gunner's 7, a Tripod's
+  10, a Pie Launcher's 7, a Grunt's 4, Acid's 4, a Boulder's 7); the
+  current values are 10, 14, 10, 6, 6, and 10, and the tests of those
+  factions state them. Metallurgy is unchanged and still needs a Forge to
+  pay. The Normal AI's army play covers only matches of Human, Undead, and
+  Goblin seats; it does not hire, does not blast as a weapon, and does not
+  build a Field Defense for a unit that will be shot at.
 - **The Human tuning, round 3: what is open** (`pulp_wars-w49.3`, `7r47`;
   [the Human tuning](RULESET_7_TUNING_HUMAN.md)). Nothing of round 3 was
   played by hand yet; its three playtests are in section 9 of that

@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r47" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r48" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -58,8 +58,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r44",
   "pulp-wars-poc-7r45",
   "pulp-wars-poc-7r46",
+  "pulp-wars-poc-7r47",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r47.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r48.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -152,6 +153,9 @@ export const UNIT_ROLE_IDS_V7 = Object.freeze([
   "BATTLESHIP",
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 5.1).
   "SUBMARINE",
+  // Tuning 5 (`pulp_wars-w49.4`): the Human heavy line unit, last so that
+  // every earlier role keeps its ordinal. Only the Human tree unlocks it.
+  "SWORDSMAN",
 ] as const);
 /**
  * The naval branch (section 6): the ship roles, in role order. A unit has
@@ -231,8 +235,6 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "RECOVER",
   "CAPTURE",
   "PROMOTE",
-  // Tuning 4 (`pulp_wars-w49.3`): the paid Promotion at a Barracks.
-  "DRILL_UNIT",
   "PILLAGE",
   "DISBAND",
   "WAIT",

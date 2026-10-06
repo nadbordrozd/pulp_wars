@@ -10,6 +10,7 @@ import {
   SPATIAL_ECONOMIC_ACTIONS_V7,
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
+  HUMAN_ONLY_ROLES_V7,
   factionUnlocksRoleV7,
   isEggLaidRoleV7,
   isNavalRoleV7,
@@ -258,6 +259,15 @@ export function galleryUnitCellV7(
       !factionUnlocksRoleV7(faction, row))
   )
     return { kind: "EMPTY", row, faction, reason: "NO_SHIPS" };
+  // Tuning 5 (`pulp_wars-w49.4`): a role only the Human tree unlocks (the
+  // Swordsman) is no unit of any other faction.
+  if (
+    row !== "TRANSPORT" &&
+    row !== "EGG" &&
+    HUMAN_ONLY_ROLES_V7.includes(row) &&
+    !factionUnlocksRoleV7(faction, row)
+  )
+    return { kind: "EMPTY", row, faction };
   if (row === "TRANSPORT")
     return {
       kind: "UNIT",

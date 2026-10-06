@@ -167,18 +167,22 @@ describe("Ruleset 7 Gallery", () => {
       "BATTLESHIP",
       // The naval branch (`pulp_wars-5ti.2`).
       "SUBMARINE",
+      // Tuning 5 (`pulp_wars-w49.4`): the Human Swordsman's row.
+      "SWORDSMAN",
       "TRANSPORT",
       "EGG",
     ]);
     // 12 rows of eight units, and one Egg; the Ice Folk have no ships and
     // no transport since the frozen sea (`pulp_wars-5ti.3`): four empty
     // cells more.
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(93);
+    // (93 before tuning 5, which adds the one Swordsman, the Humans'.)
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(94);
     expect(
       document.querySelectorAll(".v7-gallery-cell-wrap.is-empty"),
-    ).toHaveLength(11);
+    ).toHaveLength(18);
     // The frozen sea (`pulp_wars-5ti.7`): the four Ice Folk cells are empty
-    // on purpose and say why; the seven Egg cells keep their dash.
+    // on purpose and say why; the seven Egg cells keep their dash, and so
+    // do the seven Swordsman cells of the other factions (tuning 5).
     const frozen = [
       ...document.querySelectorAll<HTMLElement>(
         ".v7-gallery-cell-wrap.is-frozen",
@@ -275,7 +279,8 @@ describe("Ruleset 7 Gallery", () => {
     );
     required<HTMLButtonElement>('[data-action="gallery-factions-all"]').click();
     required<HTMLButtonElement>('[data-action="gallery-rows-all"]').click();
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(93);
+    // (93 before tuning 5, which adds the one Swordsman, the Humans'.)
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(94);
   });
 
   it("survives storage that throws", () => {

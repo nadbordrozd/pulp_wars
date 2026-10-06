@@ -223,12 +223,19 @@ describe("ruleset-7 revision-16 income previews", () => {
     // ends in round 27). With tuning 4 seed 7 has a capped Market and no
     // capped city; seed 2 runs to the round cap with a city above the
     // income cap from round 20 and a Market at its cap from round 16 (of
-    // seeds 0-12, seeds 9 and 12 also do).
+    // seeds 0-12, seeds 9 and 12 also do). With tuning 5
+    // (`pulp_wars-w49.4`) two Human seats play the Normal AI's army play
+    // and none of seeds 0-12 reaches both caps (most matches end before
+    // round 28), so the match is Humans against Dinosaurs, which plays the
+    // older policy: seed 7 runs to the round cap with a city above the
+    // income cap from round 28 and a Market at its cap from round 26 (of
+    // seeds 0-9, seed 9 also does).
     const setup: MatchSetupV7 = {
-      ...setupV7(2, 1),
+      ...setupV7(7, 1),
       width: 11,
       height: 11,
       mapType: "PANGEA",
+      factions: ["ORIGINAL", "DINOSAUR"],
     };
     const match = runAiMatchV7(setup, { maxRounds: 30, maxCommands: 30_000 });
     expect(match.errors).toEqual([]);

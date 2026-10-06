@@ -655,6 +655,12 @@ export function moundArtSubjectV7(rider: boolean): ArtSubjectV7 {
 export function chibiFallbackSubjectV7(
   subject: ArtSubjectV7,
 ): ArtSubjectV7 | null {
+  // Tuning 5 (`pulp_wars-w49.4`): STAND-IN. The Human Swordsman has no art
+  // yet; until its art bead registers `UNIT:SWORDSMAN` and
+  // `PORTRAIT:SWORDSMAN` it is drawn as the Guard (the board and the
+  // Gallery mark a piece drawn with stand-in art).
+  if (subject === "UNIT:SWORDSMAN") return "UNIT:GUARD";
+  if (subject === "PORTRAIT:SWORDSMAN") return "PORTRAIT:GUARD";
   if (subject === "UNIT:DINOSAUR:EGG") return null;
   if (subject === "UNIT:DWARF:MOUND" || subject === "UNIT:DWARF:MOUND_RIDER")
     return null;

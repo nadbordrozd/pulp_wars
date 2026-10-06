@@ -47,8 +47,9 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   "LAY_EGG",
   // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL.
   "HIRE",
-  // Tuning 4 inserts DRILL_UNIT after PROMOTE.
-  "DRILL_UNIT",
+  // Tuning 4 inserted DRILL_UNIT after PROMOTE; tuning 5
+  // (`pulp_wars-w49.4`) removed it again, so every kind after PROMOTE is
+  // back where it was at tuning 3.
 ];
 const REVISION_12_COMMAND_KIND_ORDER = COMMAND_KIND_ORDER_V7.filter(
   (kind) => !LATER_COMMAND_KINDS.includes(kind),

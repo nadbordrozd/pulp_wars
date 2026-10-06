@@ -91,16 +91,16 @@ class MemoryStorage {
 // save keys are obsolete, and the scripts perform no Stampede.
 describe("ruleset-7 revision-20 identity", () => {
   it("keeps 7r19 and 7r20 as prior identities after the later bumps", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r47");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r48");
     expect(RULESET_7.version).toBe(7);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r47.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-28, -26)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r48.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-29, -27)).toEqual([
       "pulp-wars-poc-7r19",
       "pulp-wars-poc-7r20",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-28, -26)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-29, -27)).toEqual([
       "pulpWars.save.v7r19.current",
       "pulpWars.save.v7r20.current",
     ]);
@@ -142,7 +142,7 @@ describe("ruleset-7 revision-20 identity", () => {
       const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
       const created = createPlayableGameV7(setup);
       if (!created.ok) throw new Error(created.error.code);
-      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r47");
+      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r48");
       const oldSetup = { ...setup, rulesetId: oldId };
       expect(parseMatchSetupV7(setup)).not.toBeNull();
       expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -222,8 +222,9 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     // Ice Folk revision two commands after TRACTOR_BEAM and one event, and
     // the Dwarf revision three commands after COLD_SNAP and four events.
     // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL (59), and
-    // tuning 4 DRILL_UNIT after PROMOTE (60).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(60);
+    // tuning 4 DRILL_UNIT after PROMOTE (60), which tuning 5
+    // (`pulp_wars-w49.4`) removes again (59).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(59);
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
     const kaboom = COMMAND_KIND_ORDER_V7.indexOf("KABOOM");
     expect(COMMAND_KIND_ORDER_V7.slice(kaboom, kaboom + 8)).toEqual([
@@ -533,11 +534,15 @@ describe("ruleset-7 revision-20 role registrations (section 6.1)", () => {
       UNIT_ROLE_IDS_V7.map((role) => effectiveRoleRuleV7(role, faction).maxHp);
     // `pulp_wars-0hi.3`: Fighter, Raider, Marksman 12 (were 10), Guard 17
     // (was 15). Tuning 1 (`pulp_wars-w49.3`, 7r46): Knight 13 (was 10).
+    // Tuning 5 (`pulp_wars-w49.4`): the last role is the Human Swordsman
+    // (15), copied into the other tables, which never field it.
     expect(hp("ORIGINAL")).toEqual([
-      12, 12, 12, 17, 10, 10, 13, 40, 10, 25, 12,
+      12, 12, 12, 17, 10, 10, 13, 40, 10, 25, 12, 15,
     ]);
-    expect(hp("UNDEAD")).toEqual([10, 10, 8, 18, 10, 10, 10, 40, 10, 25, 12]);
-    expect(hp("GOBLIN")).toEqual([6, 10, 8, 15, 12, 8, 10, 40, 10, 25, 12]);
+    expect(hp("UNDEAD")).toEqual([
+      10, 10, 8, 18, 10, 10, 10, 40, 10, 25, 12, 15,
+    ]);
+    expect(hp("GOBLIN")).toEqual([6, 10, 8, 15, 12, 8, 10, 40, 10, 25, 12, 15]);
   });
 });
 

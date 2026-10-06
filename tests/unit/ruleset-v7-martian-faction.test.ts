@@ -11,7 +11,7 @@ import {
   MARTIAN_ROLE_MECHANICS_V7,
   MARTIAN_ROLE_RULES_V7,
   MILITIA_FIGHTERS_V7,
-  ORIGINAL_BASELINE_V5_NODES,
+  SHARED_BASELINE_NODES_V7,
   ORIGINAL_ROLE_RULES_V7,
   PLAYER_EVENT_KIND_ORDER_V7,
   PRIOR_RULESET_7_IDS,
@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 47;
+const REVISION = 48;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -264,8 +264,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
 
   it("has the new kinds at the stated positions (48 command and 76 event kinds; the Ice Folk revision adds two and one, the Dwarf revision three and four)", () => {
     // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL (59), and
-    // tuning 4 DRILL_UNIT after PROMOTE (60).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(60);
+    // tuning 4 DRILL_UNIT after PROMOTE (60), which tuning 5
+    // (`pulp_wars-w49.4`) removes again (59).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(59);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",
@@ -1056,9 +1057,9 @@ describe("Martian roster (section 3)", () => {
 describe("Martian technology (section 4)", () => {
   it("differs from the Human graph in four unlock entries and two display names", () => {
     expect(MARTIAN_BASELINE_V1_NODES).toHaveLength(
-      ORIGINAL_BASELINE_V5_NODES.length,
+      SHARED_BASELINE_NODES_V7.length,
     );
-    ORIGINAL_BASELINE_V5_NODES.forEach((human, index) => {
+    SHARED_BASELINE_NODES_V7.forEach((human, index) => {
       const martian = MARTIAN_BASELINE_V1_NODES[index];
       if (martian === undefined) throw new Error("node missing");
       expect([
@@ -1135,7 +1136,10 @@ describe("Martian technology (section 4)", () => {
     // Everything else is the Human table, minus Field Defense.
     const martian = technologyCapabilitiesV7(all, "MARTIAN");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
-    expect(martian.trainableRoles).toEqual(human.trainableRoles);
+    // (The Swordsman of tuning 5 is the Humans' alone.)
+    expect(martian.trainableRoles).toEqual(
+      human.trainableRoles.filter((role) => role !== "SWORDSMAN"),
+    );
     expect(martian.roleSightRadius).toEqual(human.roleSightRadius);
     expect(martian.commands).toEqual(
       human.commands.filter((command) => command !== "BUILD_FIELD_DEFENSE"),

@@ -6,6 +6,8 @@ import {
   gravesEnabledV7,
   ownerHasForestCoverV7,
   terrainGivesCoverV7,
+  roleDefense2AtDistanceV7,
+  unitRoleMechanicsV7,
   unitRoleRuleV7,
   unitTakesCoverV7,
   type FactionRosterV7,
@@ -307,7 +309,13 @@ export function wailTargetV7(
   const defenseBonusNumerator = cover.numerator;
   const defenseBonusDenominator = cover.denominator;
   const defense2 = defense2For(
-    unitRoleRuleV7(roster, unit).defense2,
+    // Tuning 5 (`pulp_wars-w49.4`): the Human Guard is open to ranged
+    // attacks, a Wail from two tiles included.
+    roleDefense2AtDistanceV7(
+      unitRoleRuleV7(roster, unit),
+      unitRoleMechanicsV7(roster, unit),
+      chebyshev(banshee.at, unit.at),
+    ),
     unit,
     fortificationLevel,
   );

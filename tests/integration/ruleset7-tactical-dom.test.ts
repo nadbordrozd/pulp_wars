@@ -55,9 +55,9 @@ describe("Ruleset 7 tactical DOM controls", () => {
     host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
     const grant = requiredButton("command-land_grant");
     expect(grant.disabled).toBe(false);
-    expect(grant.getAttribute("aria-label")).toBe("Land grant for 6 Coins");
+    expect(grant.getAttribute("aria-label")).toBe("Land grant for 1 Coins");
     expect(grant.querySelector(".v7-economy-chip.is-cost")?.textContent).toBe(
-      "6",
+      "1",
     );
 
     host.callbacks?.onSelection({ kind: "TILE", at: tile.at });

@@ -791,8 +791,10 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
       "ORIGINAL",
     ];
     const state = rawShowcase(factions);
+    // Tuning 5 (`pulp_wars-w49.4`): every role but the Swordsman, which
+    // only the Humans have (`SHOWCASE_ROLE_IDS_V7`).
     expect(SHOWCASE_UNIT_TEMPLATES_V7.map((entry) => entry.role)).toEqual(
-      UNIT_ROLE_IDS_V7,
+      UNIT_ROLE_IDS_V7.filter((role) => role !== "SWORDSMAN"),
     );
     expect(state.units).toHaveLength(44);
     // IDs: capital 2s + 1 and FIGHTER 2s + 2; then North and Coast cities
@@ -981,7 +983,11 @@ describe("ruleset-7 revision-18 Showcase play", () => {
       );
       expect([...trained].sort()).toEqual(
         UNIT_ROLE_IDS_V7.filter(
-          (role) => role !== "JUGGERNAUT" && !(shipless && isNavalRoleV7(role)),
+          (role) =>
+            role !== "JUGGERNAUT" &&
+            !(shipless && isNavalRoleV7(role)) &&
+            // Tuning 5: a Human seat trains the Swordsman, and only it.
+            !(role === "SWORDSMAN" && faction !== "ORIGINAL"),
         ).sort(),
       );
       expect(commands.at(-1)).toEqual({ kind: "END_TURN" });

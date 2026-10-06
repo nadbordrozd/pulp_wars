@@ -989,7 +989,9 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // 32a2e1…15c0).
           // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL, moving every later command kind forward by one
           // (was b495e0…5c8e).
-          "7f52e59a46ee2c30ada9f9ea3ee34414c88a2ad276c8475f2ba9d417560183ff",
+          // Tuning 5 (`pulp_wars-w49.4`): the Normal AI's army play scores
+          // the candidates of a Human match (was 7f52e5…83ff).
+          "ced53114583e5424fc5f7fdac3be115053dec73740c3c651fdaf757b6c7534f8",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -999,7 +1001,7 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         expect(
           canonicalHash(withRevision12DecisionOrdinalsV7(beforeDecision)),
         ).toBe(
-          "8e91dae9b708b655b3fc8824790f52ef71e390f779f70a9cfe526385d5df48be",
+          "a02a3abd2328a6875256571055c553d4169b7b48a1d00abda8c7340e9da052a0",
         );
       }
       expect(inspectNormalTacticalFactsV7(beforeView).roadCorridor).toBeNull();
@@ -1073,14 +1075,14 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // numbers (was 7e8bcc…dce8).
           // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL, moving
           // every later command kind forward by one (was 813c7f…07f9).
-          "c82e65732afd65a9cd75acb41c8dce20a29184bedb858ff56a69a336b2894944",
+          "a58d379bf6163928b252c06b29434f8761bb356f42360050ad0a0c72f9e999ed",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).
         expect(
           canonicalHash(withRevision12DecisionOrdinalsV7(capturedDecision)),
         ).toBe(
-          "41aca9bea81968ce25da84d5decf7bcd53919b7f0938c2975af0aafd6b353244",
+          "1c61f73726f582c7b0696bd0bd40e1972abe54d86b2704b2c759609f59e77d78",
         );
       }
 

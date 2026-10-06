@@ -1199,9 +1199,10 @@ describe("M4: the Grunt's gun and body (sections 5.4 and 5.7)", () => {
     return attackV7(state, at(4, 3), at(6, 3)).combat;
   };
 
-  it("a shot from two tiles: 5 on a Fighter, 4 on a Guard, 6 on a Marksman or Raider, 7 on a Catapult", () => {
+  // The Guard row was 4 before tuning 5 (`pulp_wars-w49.4`): the Human Guard has Defense 1 against an attack from two or more tiles.
+  it("a shot from two tiles: 5 on a Fighter, 6 on a Guard, 6 on a Marksman or Raider, 7 on a Catapult", () => {
     expect(shot("FIGHTER").damageToDefender).toBe(5);
-    expect(shot("GUARD").damageToDefender).toBe(4);
+    expect(shot("GUARD").damageToDefender).toBe(6);
     expect(shot("MARKSMAN").damageToDefender).toBe(6);
     expect(shot("RAIDER").damageToDefender).toBe(6);
     expect(shot("KNIGHT").damageToDefender).toBe(6);

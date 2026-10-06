@@ -104,10 +104,11 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The Human tuning labs (`pulp_wars-w49.3`, tuning 4).
   "LAB_SIEGE@1:ORIGINAL":
     "4dfd821eba726c3103d795c00fb6b02b8048e7904e1d216f4d26d9917a122466",
-  "LAB_BACKLINE@1:ORIGINAL":
-    "145050eb743f0deb7cba22f753be2d60b0e4a6e4f41d7f004e6dc1ec4c8b5552",
-  "LAB_LATE@1:ORIGINAL":
-    "4942d9dc5b610f9a9f920a20d58624f3c1aca32936bbf9a921de3801256aa872",
+  // Tuning 5 (`pulp_wars-w49.4`): revision 2 of both, with Swordsmen.
+  "LAB_BACKLINE@2:ORIGINAL":
+    "2975321dbfb42083e68681f31ed09217232c4856c4b43d5feef85acd5ce1aef2",
+  "LAB_LATE@2:ORIGINAL":
+    "9aec749baf81daae59ec354bc9d322dfe1e91c4dcf00406ad02c106e3881b1ca",
 };
 
 /**
@@ -196,10 +197,10 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // curiosities; their digests here are the same reduction of the state.
   "LAB_SIEGE@1:ORIGINAL":
     "08e89649ece323a8d5284cc1895331f236d702a507a8c68df6ff443175b539ed",
-  "LAB_BACKLINE@1:ORIGINAL":
-    "ad1dfe30f7c32601e73087dfecccbb231512769bae8d45551fef9211e5515768",
-  "LAB_LATE@1:ORIGINAL":
-    "aa5066ead4b8c7c45f57cf02ccb8d962642e6fde059571f1f8ec5bcc494556a4",
+  "LAB_BACKLINE@2:ORIGINAL":
+    "bf278fe987b22356a48b8a199331a3435878bc5072ec31f85691371d6be31277",
+  "LAB_LATE@2:ORIGINAL":
+    "67247565f08469287eeae5e2a66f4b4a3a9f270e9d2d1d08bc1d595cb68e0643",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {

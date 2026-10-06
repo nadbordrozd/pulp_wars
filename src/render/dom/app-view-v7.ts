@@ -13,8 +13,6 @@ import {
   FOREST_MARCH_UNLOCK_TEXT_V7,
   BARRACKS_REWARD_TEXT_V7,
   SCOUTS_REWARD_TEXT_V7,
-  drillLabelV7,
-  drillTooltipV7,
   BLAST_ORE_WARNING_V7,
   landGrantUnaffordableTextV7,
   pillageUnlockTextV7,
@@ -105,8 +103,6 @@ import {
   previewBlastMountainV7,
   publicHireCostV7,
   cityBarracksV7,
-  DRILL_COST_V7,
-  PROMOTION_HP_V7,
   publicLandGrantPriceV7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
 } from "../../engine/index";
@@ -5040,7 +5036,7 @@ export class Ruleset7DomAppView {
         );
         action.append(economyChips(this.#document, { cost: 3 }));
       } else if (command.kind === "LAND_GRANT") {
-        // Tuning 1 (7r46): 2 Coins per explored neutral tile, at least 6.
+        // Tuning 5 (7r48): 1 Coin per explored neutral tile.
         const grant =
           this.#snapshot.view === null
             ? null
@@ -5081,11 +5077,6 @@ export class Ruleset7DomAppView {
         // Revision 17: the blast preview is shown on hover or focus and while
         // armed; activating the button arms it and asks for confirmation.
         this.#decorateKaboomButton(action, command.unitId);
-      } else if (command.kind === "DRILL_UNIT") {
-        // Tuning 4 (`pulp_wars-w49.3`): the Barracks' paid Promotion.
-        const tooltip = drillTooltipV7(DRILL_COST_V7, PROMOTION_HP_V7);
-        action.title = tooltip;
-        action.setAttribute("aria-label", tooltip);
       } else if (command.kind === "PROMOTE") {
         // Revision 20: a Promotion adds maximum HP and fully heals.
         action.title = PROMOTE_TOOLTIP_V7;
@@ -10126,7 +10117,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r47",
+    rulesetId: "pulp-wars-poc-7r48",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -10811,8 +10802,6 @@ function commandLabel(command: CommandV7, faction: FactionIdV7): string {
   // Tuning 3 (`pulp_wars-w49.3`): a Market hires.
   if (command.kind === "HIRE")
     return `Hire ${effectiveRoleRuleV7(command.role, faction).label}`;
-  // Tuning 4: the Barracks' paid Promotion, with its price.
-  if (command.kind === "DRILL_UNIT") return drillLabelV7(DRILL_COST_V7);
   const undead = undeadCommandLabelV7(command.kind, faction);
   if (undead !== null) return undead;
   const goblin = goblinCommandLabelV7(command.kind, faction);

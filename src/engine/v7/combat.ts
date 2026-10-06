@@ -29,6 +29,7 @@ import {
   unitMovementModeV7,
   unitRoleMechanicsV7,
   isRangedRoleRuleV7,
+  roleDefense2AtDistanceV7,
   unitRoleRuleV7,
   unitTakesCoverV7,
   type EffectiveRoleRuleV7,
@@ -466,7 +467,13 @@ export function calculateCombatPreviewV7(
       ? 2
       : defender.form === "EGG"
         ? EGG_DEFENSE2_V7
-        : defenderRule.defense2 + fortificationLevel * 2;
+        : // Tuning 5: the Human Guard is open to ranged attacks.
+          roleDefense2AtDistanceV7(
+            defenderRule,
+            unitRoleMechanicsV7(state, defender),
+            distance,
+          ) +
+          fortificationLevel * 2;
   const breachApplied = breach && fortificationIgnored > 0;
   // The Ice Folk revision section 6.2: Snow cover (a telemetry option can
   // evaluate the exchange without it).
