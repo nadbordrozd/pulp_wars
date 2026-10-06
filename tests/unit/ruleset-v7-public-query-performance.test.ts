@@ -37,9 +37,14 @@ describe("ruleset-7 late public query performance", () => {
     // could afford (12 Coins, five technologies: a tier 1 now costs 13).
     // Tuning 5 (`pulp_wars-w49.4`): 65, with the Swordsman on offer in the
     // view's two cities that can train (it owns Engineering).
-    expect(commands).toHaveLength(65);
+    // Tuning 6 (`pulp_wars-w49.6`): 71, with the six technologies its 12
+    // Coins buy again (research costs 1 Coin for each technology owned).
+    expect(commands).toHaveLength(71);
     expect(canonicalHash(commands)).toBe(
-      "83c9a2dd6aa17b01f061cf3a5a0c4b4d0145a28902398e2d48aeb76a0378466e",
+      // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
+      // technology owned, so the retained view's 12 Coins buy a technology
+      // again and six RESEARCH commands are offered (was 83c9a2…466e).
+      "9fd9949165d34f7fc6354364bee3ce65b287908a50d6654a1311ac2b25e21b96",
     );
     expect(
       commands.flatMap((command) =>
@@ -70,7 +75,10 @@ describe("ruleset-7 late public query performance", () => {
     expect(commands.filter(isRevision8MergedUnlockCommand)).toHaveLength(2);
     expect(commands.filter(isNavalExpansionCommand)).toEqual([]);
     expect(canonicalHash(commands.filter(isRetainedLandCommand))).toBe(
-      "83c9a2dd6aa17b01f061cf3a5a0c4b4d0145a28902398e2d48aeb76a0378466e",
+      // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
+      // technology owned, so the retained view's 12 Coins buy a technology
+      // again and six RESEARCH commands are offered (was 83c9a2…466e).
+      "9fd9949165d34f7fc6354364bee3ce65b287908a50d6654a1311ac2b25e21b96",
     );
     const ready = queryAiReadyCommandsV7(view);
     // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
@@ -96,12 +104,17 @@ describe("ruleset-7 late public query performance", () => {
       // moving every later kind forward by one (was 056a9c…21e1).
       // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL, moving every later command kind forward by one
       // (was b3c666…2787).
-      "8926e8e22f5ef85f017380a9849f6d8ea35f5ccccb4fd8f4c86ec6aa6def9159",
+      // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
+      // technology owned, so the retained view's 12 Coins buy a technology
+      // again and six RESEARCH commands are offered (was 8926e8…9159).
+      "9ed334323546137e4753155a6f58b45e42496a3ebe44820bd412ed7f0feb056e",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.
     expect(canonicalHash(withRevision12AiReadyOrdinalsV7(ready))).toBe(
-      "b9b0a8c18ebea9a27e955fc1fc9d2cfdceeba8556e84fa107c7d534d22ab40cb",
+      // Tuning 6 (`pulp_wars-w49.6`): the six RESEARCH commands, as above
+      // (was b9b0a8…40cb).
+      "999e506c925301593a7acfcc1ab156fbbb991fca2ba4d69a4657e1164cb0a79f",
     );
     expect(
       canonicalHash(
@@ -110,7 +123,7 @@ describe("ruleset-7 late public query performance", () => {
           result: previewEconomicV7(view, command),
         })),
       ),
-    ).toBe("df13938a3dac6c6d51573f24d7ac74e481aed6626aaff886cf7efd07c39c1331");
+    ).toBe("fe39b7f1bf5a7852a03f45ab651126d3e6d0fbd425a024a209f97d069af968d3");
     expect(
       canonicalHash(
         commands.filter(isRetainedLandCommand).map((command) => ({
@@ -118,7 +131,7 @@ describe("ruleset-7 late public query performance", () => {
           result: previewEconomicV7(view, command),
         })),
       ),
-    ).toBe("df13938a3dac6c6d51573f24d7ac74e481aed6626aaff886cf7efd07c39c1331");
+    ).toBe("fe39b7f1bf5a7852a03f45ab651126d3e6d0fbd425a024a209f97d069af968d3");
     expect(elapsed).toBeLessThan(250);
 
     const incrementalView = structuredClone(RETAINED_VIEW);
@@ -216,7 +229,10 @@ describe("ruleset-7 late public query performance", () => {
         "46e69d22f7561de4a04018da1efd36af083d79750c5846a3eb973d1b5c0ee6ee",
       );
       expect(canonicalHash(leftResult.scores)).toBe(
-        "ed2aad7943952a011fcc725a1c4c24ab4c384d4a461f382e9390372224d546f9",
+        // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
+        // technology owned, so the retained view's 12 Coins buy a technology
+        // again and six RESEARCH commands are offered (was ed2aad…46f9).
+        "447868b6ea483a206cad9c1d38f2679ac13407874804c1569f003309ec9a9983",
       );
       const revision8Scores = leftResult.scores.filter(({ command }) =>
         isRevision8MergedUnlockCommand(command),
@@ -230,7 +246,10 @@ describe("ruleset-7 late public query performance", () => {
           ),
         ),
       ).toBe(
-        "ed2aad7943952a011fcc725a1c4c24ab4c384d4a461f382e9390372224d546f9",
+        // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
+        // technology owned, so the retained view's 12 Coins buy a technology
+        // again and six RESEARCH commands are offered (was ed2aad…46f9).
+        "447868b6ea483a206cad9c1d38f2679ac13407874804c1569f003309ec9a9983",
       );
       expect(queryPublicEconomicPotentialsV7(leftView)).toBe(
         leftResult.potentials,
@@ -291,7 +310,10 @@ describe("ruleset-7 late public query performance", () => {
   it("keys movement preparation to the exact changed public view", () => {
     const original = structuredClone(RETAINED_VIEW);
     expect(canonicalHash(queryPlayerCommandsV7(original))).toBe(
-      "83c9a2dd6aa17b01f061cf3a5a0c4b4d0145a28902398e2d48aeb76a0378466e",
+      // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
+      // technology owned, so the retained view's 12 Coins buy a technology
+      // again and six RESEARCH commands are offered (was 83c9a2…466e).
+      "9fd9949165d34f7fc6354364bee3ce65b287908a50d6654a1311ac2b25e21b96",
     );
     const firstMove = required(
       queryPlayerCommandsV7(original).find(
@@ -315,10 +337,16 @@ describe("ruleset-7 late public query performance", () => {
       canonicalHash(queryPlayerCommandsV7(structuredClone(changed))),
     );
     expect(canonicalHash(changedCommands)).toBe(
-      "0bfa820b9f6ef1b5e6d9e0f2997c8138ff9c6b6ea61b50c4c2d6cc520bd88f93",
+      // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
+      // technology owned, so the retained view's 12 Coins buy a technology
+      // again and six RESEARCH commands are offered (was 0bfa82…8f93).
+      "8e4aa3e25bc82bdadcca5abd96bdd8cb15a645bb814d97775f0c6b55019fe4bd",
     );
     expect(canonicalHash(changedCommands.filter(isRetainedLandCommand))).toBe(
-      "0bfa820b9f6ef1b5e6d9e0f2997c8138ff9c6b6ea61b50c4c2d6cc520bd88f93",
+      // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
+      // technology owned, so the retained view's 12 Coins buy a technology
+      // again and six RESEARCH commands are offered (was 0bfa82…8f93).
+      "8e4aa3e25bc82bdadcca5abd96bdd8cb15a645bb814d97775f0c6b55019fe4bd",
     );
   });
 

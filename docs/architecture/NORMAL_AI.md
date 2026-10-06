@@ -82,6 +82,271 @@ only with its Forestry, reads an enemy's cover where it stands from the
 public Defense breakdown, and assumes the cover for an enemy on any other
 Forest tile. It does not value Forestry for the cover.
 
+## The assault, expansion, and discipline (`pulp_wars-w49.6`)
+
+**The Human tuning, round 6**
+([round 6](../product/RULESET_7_TUNING_HUMAN.md#13-round-6)). Three more
+hand-played games on round 5 were bloody, but the policy still lost every
+one: with 17 units against 5 behind a gate it walked up and did not
+attack, it fed units in one at a time, an Undead seat never took a village
+and lost in twelve rounds on one city, and neither the Goblin nor the Human
+seat reached its siege or breakthrough unit. The user's bar for this round:
+**with overwhelming numbers the AI must break through a prepared line.**
+Everything here applies to the seats that play the army rules (a Human,
+Undead, or Goblin seat in a match of only those three); the numbers are in
+`src/ai/v7-army.ts`, the hooks in `src/ai/v7.ts` (`armyAssaultV7`,
+`armyFocusV7`, `armyCommitAcceptsV7`, `armyMoveValueV7`,
+`armyAttackValueV7`, `armyResearchTargetV7`, `armyPressedV7`), and
+`inspectNormalArmyV7(view)` reports the facts of one decision (the mode of
+every unit, the research target and whether it is due, the threat
+distance) for tests and diagnostics.
+
+### Positions and their modes
+
+The visible hostile land units are grouped into **positions**: units within
+2 tiles of each other, transitively. Every own fighting land unit that does
+not stand on an own center belongs to the position whose nearest unit is
+nearest to it, when that is within 9 tiles (**coming**); within 5 tiles it
+has **arrived**. A unit weighs `4 x price + HP` (a Fighter 20, a Guard 29,
+a Swordsman 35, a Catapult 42, a Knight 49, a Goblin 10); a hostile unit
+behind Walls or on a Field Defense weighs half as much again, on a center
+without Walls, in a Forest, or on a Mountain a quarter more.
+
+| Mode       | When                                                                                                                                                                                                                                              | What the units of the position do                                                                                                                                                                                                                                                                          |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Commit** | the arrived units weigh 150% of the position; or 100% once the battle is joined (an own unit next to a unit of the position, and a unit of the position wounded); or the coming units weigh 150%, 60% of them have arrived, and those weigh 100%. | They close in together, attack as described below, are not held back by the reach they enter (a ranged, siege, or support unit still stays out of lethal reach), and make no routine Move that takes them farther from the position.                                                                       |
+| **Stage**  | the coming units weigh 150% but too few have arrived.                                                                                                                                                                                             | The units coming walk up, from up to 9 tiles, and stop outside every visible enemy's reach. The units that have arrived wait there: no Move into reach except for a kill, no Move away. Nobody attacks piecemeal (the tuning-5 exchange rules still allow a kill or a clearly favourable attack on offer). |
+| **None**   | otherwise (no clear superiority).                                                                                                                                                                                                                 | The rules of tuning 5: an acceptable exchange, a combined kill, nobody alone into heavy reach.                                                                                                                                                                                                             |
+
+A single-file front (`src/ai/v7-chokepoint.ts`) keeps its own siege, and
+these modes do not move its units. The weights still count there: when the
+position of a garrison unit would be committed, the siege is in its
+assault ([numbers at a gate](#numbers-at-a-gate)).
+
+### What a committed unit attacks
+
+A committed unit takes an exchange it would otherwise refuse (it deals
+less than it takes) when **one** of these holds, and never an attack that
+kills it without a kill, deals nothing, or that a faction rule rejects
+(friendly bomb splash, a fed Zombie):
+
+- **the battle is joined** (see the table);
+- **the target is in this turn's focus**: the committed units that can hit
+  it this turn (from where they stand, or after a Move for a unit that may
+  attack after moving; each unit counted once, against the unit it can
+  take the largest share of HP from) can together take half its HP;
+- **the unit is lost anyway**: the visible enemies can kill it where it
+  stands.
+
+So six Fighters commit against a Guard on a Field Defense with a Marksman
+behind it (120 against 71), three of them can reach it and take 12 of its
+17 HP, and it dies on the second turn; three Fighters (60 against 71) do
+not attack it at all, as under tuning 5.
+
+**Order of a committed turn** (priorities; a kill stays 1180):
+
+| What                                                                                               | Priority |
+| -------------------------------------------------------------------------------------------------- | -------- |
+| a fast unit (Move 2 or more) moves to where it hits a ranged, siege, or support unit               | 1177     |
+| a shot from two or more tiles that does not kill                                                   | 1176     |
+| a ranged unit moves to a tile with a shot                                                          | 1175     |
+| a melee attack that does not kill                                                                  | 1174     |
+| a melee unit moves into contact                                                                    | 1173     |
+| the combined kills of tuning 5                                                                     | 1171/2   |
+| a siege unit that cannot fire moves to a tile with a shot next turn (ahead of the units behind it) | 765      |
+| a unit that cannot attack this turn closes in                                                      | 760      |
+
+Within one priority the strategic value decides, and it prefers: the unit
+the hit brings closest to dying (tuning 5); a unit in this turn's focus
+(+15); for a shot, an **anchor** (a unit in cover or on a fortification,
+or a defender-class unit: +12); for a fast or ranged unit, a ranged,
+siege, or support target (+30, in every mode). A melee kill advances onto
+the dead unit's tile by the rules, which is how a gap opens; a Raider
+(it ignores zones of control) goes through a one-tile gap to a Catapult
+before the line fights; a capturer that can step onto an empty hostile
+center does (priority 1290, as before) and captures next turn; the
+defender of a center the campaign marches on is a combined-kill target as
+before.
+
+### Expansion and growth
+
+- **Villages.** A capturer that can step onto a free village does, if the
+  visible enemies cannot kill it there: priority 1170 while the seat owns
+  fewer than three cities (above an exchange at 950 and a chip at 900,
+  below a kill), 960 afterwards. A unit standing on a free village makes
+  no Move and no attack that would take it off the tile (a capture needs
+  the unit to start its turn there), unless it would die there. A unit the
+  campaign sent to a village turns aside only for a kill while the seat
+  has fewer than three cities.
+- **The first units.** While the seat has fewer than three cities it
+  trains as if alert (the unit on its center steps aside, the city trains
+  before research), so the units that take the villages exist by round 3.
+- **Growth before training.** With no hostile land unit within 4 tiles of
+  an own center, an economic action that levels a city now, or adds
+  population for at most 2 Coins a point (a harvest, a hunt), goes before
+  training (priority 1218). A Monument is free and is built at once in
+  every state.
+- **Training against the rest.** With no enemy near, an enemy city known,
+  and two thirds of the unit slots filled (`warTrainingFirstV7`, the rule
+  of `pulp_wars-9s0.1`), training drops below the growth that adds
+  population (1135): Farms, Lumber Camps, Mines, and Markets are bought
+  first and the army is topped up with what is left. Below two thirds of
+  the slots, with an enemy within 4 tiles, at a single-file front, or with
+  fewer than three cities, training keeps its tuning-5 place (1215).
+- **Pressed.** With a hostile land unit within 3 tiles of an own center
+  and a city that can still train this turn (a free slot, its action, and
+  a free center or a unit on it that can still step aside), no research
+  and no construction that costs Coins is a candidate. Once every such
+  city has trained, the rest of the Coins is free.
+- **Rewards.** At level 4 the seat takes Boom (3 population), never the 6
+  Coins.
+
+### Research
+
+The army's next technology is the first step toward the first unit of the
+faction's own order that the seat cannot train yet
+(`ARMY_RESEARCH_ROLES_V7`), from the first turn and not only while alert.
+Each faction's signature units come first:
+
+| Faction | Units in order                                                         | Technologies from a Gathering opener                                                                         |
+| ------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Humans  | Marksman, Guard, Catapult, Knight, Swordsman, Captain                  | Hunting, Marksmanship, Drill, Forestry, Sawmilling, Scouting, Raiding, Chivalry, Engineering, Administration |
+| Undead  | Zombie, Banshee, Necromancer, Lich, Vampire                            | Drill, Hunting, Marksmanship, Administration, Forestry, Sawmilling, Scouting, Raiding, Chivalry              |
+| Goblins | Bomb Chucker, Wolf Rider, Rocket Cart, Scrap Buggy, Orc Brute, Warboss | Hunting, Marksmanship, Scouting, Forestry, Sawmilling, Raiding, Chivalry, Drill, Administration              |
+
+(The first draft of this bead used one class order for all three, ranged,
+siege, breakthrough, line, defender, support, which put the Zombie ninth.)
+With `ARMY_ROADS_CITIES_V7` (3) or more cities, Roads (by Scouting) is the
+target once the first `ARMY_ROADS_AFTER_ROLES_V7` (2) units of the order
+can be trained, and Commerce after the last unit; a seat with fewer cities
+researches neither by this rule.
+Other research is no candidate while that technology costs at most the
+Coins in hand plus four turns of income (tuning 5).
+
+The technology is **due** while the seat's city levels add up to at least
+twice the technologies it owns beyond the first
+(`armyResearchDueV7`): research and growth advance together.
+
+| State                                                                | Priority of the army's technology                 |
+| -------------------------------------------------------------------- | ------------------------------------------------- |
+| due, no enemy within 4 tiles, three cities or no city that can train | 1219: before growth and training                  |
+| due otherwise                                                        | 1165, or 1206 when the Coins are there (tuning 5) |
+| not due                                                              | 1130: after the growth that adds population       |
+
+While it is due and within two turns of income, construction that is
+neither a city level nor cheap growth waits for it (the savings plan of
+tuning 5); training never waits.
+
+### The mix by faction, and Zombies
+
+`armySharesV7(faction, fragile)` gives the shares of the land army in
+percent (line / defender / ranged / siege / breakthrough): Humans 35 / 15 /
+20 / 15 / 15, **Undead 20 / 30 / 20 / 15 / 15** (the defender is the
+Zombie), **Goblins 30 / 10 / 30 / 15 / 15**; against two or more visible
+ranged, siege, or support units 5 points (Humans 10) move to the
+breakthrough unit. A Goblin army has a Wolf Rider per four units (at most
+three); the others one skirmisher from five units.
+
+An own Zombie (an Undead unit with Infect) of an army seat:
+
+- values an attack on cheap line infantry (a line unit of at most 2 Coins:
+  a Fighter, a Skeleton, a Goblin) 12 strategic value higher: what it
+  kills rises as a Zombie;
+- approaches, and closes in when committed, on the nearest such unit and
+  not on the nearest hostile unit, when one is visible;
+- pays 5 strategic value per hostile ranged or siege unit that reaches the
+  end of a Move, less those that reach the tile it stands on
+  (`armyZombieShyV7`): of two tiles it takes the one out of their reach,
+  and where every tile is under the same fire it still moves.
+
+### The dear units
+
+`armyRoleScoreV7` adds 20 per Coin of price to a role whose class the army
+is short of. In a mixed army of cheap units the next unit trained is the
+breakthrough or the siege unit when the Coins are there (a Goblin seat
+with 12 Coins and two units trains a Scrap Buggy, not a Goblin), and the
+other one follows; a class that has its share is bought in its cheapest
+useful unit as before.
+
+### Discipline
+
+| Rule                                                                                                                                                                                                                                            | Where                                           |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| An attack on an enemy unit standing on an own center is made whatever the exchange (not one that kills the attacker without a kill).                                                                                                            | priority 1345, exempt from the low-value filter |
+| The unit on an own center does not make an attack that does not kill while it can still step aside for its city to train: it steps aside, the city trains, and it attacks from the new tile if it can.                                          | `armyGarrisonHoldsV7`                           |
+| A city does not train onto a center that two or more hostile ranged or siege units can hit next turn while another city can train, unless a hostile capturer can walk onto that center next turn.                                               | `armyTrainsElsewhereV7`                         |
+| A Move that ends next to own units, on a tile a hostile unit whose attack splashes (a Bomb Chucker, a Lich) can hit or next to one, costs 6 strategic value per neighbour, so another tile of the same priority is taken.                       | `armySplashSpacingV7`                           |
+| A Guard open to ranged attacks (the Human Guard) makes no routine Move, and no step aside, into the open inside the reach of a hostile ranged or siege unit; a center, a Field Defense, a Mountain, or a Forest that covers it is not the open. | `armyGuardExposedV7`                            |
+| A unit near (within 4 tiles of) an own center with an enemy within 3 tiles of it does not walk away from that center, and a Move that brings it nearer is taken.                                                                                | priority 725                                    |
+| A fighting unit outside the own territory with a hostile unit within 5 tiles and no own fighting unit within 3 goes back toward the nearest own unit when it has nothing to attack (also the scout).                                            | priority 705                                    |
+| With Raiding, a unit moves onto a hostile improvement to Pillage it in the same turn.                                                                                                                                                           | priority 955                                    |
+| A Kaboom is used only for a kill or on two or more enemies.                                                                                                                                                                                     | `kaboomScoreV7`                                 |
+
+### Cost
+
+One pass over the visible hostile land units to link the positions and one
+over the own land units to weigh them, once per decision; the focus adds,
+for each committed unit and each unit of its position, a range check per
+Move destination and at most one damage projection. Nothing draws from the
+PRNG or depends on elapsed time, and the work is inside the existing
+scoring phase (no new phase, no new bound). On the 16 x 16 breakthrough lab
+(26 to 33 attacking units at the start) the bounded run took 5.8, 7.3, and
+7.1 ms a decision for the Human, Goblin, and Undead attacker on the
+development machine, and 5.2, 6.5, and 6.4 ms with the round-5 source on
+the same lab; the slowest decision was 63 to 65 ms in every run of either. On two
+generated 14 x 14 matches the average was 2.6 and 3.5 ms and the slowest
+decision 24 and 28 ms.
+
+### Numbers at a gate
+
+The siege of a single-file front
+([below](#siege-of-a-single-file-front-pulp_wars-68k6)) attacked a healthy
+holder only once 30 unspent Coins had piled up (`chokepointAssaultV7`),
+and the first draft of this bead switched the assault off at such a front.
+A seat with 17 to 23 units in front of a one-tile gate and no pile of
+Coins never attacked: the user's exact complaint. Now
+`chokepointAssaultOnV7(context)` is true when the clock has struck **or**
+the seat plays the army rules and the position of a unit of the front's
+garrison is committed by the weights above (`chokepointNumbersV7`). Every
+rule of the siege that read the clock reads this instead:
+
+- siege and ranged units take firing tiles inside lethal reach, and their
+  fire still goes first, at one holder (priority 1112);
+- the head advances into lethal reach and the column moves up behind it;
+- the committed melee attack (1108) is made on the focus whenever the
+  attacker survives it: with numbers the condition "this turn's attackers
+  out-damage the holder's idle recovery" is dropped, so the gate is fed
+  every turn; a head below half HP rotates out as before and the next
+  strongest unit steps in;
+- with Explosives, a `BLAST_MOUNTAIN` outside the own territory is a
+  candidate when its Mountain is next to the corridor or to a holder, or
+  the blast hurts the garrison, and it hits no own unit (the setter is
+  spared by the rules): priority 1114, before the fire
+  (`chokepointBlastV7`).
+
+A second route is not searched for: the front exists only while every
+explored land route runs through the corridor, the campaign plan's scouts
+keep exploring, and the plan is null the turn another route is known.
+Without numbers and without the clock the siege is unchanged (its twenty
+tests pass as they were). Tests: "numbers at the gate" in
+`tests/unit/ruleset-v7-chokepoint-ai.test.ts`.
+
+### What it does not do
+
+It does not hire, blasts a Mountain outside its territory only beside a
+gate it attacks with numbers, and does not build a Field Defense in answer
+to ranged units (as before). It does not pull a wounded
+unit out of a committed fight. A position is judged by what is visible: a
+unit on a tile the seat has not explored is not counted. "Pressed" ends
+when every city that can train has trained, so a seat under siege still
+researches with what is left that turn.
+
+**Tests.** `tests/unit/ruleset-v7-tuning-6.test.ts` holds a constructed
+position for each rule above and the bounded run of the three labs (twice
+the defender's unit value against a script that focuses its fire, retrains,
+and refills the line; the round the capital falls is pinned, and the
+round-5 policy takes one to two rounds longer on each).
+
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and

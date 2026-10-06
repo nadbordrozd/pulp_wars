@@ -101,6 +101,224 @@ export const ARMY_SUPPORT_RADIUS_V7 = 2;
 /** Hunters of one combined kill (the limit of `pulp_wars-9s0.8`). */
 export const ARMY_HUNT_REACH_V7 = 6;
 
+// ---------------------------------------------------------------------------
+// Tuning 6 (`pulp_wars-w49.6`, docs/product/RULESET_7_TUNING_HUMAN.md
+// section 13): numbers break a line. The user's bar: "with overwhelming
+// numbers the AI must break through my ranks".
+//
+// - **Assault.** The visible hostile land units form positions (units
+//   within `ARMY_POSITION_LINK_V7` of each other). Each own fighting unit
+//   belongs to the position nearest to it within `ARMY_COMING_RADIUS_V7`;
+//   it is *near* within `ARMY_NEAR_RADIUS_V7`. Strength is
+//   `armyUnitStrengthV7` (4 per Coin of price plus present HP; a hostile
+//   unit behind Walls or on a Field Defense counts half as much again, in
+//   other cover a quarter).
+//   - **Commit**: the near units are worth `ARMY_COMMIT_RATIO_V7` percent
+//     of the position (`ARMY_COMMIT_HELD_RATIO_V7` once a unit of theirs is
+//     in contact and a unit of the position is wounded, so that an assault
+//     is not called off after its first losses), or the units coming are worth that and
+//     `ARMY_COMMIT_ARRIVED_V7` percent of them have arrived. A committed
+//     unit attacks whenever its attack does not kill it without a kill, the
+//     shots from two or more tiles first, then the melee; it moves into
+//     contact whatever the reach it enters; and it does not wait for
+//     company.
+//   - **Stage**: the units coming are worth the ratio but have not
+//     arrived: the units near wait outside every visible enemy's reach.
+// - **Breakthrough.** A fast unit (Move 2 or more) or a ranged unit prefers
+//   a ranged, siege, or support target, and a fast unit that can reach one
+//   goes before the melee.
+// - **Expansion.** A capturer that can step onto a free village does, and
+//   then stays until it has captured it: with fewer than
+//   `ARMY_EXPANSION_CITIES_V7` cities before every exchange that is not a
+//   kill, and a unit sent to a village turns aside only for a kill.
+// - **Economy.** Growth that costs at most `ARMY_CHEAP_GROWTH_COINS_V7` per
+//   population, or levels a city now, comes before training while no
+//   hostile unit is within `ARMY_NEAR_THREAT_RADIUS_V7` of an own center;
+//   other construction comes after training. Within
+//   `ARMY_PRESSED_RADIUS_V7` of a center no research and no construction
+//   is done while a city could still train.
+// - **Research.** The next technology is the first step toward the first
+//   unit of the faction's own order (`ARMY_RESEARCH_ROLES_V7`) that the
+//   seat cannot train yet: the faction's signature units come first. It
+//   is *due* while the seat's city levels are worth more technologies than
+//   it owns (`armyResearchDueV7`): then it is bought before training when
+//   affordable and no enemy is near, and dearer construction waits for it.
+// ---------------------------------------------------------------------------
+
+/** Hostile units this close to each other are one position. */
+export const ARMY_POSITION_LINK_V7 = 2;
+/** An own unit this close to a position's nearest unit has arrived. */
+export const ARMY_NEAR_RADIUS_V7 = 5;
+/** An own unit this close to a position is on its way to it. */
+export const ARMY_COMING_RADIUS_V7 = 9;
+/** Near strength, in percent of the position's, that commits. */
+export const ARMY_COMMIT_RATIO_V7 = 150;
+/**
+ * The same once the battle is joined: an own unit stands next to a unit of
+ * the position and a unit of the position is wounded.
+ */
+export const ARMY_COMMIT_HELD_RATIO_V7 = 100;
+/** Share of the coming strength, in percent, that counts as assembled. */
+export const ARMY_COMMIT_ARRIVED_V7 = 60;
+/** A committed shot from two or more tiles: below a kill (1180). */
+export const ARMY_COMMIT_FIRE_PRIORITY_V7 = 1176;
+/** A committed ranged unit's Move to a tile with a shot. */
+export const ARMY_COMMIT_FIRE_MOVE_PRIORITY_V7 = 1175;
+/** A committed melee attack that does not kill. */
+export const ARMY_COMMIT_MELEE_PRIORITY_V7 = 1174;
+/** A committed melee unit's Move into contact. */
+export const ARMY_COMMIT_MELEE_MOVE_PRIORITY_V7 = 1173;
+/** A fast unit's Move to a ranged, siege, or support target: first. */
+export const ARMY_BREAKTHROUGH_MOVE_PRIORITY_V7 = 1177;
+/** A committed unit that cannot attack after moving closes in. */
+export const ARMY_COMMIT_ADVANCE_PRIORITY_V7 = 760;
+/** Strategic value of a ranged, siege, or support target for a fast unit. */
+export const ARMY_FRAGILE_TARGET_VALUE_V7 = 30;
+/**
+ * A Move onto a free village while the seat expands: above an exchange
+ * (950), a chip (900), and Pillage; below a combined kill (1171) and a
+ * kill (1180).
+ */
+export const ARMY_VILLAGE_PRIORITY_V7 = 1170;
+/** The same Move once the seat has its cities: above an exchange. */
+export const ARMY_LATE_VILLAGE_PRIORITY_V7 = 960;
+/** The seat expands first while it owns fewer cities than this. */
+export const ARMY_EXPANSION_CITIES_V7 = 3;
+/** A hostile unit this close to an own center: units before the economy. */
+export const ARMY_NEAR_THREAT_RADIUS_V7 = 4;
+/** A hostile unit this close to an own center: nothing but units. */
+export const ARMY_PRESSED_RADIUS_V7 = 3;
+/** Coins per population of growth that goes before training. */
+export const ARMY_CHEAP_GROWTH_COINS_V7 = 2;
+/** Cheap growth: above training while alert (1215) and the step aside. */
+export const ARMY_GROWTH_PRIORITY_V7 = 1218;
+/** The due research, bought before training: above cheap growth. */
+export const ARMY_DUE_RESEARCH_PRIORITY_V7 = 1219;
+/**
+ * Training with two thirds of the unit slots filled and no enemy near:
+ * after the growth that adds population (1140), before Roads (1120).
+ */
+export const ARMY_TOPUP_TRAINING_PRIORITY_V7 = 1135;
+/** The army's next technology while it is not due: after that training. */
+export const ARMY_UNDUE_RESEARCH_PRIORITY_V7 = 1130;
+/** City levels one owned technology beyond the first is worth. */
+export const ARMY_LEVELS_PER_TECHNOLOGY_V7 = 2;
+/** An attack on a unit standing on an own city center. */
+export const ARMY_RETAKE_CENTER_PRIORITY_V7 = 1345;
+/** A Move toward the own units by a unit alone among enemies. */
+export const ARMY_REGROUP_PRIORITY_V7 = 705;
+/** A unit is alone with no own fighting unit this close. */
+export const ARMY_ALONE_RADIUS_V7 = 3;
+/** A Move next to an own center with an enemy at its gates. */
+export const ARMY_RALLY_PRIORITY_V7 = 725;
+/** A Move onto a hostile improvement to Pillage it: above an exchange. */
+export const ARMY_RAID_PRIORITY_V7 = 955;
+/** Hostile ranged units over a center at which a city does not train. */
+export const ARMY_COVERED_CENTER_SHOOTERS_V7 = 2;
+/** Strategic penalty per own unit next to a tile under a splash attack. */
+export const ARMY_SPLASH_SPACING_VALUE_V7 = 6;
+
+/**
+ * The order in which a seat researches toward its units, by faction (the
+ * correction pass of tuning 6): each faction's signature and best-value
+ * units come first.
+ *
+ * - Humans: the Marksman, the Guard as a cheap anchor, the Catapult, the
+ *   Knight, the Swordsman, the Captain.
+ * - Undead: the **Zombie** with the first technology bought (its Infect
+ *   waves are what the faction is), the Banshee, the Necromancer, the
+ *   Lich, the Vampire.
+ * - Goblins: the Bomb Chucker and the Wolf Rider, then the Rocket Cart and
+ *   the Scrap Buggy, the Orc Brute, the Warboss.
+ */
+export const ARMY_RESEARCH_ROLES_V7: Readonly<
+  Partial<Record<FactionIdV7, readonly UnitRoleIdV7[]>>
+> = Object.freeze({
+  ORIGINAL: Object.freeze([
+    "MARKSMAN",
+    "GUARD",
+    "CATAPULT",
+    "KNIGHT",
+    "SWORDSMAN",
+    "CAPTAIN",
+  ] as const),
+  UNDEAD: Object.freeze([
+    "GUARD",
+    "MARKSMAN",
+    "CAPTAIN",
+    "CATAPULT",
+    "KNIGHT",
+  ] as const),
+  GOBLIN: Object.freeze([
+    "MARKSMAN",
+    "RAIDER",
+    "CATAPULT",
+    "KNIGHT",
+    "GUARD",
+    "CAPTAIN",
+  ] as const),
+});
+
+/**
+ * Roads: a seat with this many cities researches Roads once it can train
+ * the first `ARMY_ROADS_AFTER_ROLES_V7` units of its order (Roads links
+ * the cities, and Commerce, which follows the whole order, pays for it).
+ */
+export const ARMY_ROADS_CITIES_V7 = 3;
+export const ARMY_ROADS_AFTER_ROLES_V7 = 2;
+
+/**
+ * Whether the next army technology is due: the seat's city levels are
+ * worth more technologies than it owns. One technology (the free opener)
+ * is always owned; each further one needs
+ * `ARMY_LEVELS_PER_TECHNOLOGY_V7` city levels, so research and growth
+ * advance together and neither starves the other.
+ */
+export function armyResearchDueV7(
+  cityLevels: number,
+  ownedTechnologies: number,
+): boolean {
+  return (
+    cityLevels >=
+    ARMY_LEVELS_PER_TECHNOLOGY_V7 * Math.max(0, ownedTechnologies - 1)
+  );
+}
+
+/** The price a reward unit (no price of its own) counts as. */
+export const ARMY_REWARD_UNIT_COST_V7 = 8;
+
+/** What a unit is worth in an assault: 4 per Coin of price plus its HP. */
+export function armyUnitStrengthV7(
+  rule: EffectiveRoleRuleV7,
+  hp: number,
+): number {
+  return 4 * (rule.cost ?? ARMY_REWARD_UNIT_COST_V7) + hp;
+}
+
+export type ArmyAssaultModeV7 = "COMMIT" | "STAGE" | "NONE";
+
+/**
+ * The mode of one position from the strengths around it (`contact`: the
+ * battle is joined).
+ */
+export function armyAssaultModeV7(facts: {
+  readonly hostile: number;
+  readonly near: number;
+  readonly coming: number;
+  readonly contact: boolean;
+}): ArmyAssaultModeV7 {
+  if (facts.hostile <= 0 || facts.near <= 0) return "NONE";
+  const ratio = facts.contact
+    ? ARMY_COMMIT_HELD_RATIO_V7
+    : ARMY_COMMIT_RATIO_V7;
+  if (100 * facts.near >= ratio * facts.hostile) return "COMMIT";
+  if (100 * facts.coming < ARMY_COMMIT_RATIO_V7 * facts.hostile) return "NONE";
+  return 100 * facts.near >= ARMY_COMMIT_ARRIVED_V7 * facts.coming &&
+    100 * facts.near >= ARMY_COMMIT_HELD_RATIO_V7 * facts.hostile
+    ? "COMMIT"
+    : "STAGE";
+}
+
 /** The classes the composition counts; a naval or reward role has none. */
 export type ArmyClassV7 =
   | "LINE"
@@ -147,7 +365,55 @@ export const ARMY_SHARES_V7 = Object.freeze({
     SIEGE: 15,
     BREAKTHROUGH: 25,
   }),
+  // The correction pass of tuning 6: the Undead army is a third Zombies
+  // (its defender-class unit, whose kills rise as Zombies), and the Goblin
+  // army has more Bomb Chuckers.
+  undead: Object.freeze({
+    LINE: 20,
+    DEFENDER: 30,
+    RANGED: 20,
+    SIEGE: 15,
+    BREAKTHROUGH: 15,
+  }),
+  undeadFragile: Object.freeze({
+    LINE: 20,
+    DEFENDER: 25,
+    RANGED: 20,
+    SIEGE: 15,
+    BREAKTHROUGH: 20,
+  }),
+  goblin: Object.freeze({
+    LINE: 30,
+    DEFENDER: 10,
+    RANGED: 30,
+    SIEGE: 15,
+    BREAKTHROUGH: 15,
+  }),
+  goblinFragile: Object.freeze({
+    LINE: 25,
+    DEFENDER: 10,
+    RANGED: 30,
+    SIEGE: 15,
+    BREAKTHROUGH: 20,
+  }),
 });
+
+/** The shares of a faction's land army (`fragile`: see above). */
+export function armySharesV7(
+  faction: FactionIdV7,
+  fragile: boolean,
+): Readonly<
+  Record<"LINE" | "DEFENDER" | "RANGED" | "SIEGE" | "BREAKTHROUGH", number>
+> {
+  if (faction === "UNDEAD")
+    return fragile ? ARMY_SHARES_V7.undeadFragile : ARMY_SHARES_V7.undead;
+  if (faction === "GOBLIN")
+    return fragile ? ARMY_SHARES_V7.goblinFragile : ARMY_SHARES_V7.goblin;
+  return fragile ? ARMY_SHARES_V7.fragile : ARMY_SHARES_V7.standard;
+}
+/** A Goblin army has one Wolf Rider per this many units (at most three). */
+export const ARMY_GOBLIN_SKIRMISHER_PER_UNITS_V7 = 4;
+export const ARMY_GOBLIN_SKIRMISHER_MAXIMUM_V7 = 3;
 /** One skirmisher once the army has this many units. */
 export const ARMY_SKIRMISHER_ARMY_V7 = 5;
 /** One support unit per this many army units, at most two. */
@@ -216,7 +482,15 @@ export function armyRoleScoreV7(
   const have = counts.byClass[unitClass];
   let deficit: number;
   if (unitClass === "SKIRMISHER")
-    deficit = 100 * (Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7) - have);
+    deficit =
+      100 *
+      ((faction === "GOBLIN"
+        ? Math.min(
+            ARMY_GOBLIN_SKIRMISHER_MAXIMUM_V7,
+            Math.floor(counts.total / ARMY_GOBLIN_SKIRMISHER_PER_UNITS_V7),
+          )
+        : Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7)) -
+        have);
   else if (unitClass === "SUPPORT")
     deficit =
       100 *
@@ -226,10 +500,10 @@ export function armyRoleScoreV7(
       ) -
         have);
   else {
-    const shares =
-      counts.hostileFragile >= ARMY_FRAGILE_HOSTILES_V7
-        ? ARMY_SHARES_V7.fragile
-        : ARMY_SHARES_V7.standard;
+    const shares = armySharesV7(
+      faction,
+      counts.hostileFragile >= ARMY_FRAGILE_HOSTILES_V7,
+    );
     deficit = shares[unitClass] * after - 100 * have;
   }
   const defence = !threatened
@@ -241,5 +515,17 @@ export function armyRoleScoreV7(
         : unitClass === "SIEGE" || unitClass === "SUPPORT"
           ? -200
           : 0;
-  return deficit + defence + rule.cost;
+  // Tuning 6 (`pulp_wars-w49.6`): a class the army is short of is bought
+  // in its dearest unit the Coins reach (`ARMY_DEAR_UNIT_VALUE_V7` per
+  // Coin of price), so the top units get a real share of the purchases:
+  // the Goblin seat trained nothing dearer than 3 Coins in thirty rounds.
+  return (
+    deficit +
+    defence +
+    rule.cost +
+    (deficit > 0 ? ARMY_DEAR_UNIT_VALUE_V7 * rule.cost : 0)
+  );
 }
+
+/** What a Coin of price adds to the score of a role the army is short of. */
+export const ARMY_DEAR_UNIT_VALUE_V7 = 20;

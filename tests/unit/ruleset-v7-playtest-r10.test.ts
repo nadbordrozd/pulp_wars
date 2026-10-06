@@ -45,8 +45,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 10 playtest corrections", () => {
   it("uses the exact current identity while retaining numeric schema 7", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r48.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r49");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r49.current");
     expect(initialV7().schemaVersion).toBe(7);
   });
 
@@ -434,7 +434,10 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     expect(rejected.state).toBe(fixture.state);
   });
 
-  it("keeps Militia reward displacement in y/x order without resetting the occupant", () => {
+  // Tuning 6 (`pulp_wars-w49.6`, 7r49): the occupant of the center stays
+  // and the Militia unit appears beside it. Before, the Militia unit took
+  // the center and the occupant was displaced to that same cell.
+  it("places the Militia reward unit beside an occupied center in y/x order without touching the occupant", () => {
     const fixture = occupiedTrainingState(10_007);
     const [mountain, expected] = canonicalNeighbors(
       fixture.state,
@@ -477,40 +480,36 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     ).toContainEqual(command);
     const result = applyCommandV7(rewardState, fixture.actor, command);
     if (!result.accepted) throw new Error(result.error.code);
-    const displaced = required(
-      result.state.units.find((unit) => unit.id === fixture.occupantId),
-      "displaced unit missing",
+    const before = required(
+      rewardState.units.find((unit) => unit.id === fixture.occupantId),
+      "occupant missing",
     );
-    expect(displaced.at).toEqual(expected);
-    expect(displaced.homeCityId).toBe(fixture.otherCityId);
-    expect(displaced.activation).toEqual(fixture.activation);
-    expect(displaced.captureEligible).toBe(false);
+    const occupant = required(
+      result.state.units.find((unit) => unit.id === fixture.occupantId),
+      "occupant missing afterwards",
+    );
+    // The occupant is the same unit on the same tile.
+    expect(occupant).toEqual(before);
+    expect(occupant.at).toEqual(fixture.cityAt);
+    expect(occupant.homeCityId).toBe(fixture.otherCityId);
+    expect(occupant.activation).toEqual(fixture.activation);
+    // The Mountain is skipped (no Engineering): the next cell in y/x order.
     expect(
       result.state.units.find(
-        (unit) =>
-          unit.id !== fixture.occupantId && same(unit.at, fixture.cityAt),
+        (unit) => unit.id !== fixture.occupantId && same(unit.at, expected),
       ),
     ).toMatchObject({ role: "FIGHTER", activation: { handled: true } });
-    const displacement = required(
-      result.events.find((event) => event.kind === "UNIT_SPAWN_DISPLACED"),
-      "displacement event missing",
-    );
-    expect(displacement).toMatchObject({
-      displacedUnitId: fixture.occupantId,
-      from: fixture.cityAt,
-      to: expected,
-    });
-    expect(parseEventV7(displacement)).toMatchObject({ ok: true });
+    expect(
+      result.events.some((event) => event.kind === "UNIT_SPAWN_DISPLACED"),
+    ).toBe(false);
+    for (const event of result.events)
+      expect(parseEventV7(event)).toMatchObject({ ok: true });
     expect(result.events.some((event) => event.kind === "UNIT_DIED")).toBe(
       false,
     );
     expect(result.events.some((event) => event.kind === "TILES_REVEALED")).toBe(
       true,
     );
-    expect(
-      projectEventsV7(rewardState, result.state, fixture.actor, result.events)
-        .events,
-    ).toContainEqual(displacement);
     const observer = required(
       rewardState.players.find(
         (player) =>
@@ -537,7 +536,8 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     );
   });
 
-  it("keeps Militia reward Mountain displacement and its sight bonus", () => {
+  // Tuning 6: the Militia unit, not the occupant, takes the Mountain.
+  it("places the Militia reward unit on a Mountain beside the center with its sight bonus", () => {
     const fixture = occupiedTrainingState(10_009);
     const destination = required(
       canonicalNeighbors(fixture.state, fixture.cityAt)[0],
@@ -571,7 +571,12 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     if (!result.accepted) throw new Error(result.error.code);
     expect(
       result.state.units.find((unit) => unit.id === fixture.occupantId)?.at,
-    ).toEqual(destination);
+    ).toEqual(fixture.cityAt);
+    expect(
+      result.state.units.find(
+        (unit) => unit.id !== fixture.occupantId && same(unit.at, destination),
+      ),
+    ).toMatchObject({ role: "FIGHTER" });
     const player = required(
       result.state.players.find((candidate) => candidate.id === fixture.actor),
       "actor missing",

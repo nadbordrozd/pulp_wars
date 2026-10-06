@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r48`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r49`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -199,6 +199,24 @@ balance on water maps, `pulp_wars-5ti.8`; and the polish items of
 a unit on ice has no fortification, so a Dwarf Hammerer or Steam Mole is
 never dug in on an ice tile ([section 22.7](#227-dig-in)). No shape changed,
 and a match without both a Dwarf and an Ice Folk seat plays as at `7r44`.
+`pulp-wars-poc-7r49` (`pulp_wars-w49.6`) is
+**[round 6 of the Human tuning](RULESET_7_TUNING_HUMAN.md#13-round-6)**, which followed three hand-played
+games on round 5 and is mostly the Normal AI. Three rules changed for every
+faction: **research costs 1 Coin more for each technology already owned**,
+not 2 ([section 6.1](#61-research-cost)); a **reward unit** leaves the unit
+on the center where it is and appears beside it
+([section 4.6](#46-training-and-city-center-spawning)); and **damage from an
+attacker the victim's owner cannot see** is reported to that owner
+([section 15](#15-fog-and-observation)). The **Normal AI** of a
+Human, Undead, or Goblin seat weighs an enemy position, masses, commits
+with numbers (also at a gate one tile wide), expands to three cities
+first, and researches toward its faction's signature units, the Undead
+toward Zombies ([section 16](#16-normal-ai-summary)). Three
+labs stage the user's test of it (`LAB_BREAKTHROUGH` and its Goblin and
+Undead variants). **Where another passage of this document, or a faction's
+revision document, still gives a research price with a step of 2 Coins or a
+garrison pushed off its center by a reward unit, this paragraph and the
+sections it names are the rule.**
 `pulp-wars-poc-7r48` (`pulp_wars-w49.4`) is
 **[round 5 of the Human tuning](RULESET_7_TUNING_HUMAN.md#12-round-5)**, which followed four hand-played
 games on round 4. The Human **Guard** has Defense 1 against an attack from
@@ -369,7 +387,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r48`.
+resolved ones as of `pulp-wars-poc-7r49`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -470,10 +488,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r48`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r49`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r48.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r49.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -2082,17 +2100,23 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
 - **Reward units** (the Militia `FIGHTER` and the level-5+ `JUGGERNAUT`, in
   the owner's faction: Fighter, Skeleton, Goblin, Caveman, Grunt, Yeti, or
   Hammerer; Juggernaut, Abomination, Troll, Brontosaurus, Colossus, Frost
-  Giant, or Brass Titan) always appear
+  Giant, or Brass Titan) appear
   on the city center, hatched (no reward ever creates an Egg) and at full
-  Shield. An existing occupant moves to
-  the first free adjacent land cell in `(y, x)` order that it can legally
-  enter (Engineering for Mountain unless it strides, flies, or is
-  Mountain-born, no unit, Egg, or mound, no treasure, not allied
-  territory); an Egg is never displaced. If
+  Shield. **Round 6** (`7r49`): when the center is occupied, **the
+  occupant stays** and the reward unit appears on the first free adjacent
+  land cell in `(y, x)` order that it can legally enter (Engineering for
+  Mountain unless it strides, flies, or is Mountain-born, no unit, Egg, or
+  mound, no treasure, not allied territory), a cell of that city's own
+  territory before any other. Only when no adjacent cell is free does the
+  earlier rule apply: the reward unit takes the center and the occupant
+  moves to the first free adjacent cell it can enter by the same test (an
+  Egg is never displaced); if
   none exists, the occupant is removed with no refund or kill credit (and
   no Grave or death blast; a removed Brain's controlled unit is released).
+  Before `7r49` the occupant was always the one that moved.
 - **Goblin Militia** is two Goblins (`MILITIA_FIGHTERS_V7`): the first
-  appears on the center as above; the second then appears on the first
+  appears on the center, or beside an occupied one, as above; the second
+  then appears on the first
   adjacent cell in `(y, x)` order that the same displacement rule allows, or
   is not created (no substitute). Each is full-HP, exhausted, homed to the
   city, may exceed capacity, and emits `UNIT_REWARD_GRANTED`; the reward ID
@@ -2295,17 +2319,21 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
 ### 6.1 Research cost
 
 ```text
-tier 1 = 5  + 2 * (N - 1)
-tier 2 = 7  + 2 * (N - 1)
-tier 3 = 9  + 2 * (N - 1)
+tier 1 = 5  + (N - 1)
+tier 2 = 7  + (N - 1)
+tier 3 = 9  + (N - 1)
 ```
 
 `N` is the number of technologies the researcher already owns (at least 1;
-the first technology of a match is free, below). **Round 4** of the Human
-tuning (`7r47`, [section 11](RULESET_7_TUNING_HUMAN.md#11-round-4)): the
-price no longer reads the city count. The table below is the rule it
-replaced (`C` cities, steps 1, 2, and 2), kept for the record; the whole
-land tree of 20 technologies now costs 485 Coins in tier order.
+the first technology of a match is free, below). **Round 6** of the Human
+tuning (`7r49`, [section 13.5](RULESET_7_TUNING_HUMAN.md#135-research-the-price-the-order-and-the-dear-units)):
+each technology owned beyond the first adds **1 Coin**; it added 2 in
+rounds 4 and 5 (`7r47` and `7r48`). The whole land tree of 20
+technologies costs 314 Coins in tier order (485 at a step of 2), and all 25
+with the Naval branch 456 (732). **Round 4** (`7r47`,
+[section 11](RULESET_7_TUNING_HUMAN.md#11-round-4)): the
+price no longer reads the city count. The table below is the rule that
+round replaced (`C` cities, steps 1, 2, and 2), kept for the record.
 
 | Cities `C` | Tier 1 | Tier 2 | Tier 3 |
 | ---------: | -----: | -----: | -----: |
@@ -4824,7 +4852,15 @@ Harbours from it.
   that can see the exploding unit before or after the command, with
   `results` filtered to units the viewer owns or could see before the
   command; a viewer that cannot see the exploder but owns a victim receives
-  `COMBAT_SPLASH_DAMAGE` with its own entries. `PLUNDER_AWARDED` is
+  `COMBAT_SPLASH_DAMAGE` with its own entries. **Round 6** (`7r49`): the
+  same holds for an ordinary attack. A viewer that owns the target of a
+  `COMBAT_RESOLVED` whose attacker it cannot see (a Bomb Chucker or a
+  Catapult on a tile it has not explored) receives `COMBAT_SPLASH_DAMAGE`
+  whose first entry is its own unit, with the damage and whether it died,
+  followed by its own splashed units; the event names no attacker and no
+  tile of the attacker. Before `7r49` that viewer received nothing but the
+  death. The browser shows the hit on the unit as it shows splash, and the
+  text harness prints a `HIT_UNSEEN` line. `PLUNDER_AWARDED` is
   owner-only and names no victims; `UNITS_REGENERATED` is projected like
   `WINDMILL_HEALING_RESOLVED`. Explosion previews are computed from the
   viewer's visible units and flag `touchesUnexplored`
@@ -4988,6 +5024,37 @@ Harbours from it.
   the opening growth harvest, and in a match with any other faction, where
   both sides keep the older policy. Details:
   [Normal AI army play](../architecture/NORMAL_AI.md#army-play-pulp_wars-w494).
+- **The assault, expansion, and discipline** (`pulp_wars-w49.6`, round 6;
+  the same three factions). Visible enemy land units close to each other
+  are one position, weighed at four times the price plus the HP of each
+  unit (more in cover or on a fortification). While the seat's units
+  within nine tiles outweigh it by half but too few have arrived, those
+  that have arrived wait outside every enemy's reach and the rest come up;
+  once what has arrived outweighs it by half, all of them close in in the
+  same turn, the shots from two or more tiles go first and at the units in
+  cover, and a unit takes an exchange against it when the group can take
+  half the target's HP that turn, when the battle is joined, or when the
+  unit is lost anyway. Fast units go for ranged, siege, and support units
+  through a gap; nobody walks away from a committed fight. A unit that can
+  step onto a free village does and stays there; until the seat has three
+  cities its first units come before research. With no enemy within four
+  tiles of a center, a city level or cheap population is bought before
+  training, and research goes toward the faction's own units in its own
+  order (Humans: Marksman, Guard, Catapult, Knight; Undead: Zombie,
+  Banshee, Necromancer, Lich, Vampire; Goblins: Bomb Chucker, Wolf Rider,
+  Rocket Cart, Scrap Buggy), Roads with three cities, two city levels to a
+  technology; a third of an Undead army is Zombies, which go for cheap
+  infantry and keep out of ranged reach where they can; the dear unit of a class the
+  army lacks is bought when the Coins are there. With an enemy within
+  three tiles of a center nothing but units is bought while a city can
+  still train. An enemy on an own center is attacked whatever the
+  exchange; a city under two or more ranged units does not train while
+  another can; a Kaboom needs a kill or two enemies. At a single-file
+  front the siege of `pulp_wars-68k.6` turns into its assault when the
+  seat's units outweigh the garrison by half: the head attacks the holder
+  every turn, and with Explosives a Mountain beside the gate is blasted
+  first. Details:
+  [Normal AI: the assault](../architecture/NORMAL_AI.md#the-assault-expansion-and-discipline-pulp_wars-w496).
 - **Second pass** (`pulp_wars-9s0.8`): at war, with no own city threatened
   and at least three attack-capable land units, Normal saves for its
   Chivalry-tier unit (fewer than two of them) or for Chivalry itself when the
@@ -9453,6 +9520,7 @@ has no Candy step.
 | Tuning      | `pulp-wars-poc-7r47` | `pulp_wars-w49.3` [tuning 2](RULESET_7_TUNING_1.md#10-round-2-tuning-2-pulp-wars-poc-7r47) after three more hand-played games: a ranged unit of any faction never advances after a kill (the role's range above 1; the Spitter, Grunt, Ray Gunner, Colossus, Snow Hunter, and Gumball Gunner advanced after an adjacent kill before); the Human Knight has `CAPTURE`; no shape change; the capital rule of Commerce, the blocked training of a garrisoned city, and the advance of an attack preview are shown; no balance measurement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | Tuning      | `pulp-wars-poc-7r47` | `pulp_wars-w49.3` [round 3 of the Human tuning](RULESET_7_TUNING_HUMAN.md), unpublished together with tuning 2 under the same identity: the Human Knight at Attack 4; Forest cover only with the defender's Forestry (every faction); Blast Mountain as an explosion of 5 on and around the tile, also next to an own unit outside the territory (explosion cause `BLAST`, `MOUNTAIN_BLASTED.cityId` nullable); land trade for every Road-linked city without the capital rule; the `HIRE` command (a Market hires at 1.5 times the price, one unit above the capacity); a Human Militia of two Fighters; no state shape change; no balance measurement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Tuning      | `pulp-wars-poc-7r48` | `pulp_wars-w49.4` [round 5 of the Human tuning](RULESET_7_TUNING_HUMAN.md#12-round-5) after four hand-played games on round 4: the Human Guard at Defense 1 against an attack from two or more tiles (`rangedDefense2`); the Human Swordsman (role `SWORDSMAN`, 5 Coins, 15 HP, Attack 3.5, Defense 2.5) at Engineering; Drill removed (`DRILL_UNIT` is no command kind); Land Grant at 1 Coin a cell with no minimum; a Blast Mountain spares the blasting player's weakest land unit next to the Mountain (`setterUnitId` in its preview); `LAB_BACKLINE` and `LAB_LATE` at revision 2 with Swordsmen. The Normal AI of a Human, Undead, or Goblin seat plays an army (`src/ai/v7-army.ts`). A `7r47` save, replay, or command stream is incompatible.                                                                                                                                                                                                                                                                                                                                                                                              |
+| Tuning      | `pulp-wars-poc-7r49` | `pulp_wars-w49.6` [round 6 of the Human tuning](RULESET_7_TUNING_HUMAN.md#13-round-6) after three hand-played games on round 5: research costs its tier base plus 1 Coin (2) for each technology owned beyond the first; a reward unit appears beside an occupied center and the occupant stays; the owner of a unit hit by an attacker it cannot see receives `COMBAT_SPLASH_DAMAGE` for it; the labs `LAB_BREAKTHROUGH`, `LAB_BREAKTHROUGH_GOBLIN`, and `LAB_BREAKTHROUGH_UNDEAD`. The Normal AI of a Human, Undead, or Goblin seat weighs positions, masses and commits (also at a single-file front), expands to three cities, and researches toward its faction's signature units (the Undead toward Zombies). A `7r48` save, replay, or command stream is incompatible.                                                                                                                                                                                                                                                                                                                                                                         |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -9881,7 +9949,7 @@ and autosave key (it is `7r43`). The overlay's own corrections are in its
 
 ## 25. Known discrepancies
 
-As of `pulp-wars-poc-7r48` the rules in this document match the code for
+As of `pulp-wars-poc-7r49` the rules in this document match the code for
 the eight factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
 Martian overlay with the engine of the Mind Control overlay, the Ice Folk
@@ -9894,17 +9962,25 @@ village density of `7r40`, and the starting Coins and tier 3 technology base
 cost of `7r41`, and the many seats of `7r42`, and the naval branch of
 `7r43` and `7r44` with the ice fortification fix of `7r45`, and
 [tuning 1](RULESET_7_TUNING_1.md) of `7r46` and its round 2 of `7r47`,
-and [round 5 of the Human tuning](RULESET_7_TUNING_HUMAN.md#12-round-5) of `7r48`,
+and [round 5 of the Human tuning](RULESET_7_TUNING_HUMAN.md#12-round-5) of `7r48`
+and [round 6](RULESET_7_TUNING_HUMAN.md#13-round-6) of `7r49`,
 with these
 open items: what is left of the naval branch after the fold, the Candy
 items left after the fold, and the pending balance steps below.
 
 **Open.**
 
+- **The Human tuning, round 6: what is open** (`pulp_wars-w49.6`, `7r49`;
+  [round 6](RULESET_7_TUNING_HUMAN.md#13-round-6)). Nothing of round 6 was
+  played by hand yet; its forks for the user are in its section 13.8 and
+  what it does not do in 13.9. The worked research prices in the faction
+  sections below and in the faction revision documents that use a step of
+  2 Coins a technology are those of `7r47` and `7r48`; section 6.1 is the
+  rule.
 - **The Human tuning, round 5: what is open** (`pulp_wars-w49.4`, `7r48`;
   [round 5](RULESET_7_TUNING_HUMAN.md#12-round-5)). Nothing of round 5 was played by hand yet. Its forks for
-  the user are in its section 12.5. The Swordsman has no art of its own
-  (the Guard's stands in). The worked examples of the faction sections
+  the user are in its section 12.5. The Swordsman has its own sprite
+  and portrait since `pulp_wars-w49.9` (the Guard's stood in). The worked examples of the faction sections
   below, and the faction revision documents, still give the damage of a
   ranged attack on a Human Guard at Defense 3 (a Ray Gunner's 7, a Tripod's
   10, a Pie Launcher's 7, a Grunt's 4, Acid's 4, a Boulder's 7); the

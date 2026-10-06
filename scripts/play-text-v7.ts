@@ -31,6 +31,7 @@ import {
   chooseNormalCommandV7,
   chooseNormalTurnCommandV7,
 } from "../src/ai/index";
+import { publicProjectedDamageForPolicyV7 } from "../src/ai/v7";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
   FACTION_DISPLAY_NAMES_V7,
@@ -87,6 +88,8 @@ import {
   queryLandGrantPreviewV7,
   queryPlayerCommandsV7,
   queryTechnologyTreeV7,
+  queryThreatenedTilesV7,
+  TECHNOLOGY_RESEARCH_COST_V7,
   roleMechanicsV7,
   seatCountAllowedV7,
   unitCapacitySlotsV7,
@@ -223,7 +226,7 @@ const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; st
   new     --session S [--map dry-land] [--size 11] [--seed 1] [--factions original,undead[,...]]
           [--seat 0] [--curiosities on|off] [--overwrite]
   lab     --session S <LAB> [--overwrite]
-                                        start a staged position (Human against the Human AI); lab alone lists them
+                                        start a staged position (you play the Humans); lab alone lists them
   view    --session S [--full]          public view of your seat: header, map, cities, units
   tech    --session S                   technology tree with costs and unlocks
   options --session S [--unit ID | --city ID | --tile x,y | --all]
@@ -553,6 +556,8 @@ interface UnitNamesV7 {
 interface TextContextV7 {
   readonly view: PlayerViewV7;
   readonly memory: UnitNamesV7;
+  /** The seat's view before the command (an event text may need old HP). */
+  readonly before?: PlayerViewV7;
 }
 
 /**
@@ -1474,6 +1479,18 @@ function eventTextV7(
       );
       break;
     }
+    case "COMBAT_SPLASH_DAMAGE":
+      // Damage to own units from a source the seat does not see (tuning 6:
+      // the unit an unseen attacker hit directly is listed too).
+      for (const entry of event.splash) {
+        const hp =
+          context.before?.units.find((unit) => unit.id === entry.unitId)?.hp ??
+          null;
+        lines.push(
+          `HIT_UNSEEN ${context.memory.tag(entry.unitId)} @${xyV7(entry.at)} takes ${entry.damage} from a source you do not see${hp === null ? "" : ` (hp ${hp}->${Math.max(0, hp - entry.damage)})`}${entry.shieldDamage > 0 ? ` shield -${entry.shieldDamage}` : ""}${entry.dies ? " DIES" : ""}`,
+        );
+      }
+      break;
     case "UNIT_DIED": {
       const owner = context.memory.owner(event.unitId);
       lines.push(`DIED ${context.memory.tag(event.unitId)} (${event.cause})`);
@@ -1600,10 +1617,12 @@ function applyObservedV7(
   // Newly trained or revealed units are named from the view after the
   // command; the positions used for "from" stay those before it.
   const positions = new UnitMemoryV7();
-  positions.remember(viewForV7(state, viewerId));
+  const beforeView = viewForV7(state, viewerId);
+  positions.remember(beforeView);
   memory.remember(afterView);
   const context: TextContextV7 = {
     view: afterView,
+    before: beforeView,
     memory: {
       tag: (unitId) => memory.tag(unitId),
       owner: (unitId) => memory.owner(unitId),
@@ -1786,13 +1805,20 @@ function integerFlagV7(args: ArgsV7, name: string, fallback: number): number {
  * mirror missions of `src/engine/v7/missions/lab-human.ts`, with what each
  * is for.
  */
+const BREAKTHROUGH_LAB_TEXT_V7 =
+  "hold a prepared line against numbers: you hold the only crossing between two lakes, eight tiles wide (Guards on two Mountains and two Field Defenses, Swordsmen in four Forests, three Marksmen and two Catapults behind, a walled capital three tiles back, 14 units, 12c a turn); the AI attacks with twice your units' value, three level-4 cities and 13c a turn";
+
 export const TEXT_PLAY_LABS_V7: Readonly<Record<string, string>> = {
   LAB_SIEGE:
-    "assault a walled level-4 capital: Guard on the center, three Guards in front (Forest cover, a Field Defense), a Marksman and two Catapults behind, a Mountain touching the screen; you have 6 units, 60c and the prerequisites of Sawmilling, Chivalry, Explosives and Fieldcraft (23c the first) and of Engineering (Swordsmen, 21c)",
+    "assault a walled level-4 capital: Guard on the center, three Guards in front (Forest cover, a Field Defense), a Marksman and two Catapults behind, a Mountain touching the screen; you have 6 units, 60c and the prerequisites of Sawmilling, Chivalry, Explosives and Fieldcraft (16c the first) and of Engineering (Swordsmen, 14c)",
   LAB_BACKLINE:
     "the AI advances with four Catapults and three Marksmen behind two Guards, a Swordsman and two Fighters; you have three Knights, two Raiders, a Swordsman, two Fighters, two Marksmen, a Catapult and 40c",
   LAB_LATE:
     "the late game: six road-linked cities a side, 16 technologies, armies at the unit limit (a Swordsman in every front city), 100c each; two of your cities have a Barracks",
+  // Tuning 6 (`pulp_wars-w49.6`): the Normal AI's bar, one lab per attacker.
+  LAB_BREAKTHROUGH: `${BREAKTHROUGH_LAB_TEXT_V7}; the attacker is the Human AI (Swordsmen, Marksmen, Catapults, Knights, Raiders)`,
+  LAB_BREAKTHROUGH_GOBLIN: `${BREAKTHROUGH_LAB_TEXT_V7}; the attacker is the Goblin AI (Orc Brutes, Bomb Chuckers, Rocket Carts, Scrap Buggies, Wolf Riders)`,
+  LAB_BREAKTHROUGH_UNDEAD: `${BREAKTHROUGH_LAB_TEXT_V7}; the attacker is the Undead AI (Zombies, Banshees, Liches, Vampires, Ghouls)`,
 };
 
 function commandLabV7(args: ArgsV7): string {
@@ -1802,7 +1828,7 @@ function commandLabV7(args: ArgsV7): string {
   );
   if (name === "")
     return [
-      "LABS (lab --session S <LAB>): staged positions, you against the Human AI, you move first",
+      "LABS (lab --session S <LAB>): staged positions, you play the Humans against the Normal AI, you move first",
       ...listing,
     ].join("\n");
   const mission =
@@ -2180,6 +2206,111 @@ function unitReasonLinesV7(
   return lines;
 }
 
+/**
+ * Tuning 6 (`pulp_wars-w49.6`): a Monument costs nothing and adds 2
+ * population, and its offers used to be one grouped line among the tile
+ * actions. This says so in plain words, for every city or for one.
+ */
+function freeMonumentLinesV7(
+  view: PlayerViewV7,
+  offered: readonly OfferedV7[],
+  cityId: number | null,
+): string[] {
+  const byAchievement = new Map<string, OfferedV7[]>();
+  for (const entry of offered) {
+    if (entry.command.kind !== "BUILD_MONUMENT") continue;
+    if (cityId !== null && commandCityIdV7(view, entry.command) !== cityId)
+      continue;
+    const list = byAchievement.get(entry.command.achievement) ?? [];
+    list.push(entry);
+    byAchievement.set(entry.command.achievement, list);
+  }
+  const lines: string[] = [];
+  for (const [achievement, entries] of byAchievement) {
+    const cities = [
+      ...new Set(entries.map((entry) => commandCityIdV7(view, entry.command))),
+    ]
+      .filter((id): id is number => id !== null)
+      .map((id) => `c${id}`);
+    const first = entries[0];
+    if (first === undefined) continue;
+    lines.push(
+      `FREE MONUMENT ${achievement}: 0c, +2 population in the city it is built in (one per achievement) | ${entries.length} tiles${cities.length === 0 ? "" : ` in ${cities.join(" ")}`} | e.g. ${first.id}`,
+    );
+  }
+  return lines;
+}
+
+/**
+ * Tuning 6 (`pulp_wars-w49.6`): what a visible enemy unit would deal to
+ * one of yours, or what each visible enemy in reach would deal to this
+ * unit. An estimate from public information: the tiles the enemy can hit
+ * next turn (`queryThreatenedTilesV7`) and the damage formula on the public
+ * stats, your unit standing where it stands now. It leaves out what
+ * depends on the order of the enemy's turn (Gang Up, Rally, a blast).
+ */
+function threatEstimateLinesV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): string[] {
+  const mine = unit.ownerId === view.viewer.id;
+  const pairs: { attacker: PublicUnitV7; defender: PublicUnitV7 }[] = [];
+  if (mine) {
+    for (const enemy of view.units)
+      if (
+        enemy.id !== unit.id &&
+        !isNeutralOwnerV7(enemy.ownerId) &&
+        arePlayersHostileV7(view, view.viewer.id, enemy.ownerId)
+      )
+        pairs.push({ attacker: enemy, defender: unit });
+  } else if (
+    !isNeutralOwnerV7(unit.ownerId) &&
+    arePlayersHostileV7(view, view.viewer.id, unit.ownerId)
+  )
+    for (const own of allOwnedUnitsV7(view, view.viewer.id))
+      pairs.push({ attacker: unit, defender: own });
+  const rows: string[] = [];
+  const reachByAttacker = new Map<number, readonly CoordV7[]>();
+  for (const { attacker, defender } of pairs) {
+    let reach = reachByAttacker.get(attacker.id);
+    if (reach === undefined) {
+      reach = queryThreatenedTilesV7(view, attacker.id);
+      reachByAttacker.set(attacker.id, reach);
+    }
+    if (!reach.some((at) => sameV7(at, defender.at))) continue;
+    const stats = view.unitStats.find((entry) => entry.unitId === attacker.id);
+    const gap = chebyshevV7(attacker.at, defender.at);
+    const direct =
+      stats !== undefined &&
+      gap >= stats.minimumRange &&
+      gap <= stats.maximumRange;
+    const damage = publicProjectedDamageForPolicyV7(
+      view,
+      attacker,
+      defender,
+      defender.at,
+      { maximumCharge: !direct },
+    );
+    rows.push(
+      `  ${unitTagV7(view, attacker)} @${xyV7(attacker.at)} on ${unitTagV7(view, defender)} @${xyV7(defender.at)}: deals about ${damage} (hp ${defender.hp}->${Math.max(0, defender.hp - damage)})${damage >= defender.hp ? " KILLS" : ""}${direct ? "" : " after moving into range"}`,
+    );
+  }
+  if (pairs.length === 0) return [];
+  return [
+    "",
+    mine
+      ? "ENEMY ATTACKS ON IT NEXT TURN (estimate from public information, each attacker alone)"
+      : "WHAT IT WOULD DEAL TO YOUR UNITS NEXT TURN (estimate from public information)",
+    ...(rows.length === 0
+      ? [
+          mine
+            ? "  no visible enemy unit can reach it next turn"
+            : "  it can reach none of your units next turn",
+        ]
+      : rows),
+  ];
+}
+
 function unitLineV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
@@ -2512,7 +2643,7 @@ function commandTechV7(args: ArgsV7): string {
   if (tree === null)
     return "TECH: you own no city, so nothing can be researched.";
   const lines = [
-    `TECH TREE ${FACTION_DISPLAY_NAMES_V7[tree.faction]} | state #${session.state.commandIndex} | coins ${view.viewer.coins} | technologies ${view.viewer.researchedTechs.length} (each one you own makes the next 2c dearer; cities do not matter) | researched ${view.viewer.researchedTechs.length}/${tree.nodes.length}`,
+    `TECH TREE ${FACTION_DISPLAY_NAMES_V7[tree.faction]} | state #${session.state.commandIndex} | coins ${view.viewer.coins} | technologies ${view.viewer.researchedTechs.length} (each one you own makes the next ${TECHNOLOGY_RESEARCH_COST_V7[1].step}c dearer; cities do not matter) | researched ${view.viewer.researchedTechs.length}/${tree.nodes.length}`,
   ];
   for (const branch of tree.branches) {
     const nodes = tree.nodes.filter((node) => node.branch === branch);
@@ -2576,6 +2707,7 @@ function commandOptionsV7(args: ArgsV7): string {
     offeredSummaryV7(offered),
   ];
   if (view.outcome !== null) return [...lines, outcomeLineV7(view)].join("\n");
+  lines.push(...freeMonumentLinesV7(view, offered, null));
   const row = (entry: OfferedV7): string =>
     `${entry.id}  ${describeCommandV7(view, entry.command, context)}`;
   const unitFlag = args.flags.get("unit");
@@ -2609,6 +2741,7 @@ function commandOptionsV7(args: ArgsV7): string {
     );
     if (targeted.length > 0) lines.push("", "COMMANDS TARGETING IT");
     for (const entry of targeted) lines.push(row(entry));
+    lines.push(...threatEstimateLinesV7(view, unit));
     return lines.join("\n");
   }
   if (cityFlag !== undefined) {
@@ -2625,6 +2758,7 @@ function commandOptionsV7(args: ArgsV7): string {
     );
     if (mine.length === 0) lines.push("(no command is offered for this city)");
     for (const entry of mine) lines.push(row(entry));
+    lines.push(...freeMonumentLinesV7(view, offered, id));
     return lines.join("\n");
   }
   if (tileFlag !== undefined) {
@@ -2791,11 +2925,57 @@ function requireOwnTurnV7(session: SessionV7): PlayerViewV7 {
   return view;
 }
 
+/**
+ * Tuning 6 (`pulp_wars-w49.6`): why a move id is not offered, from the
+ * seat's own view: the unit, its activation, the destination tile, what
+ * stands on it, and the distance. The engine's path rules are not replayed
+ * here; when none of the plain reasons applies the line names the three
+ * rules that end a Move early.
+ */
+function moveRejectionReasonV7(view: PlayerViewV7, id: string): string | null {
+  const match = /^u(\d+)\.m\.(\d+),(\d+)$/i.exec(id);
+  if (match === null) return null;
+  const unit = allOwnedUnitsV7(view).find(
+    (candidate) => candidate.id === Number(match[1]),
+  );
+  const to = { x: Number(match[2]), y: Number(match[3]) };
+  if (unit === undefined) return `no visible unit u${match[1]}`;
+  if (unit.ownerId !== view.viewer.id) return "it is not your unit";
+  const label = unitLabelV7(view, unit);
+  if (unit.activation.moved) return `the ${label} has already moved this turn`;
+  const state = activationTextV7(unit);
+  if (state === "spent") return `the ${label} arrived this turn and is spent`;
+  if (sameV7(unit.at, to)) return "it already stands there";
+  const tile = tileAtV7(view, to);
+  if (tile === undefined) return "the tile is off the board";
+  if (!tile.explored) return "the tile is unexplored";
+  const occupant = view.units.find((candidate) => sameV7(candidate.at, to));
+  if (occupant !== undefined)
+    return `the tile is occupied by ${unitTagV7(view, occupant)}`;
+  const move = Number(statTotalV7(view, unit.id, "MOVE") ?? "0");
+  const gap = chebyshevV7(unit.at, to);
+  if (Number.isFinite(move) && move > 0 && gap > move)
+    return `the tile is ${gap} tiles away and the ${label} has Move ${move}`;
+  const offeredMoves = queryPlayerCommandsV7(view).filter(
+    (command) => command.kind === "MOVE" && command.unitId === unit.id,
+  ).length;
+  if (offeredMoves === 0)
+    return `no move is offered for the ${label} now (it is ${state})`;
+  return `no legal path ends there this turn: entering a Forest or a Mountain ends a Move (unless both tiles are on your Road, or Fieldcraft frees Forests), a tile next to an enemy unit stops it (zone of control; a Raider slips by), a unit cannot pass an enemy unit, and some terrain needs a technology (Mountain: Engineering; water: Shorecraft)`;
+}
+
 function unknownIdMessageV7(
   id: string,
   offered: readonly OfferedV7[],
   state: GameStateV7,
+  view?: PlayerViewV7,
 ): string {
+  const reason =
+    view === undefined || state.pendingChoices.length > 0
+      ? null
+      : moveRejectionReasonV7(view, id);
+  if (reason !== null)
+    return `"${id}" is not an offered move at state #${state.commandIndex}: ${reason}`;
   const segments = id.toLowerCase().split(".");
   // A tile id is `t.x,y.<action>`: the tile is its first two segments.
   const prefix =
@@ -2843,7 +3023,7 @@ function commandDoV7(args: ArgsV7): string {
     } else if (view.outcome !== null) {
       rejection = `REJECTED ${id}: the match is over`;
     } else if (entry === undefined) {
-      rejection = `REJECTED ${id}: ${unknownIdMessageV7(id, offered, session.state)}`;
+      rejection = `REJECTED ${id}: ${unknownIdMessageV7(id, offered, session.state, viewForV7(session.state, session.playerId))}`;
     } else {
       const round = session.state.round;
       const applied = applyObservedV7(

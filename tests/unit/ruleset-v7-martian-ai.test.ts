@@ -447,7 +447,9 @@ describe("Normal AI against Martians", () => {
     // Two Fighters on a wounded Fighter that one hit does not kill: no
     // Shield-break tier (1179). Tuning 5 (`pulp_wars-w49.4`): in a Human
     // mirror the two hits are a combined kill of army play (1172; an
-    // ordinary chip, 900, before).
+    // ordinary chip, 900, before). Tuning 6 (`pulp_wars-w49.6`): the two
+    // Fighters outweigh the wounded one and commit, so the hit is a
+    // committed melee attack (1174).
     const state = martianFieldV7(
       [
         own("FIGHTER", 5, 5),
@@ -459,6 +461,6 @@ describe("Normal AI against Martians", () => {
     const best = candidatesV7(state).find(
       (item) => item.command.kind === "ATTACK",
     );
-    expect(best?.score.priority).toBe(1172);
+    expect(best?.score.priority).toBe(1174);
   });
 });

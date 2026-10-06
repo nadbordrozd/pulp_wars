@@ -33,7 +33,10 @@ describe("ruleset-7 exact public planning reuse", () => {
     expect(warm.operations).toBeLessThan(cold.operations);
     expect(warm.result).toEqual(cold.result);
     expect(canonicalHash(warm.result)).toBe(
-      "fadb84607b2ce160b46f1f906d29868b117507da5630b9b8b3beb186a8ee4dc8",
+      // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
+      // technology owned, so the retained view's 12 Coins buy a technology
+      // again and six RESEARCH commands are offered (was fadb84…4dc8).
+      "2df0a7078585ff4ec1ba0a0344afbdcecac63245d4b619bf2c27f849e8166a92",
     );
   });
 

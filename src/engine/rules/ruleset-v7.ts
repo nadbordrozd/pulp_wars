@@ -3290,6 +3290,11 @@ export const RULESET_7 = deepFreeze({
  * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r47`): the per-city steps
  * are 1 / 2 / 2 (1 / 3 / 5 before), so tier 2 is `7 + 2(C - 1)` and tier 3
  * `9 + 2(C - 1)`; the bases are unchanged.
+ *
+ * Tuning 4 replaced the city count by the technologies owned; tuning 6
+ * (`pulp_wars-w49.6`, `pulp-wars-poc-7r49`) made that step 1 a technology:
+ * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
+ * technologies the researcher already owns.
  */
 export const TECHNOLOGY_RESEARCH_COST_V7: Readonly<
   Record<1 | 2 | 3, { readonly base: number; readonly step: number }>
@@ -3298,9 +3303,13 @@ export const TECHNOLOGY_RESEARCH_COST_V7: Readonly<
   // already owns beyond its first (2 for every tier); it was per city the
   // player owned beyond its first (1 / 2 / 2). The city count no longer
   // enters the price.
-  1: { base: 5, step: 2 },
-  2: { base: 7, step: 2 },
-  3: { base: 9, step: 2 },
+  // Tuning 6 (`pulp_wars-w49.6`, `pulp-wars-poc-7r49`): the step is 1 for
+  // every tier (2 before). At 2 a tenth technology cost 23 to 27 Coins and
+  // neither the hand player nor the Normal AI reached its tier-3 units
+  // before round 28.
+  1: { base: 5, step: 1 },
+  2: { base: 7, step: 1 },
+  3: { base: 9, step: 1 },
 });
 
 /**

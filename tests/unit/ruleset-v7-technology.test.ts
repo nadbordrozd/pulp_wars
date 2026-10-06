@@ -68,15 +68,15 @@ describe("ruleset-7 technology", () => {
   });
 
   it("uses the exact formula by owned technologies without unsafe arithmetic", () => {
-    // Tuning 4 (`pulp_wars-w49.3`): 5 / 7 / 9 plus 2 for each technology
-    // owned beyond the first, N (tuning 1: 1 / 2 / 2 per city beyond the
-    // first).
+    // Tuning 4 (`pulp_wars-w49.3`): 5 / 7 / 9 plus a step for each
+    // technology owned beyond the first, N (tuning 1: 1 / 2 / 2 per city
+    // beyond the first). Tuning 6 (`pulp_wars-w49.6`): the step is 1 (2).
     expect(
       [1, 2, 3].map((tier) => technologyResearchCostV7(tier as 1 | 2 | 3, 1)),
     ).toEqual([5, 7, 9]);
     expect(
       [1, 2, 3].map((tier) => technologyResearchCostV7(tier as 1 | 2 | 3, 4)),
-    ).toEqual([11, 13, 15]);
+    ).toEqual([8, 10, 12]);
     expect(() => technologyResearchCostV7(3, Number.MAX_SAFE_INTEGER)).toThrow(
       "INTEGER_OVERFLOW",
     );
@@ -122,7 +122,7 @@ describe("ruleset-7 technology", () => {
 
   // 732 Coins in the frozen technology order (180 before tuning 4, when
   // one city paid the base price for every technology).
-  it("researches the entire graph for 732 coins without PRNG use", () => {
+  it("researches the entire graph for 456 coins without PRNG use", () => {
     let state = richV7(
       checkedV7({
         ...initialV7(),
@@ -152,7 +152,7 @@ describe("ruleset-7 technology", () => {
       state = result.state;
     }
     expect(state.players[0]).toMatchObject({
-      coins: 268,
+      coins: 544,
       researchedTechs: TECHNOLOGY_IDS_V7,
     });
   });

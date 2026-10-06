@@ -162,7 +162,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       cityId: cityId(1),
       role: "FIGHTER",
     });
-    expect(decision.candidates[0]?.score.priority).toBe(1080);
+    // Tuning 6 (`pulp_wars-w49.6`): a Human seat with fewer than three
+    // cities trains its first units as if alert (1215; 1080 before).
+    expect(decision.candidates[0]?.score.priority).toBe(1215);
     expect(
       decision.candidates.some(({ command }) => command.kind === "WAIT"),
     ).toBe(false);
@@ -329,13 +331,19 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // (was 65a17d…443f).
       // Tuning 5 (`pulp_wars-w49.4`): the Normal AI's army play scores the
       // candidates of a Human match (was bbf1ab…b503).
-      "59c61a9d57a52ebc5d7a7ca25f4e0fd87b0029182ee0ec5597e456ff411f4603",
+      // Tuning 6 (`pulp_wars-w49.6`): the command is unchanged; the
+      // candidates are scored by the assault, growth, and research rules of a
+      // Human seat (was 59c61a…4603).
+      "4d40a9530cd7f98c957355979e71de1d3113c850b081b52298910d6b329532be",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
     // (pulp_wars-9s0.1: was 2355bb…3e7a, for the same two Moves).
     expect(canonicalHash(withRevision12DecisionOrdinalsV7(basicChoice))).toBe(
-      "b446111b4f8e597b810534e980510233d210f103a4d0070e2ce52cb936904ff5",
+      // Tuning 6 (`pulp_wars-w49.6`): the command is unchanged; the
+      // candidates are scored by the assault, growth, and research rules of a
+      // Human seat (was b44611…4ff5).
+      "8df833922cc2b054ad6f836483fc39b91079d71b921bc394d8bf59be23d516ad",
     );
     const basicCommands = queryPlayerCommandsV7(basicView);
     const basicWork = new NormalPolicyWorkV7(structuredClone(basicView));
@@ -1020,7 +1028,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // cause), and de28fd…a6e4 before the pulp_wars-0hi.3 Human HP (same
     // comment: two Train Guard candidates and Research Scouting).
     expect(canonicalHash(withRevision12DecisionOrdinalsV7(sliced))).toBe(
-      "0164394fab88ac447ec5eaacac28d8619abb88cb80d74cdb514a619303eb56f8",
+      // Tuning 6 (`pulp_wars-w49.6`): the command is unchanged; the
+      // candidates are scored by the assault, growth, and research rules of a
+      // Human seat (was 016439…56f8).
+      "c6512aa8d46507d1b1caae6990fe1500951b0ef0748e3b19e55439a76973dddd",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -1095,7 +1106,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r48");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r49");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

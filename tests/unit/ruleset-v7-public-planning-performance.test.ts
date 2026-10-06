@@ -58,13 +58,19 @@ describe("ruleset-7 exact public-planning performance", () => {
       id: "retained-command-1100",
       view: () => retained,
       commandHash:
-        "83c9a2dd6aa17b01f061cf3a5a0c4b4d0145a28902398e2d48aeb76a0378466e",
+        // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
+        // technology owned, so the retained view's 12 Coins buy a technology
+        // again and six RESEARCH commands are offered (was 83c9a2…466e).
+        "9fd9949165d34f7fc6354364bee3ce65b287908a50d6654a1311ac2b25e21b96",
       resultHash:
-        "fadb84607b2ce160b46f1f906d29868b117507da5630b9b8b3beb186a8ee4dc8",
+        // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
+        // technology owned, so the retained view's 12 Coins buy a technology
+        // again and six RESEARCH commands are offered (was fadb84…4dc8).
+        "2df0a7078585ff4ec1ba0a0344afbdcecac63245d4b619bf2c27f849e8166a92",
       // 4 097 since tuning 4 (one RESEARCH fewer in the retained view);
       // 4 099 since tuning 5 (`pulp_wars-w49.4`: two cities offer the
-      // Swordsman).
-      operations: 4_099,
+      // Swordsman); 4 105 since tuning 6 (six RESEARCH commands again).
+      operations: 4_105,
     },
     {
       id: "captured-command-300",

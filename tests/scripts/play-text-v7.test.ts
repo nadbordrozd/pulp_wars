@@ -598,22 +598,29 @@ describe("text-mode play harness", () => {
     const listing = ok("lab");
     for (const lab of Object.keys(TEXT_PLAY_LABS_V7))
       expect(listing).toContain(`  ${lab}  `);
-    expect(Object.keys(TEXT_PLAY_LABS_V7)).toEqual([
-      "LAB_SIEGE",
-      "LAB_BACKLINE",
-      "LAB_LATE",
-    ]);
+    // Tuning 6 (`pulp_wars-w49.6`): the three breakthrough labs, one per
+    // attacking faction.
+    const attackers: Readonly<Record<string, readonly [string, string]>> = {
+      LAB_SIEGE: ["ORIGINAL", "Human"],
+      LAB_BACKLINE: ["ORIGINAL", "Human"],
+      LAB_LATE: ["ORIGINAL", "Human"],
+      LAB_BREAKTHROUGH: ["ORIGINAL", "Human"],
+      LAB_BREAKTHROUGH_GOBLIN: ["GOBLIN", "Goblin"],
+      LAB_BREAKTHROUGH_UNDEAD: ["UNDEAD", "Undead"],
+    };
+    expect(Object.keys(TEXT_PLAY_LABS_V7)).toEqual(Object.keys(attackers));
     for (const lab of Object.keys(TEXT_PLAY_LABS_V7)) {
+      const [faction, name] = attackers[lab] ?? ["", ""];
       const session = path.join(root, `${lab}.json`);
       const started = ok("lab", "--session", session, lab);
       expect(started).toContain(`LAB ${lab}:`);
       expect(started).toContain("S0 Human (you)");
-      expect(started).toContain("S1 Human (AI)");
+      expect(started).toContain(`S1 ${name} (AI)`);
       expect(started).toContain("YOUR TURN");
       const state = sessionState(session);
       expect(state.setup).toMatchObject({
         mapType: "MISSION",
-        factions: ["ORIGINAL", "ORIGINAL"],
+        factions: ["ORIGINAL", faction],
         mission: { id: lab },
       });
       const ids = offeredIds(session);
@@ -667,9 +674,10 @@ describe("text-mode play harness", () => {
     // Research is priced by the technologies owned.
     const tech = ok("tech", "--session", session);
     expect(tech).toContain(
-      "technologies 16 (each one you own makes the next 2c dearer; cities do not matter)",
+      "technologies 16 (each one you own makes the next 1c dearer; cities do not matter)",
     );
-    expect(tech).toContain("T3 PLANNING | AVAILABLE 39c");
+    // Tier 3 with 16 technologies owned: 9 + 15 (tuning 6; 39 before).
+    expect(tech).toContain("T3 PLANNING | AVAILABLE 24c");
     expect(tech).toContain(
       "cmd BUILD_MARKET (6c, output by neighbours; needs one of your Farms, Lumber Camps, Mines or their mills next to it)",
     );
@@ -685,9 +693,11 @@ describe("text-mode play harness", () => {
     const session = path.join(root, "siege-blast.json");
     ok("lab", "--session", session, "LAB_SIEGE");
     ok("do", "--session", session, "r.EXPLOSIVES", "u2.m.5,5", "--end");
+    // (Explosives is the ninth technology: 16 Coins since tuning 6, so the
+    // 60 Coins are back after one turn of income.)
     const blast = ok("options", "--session", session, "--tile", "6,5");
     expect(blast).toContain(
-      "t.6,5.blast_mountain  blast mountain at 6,5 (mountain neutral) | cost 3c (coins 53->50; not your territory, so no population) | BLAST 5 damage on and around the tile, to your units too except the one that sets it:",
+      "t.6,5.blast_mountain  blast mountain at 6,5 (mountain neutral) | cost 3c (coins 60->57; not your territory, so no population) | BLAST 5 damage on and around the tile, to your units too except the one that sets it:",
     );
     expect(blast).not.toContain("no exact public preview");
     // Three Guards; the Fighter that sets the charge is not hit (tuning 5).
@@ -728,7 +738,10 @@ describe("text-mode play harness", () => {
     const bogus = run("do", "--session", session, "u999.m.0,0");
     expect(bogus.exitCode).toBe(1);
     expect(bogus.output).toContain("REJECTED u999.m.0,0");
-    expect(bogus.output).toContain("not an offered command at state #0");
+    // Tuning 6: a move id gets its reason.
+    expect(bogus.output).toContain(
+      "is not an offered move at state #0: no visible unit u999",
+    );
     // Nothing of the match changed; the session only notes the rejection
     // (the guard of `end`, below).
     expect(JSON.parse(readFileSync(session, "utf8"))).toEqual({

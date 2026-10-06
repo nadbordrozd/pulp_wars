@@ -375,6 +375,10 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // technologies owned, so the Normal AI reaches Sawmilling later) only
     // seeds 2, 12, and 13 of 0-15 train a Lich within 40 rounds, and only
     // seed 2 plagues (one Lich, one Plague application, over in round 26).
+    // With tuning 6 (`pulp_wars-w49.6`: each faction's own research order,
+    // the Undead by Drill, Marksmanship, and Administration to Sawmilling;
+    // research at 1 Coin a technology owned) seed 2 trains three Liches
+    // and plagues, over in round 30.
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
       seed: 2,

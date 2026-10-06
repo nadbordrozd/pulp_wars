@@ -7159,6 +7159,7 @@ function rewardDisplacementCellV7(
   state: GameStateV7,
   unit: Pick<UnitStateV7, "id" | "ownerId" | "role">,
   center: CoordV7,
+  allowed: (at: CoordV7) => boolean = () => true,
 ): CoordV7 | null {
   const ownerId = unit.ownerId;
   const owner = requirePlayer(state, ownerId);
@@ -7166,7 +7167,8 @@ function rewardDisplacementCellV7(
   return (
     adjacentCoords(state, center).find((at) => {
       const tile = tileAtV7(state.board, at);
-      if (tile === undefined || tile.biome === null) return false;
+      if (tile === undefined || tile.biome === null || !allowed(at))
+        return false;
       if (state.treasureChests.some((chest) => same(chest, at))) return false;
       if (
         !canEnterTerrainV7({
@@ -7205,6 +7207,24 @@ function rewardDisplacementCellV7(
   );
 }
 
+/**
+ * Tuning 6 (`pulp_wars-w49.6`): where a reward unit appears when its
+ * city's center is occupied: a free tile next to the center that the unit
+ * may stand on (the reward displacement predicate), one of the city's own
+ * territory before any other, in (y, x) order. Null when there is none.
+ */
+function rewardArrivalCellV7(
+  state: GameStateV7,
+  unit: Pick<UnitStateV7, "id" | "ownerId" | "role">,
+  city: CityStateV7,
+): CoordV7 | null {
+  const free = (own: boolean): CoordV7 | null =>
+    rewardDisplacementCellV7(state, unit, city.at, (at) =>
+      own ? tileAtV7(state.board, at)?.territoryCityId === city.id : true,
+    );
+  return free(true) ?? free(false);
+}
+
 function resolveCityCenterSpawnV7(
   state: GameStateV7,
   actor: PlayerId,
@@ -7219,21 +7239,32 @@ function resolveCityCenterSpawnV7(
   const occupant = state.units.find(
     (unit) => unit.hp > 0 && same(unit.at, city.at),
   );
-  const destination =
-    occupant === undefined
-      ? null
-      : rewardDisplacementCellV7(state, occupant, city.at);
+  // Tuning 6 (`pulp_wars-w49.6`, `pulp-wars-poc-7r49`): the unit on the
+  // center stays. A reward unit that finds the center occupied appears on
+  // a free tile next to it (`rewardArrivalCellV7`); it used to take the
+  // center and push the garrison to the first free cell in (y, x) order,
+  // which put a wounded garrison in the open without its owner choosing.
+  // Only when no tile next to the center is free does the old rule apply.
+  const beside =
+    occupant === undefined ? null : rewardArrivalCellV7(state, spawned, city);
+  if (beside !== null) spawned = { ...spawned, at: beside };
+  const displaces = occupant !== undefined && beside === null;
+  const destination = displaces
+    ? rewardDisplacementCellV7(state, occupant, city.at)
+    : null;
   const displaced =
-    occupant === undefined || destination === null
+    !displaces || destination === null
       ? null
       : { ...occupant, at: destination, captureEligible: false };
   let units = state.units
-    .filter((unit) => unit.id !== occupant?.id || displaced !== null)
+    .filter(
+      (unit) => !displaces || unit.id !== occupant.id || displaced !== null,
+    )
     .map((unit) => (unit.id === displaced?.id ? displaced : unit));
   units = [...units, spawned];
   let players = state.players;
   const events: DomainEventV7[] = [];
-  if (occupant !== undefined)
+  if (displaces)
     events.push({
       kind: "UNIT_SPAWN_DISPLACED",
       playerId: actor,
@@ -7246,7 +7277,7 @@ function resolveCityCenterSpawnV7(
   // The Mind Control revision section 4.2: a Brain removed by displacement
   // releases its controlled unit.
   let burrowed = state.burrowed;
-  if (occupant !== undefined && displaced === null) {
+  if (displaces && displaced === null) {
     const release = releaseControlledV7(
       units,
       burrowed,

@@ -7,7 +7,7 @@
  *
  *   npx tsx scripts/human-tuning-analysis-v7.ts            (everything)
  *   npx tsx scripts/human-tuning-analysis-v7.ts matrix     (one part:
- *     matrix | scenarios | technology | economy | round4 | round5)
+ *     matrix | scenarios | technology | economy | round4 | round5 | round6)
  *
  * Output is Markdown on stdout.
  */
@@ -567,7 +567,7 @@ function technology(): string[] {
   }
   lines.push(
     "",
-    "The first technology of a match is free. A technology costs its tier's base (5 / 7 / 9) plus 2 Coins for each technology the player already owns beyond the first; the number of cities does not matter (tuning 4).",
+    "The first technology of a match is free. A technology costs its tier's base (5 / 7 / 9) plus 1 Coin for each technology the player already owns beyond the first (tuning 6; 2 Coins in tunings 4 and 5); the number of cities does not matter (tuning 4).",
   );
   return lines;
 }
@@ -947,6 +947,105 @@ function round5(): string[] {
   return lines;
 }
 
+/**
+ * Tuning 6 (`pulp_wars-w49.6`): the research price at 1 Coin a technology
+ * owned (2 before), and what the Normal AI's research order costs for each
+ * of the three army factions.
+ */
+function round6(): string[] {
+  const before = (tier: 1 | 2 | 3, owned: number): number =>
+    owned === 0 && tier === 1 ? 0 : 5 + 2 * (tier - 1) + 2 * (owned - 1);
+  const lines: string[] = [
+    "#### The price of the n-th technology",
+    "",
+    "| It is the player's | Tier 1: round 5 / round 6 | Tier 2 | Tier 3 |",
+    "| --- | --- | --- | --- |",
+  ];
+  for (const nth of [2, 3, 4, 5, 6, 8, 10, 12, 16, 20])
+    lines.push(
+      `| ${nth}${nth === 2 ? "nd" : nth === 3 ? "rd" : "th"} | ${([1, 2, 3] as const).map((tier) => `${before(tier, nth - 1)} / ${playerTechnologyResearchCostV7(tier, nth - 1)}`).join(" | ")} |`,
+    );
+  const land = factionTreeV7("ORIGINAL").nodes.filter(
+    (node) => node.branch !== "NAVAL",
+  );
+  const ordered = [...land].sort((left, right) => left.tier - right.tier);
+  const whole = (price: (tier: 1 | 2 | 3, owned: number) => number): number =>
+    ordered.reduce((total, node, owned) => total + price(node.tier, owned), 0);
+  lines.push(
+    "",
+    `The whole land tree of ${land.length} technologies in tier order: ${whole(before)} Coins in round 5, ${whole(playerTechnologyResearchCostV7)} in round 6.`,
+    "",
+    "#### The Normal AI's research order from a Gathering opener",
+    "",
+    "Each faction's signature units first (`ARMY_RESEARCH_ROLES_V7`). The unit named is what the technology unlocks for that faction. With three cities Roads (by Scouting) comes after the first two units and Commerce after the last; the tables are for a seat with fewer.",
+    "",
+  );
+  const orders: Readonly<
+    Record<"ORIGINAL" | "UNDEAD" | "GOBLIN", readonly TechnologyIdV7[]>
+  > = {
+    ORIGINAL: [
+      "HUNTING",
+      "MARKSMANSHIP",
+      "DRILL",
+      "FORESTRY",
+      "SAWMILLING",
+      "SCOUTING",
+      "RAIDING",
+      "CHIVALRY",
+      "ENGINEERING",
+      "ADMINISTRATION",
+    ],
+    UNDEAD: [
+      "DRILL",
+      "HUNTING",
+      "MARKSMANSHIP",
+      "ADMINISTRATION",
+      "FORESTRY",
+      "SAWMILLING",
+      "SCOUTING",
+      "RAIDING",
+      "CHIVALRY",
+    ],
+    GOBLIN: [
+      "HUNTING",
+      "MARKSMANSHIP",
+      "SCOUTING",
+      "FORESTRY",
+      "SAWMILLING",
+      "RAIDING",
+      "CHIVALRY",
+      "DRILL",
+      "ADMINISTRATION",
+    ],
+  };
+  for (const faction of ["ORIGINAL", "UNDEAD", "GOBLIN"] as const) {
+    const tree = factionTreeV7(faction);
+    lines.push(
+      `**${faction === "ORIGINAL" ? "Humans" : faction === "UNDEAD" ? "Undead" : "Goblins"}**`,
+      "",
+      "| #   | Technology | Tier | Unit | Round 5 price | Round 6 price | Total, round 6 |",
+      "| --- | --- | --- | --- | --- | --- | --- |",
+    );
+    let totalNow = 0;
+    orders[faction].forEach((tech, index) => {
+      const node = tree.nodes.find((candidate) => candidate.id === tech);
+      if (node === undefined) throw new Error(tech);
+      const owned = index + 1;
+      totalNow += playerTechnologyResearchCostV7(node.tier, owned);
+      const unit = node.unlocks.flatMap((unlock) =>
+        unlock.kind === "UNIT_ROLE"
+          ? [effectiveRoleRuleV7(unlock.role, faction).label]
+          : [],
+      );
+      lines.push(
+        `| ${owned + 1} | ${tech} | ${node.tier} | ${unit.length === 0 ? "—" : unit.join(", ")} | ${before(node.tier, owned)} | ${playerTechnologyResearchCostV7(node.tier, owned)} | ${totalNow} |`,
+      );
+    });
+    lines.push("");
+  }
+  return lines;
+}
+
 const part = process.argv[2] ?? "all";
 const out: string[] = [
   `<!-- ${RULESET_7_ID}, scripts/human-tuning-analysis-v7.ts ${part} -->`,
@@ -964,4 +1063,6 @@ if (part === "all" || part === "round4")
   out.push("### Round 4", "", ...round4(), "");
 if (part === "all" || part === "round5")
   out.push("### Round 5", "", ...round5(), "");
+if (part === "all" || part === "round6")
+  out.push("### Round 6", "", ...round6(), "");
 process.stdout.write(`${out.join("\n")}\n`);

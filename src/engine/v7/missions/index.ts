@@ -10,6 +10,11 @@ import { FRONTIER_1_V7 } from "./frontier-1";
 import { FRONTIER_2_V7 } from "./frontier-2";
 import { FRONTIER_3_V7 } from "./frontier-3";
 import { FRONTIER_4_V7 } from "./frontier-4";
+import {
+  LAB_BREAKTHROUGH_GOBLIN_V7,
+  LAB_BREAKTHROUGH_UNDEAD_V7,
+  LAB_BREAKTHROUGH_V7,
+} from "./lab-breakthrough";
 import { LAB_BACKLINE_V7, LAB_LATE_V7, LAB_SIEGE_V7 } from "./lab-human";
 import { TEST_GROUNDS_V7 } from "./test-grounds";
 import { TEST_GUARD_V7, TEST_HOLD_V7, TEST_RUSH_V7 } from "./test-directives";
@@ -42,6 +47,11 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   LAB_SIEGE_V7,
   LAB_BACKLINE_V7,
   LAB_LATE_V7,
+  // Tuning 6 (`pulp_wars-w49.6`): numbers against a prepared line, one
+  // fixture per attacking faction.
+  LAB_BREAKTHROUGH_V7,
+  LAB_BREAKTHROUGH_GOBLIN_V7,
+  LAB_BREAKTHROUGH_UNDEAD_V7,
 ]);
 
 /** The registered mission with this ID (any revision), or null. */

@@ -151,6 +151,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::armySupportedV7": "BOARD",
     "src/ai/v7.ts::armyHuntTargetsV7": "BOARD",
     "src/ai/v7.ts::armyScreenedV7": "BOARD",
+    // Tuning 6 (`pulp_wars-w49.6`): the own units weighed against a hostile
+    // position, the own units near a lone unit, and the friend it walks back
+    // to are what stands on the board in the public view.
+    "src/ai/v7.ts::armyAssaultV7": "BOARD",
+    "src/ai/v7.ts::armyAloneV7": "BOARD",
+    "src/ai/v7.ts::armyNearestFriendV7": "BOARD",
     "src/ai/v7.ts::iceFolkAttackAdjustmentV7": "BOARD",
     "src/ai/v7.ts::iceFolkWoundedAtHomeV7": "BOARD",
     "src/ai/v7.ts::isPolicyCandidate": "BOARD",

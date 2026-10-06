@@ -329,7 +329,9 @@ describe("ruleset-7 revision-13 Normal AI playing Undead", () => {
       targetUnitId: victim.id,
     });
     // Target value (Fighter 2 x 4 + 2 HP) plus the 10-HP Zombie rising.
-    expect(infect.candidates[0]?.score.strategicValue).toBe(10 + 22);
+    // Tuning 6 (`pulp_wars-w49.6`): and 12 for cheap line infantry as a
+    // Zombie's target.
+    expect(infect.candidates[0]?.score.strategicValue).toBe(10 + 22 + 12);
   });
 
   it("uses Frenzy only when adjacent attackers can reach a visible enemy", () => {
@@ -377,11 +379,18 @@ describe("ruleset-7 revision-13 Normal AI playing Undead", () => {
       unitId: skeleton.id,
     });
     const decision = chooseNormalCommandV7(view);
-    const best = required(
-      decision.candidates.find(
-        ({ command }) => "unitId" in command && command.unitId === skeleton.id,
-      ),
+    // Tuning 6 (`pulp_wars-w49.6`): the free village next to it comes first
+    // (1170, no enemy in sight); the retreat is its best Move otherwise.
+    const moves = decision.candidates.filter(
+      ({ command }) =>
+        command.kind === "MOVE" && command.unitId === skeleton.id,
     );
+    const village = required(moves[0]);
+    expect(village.score.priority).toBe(1170);
+    expect(
+      village.command.kind === "MOVE" && village.command.path.at(-1),
+    ).toEqual({ x: 5, y: 5 });
+    const best = required(moves[1]);
     expect(best.command.kind).toBe("MOVE");
     if (best.command.kind !== "MOVE") return;
     expect(best.command.path.at(-1)).toEqual(SEAT_0_TERRITORY);
@@ -585,6 +594,12 @@ describe("ruleset-7 revision-13 Normal AI determinism and headless play", () => 
       // none of the cases above reaches a Frenzy (the Undead Rally) any
       // more; this Dry Land match has five.
       { factions: ["UNDEAD", "ORIGINAL"], seed: 8, mapType: "DRY_LAND" },
+      // Tuning 6 (`pulp_wars-w49.6`): the Normal AI researches toward
+      // ranged, siege, and breakthrough units first and the Necromancer
+      // last, so none of the cases above reaches a Frenzy any more (none of
+      // seeds 0-15 against Humans does within 45 rounds); this Undead
+      // mirror has 18, in a match of 54 rounds.
+      { factions: ["UNDEAD", "UNDEAD"], seed: 5, mapType: "DRY_LAND" },
     ];
     const used: Record<string, number> = {
       RAISE_DEAD: 0,

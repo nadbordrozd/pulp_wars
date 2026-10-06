@@ -120,19 +120,27 @@ output before `debrief`.
 
 ## Labs
 
-Three staged positions for the Human tuning
+Six staged positions for the Human tuning. The first three
 ([round 4](../product/RULESET_7_TUNING_HUMAN.md#119-the-labs); `LAB_BACKLINE`
 and `LAB_LATE` are at revision 2 since
-[round 5](../product/RULESET_7_TUNING_HUMAN.md#12-round-5), with Swordsmen). Each is a
-hidden mirror mission (`src/engine/v7/missions/lab-human.ts`), so it is an
+[round 5](../product/RULESET_7_TUNING_HUMAN.md#12-round-5), with Swordsmen) are each a
+hidden mirror mission (`src/engine/v7/missions/lab-human.ts`); the three
+breakthrough labs of
+[round 6](../product/RULESET_7_TUNING_HUMAN.md#132-the-bar-numbers-against-a-prepared-line)
+(`src/engine/v7/missions/lab-breakthrough.ts`) are not mirrors: you are
+Human and hold a line, and the AI attacks it as a Human, a Goblin, or an
+Undead seat. Each is an
 ordinary match from a fixed start: every command, `verify`, and `debrief`
 work as in a generated match.
 
-| Lab            | Position                                                                                                                                                                                                                                                                                                                                |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `LAB_SIEGE`    | 11 x 11. The AI's walled level-4 capital with a Guard on the center, three Guards in front (Forest cover, a Field Defense), a Marksman and two Catapults behind, and a Mountain touching the screen; the AI holds its formation. You have 6 units, 60 Coins, and the prerequisites of Sawmilling, Chivalry, Explosives, and Fieldcraft. |
-| `LAB_BACKLINE` | 14 x 14. The AI advances with four Catapults and three Marksmen behind two Guards, a Swordsman, and two Fighters. You have three Knights, two Raiders, a Swordsman, two Fighters, two Marksmen, a Catapult, and 40 Coins.                                                                                                               |
-| `LAB_LATE`     | 16 x 16. Six road-linked cities a side, 16 technologies (Engineering among them), armies at the unit limit with a Swordsman in every front city, 100 Coins each, two of your cities with a Barracks.                                                                                                                                    |
+| Lab                       | Position                                                                                                                                                                                                                                                                                                                                                                                      |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `LAB_SIEGE`               | 11 x 11. The AI's walled level-4 capital with a Guard on the center, three Guards in front (Forest cover, a Field Defense), a Marksman and two Catapults behind, and a Mountain touching the screen; the AI holds its formation. You have 6 units, 60 Coins, and the prerequisites of Sawmilling, Chivalry, Explosives, and Fieldcraft.                                                       |
+| `LAB_BACKLINE`            | 14 x 14. The AI advances with four Catapults and three Marksmen behind two Guards, a Swordsman, and two Fighters. You have three Knights, two Raiders, a Swordsman, two Fighters, two Marksmen, a Catapult, and 40 Coins.                                                                                                                                                                     |
+| `LAB_LATE`                | 16 x 16. Six road-linked cities a side, 16 technologies (Engineering among them), armies at the unit limit with a Swordsman in every front city, 100 Coins each, two of your cities with a Barracks.                                                                                                                                                                                          |
+| `LAB_BREAKTHROUGH`        | 16 x 16. You hold the one crossing between two lakes, eight tiles wide, with 14 units (63 Coins): Guards on two Mountains and two Field Defenses, four Swordsmen in Forests, three Marksmen and two Catapults behind, a walled capital with a Guard, and two more cities. The Human AI stands out of reach with 26 units (125 Coins, twice yours), three level-4 cities, and 13 Coins a turn. |
+| `LAB_BREAKTHROUGH_GOBLIN` | The same line; the AI is Goblin with 33 units (125 Coins): Orc Brutes, Goblins, Bomb Chuckers, Rocket Carts, Scrap Buggies, Wolf Riders, a Warboss.                                                                                                                                                                                                                                           |
+| `LAB_BREAKTHROUGH_UNDEAD` | The same line; the AI is Undead with 29 units (127 Coins): Zombies, Skeletons, Banshees, Liches, Vampires, Ghouls, a Necromancer.                                                                                                                                                                                                                                                             |
 
 ## Ids
 
@@ -206,7 +214,7 @@ END OF YOUR TURN (round 2)
 -- your turn starts: coins 8 --
   INCOME S0 +3 (c1 +3)
 
-== state #20 | pulp-wars-poc-7r48 | dry_land 11x11 seed 7 ==
+== state #20 | pulp-wars-poc-7r49 | dry_land 11x11 seed 7 ==
 ROUND 3 | you are S0 Human | YOUR TURN | coins 8 | income +3/turn | cities 1 | units 2
 PLAYERS in turn order: S0 Human (you) active cities 1 units 2 > S1 Goblin (AI) active cities 1 units 2
 OFFERED 17: research 5 | train 1 | move 9 | unit 2 | end available
@@ -274,11 +282,27 @@ action used`).
   right place recovers by itself (the `recover` preview says how much).
 - A unit captures a settlement it stands on with `.capture`; `can-capture-now`
   in its unit line says when. Move onto the center first.
-- Research costs grow with the number of cities you own; the first
-  technology is free. `tech` shows the cost now.
+- Research costs 1 Coin more for each technology you already own (cities
+  do not matter); the first technology is free. `tech` shows the cost now.
 - Use `options --unit u12` before a fight: it lists that unit's attacks with
   exact numbers and, under `COMMANDS TARGETING IT`, your attacks on an enemy
   unit when you pass the enemy's id.
+- `options --unit` on an enemy unit also lists, under `WHAT IT WOULD DEAL TO
+YOUR UNITS NEXT TURN`, what it would deal to each of your units it can
+  reach, and on your own unit, under `ENEMY ATTACKS ON IT NEXT TURN`, what
+  each visible enemy would deal to it. It is an estimate
+  from what you can see (`deals about 6 (hp 17->11)`, `KILLS`,
+  `after moving into range`); a unit you cannot see is not in it.
+- A rejected move says why: `"u12.move.7,4" is not an offered move at
+state #20: the tile is 3 tiles away and the Fighter has Move 1` (the unit
+  has moved, the tile is occupied or unexplored, too far, or the rules
+  that end a Move early).
+- A Monument you have earned is one line at the top of `options` and under
+  `options --city`: `FREE MONUMENT <achievement>: 0c, +2 population in the
+city it is built in`, with an id to use.
+- `HIT_UNSEEN u12(S0 Guard) @7,2 takes 6 from a source you do not see (hp
+17->11)` in what your seat observed is damage from an attacker on a tile
+  you have not explored. It names no attacker.
 - When a unit has no attack or no `fortify`, `options --unit u12` ends with
   a `no attack: …` or `no fortify: …` line that names the reason (a Guard
   cannot attack after it has moved; only some roles build Field Defense,

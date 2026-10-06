@@ -81,12 +81,12 @@ import {
 // 9, and 13).
 
 describe("ruleset-7 revision-17 identity", () => {
-  it("keeps r16 among the prior identities after the r48 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r48.current");
-    expect(PRIOR_RULESET_7_IDS.at(-32)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(47);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-32)).toBe(
+  it("keeps r16 among the prior identities after the r49 identity and cleans the r16 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r49");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r49.current");
+    expect(PRIOR_RULESET_7_IDS.at(-33)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(48);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-33)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -1056,7 +1056,10 @@ describe("ruleset-7 Goblin reward substitutions", () => {
     }
   });
 
-  it("displaces a center occupant first and then places the second Goblin", () => {
+  // Tuning 6 (`pulp_wars-w49.6`, 7r49): the occupant stays on the center;
+  // both Goblins appear beside it (the first used to take the center and
+  // displace the occupant).
+  it("leaves a center occupant where it is and places both Goblins beside it", () => {
     const fixture = rewardState("MILITIA", ["CENTER"]);
     const city = humanCity(fixture.state);
     const occupant = unitAtV7(fixture.state, city.at);
@@ -1065,19 +1068,17 @@ describe("ruleset-7 Goblin reward substitutions", () => {
       fixture.state.humanPlayerId,
       fixture.command,
     );
-    const displaced = result.state.units.find(
-      (unit) => unit.id === occupant.id,
+    expect(result.state.units.find((unit) => unit.id === occupant.id)).toEqual(
+      occupant,
     );
-    if (displaced === undefined) throw new Error("occupant removed");
-    const expectedDisplacement = firstOpenAdjacent(fixture.state, city.at, []);
-    if (expectedDisplacement === undefined) throw new Error("no open cell");
-    expect(displaced.at).toEqual(expectedDisplacement);
+    const firstCell = firstOpenAdjacent(fixture.state, city.at, []);
+    if (firstCell === undefined) throw new Error("no open cell");
     const [first, second] = newUnits(fixture.state, result.state);
-    expect(first?.at).toEqual(city.at);
+    expect(first?.at).toEqual(firstCell);
     expect(second?.at).toEqual(
-      firstOpenAdjacent(fixture.state, city.at, [expectedDisplacement]),
+      firstOpenAdjacent(fixture.state, city.at, [firstCell]),
     );
-    expect(result.events.map((event) => event.kind)).toContain(
+    expect(result.events.map((event) => event.kind)).not.toContain(
       "UNIT_SPAWN_DISPLACED",
     );
   });

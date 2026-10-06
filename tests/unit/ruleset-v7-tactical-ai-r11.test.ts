@@ -704,7 +704,19 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         ownUnits(screened).find((unit) => unit.role === "GUARD"),
       );
       const target = required(hostileUnits(screened)[0]);
-      const selected = chooseNormalCommandV7(screenedView).command;
+      // Tuning 6 (`pulp_wars-w49.6`): where a free village lies beside the
+      // Guard, it steps onto it first (priority 1170 while the seat has
+      // fewer than three cities); the Catapult's Move is the next command.
+      const selected = required(
+        chooseNormalCommandV7(screenedView).candidates.find(
+          ({ command, score }) =>
+            !(
+              command.kind === "MOVE" &&
+              command.unitId === guard.id &&
+              score.priority === 1170
+            ),
+        ),
+      ).command;
       expect(selected).toMatchObject({ kind: "MOVE", unitId: catapult.id });
       if (selected?.kind !== "MOVE") return;
       const destination = required(selected.path.at(-1));
@@ -991,7 +1003,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // (was b495e0…5c8e).
           // Tuning 5 (`pulp_wars-w49.4`): the Normal AI's army play scores
           // the candidates of a Human match (was 7f52e5…83ff).
-          "ced53114583e5424fc5f7fdac3be115053dec73740c3c651fdaf757b6c7534f8",
+          // Tuning 6 (`pulp_wars-w49.6`): the command is the same Capture
+          // and one candidate's score differs, Train with the price term
+          // of a class the army lacks in its strategic value (was
+          // ced531…34f8).
+          "641b21351bc4291259373c90c132734187c2489346608aeb4312d48eb6593060",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1001,7 +1017,8 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         expect(
           canonicalHash(withRevision12DecisionOrdinalsV7(beforeDecision)),
         ).toBe(
-          "a02a3abd2328a6875256571055c553d4169b7b48a1d00abda8c7340e9da052a0",
+          // Tuning 6: the same Train score (was a02a3a…52a0).
+          "c32ecdf332f268b8d4b1d5144e3560dc2feb07b9882f88ef20fb64575bdfa279",
         );
       }
       expect(inspectNormalTacticalFactsV7(beforeView).roadCorridor).toBeNull();
@@ -1075,14 +1092,20 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // numbers (was 7e8bcc…dce8).
           // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL, moving
           // every later command kind forward by one (was 813c7f…07f9).
-          "a58d379bf6163928b252c06b29434f8761bb356f42360050ad0a0c72f9e999ed",
+          // Tuning 6 (`pulp_wars-w49.6`): the command is unchanged; the
+          // candidates are scored by the assault, growth, and research rules
+          // of a Human seat (was a58d37…99ed).
+          "35a6048905cde40f60174be5a4c4c41015241c76c4b68705efd76198b8678208",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).
         expect(
           canonicalHash(withRevision12DecisionOrdinalsV7(capturedDecision)),
         ).toBe(
-          "1c61f73726f582c7b0696bd0bd40e1972abe54d86b2704b2c759609f59e77d78",
+          // Tuning 6 (`pulp_wars-w49.6`): the command is unchanged; the
+          // candidates are scored by the assault, growth, and research rules
+          // of a Human seat (was 1c61f7…7d78).
+          "828b452952251643279348d92d09ac3fd6fb31e5d719e14d3fef76cbef5c5195",
         );
       }
 

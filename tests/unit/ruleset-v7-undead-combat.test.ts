@@ -860,7 +860,11 @@ describe("ruleset-7 revision-13 Infect and Lifesteal: events, fog, and persisten
     // Chivalry later) only seed 15 of 0-15 shows a heal within 40 rounds.
     // With tuning 5 (`pulp_wars-w49.4`, the Normal AI's army play) seeds
     // 2, 3, 5, 8, 9, and 10 of 0-15 do (seed 2: the match over in round 32).
-    const setup = setupWith(["UNDEAD", "UNDEAD"], 2);
+    // With tuning 6 (`pulp_wars-w49.6`: the Undead research Drill first
+    // and the Vampire last) Infect is common and Lifesteal late: seed 8
+    // shows 14 risings and nine heals within the 40 rounds (seeds 2 and 5
+    // show risings and no heal).
+    const setup = setupWith(["UNDEAD", "UNDEAD"], 8);
     const match = runAiMatchV7(setup, { maxRounds: 40 });
     expect(match.errors).toEqual([]);
     expect(match.metrics.eventsByKind.UNIT_INFECTED).toBeGreaterThan(0);

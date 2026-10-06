@@ -81,10 +81,10 @@ const CELLS = [
 ] as const;
 
 describe("ruleset-7 revision-16 identity", () => {
-  it("keeps rejecting r15 after the r48 identity and cleans the r15 through r47 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r48.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-33)).toEqual([
+  it("keeps rejecting r15 after the r49 identity and cleans the r15 through r48 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r49");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r49.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-34)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -118,6 +118,7 @@ describe("ruleset-7 revision-16 identity", () => {
       "pulpWars.save.v7r45.current",
       "pulpWars.save.v7r46.current",
       "pulpWars.save.v7r47.current",
+      "pulpWars.save.v7r48.current",
     ]);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const setup = setupFor("CONTINENTS", 11, 1, 3);
@@ -171,7 +172,7 @@ describe("ruleset-7 prior identities", () => {
   ];
 
   it("lists every earlier Ruleset 7 identity exactly once, in order", () => {
-    expect(revision).toBe(48);
+    expect(revision).toBe(49);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -205,7 +206,7 @@ describe("ruleset-7 prior identities", () => {
   });
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r49", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r50", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",
@@ -619,14 +620,16 @@ describe("ruleset-7 revision-16 Normal AI opening", () => {
     const view = viewForV7(state, state.humanPlayerId);
     const decision = chooseNormalCommandV7(view);
     expect(decision.command?.kind).toBe("HARVEST_FRUIT");
-    expect(decision.candidates[0]?.score.priority).toBe(1212);
+    // Tuning 6 (`pulp_wars-w49.6`): a Human seat with no enemy near buys
+    // cheap growth at 1218 (the opening harvest alone is 1212).
+    expect(decision.candidates[0]?.score.priority).toBe(1218);
     for (const candidate of decision.candidates)
       if (
         candidate.command.kind === "RESEARCH" ||
         candidate.command.kind === "TRAIN" ||
         candidate.command.kind.startsWith("BUILD_")
       )
-        expect(candidate.score.priority).toBeLessThan(1212);
+        expect(candidate.score.priority).toBeLessThan(1218);
     // Once the capital is level 2 the harvest bonus stops.
     let levelled = state;
     const capital = required(
@@ -656,12 +659,15 @@ describe("ruleset-7 revision-16 Normal AI opening", () => {
     expect(levelled.cities.find((city) => city.id === capital.id)?.level).toBe(
       2,
     );
+    // Tuning 6: the opening bonus (1212) has stopped, but for a Human seat
+    // with no enemy near a harvest is still cheap growth (1218; it was
+    // below 1212).
     expect(
       scoreCommandV7(viewForV7(levelled, levelled.humanPlayerId), {
         kind: "HARVEST_FRUIT",
         at: required(fruit[2]),
       }).priority,
-    ).toBeLessThan(1212);
+    ).toBe(1218);
   });
 
   it.each([

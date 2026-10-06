@@ -168,7 +168,9 @@ describe("ruleset-7 Normal AI campaign (pulp_wars-9s0.1)", () => {
       explored: around(HOME, 2),
     });
     expect(campaign(peace)).toMatchObject({ atWar: false, warTraining: false });
-    expect(trainPriority(peace)).toBe(1080);
+    // Tuning 6 (`pulp_wars-w49.6`): a Human seat with fewer than three
+    // cities trains its first units as if alert (1215; 1080 before).
+    expect(trainPriority(peace)).toBe(1215);
   });
 
   it("sends the nearest capturer to every unclaimed village", () => {

@@ -402,11 +402,14 @@ describe("headless parity and the CLI flag", () => {
         // Tuning 4 (`pulp_wars-w49.3`): 18 rounds (17 before), recomputed.
         // Tuning 5 (`pulp_wars-w49.4`, the Normal AI's army play):
         // recomputed.
+        // Tuning 6 (`pulp_wars-w49.6`: research at 1 Coin a technology
+        // owned, the Normal AI's assault, expansion, and research order):
+        // recomputed.
         rounds: 18,
         commandHash:
-          "62f237a834524c5b707d432053c3202fa20e58aec784f109df65486db4529c08",
+          "84950321e2f9bcfb4272b4d88cee9c0d5f104dc53c763f5ea5721faf37a49573",
         eventHash:
-          "f7f0a1c36326f5c5d411a0c3b2f582e139a7849a7ceba3c9a8d2e7ec03c1ed97",
+          "04930ba2da11394beb1087fd31f427740bfb2a369a6b63bd69c091356834f29b",
         mapHash:
           "1f6ad08d476884229d6cb8a7319ea209b8667cf4e28e24cd07352ebafc3055de",
         finalPrngHash:
@@ -416,11 +419,15 @@ describe("headless parity and the CLI flag", () => {
         mapType: "PANGEA",
         factions: ["GOBLIN", "DINOSAUR", "MARTIAN"],
         seed: 11,
-        rounds: 15,
+        // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin a technology
+        // owned for every faction, so every match changes at its third
+        // technology: 14 rounds (15 before), recomputed. The same holds for
+        // the three pins below.
+        rounds: 14,
         commandHash:
-          "79687de9bb6b0699f24179957e67d3ca54e9ea9aaefb872138fe316b50ec6655",
+          "06a0c1a46349f941e0b3a1f3ccb6fefeffe1872edef0e9a888a09c1cfe0ff4d9",
         eventHash:
-          "fd31b51d2530366c7c9b544b82e304cc0900e60da2feeddc56502f7c7e00eaf6",
+          "ab6337c58f0a6b5b50b31a9578f6a938245d4095ab08bbec9ef2c65dfb0a10de",
         mapHash:
           "5b286bbe8cdb2f8a339cd7a74ba219bc2b57a4322370548442b3c8f26bef4ad9",
         finalPrngHash:
@@ -433,11 +440,12 @@ describe("headless parity and the CLI flag", () => {
         // was 18 rounds, commands 2c1c37…d518, events bd9d09…7c62).
         factions: ["ICE_FOLK", "DWARF"],
         seed: 5,
-        rounds: 22,
+        // Tuning 6: 20 rounds (22 before).
+        rounds: 20,
         commandHash:
-          "dcbe79d20690e149305287bf895d9adcad621cf8920a7607335c7127313fb5df",
+          "effa4bab89ee47c80ec5bad38fdea134ce496d6ea6d4d040bca60aa023dfd032",
         eventHash:
-          "d67485a757fd03fb7327de28623547f512c6a1b3f606e720d90d5ed6557bfb5b",
+          "fd26a329a705c1bfc810a76a69f03aa580bfc6249085d1a97cec6bbaa4b1a5dc",
         mapHash:
           "2cbf36a1c5d03e70dd785be13a1ed7d5dd04fecdd54925baa1b483261d71c9be",
         finalPrngHash:
@@ -452,9 +460,9 @@ describe("headless parity and the CLI flag", () => {
         // (15 before), recomputed.
         rounds: 14,
         commandHash:
-          "f122e0c7538cd1846ede1d843227b53ad781e6320df364348c41c5a7aa934bca",
+          "16273ba9aa1e144d6b521b40206dd01086c008591a624dd20feb846104febc71",
         eventHash:
-          "9ed26229a227307d3dd5d0ae78fef9da05512cd64d4d9c167704cb0b08d3ae07",
+          "900a2f19a29d70b731ac9f8f57b5dc7dfcbc77d3993ac4b3e284da34f8558b05",
         mapHash:
           "be112bd78cfeb3f5ae72a6b67f8f91bd45b81814c5d0cdad9abe7f31f221be5d",
         finalPrngHash:
@@ -464,11 +472,12 @@ describe("headless parity and the CLI flag", () => {
         mapType: "LAKES",
         factions: ["DWARF", "UNDEAD", "ICE_FOLK", "DINOSAUR"],
         seed: 2,
-        rounds: 11,
+        // Tuning 6: 10 rounds (11 before).
+        rounds: 10,
         commandHash:
-          "ee1a960bd9f26527dd162cf455e5b7c1927858aff74a009cd12d734de357f2c2",
+          "aa83281500e65b1181c2eb67e301484de85c245dea72df726ab8685262089bd8",
         eventHash:
-          "94dbfde0bec02c3eb1434abdfdcb140909b2a286cdfea6946efc36e8bebc502b",
+          "818aa9efc91a8535406a290fbf99e27ddb56c261a4d1be7a00d7c89e07f99f48",
         mapHash:
           "70ff339440ce86f231bca6b2be56c748891436934f614f6ef66fa53933f3d5ab",
         finalPrngHash:

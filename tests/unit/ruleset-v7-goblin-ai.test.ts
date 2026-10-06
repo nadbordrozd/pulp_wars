@@ -610,7 +610,10 @@ describe("ruleset-7 revision-17 Normal AI: exploder spacing", () => {
     // either, so the lone tile is refused as well (it was allowed).
     expect(scoreCommandV7(near.view, move(rocket, at(3, 3))).priority).toBe(-1);
     expect(scoreCommandV7(near.view, move(rocket, at(4, 3))).priority).toBe(-1);
-    const far = cart(at(9, 0));
+    // Tuning 6 (`pulp_wars-w49.6`): the far enemy stands outside the nine
+    // tiles of an assault (at (9, 0) the three units commit against it, and
+    // a committed unit makes no Move away from its position).
+    const far = cart(at(10, 2));
     expect(
       scoreCommandV7(far.view, move(rocket, at(3, 3))).priority,
     ).toBeGreaterThanOrEqual(0);
@@ -636,8 +639,10 @@ describe("ruleset-7 revision-17 Normal AI: against Goblins", () => {
     const { state, view } = arena(["ORIGINAL", "GOBLIN"], pieces("FIGHTER"));
     const fighter = unitAtV7(state, at(2, 3)).id;
     const clump = scoreCommandV7(view, move(fighter, at(3, 4)));
+    // Tuning 6 (`pulp_wars-w49.6`): the two Fighters commit against the one
+    // Goblin, so the Move carries the value of its attack; the priority
+    // still refuses it.
     expect(clump.priority).toBe(-1);
-    expect(clump.strategicValue).toBeLessThan(0);
     expect(
       scoreCommandV7(view, move(fighter, at(2, 4))).priority,
     ).toBeGreaterThanOrEqual(0);

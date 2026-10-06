@@ -1,9 +1,11 @@
-# Ruleset 7: the Human tech tree, rounds 3 to 5
+# Ruleset 7: the Human tech tree, rounds 3 to 6
 
 **Status:** rounds 3 and 4 were implemented on `pulp-wars-poc-7r47` (bead
 `pulp_wars-w49.3`); [round 5](#12-round-5) (section 12, bead
-`pulp_wars-w49.4`) is implemented on `pulp-wars-poc-7r48` and has not been
-played yet. Round 3 (sections 1 to 10) was played by hand three times;
+`pulp_wars-w49.4`) was implemented on `pulp-wars-poc-7r48` and played three times;
+[round 6](#13-round-6) (section 13, bead `pulp_wars-w49.6`, mostly the
+Normal AI) is implemented on `pulp-wars-poc-7r49` and has not been played
+yet. Round 3 (sections 1 to 10) was played by hand three times;
 [round 4](#11-round-4) (section 11) is what those games changed, and was
 played four times. Where they differ, the later section is the rule. [Tuning 1 and its round 2](RULESET_7_TUNING_1.md)
 changed numbers and two rules after eight hand-played games. This round
@@ -1130,16 +1132,10 @@ It builds no Field Defense and has no ability, so its card is its numbers.
 **Metallurgy is unchanged.** With Arms Industry a Swordsman costs 4 in a
 city with a Forge.
 
-**Art.** The Swordsman is drawn with the Guard's sprite and portrait and
-the board marks it with a small "S"; the Gallery lists it as a stand-in.
-The art bead must generate, for the Human faction in the approved unit
-style: the map sprite `UNIT:SWORDSMAN`, the portrait `PORTRAIT:SWORDSMAN`,
-and its own two entries in `src/assets/ruleset7-ui-art.ts` (they name the
-Guard's files now); then remove the two fallback lines in
-`src/assets/chibi-art-v7.ts` and the
-stand-in badge in the board renderer, and, if wanted, add the unit to the
-Showcase (it is left out so that the Showcase's 44 units and its tests did
-not move).
+**Art.** The Swordsman has its own map sprite and portrait since
+`pulp_wars-w49.9` (a closed great helm, full plate, a greatsword, no
+shield). At `7r48` it was drawn with the Guard's sprite and portrait and
+a small "S" on the board.
 
 ### 12.5 Decisions that are forks, for the user to overrule
 
@@ -1309,3 +1305,481 @@ seeds once each and reading only whether the event occurs: the Undead
 Frenzy and Lich splash tests, the Infect and Lifesteal round trip (seed
 2), and the income-cap match (now Humans against Dinosaurs, seed 7,
 because a Human mirror on that small map no longer runs 30 rounds).
+
+## 13. Round 6
+
+Round 5 was played by hand three times (Humans against the Goblin AI,
+Humans against the Undead AI, Goblins against the Human AI; 14 x 14
+dry-land maps). Two of the games were bloody: the player lost 27 and 33
+units, the AI trained 67 and 54, focused fire, and attacked in groups. The
+AI still lost all three, and the reports say why:
+
+- With 17 units against 5 behind a gate it walked up and did not attack;
+  when it did attack it fed three or four units a turn into two Marksmen.
+- The Undead AI never took a village (three were in reach), stayed on one
+  city with 3 Coins a turn and three unit slots, and was eliminated in
+  round 12. In its last turns it researched with an enemy army at its
+  capital and a free slot, and a unit next to the capital walked away.
+- Neither the Goblin nor the Human AI reached its strong units. The Goblin
+  AI researched Roads in round 5 and Marksmanship in round 22 and never
+  bought a unit dearer than 3 Coins; the Human AI never researched
+  Sawmilling or Chivalry. Income stayed at 9 to 11 Coins from round 9 to
+  round 18.
+- Small things that cost games: a Kaboom spent on one target, Guards in the
+  open in front of Bomb Chuckers, units trained onto a center under three
+  to six ranged units, a Raider idle beside the enemy capital for seven
+  rounds.
+
+The user's direction of 2026-10-06 for this round: **the AI first, the
+mechanics second.** A heuristic AI without search stays weak, so the user
+plays against many of them; "the problem is if even with overwhelming
+numbers the AI can't break through my ranks. You need to fix that." The
+game should be bloody, with constant turnover. Coins that pile up once a
+war is decided are not a problem to solve. Units that are overpowering in
+the right situation (the Knight's kill chains, Zombie conversion waves) are
+wanted and stay as they are. No new Coin sinks. The result is judged on
+constructed positions and by hand play, never by counting AI-against-AI
+outcomes.
+
+Round 6 is implemented on `pulp-wars-poc-7r49` (bead `pulp_wars-w49.6`).
+Where this section and sections 1 to 12 differ, this section is the rule.
+Nothing of it was played by hand yet. It had a correction pass after the
+root's review (the same bead): each faction's own research order and army
+mix so that the Undead field Zombies, Roads for a seat with three cities,
+the assault at a gate one tile wide, and a tighter lab; the first draft is
+named where it differed.
+
+### 13.1 The changes
+
+| #   | What                           | Round 5                                                                                        | Round 6                                                                                                                                                                                   |
+| --- | ------------------------------ | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Research price (a rule)        | the tier's base (5 / 7 / 9) plus **2** Coins for each technology owned beyond the first        | the base plus **1** Coin for each technology owned beyond the first (section 13.5)                                                                                                        |
+| 2   | Reward unit (a rule)           | appears on the center; a unit standing there is pushed to the first free tile in reading order | **the unit on the center stays**; the reward unit appears on a free tile of the city next to the center (section 13.7)                                                                    |
+| 3   | Damage from an unseen attacker | the victim's owner got no event: the unit lost HP, or died, without a line                     | the owner gets the damage and whether the unit died, nothing about the attacker (section 13.7)                                                                                            |
+| 4   | Normal AI: attacking           | an exchange in its favor, or a combined kill; otherwise it waits                               | **the assault**: it weighs the position, masses outside its reach, commits with numbers, fires at the anchors first, takes losing exchanges on a focus, goes through a gap (section 13.3) |
+| 5   | Normal AI: economy             | units before everything once an enemy city is known; the first research by economic value      | villages and city levels first, growth while no enemy is near, research toward each faction's signature units, the dear units bought (sections 13.4 and 13.5)                             |
+| 6   | Normal AI: discipline          |                                                                                                | the nine rules of section 13.6                                                                                                                                                            |
+| 7   | Labs                           | `LAB_SIEGE`, `LAB_BACKLINE`, `LAB_LATE`                                                        | three more: `LAB_BREAKTHROUGH`, `LAB_BREAKTHROUGH_GOBLIN`, `LAB_BREAKTHROUGH_UNDEAD` (section 13.2)                                                                                       |
+| 8   | Text harness                   |                                                                                                | what an enemy unit would deal to yours, the reason of a rejected move, free Monuments in plain words, hits from unseen attackers (section 13.7)                                           |
+
+Not changed, by the user's ruling: the Knight and Overrun, the Zombie, the
+Stockpile at 4 Coins, every unit and price. No Coin sink was added, and a
+city still cannot train with its center occupied. The Goblin Bomb Chucker
+(23 of the hand player's 55 purchases in the third game) is recorded for
+the Goblin pass and was not touched. AI head starts and alliances are
+separate work.
+
+The state shape did not change; a `7r48` save, replay, or session is
+refused as incompatible because rule 1 changes what a recorded research
+costs.
+
+### 13.2 The bar: numbers against a prepared line
+
+`LAB_BREAKTHROUGH` is the user's test as a staged position
+(`src/engine/v7/missions/lab-breakthrough.ts`, 16 x 16). You hold the only
+crossing between two lakes, eight tiles wide:
+
+```text
+     x 0123456789ABCDEF
+y  0   .....~~~~.......
+   2   .h...~~~~.....u.      h, H: your cities; u, U: the AI's
+   4   ......G.........      G: Guard on a Mountain
+   5   .....MS....f..u.      S: Swordsman in a Forest; M: Marksman
+   6   ....C.G.........      G: Guard on a Field Defense; C: Catapult
+   7   ...H.MS.........      H: your walled capital, a Guard on it
+   8   ......S.......U.
+   9   ....C.G.........
+  10   .....MS....f....
+  11   ......G.......u.
+  13   .h...~~~~.......
+  14   .....~~~~.....u.
+```
+
+14 units worth 63 Coins, three cities, 12 Coins a turn, Forestry (so the
+Forests are cover), Engineering, Sawmilling, and Fortification. The AI
+stands three tiles outside the reach of your Catapults and Marksmen with
+**twice the value** and three level-4 cities (13 Coins a turn):
+
+| Lab                       | Attacker | Its army                                                                                                | Units | Coins of units |
+| ------------------------- | -------- | ------------------------------------------------------------------------------------------------------- | ----- | -------------- |
+| `LAB_BREAKTHROUGH`        | Human    | 6 Swordsmen, 5 Fighters, 2 Guards, 5 Marksmen, 3 Catapults, 3 Knights, 2 Raiders                        | 26    | 125            |
+| `LAB_BREAKTHROUGH_GOBLIN` | Goblin   | 6 Orc Brutes, 6 Goblins, 7 Bomb Chuckers, 4 Rocket Carts, 4 Scrap Buggies, 5 Wolf Riders, 1 Orc Warboss | 33    | 125            |
+| `LAB_BREAKTHROUGH_UNDEAD` | Undead   | 6 Zombies, 6 Skeletons, 5 Banshees, 4 Liches, 4 Vampires, 3 Ghouls, 1 Necromancer                       | 29    | 127            |
+
+The AI seat has no directive: it plays the ordinary Normal policy.
+
+**The first draft was no bar.** The lab first gave the attacker two and a
+half to three times the value (154 to 172 Coins), five level-5 cities with
+a Barracks each (21 Coins a turn), and a defender script that never moved
+or trained. The round-5 policy, run from its source on that lab, took the
+capital too (rounds 6, 8, and 8 against rounds 5, 6, and 7). The lab above
+is the tightened one: twice the value, an economy like yours, and a
+defender that does what a player does cheaply.
+
+**The bounded run.** This is the one AI-driven run that is automated
+(`tests/unit/ruleset-v7-tuning-6.test.ts`). The player's side is a script:
+
+1. the shots that draw no retaliation (Catapults, Marksmen) go together at
+   the unit they kill, or else hurt most;
+2. every other attack that kills or deals at least what it takes;
+3. every city that can trains a Swordsman, or a Guard, or a Fighter, while
+   the Coins last (the capital cannot: its Guard stands on the center);
+4. a melee unit behind the line walks to the nearest gap in it.
+
+| Attacker | On the line | Capital taken | Attackers lost by then | The round-5 policy, same lab and script |
+| -------- | ----------- | ------------- | ---------------------- | --------------------------------------- |
+| Human    | round 2     | round 7       | 7                      | round 9, 9 lost                         |
+| Goblin   | round 2     | round 8       | 15                     | round 10, 17 lost                       |
+| Undead   | round 3     | round 8       | 12                     | round 9, 17 lost                        |
+
+(The losses are those of the whole run, to the end of the match or 16
+rounds.) The test pins the round the capital falls for the three
+attackers, so the round-5 policy fails it for each.
+
+**What this run does and does not show.** At twice the value **both
+policies break this line**; round 6 does it one to two rounds sooner and
+with fewer losses. That is the honest size of the difference on an
+eight-tile front against a script: a script does not counterattack, and a
+line of fourteen units with two Catapults does not hold eight tiles
+against twice its value whoever attacks it. What stopped the AI in the
+hand-played games was not this. It was a gate one tile wide (first game,
+rounds 9 to 18), in front of which the round-5 AI stood with 17 to 23
+units, attacked piecemeal, and pulled back. That is section 13.3a and its
+tests: a column of strong units now attacks the unit in the gate every
+turn until it falls, where the round-5 policy made no attack at all.
+Whether the line of a player who thinks holds is for the hand play of this
+round.
+
+### 13.3 How the AI attacks a position
+
+The rules, the numbers, and the priorities are in
+[Normal AI: the assault](../architecture/NORMAL_AI.md#the-assault-expansion-and-discipline-pulp_wars-w496).
+In plain words:
+
+- **It weighs the position.** Enemy units close to each other are one
+  position. A unit weighs four times its price plus its HP; a unit behind
+  Walls or on a Field Defense counts half as much again, in other cover a
+  quarter more.
+- **It masses first.** While its units within nine tiles outweigh the
+  position by half but too few of them have arrived (within five tiles),
+  those that have arrived wait outside every enemy's reach and the others
+  come up.
+- **It commits with numbers.** Once what has arrived outweighs the position
+  by half, every unit closes in in the same turn, whatever reach it steps
+  into. Once the battle is joined (a unit in contact, an enemy wounded) it
+  keeps going at equal weight, so the first losses do not call it off.
+  Without that advantage it plays as in round 5: only a good exchange or a
+  kill.
+- **It fires before it charges.** The shots from two or more tiles go
+  first, at the anchors (a unit in cover or on a fortification, a Guard);
+  then the melee units attack; a kill by a melee unit takes the tile.
+- **It takes losing exchanges, on a focus.** A committed unit attacks
+  although it takes more than it deals when the group can take half the
+  target's HP this turn, when the battle is joined, or when the unit is
+  lost anyway. It never makes an attack that kills it without a kill.
+- **It goes through.** A fast unit that can reach a Marksman, a Catapult,
+  or a support unit does so before the line fights (a Raider goes through a
+  one-tile gap; a Knight makes its own with a kill). A unit that can step
+  onto an empty enemy center does, and captures.
+- **It does not walk away.** A committed unit makes no ordinary move that
+  takes it farther from the position, a wounded one attacks before it
+  recovers, and new units march to the same front.
+
+Worked example (a test): a Guard on a Field Defense with a Marksman behind
+it weighs 71. Three Fighters (60) do not attack it: a Fighter deals 4 and
+takes 8. Six Fighters (120) commit; three can reach it in the first turn
+and take 12 of its 17 HP, losing more HP than they take; the Guard is dead
+in the second turn.
+
+### 13.3a A gate one tile wide
+
+A single-file front (every land route to the enemy's cities runs through
+the same corridor, and a garrison in its own territory holds its far end)
+has had its own siege since `pulp_wars-68k.6`: line up, bring siege
+units, fire at one holder, rotate the wounded head out, and attack by hand
+only a holder at half HP or less, or once 30 unspent Coins have piled up.
+A seat without siege units and without a pile of Coins never attacked. In
+the first draft of this round the assault of section 13.3 was simply
+switched off there, which left exactly the user's complaint in place.
+
+Now, for a seat that plays the army rules:
+
+- **Numbers start the assault.** When the units that have come up outweigh
+  the garrison by half (the same weights as in section 13.3), the siege is
+  in its assault whatever the treasury holds: siege and ranged units take
+  their firing tiles inside enemy reach and fire first at one holder; the
+  head of the column attacks the holder in front of it **every turn** it
+  survives the exchange, healthy holder or not; a worn head rotates out
+  and the next strongest unit takes its place; the column goes through as
+  soon as the mouth is open.
+- **Explosives.** With numbers, a Mountain next to the corridor or to a
+  holder is blasted before the column attacks (when the blast hits no own
+  unit but the one that sets it): it hurts the holders and leaves ground
+  the column can use. This is the one place the AI blasts outside its own
+  territory.
+- **Another way round.** A front is single-file only while no other
+  explored route exists; the scouts of the campaign plan keep exploring,
+  and the front dissolves the turn a second route is seen. Nothing new was
+  added for this.
+
+Tests (`tests/unit/ruleset-v7-chokepoint-ai.test.ts`, "numbers at the
+gate"): five Swordsmen and no Coins against a healthy Guard in the gate
+with a Fighter behind it attack in the first turn (17 to 8 HP) and kill
+it in the second; with Explosives the Mountain beside the gate is blasted
+first; two Guards against the same gate do not attack (no numbers: the old
+siege). The twenty older tests of the siege pass unchanged.
+
+### 13.4 Expansion and growth
+
+| Seen in round 5                                                                              | Rule                                                                                                                                                                                                         |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| a Ghoul beside a free village attacked a Fighter instead; one city, 3 Coins a turn, all game | A unit that can step onto a free village does, before any exchange that is not a kill, **stays on it**, and captures next turn. Until the seat has three cities its first units are trained before research. |
+| income flat at 9 to 11 Coins for ten rounds; 4 to 8 Coins idle at the unit limit             | While no enemy is within four tiles of a center, a city level, a harvest, or a hunt is bought **before** training; a Monument (free) at once.                                                                |
+| every Coin went to units, cities stayed at level 2 and 3                                     | With two thirds of the unit slots filled and no enemy near, Farms, Lumber Camps, Mines, and Markets are bought before the army is topped up. Below two thirds, or with an enemy near, units come first.      |
+| the level-4 reward                                                                           | Boom (3 population), not the 6 Coins.                                                                                                                                                                        |
+
+Two diagnostic matches were read for behavior only (14 x 14, Dry Land;
+Humans against Goblins, seed 1, and Goblins against Undead, seed 3): the
+Human seat had three cities in round 5 and ten in round 18, the Goblin seat
+of the second match four in round 10 and seven in round 20. In both the
+other seat was boxed in on two or three cities and lost; that is not
+evidence of anything.
+
+### 13.5 Research: the price, the order, and the dear units
+
+**The price** (`scripts/human-tuning-analysis-v7.ts round6`). The base by
+tier is unchanged (5 / 7 / 9); each technology already owned beyond the
+first adds 1 Coin, not 2.
+
+| It is the player's | Tier 1: round 5 / round 6 | Tier 2  | Tier 3  |
+| ------------------ | ------------------------- | ------- | ------- |
+| 2nd                | 5 / 5                     | 7 / 7   | 9 / 9   |
+| 3rd                | 7 / 6                     | 9 / 8   | 11 / 10 |
+| 4th                | 9 / 7                     | 11 / 9  | 13 / 11 |
+| 5th                | 11 / 8                    | 13 / 10 | 15 / 12 |
+| 6th                | 13 / 9                    | 15 / 11 | 17 / 13 |
+| 8th                | 17 / 11                   | 19 / 13 | 21 / 15 |
+| 10th               | 21 / 13                   | 23 / 15 | 25 / 17 |
+| 12th               | 25 / 15                   | 27 / 17 | 29 / 19 |
+| 16th               | 33 / 19                   | 35 / 21 | 37 / 23 |
+| 20th               | 41 / 23                   | 43 / 25 | 45 / 27 |
+
+The whole land tree of 20 technologies costs 314 Coins in tier order (485
+in round 5). In the first game the hand player's tenth technology would
+have been Chivalry at 23 Coins; it is 17 now.
+
+**The order** is each faction's own: its signature and best-value units
+come first (`ARMY_RESEARCH_ROLES_V7`). The first draft of this round used
+one order for all three (ranged, siege, breakthrough, line, defender,
+support), which put the Zombie ninth and the Necromancer last: an Undead
+AI that almost never fielded the units that make it Undead. From a
+Gathering opener (`scripts/human-tuning-analysis-v7.ts round6`):
+
+| #   | Humans                      | Price | Undead                          | Price | Goblins                        | Price |
+| --- | --------------------------- | ----- | ------------------------------- | ----- | ------------------------------ | ----- |
+| 2   | Hunting                     | 5     | Drill: **Zombie**               | 5     | Hunting                        | 5     |
+| 3   | Marksmanship: **Marksman**  | 8     | Hunting                         | 6     | Marksmanship: **Bomb Chucker** | 8     |
+| 4   | Drill: **Guard**            | 7     | Marksmanship: **Banshee**       | 9     | Scouting: **Wolf Rider**       | 7     |
+| 5   | Forestry                    | 10    | Administration: **Necromancer** | 10    | Forestry                       | 10    |
+| 6   | Sawmilling: **Catapult**    | 13    | Forestry                        | 11    | Sawmilling: **Rocket Cart**    | 13    |
+| 7   | Scouting: Raider            | 10    | Sawmilling: **Lich**            | 14    | Raiding                        | 12    |
+| 8   | Raiding                     | 13    | Scouting: Ghoul                 | 11    | Chivalry: **Scrap Buggy**      | 15    |
+| 9   | Chivalry: **Knight**        | 16    | Raiding                         | 14    | Drill: **Orc Brute**           | 12    |
+| 10  | Engineering: **Swordsman**  | 15    | Chivalry: **Vampire**           | 17    | Administration: **Warboss**    | 15    |
+| 11  | Administration: **Captain** | 16    |                                 |       |                                |       |
+|     | **Total**                   | 113   |                                 | 97    |                                | 97    |
+
+So the Undead have the Zombie with the first technology they buy, the
+Banshee with the third, and the Necromancer with the fourth; the Goblins
+have the Bomb Chucker with the second and the Wolf Rider with the third;
+the Humans have the Marksman with the second and the Guard, a cheap anchor,
+with the third, and pay for that with the Catapult one technology later
+(43 Coins in all instead of 34).
+
+**Roads.** A seat with three or more cities researches Roads (by Scouting)
+once it can train the first two units of its order, and Commerce after the
+last. With fewer cities it does not. (In the first draft Roads was on no
+order, and no unit took a Road step in three 26-round test matches.)
+
+**The army's mix** is per faction too (`armySharesV7`): line, defender,
+ranged, siege, breakthrough in percent.
+
+| Faction | Line | Defender         | Ranged                 | Siege | Breakthrough | Also                                       |
+| ------- | ---- | ---------------- | ---------------------- | ----- | ------------ | ------------------------------------------ |
+| Humans  | 35   | 15               | 20                     | 15    | 15           | one Raider from five units                 |
+| Undead  | 20   | **30** (Zombies) | 20                     | 15    | 15           | one Ghoul from five units                  |
+| Goblins | 30   | 10               | **30** (Bomb Chuckers) | 15    | 15           | a Wolf Rider per four units, at most three |
+
+An Undead army that grows from two Skeletons to twelve units buys four
+Zombies, two Banshees, two Liches, and two Vampires (a test).
+
+**How it uses Zombies.** What a Zombie kills rises as a Zombie, so cheap
+infantry is its prey: an attack on a line unit of at most 2 Coins (a
+Fighter, a Skeleton, a Goblin) is worth more to it than any other (12
+strategic value), it walks toward the nearest such unit and not toward the
+nearest enemy, and of the tiles it could step to it prefers the one fewer
+enemy ranged and siege units reach (5 per unit). It is a preference: where
+every tile is under fire it still advances.
+
+**When it researches.** A technology is _due_ while the seat's city levels
+add up to at least twice the technologies it owns beyond the first: two
+city levels buy one technology, so research and growth advance together.
+A due technology is bought before training when the Coins are there, no
+enemy is within four tiles of a center, and the seat has its three cities
+(or no city that can train). With an enemy near, units come first, as in
+round 5. Training is never held back to save for a technology; when every
+slot is full the Coins collect for it by themselves.
+
+**The dear units.** A role whose class the army is short of gets 20 points
+per Coin of its price, so with the Coins in hand the first city to train
+buys the Catapult, the Knight, the Rocket Cart, the Scrap Buggy, the Lich,
+or the Vampire and not another 1- or 2-Coin body. In the two
+diagnostic matches the Human seat researched Marksmanship in round 5,
+trained its first Catapult in round 8 and its first Knights in round 18,
+and stood with 5 Catapults and 4 Knights in round 20; the Goblin seat
+trained Bomb Chuckers from round 8 and a Rocket Cart in round 10 and stood
+with 5 Rocket Carts and 2 Scrap Buggies in round 20 (in the hand-played
+games of round 5: none of either).
+
+### 13.6 Discipline
+
+| Seen in round 5                                                                      | Rule                                                                                                                                                                            |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| research with an enemy army at the capital and a free slot                           | With an enemy within three tiles of a center, **nothing but units** is bought while a city can still train this turn.                                                           |
+| the unit on the center attacked, so the city could not train                         | The unit on a center does not chip while it can still step aside: it steps aside, the city trains, and it attacks from the new tile if it can.                                  |
+| a full-HP Zombie did not attack a wounded Fighter standing on its capital            | An enemy unit on an own center is attacked **whatever the exchange**.                                                                                                           |
+| a unit next to the besieged capital walked away                                      | A unit within four tiles of a center with an enemy at its gates does not walk away from it and comes nearer.                                                                    |
+| one unit a turn trained onto a center inside the reach of three to six Bomb Chuckers | A city does not train onto a center two or more enemy ranged units can hit while another city can train (unless an enemy capturer can walk onto that center next turn).         |
+| pairs and threes standing together under splash                                      | A move that ends next to own units inside a splash attacker's reach is worth less than one that does not.                                                                       |
+| Guards in the open in front of ranged units                                          | A Human Guard does not step into the open inside the reach of an enemy ranged or siege unit (a center, a Field Defense, a Mountain, or a Forest with Forestry is not the open). |
+| a Kaboom on one unit, twice on the same Fighter                                      | A Kaboom only for a kill or on two or more enemies.                                                                                                                             |
+| a Raider idle beside the enemy capital for seven rounds                              | A unit alone among enemies with nothing to attack goes back to the others; with Raiding it pillages an improvement in reach.                                                    |
+
+"Never end a turn with the Coins for a useful unit and a free slot in a
+city that can train" holds by the step aside of round 5 and is pinned by a
+test with two garrisoned cities. What still leaves Coins unspent is the
+rule that a city trains once a turn (the first game's 10 to 16 idle Coins
+were a seat with two cities that could train and a roster that costs at
+most 3): that is the pile-up the user ruled is not a problem.
+
+### 13.7 Two defects and the text harness
+
+- **A hit from an unseen attacker.** An attacker on a tile the victim's
+  owner has not explored (a Bomb Chucker three tiles away) produced no
+  event for that owner: the unit lost HP, or died with a bare death line.
+  The owner now receives the hidden-source damage event that splash from
+  an unseen attacker already used, with the unit that was hit first in its
+  list: the amount and whether it died. It names no attacker and no tile
+  of the attacker. The browser shows the hit on the unit as it shows
+  splash; the text harness prints
+  `HIT_UNSEEN u12(S0 Guard) @7,2 takes 6 from a source you do not see (hp 17->11)`.
+- **A reward unit and the garrison.** A Militia or Scouts unit used to
+  take the center and push the unit standing there to the first free tile
+  in reading order, without the player choosing; a wounded Swordsman was
+  pushed into Bomb Chucker range that way. The unit on the center now
+  stays, and the reward unit appears on a free tile next to the center, one
+  of the city's own territory first. Only when no tile next to the center
+  is free does the old rule apply (the reward unit takes the center).
+- **Text harness** (`docs/validation/TEXT_PLAY.md`): `options --unit` on
+  an enemy unit lists what it would deal to each of your units it can
+  reach next turn, and on your own unit what each visible enemy would deal
+  to it (an estimate from public information); a rejected move says why
+  (the unit has moved, the tile is occupied, too far, or the three rules
+  that end a move early); a free Monument is one plain line at the top of
+  `options` and under `options --city`; `lab` knows the three breakthrough
+  labs.
+
+### 13.8 Decisions that are forks, for the user to overrule
+
+1. **An unfavourable exchange is taken on a focus, not always.** With a
+   clear advantage the AI still does not send a Fighter alone at a Guard
+   (4 dealt for 8 taken): it does so when the group can take half the
+   target's HP that turn, when the battle is joined, or when the unit is
+   lost anyway. The alternative, every committed unit attacks whatever it
+   can reach, was tried first and burned units for hits the Guard healed
+   back in its own land.
+2. **"Clear advantage" is half as much again by weight** (four times the
+   price plus the HP, fortified units counted higher), and equal weight
+   once the battle is joined. A higher bar keeps the AI out of fights it
+   would win slowly; a lower one makes it bleed against walls.
+3. **"Nothing but units" ends when every city that can train has trained
+   that turn.** With an enemy three tiles from a center and Coins left
+   after training, the AI still researches or builds. Holding every Coin
+   until the next turn was the literal reading; it would freeze a seat's
+   economy whenever one raider stands near one city.
+4. **Research is tied to city levels** (two levels a technology). It makes
+   a small seat grow before it researches and a large one research at
+   once. A fixed schedule by round would be simpler to explain and blind
+   to how the game is going.
+5. **Training is never held back for a technology or a dear unit.** The
+   dear unit is bought when the Coins are there at the start of the turn;
+   a poor seat still fills its slots with cheap units. Saving a turn for a
+   Knight is the alternative.
+6. **Each faction's research order is a fixed list.** It does not look at
+   the enemy: an Undead seat buys Drill first against Goblins and against
+   Liches alike. The Human Catapult is now the sixth technology, not the
+   fifth, because the Guard comes before it.
+7. **The reward unit beside the center** stands in the open for a turn,
+   exhausted. The alternative, a choice of the tile by the player, is a
+   new command.
+8. **The lab's attacker has twice the Coins of units** and an economy like
+   the defender's. At that ratio both policies still win it against a
+   script; a lab that the round-5 policy loses outright would need a
+   defender that counterattacks, which is a second AI, or a gate (the
+   tests of section 13.3a).
+9. **At a gate, numbers attack every turn, whatever the exchange**, as long
+   as the attacker survives it. Against a Guard that recovers 4 HP a turn
+   in its own land a column of Fighters loses more than it deals; the
+   strongest unit goes first to make that rare, and the alternative is
+   the waiting the user ruled out.
+10. **A third of the Undead army is Zombies.** That is a guess at "a real
+    share"; the number is one line in `src/ai/v7-army.ts`.
+
+### 13.9 What is still open
+
+- The AI's assault was checked on constructed positions and one scripted
+  defender. A line that is two deep, a defender that counterattacks into
+  the massing units, and a position it cannot see whole are for the hand
+  play.
+- It does not withdraw a wounded unit from a committed fight, does not
+  hire, blasts only beside a gate, and does not build a Field Defense
+  under fire.
+- At a gate the column still attacks one unit at a time: it does not
+  count what stands behind the holder beyond the garrison within three
+  tiles, and a seat without Explosives has no way to widen the gap.
+- A seat that loses the early war is boxed in on one or two cities and
+  cannot recover: the rules above do not help a seat with 3 Coins a turn.
+- The Goblin Bomb Chucker is still the one best Goblin unit, and the AI
+  now buys more of them.
+- In the one diagnostic match read after the correction pass (Undead
+  against Humans, 14 x 14, seed 1) the Human seat took three cities early,
+  so it researched Scouting and Roads before Forestry and had its first
+  Catapult only in round 25: Roads delays the siege unit of a seat whose
+  income stays low. The Undead seat had Drill in round 3, five Zombies in
+  round 12, Necromancers in round 22, Liches and Vampires in round 28.
+
+### 13.10 Tests
+
+`tests/unit/ruleset-v7-tuning-6.test.ts`: the identity; the research price
+(the table, the public tree, the engine's charge, the chain to Chivalry);
+the assault (the three modes from strengths, the weights, three Fighters
+that do not attack a Guard and six that kill it in two turns, staging and
+the common advance, the Catapult on the anchor before the melee, the
+Raider through the gap, shooters first for a ranged unit, a wounded unit
+that keeps attacking); expansion and growth (the village before an
+exchange and the unit that stays on it, harvest before training, pressed,
+the free Monument, Boom at level 4); research (due, the order for the
+three factions with its signature units first, Roads with three cities,
+due research before training, training first on one city); the Undead and
+their Zombies (a third of a growing army, the cheap infantry as a target,
+the tile the Marksman does not reach); the dear units; discipline (two cities that both train, the enemy
+on the own center, the garrison that steps aside, the covered center,
+splash spacing, the Guard and the open, the Kaboom, the lone unit, the
+second unit at the gates); the unseen attacker's damage (the event, the
+browser's damage step, the death); the reward unit beside the center; and
+the three labs with their bounded runs. The gate is in
+`tests/unit/ruleset-v7-chokepoint-ai.test.ts` ("numbers at the gate").
+
+The older tests of the changed rules were updated in place, each with a
+note; the recorded matches and decision pins that tests read were
+recomputed.

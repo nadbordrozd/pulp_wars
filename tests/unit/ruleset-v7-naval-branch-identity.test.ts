@@ -246,14 +246,14 @@ describe("the five-node Naval branch in every tree", () => {
         { kind: "NAVAL_TRAINING_DISCOUNT", coins: 2 },
       ]);
     }
-    // Costs follow the ordinary tier formula (tier 3 base 9 since 7r41; the
-    // per-city steps 2 and 2 since tuning 1, 7r46).
+    // Costs follow the ordinary tier formula (tier 3 base 9 since 7r41; a
+    // step per technology owned since tuning 4, 1 Coin since tuning 6).
     expect(
-      [1, 2, 3].map((cities) => technologyResearchCostV7(2, cities)),
-    ).toEqual([7, 9, 11]);
+      [1, 2, 3].map((owned) => technologyResearchCostV7(2, owned)),
+    ).toEqual([7, 8, 9]);
     expect(
-      [1, 2, 3].map((cities) => technologyResearchCostV7(3, cities)),
-    ).toEqual([9, 11, 13]);
+      [1, 2, 3].map((owned) => technologyResearchCostV7(3, owned)),
+    ).toEqual([9, 10, 11]);
   });
 
   it("registers the same Submarine and the rammer Patrol Boat for every faction", () => {
@@ -397,8 +397,8 @@ describe("the five-node Naval branch in every tree", () => {
     });
     const second = applyResearch(first.state, "SUBMERSIBLES");
     if (!second.accepted) throw new Error(second.error.code);
-    // Tier 3 as the third technology: 9 + 2 (tuning 4).
-    expect(second.events[0]).toMatchObject({ tech: "SUBMERSIBLES", cost: 11 });
+    // Tier 3 as the third technology: 9 + 1 (tuning 6; 9 + 2 before).
+    expect(second.events[0]).toMatchObject({ tech: "SUBMERSIBLES", cost: 10 });
     // The stored list keeps the frozen technology order.
     expect(
       second.state.players.find((player) => player.id === actor)

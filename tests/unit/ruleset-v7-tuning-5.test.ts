@@ -66,7 +66,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 5 (`pulp_wars-w49.4`, identity `pulp-wars-poc-7r48`;
+ * Tuning 5 (`pulp_wars-w49.4`, identity `pulp-wars-poc-7r49`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 12): the Normal AI's army
  * play, the Human Guard open to ranged attacks, the Swordsman, the removal
  * of Drill, the Blast Mountain's setter, the Land Grant's price, and the
@@ -149,13 +149,19 @@ const field = (
   });
 
 describe("tuning 5 identity", () => {
-  it("is 7r48 after 7r47, with the 7r47 save key obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r47");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r48.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+  // Tuning 5 took 7r48; tuning 6 (tests/unit/ruleset-v7-tuning-6.test.ts)
+  // took 7r49, so 7r48 is the last prior identity.
+  it("was 7r48 after 7r47, with both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r49");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r47",
+      "pulp-wars-poc-7r48",
+    ]);
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r49.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r47.current",
-    );
+      "pulpWars.save.v7r48.current",
+    ]);
   });
 });
 
@@ -608,9 +614,14 @@ describe("Normal AI army play: the composition", () => {
       { seat: 0, role: "FIGHTER", at: at(9, 8) },
     ]);
     expect(best("ORIGINAL", ["FIGHTER", "GUARD"], fighters)).toBe("GUARD");
+    expect(best("ORIGINAL", ["FIGHTER", "GUARD", "MARKSMAN"], fighters)).toBe(
+      "MARKSMAN",
+    );
+    // Tuning 6 (`pulp_wars-w49.6`): of two classes the army lacks, the
+    // dearer unit is bought first (the Marksman was).
     expect(
       best("ORIGINAL", ["FIGHTER", "GUARD", "MARKSMAN", "CATAPULT"], fighters),
-    ).toBe("MARKSMAN");
+    ).toBe("CATAPULT");
     // The same holds for the Undead and Goblin rosters.
     expect(best("UNDEAD", ["FIGHTER", "GUARD"], guards)).toBe("FIGHTER");
     expect(best("GOBLIN", ["FIGHTER", "GUARD"], guards)).toBe("FIGHTER");

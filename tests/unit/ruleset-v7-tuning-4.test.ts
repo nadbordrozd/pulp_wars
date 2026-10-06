@@ -109,7 +109,7 @@ const moveTargets = (state: GameStateV7, from: CoordV7): readonly string[] => {
 
 describe("tuning 4 keeps the unpublished identity", () => {
   it("is 7r47", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r49");
   });
 });
 
@@ -145,11 +145,13 @@ describe("research is priced by the technologies owned", () => {
     };
   };
 
-  it("is the tier base plus 2 for each technology owned beyond the first", () => {
+  // Tuning 6 (`pulp_wars-w49.6`): the step is 1 Coin a technology (2 in
+  // tunings 4 and 5); the numbers below are the current ones.
+  it("is the tier base plus a step for each technology owned beyond the first", () => {
     expect(TECHNOLOGY_RESEARCH_COST_V7).toEqual({
-      1: { base: 5, step: 2 },
-      2: { base: 7, step: 2 },
-      3: { base: 9, step: 2 },
+      1: { base: 5, step: 1 },
+      2: { base: 7, step: 1 },
+      3: { base: 9, step: 1 },
     });
     expect(playerTechnologyResearchCostV7(1, 0)).toBe(0);
     expect(costs([]).cost("HUNTING")).toBe(0);
@@ -157,9 +159,9 @@ describe("research is priced by the technologies owned", () => {
     expect(one.cost("DRILL")).toBe(5);
     expect(one.cost("FORESTRY")).toBe(7);
     const two = costs(["HUNTING", "FORESTRY"]);
-    expect(two.cost("DRILL")).toBe(7);
-    expect(two.cost("MARKSMANSHIP")).toBe(9);
-    expect(two.cost("SAWMILLING")).toBe(11);
+    expect(two.cost("DRILL")).toBe(6);
+    expect(two.cost("MARKSMANSHIP")).toBe(8);
+    expect(two.cost("SAWMILLING")).toBe(10);
     const seven = costs([
       "GATHERING",
       "HUNTING",
@@ -169,8 +171,8 @@ describe("research is priced by the technologies owned", () => {
       "RAIDING",
       "DRILL",
     ]);
-    expect(seven.cost("CHIVALRY")).toBe(21);
-    expect(seven.cost("FARMING")).toBe(19);
+    expect(seven.cost("CHIVALRY")).toBe(15);
+    expect(seven.cost("FARMING")).toBe(13);
   });
 
   it("does not read the number of cities", () => {
@@ -197,7 +199,7 @@ describe("research is priced by the technologies owned", () => {
     const result = applied(captured, { kind: "RESEARCH", tech: "SAWMILLING" });
     expect(result.events[0]).toMatchObject({
       kind: "TECH_RESEARCHED",
-      cost: 11,
+      cost: 10,
     });
   });
 });
@@ -617,8 +619,10 @@ describe("Blast Mountain outside the territory", () => {
 });
 
 describe("the Human labs", () => {
+  // The three labs of tuning 4. Tuning 6 added the breakthrough labs
+  // (tests/unit/ruleset-v7-tuning-6.test.ts), two of which are not mirrors.
   const labs = MISSION_REGISTRY_V7.filter((mission) =>
-    mission.id.startsWith("LAB_"),
+    ["LAB_SIEGE", "LAB_BACKLINE", "LAB_LATE"].includes(mission.id),
   );
 
   it("are three hidden mirror fixtures", () => {
@@ -626,6 +630,18 @@ describe("the Human labs", () => {
       "LAB_SIEGE",
       "LAB_BACKLINE",
       "LAB_LATE",
+    ]);
+    expect(
+      MISSION_REGISTRY_V7.filter((mission) =>
+        mission.id.startsWith("LAB_"),
+      ).map((mission) => mission.id),
+    ).toEqual([
+      "LAB_SIEGE",
+      "LAB_BACKLINE",
+      "LAB_LATE",
+      "LAB_BREAKTHROUGH",
+      "LAB_BREAKTHROUGH_GOBLIN",
+      "LAB_BREAKTHROUGH_UNDEAD",
     ]);
     for (const mission of labs) {
       expect(mission, mission.id).toMatchObject({ hidden: true, mirror: true });

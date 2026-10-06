@@ -407,10 +407,34 @@ export function projectEventsV7(
           beforeState.units.find((unit) => unit.id === entry.unitId)
             ?.ownerId === viewerId,
       );
-      if (ownedSplash.length > 0)
+      // Tuning 6 (`pulp_wars-w49.6`): the viewer's own unit that an
+      // attacker it cannot see hit directly is reported the same way, first
+      // in the list: what it lost and whether it died, nothing about the
+      // attacker. (A unit shot from an unexplored tile used to lose HP, or
+      // die, with no event at all for its owner.)
+      const target = beforeState.units.find(
+        (unit) => unit.id === event.preview.targetUnitId,
+      );
+      const ownedTarget =
+        target !== undefined &&
+        target.ownerId === viewerId &&
+        (event.preview.damageToDefender > 0 ||
+          event.preview.defenderShieldDamage > 0 ||
+          event.preview.defenderDies)
+          ? [
+              {
+                unitId: target.id,
+                at: target.at,
+                damage: event.preview.damageToDefender,
+                dies: event.preview.defenderDies,
+                shieldDamage: event.preview.defenderShieldDamage,
+              },
+            ]
+          : [];
+      if (ownedTarget.length + ownedSplash.length > 0)
         projected.push({
           kind: "COMBAT_SPLASH_DAMAGE",
-          splash: ownedSplash,
+          splash: [...ownedTarget, ...ownedSplash],
         });
       continue;
     }

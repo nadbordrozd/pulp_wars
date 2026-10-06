@@ -2711,18 +2711,18 @@ describe("ruleset-7 revision-19 Eggs and reward displacement", () => {
     const occupant = unitAtV7(state, { x: 8, y: 8 });
     const eggs = state.units.filter((unit) => unit.form === "EGG");
     const result = applyOkV7(state, actor, command);
-    const displaced = result.events.find(
-      (event) => event.kind === "UNIT_SPAWN_DISPLACED",
-    );
-    expect(displaced).toMatchObject({
-      displacedUnitId: occupant.id,
-      from: { x: 8, y: 8 },
-      to: { x: 9, y: 7 },
-    });
+    // Tuning 6 (`pulp_wars-w49.6`, 7r49): the Shaman stays on the center
+    // and the Caveman appears on the first free cell beside it, past the
+    // two Eggs (before, the Caveman took the center and the Shaman was
+    // displaced to that cell).
+    expect(
+      result.events.some((event) => event.kind === "UNIT_SPAWN_DISPLACED"),
+    ).toBe(false);
     expect(result.state.units.filter((unit) => unit.form === "EGG")).toEqual(
       eggs,
     );
-    expect(unitAtV7(result.state, { x: 8, y: 8 })).toMatchObject({
+    expect(unitAtV7(result.state, { x: 8, y: 8 })).toEqual(occupant);
+    expect(unitAtV7(result.state, { x: 9, y: 7 })).toMatchObject({
       role: "FIGHTER",
       form: "LAND",
     });

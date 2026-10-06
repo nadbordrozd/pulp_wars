@@ -1308,6 +1308,11 @@ export type ProjectedEggLaidV7 = Omit<
   "cost"
 > & { readonly cost: null };
 
+/**
+ * Damage to the viewer's own units from a source it cannot see: the splash
+ * of a hidden attack and, since tuning 6 (`pulp_wars-w49.6`), the unit
+ * that attack hit directly (the first entry). It names no attacker.
+ */
 export interface ProjectedCombatSplashDamageV7 {
   readonly kind: "COMBAT_SPLASH_DAMAGE";
   readonly splash: readonly CombatSplashEntryV7[];

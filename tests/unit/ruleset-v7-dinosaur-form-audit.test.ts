@@ -612,7 +612,12 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // center so the city trains, the garrison, the unit an army Move is
     // valued for, and a hunted unit are land-form units (an Egg never moves
     // or garrisons, and an embarked unit keeps the naval rules).
-    "src/ai/v7.ts": 28,
+    // Tuning 6 (`pulp_wars-w49.6`): the unit that steps aside while the
+    // seat expands, the units weighed in an assault, an attack valued for a
+    // committed unit, the exposed Guard, and the unit that regroups are
+    // land-form units (an Egg neither moves nor attacks, and an embarked
+    // unit keeps the naval rules).
+    "src/ai/v7.ts": 34,
     // Tuning 5: the army count takes land-form units only (an Egg and an
     // embarked unit are in no fighting class).
     "src/ai/v7-army.ts": 1,

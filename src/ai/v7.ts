@@ -114,10 +114,44 @@ import {
   ARMY_SUPPORT_RADIUS_V7,
   ARMY_TRAINING_PRIORITY_V7,
   ARMY_VACATE_PRIORITY_V7,
+  ARMY_BREAKTHROUGH_MOVE_PRIORITY_V7,
+  ARMY_CHEAP_GROWTH_COINS_V7,
+  ARMY_COMING_RADIUS_V7,
+  ARMY_COMMIT_ADVANCE_PRIORITY_V7,
+  ARMY_COMMIT_FIRE_MOVE_PRIORITY_V7,
+  ARMY_COMMIT_FIRE_PRIORITY_V7,
+  ARMY_COMMIT_MELEE_MOVE_PRIORITY_V7,
+  ARMY_COMMIT_MELEE_PRIORITY_V7,
+  ARMY_DUE_RESEARCH_PRIORITY_V7,
+  ARMY_EXPANSION_CITIES_V7,
+  ARMY_FRAGILE_TARGET_VALUE_V7,
+  ARMY_GROWTH_PRIORITY_V7,
+  ARMY_LATE_VILLAGE_PRIORITY_V7,
+  ARMY_NEAR_RADIUS_V7,
+  ARMY_NEAR_THREAT_RADIUS_V7,
+  ARMY_POSITION_LINK_V7,
+  ARMY_PRESSED_RADIUS_V7,
+  ARMY_ALONE_RADIUS_V7,
+  ARMY_COVERED_CENTER_SHOOTERS_V7,
+  ARMY_RAID_PRIORITY_V7,
+  ARMY_RALLY_PRIORITY_V7,
+  ARMY_REGROUP_PRIORITY_V7,
+  ARMY_RESEARCH_ROLES_V7,
+  ARMY_ROADS_AFTER_ROLES_V7,
+  ARMY_ROADS_CITIES_V7,
+  ARMY_RETAKE_CENTER_PRIORITY_V7,
+  ARMY_SPLASH_SPACING_VALUE_V7,
+  ARMY_TOPUP_TRAINING_PRIORITY_V7,
+  ARMY_UNDUE_RESEARCH_PRIORITY_V7,
+  ARMY_VILLAGE_PRIORITY_V7,
+  armyAssaultModeV7,
   armyClassV7,
   armyCountsV7,
   armyPlayFactionV7,
+  armyResearchDueV7,
   armyRoleScoreV7,
+  armyUnitStrengthV7,
+  type ArmyAssaultModeV7,
   type ArmyCountsV7,
 } from "./v7-army";
 import {
@@ -658,6 +692,18 @@ interface PolicyContextV7 {
   armyAttackers: ReadonlySet<UnitId> | null;
   /** Army play: the engagement of each own unit by destination (cached). */
   readonly armyEngagements: Map<UnitId, ReadonlyMap<string, ArmyEngagementV7>>;
+  /** Tuning 6: the hostile positions and their modes (cached). */
+  armyAssault: ArmyAssaultV7 | undefined;
+  /** Tuning 6: hostile land units by distance to the own centers (cached). */
+  armyThreatDistance: number | undefined;
+  /** Tuning 6: the tiles a visible hostile splash attacker reaches (cached). */
+  armySplashReach: ReadonlySet<string> | undefined;
+  /** Tuning 6: the tiles a visible hostile ranged unit reaches (cached). */
+  armyRangedReach: ReadonlyMap<string, number> | undefined;
+  /** Tuning 6: the own centers with an enemy at the gates (cached). */
+  armyPressedCenters: readonly CoordV7[] | undefined;
+  /** Tuning 6: the units a committed assault focuses this turn (cached). */
+  armyFocus: ReadonlySet<UnitId> | undefined;
   /** `pulp_wars-9s0.1`: embarked units with no way forward (cached). */
   readonly strandedTransports: Map<UnitId, boolean>;
   redevelopmentMayChangeImprovement: Map<string, boolean>;
@@ -1627,6 +1673,12 @@ function bareContext(
     armyAttackers: null,
     armyTrainingScoreByCity: new Map(),
     armyEngagements: new Map(),
+    armyAssault: undefined,
+    armyThreatDistance: undefined,
+    armySplashReach: undefined,
+    armyRangedReach: undefined,
+    armyPressedCenters: undefined,
+    armyFocus: undefined,
     strandedTransports: new Map(),
     redevelopmentMayChangeImprovement: new Map(),
     sharedCityContextPrepared: false,
@@ -2873,6 +2925,45 @@ export function inspectNormalNavalPlanV7(view: PlayerViewV7): {
   };
 }
 
+/**
+ * Tuning 6 (`pulp_wars-w49.6`): the army facts of one decision, for tests
+ * and diagnostics: the assault mode of every own fighting unit that
+ * belongs to a hostile position, the research target and whether it is
+ * due, and the threat state of the own centers.
+ */
+export function inspectNormalArmyV7(view: PlayerViewV7): {
+  readonly army: boolean;
+  readonly modes: readonly {
+    readonly unitId: UnitId;
+    readonly mode: ArmyAssaultModeV7;
+  }[];
+  readonly research: {
+    readonly tech: TechnologyIdV7;
+    readonly cost: number;
+    readonly due: boolean;
+  } | null;
+  readonly threatDistance: number;
+  readonly pressed: boolean;
+  readonly expanding: boolean;
+} {
+  const context = makeContext(
+    view,
+    queryAiReadyCommandsV7(view).map((item) => item.command),
+  );
+  const target = armyResearchTargetV7(context);
+  return {
+    army: context.army,
+    modes: [...armyAssaultV7(context).positionByOwn]
+      .map(([unitId, position]) => ({ unitId, mode: position.mode }))
+      .sort((left, right) => left.unitId - right.unitId),
+    research:
+      target === null ? null : { ...target, due: armyResearchIsDueV7(context) },
+    threatDistance: armyThreatDistanceV7(context),
+    pressed: armyPressedV7(context),
+    expanding: armyExpandingV7(context),
+  };
+}
+
 export function inspectNormalTacticalFactsV7(view: PlayerViewV7): {
   readonly threats: readonly ThreatV7[];
   readonly objectiveByUnitId: readonly {
@@ -3060,7 +3151,9 @@ function computeSavingsPlanV7(context: PolicyContextV7): SavingsPlanV7 | null {
   if (context.army && context.chokepoint === null) {
     if (context.threats.length > 0 || context.openingGrowthHarvest) return null;
     const target = armyResearchTargetV7(context);
-    if (target === null) return null;
+    // Tuning 6 (`pulp_wars-w49.6`): only while the technology is due;
+    // otherwise the Coins go to growth first.
+    if (target === null || !armyResearchIsDueV7(context)) return null;
     if (view.viewer.coins >= target.cost)
       return {
         role: null,
@@ -3224,49 +3317,129 @@ function armyResearchTargetV7(
   interface Target {
     readonly tech: TechnologyIdV7;
     readonly cost: number;
-    readonly total: number;
   }
-  let best: Target | null = null;
-  let support: Target | null = null;
-  if (armyAlertV7(context)) {
+  // Tuning 6 (`pulp_wars-w49.6`): from the first turn, not only while
+  // alert, and unit by unit in the faction's own order
+  // (`ARMY_RESEARCH_ROLES_V7`): its signature units first. With three
+  // cities Roads comes after the first two units of the order, and
+  // Commerce after the last.
+  let chosen: Target | null = null;
+  if (
+    context.army &&
+    !context.naval.active &&
+    !normalOpeningResearchPendingV7(context.view)
+  ) {
     const view = context.view;
     const faction = view.viewer.faction;
     const forbidden = forbiddenTechnologiesV7(view.setup);
     const uselessBanshee =
       faction === "UNDEAD" &&
       !hasLivingHostileSeatV7(view, (owner) => isHostile(view, owner));
-    for (const role of UNIT_ROLE_IDS_V7) {
+    const toward = (technology: TechnologyIdV7): Target | null => {
+      if (view.viewer.researchedTechs.includes(technology)) return null;
+      const chain = researchChain(view, technology);
+      const first = chain[0];
+      return first === undefined || chain.some((tech) => forbidden.has(tech))
+        ? null
+        : { tech: first, cost: totalResearchCost(view, [first]) };
+    };
+    const roads =
+      view.cities.filter((city) => city.ownerId === view.viewer.id).length >=
+      ARMY_ROADS_CITIES_V7;
+    let unlocked = 0;
+    for (const role of ARMY_RESEARCH_ROLES_V7[faction] ?? []) {
+      if (chosen !== null) break;
+      if (roads && unlocked === ARMY_ROADS_AFTER_ROLES_V7)
+        chosen = toward("ROADS");
+      if (chosen !== null) break;
       const rule = effectiveRoleRuleV7(role, faction);
-      const unitClass = armyClassV7(rule);
       if (
-        unitClass === null ||
-        unitClass === "SKIRMISHER" ||
         rule.technology === null ||
         rule.cost === null ||
-        view.viewer.researchedTechs.includes(rule.technology) ||
         !factionUnlocksRoleV7(faction, role) ||
         (uselessBanshee && role === "MARKSMAN")
       )
         continue;
-      const chain = researchChain(view, rule.technology);
-      const first = chain[0];
-      if (first === undefined || chain.some((tech) => forbidden.has(tech)))
-        continue;
-      const total = totalResearchCost(view, chain);
-      const target = {
-        tech: first,
-        cost: totalResearchCost(view, [first]),
-        total,
-      };
-      if (unitClass === "SUPPORT") {
-        if (support === null || total < support.total) support = target;
-      } else if (best === null || total < best.total) best = target;
+      chosen = toward(rule.technology);
+      unlocked += 1;
     }
+    if (chosen === null && roads)
+      chosen = toward("ROADS") ?? toward("COMMERCE");
   }
-  const chosen: Target | null = best ?? support;
-  context.armyResearch =
-    chosen === null ? null : { tech: chosen.tech, cost: chosen.cost };
+  context.armyResearch = chosen;
   return context.armyResearch;
+}
+
+/**
+ * Tuning 6: the army's next technology is due (`armyResearchDueV7`): the
+ * seat's city levels are worth more technologies than it owns.
+ */
+function armyResearchIsDueV7(context: PolicyContextV7): boolean {
+  const view = context.view;
+  return armyResearchDueV7(
+    view.cities.reduce(
+      (total, city) =>
+        city.ownerId === view.viewer.id ? total + city.level : total,
+      0,
+    ),
+    view.viewer.researchedTechs.length,
+  );
+}
+
+/**
+ * Tuning 6: growth that goes before training while no enemy is near: it
+ * levels a city now, or costs at most `ARMY_CHEAP_GROWTH_COINS_V7` per
+ * population (a harvest, a hunt).
+ */
+function armyCheapGrowthV7(preview: {
+  readonly cost: number;
+  readonly levelsReached: readonly unknown[];
+  readonly populationDeltaByCity: readonly { readonly delta: number }[];
+}): boolean {
+  const population = sum(
+    preview.populationDeltaByCity.map((item) => item.delta),
+  );
+  return (
+    preview.levelsReached.length > 0 ||
+    (population > 0 && preview.cost <= ARMY_CHEAP_GROWTH_COINS_V7 * population)
+  );
+}
+
+/** Tuning 6: no hostile land unit is near an own center. */
+function armyUnthreatenedV7(context: PolicyContextV7): boolean {
+  return armyThreatDistanceV7(context) > ARMY_NEAR_THREAT_RADIUS_V7;
+}
+
+/**
+ * Tuning 6: where an alert seat's training stands. With an enemy near, at a
+ * single-file front, or with fewer than two thirds of the unit slots
+ * filled (`warTrainingFirstV7`): before research and construction (tuning
+ * 5). Otherwise the growth that adds population goes first and training
+ * tops the army up after it.
+ */
+function armyTrainingPriorityV7(context: PolicyContextV7): number {
+  return !armyUnthreatenedV7(context) ||
+    warTrainingFirstV7(context) ||
+    context.chokepoint !== null ||
+    // The first units are the ones that take the villages.
+    armyExpandingV7(context)
+    ? ARMY_TRAINING_PRIORITY_V7
+    : ARMY_TOPUP_TRAINING_PRIORITY_V7;
+}
+
+/**
+ * Tuning 6: the seat trains like an alert one: it is alert, or it still
+ * expands (fewer than `ARMY_EXPANSION_CITIES_V7` cities) and its opening
+ * harvest is done.
+ */
+function armyTrainsFirstV7(context: PolicyContextV7): boolean {
+  return (
+    armyAlertV7(context) ||
+    (context.army &&
+      !context.naval.active &&
+      !context.openingGrowthHarvest &&
+      armyExpandingV7(context))
+  );
 }
 
 /** The seat's public city income a turn. */
@@ -3312,7 +3485,7 @@ function armyVacatesCenterV7(
   actor: PublicUnitV7,
   to: CoordV7,
 ): boolean {
-  if (!armyAlertV7(context) || actor.form !== "LAND") return false;
+  if (!armyTrainsFirstV7(context) || actor.form !== "LAND") return false;
   const view = context.view;
   const city = context.lookup.citiesByKey.get(coordKey(actor.at));
   return (
@@ -3386,6 +3559,17 @@ function armyGarrisonHoldsV7(
   );
   if (preview === null) return false;
   if (preview.attackerDies) return true;
+  // Tuning 6 (`pulp_wars-w49.6`): a hit that does not kill waits while the
+  // unit can still step aside for its city to train (an attack ends its
+  // turn on the center, and the city then trains nothing).
+  if (
+    !preview.defenderDies &&
+    !actor.activation.moved &&
+    (context.lookup.moveDestinationsByUnit.get(actor.id) ?? []).some((to) =>
+      armyVacatesCenterV7(context, actor, to),
+    )
+  )
+    return true;
   return (
     preview.advances && near.some((unit) => unit.id !== command.targetUnitId)
   );
@@ -3397,6 +3581,34 @@ interface ArmyEngagementV7 {
   /** 10 per HP dealt, 8 per HP taken, and a kill's value. */
   readonly value: number;
   readonly kills: boolean;
+  /** Tuning 6: a ranged, siege, or support target of a fast or ranged unit. */
+  readonly fragile: boolean;
+  /** Tuning 6: the distance the attack is made from. */
+  readonly range: number;
+}
+
+/** A ranged, siege, or support unit: what a breakthrough is for. */
+function armyFragileV7(context: PolicyContextV7, unit: PublicUnitV7): boolean {
+  const unitClass = armyClassV7(unitRoleRuleV7(context.view, unit));
+  return (
+    unitClass === "RANGED" || unitClass === "SIEGE" || unitClass === "SUPPORT"
+  );
+}
+
+/**
+ * A fast unit (Move 2 or more) or a ranged unit: it goes for the enemy's
+ * ranged, siege, and support units first.
+ */
+function armyHuntsFragileV7(
+  context: PolicyContextV7,
+  unit: PublicUnitV7,
+): boolean {
+  if (!context.army) return false;
+  const rule = unitRoleRuleV7(context.view, unit);
+  return (
+    armyClassV7(rule) === "RANGED" ||
+    publicCombatFacts(context.view, unit, context.lookup).move >= 2
+  );
 }
 
 /**
@@ -3463,6 +3675,11 @@ function armyEngagementsForV7(
   ) {
     const facts = publicCombatFacts(view, actor, context.lookup);
     if (facts.abilities.includes("ATTACK") && facts.attack2 > 0) {
+      // Tuning 6: a committed unit takes an exchange that does not kill
+      // it where the commitment accepts it (`armyCommitAcceptsV7`), and
+      // a fast or ranged unit prefers the enemy's shooters.
+      const committed = armyModeV7(context, actor) === "COMMIT";
+      const hunter = armyHuntsFragileV7(context, actor);
       const found = new Map<string, ArmyEngagementV7>();
       for (const to of context.lookup.moveDestinationsByUnit.get(actor.id) ??
         []) {
@@ -3485,20 +3702,30 @@ function armyEngagementsForV7(
           const taken = kills
             ? 0
             : armyRetaliationV7(context, moved, target, range);
-          if (!kills && (taken >= actor.hp || 10 * dealt - 8 * taken <= 0))
+          if (
+            !kills &&
+            (taken >= actor.hp ||
+              (10 * dealt - 8 * taken <= 0 &&
+                !(committed && armyCommitAcceptsV7(context, actor, target))))
+          )
             continue;
+          const fragile = hunter && armyFragileV7(context, target);
           const value =
             10 * dealt -
             8 * taken +
             (kills
               ? 20 + targetStrategicValue(view, target.id, context.lookup)
+              : 0) +
+            (fragile ? ARMY_FRAGILE_TARGET_VALUE_V7 : 0) +
+            (committed && armyFocusV7(context).has(target.id)
+              ? ARMY_FOCUS_TARGET_VALUE_V7
               : 0);
           if (
             best === null ||
             value > best.value ||
             (value === best.value && target.id < best.targetId)
           )
-            best = { targetId: target.id, value, kills };
+            best = { targetId: target.id, value, kills, fragile, range };
         }
         if (best !== null) found.set(coordKey(to), best);
       }
@@ -3604,13 +3831,22 @@ const ARMY_ROUTINE_MOVE_MAXIMUM_V7 = 735;
 
 /**
  * Army play for a land Move (`src/ai/v7-army.ts`): the step off a center
- * that lets its city train; the Move into an acceptable exchange for a unit
- * that may attack after it (not below half its HP unless it kills, and not
- * alone into lethal reach); the Move of a unit that cannot (a siege unit)
- * to a tile with a shot next turn that it survives until then, when it has
- * no shot now; and the routine Move that would take a ranged, siege, or
- * support unit into reach, or a melee unit alone into heavy reach, which
- * waits for the others.
+ * that lets its city train; the step onto a free village; the Move into an
+ * acceptable exchange for a unit that may attack after it (not below half
+ * its HP unless it kills, and not alone into lethal reach); the Move of a
+ * unit that cannot (a siege unit) to a tile with a shot next turn that it
+ * survives until then, when it has no shot now; and the routine Move that
+ * would take a ranged, siege, or support unit into reach, or a melee unit
+ * alone into heavy reach, which waits for the others.
+ *
+ * Tuning 6 (`pulp_wars-w49.6`): the assault. A unit of a committed
+ * position takes every exchange that does not kill it (a fast unit that
+ * reaches a ranged, siege, or support unit first, then the ranged units,
+ * then the melee), closes in when it cannot attack this turn, and is not
+ * held back by the reach it enters; a unit of a staging position waits
+ * outside every visible enemy's reach. A Guard open to ranged attacks does
+ * not step into the open under them, and a Move that ends next to own
+ * units under a splash attacker costs strategic value.
  */
 function armyMoveValueV7(
   context: PolicyContextV7,
@@ -3620,13 +3856,32 @@ function armyMoveValueV7(
 ): { readonly priority: number; readonly strategic: number } {
   const unchanged = { priority, strategic: 0 };
   if (!context.army || actor.form !== "LAND") return unchanged;
+  const view = context.view;
   if (armyVacatesCenterV7(context, actor, to))
     return {
-      priority: Math.max(priority, ARMY_VACATE_PRIORITY_V7),
-      strategic: 1,
+      // Just above the training it makes room for.
+      priority: Math.max(
+        priority,
+        armyTrainingPriorityV7(context) === ARMY_TRAINING_PRIORITY_V7
+          ? ARMY_VACATE_PRIORITY_V7
+          : ARMY_TOPUP_TRAINING_PRIORITY_V7 + 1,
+      ),
+      strategic: armyGuardExposedV7(context, actor, to) ? 0 : 1,
+    };
+  if (
+    armyVillageMoveV7(context, actor, to) &&
+    visibleImmediateDamage(view, actor, to, context) < actor.hp
+  )
+    return {
+      priority: Math.max(
+        priority,
+        armyExpandingV7(context)
+          ? ARMY_VILLAGE_PRIORITY_V7
+          : ARMY_LATE_VILLAGE_PRIORITY_V7,
+      ),
+      strategic: 50,
     };
   if (armyHostilesV7(context).length === 0) return unchanged;
-  const view = context.view;
   // The garrison of a center with a hostile unit near goes nowhere on its
   // own account (the candidate filter holds it; where the tactical plan
   // lets it act because a replacement stands by, the old scores decide).
@@ -3640,63 +3895,218 @@ function armyMoveValueV7(
   )
     return unchanged;
   const danger = visibleImmediateDamage(view, actor, to, context);
+  const mode = armyModeV7(context, actor);
+  const facts = publicCombatFacts(view, actor, context.lookup);
+  const mayAct = unitMayActAfterMoveV7(view, actor);
+  const spacing = armySplashSpacingV7(context, actor, to);
+  const job = context.tactical.campaign?.assignmentByUnitId.get(actor.id)?.job;
+  // A unit sent to a village while the seat has few cities goes there: it
+  // turns aside only for a kill.
+  const errand = job === "VILLAGE" && armyExpandingV7(context);
   const engagement = armyEngagementsForV7(context, actor).get(coordKey(to));
   if (engagement !== undefined) {
-    if (unitMayActAfterMoveV7(view, actor)) {
+    if (mayAct) {
+      if (mode === "COMMIT" && (engagement.kills || !errand))
+        return {
+          priority: Math.max(
+            priority,
+            engagement.fragile && facts.move >= 2
+              ? ARMY_BREAKTHROUGH_MOVE_PRIORITY_V7
+              : engagement.range >= 2
+                ? ARMY_COMMIT_FIRE_MOVE_PRIORITY_V7
+                : ARMY_COMMIT_MELEE_MOVE_PRIORITY_V7,
+          ),
+          strategic: engagement.value - 2 * danger - spacing,
+        };
       if (
         engagement.kills ||
-        (actor.hp * 2 >= actor.maxHp &&
+        (mode !== "STAGE" &&
+          !errand &&
+          actor.hp * 2 >= actor.maxHp &&
           (danger < actor.hp || armySupportedV7(context, actor, to)))
       )
         return {
           priority: Math.max(priority, ARMY_ENGAGE_PRIORITY_V7),
-          strategic: engagement.value - 4 * danger,
+          strategic: engagement.value - 4 * danger - spacing,
         };
     } else if (
-      publicCombatFacts(view, actor, context.lookup).maximumRange > 1 &&
+      facts.maximumRange > 1 &&
       danger < actor.hp &&
+      (mode !== "STAGE" || danger <= 0) &&
       !armyOfferedAttackersV7(context).has(actor.id)
     )
       return {
-        priority: Math.max(priority, ARMY_FIRING_POSITION_PRIORITY_V7),
-        strategic: engagement.value - 4 * danger,
+        // Committed, the siege units take their tiles before the melee
+        // units close in.
+        priority: Math.max(
+          priority,
+          mode === "COMMIT"
+            ? ARMY_COMMIT_ADVANCE_PRIORITY_V7 + 5
+            : ARMY_FIRING_POSITION_PRIORITY_V7,
+        ),
+        strategic: engagement.value - 4 * danger - spacing,
       };
   }
-  // Approach: toward the nearest visible hostile land unit.
-  let approach = 0;
-  const facts = publicCombatFacts(view, actor, context.lookup);
-  const job = context.tactical.campaign?.assignmentByUnitId.get(actor.id)?.job;
+  const fights = facts.abilities.includes("ATTACK") && facts.attack2 > 0;
+  // Raid: onto a hostile improvement to Pillage it in the same turn.
   if (
-    facts.abilities.includes("ATTACK") &&
-    facts.attack2 > 0 &&
-    actor.hp * 2 >= actor.maxHp &&
-    job !== "VILLAGE" &&
-    job !== "CHEST" &&
-    job !== "EXPLORE" &&
-    job !== "RETURN"
+    !errand &&
+    danger < actor.hp &&
+    view.viewer.researchedTechs.includes("RAIDING") &&
+    primaryReadyForPolicyV7(actor) &&
+    !same(actor.at, to)
   ) {
-    const target = armyNearestHostileV7(context, actor.at);
+    const tile = findPublicTileV7(view, to);
+    if (
+      tile?.explored === true &&
+      tile.improvement !== null &&
+      tile.territoryOwnerId !== null &&
+      isHostile(view, tile.territoryOwnerId)
+    )
+      return {
+        priority: Math.max(priority, ARMY_RAID_PRIORITY_V7),
+        strategic:
+          12 * (visibleImprovementValueAt(view, to, context.lookup) ?? 1) -
+          danger,
+      };
+  }
+  const guardExposed =
+    armyGuardExposedV7(context, actor, to) &&
+    !armyGuardExposedV7(context, actor, actor.at);
+  // Committed and without an attack from `to`: close in on the position.
+  if (mode === "COMMIT" && fights && !errand && !guardExposed) {
+    // (A Zombie closes in on the cheap infantry when there is some.)
+    const target =
+      (armyZombieV7(context, actor)
+        ? armyNearestPreyV7(context, actor.at)
+        : null) ?? armyNearestOfPositionV7(context, actor);
     if (target !== null) {
       const from = distance(actor.at, target.at);
       const next = distance(to, target.at);
       if (
-        from <= ARMY_APPROACH_RADIUS_V7 &&
         next < from &&
-        next >= facts.maximumRange
-      ) {
-        priority = Math.max(priority, ARMY_APPROACH_PRIORITY_V7);
-        approach = 1 + ARMY_APPROACH_RADIUS_V7 - next;
+        next >= facts.maximumRange &&
+        (danger < actor.hp || next <= 1)
+      )
+        return {
+          priority: Math.max(priority, ARMY_COMMIT_ADVANCE_PRIORITY_V7),
+          strategic:
+            4 * (ARMY_COMING_RADIUS_V7 - next) -
+            spacing -
+            Math.floor(danger / 4) -
+            armyZombieShyV7(context, actor, to),
+        };
+    }
+  }
+  // Rally: with an enemy at the gates of an own center, a unit near that
+  // center does not walk away from it, and comes next to it.
+  let approach = 0;
+  if (fights && mode !== "COMMIT") {
+    let home: CoordV7 | null = null;
+    for (const at of armyPressedCentersV7(context))
+      if (
+        distance(actor.at, at) <= ARMY_NEAR_THREAT_RADIUS_V7 &&
+        (home === null || distance(actor.at, at) < distance(actor.at, home))
+      )
+        home = at;
+    if (home !== null) {
+      const from = distance(actor.at, home);
+      const next = distance(to, home);
+      if (next > from && next > 2 && priority <= ARMY_ROUTINE_MOVE_MAXIMUM_V7)
+        return { priority: -1, strategic: 0 };
+      if (next < from && danger < actor.hp && !guardExposed) {
+        priority = Math.max(priority, ARMY_RALLY_PRIORITY_V7);
+        approach = next === 1 ? 3 : 1;
       }
     }
   }
-  const moved = { priority, strategic: approach };
-  if (priority < 0 || priority > ARMY_ROUTINE_MOVE_MAXIMUM_V7 || danger <= 0)
-    return moved;
+  // Alone among enemies and with nothing to attack: back to the others.
+  const roaming =
+    job === "VILLAGE" ||
+    job === "CHEST" ||
+    job === "EXPLORE" ||
+    job === "RETURN";
+  // (A scout too: its frontier lies behind the enemy.)
+  const alone =
+    mode === "NONE" &&
+    fights &&
+    (!roaming || job === "EXPLORE") &&
+    armyAloneV7(context, actor);
+  if (alone && approach === 0) {
+    const friend = armyNearestFriendV7(context, actor);
+    if (
+      friend !== null &&
+      armyWalkV7(to, friend) < armyWalkV7(actor.at, friend) &&
+      danger < actor.hp
+    )
+      // Not held by the reach it crosses on the way out.
+      return {
+        priority: Math.max(priority, ARMY_REGROUP_PRIORITY_V7),
+        strategic: -spacing,
+      };
+  }
+  // Approach: toward the nearest visible hostile land unit. A staging unit
+  // comes from farther and stops outside every reach.
+  if (
+    fights &&
+    !alone &&
+    !roaming &&
+    approach === 0 &&
+    actor.hp * 2 >= actor.maxHp
+  ) {
+    // A Zombie walks toward the cheap infantry when there is some.
+    const target =
+      (armyZombieV7(context, actor)
+        ? armyNearestPreyV7(context, actor.at)
+        : null) ?? armyNearestHostileV7(context, actor.at);
+    if (target !== null) {
+      const from = distance(actor.at, target.at);
+      const next = distance(to, target.at);
+      const radius =
+        mode === "STAGE" ? ARMY_COMING_RADIUS_V7 : ARMY_APPROACH_RADIUS_V7;
+      if (
+        from <= radius &&
+        next < from &&
+        next >= facts.maximumRange &&
+        (mode !== "STAGE" || danger <= 0)
+      ) {
+        priority = Math.max(priority, ARMY_APPROACH_PRIORITY_V7);
+        approach = 1 + radius - next;
+      }
+    }
+  }
+  const moved = {
+    priority,
+    strategic: approach - spacing - armyZombieShyV7(context, actor, to),
+  };
+  if (priority < 0 || priority > ARMY_ROUTINE_MOVE_MAXIMUM_V7) return moved;
+  if (guardExposed) return { priority: -1, strategic: 0 };
+  // Staging: a unit that has arrived waits where it is; it does not walk
+  // off on another errand while the others come up. Committed: a superior
+  // army does not walk away from the position it attacks.
+  if (mode !== "NONE" && approach === 0 && fights && !errand) {
+    const target = armyNearestOfPositionV7(context, actor);
+    if (
+      target !== null &&
+      (mode === "COMMIT" ||
+        distance(actor.at, target.at) <= ARMY_NEAR_RADIUS_V7) &&
+      distance(to, target.at) > distance(actor.at, target.at)
+    )
+      return { priority: -1, strategic: 0 };
+  }
+  if (danger <= 0) return moved;
   if (danger <= visibleImmediateDamage(view, actor, actor.at, context))
     return moved;
   const unitClass = armyClassV7(unitRoleRuleV7(view, actor));
   const fragile =
     unitClass === "RANGED" || unitClass === "SIEGE" || unitClass === "SUPPORT";
+  // Committed: only a ranged, siege, or support unit still stays out of
+  // lethal reach.
+  if (mode === "COMMIT")
+    return fragile && danger >= actor.hp
+      ? { priority: -1, strategic: 0 }
+      : moved;
+  if (mode === "STAGE") return { priority: -1, strategic: 0 };
   if (
     fragile
       ? danger >= actor.hp || !armyScreenedV7(context, actor, to)
@@ -3704,6 +4114,24 @@ function armyMoveValueV7(
   )
     return { priority: -1, strategic: 0 };
   return moved;
+}
+
+/** The unit of an own unit's position nearest to it (then the lowest ID). */
+function armyNearestOfPositionV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+): PublicUnitV7 | null {
+  const position = armyAssaultV7(context).positionByOwn.get(actor.id);
+  let best: PublicUnitV7 | null = null;
+  for (const unit of position?.hostiles ?? [])
+    if (
+      best === null ||
+      distance(unit.at, actor.at) < distance(best.at, actor.at) ||
+      (distance(unit.at, actor.at) === distance(best.at, actor.at) &&
+        unit.id < best.id)
+    )
+      best = unit;
+  return best;
 }
 
 /** The nearest visible hostile land unit (then the weakest, the lowest ID). */
@@ -3752,6 +4180,780 @@ function armyScreenedV7(
       unitClass === "BREAKTHROUGH"
     );
   });
+}
+
+// ---------------------------------------------------------------------------
+// Tuning 6 (`pulp_wars-w49.6`, `src/ai/v7-army.ts`): the assault, the
+// expansion, and the discipline rules. Every helper returns its neutral
+// answer for a seat that does not play the army rules.
+// ---------------------------------------------------------------------------
+
+/** A group of visible hostile land units and what the seat does about it. */
+interface ArmyPositionV7 {
+  readonly hostiles: readonly PublicUnitV7[];
+  readonly mode: ArmyAssaultModeV7;
+  /**
+   * The battle is joined: an own unit is in contact and a unit of the
+   * position is wounded.
+   */
+  readonly joined: boolean;
+}
+
+interface ArmyAssaultV7 {
+  /** The position each own fighting unit (not a garrison) belongs to. */
+  readonly positionByOwn: ReadonlyMap<UnitId, ArmyPositionV7>;
+  readonly positionByHostile: ReadonlyMap<UnitId, ArmyPositionV7>;
+}
+
+const NO_ARMY_ASSAULT_V7: ArmyAssaultV7 = {
+  positionByOwn: new Map(),
+  positionByHostile: new Map(),
+};
+
+/** A unit with an attack of its own, or a Wail. */
+function armyFightsV7(context: PolicyContextV7, unit: PublicUnitV7): boolean {
+  const facts = publicCombatFacts(context.view, unit, context.lookup);
+  return (
+    (facts.abilities.includes("ATTACK") && facts.attack2 > 0) ||
+    facts.abilities.includes("WAIL")
+  );
+}
+
+/**
+ * How much harder a hostile unit is to remove where it stands, in percent:
+ * half as much again behind Walls or on a Field Defense, a quarter on a
+ * center without Walls, in a Forest, or on a Mountain.
+ */
+function armyCoverPercentV7(
+  context: PolicyContextV7,
+  unit: PublicUnitV7,
+): number {
+  const tile = findPublicTileV7(context.view, unit.at);
+  if (tile?.explored !== true) return 100;
+  const city = context.lookup.citiesByKey.get(coordKey(unit.at));
+  if (
+    tile.fieldDefense ||
+    city?.rewards.some((record) => record.reward === "WALLS") === true
+  )
+    return 150;
+  return city !== undefined ||
+    tile.terrain === "FOREST" ||
+    tile.terrain === "MOUNTAIN"
+    ? 125
+    : 100;
+}
+
+/** The unit stands on an own center (the garrison rules own it). */
+function armyOnOwnCenterV7(
+  context: PolicyContextV7,
+  unit: PublicUnitV7,
+): boolean {
+  return (
+    context.lookup.citiesByKey.get(coordKey(unit.at))?.ownerId ===
+    context.view.viewer.id
+  );
+}
+
+/**
+ * The hostile positions and their modes (`src/ai/v7-army.ts`). One pass
+ * over the visible hostile land units to link them, one over the own land
+ * units to weigh them; nothing here depends on the order of the commands.
+ */
+function armyAssaultV7(context: PolicyContextV7): ArmyAssaultV7 {
+  if (context.armyAssault !== undefined) return context.armyAssault;
+  const view = context.view;
+  const hostiles = context.army
+    ? [...armyHostilesV7(context)].sort((left, right) => left.id - right.id)
+    : [];
+  if (hostiles.length === 0) {
+    context.armyAssault = NO_ARMY_ASSAULT_V7;
+    return NO_ARMY_ASSAULT_V7;
+  }
+  const groupOf = new Map<UnitId, number>();
+  const groups: PublicUnitV7[][] = [];
+  for (const seed of hostiles) {
+    if (groupOf.has(seed.id)) continue;
+    const group = [seed];
+    groupOf.set(seed.id, groups.length);
+    for (let index = 0; index < group.length; index += 1) {
+      const current = group[index] as PublicUnitV7;
+      for (const other of hostiles)
+        if (
+          !groupOf.has(other.id) &&
+          distance(other.at, current.at) <= ARMY_POSITION_LINK_V7
+        ) {
+          groupOf.set(other.id, groups.length);
+          group.push(other);
+        }
+    }
+    groups.push(group);
+  }
+  const totals = groups.map((group) => ({
+    hostile: group.reduce(
+      (total, unit) =>
+        total +
+        Math.floor(
+          (armyUnitStrengthV7(unitRoleRuleV7(view, unit), unit.hp) *
+            armyCoverPercentV7(context, unit)) /
+            100,
+        ),
+      0,
+    ),
+    near: 0,
+    coming: 0,
+    contact: false,
+    own: [] as UnitId[],
+  }));
+  for (const unit of view.units) {
+    if (
+      unit.ownerId !== view.viewer.id ||
+      unit.form !== "LAND" ||
+      unit.hp <= 0 ||
+      armyOnOwnCenterV7(context, unit) ||
+      !armyFightsV7(context, unit)
+    )
+      continue;
+    let nearest: PublicUnitV7 | null = null;
+    let gap = Number.POSITIVE_INFINITY;
+    for (const hostile of hostiles) {
+      const range = distance(hostile.at, unit.at);
+      if (range < gap) {
+        nearest = hostile;
+        gap = range;
+      }
+    }
+    if (nearest === null || gap > ARMY_COMING_RADIUS_V7) continue;
+    const total = totals[groupOf.get(nearest.id) ?? -1];
+    if (total === undefined) continue;
+    const strength = armyUnitStrengthV7(unitRoleRuleV7(view, unit), unit.hp);
+    total.coming += strength;
+    if (gap <= ARMY_NEAR_RADIUS_V7) total.near += strength;
+    if (gap <= 1) total.contact = true;
+    total.own.push(unit.id);
+  }
+  const positionByOwn = new Map<UnitId, ArmyPositionV7>();
+  const positionByHostile = new Map<UnitId, ArmyPositionV7>();
+  groups.forEach((group, index) => {
+    const total = totals[index];
+    if (total === undefined) return;
+    const joined = total.contact && group.some((unit) => unit.hp < unit.maxHp);
+    const position: ArmyPositionV7 = {
+      hostiles: group,
+      mode: armyAssaultModeV7({ ...total, contact: joined }),
+      joined,
+    };
+    for (const unit of group) positionByHostile.set(unit.id, position);
+    for (const id of total.own) positionByOwn.set(id, position);
+  });
+  context.armyAssault = { positionByOwn, positionByHostile };
+  return context.armyAssault;
+}
+
+/**
+ * The focus of a committed assault: the units of committed positions that
+ * the committed units can together take half the HP from this turn. Each
+ * own unit counts once, against the unit it can hurt most (the largest
+ * share of its HP; then the lowest ID), from where it stands or after a
+ * Move when it may attack after moving. A hit that would kill the attacker
+ * without a kill is not counted.
+ */
+function armyFocusV7(context: PolicyContextV7): ReadonlySet<UnitId> {
+  if (context.armyFocus !== undefined) return context.armyFocus;
+  const view = context.view;
+  const potential = new Map<UnitId, number>();
+  const assault = armyAssaultV7(context);
+  const offered = new Map<UnitId, UnitId[]>();
+  for (const command of context.commands)
+    if (command.kind === "ATTACK") {
+      const list = offered.get(command.unitId) ?? [];
+      list.push(command.targetUnitId);
+      offered.set(command.unitId, list);
+    }
+  for (const [unitId, position] of assault.positionByOwn) {
+    if (position.mode !== "COMMIT") continue;
+    const unit = context.lookup.unitsById.get(unitId);
+    if (unit === undefined || !primaryReadyForPolicyV7(unit)) continue;
+    const facts = publicCombatFacts(view, unit, context.lookup);
+    if (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0) continue;
+    const moves =
+      !unit.activation.moved && unitMayActAfterMoveV7(view, unit)
+        ? (context.lookup.moveDestinationsByUnit.get(unit.id) ?? [])
+        : [];
+    const attacks = offered.get(unit.id) ?? [];
+    let best: {
+      readonly target: PublicUnitV7;
+      readonly damage: number;
+    } | null = null;
+    for (const target of position.hostiles) {
+      let damage = 0;
+      if (attacks.includes(target.id)) {
+        const preview = queryCombatPreviewV7(view, unit.id, target.id);
+        if (preview !== null && (!preview.attackerDies || preview.defenderDies))
+          damage = preview.damageToDefender;
+      } else {
+        const from = moves.find((to) => {
+          const range = distance(to, target.at);
+          return range >= facts.minimumRange && range <= facts.maximumRange;
+        });
+        if (from !== undefined) {
+          const moved = { ...unit, at: from };
+          const dealt = publicProjectedDamageWithLookupV7(
+            view,
+            moved,
+            target,
+            target.at,
+            {},
+            context.lookup,
+          );
+          if (
+            dealt >= target.hp ||
+            armyRetaliationV7(
+              context,
+              moved,
+              target,
+              distance(from, target.at),
+            ) < unit.hp
+          )
+            damage = dealt;
+        }
+      }
+      if (
+        damage > 0 &&
+        (best === null ||
+          damage * best.target.hp > best.damage * target.hp ||
+          (damage * best.target.hp === best.damage * target.hp &&
+            target.id < best.target.id))
+      )
+        best = { target, damage };
+    }
+    if (best !== null)
+      potential.set(
+        best.target.id,
+        (potential.get(best.target.id) ?? 0) + best.damage,
+      );
+  }
+  const focus = new Set<UnitId>();
+  for (const [targetId, damage] of potential) {
+    const target = context.lookup.unitsById.get(targetId);
+    if (target !== undefined && 2 * damage >= target.hp) focus.add(targetId);
+  }
+  context.armyFocus = focus;
+  return focus;
+}
+
+/**
+ * Whether a committed unit takes an exchange against `target` that it
+ * would otherwise refuse: the battle is joined, the target is in this
+ * turn's focus, or the unit will not live through the enemy's turn where
+ * it stands anyway.
+ */
+function armyCommitAcceptsV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+): boolean {
+  if (!context.army || context.chokepoint !== null) return false;
+  const position = armyAssaultV7(context).positionByOwn.get(actor.id);
+  if (position === undefined || position.mode !== "COMMIT") return false;
+  return (
+    position.joined ||
+    armyFocusV7(context).has(target.id) ||
+    visibleImmediateDamage(context.view, actor, actor.at, context) >= actor.hp
+  );
+}
+
+/** The assault mode of the position an own unit belongs to. */
+function armyModeV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+): ArmyAssaultModeV7 {
+  // A single-file front keeps its own siege (`src/ai/v7-chokepoint.ts`).
+  if (!context.army || context.chokepoint !== null) return "NONE";
+  return armyAssaultV7(context).positionByOwn.get(actor.id)?.mode ?? "NONE";
+}
+
+/**
+ * The distance from the nearest visible hostile land unit to the nearest
+ * own center (infinite with none in sight).
+ */
+function armyThreatDistanceV7(context: PolicyContextV7): number {
+  if (context.armyThreatDistance !== undefined)
+    return context.armyThreatDistance;
+  let result = Number.POSITIVE_INFINITY;
+  if (context.army) {
+    const view = context.view;
+    for (const city of view.cities) {
+      if (city.ownerId !== view.viewer.id) continue;
+      for (const unit of armyHostilesV7(context))
+        result = Math.min(result, distance(unit.at, city.at));
+    }
+  }
+  context.armyThreatDistance = result;
+  return result;
+}
+
+/**
+ * Pressed: a hostile land unit within `ARMY_PRESSED_RADIUS_V7` of an own
+ * center while an own city can still train this turn (a free slot and its
+ * action). Then nothing but units is bought: no research, no construction.
+ */
+function armyPressedV7(context: PolicyContextV7): boolean {
+  return (
+    context.army &&
+    !context.naval.active &&
+    armyThreatDistanceV7(context) <= ARMY_PRESSED_RADIUS_V7 &&
+    armyCanTrainV7(context)
+  );
+}
+
+/** An own city can still train this turn: a free slot and its action. */
+function armyCanTrainV7(context: PolicyContextV7): boolean {
+  const view = context.view;
+  return view.cities.some(
+    (city) =>
+      city.ownerId === view.viewer.id &&
+      city.cityActionAvailable !== false &&
+      freeCapacity(view, city.id) > 0 &&
+      // Its center is free, or the unit on it can still step aside.
+      (context.threatLookup.occupantsByKey.get(coordKey(city.at)) ?? []).every(
+        (unit) => !same(unit.at, city.at) || !unit.activation.moved,
+      ),
+  );
+}
+
+/** The own centers with a hostile land unit within the pressed radius. */
+function armyPressedCentersV7(context: PolicyContextV7): readonly CoordV7[] {
+  if (context.armyPressedCenters !== undefined)
+    return context.armyPressedCenters;
+  const view = context.view;
+  const centers: CoordV7[] = [];
+  if (context.army)
+    for (const city of view.cities)
+      if (
+        city.ownerId === view.viewer.id &&
+        armyHostilesV7(context).some(
+          (unit) => distance(unit.at, city.at) <= ARMY_PRESSED_RADIUS_V7,
+        )
+      )
+        centers.push(city.at);
+  context.armyPressedCenters = centers;
+  return centers;
+}
+
+/**
+ * Alone among enemies: outside the own territory, a hostile land unit
+ * within `ARMY_NEAR_RADIUS_V7`, and no own fighting land unit within
+ * `ARMY_ALONE_RADIUS_V7`.
+ */
+function armyAloneV7(context: PolicyContextV7, actor: PublicUnitV7): boolean {
+  const view = context.view;
+  const tile = findPublicTileV7(view, actor.at);
+  if (tile?.explored === true && tile.territoryOwnerId === view.viewer.id)
+    return false;
+  if (
+    !armyHostilesV7(context).some(
+      (unit) => distance(unit.at, actor.at) <= ARMY_NEAR_RADIUS_V7,
+    )
+  )
+    return false;
+  return !view.units.some(
+    (unit) =>
+      unit.id !== actor.id &&
+      unit.ownerId === view.viewer.id &&
+      unit.form === "LAND" &&
+      distance(unit.at, actor.at) <= ARMY_ALONE_RADIUS_V7 &&
+      armyFightsV7(context, unit),
+  );
+}
+
+/**
+ * A measure of the way between two tiles that every step toward the goal
+ * shortens: the distance first, then the sum of both offsets.
+ */
+function armyWalkV7(from: CoordV7, to: CoordV7): number {
+  return (
+    100 * distance(from, to) + Math.abs(from.x - to.x) + Math.abs(from.y - to.y)
+  );
+}
+
+/** Where a unit alone among enemies goes back to: the nearest own unit. */
+function armyNearestFriendV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+): CoordV7 | null {
+  const view = context.view;
+  let best: CoordV7 | null = null;
+  const consider = (at: CoordV7): void => {
+    if (
+      best === null ||
+      distance(at, actor.at) < distance(best, actor.at) ||
+      (distance(at, actor.at) === distance(best, actor.at) &&
+        (at.y < best.y || (at.y === best.y && at.x < best.x)))
+    )
+      best = at;
+  };
+  for (const unit of view.units)
+    if (
+      unit.id !== actor.id &&
+      unit.ownerId === view.viewer.id &&
+      unit.form === "LAND" &&
+      armyFightsV7(context, unit)
+    )
+      consider(unit.at);
+  if (best === null)
+    for (const city of view.cities)
+      if (city.ownerId === view.viewer.id) consider(city.at);
+  return best;
+}
+
+/**
+ * A city does not train onto a center that two or more hostile ranged
+ * units cover while another city of the seat can train this turn, unless
+ * a hostile capturer can walk onto the center next turn: then it needs the
+ * defender.
+ */
+function armyTrainsElsewhereV7(
+  context: PolicyContextV7,
+  cityId: CityId,
+): boolean {
+  if (!context.army) return false;
+  const view = context.view;
+  const city = context.lookup.citiesById.get(cityId);
+  if (city === undefined) return false;
+  if (
+    armyHostilesV7(context).some(
+      (unit) =>
+        unitRoleRuleV7(view, unit).abilities.includes("CAPTURE") &&
+        distance(unit.at, city.at) <=
+          publicCombatFacts(view, unit, context.lookup).move,
+    )
+  )
+    return false;
+  const reach = armyRangedReachV7(context);
+  const covered = (at: CoordV7): boolean =>
+    (reach.get(coordKey(at)) ?? 0) >= ARMY_COVERED_CENTER_SHOOTERS_V7;
+  if (!covered(city.at)) return false;
+  return context.commands.some((command) => {
+    if (command.kind !== "TRAIN" || command.cityId === cityId) return false;
+    const other = context.lookup.citiesById.get(command.cityId);
+    return (
+      other !== undefined &&
+      other.ownerId === view.viewer.id &&
+      !covered(other.at)
+    );
+  });
+}
+
+/** The tiles the visible hostile splash attackers can hit next turn. */
+function armySplashReachV7(context: PolicyContextV7): ReadonlySet<string> {
+  if (context.armySplashReach !== undefined) return context.armySplashReach;
+  const reach = new Set<string>();
+  for (const unit of armyHostilesV7(context))
+    if (isSplashAttackerV7(context.view, unit))
+      for (const key of context.threatenedTiles.get(unit.id) ?? [])
+        reach.add(key);
+  context.armySplashReach = reach;
+  return reach;
+}
+
+/**
+ * How many visible hostile ranged or siege units can hit each tile next
+ * turn from two or more tiles away.
+ */
+function armyRangedReachV7(
+  context: PolicyContextV7,
+): ReadonlyMap<string, number> {
+  if (context.armyRangedReach !== undefined) return context.armyRangedReach;
+  const reach = new Map<string, number>();
+  for (const unit of armyHostilesV7(context)) {
+    const unitClass = armyClassV7(unitRoleRuleV7(context.view, unit));
+    if (
+      (unitClass !== "RANGED" && unitClass !== "SIEGE") ||
+      publicCombatFacts(context.view, unit, context.lookup).maximumRange < 2
+    )
+      continue;
+    for (const key of context.threatenedTiles.get(unit.id) ?? [])
+      reach.set(key, (reach.get(key) ?? 0) + 1);
+  }
+  context.armyRangedReach = reach;
+  return reach;
+}
+
+/**
+ * Splash spacing: what a Move to `to` costs for standing next to own units
+ * inside the reach of a hostile splash attacker.
+ */
+function armySplashSpacingV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): number {
+  const reach = armySplashReachV7(context);
+  if (reach.size === 0) return 0;
+  const view = context.view;
+  let neighbours = 0;
+  let exposed = reach.has(coordKey(to));
+  for (const at of neighbors8V7(view, to))
+    for (const unit of context.threatLookup.occupantsByKey.get(coordKey(at)) ??
+      [])
+      if (
+        unit.id !== actor.id &&
+        unit.ownerId === view.viewer.id &&
+        unit.form === "LAND"
+      ) {
+        neighbours += 1;
+        if (reach.has(coordKey(at))) exposed = true;
+      }
+  return exposed ? neighbours * ARMY_SPLASH_SPACING_VALUE_V7 : 0;
+}
+
+/**
+ * A Guard open to ranged attacks (the Human Guard) does not end a Move in
+ * the open inside the reach of a hostile ranged or siege unit: not on a
+ * center, a Field Defense, a Mountain, or a Forest that covers it.
+ */
+function armyGuardExposedV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): boolean {
+  const view = context.view;
+  if (unitRoleMechanicsV7(view, actor).rangedDefense2 === null) return false;
+  if ((armyRangedReachV7(context).get(coordKey(to)) ?? 0) === 0) return false;
+  const tile = findPublicTileV7(view, to);
+  if (tile?.explored !== true) return true;
+  return !(
+    tile.fieldDefense ||
+    tile.terrain === "MOUNTAIN" ||
+    context.lookup.citiesByKey.has(coordKey(to)) ||
+    (tile.terrain === "FOREST" &&
+      view.viewer.researchedTechs.includes("FORESTRY"))
+  );
+}
+
+/**
+ * An attack the low-value filter would drop that an army seat makes anyway:
+ * by a unit of a committed position, or on a unit standing on an own city
+ * center. Never one that kills the attacker without a kill, deals nothing,
+ * or that a faction rule rejects.
+ */
+function armyCommitAttackV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+): boolean {
+  if (!context.army) return false;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const target = context.lookup.unitsById.get(command.targetUnitId);
+  if (actor === undefined || target === undefined || actor.form !== "LAND")
+    return false;
+  if (
+    !armyCommitAcceptsV7(context, actor, target) &&
+    !armyOnOwnCenterV7(context, target)
+  )
+    return false;
+  const preview = queryCombatPreviewV7(
+    view,
+    command.unitId,
+    command.targetUnitId,
+  );
+  return (
+    preview !== null &&
+    preview.damageToDefender > 0 &&
+    (!preview.attackerDies || preview.defenderDies) &&
+    !attackFactionRejectedV7(context, command, actor, preview)
+  );
+}
+
+/**
+ * Tuning 6 attack values: an enemy on an own center is attacked before
+ * anything but a capture; a fast or ranged unit prefers a ranged, siege,
+ * or support target; a committed unit's hit that does not kill goes ahead
+ * of every routine action, the shots from two or more tiles first (at the
+ * anchors: a unit in cover or on a fortification, or a defender).
+ */
+function armyAttackValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+  preview: CombatPreviewV7,
+  priority: number,
+): { readonly priority: number; readonly strategic: number } {
+  if (!context.army || actor.form !== "LAND" || target.form !== "LAND")
+    return { priority, strategic: 0 };
+  let strategic = 0;
+  const survives = !preview.attackerDies || preview.defenderDies;
+  if (survives && armyOnOwnCenterV7(context, target)) {
+    priority = Math.max(priority, ARMY_RETAKE_CENTER_PRIORITY_V7);
+    strategic += 40;
+  }
+  if (armyHuntsFragileV7(context, actor) && armyFragileV7(context, target))
+    strategic += ARMY_FRAGILE_TARGET_VALUE_V7;
+  // A Zombie goes for cheap infantry: what it kills rises as a Zombie.
+  if (armyZombieV7(context, actor) && armyZombiePreyV7(context, target))
+    strategic += ARMY_ZOMBIE_PREY_VALUE_V7;
+  if (
+    survives &&
+    !preview.defenderDies &&
+    preview.damageToDefender > 0 &&
+    armyModeV7(context, actor) === "COMMIT"
+  ) {
+    const shot = distance(actor.at, target.at) >= 2;
+    priority = Math.max(
+      priority,
+      shot ? ARMY_COMMIT_FIRE_PRIORITY_V7 : ARMY_COMMIT_MELEE_PRIORITY_V7,
+    );
+    if (
+      shot &&
+      (armyCoverPercentV7(context, target) > 100 ||
+        armyClassV7(unitRoleRuleV7(context.view, target)) === "DEFENDER")
+    )
+      strategic += ARMY_ANCHOR_TARGET_VALUE_V7;
+    // The hits go where the group's hits go.
+    if (armyFocusV7(context).has(target.id))
+      strategic += ARMY_FOCUS_TARGET_VALUE_V7;
+  }
+  return { priority, strategic };
+}
+
+/** A Zombie prefers cheap line infantry as a target by this much. */
+const ARMY_ZOMBIE_PREY_VALUE_V7 = 12;
+/** A Zombie's Move costs this per hostile ranged unit that reaches its end. */
+const ARMY_ZOMBIE_SHY_VALUE_V7 = 5;
+/** Line infantry at most this dear is a Zombie's prey. */
+const ARMY_ZOMBIE_PREY_COST_V7 = 2;
+
+/** An own Undead unit with Infect (the Zombie) of an army seat. */
+function armyZombieV7(context: PolicyContextV7, unit: PublicUnitV7): boolean {
+  return (
+    context.army &&
+    context.undead &&
+    unit.ownerId === context.view.viewer.id &&
+    isZombieV7(context.view, unit)
+  );
+}
+
+/** Cheap hostile line infantry (a Fighter, a Skeleton, a Goblin). */
+function armyZombiePreyV7(
+  context: PolicyContextV7,
+  target: PublicUnitV7,
+): boolean {
+  const rule = unitRoleRuleV7(context.view, target);
+  return (
+    armyClassV7(rule) === "LINE" &&
+    rule.cost !== null &&
+    rule.cost <= ARMY_ZOMBIE_PREY_COST_V7
+  );
+}
+
+/**
+ * What a Zombie's Move to `to` costs: the hostile ranged and siege units
+ * that reach `to`, less those that reach the tile it stands on: a tile out
+ * of their reach is preferred, and where every tile is under the same fire
+ * it still moves.
+ */
+function armyZombieShyV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): number {
+  if (!armyZombieV7(context, actor)) return 0;
+  const reach = armyRangedReachV7(context);
+  return (
+    ARMY_ZOMBIE_SHY_VALUE_V7 *
+    ((reach.get(coordKey(to)) ?? 0) - (reach.get(coordKey(actor.at)) ?? 0))
+  );
+}
+
+/** The nearest visible cheap hostile line infantry (then the lowest ID). */
+function armyNearestPreyV7(
+  context: PolicyContextV7,
+  at: CoordV7,
+): PublicUnitV7 | null {
+  let best: PublicUnitV7 | null = null;
+  for (const unit of armyHostilesV7(context))
+    if (
+      armyZombiePreyV7(context, unit) &&
+      (best === null ||
+        distance(unit.at, at) < distance(best.at, at) ||
+        (distance(unit.at, at) === distance(best.at, at) && unit.id < best.id))
+    )
+      best = unit;
+  return best;
+}
+
+/** A committed shot prefers a unit in cover or a defender by this much. */
+const ARMY_ANCHOR_TARGET_VALUE_V7 = 12;
+/** A committed unit prefers a unit in this turn's focus by this much. */
+const ARMY_FOCUS_TARGET_VALUE_V7 = 15;
+
+/**
+ * Expansion: a free village a capturer can step onto now. With fewer than
+ * `ARMY_EXPANSION_CITIES_V7` cities this goes before every fight; with
+ * more it is still a Move worth making at once.
+ */
+function armyVillageMoveV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): boolean {
+  if (!context.army || actor.form !== "LAND") return false;
+  const view = context.view;
+  if (!unitRoleRuleV7(view, actor).abilities.includes("CAPTURE")) return false;
+  const tile = findPublicTileV7(view, to);
+  return (
+    tile?.explored === true &&
+    tile.site === "VILLAGE" &&
+    tile.territoryOwnerId === null &&
+    !same(actor.at, to)
+  );
+}
+
+/** The own city count (expansion comes first below the threshold). */
+function armyExpandingV7(context: PolicyContextV7): boolean {
+  if (!context.army) return false;
+  const view = context.view;
+  return (
+    view.cities.filter((city) => city.ownerId === view.viewer.id).length <
+    ARMY_EXPANSION_CITIES_V7
+  );
+}
+
+/**
+ * The unit stands on a free village it will capture next turn: it does
+ * not leave it (a capture needs the unit to start its turn there).
+ */
+function armyHoldsVillageV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" | "ATTACK" }>,
+): boolean {
+  if (!context.army) return false;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  if (
+    actor === undefined ||
+    actor.form !== "LAND" ||
+    actor.ownerId !== view.viewer.id ||
+    !unitRoleRuleV7(view, actor).abilities.includes("CAPTURE")
+  )
+    return false;
+  const tile = findPublicTileV7(view, actor.at);
+  if (
+    tile?.explored !== true ||
+    tile.site !== "VILLAGE" ||
+    tile.territoryOwnerId !== null
+  )
+    return false;
+  // A unit the visible enemies would kill there may leave.
+  if (visibleImmediateDamage(view, actor, actor.at, context) >= actor.hp)
+    return false;
+  if (command.kind === "MOVE") return true;
+  const preview = queryCombatPreviewV7(
+    view,
+    command.unitId,
+    command.targetUnitId,
+  );
+  return preview !== null && (preview.attackerDies || preview.advances);
 }
 
 function* publicThreatenedTilesWorkV7(
@@ -4117,6 +5319,13 @@ function isPolicyCandidate(
     armyGarrisonHoldsV7(context, command)
   )
     return false;
+  // Tuning 6 (`pulp_wars-w49.6`): so does a unit on a village it will
+  // capture next turn.
+  if (
+    (command.kind === "MOVE" || command.kind === "ATTACK") &&
+    armyHoldsVillageV7(context, command)
+  )
+    return false;
   // Map curiosities (`pulp_wars-737.4`): the Spider and the Fountain.
   if (context.curiosities !== null && curiosityRejectsV7(context, command))
     return false;
@@ -4146,10 +5355,13 @@ function isPolicyCandidate(
   if (command.kind === "ATTACK" && isLowValueAttackV7(context, command)) {
     // pulp_wars-9s0.8: a hunter's share of a planned kill is not low value.
     const hunt = huntOfV7(context, command.unitId);
-    if (hunt?.target.id !== command.targetUnitId) return false;
-    // Tuning 5: an army plan excuses a poor exchange, never an attack a
-    // faction rule rejects (friendly bomb splash, a fed Zombie, ...).
-    if (hunt.army) {
+    if (hunt?.target.id !== command.targetUnitId) {
+      // Tuning 6 (`pulp_wars-w49.6`): nor is the attack of a committed
+      // unit, or one on a unit standing on an own center.
+      if (!armyCommitAttackV7(context, command)) return false;
+    } else if (hunt.army) {
+      // Tuning 5: an army plan excuses a poor exchange, never an attack a
+      // faction rule rejects (friendly bomb splash, a fed Zombie, ...).
       const preview = queryCombatPreviewV7(
         context.view,
         command.unitId,
@@ -4225,6 +5437,21 @@ function isPolicyCandidate(
     armyResearchHoldsV7(context, command.tech)
   )
     return false;
+  // Tuning 6 (`pulp_wars-w49.6`): no research with an enemy at the gates
+  // while a city can still train.
+  if (
+    command.kind === "RESEARCH" &&
+    !normalOpeningResearchPendingV7(context.view) &&
+    armyPressedV7(context)
+  )
+    return false;
+  // Tuning 6: no training onto a center under two or more hostile ranged
+  // units while another city can train.
+  if (
+    command.kind === "TRAIN" &&
+    armyTrainsElsewhereV7(context, command.cityId)
+  )
+    return false;
   // pulp_wars-9s0.8: the savings plan holds research it cannot spare.
   if (
     command.kind === "RESEARCH" &&
@@ -4254,9 +5481,10 @@ function isPolicyCandidate(
     const blast = previewBlastMountainV7(context.view, command.at);
     if (
       tile?.explored !== true ||
-      tile.territoryOwnerId !== context.view.viewer.id ||
       blast === null ||
-      blast.totals.friendlyDamage > 0
+      blast.totals.friendlyDamage > 0 ||
+      (tile.territoryOwnerId !== context.view.viewer.id &&
+        !chokepointBlastV7(context, command.at, blast.totals.hostileDamage))
     )
       return false;
   }
@@ -4304,8 +5532,15 @@ function isPolicyCandidate(
     economic.ok &&
     economic.preview.levelsReached.length === 0 &&
     !openingGrowthHarvestV7(context.view, command) &&
+    // Tuning 6 (`pulp_wars-w49.6`): nor the growth that costs at most 2
+    // Coins per population.
+    !(context.army && armyCheapGrowthV7(economic.preview)) &&
     savingsHoldsV7(context, command, economic.preview.cost)
   )
+    return false;
+  // Tuning 6: no construction with an enemy at the gates while a city can
+  // still train (what costs nothing is still taken).
+  if (economic.ok && economic.preview.cost > 0 && armyPressedV7(context))
     return false;
   if (
     context.naval.active &&
@@ -5773,6 +7008,16 @@ function scoreCommandWithContext(
     // Revision 16 (section 3.6 rule 2): growth before other spending.
     if (openingGrowthHarvestV7(view, command))
       priority = Math.max(priority, NORMAL_GROWTH_HARVEST_PRIORITY_V7);
+    // Tuning 6 (`pulp_wars-w49.6`): with no enemy near, an army seat buys
+    // a city level, a harvest, or a hunt before it trains.
+    if (
+      context.army &&
+      !context.naval.active &&
+      priority >= 0 &&
+      armyCheapGrowthV7(economic.preview) &&
+      armyUnthreatenedV7(context)
+    )
+      priority = Math.max(priority, ARMY_GROWTH_PRIORITY_V7);
     if (command.kind === "BUILD_ROAD") {
       const corridor = context.tactical.roadCorridor;
       if (
@@ -5802,6 +7047,9 @@ function scoreCommandWithContext(
         );
       futureValue = scorePublicSpatialPlanV7(view, command);
       priority = imminent > 0 ? 1210 : 1150;
+      // Tuning 6 (`pulp_wars-w49.6`): a Monument is free population.
+      if (context.army && !context.naval.active)
+        priority = ARMY_GROWTH_PRIORITY_V7;
     }
   }
 
@@ -5968,7 +7216,17 @@ function scoreCommandWithContext(
     context.army &&
     armyResearchTargetV7(context)?.tech === command.tech
   ) {
-    priority = Math.max(priority, ARMY_RESEARCH_PRIORITY_V7);
+    // Tuning 6 (`pulp_wars-w49.6`): due and no enemy near, it is bought
+    // before training; due with an enemy near, after training (tuning 5);
+    // not due, after the growth that adds population.
+    // While the seat expands, a city that can train goes first: its
+    // first units take the villages.
+    priority = !armyResearchIsDueV7(context)
+      ? ARMY_UNDUE_RESEARCH_PRIORITY_V7
+      : armyUnthreatenedV7(context) &&
+          !(armyExpandingV7(context) && armyCanTrainV7(context))
+        ? ARMY_DUE_RESEARCH_PRIORITY_V7
+        : Math.max(priority, ARMY_RESEARCH_PRIORITY_V7);
     strategicValue = Math.max(strategicValue, 100);
   }
 
@@ -5995,8 +7253,11 @@ function scoreCommandWithContext(
     strategicValue = trainingStrategicValue(context, command);
     // Tuning 5 (`pulp_wars-w49.4`): an alert army seat trains before any
     // research and construction, the role it lacks most first.
-    if (command.kind === "TRAIN" && armyAlertV7(context)) {
-      priority = Math.max(priority, ARMY_TRAINING_PRIORITY_V7);
+    if (command.kind === "TRAIN" && armyTrainsFirstV7(context)) {
+      // Tuning 6 (`pulp_wars-w49.6`): with no enemy near and two thirds
+      // of the unit slots filled (`warTrainingFirstV7`), the growth that
+      // adds population goes first and training tops the army up after.
+      priority = Math.max(priority, armyTrainingPriorityV7(context));
       strategicValue =
         1000 + (context.armyTrainingScoreByCity.get(command.cityId) ?? 0);
     }
@@ -6264,6 +7525,18 @@ function scoreCommandWithContext(
       }
       // pulp_wars-9s0.8: the hunters' attacks on a hunted high-value unit.
       priority = huntAttackPriorityV7(context, command, preview, priority);
+      // Tuning 6 (`pulp_wars-w49.6`): the assault and the retaken center.
+      if (context.army && actor !== undefined && targetUnit !== undefined) {
+        const army = armyAttackValueV7(
+          context,
+          actor,
+          targetUnit,
+          preview,
+          priority,
+        );
+        priority = army.priority;
+        strategicValue += army.strategic;
+      }
       // pulp_wars-68k.6: focused fire, then the committed melee attack.
       priority = chokepointAttackPriorityV7(
         context,
@@ -6812,6 +8085,23 @@ function scoreCommandWithContext(
     // The Mind Control revision (section 4.1): a controlled unit is never
     // disbanded (the engine never offers it; the policy never asks).
     if (isMindControlledV7(view, actor.id)) priority = -1;
+  }
+
+  // The correction pass of tuning 6: a Mountain beside a held gate is
+  // blasted before the column attacks (the filter allowed only this one
+  // outside the own territory).
+  if (command.kind === "BLAST_MOUNTAIN" && context.chokepoint !== null) {
+    const tile = findPublicTileV7(view, command.at);
+    const blast = previewBlastMountainV7(view, command.at);
+    if (
+      tile?.explored === true &&
+      tile.territoryOwnerId !== view.viewer.id &&
+      blast !== null &&
+      chokepointBlastV7(context, command.at, blast.totals.hostileDamage)
+    ) {
+      priority = Math.max(priority, CHOKEPOINT_FIRE_PRIORITY_V7 + 2);
+      strategicValue += 4 * blast.totals.hostileDamage;
+    }
   }
 
   if (command.kind === "KABOOM" && actor !== undefined && context.goblin) {
@@ -8459,6 +9749,48 @@ function endgameMoveValueV7(
 // and the public previews, and add no PRNG use, elapsed-time input, or work
 // units: each is a bounded scan inside an existing scoring step.
 
+/**
+ * The assault on a single-file front is on: the attrition clock has struck
+ * (`chokepointAssaultV7`), or, for a seat that plays the army rules, the
+ * own units that have come up outweigh the garrison (the position of a
+ * garrison unit is committed, `armyAssaultV7`). The correction pass of
+ * tuning 6: a seat with numbers attacks the gate every turn instead of
+ * waiting for its Coins to pile up.
+ */
+function chokepointAssaultOnV7(context: PolicyContextV7): boolean {
+  if (chokepointAssaultV7(context.view)) return true;
+  return chokepointNumbersV7(context);
+}
+
+/**
+ * A Blast Mountain outside the own territory that helps at a chokepoint
+ * front with numbers: the Mountain is next to the corridor or to a holder
+ * (it becomes ground the column can use), or the blast hurts the garrison.
+ */
+function chokepointBlastV7(
+  context: PolicyContextV7,
+  at: CoordV7,
+  hostileDamage: number,
+): boolean {
+  const plan = context.chokepoint;
+  if (plan === null || !chokepointNumbersV7(context)) return false;
+  return (
+    hostileDamage > 0 ||
+    plan.corridor.some((tile) => distance(tile, at) <= 1) ||
+    plan.holders.some((holder) => distance(holder.at, at) <= 1)
+  );
+}
+
+/** The own units at a chokepoint front outweigh its garrison. */
+function chokepointNumbersV7(context: PolicyContextV7): boolean {
+  const plan = context.chokepoint;
+  if (plan === null || !context.army) return false;
+  const positions = armyAssaultV7(context).positionByHostile;
+  return plan.garrison.some(
+    (unit) => positions.get(unit.id)?.mode === "COMMIT",
+  );
+}
+
 /** The viewer's own land unit a placement rule applies to, or undefined. */
 function chokepointActorV7(
   context: PolicyContextV7,
@@ -8508,7 +9840,7 @@ function chokepointSiegeSlotV7(
     chokepointUnitClassV7(context.view, actor) === "RANGED" &&
     chokepointTargetsInRangeV7(context.view, plan, actor, to) > 0 &&
     chokepointPlaceAllowedV7(context.view, plan, actor, to) &&
-    (chokepointAssaultV7(context.view) ||
+    (chokepointAssaultOnV7(context) ||
       visibleImmediateDamage(context.view, actor, to, context) < actor.hp)
   );
 }
@@ -8634,7 +9966,10 @@ function chokepointCommitV7(
       return false;
   }
   if (target.hp * 2 <= target.maxHp) return true;
-  if (!chokepointAssaultV7(view)) return false;
+  if (!chokepointAssaultOnV7(context)) return false;
+  // With numbers the gate is fed every turn: the head attacks whenever it
+  // survives, and the next unit takes its place when it is worn down.
+  if (chokepointNumbersV7(context)) return true;
   // The assault: this turn's surviving attackers together out-damage the
   // target's idle recovery.
   const tile = findPublicTileV7(view, target.at);
@@ -8765,7 +10100,7 @@ function chokepointMoveValueV7(
       slot === null ||
       chokepointSlotStepsV7(context, plan, actor, slot.at, to) >=
         chokepointSlotStepsV7(context, plan, actor, slot.at, actor.at) ||
-      (!chokepointAssaultV7(view) &&
+      (!chokepointAssaultOnV7(context) &&
         visibleImmediateDamage(view, actor, to, context) >= actor.hp)
     )
       return unchanged;
@@ -8797,7 +10132,7 @@ function chokepointMoveValueV7(
   // cleared it: the column goes through) or the attrition clock has struck.
   if (
     !plan.open &&
-    !chokepointAssaultV7(view) &&
+    !chokepointAssaultOnV7(context) &&
     visibleImmediateDamage(view, actor, to, context) >= actor.hp
   )
     return unchanged;
@@ -8886,7 +10221,7 @@ function chokepointSlotV7(
         Math.max(Math.abs(dx), Math.abs(dy));
       if (best !== null && score <= best.score) continue;
       if (
-        !chokepointAssaultV7(view) &&
+        !chokepointAssaultOnV7(context) &&
         visibleImmediateDamage(view, actor, at, context) >= actor.hp
       )
         continue;
@@ -9247,6 +10582,22 @@ function kaboomScoreV7(
     (unit, damage, dies) => hostileLossValueV7(context, unit, damage, dies),
     (unit, damage, dies) => friendlyLossValueV7(view, unit, damage, dies),
   );
+  // Tuning 6 (`pulp_wars-w49.6`): an army seat's unit blows itself up only
+  // for a kill or on two or more enemies (it spent Goblins, and Scrap
+  // Buggies, on 5 damage to one unit).
+  if (context.army && chain.hostileKills === 0) {
+    const hit = new Set<UnitId>();
+    for (const explosion of preview.explosions)
+      for (const result of explosion.results)
+        if (
+          result.unitId !== null &&
+          !result.friendly &&
+          result.damage > 0 &&
+          isHostile(view, result.ownerId)
+        )
+          hit.add(result.unitId);
+    if (hit.size < 2) return none;
+  }
   const doomed = goblinDoomedAtV7(context, actor, actor.at);
   let exploder = retainedUnitValue(view, actor);
   if (doomed) exploder = Math.floor(exploder / 3);
@@ -13814,7 +15165,9 @@ function preferredReward(
               tile.territoryOwnerId === null &&
               distance(tile.at, city.at) <= 2,
           ).length;
-    return offered.includes("TREASURY_6") && neutral >= 4
+    // Tuning 6 (`pulp_wars-w49.6`): an army seat takes population (toward
+    // the next level and its unit slot) before the 6 Coins.
+    return !context.army && offered.includes("TREASURY_6") && neutral >= 4
       ? "TREASURY_6"
       : offered.includes("BOOM")
         ? "BOOM"

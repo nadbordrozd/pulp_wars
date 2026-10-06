@@ -114,13 +114,13 @@ describe("tuning 1 identity", () => {
   // Tuning 1 took 7r46; tuning 2 (tests/unit/ruleset-v7-tuning-2.test.ts)
   // took 7r47, so 7r46 is the last prior identity.
   it("was 7r46, after 7r45 in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r48.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r49");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r49.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(47);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(48);
   });
 });
 
@@ -274,9 +274,10 @@ describe("A: retaliation uses the base Defense, without fortification or cover",
 });
 
 // Tuning 4 replaced the per-city steps of tuning 1 (1, 2, and 2) by 2 Coins
-// per technology already owned beyond the first, for every tier.
-describe("B: research cost steps of 2 per technology owned", () => {
-  it("costs 5/7/9 with one technology and 15/17/19 with six", () => {
+// per technology already owned beyond the first, for every tier; tuning 6
+// (`pulp_wars-w49.6`) made that 1 Coin.
+describe("B: research cost steps of 1 per technology owned", () => {
+  it("costs 5/7/9 with one technology and 10/12/14 with six", () => {
     const table = [1, 2, 3, 4, 5, 6].map((owned) => [
       technologyResearchCostV7(1, owned),
       technologyResearchCostV7(2, owned),
@@ -284,11 +285,11 @@ describe("B: research cost steps of 2 per technology owned", () => {
     ]);
     expect(table).toEqual([
       [5, 7, 9],
+      [6, 8, 10],
       [7, 9, 11],
+      [8, 10, 12],
       [9, 11, 13],
-      [11, 13, 15],
-      [13, 15, 17],
-      [15, 17, 19],
+      [10, 12, 14],
     ]);
   });
 });

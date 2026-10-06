@@ -19,7 +19,8 @@ import type {
  * revision 2: both sides have Engineering and field Swordsmen (the middle
  * Fighter of each screen in `LAB_BACKLINE`, one Fighter of every front
  * city in `LAB_LATE`). `LAB_SIEGE` is unchanged: its player can research
- * Engineering (21 Coins) and train Swordsmen as a fifth way in.
+ * Engineering (14 Coins since tuning 6, 21 before) and train Swordsmen as a
+ * fifth way in.
  */
 const DRY_NAVAL_V7: readonly TechnologyIdV7[] = [
   "SHORECRAFT",
@@ -39,7 +40,8 @@ const NO_RESOURCES_14_V7 = Array.from({ length: 14 }, () => "..............");
  * Defense), and a Marksman and two Catapults behind. A neutral Mountain
  * touches the whole screen. The player has two cities, six units, 60 Coins,
  * and every prerequisite of Sawmilling (Catapults), Chivalry (Knights),
- * Explosives (Blast and Breach), and Fieldcraft, at 23 Coins the first.
+ * Explosives (Blast and Breach), and Fieldcraft, at 16 Coins the first
+ * (tuning 6: research costs 1 Coin more per technology owned; 23 before).
  * The AI's whole army is the garrison of its capital (`GUARD`): it keeps
  * the formation.
  *

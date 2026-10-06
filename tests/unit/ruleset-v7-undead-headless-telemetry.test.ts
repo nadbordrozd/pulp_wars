@@ -140,7 +140,9 @@ describe("ruleset-7 revision-13 headless Undead telemetry", () => {
     // (`pulp_wars-ykw.3`; seed 2 before, see the area-attack
     // tests; seed 15 until the 3 starting Coins of `pulp_wars-if6`). Seed 12
     // since tuning 1 (`pulp_wars-w49.3`, 7r46), and seed 3 since tuning 3.
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 3), {
+    // Seed 5 since tuning 6 (`pulp_wars-w49.6`: seed 3 trains its one Lich
+    // too late to splash; seeds 2, 5, 8, 9, 10, and 14 of 0-15 splash).
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 5), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);

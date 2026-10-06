@@ -49,25 +49,26 @@ import {
  */
 // Tuning 1 (`pulp_wars-w49.3`, 7r46): the per-city steps were 1 / 2 / 2
 // (1 / 3 / 5 before). Tuning 4: the price no longer reads the city count;
-// the step is 2 Coins per technology the player already owns beyond its
-// first, for every tier. Rows: 1..8 owned technologies.
+// the step is per technology the player already owns beyond its first,
+// for every tier: 2 Coins in tunings 4 and 5, 1 Coin since tuning 6
+// (`pulp_wars-w49.6`, 7r49). Rows: 1..8 owned technologies.
 const RESEARCH_COST_TABLE: readonly (readonly [number, number, number])[] = [
   [5, 7, 9],
+  [6, 8, 10],
   [7, 9, 11],
+  [8, 10, 12],
   [9, 11, 13],
+  [10, 12, 14],
   [11, 13, 15],
-  [13, 15, 17],
-  [15, 17, 19],
-  [17, 19, 21],
-  [19, 21, 23],
+  [12, 14, 16],
 ];
 
 describe("ruleset-7 revision-16 research costs", () => {
-  it("prices every tier by the technologies already owned (tuning 4)", () => {
+  it("prices every tier by the technologies already owned (tuning 4; 1 Coin each since tuning 6)", () => {
     expect(TECHNOLOGY_RESEARCH_COST_V7).toEqual({
-      1: { base: 5, step: 2 },
-      2: { base: 7, step: 2 },
-      3: { base: 9, step: 2 },
+      1: { base: 5, step: 1 },
+      2: { base: 7, step: 1 },
+      3: { base: 9, step: 1 },
     });
     expect(
       RESEARCH_COST_TABLE.map((_, index) =>
@@ -105,10 +106,11 @@ describe("ruleset-7 revision-16 research costs", () => {
           0,
         );
     expect(factionTreeV7("ORIGINAL").nodes).toHaveLength(25);
-    // Dry Land has 20 technologies (no Naval branch of five): 21 Coins of
-    // tier 1, 160 of tier 2 and 304 of tier 3.
-    expect(whole(true)).toBe(485);
-    expect(whole(false)).toBe(732);
+    // Dry Land has 20 technologies (no Naval branch of five): 18 Coins of
+    // tier 1, 108 of tier 2 and 188 of tier 3 (tuning 6; 21, 160, and 304
+    // at 2 Coins a technology owned: 485, and 732 with the Naval branch).
+    expect(whole(true)).toBe(314);
+    expect(whole(false)).toBe(456);
   });
 
   it("offers the revision-16 costs in the public tree and charges them", () => {

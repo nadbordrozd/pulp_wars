@@ -130,10 +130,14 @@ describe("ruleset-7 exact public query indexing", () => {
     expect(rightOperations).toBe(
       // 4 097 since tuning 4 (one RESEARCH fewer in the retained view);
       // 4 099 since tuning 5 (two cities offer the Swordsman).
-      4_099 + publicPlanningFactScanOperations(rightView),
+      // 4 105 since tuning 6 (six RESEARCH commands are offered again).
+      4_105 + publicPlanningFactScanOperations(rightView),
     );
     expect(canonicalHash(leftResult)).toBe(
-      "fadb84607b2ce160b46f1f906d29868b117507da5630b9b8b3beb186a8ee4dc8",
+      // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
+      // technology owned, so the retained view's 12 Coins buy a technology
+      // again and six RESEARCH commands are offered (was fadb84…4dc8).
+      "2df0a7078585ff4ec1ba0a0344afbdcecac63245d4b619bf2c27f849e8166a92",
     );
     expect(rightResult).toEqual(leftResult);
   });

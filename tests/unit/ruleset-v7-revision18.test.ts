@@ -277,22 +277,22 @@ const MOVER_BY_MOVE: Readonly<Record<1 | 2 | 3, UnitRoleIdV7>> = {
 };
 
 describe("ruleset-7 revision-18 identity", () => {
-  it("keeps r17 and r18 among the gap-free prior identities after the r48 identity and cleans their keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r48.current");
+  it("keeps r17 and r18 among the gap-free prior identities after the r49 identity and cleans their keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r49");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r49.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 46 },
+        { length: 47 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-31)).toBe("pulp-wars-poc-7r17");
-    expect(PRIOR_RULESET_7_IDS.at(-30)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-32)).toBe("pulp-wars-poc-7r17");
+    expect(PRIOR_RULESET_7_IDS.at(-31)).toBe("pulp-wars-poc-7r18");
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 46 },
+        { length: 47 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -329,7 +329,7 @@ describe("ruleset-7 revision-18 identity", () => {
     const setup = goblinSetupV7(["GOBLIN", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r48");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r49");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r17" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -1248,7 +1248,12 @@ describe("ruleset-7 revision-18 Road cost by origin", () => {
 describe("ruleset-7 revision-18 public and engine parity", () => {
   const totals = { passThroughMoves: 0, roadOriginMoves: 0, conservative: 0 };
   it.each([
-    { factions: ["ORIGINAL", "ORIGINAL"], mapType: "PANGEA", seed: 0 },
+    // Tuning 6 (`pulp_wars-w49.6`): the Normal AI of these three factions
+    // researches toward its army first, so Roads come late and none of the
+    // three matches had a step off a Road within 26 rounds; the Human
+    // Pangea match is seed 7 (seed 0 before), which has ten (of seeds 0-9
+    // the only one).
+    { factions: ["ORIGINAL", "ORIGINAL"], mapType: "PANGEA", seed: 7 },
     { factions: ["UNDEAD", "GOBLIN"], mapType: "CONTINENTS", seed: 5 },
     { factions: ["GOBLIN", "ORIGINAL"], mapType: "LAKES", seed: 8 },
   ] as const)(

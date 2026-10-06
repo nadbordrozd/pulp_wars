@@ -109,6 +109,14 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "2975321dbfb42083e68681f31ed09217232c4856c4b43d5feef85acd5ce1aef2",
   "LAB_LATE@2:ORIGINAL":
     "9aec749baf81daae59ec354bc9d322dfe1e91c4dcf00406ad02c106e3881b1ca",
+  // Tuning 6 (`pulp_wars-w49.6`): numbers against a prepared line, one
+  // fixture per attacking faction (the player is Human in each).
+  "LAB_BREAKTHROUGH@1:ORIGINAL":
+    "cc654d9551cb311b7df84efa0145ccc1365d8464fac195d73467ddf5575be4c9",
+  "LAB_BREAKTHROUGH_GOBLIN@1:ORIGINAL":
+    "2ef1db85daef0b3494d163f54e2525d767384c15823b76b32835754027280a6c",
+  "LAB_BREAKTHROUGH_UNDEAD@1:ORIGINAL":
+    "c7e71865750d1d0b1479577c359bf617b79beacb7bc6abce578475c89c3628e5",
 };
 
 /**
@@ -201,6 +209,13 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "bf278fe987b22356a48b8a199331a3435878bc5072ec31f85691371d6be31277",
   "LAB_LATE@2:ORIGINAL":
     "67247565f08469287eeae5e2a66f4b4a3a9f270e9d2d1d08bc1d595cb68e0643",
+  // The breakthrough labs of tuning 6: the same reduction of the state.
+  "LAB_BREAKTHROUGH@1:ORIGINAL":
+    "6ccb8e03ac5fbde39f519a869f27842d9d04c76b6f4ae22a9edff82b63621c3d",
+  "LAB_BREAKTHROUGH_GOBLIN@1:ORIGINAL":
+    "1373e09cadca8389096d78651cdd32bcc90151e3238e2558381fed099388b9a6",
+  "LAB_BREAKTHROUGH_UNDEAD@1:ORIGINAL":
+    "1d5eeb851165e178d979abbb49cf65a9f24c3a23665ee5af8ed6a1e1df9682c4",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {

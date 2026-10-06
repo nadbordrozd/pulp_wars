@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r48");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r48.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r49");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r49.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r47 and preserves the r48 save", () => {
+  it("cleans obsolete keys through v7r48 and preserves the r49 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r47.current",
+      "pulpWars.save.v7r48.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(47);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(48);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -1723,21 +1723,27 @@ describe("ruleset-7 all-Human parity digests", () => {
       // Tuning 5 (`pulp_wars-w49.4`: the Normal AI's army play, the Guard
       // open to ranged attacks, the Swordsman): the match ends in round 23
       // (301 commands), and every digest below was recomputed.
-      acceptedCommands: 301,
-      rounds: 23,
+      // Tuning 6 (`pulp_wars-w49.6`: research at 1 Coin a technology owned,
+      // the reward unit beside the center, the Normal AI's assault,
+      // expansion, and research order): the match ends in round 25 (271
+      // commands; round 20 and 228 before the correction pass gave each
+      // faction its own research order), and every digest below was
+      // recomputed.
+      acceptedCommands: 271,
+      rounds: 25,
       termination: "OUTCOME",
       mapHash:
         "251ae814b9c22679f8ed6b288c0a9ae2a06574b84b5b719521970f6f24a3e51c",
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "6705af943ee210eca934da08bc04740eccfa0358ae3e9211075943d3f099426e",
+        "510df05a261d1725b945893c9eaab2d9c3bee69c7f8ace4245986ee91032f971",
       eventHash:
-        "a2bd80f36db0fcd31b610ec1e43ca66f1d8d259fdecabbf7813ab2318e9960f2",
+        "21f76501dcb475ec8e97dab0d1e0a8c650f0f824d5b7c8efd04177de17b72cb5",
       normalizedFinalStateHash:
-        "c83b0b3d8ddca897eb5959a8cbaec6f9c66a970ae061f0953645165439ddef98",
+        "3673a7627098148cdcaedf48f4581469f4e0a1a089ba2c0cf451e59d5face5a6",
       normalizedHumanViewHash:
-        "10b4ce8bdcc7ceda8a94f1504415dd1adfdf0beca449959c4b604ad18c86c2d8",
+        "2a20fab2591b9aefc7ffa7b85eb7de9bc8dedb17f24dcab6e2cbf404d3804ed1",
       normalizedHumanCommandsHash:
         "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     },
@@ -1750,7 +1756,8 @@ describe("ruleset-7 all-Human parity digests", () => {
       maxRounds: 18,
       // Tuning 4: 309 commands (337 before), recomputed.
       // Tuning 5: 313 commands, recomputed.
-      acceptedCommands: 313,
+      // Tuning 6 (`pulp_wars-w49.6`): 354 commands, recomputed.
+      acceptedCommands: 354,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1758,15 +1765,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "b11910d95aeab8c56bbf6f72f63d4e6f6b30f7e43f842d8354e7badf23e1050c",
       commandHash:
-        "b9e726de91a2dd853f727fc076ef93a38fa4bc4484c12d12b0bbff41f2a43c27",
+        "a8f5b0a5517f22c68500b19374495b4fb62abfb5b4ea7f0193a8435debfa3944",
       eventHash:
-        "812b8d24bf7550c48d9a4bda3745adb8a169bc1da85dddfbb4dadda49c426a45",
+        "fd49f0531e4871100e845776e7295252a7f6925a42e97254964ff6fa7e4929d3",
       normalizedFinalStateHash:
-        "397852ad317d8f5d0aae25fdd8f0397529b4ff23d0467684731a09773c850529",
+        "bdde6c73bc792fe90c743749c7c6c41cf935f154e8e9e03fc15143e718b48a13",
       normalizedHumanViewHash:
-        "18748aa1dddd2bde19c90a75e30aaed1f50a18903baafec33b95fc6ac6b4e02f",
+        "84d4e81c263548738c54aa56e86d9a13df8df8c5cc339a6db093d1c3e58acca8",
       normalizedHumanCommandsHash:
-        "569da8f860a3df041fd0bf5c7a6c9ce177a4c86d44b282736664465d0302dea3",
+        "779440fb70914e029620786937ee97c157a1d303fdda0730ada7cb6b82048f0e",
     },
   ] as const;
 

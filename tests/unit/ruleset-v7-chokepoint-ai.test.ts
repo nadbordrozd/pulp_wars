@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   chooseNormalCommandV7,
+  chooseNormalTurnCommandV7,
   type NormalAiDecisionV7,
   type ScoredAiCandidateV7,
 } from "../../src/ai/v7";
@@ -19,6 +20,7 @@ import {
   type ChokepointPlanV7,
 } from "../../src/ai/v7-chokepoint";
 import {
+  applyCommandV7,
   createPlayableGameV7,
   effectiveRoleRuleV7,
   missionByIdV7,
@@ -713,6 +715,138 @@ describe("ruleset-7 Normal AI siege of a single-file front (pulp_wars-68k.6)", (
       expect(
         chokepointAssaultV7(viewFor(neck(pieces, CHOKEPOINT_ASSAULT_BANK_V7))),
       ).toBe(true);
+    });
+  });
+
+  // Tuning 6, correction pass (`pulp_wars-w49.6`): a seat with numbers
+  // attacks the gate every turn; it does not wait for the attrition clock.
+  describe("numbers at the gate", () => {
+    /** The active seat plays its turn; returns the attacks it made. */
+    const turn = (
+      start: GameStateV7,
+    ): { readonly state: GameStateV7; readonly attacks: number } => {
+      const actor = required(start.turnOrder[start.activeSeatIndex]);
+      let state = start;
+      let attacks = 0;
+      for (let accepted = 0; accepted < 128; accepted += 1) {
+        const view = viewForV7(state, actor);
+        const command = required(
+          chooseNormalTurnCommandV7(
+            view,
+            accepted,
+            128,
+            chooseNormalCommandV7(view),
+          ),
+        );
+        if (command.kind === "ATTACK") attacks += 1;
+        const applied = applyCommandV7(state, actor, command);
+        if (!applied.accepted) throw new Error(applied.error.code);
+        state = applied.state;
+        if (command.kind === "END_TURN") break;
+      }
+      return { state, attacks };
+    };
+    const endTurn = (state: GameStateV7): GameStateV7 => {
+      const applied = applyCommandV7(
+        state,
+        required(state.turnOrder[state.activeSeatIndex]),
+        { kind: "END_TURN" },
+      );
+      if (!applied.accepted) throw new Error(applied.error.code);
+      return applied.state;
+    };
+    const column: readonly Piece[] = [
+      { seat: 0, role: "SWORDSMAN", at: FAR },
+      { seat: 0, role: "SWORDSMAN", at: ENTRANCE },
+      { seat: 0, role: "SWORDSMAN", at: TAIL },
+      { seat: 0, role: "SWORDSMAN", at: APRON_NORTH },
+      { seat: 0, role: "SWORDSMAN", at: { x: 2, y: 5 } },
+    ];
+
+    it("five Swordsmen attack one healthy Guard in the gate every turn until it falls", () => {
+      // No Coins: the attrition clock never strikes.
+      let state = neck([...column, ...GATE]);
+      expect(chokepointAssaultV7(viewFor(state))).toBe(false);
+      expect(planFor(viewFor(state))).not.toBeNull();
+      const guard = unitAt(state, MOUTH).id;
+      const log: string[] = [];
+      for (let round = 1; round <= 8; round += 1) {
+        const played = turn(state);
+        state = played.state;
+        const left = state.units.find((unit) => unit.id === guard);
+        log.push(
+          `${String(round)}:${String(played.attacks)}:${String(left?.hp ?? 0)}`,
+        );
+        if (left === undefined) break;
+        // The Guard's owner does nothing (the Guard recovers by the rules).
+        state = endTurn(state);
+      }
+      // round:attacks:the Guard's HP. The first attack is the one the siege
+      // without numbers does not make: the holder is healthy and the clock
+      // has not struck.
+      expect(log).toEqual(["1:1:8", "2:1:0"]);
+    });
+
+    it("with Explosives blasts a Mountain beside the gate before the column attacks", () => {
+      const base = neck(
+        [
+          { seat: 0, role: "SWORDSMAN", at: FAR },
+          { seat: 0, role: "SWORDSMAN", at: TAIL },
+          { seat: 0, role: "SWORDSMAN", at: APRON_NORTH },
+          { seat: 0, role: "SWORDSMAN", at: { x: 2, y: 5 } },
+          { seat: 0, role: "SWORDSMAN", at: { x: 2, y: 4 } },
+          ...GATE,
+        ],
+        6,
+      );
+      const rock = { x: 5, y: 4 };
+      const state: GameStateV7 = {
+        ...base,
+        players: base.players.map((player) =>
+          player.seat === 0
+            ? {
+                ...player,
+                researchedTechs: [
+                  ...new Set([
+                    ...player.researchedTechs,
+                    "DRILL",
+                    "FORTIFICATION",
+                    "EXPLOSIVES",
+                  ] as const),
+                ],
+              }
+            : player,
+        ),
+        board: {
+          ...base.board,
+          tiles: base.board.tiles.map((tile) =>
+            same(tile.at, rock)
+              ? {
+                  ...tile,
+                  biome: "HIGHLANDS" as const,
+                  terrain: "MOUNTAIN" as const,
+                  resource: null,
+                }
+              : tile,
+          ),
+        },
+      };
+      const decision = chooseNormalCommandV7(viewFor(state));
+      expect(decision.command).toEqual({ kind: "BLAST_MOUNTAIN", at: rock });
+      expect(decision.candidates[0]?.score.priority).toBe(
+        CHOKEPOINT_FIRE_PRIORITY_V7 + 2,
+      );
+    });
+
+    it("two Guards do not: without numbers the old siege waits", () => {
+      const state = neck([
+        { seat: 0, role: "GUARD", at: FAR },
+        { seat: 0, role: "GUARD", at: TAIL },
+        ...GATE,
+      ]);
+      expect(
+        attacksOf(chooseNormalCommandV7(viewFor(state)), unitAt(state, FAR)),
+      ).toEqual([]);
     });
   });
 
