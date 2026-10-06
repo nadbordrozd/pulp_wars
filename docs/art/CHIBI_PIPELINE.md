@@ -519,6 +519,28 @@ the resource field of
 Forest and Fruit on Grass in runs of three, with a Fighter of each of the
 four player colours.
 
+Batch `fish-variants` (bead `pulp_wars-2yc.16`, the user: "generate a few
+different fish variants") adds three rasters to `RESOURCE:FISH` after the
+batch-3 leaping fish, on the same 40 x 40 canvas centred on the cell: a
+shoal of three (`RESOURCE:FISH/SHOAL`), a pair leaping apart out of one
+splash (`RESOURCE:FISH/PAIR`) and a fish diving into a splash
+(`RESOURCE:FISH/DIVE`). With four variants the hash gives every Shallow
+Water tile one of them, never the same one as the tile beside or below it.
+The interface asks without a tile and keeps the first fish. The `resource`
+class sends no light layer, so each recipe states the south-west light in
+its addendum. `scripts/art/lighting-qa.ts` calls the dive, the pair and the
+first fish lit from the left; it calls the shoal lit from the right, which
+is local colour (the dark blue backs are on the left of the fish and their
+yellow faces on the right), not shading. Rejected on the way: fish on a
+grass block or a pond island, two upright fish that read as long-haired
+figures, a whale-like body, an orange-red goldfish and fish under about
+24 px. The batch has no in-game capture of its own in
+`art/pixellab/reviews/chibi-batch-fish-variants/` (the resource field of the
+batch review holds Game and Fruit); `scripts/art/resource-review.ts`
+captures Fish on shallow and deep water, and the Gallery's Water detail
+lists every Fish variant on Shallow Water and shows all four on its sample
+board.
+
 ## Owner masks
 
 Owned assets (units, cities, and improvements that opt in) get a

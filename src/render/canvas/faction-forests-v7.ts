@@ -287,7 +287,7 @@ export function createFactionForestArtV7(input: {
         const [set, own] = split(variant);
         return artOf(set)?.band(shape, own, column, row) ?? null;
       },
-      glade: (ground, variant) => base.glade(ground, variant),
+      glade: (ground) => base.glade(ground),
       floor(at, edges) {
         const set = sets.get(`${at.x},${at.y}`) ?? 0;
         const id = FACTION_FOREST_IDS_V7[set - 1];

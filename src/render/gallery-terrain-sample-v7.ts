@@ -32,7 +32,9 @@ import type { GalleryTerrainRowIdV7 } from "./gallery-terrain-presentation-v7";
  *    6   ...TT
  * ```
  *
- * Grass is the patch itself; the Rift is one crack in each direction.
+ * Grass is the patch itself; the Rift is one crack in each direction. The
+ * Water patch has Fish on four cells of its shallow column, one for each
+ * Fish variant (the board picks a variant from a cell's coordinates).
  */
 const SIZE = 11;
 const CAPITAL: CoordV7 = { x: 4, y: 4 };
@@ -66,6 +68,19 @@ function terrainRows(row: GalleryTerrainRowIdV7): string[] {
   return grid.map((line) => line.join(""));
 }
 
+/** Fish of the Water patch: column 5 is shallow, rows 2 to 5 are in view. */
+const FISH: readonly CoordV7[] = [2, 3, 4, 5].map((y) => ({ x: 5, y }));
+
+function resourceRows(row: GalleryTerrainRowIdV7): string[] {
+  return Array.from({ length: SIZE }, (_, y) =>
+    Array.from({ length: SIZE }, (_, x) =>
+      row === "WATER" && FISH.some((at) => at.x === x && at.y === y)
+        ? "s"
+        : ".",
+    ).join(""),
+  );
+}
+
 function mission(
   row: GalleryTerrainRowIdV7,
   faction: FactionIdV7,
@@ -77,7 +92,7 @@ function mission(
     size: SIZE,
     seed: 1,
     terrain: terrainRows(row),
-    resources: Array.from({ length: SIZE }, () => ".".repeat(SIZE)),
+    resources: resourceRows(row),
     biome: "PLAINS",
     villages: [],
     aiMode: "RIVAL",

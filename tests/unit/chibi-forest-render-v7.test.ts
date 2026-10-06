@@ -26,7 +26,8 @@ import {
 } from "../../src/render/canvas/chibi-forest-packing-v7";
 import {
   chibiForestCellsV7,
-  chibiForestGladeMaskV7,
+  CHIBI_FOREST_GLADE_V7,
+  chibiForestGladeAlphaV7,
   createChibiForestArtV7,
   type ChibiForestRasterEnvironmentV7,
 } from "../../src/render/canvas/chibi-forest-v7";
@@ -395,9 +396,10 @@ describe("forest piece set", () => {
     expect(art.floor({ x: 3, y: 4 }, 0)).toBe(art.floor({ x: 9, y: 9 }, 0));
     expect(art.floor({ x: 3, y: 4 }, 5)).toBe(art.floor({ x: 3, y: 4 }, 5));
     const ground = { url: "ground" } as unknown as CanvasImageSource;
-    expect(art.glade(ground, 1)).toBe(art.glade(ground, 1));
-    expect(art.glade(ground, 1)).not.toBe(art.glade(ground, 2));
-    expect(size(art.glade(ground, 0))).toEqual([80, 80]);
+    const other = { url: "other" } as unknown as CanvasImageSource;
+    expect(art.glade(ground)).toBe(art.glade(ground));
+    expect(art.glade(ground)).not.toBe(art.glade(other));
+    expect(size(art.glade(ground))).toEqual([80, 80]);
   });
 
   it("uses the softened seam clumps whole", () => {
@@ -409,46 +411,80 @@ describe("forest piece set", () => {
     }
   });
 
-  it("cuts a small glade with a dithered edge and no trunks under it", () => {
-    for (let variant = 0; variant < 4; variant += 1) {
-      // The core holds a centred resource.
-      for (let y = 26; y < 51; y += 1)
-        for (let x = 28; x < 52; x += 1)
-          expect(chibiForestGladeMaskV7(x, y, variant)).toBe(true);
-      // A channel runs from the core to the cell's bottom edge.
-      for (let y = 51; y < 80; y += 1)
-        expect(chibiForestGladeMaskV7(40, y, variant)).toBe(true);
-      // The top rows and the corners of the cell stay forest.
-      for (let x = 0; x < 80; x += 1)
-        for (let y = 0; y < 12; y += 1)
-          expect(chibiForestGladeMaskV7(x, y, variant)).toBe(false);
+  it("opens a round glade with a soft edge about the centre of the cell", () => {
+    const { x: cx, y: cy, core, rim } = CHIBI_FOREST_GLADE_V7;
+    // Centred on the cell, where the resource sits, and inside the cell.
+    expect([cx, cy]).toEqual([40, 40]);
+    expect(rim).toBeLessThan(40);
+    expect(core).toBeLessThan(rim);
+    let open = 0;
+    let part = 0;
+    for (let y = 0; y < 80; y += 1)
+      for (let x = 0; x < 80; x += 1) {
+        const alpha = chibiForestGladeAlphaV7(x, y);
+        const radius = Math.hypot(x + 0.5 - cx, y + 0.5 - cy);
+        expect(alpha).toBeGreaterThanOrEqual(0);
+        expect(alpha).toBeLessThanOrEqual(1);
+        // Fully open ground under the animal, forest outside the rim.
+        if (radius <= core) expect(alpha).toBe(1);
+        if (radius >= rim) expect(alpha).toBe(0);
+        // Round: the same from the left, the right, above and below
+        // (the old glade ran down to the cell's bottom edge).
+        expect(chibiForestGladeAlphaV7(79 - x, y)).toBe(alpha);
+        expect(chibiForestGladeAlphaV7(x, 79 - y)).toBe(alpha);
+        expect(chibiForestGladeAlphaV7(y, x)).toBe(alpha);
+        if (alpha === 1) open += 1;
+        else if (alpha > 0) part += 1;
+      }
+    // The edge fades: it never jumps from ground to trees.
+    for (let x = 40; x < 79; x += 1)
+      expect(
+        chibiForestGladeAlphaV7(x, 40) - chibiForestGladeAlphaV7(x + 1, 40),
+      ).toBeLessThan(0.2);
+    // Nothing at the edges or in the corners of the cell.
+    for (let i = 0; i < 80; i += 1)
       for (const [x, y] of [
-        [0, 0],
-        [79, 0],
-        [0, 79],
-        [79, 79],
-        [4, 40],
-        [75, 40],
+        [i, 0],
+        [i, 79],
+        [0, i],
+        [79, i],
       ] as const)
-        expect(chibiForestGladeMaskV7(x, y, variant)).toBe(false);
-      // The edge is dithered: some open pixel has a closed neighbour on
-      // both sides along its row (no straight line, no ring).
-      let open = 0;
-      let lone = 0;
-      for (let y = 12; y < 80; y += 1)
-        for (let x = 1; x < 79; x += 1) {
-          if (!chibiForestGladeMaskV7(x, y, variant)) continue;
-          open += 1;
-          if (
-            !chibiForestGladeMaskV7(x - 1, y, variant) &&
-            !chibiForestGladeMaskV7(x + 1, y, variant)
-          )
-            lone += 1;
-        }
-      expect(lone).toBeGreaterThan(10);
-      // Smaller than the old oval (about 2,800 px): about a third of a cell.
-      expect(open).toBeLessThan(2400);
-    }
+        expect(chibiForestGladeAlphaV7(x, y)).toBe(0);
+    // A small opening (the cell is 6,400 px) with a wide soft rim.
+    expect(open).toBeGreaterThan(700);
+    expect(open).toBeLessThan(1100);
+    expect(part).toBeGreaterThan(open);
+  });
+
+  it("fades the ground of a glade out towards its rim", () => {
+    const pixels: Uint8ClampedArray[] = [];
+    const { environment } = fakeEnvironment();
+    const art = createChibiForestArtV7({
+      environment: {
+        ...environment,
+        createSurface(data, width, height) {
+          pixels.push(new Uint8ClampedArray(data));
+          return environment.createSurface(data, width, height);
+        },
+      },
+      redraw: vi.fn(),
+      set: CHIBI_FOREST_ART_SET_V7,
+    }).resolve();
+    if (art === null) throw new Error("art not ready");
+    const before = pixels.length;
+    art.glade({ url: "ground" } as unknown as CanvasImageSource);
+    const glade = pixels[before];
+    if (glade === undefined) throw new Error("no glade surface");
+    const at = (x: number, y: number): number[] => [
+      ...glade.slice((y * 80 + x) * 4, (y * 80 + x) * 4 + 4),
+    ];
+    // The fake ground is 200 in every channel: colour kept, alpha scaled.
+    expect(at(40, 40)).toEqual([200, 200, 200, 200]);
+    expect(at(0, 0)).toEqual([200, 200, 200, 0]);
+    expect(at(40, 79)).toEqual([200, 200, 200, 0]);
+    const rim = at(40 + 23, 40)[3] ?? 0;
+    expect(rim).toBeGreaterThan(0);
+    expect(rim).toBeLessThan(200);
   });
 });
 

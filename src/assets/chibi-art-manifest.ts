@@ -1205,6 +1205,34 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     height: 48,
     url: chibiArtUrl("assets/chibi/resources/chibi-fruit-pear.png"),
   },
+  // Fish variants (pulp_wars-2yc.16, batch fish-variants): a shoal, a
+  // leaping pair and a diving fish after the batch-3 leaping fish, the same
+  // 40 x 40 canvas centred on the cell. Each tile picks one by its
+  // coordinates (chibiVariantV7).
+  {
+    id: "chibi-fish-shoal",
+    subject: "RESOURCE:FISH",
+    assetClass: "RESOURCE",
+    width: 40,
+    height: 40,
+    url: chibiArtUrl("assets/chibi/resources/chibi-fish-shoal.png"),
+  },
+  {
+    id: "chibi-fish-pair",
+    subject: "RESOURCE:FISH",
+    assetClass: "RESOURCE",
+    width: 40,
+    height: 40,
+    url: chibiArtUrl("assets/chibi/resources/chibi-fish-pair.png"),
+  },
+  {
+    id: "chibi-fish-dive",
+    subject: "RESOURCE:FISH",
+    assetClass: "RESOURCE",
+    width: 40,
+    height: 40,
+    url: chibiArtUrl("assets/chibi/resources/chibi-fish-dive.png"),
+  },
   // Goblin (pulp_wars-0ao.8, batch goblin): UNIT:GOBLIN:<ROLE> units.
   {
     id: "chibi-goblin-goblin",

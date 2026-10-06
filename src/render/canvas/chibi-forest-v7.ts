@@ -48,7 +48,7 @@ const SEAM_BASE_INSET = 0;
  * single clump it always drew, so whatever stands there (a Village, a
  * Treasure, a curiosity, a Grave) is as readable as before. A resource is
  * different: its cell is packed like any other and gets a glade, a small
- * patch of open ground under the animal (GLADE below).
+ * round patch of open ground under the animal (CHIBI_FOREST_GLADE_V7).
  */
 const CLEARING_KINDS: ReadonlySet<string> = new Set([
   "IMPROVEMENT",
@@ -256,66 +256,37 @@ export interface ChibiForestArtV7 {
     edges: number,
   ): CanvasImageSource | null;
   /**
-   * A glade: the 80 x 80 ground tile `ground` cut to a small irregular
-   * opening with a dithered edge, drawn over the trees and under a
-   * resource. `variant` is one of CHIBI_FOREST_GLADE_VARIANTS shapes.
+   * A glade: the 80 x 80 ground tile `ground` cut to a round opening with
+   * a soft edge, drawn over the trees and under a resource.
    */
-  glade(ground: CanvasImageSource, variant: number): CanvasImageSource | null;
-}
-
-/** Shapes of the glade, chosen per cell so glades do not repeat. */
-export const CHIBI_FOREST_GLADE_VARIANTS = 4;
-
-/**
- * How far cell pixel (x, y) lies inside a glade of `variant`, in pixels
- * (0 or less: outside). The opening is a round core just large enough for a
- * centred 48 px resource, two or three smaller lobes on its rim, and a
- * channel from the core down to the cell's bottom edge, so no trunk of the
- * trees in front is left standing under the opening.
- */
-function gladeDepth(x: number, y: number, variant: number): number {
-  const px = x + 0.5;
-  const py = y + 0.5;
-  let depth = 21 - Math.hypot(px - 40, py - 38);
-  for (let lobe = 0; lobe < 3; lobe += 1) {
-    const roll = forestHashV7(variant, lobe, 11, 0x91);
-    // Lobes sit on the upper half and the sides of the core.
-    const angle = Math.PI * (1 + ((roll % 1000) / 1000) * 1.2 - 0.1);
-    const radius = 7 + ((roll >>> 10) % 5);
-    depth = Math.max(
-      depth,
-      radius -
-        Math.hypot(
-          px - (40 + Math.cos(angle) * 19),
-          py - (38 + Math.sin(angle) * 17),
-        ),
-    );
-  }
-  if (py >= 38) {
-    // The channel narrows towards the bottom and wanders a little.
-    const step = Math.floor(y / 6);
-    const drift = (forestHashV7(variant, step, 12, 0x91) % 5) - 2;
-    const half = 19 - ((py - 38) / 42) * 7;
-    depth = Math.max(depth, half - Math.abs(px - 40 - drift));
-  }
-  return depth;
+  glade(ground: CanvasImageSource): CanvasImageSource | null;
 }
 
 /**
- * Whether cell pixel (x, y) is open ground of a glade. The outermost three
- * pixels are dithered (a checker, then three in four), so the opening has
- * no hard line and no ring.
+ * The glade of a resource cell, in cell pixels: a circle about the centre
+ * of the cell, where the 48 px resource sits. Inside `core` the cell's
+ * ground is fully open; from there it fades out evenly to nothing at
+ * `rim`, so the opening is round from every side and has no hard line.
+ * `rim` is well inside the cell, so a glade never reaches a neighbour.
+ * (Bead pulp_wars-2yc.16: it was an irregular blob with a channel running
+ * down to the cell's bottom edge, which read as a keyhole.)
  */
-export function chibiForestGladeMaskV7(
-  x: number,
-  y: number,
-  variant = 0,
-): boolean {
-  if (y < 12) return false;
-  const depth = gladeDepth(x, y, variant);
-  if (depth <= 0) return false;
-  if (depth >= 3) return true;
-  return depth < 1.5 ? ((x + y) & 1) === 0 : (x & 1) === 1 || (y & 1) === 1;
+export const CHIBI_FOREST_GLADE_V7 = {
+  x: 40,
+  y: 40,
+  core: 17,
+  rim: 29,
+} as const;
+
+/** How open cell pixel (x, y) of a glade is: 0 (trees) to 1 (ground). */
+export function chibiForestGladeAlphaV7(x: number, y: number): number {
+  const { core, rim } = CHIBI_FOREST_GLADE_V7;
+  const radius = Math.hypot(
+    x + 0.5 - CHIBI_FOREST_GLADE_V7.x,
+    y + 0.5 - CHIBI_FOREST_GLADE_V7.y,
+  );
+  const t = Math.min(1, Math.max(0, (rim - radius) / (rim - core)));
+  return t * t * (3 - 2 * t);
 }
 
 /** The shade under a forest: a dark green veil, about an eighth opaque. */
@@ -428,30 +399,27 @@ export function createChibiForestArtV7(input: {
     const plain = new Uint8ClampedArray(CELL * CELL * 4);
     for (let i = 0; i < plain.length; i += 4) plain.set(FLOOR_RGBA, i);
     const floors = new Map<string, CanvasImageSource | null>();
-    const glades = new WeakMap<object, (CanvasImageSource | null)[]>();
+    const glades = new WeakMap<object, CanvasImageSource | null>();
     return {
       variants,
       clumps,
-      glade(ground, variant) {
-        const shape = variant % CHIBI_FOREST_GLADE_VARIANTS;
-        let cached = glades.get(ground);
-        if (cached === undefined) {
-          cached = [];
-          glades.set(ground, cached);
-        }
-        const known = cached[shape];
+      glade(ground) {
+        const known = glades.get(ground);
         if (known !== undefined) return known;
         const source = environment.readPixels(ground, CELL, CELL);
         let surface: CanvasImageSource | null = null;
         if (source !== null) {
           const pixels = new Uint8ClampedArray(source);
           for (let y = 0; y < CELL; y += 1)
-            for (let x = 0; x < CELL; x += 1)
-              if (!chibiForestGladeMaskV7(x, y, shape))
-                pixels[(y * CELL + x) * 4 + 3] = 0;
+            for (let x = 0; x < CELL; x += 1) {
+              const alpha = (y * CELL + x) * 4 + 3;
+              pixels[alpha] = Math.round(
+                (pixels[alpha] ?? 0) * chibiForestGladeAlphaV7(x, y),
+              );
+            }
           surface = environment.createSurface(pixels, CELL, CELL);
         }
-        cached[shape] = surface;
+        glades.set(ground, surface);
         return surface;
       },
       body: (shape, variant) => bodies.get(`${shape}#${variant}`) ?? [],
@@ -751,7 +719,7 @@ export function drawChibiForestGladeV7(
   at: { readonly x: number; readonly y: number },
   ground: CanvasImageSource,
 ): void {
-  const glade = art.glade(ground, forestHashV7(at.x, at.y, 7, 0x91));
+  const glade = art.glade(ground);
   if (glade === null) return;
   blit(
     context,

@@ -365,6 +365,9 @@ export function galleryTerrainPiecesV7(
     return [
       ...subjectTiles("TERRAIN:SHALLOW_WATER"),
       ...subjectTiles("TERRAIN:DEEP_WATER"),
+      // Every Fish the board draws, on the Shallow Water it lives on
+      // (bead pulp_wars-2yc.16); a tile picks one by its coordinates.
+      ...subjectTiles("RESOURCE:FISH", [subjectLayer("TERRAIN:SHALLOW_WATER")]),
     ];
   if (row === "ICE")
     return SEA_ICE.flatMap(({ water, sheet }) =>

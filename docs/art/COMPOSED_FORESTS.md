@@ -19,15 +19,15 @@ Every explored Forest cell that still shows its canopy takes part. A Forest
 under a Lumber Camp, Windmill, Sawmill or Forge is drawn as Grass, as before,
 and does not.
 
-| Layer                | Pass         | What                                                                                                                                                                                                                                                                             |
-| -------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ground               | `GROUND`     | The Forest master's ground tile, as before: Grass, or the gloam Grass inside Undead borders.                                                                                                                                                                                     |
-| Shade                | `GROUND`     | A dark green veil, about an eighth opaque, cut back with the Mountain fringe mask along edges that face a cell without Forest. Snow and the Blizzard go over it.                                                                                                                 |
-| Seam clumps          | `TALL_BODY`  | One single clump on the east edge and one over the north edge of a cell, where the neighbour is another piece. They are drawn first, so they only show through the gaps between two pieces. They are the softened clumps of the piece set.                                       |
-| Piece footprint      | `TALL_BODY`  | The multi-tile piece, drawn once at its last cell's turn, after the Roads and under every unit and building.                                                                                                                                                                     |
-| Glade                | `FOREGROUND` | On a cell with a resource: a small irregular opening of the cell's own ground (snowy on Snow) over the trees and under the animal. Its edge is dithered, and a channel runs down to the cell's bottom edge, so no trunk is left standing under it. Four shapes, chosen per cell. |
-| Band                 | `FOREGROUND` | The piece's 24 px band above its top row, in that row's turn, exactly where the old clump's overflow was drawn.                                                                                                                                                                  |
-| Snow caps (Ice Folk) | both         | The caps of each tree raster, drawn cell by cell over Snow cells only; a piece that spans a Snow border is capped only on its Snow side.                                                                                                                                         |
+| Layer                | Pass         | What                                                                                                                                                                                                                                                                                                                               |
+| -------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ground               | `GROUND`     | The Forest master's ground tile, as before: Grass, or the gloam Grass inside Undead borders.                                                                                                                                                                                                                                       |
+| Shade                | `GROUND`     | A dark green veil, about an eighth opaque, cut back with the Mountain fringe mask along edges that face a cell without Forest. Snow and the Blizzard go over it.                                                                                                                                                                   |
+| Seam clumps          | `TALL_BODY`  | One single clump on the east edge and one over the north edge of a cell, where the neighbour is another piece. They are drawn first, so they only show through the gaps between two pieces. They are the softened clumps of the piece set.                                                                                         |
+| Piece footprint      | `TALL_BODY`  | The multi-tile piece, drawn once at its last cell's turn, after the Roads and under every unit and building.                                                                                                                                                                                                                       |
+| Glade                | `FOREGROUND` | On a cell with a resource: a small round opening of the cell's own ground (snowy on Snow) over the trees and under the animal, centred on the cell. The ground is fully open out to 17 px from the centre and fades out evenly to nothing at 29 px, so it has no hard line and stays inside its cell. See [The glade](#the-glade). |
+| Band                 | `FOREGROUND` | The piece's 24 px band above its top row, in that row's turn, exactly where the old clump's overflow was drawn.                                                                                                                                                                                                                    |
+| Snow caps (Ice Folk) | both         | The caps of each tree raster, drawn cell by cell over Snow cells only; a piece that spans a Snow border is capped only on its Snow side.                                                                                                                                                                                           |
 
 A cell with a Village, a City, a Treasure, a curiosity, a Grave, a Field
 Defense or an improvement is a **clearing**: it keeps the single clump it
@@ -35,6 +35,45 @@ always drew, gains only the shade, and no piece or seam clump touches it.
 
 While the piece set loads, or if it fails to load, every Forest cell draws
 its single clump as before.
+
+## The glade
+
+`CHIBI_FOREST_GLADE_V7` and `chibiForestGladeAlphaV7` in
+`src/render/canvas/chibi-forest-v7.ts`. The first glade (bead
+`pulp_wars-maw.3`) was an irregular blob, one of four shapes, with a channel
+running down to the cell's bottom edge so that no trunk stood under it. The
+user (2026-10-06): "This background blob has a strange shape. it appears to
+be elongated downwards. make it round or get rid of it." Bead
+`pulp_wars-2yc.16` made it one round, soft-edged opening for every cell and
+every forest set.
+
+Both ways were tried in the real game, in the default Forest, the Candy grove
+and the Undead dead wood (`scripts/art/resource-review.ts`):
+
+- **No glade** (the animal straight over the trees, with or without a
+  contact shadow): the Deer still reads in the default Forest, but the grey
+  Boar and Rabbit are lost among the brown candy and the grey dead trees.
+- **A round glade with a dithered hard edge**: round, but it reads as a disc
+  stamped on the canopy.
+- **A round glade that fades out** (chosen): reads as a small sunlit opening
+  in every set, and the trees around it are never cut along a line. A
+  smaller one (open to 12 px, gone at 24 px) left the Boar's back and snout
+  over the trees; open to 17 px and gone at 29 px holds every Game animal.
+
+The glade is alpha only: the ground's own colours, nothing mirrored, the same
+for every cell, so it reads no coordinates and no state.
+
+```sh
+npx vite --port 6741 --strictPort &
+CHROME_PATH=... npx tsx scripts/art/resource-review.ts <out-dir> [label]
+```
+
+The review mounts the real app view over the scenes of
+`scripts/art/chibi/resource-review-scenes.ts`: a wood with Game whose west
+half lies inside the viewer's widened borders (the faction's forest) and
+whose east half is the default Forest, for the Humans, Candy, the Undead and
+the Ice Folk, over a sea with Fish on shallow and (for the review only) deep
+water.
 
 ## Packing
 

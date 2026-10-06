@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "batch": "fish-variants",
+  "title": "Chibi Fish variants: a shoal, a leaping pair and a diving fish",
+  "bead": "pulp_wars-2yc.16",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-fish-shoal",
+      "subject": "RESOURCE:FISH",
+      "subjectKey": "RESOURCE:FISH/SHOAL",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      }
+    },
+    {
+      "id": "chibi-fish-pair",
+      "subject": "RESOURCE:FISH",
+      "subjectKey": "RESOURCE:FISH/PAIR",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      }
+    },
+    {
+      "id": "chibi-fish-dive",
+      "subject": "RESOURCE:FISH",
+      "subjectKey": "RESOURCE:FISH/DIVE",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "fish-shoal-a",
+      "asset": "chibi-fish-shoal",
+      "endpoint": "create-image-pixen",
+      "seed": 72101,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right.",
+      "negativeAddendum": "water surface, pond, island, grass, soil, ripples ring, boat, fishing rod, net, person, character"
+    },
+    {
+      "id": "fish-pair-a",
+      "asset": "chibi-fish-pair",
+      "endpoint": "create-image-pixen",
+      "seed": 72201,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right.",
+      "negativeAddendum": "water surface, pond, island, grass, soil, ripples ring, boat, fishing rod, net, person, character, third fish"
+    },
+    {
+      "id": "fish-dive-a",
+      "asset": "chibi-fish-dive",
+      "endpoint": "create-image-pixen",
+      "seed": 72301,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right.",
+      "negativeAddendum": "water surface, pond, island, grass, soil, ripples ring, boat, fishing rod, net, person, character, whale, shark, mermaid, second fish"
+    },
+    {
+      "id": "fish-shoal-a-edit",
+      "asset": "chibi-fish-shoal",
+      "endpoint": "edit-image-pixen",
+      "seed": 72102,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "fish-shoal-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the green grass and brown soil block under the fish so the three fish float directly on a transparent background with nothing at all under them. Keep the three fish, their golden-yellow bodies and dark blue backs, the outline and the art style exactly the same.",
+      "notes": "fish-shoal-a drew a good tight shoal of three, but lying on a grass and soil block."
+    },
+    {
+      "id": "fish-pair-a-edit",
+      "asset": "chibi-fish-pair",
+      "endpoint": "edit-image-pixen",
+      "seed": 72202,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "fish-pair-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the round pond, its green grass rim and its brown soil base: keep only the two leaping fish and the small white water splash under them, on a transparent background with nothing else. Keep the fish, outline and art style exactly the same.",
+      "notes": "fish-pair-a drew the two leaping fish over a round pond island; keep the fish and the splash, drop the pond."
+    },
+    {
+      "id": "fish-shoal-b",
+      "asset": "chibi-fish-shoal",
+      "endpoint": "create-image-pixen",
+      "seed": 72103,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "The three fish are big and fill most of the image; they float in empty transparent space with no ground of any kind under them. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right.",
+      "negativeAddendum": "water surface, pond, island, grass, soil, block, cube, slab, tile, ripples ring, boat, fishing rod, net, person, character",
+      "notes": "fish-shoal-a put small fish on a grass block: ask for big fish and name the block in the negatives."
+    },
+    {
+      "id": "fish-dive-b",
+      "asset": "chibi-fish-dive",
+      "endpoint": "create-image-pixen",
+      "seed": 72302,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "The fish tail and the splash are big and chunky and fill most of the image, about three quarters of its width and height. Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right.",
+      "negativeAddendum": "water surface, pond, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, character, whale, shark, mermaid, second fish",
+      "notes": "fish-dive-a reads as a diving fish with no plate, but it is thin and only about 20 px tall; ask for a big chunky one."
+    },
+    {
+      "id": "fish-dive-c",
+      "asset": "chibi-fish-dive",
+      "endpoint": "create-image-pixen",
+      "seed": 72303,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "The fish is fat and chunky, as wide as a third of the image, and with its splash it is about three quarters of the image tall; it floats in empty transparent space. Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right.",
+      "negativeAddendum": "water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, character, whale, shark, dolphin, seal, mermaid, second fish",
+      "notes": "fish-dive-b stood a dark whale-like body on a round pond plate; go back to the fish-dive-a wording and ask only for a fatter, taller fish."
+    },
+    {
+      "id": "fish-dive-d",
+      "asset": "chibi-fish-dive",
+      "endpoint": "create-image-pixen",
+      "seed": 72304,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "The fish is fat and chunky and tilted, its tail up to the left and its body going down to the right into the splash; fish and splash together fill about three quarters of the image and float in empty transparent space. Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right.",
+      "negativeAddendum": "water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, character, whale, shark, dolphin, seal, mermaid, second fish",
+      "notes": "A second seed and a tilted pose for the diving fish, in case fish-dive-c is thin again."
+    },
+    {
+      "id": "fish-pair-b",
+      "asset": "chibi-fish-pair",
+      "endpoint": "create-image-pixen",
+      "seed": 72203,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "Each fish is drawn in plain side profile like a simple fish symbol: a plump oval body, one round eye, a forked tail fin, no face and no hair. The two fish and their splash are big and fill most of the image and float in empty transparent space with no pond under them. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right.",
+      "negativeAddendum": "water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, character, face, hair, mermaid, third fish",
+      "notes": "fish-pair-a (and its edit) drew the two fish upright with dark heads that read as little long-haired figures, over a pond; ask for plain side-profile fish and no pond."
+    },
+    {
+      "id": "fish-pair-c",
+      "asset": "chibi-fish-pair",
+      "endpoint": "create-image-pixen",
+      "seed": 72204,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "Each fish is drawn in plain side profile like a simple fish symbol: a plump oval body, one round eye, a forked tail fin, no face and no hair. The two fish and their splash are big and fill most of the image and float in empty transparent space with no pond under them. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right.",
+      "negativeAddendum": "water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, character, face, hair, mermaid, third fish",
+      "notes": "A second seed of the fish-pair-b request."
+    }
+  ]
+}

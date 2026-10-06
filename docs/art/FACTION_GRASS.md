@@ -168,7 +168,7 @@ overview scenes with `?faction-grass=0`.
 - **The forest shade and the glade's edge stay green.** Under trees on red
   dust or mint the shade reads as a darker, greener patch.
 - **A glade does not draw the neighbour's spill to its edge**: its open
-  ground is cut to the glade's shape.
+  ground is cut to the glade's round, soft-edged shape.
 - **Shared Farms keep their own look** on Goblin, Dinosaur and Candy
   ground: brown beds with green crops, which read well on all three.
 - **The tile dock, the Gallery and Help** show the default Grass (and the

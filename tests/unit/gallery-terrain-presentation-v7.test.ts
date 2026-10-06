@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { assetInventoryV7 } from "../../src/assets/asset-inventory-v7";
+import { chibiVariantV7 } from "../../src/assets/chibi-art-v7";
 import { CHIBI_FOREST_ART_SET_V7 } from "../../src/assets/chibi-forest-pieces-manifest";
 import { FACTION_FOREST_ART_SETS_V7 } from "../../src/assets/faction-forest-pieces-manifest";
 import { FACTION_FOREST_IDS_V7 } from "../../src/render/canvas/faction-forests-v7";
@@ -129,8 +130,30 @@ describe("Gallery terrain presentation", () => {
     expect(new Set(water.map((piece) => piece.id)).size).toBe(water.length);
     expect(water.length).toBe(
       galleryTerrainVariantsV7("TERRAIN:SHALLOW_WATER").length +
-        galleryTerrainVariantsV7("TERRAIN:DEEP_WATER").length,
+        galleryTerrainVariantsV7("TERRAIN:DEEP_WATER").length +
+        galleryTerrainVariantsV7("RESOURCE:FISH").length,
     );
+    // Every Fish variant, each on Shallow Water (bead pulp_wars-2yc.16).
+    const fish = water.filter((piece) => piece.id.startsWith("chibi-fish"));
+    expect(fish.map((piece) => piece.id).sort()).toEqual([
+      "chibi-fish",
+      "chibi-fish-dive",
+      "chibi-fish-pair",
+      "chibi-fish-shoal",
+    ]);
+    for (const piece of fish) {
+      expect(piece.box).toEqual({ kind: "TILE" });
+      expect(piece.layers).toMatchObject([
+        { kind: "SUBJECT", subject: "TERRAIN:SHALLOW_WATER" },
+        { kind: "SUBJECT", subject: "RESOURCE:FISH" },
+      ]);
+      const [, top] = piece.layers;
+      if (top?.kind !== "SUBJECT") throw new Error("no fish layer");
+      // The layer's coordinate is one at which the board draws this fish.
+      expect(
+        chibiVariantV7(galleryTerrainVariantsV7("RESOURCE:FISH"), top.at)?.id,
+      ).toBe(piece.id);
+    }
     expect(galleryTerrainPiecesV7("RIFT", null)).toHaveLength(6);
     expect(galleryTerrainPiecesV7("ICE", "ICE_FOLK")).toHaveLength(4);
     expect(galleryTerrainDetailsV7("WATER", null)).toMatchObject({
@@ -231,6 +254,30 @@ describe("Gallery terrain sample boards", () => {
     expect(terrain("WATER", 6, 3)).toBe("DEEP_WATER");
     expect(terrain("RIFT", 3, 6)).toBe("RIFT");
     expect(terrain("RIFT", 6, 3)).toBe("RIFT");
+    // The Water patch shows every Fish variant on its shallow column.
+    const sea = buildGalleryTerrainSampleV7("WATER", null);
+    if (sea === null) throw new Error("WATER sample missing");
+    const fishCells = sea.board.tiles.flatMap((tile) =>
+      tile.explored && tile.resource === "FISH" ? [tile] : [],
+    );
+    expect(fishCells.map((tile) => tile.terrain)).toEqual(
+      fishCells.map(() => "SHALLOW_WATER"),
+    );
+    expect(
+      new Set(
+        fishCells.map(
+          (tile) =>
+            chibiVariantV7(galleryTerrainVariantsV7("RESOURCE:FISH"), tile.at)
+              ?.id,
+        ),
+      ).size,
+    ).toBe(galleryTerrainVariantsV7("RESOURCE:FISH").length);
+    for (const other of ["GRASS", "FOREST", "MOUNTAIN", "RIFT"] as const)
+      expect(
+        buildGalleryTerrainSampleV7(other, null)?.board.tiles.some(
+          (tile) => tile.explored && tile.resource !== null,
+        ),
+      ).toBe(false);
     const ice = buildGalleryTerrainSampleV7("ICE", "ICE_FOLK");
     expect(ice?.ice.length).toBeGreaterThan(0);
     // Ice inside the borders is permanent; beyond them it melts.

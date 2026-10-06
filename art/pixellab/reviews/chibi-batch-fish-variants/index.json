@@ -1,0 +1,181 @@
+{
+  "batch": "fish-variants",
+  "bead": "pulp_wars-2yc.16",
+  "title": "Chibi Fish variants: a shoal, a leaping pair and a diving fish",
+  "dryRun": false,
+  "faction": "ORIGINAL",
+  "tileCssPx": 80,
+  "owners": {
+    "A": "#f06762",
+    "B": "#28b7a4"
+  },
+  "maskThresholds": {
+    "alphaMin": 128,
+    "owner": {
+      "hue": {
+        "from": 340,
+        "to": 5
+      },
+      "saturationMin": 0.65,
+      "valueMin": 0.3
+    },
+    "redBrown": {
+      "hue": {
+        "from": 5.0001,
+        "to": 15
+      },
+      "saturationMin": 0.45,
+      "valueMin": 0.3
+    },
+    "keyLike": {
+      "hue": {
+        "from": 335,
+        "to": 5
+      },
+      "saturationMin": 0.5,
+      "valueMin": 0.2
+    },
+    "minComponentPixels": 3,
+    "embeddedNeighbourMin": 5,
+    "redBrownMaterialMaxShare": 0.03,
+    "coverage": {
+      "min": 0.15,
+      "targetMin": 0.2,
+      "targetMax": 0.4,
+      "max": 0.55
+    }
+  },
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour.",
+  "assets": [
+    {
+      "id": "chibi-fish-shoal",
+      "subject": "RESOURCE:FISH",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "fish-shoal-b",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-fish-shoal.png",
+        "sha256": "7feb03360be4fd16c62436ae439594b29487cb99a0a77f761a8c04d2e973f04d",
+        "pixelSha256": "eb77530fe03e88fbdf8973f8e2ec15282ff0a16cff23d23186f3ac155b930170",
+        "width": 40,
+        "height": 40
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 4,
+        "groundShare": 0.0952,
+        "footprintWidthShare": 0.5926,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-fish-pair",
+      "subject": "RESOURCE:FISH",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "fish-pair-c",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-fish-pair.png",
+        "sha256": "2ed7c6ee1700ac1d7e9b7475144757daee23a852312361f786a4729984a7f72b",
+        "pixelSha256": "6253aeae79c28161af0857e13ebd498aaca61018365ebcf2dd22657f707e060f",
+        "width": 40,
+        "height": 40
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 6,
+        "groundShare": 0.1167,
+        "footprintWidthShare": 0.8889,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-fish-dive",
+      "subject": "RESOURCE:FISH",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "fish-dive-c",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-fish-dive.png",
+        "sha256": "72e61ebd7e3bfc172eddd4fe2dbd4fe4a0d5097dddab45effb4b5aee3a9e9c7e",
+        "pixelSha256": "d5aa3967f382f8cecc8cf4bfe924aeb1f5cc95644097c7448e18eb7eb4fe48fe",
+        "width": 40,
+        "height": 40
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.0395,
+        "footprintWidthShare": 0.9032,
+        "suspect": false
+      }
+    }
+  ],
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-fish-variants/sheet-1x.png",
+      "width": 1042,
+      "height": 500,
+      "sha256": "c3fe336aea63372b6d6451104274d636eeddc87e5e2e5f0cb92e2af3bf9781a6"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-fish-variants/sheet-x4.png",
+      "width": 2370,
+      "height": 1508,
+      "sha256": "0a8594df1168a1d2ba9c300da0368d3d8db6a0c65cde8dc7dd2a6599417fe661"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-fish-variants/phone-mock.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "5a97e4c65a85f78b1d2d0bff2bbbaab539e82c9caad4cdf0b5d95be70bed47e9"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-fish-variants/desktop-mock.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7699dcf6606a4f23850451179f9b645289d0341227965cf85ccde97d0399e769"
+    }
+  ],
+  "captures": {
+    "note": "skipped (--skip-capture)",
+    "shots": []
+  },
+  "phoneLinks": "art/pixellab/reviews/chibi-batch-fish-variants/phone-links.md"
+}

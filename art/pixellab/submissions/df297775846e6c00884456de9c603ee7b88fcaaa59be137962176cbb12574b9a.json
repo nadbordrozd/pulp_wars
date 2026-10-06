@@ -1,0 +1,36 @@
+{
+  "id": "fish-shoal-a-edit",
+  "jobId": "5fad0dcc-da11-4b20-9f67-2b1cf675d499",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "fish-variants",
+    "asset": "chibi-fish-shoal",
+    "subject": "RESOURCE:FISH",
+    "faction": "ORIGINAL",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 72102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the green grass and brown soil block under the fish so the three fish float directly on a transparent background with nothing at all under them. Keep the three fish, their golden-yellow bodies and dark blue backs, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the green grass and brown soil block under the fish so the three fish float directly on a transparent background with nothing at all under them. Keep the three fish, their golden-yellow bodies and dark blue backs, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the green grass and brown soil block under the fish so the three fish float directly on a transparent background with nothing at all under them. Keep the three fish, their golden-yellow bodies and dark blue backs, the outline and the art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the green grass and brown soil block under the fish so the three fish float directly on a transparent background with nothing at all under them. Keep the three fish, their golden-yellow bodies and dark blue backs, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "fish-shoal-a",
+      "candidate": 0,
+      "sha256": "c10ea64f44bd78e67befca79cb478e99ad7d0fa1664799436d4f714e01963784"
+    }
+  }
+}

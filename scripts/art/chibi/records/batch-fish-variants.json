@@ -1,0 +1,1021 @@
+{
+  "schemaVersion": 1,
+  "batch": "fish-variants",
+  "recipes": {
+    "fish-dive-a": {
+      "id": "fish-dive-a",
+      "asset": "chibi-fish-dive",
+      "jobId": "sync-707959cf-8647-4730-a6ab-43b543ff121d",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "fish-variants",
+        "asset": "chibi-fish-dive",
+        "subject": "RESOURCE:FISH",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 72301,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: one big plump fish diving head first back into the water: its big forked tail fin and the back half of its soft golden-yellow body with a dark blue back stick straight up out of a small white splash with a few white drops flying up around it; the fish tail and the splash are the only things in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right.",
+            "negative": "water surface, pond, island, grass, soil, ripples ring, boat, fishing rod, net, person, character, whale, shark, mermaid, second fish"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: one big plump fish diving head first back into the water: its big forked tail fin and the back half of its soft golden-yellow body with a dark blue back stick straight up out of a small white splash with a few white drops flying up around it; the fish tail and the splash are the only things in the image. Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, island, grass, soil, ripples ring, boat, fishing rod, net, person, whale, shark, mermaid, second fish",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: one big plump fish diving head first back into the water: its big forked tail fin and the back half of its soft golden-yellow body with a dark blue back stick straight up out of a small white splash with a few white drops flying up around it; the fish tail and the splash are the only things in the image. Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, island, grass, soil, ripples ring, boat, fishing rod, net, person, whale, shark, mermaid, second fish."
+      },
+      "submittedAt": "2026-10-06T12:09:47.862Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-fish-variants/fish-dive-a.png",
+      "rawSheetSha256": "3ffc93d80accdb5b7907f892cef4aa0f7a229cdcd0380a7b0b3958910384e320",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0.1282,
+          "footprintWidthShare": 0.913,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:10:33.698Z",
+      "usageUsd": 0.009251648426055909,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Reads as a diving fish with no plate, but thin and only about 20 px tall: too small beside the batch-3 fish.",
+        "reviewedAt": "2026-10-06T12:16:56.905Z"
+      }
+    },
+    "fish-dive-b": {
+      "id": "fish-dive-b",
+      "asset": "chibi-fish-dive",
+      "jobId": "sync-3adf9e40-5baf-4eca-8819-428e35810d07",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "fish-variants",
+        "asset": "chibi-fish-dive",
+        "subject": "RESOURCE:FISH",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 72302,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: one big plump fish diving head first back into the water: its big forked tail fin and the back half of its soft golden-yellow body with a dark blue back stick straight up out of a small white splash with a few white drops flying up around it; the fish tail and the splash are the only things in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The fish tail and the splash are big and chunky and fill most of the image, about three quarters of its width and height. Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right.",
+            "negative": "water surface, pond, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, character, whale, shark, mermaid, second fish"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: one big plump fish diving head first back into the water: its big forked tail fin and the back half of its soft golden-yellow body with a dark blue back stick straight up out of a small white splash with a few white drops flying up around it; the fish tail and the splash are the only things in the image. The fish tail and the splash are big and chunky and fill most of the image, about three quarters of its width and height. Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, whale, shark, mermaid, second fish",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: one big plump fish diving head first back into the water: its big forked tail fin and the back half of its soft golden-yellow body with a dark blue back stick straight up out of a small white splash with a few white drops flying up around it; the fish tail and the splash are the only things in the image. The fish tail and the splash are big and chunky and fill most of the image, about three quarters of its width and height. Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, whale, shark, mermaid, second fish."
+      },
+      "submittedAt": "2026-10-06T12:13:00.479Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-fish-variants/fish-dive-b.png",
+      "rawSheetSha256": "5dc851305e5eca76ef46911df3447ef1bcd9b393d0dc2c769efc937dd3c69761",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.3977,
+          "footprintWidthShare": 0.9091,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-06T12:13:36.205Z",
+      "usageUsd": 0.007504736105600993,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A dark whale-like body on a round pond plate with a brown rock; not a fish.",
+        "reviewedAt": "2026-10-06T12:16:57.047Z"
+      }
+    },
+    "fish-dive-c": {
+      "id": "fish-dive-c",
+      "asset": "chibi-fish-dive",
+      "jobId": "sync-5a1a85fb-57d4-4041-8061-eb47c71feffa",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "fish-variants",
+        "asset": "chibi-fish-dive",
+        "subject": "RESOURCE:FISH",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 72303,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: one big plump fish diving head first back into the water: its big forked tail fin and the back half of its soft golden-yellow body with a dark blue back stick straight up out of a small white splash with a few white drops flying up around it; the fish tail and the splash are the only things in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The fish is fat and chunky, as wide as a third of the image, and with its splash it is about three quarters of the image tall; it floats in empty transparent space. Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right.",
+            "negative": "water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, character, whale, shark, dolphin, seal, mermaid, second fish"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: one big plump fish diving head first back into the water: its big forked tail fin and the back half of its soft golden-yellow body with a dark blue back stick straight up out of a small white splash with a few white drops flying up around it; the fish tail and the splash are the only things in the image. The fish is fat and chunky, as wide as a third of the image, and with its splash it is about three quarters of the image tall; it floats in empty transparent space. Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, whale, shark, dolphin, seal, mermaid, second fish",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: one big plump fish diving head first back into the water: its big forked tail fin and the back half of its soft golden-yellow body with a dark blue back stick straight up out of a small white splash with a few white drops flying up around it; the fish tail and the splash are the only things in the image. The fish is fat and chunky, as wide as a third of the image, and with its splash it is about three quarters of the image tall; it floats in empty transparent space. Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, whale, shark, dolphin, seal, mermaid, second fish."
+      },
+      "submittedAt": "2026-10-06T12:14:11.770Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-fish-variants/fish-dive-c.png",
+      "rawSheetSha256": "72e61ebd7e3bfc172eddd4fe2dbd4fe4a0d5097dddab45effb4b5aee3a9e9c7e",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.0395,
+          "footprintWidthShare": 0.9032,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:14:40.952Z",
+      "usageUsd": 0.007728619628482395,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "One chunky golden fish with a dark blue back diving into a small white splash, tail up, about 30 px, no plate; reads as fish on the shallow and the deep water tile at 1:1 and x6.",
+        "reviewedAt": "2026-10-06T12:16:57.826Z"
+      }
+    },
+    "fish-dive-d": {
+      "id": "fish-dive-d",
+      "asset": "chibi-fish-dive",
+      "jobId": "sync-b72cf808-7265-4625-b883-5dcc9785fd93",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "fish-variants",
+        "asset": "chibi-fish-dive",
+        "subject": "RESOURCE:FISH",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 72304,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: one big plump fish diving head first back into the water: its big forked tail fin and the back half of its soft golden-yellow body with a dark blue back stick straight up out of a small white splash with a few white drops flying up around it; the fish tail and the splash are the only things in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The fish is fat and chunky and tilted, its tail up to the left and its body going down to the right into the splash; fish and splash together fill about three quarters of the image and float in empty transparent space. Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right.",
+            "negative": "water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, character, whale, shark, dolphin, seal, mermaid, second fish"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: one big plump fish diving head first back into the water: its big forked tail fin and the back half of its soft golden-yellow body with a dark blue back stick straight up out of a small white splash with a few white drops flying up around it; the fish tail and the splash are the only things in the image. The fish is fat and chunky and tilted, its tail up to the left and its body going down to the right into the splash; fish and splash together fill about three quarters of the image and float in empty transparent space. Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, whale, shark, dolphin, seal, mermaid, second fish",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: one big plump fish diving head first back into the water: its big forked tail fin and the back half of its soft golden-yellow body with a dark blue back stick straight up out of a small white splash with a few white drops flying up around it; the fish tail and the splash are the only things in the image. The fish is fat and chunky and tilted, its tail up to the left and its body going down to the right into the splash; fish and splash together fill about three quarters of the image and float in empty transparent space. Light: the sun is low in the south-west, at the bottom left of the image, so the fish is lit on its left and lower sides and shaded on its right. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, whale, shark, dolphin, seal, mermaid, second fish."
+      },
+      "submittedAt": "2026-10-06T12:14:40.953Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-fish-variants/fish-dive-d.png",
+      "rawSheetSha256": "276b3dd8af1aa1e6c9cbe616b19f57b895ccbd0ca9ca784c49675e371a658ab4",
+      "plateHints": [
+        {
+          "bandRows": 4,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:14:58.748Z",
+      "usageUsd": 0.006642462174097697,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A small orange-red goldfish: off the golden-yellow and dark blue palette, close to the Coral owner colour, and small.",
+        "reviewedAt": "2026-10-06T12:16:57.188Z"
+      }
+    },
+    "fish-pair-a": {
+      "id": "fish-pair-a",
+      "asset": "chibi-fish-pair",
+      "jobId": "sync-8df5de88-d0ec-482e-9624-84d4953bf289",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "fish-variants",
+        "asset": "chibi-fish-pair",
+        "subject": "RESOURCE:FISH",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 72201,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: two plump fish leaping out of one tiny white water splash in two arcs that cross, one fish heading up to the left and the other up to the right, each with a soft golden-yellow body, a dark blue back and big simple fins; the two fish and the splash are the only things in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right.",
+            "negative": "water surface, pond, island, grass, soil, ripples ring, boat, fishing rod, net, person, character, third fish"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: two plump fish leaping out of one tiny white water splash in two arcs that cross, one fish heading up to the left and the other up to the right, each with a soft golden-yellow body, a dark blue back and big simple fins; the two fish and the splash are the only things in the image. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, island, grass, soil, ripples ring, boat, fishing rod, net, person, third fish",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: two plump fish leaping out of one tiny white water splash in two arcs that cross, one fish heading up to the left and the other up to the right, each with a soft golden-yellow body, a dark blue back and big simple fins; the two fish and the splash are the only things in the image. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, island, grass, soil, ripples ring, boat, fishing rod, net, person, third fish."
+      },
+      "submittedAt": "2026-10-06T12:09:23.331Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-fish-variants/fish-pair-a.png",
+      "rawSheetSha256": "72264ea24c3526ae00693b24b4dd4d54cc70dde17b8ccf594c9bcb7d3b1e635e",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.6289,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-06T12:09:47.860Z",
+      "usageUsd": 0.007483609146542019,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Two leaping fish over a round pond island (plate); the fish stand upright with dark heads.",
+        "reviewedAt": "2026-10-06T12:16:56.498Z"
+      }
+    },
+    "fish-pair-a-edit": {
+      "id": "fish-pair-a-edit",
+      "asset": "chibi-fish-pair",
+      "jobId": "03ec20a3-29ec-4f0a-9631-aa104187e668",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "fish-variants",
+        "asset": "chibi-fish-pair",
+        "subject": "RESOURCE:FISH",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 72202,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove the round pond, its green grass rim and its brown soil base: keep only the two leaping fish and the small white water splash under them, on a transparent background with nothing else. Keep the fish, outline and art style exactly the same."
+          }
+        ],
+        "prompt": "Remove the round pond, its green grass rim and its brown soil base: keep only the two leaping fish and the small white water splash under them, on a transparent background with nothing else. Keep the fish, outline and art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Remove the round pond, its green grass rim and its brown soil base: keep only the two leaping fish and the small white water splash under them, on a transparent background with nothing else. Keep the fish, outline and art style exactly the same.",
+        "editInstruction": "Remove the round pond, its green grass rim and its brown soil base: keep only the two leaping fish and the small white water splash under them, on a transparent background with nothing else. Keep the fish, outline and art style exactly the same.",
+        "source": {
+          "recipe": "fish-pair-a",
+          "candidate": 0,
+          "sha256": "72264ea24c3526ae00693b24b4dd4d54cc70dde17b8ccf594c9bcb7d3b1e635e"
+        }
+      },
+      "submittedAt": "2026-10-06T12:12:00.363Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-fish-variants/fish-pair-a-edit.png",
+      "rawSheetSha256": "461c49e50aed83ada477f0c9408fdbe006dadd1e9ad6cdc2419b5e3ad62cccc3",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7586,
+          "suspect": false
+        },
+        {
+          "bandRows": 6,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7586,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:12:36.756Z",
+      "usageUsd": 0.00804159320725335,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Pond removed, but the two upright fish with dark heads read as little long-haired figures, not fish.",
+        "reviewedAt": "2026-10-06T12:16:56.638Z"
+      }
+    },
+    "fish-pair-b": {
+      "id": "fish-pair-b",
+      "asset": "chibi-fish-pair",
+      "jobId": "sync-3bafed5b-a0dd-4fc5-a737-a328bd8616a8",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "fish-variants",
+        "asset": "chibi-fish-pair",
+        "subject": "RESOURCE:FISH",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 72203,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: two plump fish leaping out of one tiny white water splash in two arcs that cross, one fish heading up to the left and the other up to the right, each with a soft golden-yellow body, a dark blue back and big simple fins; the two fish and the splash are the only things in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Each fish is drawn in plain side profile like a simple fish symbol: a plump oval body, one round eye, a forked tail fin, no face and no hair. The two fish and their splash are big and fill most of the image and float in empty transparent space with no pond under them. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right.",
+            "negative": "water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, character, face, hair, mermaid, third fish"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: two plump fish leaping out of one tiny white water splash in two arcs that cross, one fish heading up to the left and the other up to the right, each with a soft golden-yellow body, a dark blue back and big simple fins; the two fish and the splash are the only things in the image. Each fish is drawn in plain side profile like a simple fish symbol: a plump oval body, one round eye, a forked tail fin, no face and no hair. The two fish and their splash are big and fill most of the image and float in empty transparent space with no pond under them. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, face, hair, mermaid, third fish",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: two plump fish leaping out of one tiny white water splash in two arcs that cross, one fish heading up to the left and the other up to the right, each with a soft golden-yellow body, a dark blue back and big simple fins; the two fish and the splash are the only things in the image. Each fish is drawn in plain side profile like a simple fish symbol: a plump oval body, one round eye, a forked tail fin, no face and no hair. The two fish and their splash are big and fill most of the image and float in empty transparent space with no pond under them. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, face, hair, mermaid, third fish."
+      },
+      "submittedAt": "2026-10-06T12:15:32.275Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-fish-variants/fish-pair-b.png",
+      "rawSheetSha256": "e00ad1560a26791fae36ffcc89de8a87e420711cffa7ad9760b1b9318c2f91ff",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.2048,
+          "footprintWidthShare": 0.6111,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:16:07.682Z",
+      "usageUsd": 0.008242180082533095,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "One big swimming fish, not a pair; a pleasant fish but not this subject.",
+        "reviewedAt": "2026-10-06T12:16:56.774Z"
+      }
+    },
+    "fish-pair-c": {
+      "id": "fish-pair-c",
+      "asset": "chibi-fish-pair",
+      "jobId": "sync-a1d6b36f-d507-4a23-9142-329c3905f5af",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "fish-variants",
+        "asset": "chibi-fish-pair",
+        "subject": "RESOURCE:FISH",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 72204,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: two plump fish leaping out of one tiny white water splash in two arcs that cross, one fish heading up to the left and the other up to the right, each with a soft golden-yellow body, a dark blue back and big simple fins; the two fish and the splash are the only things in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Each fish is drawn in plain side profile like a simple fish symbol: a plump oval body, one round eye, a forked tail fin, no face and no hair. The two fish and their splash are big and fill most of the image and float in empty transparent space with no pond under them. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right.",
+            "negative": "water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, character, face, hair, mermaid, third fish"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: two plump fish leaping out of one tiny white water splash in two arcs that cross, one fish heading up to the left and the other up to the right, each with a soft golden-yellow body, a dark blue back and big simple fins; the two fish and the splash are the only things in the image. Each fish is drawn in plain side profile like a simple fish symbol: a plump oval body, one round eye, a forked tail fin, no face and no hair. The two fish and their splash are big and fill most of the image and float in empty transparent space with no pond under them. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, face, hair, mermaid, third fish",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: two plump fish leaping out of one tiny white water splash in two arcs that cross, one fish heading up to the left and the other up to the right, each with a soft golden-yellow body, a dark blue back and big simple fins; the two fish and the splash are the only things in the image. Each fish is drawn in plain side profile like a simple fish symbol: a plump oval body, one round eye, a forked tail fin, no face and no hair. The two fish and their splash are big and fill most of the image and float in empty transparent space with no pond under them. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, puddle, island, grass, soil, block, ripples ring, boat, fishing rod, net, person, face, hair, mermaid, third fish."
+      },
+      "submittedAt": "2026-10-06T12:16:07.684Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-fish-variants/fish-pair-c.png",
+      "rawSheetSha256": "2ed7c6ee1700ac1d7e9b7475144757daee23a852312361f786a4729984a7f72b",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0.1167,
+          "footprintWidthShare": 0.8889,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:16:34.035Z",
+      "usageUsd": 0.007360576735602485,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Two golden fish leaping apart out of one white splash, about 30 px tall, no pond; reads as fish on the shallow and the deep water tile at 1:1 and x6.",
+        "reviewedAt": "2026-10-06T12:16:57.565Z"
+      }
+    },
+    "fish-shoal-a": {
+      "id": "fish-shoal-a",
+      "asset": "chibi-fish-shoal",
+      "jobId": "sync-c2bd9c6e-d0ec-4571-b9ee-ac03e005e7fb",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "fish-variants",
+        "asset": "chibi-fish-shoal",
+        "subject": "RESOURCE:FISH",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 72101,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a little shoal of three small plump fish swimming close together towards the lower right, one in front and two behind, each with a soft golden-yellow body, a dark blue back and big simple fins, with two tiny white ripple marks beside them; the three fish and the ripples are the only things in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right.",
+            "negative": "water surface, pond, island, grass, soil, ripples ring, boat, fishing rod, net, person, character"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a little shoal of three small plump fish swimming close together towards the lower right, one in front and two behind, each with a soft golden-yellow body, a dark blue back and big simple fins, with two tiny white ripple marks beside them; the three fish and the ripples are the only things in the image. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, island, grass, soil, ripples ring, boat, fishing rod, net, person",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a little shoal of three small plump fish swimming close together towards the lower right, one in front and two behind, each with a soft golden-yellow body, a dark blue back and big simple fins, with two tiny white ripple marks beside them; the three fish and the ripples are the only things in the image. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, island, grass, soil, ripples ring, boat, fishing rod, net, person."
+      },
+      "submittedAt": "2026-10-06T12:08:48.758Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-fish-variants/fish-shoal-a.png",
+      "rawSheetSha256": "c10ea64f44bd78e67befca79cb478e99ad7d0fa1664799436d4f714e01963784",
+      "plateHints": [
+        {
+          "bandRows": 5,
+          "groundShare": 0.6786,
+          "footprintWidthShare": 0.6207,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-06T12:09:23.318Z",
+      "usageUsd": 0.008348653051588271,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A good tight shoal of three, but lying on a grass and soil block (plate), and the fish are small.",
+        "reviewedAt": "2026-10-06T12:16:56.230Z"
+      }
+    },
+    "fish-shoal-a-edit": {
+      "id": "fish-shoal-a-edit",
+      "asset": "chibi-fish-shoal",
+      "jobId": "5fad0dcc-da11-4b20-9f67-2b1cf675d499",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "fish-variants",
+        "asset": "chibi-fish-shoal",
+        "subject": "RESOURCE:FISH",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 72102,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove all ground: erase the green grass and brown soil block under the fish so the three fish float directly on a transparent background with nothing at all under them. Keep the three fish, their golden-yellow bodies and dark blue backs, the outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Remove all ground: erase the green grass and brown soil block under the fish so the three fish float directly on a transparent background with nothing at all under them. Keep the three fish, their golden-yellow bodies and dark blue backs, the outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Remove all ground: erase the green grass and brown soil block under the fish so the three fish float directly on a transparent background with nothing at all under them. Keep the three fish, their golden-yellow bodies and dark blue backs, the outline and the art style exactly the same.",
+        "editInstruction": "Remove all ground: erase the green grass and brown soil block under the fish so the three fish float directly on a transparent background with nothing at all under them. Keep the three fish, their golden-yellow bodies and dark blue backs, the outline and the art style exactly the same.",
+        "source": {
+          "recipe": "fish-shoal-a",
+          "candidate": 0,
+          "sha256": "c10ea64f44bd78e67befca79cb478e99ad7d0fa1664799436d4f714e01963784"
+        }
+      },
+      "submittedAt": "2026-10-06T12:11:23.534Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-fish-variants/fish-shoal-a-edit.png",
+      "rawSheetSha256": "5cb0e1dc18927881789ee0488d87edc9aedc974edee88de102ff2ed4bf76d637",
+      "plateHints": [
+        {
+          "bandRows": 4,
+          "groundShare": 0.1667,
+          "footprintWidthShare": 0.48,
+          "suspect": false
+        },
+        {
+          "bandRows": 4,
+          "groundShare": 0.1667,
+          "footprintWidthShare": 0.48,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:12:00.358Z",
+      "usageUsd": 0.008281354506810506,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Block removed cleanly on both candidates, but the shoal is only about 24 x 18 px, smaller than the batch-3 fish; fish-shoal-b is bigger and has no plate.",
+        "reviewedAt": "2026-10-06T12:16:56.369Z"
+      }
+    },
+    "fish-shoal-b": {
+      "id": "fish-shoal-b",
+      "asset": "chibi-fish-shoal",
+      "jobId": "sync-795d4058-d89e-4c72-bd6f-0f71a91c95a8",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "fish-variants",
+        "asset": "chibi-fish-shoal",
+        "subject": "RESOURCE:FISH",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 72103,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a little shoal of three small plump fish swimming close together towards the lower right, one in front and two behind, each with a soft golden-yellow body, a dark blue back and big simple fins, with two tiny white ripple marks beside them; the three fish and the ripples are the only things in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The three fish are big and fill most of the image; they float in empty transparent space with no ground of any kind under them. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right.",
+            "negative": "water surface, pond, island, grass, soil, block, cube, slab, tile, ripples ring, boat, fishing rod, net, person, character"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a little shoal of three small plump fish swimming close together towards the lower right, one in front and two behind, each with a soft golden-yellow body, a dark blue back and big simple fins, with two tiny white ripple marks beside them; the three fish and the ripples are the only things in the image. The three fish are big and fill most of the image; they float in empty transparent space with no ground of any kind under them. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, island, grass, soil, block, cube, slab, tile, ripples ring, boat, fishing rod, net, person",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a little shoal of three small plump fish swimming close together towards the lower right, one in front and two behind, each with a soft golden-yellow body, a dark blue back and big simple fins, with two tiny white ripple marks beside them; the three fish and the ripples are the only things in the image. The three fish are big and fill most of the image; they float in empty transparent space with no ground of any kind under them. Light: the sun is low in the south-west, at the bottom left of the image, so the fish are lit on their left and lower sides and shaded on their right. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, water surface, pond, island, grass, soil, block, cube, slab, tile, ripples ring, boat, fishing rod, net, person."
+      },
+      "submittedAt": "2026-10-06T12:12:36.758Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-fish-variants/fish-shoal-b.png",
+      "rawSheetSha256": "7feb03360be4fd16c62436ae439594b29487cb99a0a77f761a8c04d2e973f04d",
+      "plateHints": [
+        {
+          "bandRows": 4,
+          "groundShare": 0.0952,
+          "footprintWidthShare": 0.5926,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:13:00.478Z",
+      "usageUsd": 0.007310504462983873,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Three plump golden fish with dark blue backs in a tight shoal, about 28 px, nothing under them; reads as fish on the shallow and the deep water tile at 1:1 and x6.",
+        "reviewedAt": "2026-10-06T12:16:57.357Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-fish-dive": {
+      "id": "chibi-fish-dive",
+      "subject": "RESOURCE:FISH",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "fish-dive-c",
+      "candidate": 0,
+      "candidateSha256": "72e61ebd7e3bfc172eddd4fe2dbd4fe4a0d5097dddab45effb4b5aee3a9e9c7e",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-fish-dive.png",
+        "sha256": "72e61ebd7e3bfc172eddd4fe2dbd4fe4a0d5097dddab45effb4b5aee3a9e9c7e",
+        "pixelSha256": "d5aa3967f382f8cecc8cf4bfe924aeb1f5cc95644097c7448e18eb7eb4fe48fe",
+        "width": 40,
+        "height": 40
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.0395,
+        "footprintWidthShare": 0.9032,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "One chunky golden fish with a dark blue back diving into a small white splash, tail up, about 30 px, no plate; reads as fish on the shallow and the deep water tile at 1:1 and x6.",
+      "acceptedAt": "2026-10-06T12:16:57.826Z"
+    },
+    "chibi-fish-pair": {
+      "id": "chibi-fish-pair",
+      "subject": "RESOURCE:FISH",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "fish-pair-c",
+      "candidate": 0,
+      "candidateSha256": "2ed7c6ee1700ac1d7e9b7475144757daee23a852312361f786a4729984a7f72b",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-fish-pair.png",
+        "sha256": "2ed7c6ee1700ac1d7e9b7475144757daee23a852312361f786a4729984a7f72b",
+        "pixelSha256": "6253aeae79c28161af0857e13ebd498aaca61018365ebcf2dd22657f707e060f",
+        "width": 40,
+        "height": 40
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 6,
+        "groundShare": 0.1167,
+        "footprintWidthShare": 0.8889,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Two golden fish leaping apart out of one white splash, about 30 px tall, no pond; reads as fish on the shallow and the deep water tile at 1:1 and x6.",
+      "acceptedAt": "2026-10-06T12:16:57.565Z"
+    },
+    "chibi-fish-shoal": {
+      "id": "chibi-fish-shoal",
+      "subject": "RESOURCE:FISH",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "fish-shoal-b",
+      "candidate": 0,
+      "candidateSha256": "7feb03360be4fd16c62436ae439594b29487cb99a0a77f761a8c04d2e973f04d",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-fish-shoal.png",
+        "sha256": "7feb03360be4fd16c62436ae439594b29487cb99a0a77f761a8c04d2e973f04d",
+        "pixelSha256": "eb77530fe03e88fbdf8973f8e2ec15282ff0a16cff23d23186f3ac155b930170",
+        "width": 40,
+        "height": 40
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 4,
+        "groundShare": 0.0952,
+        "footprintWidthShare": 0.5926,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Three plump golden fish with dark blue backs in a tight shoal, about 28 px, nothing under them; reads as fish on the shallow and the deep water tile at 1:1 and x6.",
+      "acceptedAt": "2026-10-06T12:16:57.357Z"
+    }
+  }
+}
