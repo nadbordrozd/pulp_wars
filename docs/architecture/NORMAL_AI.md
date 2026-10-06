@@ -347,6 +347,229 @@ the defender's unit value against a script that focuses its fire, retrains,
 and refills the line; the round the capital falls is pinned, and the
 round-5 policy takes one to two rounds longer on each).
 
+## Committing, growing, and following through (`pulp_wars-w49.10`)
+
+**The Human tuning, round 7**
+([round 7](../product/RULESET_7_TUNING_HUMAN.md#14-round-7)). Round 6 was
+played by hand five times. Starting massed at twice the value, all three
+factions broke a hand-defended line by round 4; the Human AI took the
+capital, the Undead and the Goblin AI stalled in front of a defender that
+stepped back a tile a turn (22 units against 11 to 15, whole turns without
+an attack). In a six-seat game the Human AI had 42 units and kept 8 to 12
+of them beside the player's city for seven rounds without an assault, and
+the Goblin and Undead seats did not grow. The user's ruling: **the AI
+first; with overwhelming numbers it must break through and keep going.**
+This section is what changed. It applies to the seats that play the army
+rules (a Human, Undead, or Goblin seat in a match of only those three),
+replaces the passages of the two sections above that it names, and changes
+no rule of the game: the identity stays `pulp-wars-poc-7r49`. The numbers
+are in `src/ai/v7-army.ts`, `src/ai/v7-campaign.ts`, and
+`src/ai/v7-goblin.ts`; the hooks in `src/ai/v7.ts` (`armyAssaultV7`,
+`armyHoldsFastV7`, `armyMeleeReachV7`, `armyChainSpacingV7`, `armyWarV7`,
+`armyCanTrainV7`, `armyGrowthResearchV7`, `armyWarHoldsResearchV7`,
+`armyFrontCenterV7`, `waaaghUsefulV7`); `inspectNormalArmyV7(view)` also
+reports every position with its weights.
+
+### Why it parked, and why it stalled
+
+| Seen                                                          | Root cause                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 8 to 12 units beside a city for seven rounds, 42 units in all | A position was every hostile unit linked by gaps of two tiles, without a bound. The player's 23 units stood in one chain across his land, so the army in front of one city was weighed against all of them and never had half as much again. And the campaign sent every unit to its own nearest enemy city: 36 units stood on three fronts at parity. A position that is not committed is attacked only where a combined kill or an exchange in the attacker's favor exists, and cheap units against Swordsmen in cover have neither. |
+| 22 units against 11 to 15 and no attack for two turns         | The battle counted as joined only while a unit stood next to the enemy. A defender that steps back a tile breaks the contact; the assault then needed 150% by weight again, and 22 cheap units against Catapults and Swordsmen weigh about 115%.                                                                                                                                                                                                                                                                                       |
+| Zombies, Orc Brutes, Liches, Rocket Carts never caught up     | A unit that cannot attack after it moved never reaches a unit that steps back; the Lich and the siege units also refused every tile inside the reach of an enemy Catapult, which is every tile from which they fire.                                                                                                                                                                                                                                                                                                                   |
+| Capital at 0 of 3 population all game, unit limit with Coins  | Growth was "buy the harvest on offer". Once the Fruit and the Game of the capital are eaten nothing is on offer, and the research order holds only unit technologies. And "pressed" (an enemy within three tiles of a center: nothing but units) stayed on while "a city can still train" was true of a city with an enemy standing on its center.                                                                                                                                                                                     |
+| Five economy technologies in ten rounds of battle             | "An enemy near" meant near an own center. An attacker fights far from its centers.                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+
+### Positions, weights, and modes
+
+- **A position is local.** The seed is the hostile unit nearest to an own
+  fighting unit; its position is every hostile unit linked to it by gaps of
+  at most two tiles that stands within `ARMY_POSITION_SPAN_V7` (4) tiles of
+  the seed. The next unit not yet in a position seeds the next one.
+- **Numbers are numbers.** With at least 150% of the position's units
+  (`ARMY_COMMIT_COUNT_RATIO_V7`) the arrived units commit at 110% of its
+  weight (`ARMY_COMMIT_COUNT_WEIGHT_V7`; at equal weight cheap units
+  against dear ones in cover only bled); otherwise the weight rule of round
+  6 holds (150%, or 100% once the battle is joined). The same count makes
+  "coming in strength" for staging.
+- **The battle stays joined** while an own unit has arrived (within five
+  tiles) and a unit of the position is wounded, or an own unit is in
+  contact and an arrived own unit is wounded. Contact alone is no longer
+  the test, so a line that steps back is attacked again.
+- **Staging never holds an army that has the weight.** The order of the
+  mode function is unchanged: commit when what has arrived suffices, stage
+  only when what is coming suffices and what has arrived does not.
+
+### The fast units and the slow units
+
+| Rule                                                                                                                                                                                                                                                                                                                                       | Where                                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| A fast unit (Move 2 or more) of a staged or committed position makes no Move into the enemy's reach, next to a unit of the position, or nearer to it than the foremost slow unit, until the position is **ready**. A unit already under fire, and a raider (below), are free.                                                              | `armyHoldsFastV7` (a filter, and no hunter) |
+| Ready: half of the position's slow units (Move 1) attack this turn (one that has attacked, one in range, one that can still move into range and attack), or an own unit is in contact, or the position is **on the move**: half of its units moved in their owner's last turn (a unit's activation is public until its owner's next turn). | `ArmyPositionV7.ready`, `.mobile`           |
+| So against a prepared line the Knights, Scrap Buggies, Vampires, and the fast skirmishers land in the turn the infantry strikes; against an army that gives ground they lead the chase.                                                                                                                                                    |                                             |
+| A unit that cannot attack after it moved and fights hand to hand (a Zombie, an Orc Brute, a Guard) makes no routine Move into the enemy's reach outside its own land without an own unit within two tiles that can strike on arrival. Committed, it goes with its position.                                                                | `armySlowMeleeV7`                           |
+| Committed, such a unit marches on the enemy's center when one is within six tiles (never away from the enemy in front of it): the enemy must come to the block or give the city up. A tile beside its own units is worth 2 per neighbour.                                                                                                  | priority 760                                |
+| Committed, a unit is no longer held by the reach it enters; a ranged, siege, or support unit still makes no Move to a tile where a hostile melee unit reaches it and the visible enemies can kill it. The Lich's and the Vampire's own safety rules (`pulp_wars-vkq.21`) give way to this in a committed position, not elsewhere.          | `armyMeleeReachV7`                          |
+| A Goblin unit's committed Move is not held by the exploder spacing rule (it still costs the Move strategic value); the splash of its own Bomb Chucker's target and the reach of a hostile Kaboom hold it as before.                                                                                                                        | `goblinMoveValueV7`                         |
+| A wounded unit (half HP or less) beside other weak links (wounded units, siege and ranged units), inside the reach of a hostile unit with Overrun, steps to a tile with fewer of them that is no nearer to the enemy, before it recovers.                                                                                                  | priority 936 (`armyChainSpacingV7`)         |
+
+### Siege units
+
+A siege unit with a shot fires; one without moves to a tile with a shot
+next turn (round 6). New: committed, it takes such a tile under the enemy's
+shots; the value of a firing tile loses 60 where a hostile melee unit
+reaches it and 25 on a center, and gains 10 behind an own line unit and 8
+when the target is one tile inside the range (so that a step back does not
+end the shot). A city whose center a visible hostile melee unit could
+attack after one more step (its Move and 2 tiles) trains as a threatened
+city does: a body, not a siege unit (`armyFrontCenterV7`).
+
+A siege unit cannot catch a unit that steps back a tile a turn; no rule
+changes that. What a retreating defender cannot move is its center, and
+the block of slow units marches on it.
+
+### Growth
+
+- **At the unit limit, population.** When no own city can train now
+  (`armyCanTrainV7`: a free slot, the city action, and a training on offer
+  or the unit on its center able to step aside), an economic action that
+  adds population or levels a city has priority 1218, in every state, and
+  the savings plan does not hold it for a technology.
+- **Nothing to buy: the growth technology.** A seat whose every city is at
+  its unit limit, that owns the technology of the first unit of its order,
+  and whose owned technologies leave no growth action with a target on its
+  land, researches the first step toward the growth action its land has the
+  most use for per Coin of research (`ARMY_GROWTH_KINDS_V7`: harvests,
+  Farms, Lumber Camps, Mines, and the four buildings; a Farm or a Mine
+  counts 2). That technology is always due.
+- **Pressed is real.** "A city can still train" is read from the offered
+  commands. A city with an enemy unit on its center, or whose garrison has
+  no tile to step to, is not one.
+- **A naval seat's garrison steps aside.** The step off a center so that
+  its city can train (`armyVacatesCenterV7`) was made only by a seat that
+  trains first, which a seat with a naval plan is not. When no training is
+  on offer anywhere, such a seat now makes it too: two Undead seats of an
+  Archipelago had each a unit on both of their centers and trained nothing
+  for a hundred rounds (the mirror match of
+  `tests/unit/ruleset-v7-undead-ai.test.ts`, seed 4).
+
+### Wartime spending
+
+An enemy army is **in the field** (`armyWarV7`) when a hostile land unit
+is within four tiles of an own center or within five of an own fighting
+unit off its center. Then:
+
+1. every city that can train trains (priority 1215), and while one can, no
+   research and no construction that costs Coins is a candidate;
+2. with no city able to train, growth is bought (above);
+3. research is a candidate only with neither, except the one step to a
+   unit whose class the army has none of (`armyWarHoldsResearchV7`).
+
+The savings plan does not hold construction for a unit technology while
+the army is in the field.
+
+### Abilities
+
+| Ability                          | Use rule                                                                                                                                                                                       | Test (`ruleset-v7-tuning-7.test.ts` unless named)                        |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| WAAAGH! (Warboss)                | With two or more units in its radius that will attack this turn: at once (1235). New: it first moves to a tile from which that is true (1236), so the call comes before the attacks.           | "6. abilities"                                                           |
+| Kaboom                           | For a kill, or on two or more enemies (round 6). New: a blast that damages three hostile units is taken at the priority of a kill, and a Goblin moves to a tile from which it has one.         | "6. abilities"; `ruleset-v7-tuning-6.test.ts`                            |
+| Wail (Banshee)                   | Whenever a living enemy is in range. New: committed, a Banshee moves into range behind an own line unit and Wails before the melee (1175, 1176); it counts as a fighting unit of its position. | "6. abilities"                                                           |
+| Lich splash and Plague           | A volley that plagues three or more units outranks a kill (revision 14).                                                                                                                       | "6. abilities"                                                           |
+| Frenzy, Raise Dead (Necromancer) | Frenzy before the attacks of the units beside it; Raise Dead when a raised Skeleton survives (revisions 13 and 14).                                                                            | "6. abilities"; `ruleset-v7-undead-ai.test.ts`                           |
+| Devour (Ghoul)                   | To heal 4 or more, or to deny a Grave (revision 13).                                                                                                                                           | `ruleset-v7-undead-ai.test.ts`                                           |
+| Rally, Tend Wounded (Captain)    | With two or more units to inspire; to heal or cure (revision 11 and 14).                                                                                                                       | `ruleset-v7-tactical-ai-r11.test.ts`, `ruleset-v7-revision14-ai.test.ts` |
+| Escape (Raider), Pillage         | Out of lethal reach after its attack; onto an enemy improvement with Raiding (round 4).                                                                                                        | `ruleset-v7-tuning-4.test.ts`                                            |
+
+### The strategic choice (`src/ai/v7-campaign.ts`, `CampaignFactsV7.army`)
+
+- **One front, chosen by reach and opportunity.** Every known hostile
+  city is a candidate. Its cost is its reach (the walk from the nearest
+  free army unit or own center, a walled city counting 2 farther), plus up
+  to 6 steps for the visible units within three tiles that hold it (their
+  strength against the free army's: `CAMPAIGN_FRONT_DEFENSE_STEPS_V7`),
+  less 4 where a free unit is within three tiles of a holder
+  (`CAMPAIGN_FRONT_WAR_STEPS_V7`: the army is already at war there). The
+  cheapest city is the main front and the free army marches on it. Nothing
+  about the seat as a whole counts: not its city levels, not its army
+  elsewhere, not who plays it. A strong neighbor whose border city is in
+  reach is attacked there. (The first draft of this pass marched on the
+  seat with the fewest city levels, which left a strong seat, the
+  competent human, for last.) The pair of units for every other seat is
+  gone.
+- **A surplus opens another front.** A front needs twice the strength of
+  the visible holders of its city (`CAMPAIGN_FRONT_NEED_RATIO_V7`), at
+  least 10 units for the main front and 6 for a further one
+  (`CAMPAIGN_FRONT_MAIN_UNITS_V7`, `CAMPAIGN_FRONT_MIN_UNITS_V7`). What the
+  free army has above the main front's need goes, in the size the next
+  cheapest city needs, to that city; a city of a seat with no front yet
+  counts 3 steps nearer (`CAMPAIGN_FRONT_SAME_SEAT_STEPS_V7`). The main
+  front keeps its need once more for every front already open, so a second
+  front takes 16 units against lightly held cities and a third 32.
+- **Holding forces.** A unit within four tiles of an own center with a
+  hostile unit within four tiles of that center keeps its nearest target.
+  The holders of a hostile city (units within three tiles of it) do not
+  count as such an enemy: an army in front of an enemy city three tiles
+  from its own is a front. (Before this correction a seat with 40 units in
+  the diagnostic match had one free unit: nearly all of them "held" the
+  city they had gathered at.)
+- **Raids.** A hostile city with no hostile unit on or next to its center
+  gets the nearest free capturer with Move 2 or more within ten steps
+  (`raid` on its assignment). It goes at once, is not held with the fast
+  units, turns aside only for a kill, and its city's wave sets out.
+- **Villages.** The errands go to the capturer that needs the fewest
+  turns (a slow melee unit counts three turns more), the villages with a
+  hostile unit or city within three tiles last; a slow melee unit steps
+  onto a village only where no visible enemy can hit it.
+
+### Cost
+
+Two per-view and per-decision caches came with this pass: a city's
+attributable income per view (a Raider's picket value sorted every own
+city by it for every Move it was offered; a fifth of the decision time of a
+seat with seventeen cities) and the danger of a view unit on a tile per
+decision. Nothing draws from the PRNG or depends on elapsed time.
+
+| Run (development machine)                               | Round 6                                | Round 7                                |
+| ------------------------------------------------------- | -------------------------------------- | -------------------------------------- |
+| The three labs (revision 2), both scripts, per decision | 5.6 to 6.4 ms, slowest 66 ms           | 6.7 to 9.6 ms, slowest 104 ms          |
+| 20 x 20, six seats, 30 rounds: per AI turn              | mean 175 ms, p95 1.0 s, slowest 2.9 s  | mean 169 ms, p95 1.0 s, slowest 2.7 s  |
+| The same match: per decision                            | mean 10.3 ms                           | mean 8.6 ms                            |
+| 25 x 25, eight seats, 24 rounds: per AI turn            | mean 130 ms, p95 0.42 s, slowest 1.2 s | mean 148 ms, p95 0.47 s, slowest 0.6 s |
+
+(The many-seat budget of `pulp_wars-ykw.4` is a mean of 1.5 s and a p95 of
+5 s per AI turn. The matches differ between the two policies, so the rows
+compare like with unlike. The eight-seat row was measured before the last
+corrections of this pass: the count rule's weight bar, the gate on growth
+research, and the naval seat's step aside.)
+
+### What it does not do
+
+It does not retreat a unit from a committed fight (the step out of a kill
+chain is the one exception), does not move a line unit to stand between
+its siege units and an enemy fast unit (the siege unit picks the screened
+tile), and does not hire or build a Field Defense under fire. The front
+is chosen again every turn from what is visible, without memory: a city
+that has just changed hands and is lightly held can draw the main front
+away from a siege for a few turns. A committed Zombie with a striker
+beside it still takes the tile out of the enemy's reach when both tiles
+bring it as near to the enemy's center (a bonus for the nearer tile was
+tried: the Undead attacker of the lab took a round longer and lost five
+more units). The engine's public threat query (`queryThreatenedTilesV7`)
+is a geometric envelope of Move plus range and so counts a Move and an
+attack also for a unit that cannot attack after it moved (a Guard, a
+Zombie, a Catapult); engine previews and many tests read it, so only the
+text harness and the policy's own reach (`unitMayActAfterMoveV7`) correct
+for it. A position is still judged by what is visible.
+
+**Tests.** `tests/unit/ruleset-v7-tuning-7.test.ts` holds a constructed
+position for each rule (the parked army and the line that stepped back
+among them), one sixteen-round match of two Normal seats on the map of the
+hand-played Undead game that reads only what the Undead seat bought, and
+the bounded lab run against the defender that gives ground
+(`tests/fixtures/v7-breakthrough-lab.ts`); the run against the defender
+that holds is in `tests/unit/ruleset-v7-tuning-6.test.ts`.
+
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and

@@ -111,12 +111,15 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "9aec749baf81daae59ec354bc9d322dfe1e91c4dcf00406ad02c106e3881b1ca",
   // Tuning 6 (`pulp_wars-w49.6`): numbers against a prepared line, one
   // fixture per attacking faction (the player is Human in each).
-  "LAB_BREAKTHROUGH@1:ORIGINAL":
-    "cc654d9551cb311b7df84efa0145ccc1365d8464fac195d73467ddf5575be4c9",
-  "LAB_BREAKTHROUGH_GOBLIN@1:ORIGINAL":
-    "2ef1db85daef0b3494d163f54e2525d767384c15823b76b32835754027280a6c",
-  "LAB_BREAKTHROUGH_UNDEAD@1:ORIGINAL":
-    "c7e71865750d1d0b1479577c359bf617b79beacb7bc6abce578475c89c3628e5",
+  // Tuning 7 (`pulp_wars-w49.10`): revision 2 of the three. The capital
+  // stands two tiles behind the line and holds a Land Grant, so the two
+  // Field Defenses of the line are in its territory and count.
+  "LAB_BREAKTHROUGH@2:ORIGINAL":
+    "2f9bac4d4865c1810dcf20d2abe844be8d1f6b9922114517ac5dde65012c748d",
+  "LAB_BREAKTHROUGH_GOBLIN@2:ORIGINAL":
+    "c0f256f786b4ec308bde2d44874ea94710ba8510988ab19216061ae72307a9de",
+  "LAB_BREAKTHROUGH_UNDEAD@2:ORIGINAL":
+    "d3376b5a40c702a7b6fd64f955c17e7e14c73579d9dcaf1e7539e8641319e9dd",
 };
 
 /**
@@ -210,12 +213,12 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   "LAB_LATE@2:ORIGINAL":
     "67247565f08469287eeae5e2a66f4b4a3a9f270e9d2d1d08bc1d595cb68e0643",
   // The breakthrough labs of tuning 6: the same reduction of the state.
-  "LAB_BREAKTHROUGH@1:ORIGINAL":
-    "6ccb8e03ac5fbde39f519a869f27842d9d04c76b6f4ae22a9edff82b63621c3d",
-  "LAB_BREAKTHROUGH_GOBLIN@1:ORIGINAL":
-    "1373e09cadca8389096d78651cdd32bcc90151e3238e2558381fed099388b9a6",
-  "LAB_BREAKTHROUGH_UNDEAD@1:ORIGINAL":
-    "1d5eeb851165e178d979abbb49cf65a9f24c3a23665ee5af8ed6a1e1df9682c4",
+  "LAB_BREAKTHROUGH@2:ORIGINAL":
+    "f453717878a59b126db1e4638ada40a53b6093a24194bdd3055ede187aaedcea",
+  "LAB_BREAKTHROUGH_GOBLIN@2:ORIGINAL":
+    "657e665330c9d34e9b9dbd15722d44bbe5c57596a6c727cbb51c9b890f9abd04",
+  "LAB_BREAKTHROUGH_UNDEAD@2:ORIGINAL":
+    "b60fca0d1b6571f3ae2621c400e1af71d030b5dfea5f6b846845d7c3aedc3719",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {

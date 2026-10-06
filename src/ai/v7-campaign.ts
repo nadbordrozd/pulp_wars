@@ -130,6 +130,11 @@ export interface CampaignAssignmentV7 {
   readonly field: RouteFieldV7;
   /** The target city of an `ATTACK` job. */
   readonly targetCityId: CityId | null;
+  /**
+   * Tuning 7 (`pulp_wars-w49.10`): a fast capturer sent alone at a hostile
+   * city no unit defends.
+   */
+  readonly raid?: boolean;
 }
 
 export interface CampaignTargetV7 {
@@ -187,7 +192,54 @@ export interface CampaignFactsV7 {
    * non-mission match, and then the plan is unchanged.
    */
   readonly directive?: CampaignDirectiveV7;
+  /**
+   * Tuning 7 (`pulp_wars-w49.10`): army play (`src/ai/v7-army.ts`). The
+   * free army marches on one hostile city, chosen by reach and by what
+   * holds it (a large army on more than one), instead of on each unit's
+   * nearest city; a fast capturer raids a hostile
+   * city no unit defends; and the villages go to the fastest capturers,
+   * those away from the enemy first. Absent for every seat that does not
+   * play the army rules, and then the plan is unchanged.
+   */
+  readonly army?: CampaignArmyFactsV7;
 }
+
+export interface CampaignArmyFactsV7 {
+  /**
+   * The unit is part of a holding force (it stands near an own center with
+   * an enemy at its gates) and keeps its nearest target.
+   */
+  readonly holds: (unit: PublicUnitV7) => boolean;
+  /** The unit cannot attack after it moved and fights hand to hand. */
+  readonly slowMelee: (unit: PublicUnitV7) => boolean;
+  /** What a visible land unit is worth in an assault (`armyUnitStrengthV7`). */
+  readonly strength: (unit: PublicUnitV7) => number;
+}
+
+/** A raider is a capturer with at least this much Move. */
+export const CAMPAIGN_RAID_MOVE_V7 = 2;
+/** A raider is at most this many route steps from the undefended city. */
+export const CAMPAIGN_RAID_STEPS_V7 = 10;
+/** A village with a hostile unit or hostile land this close is taken last. */
+export const CAMPAIGN_VILLAGE_DANGER_RADIUS_V7 = 3;
+/** A slow melee unit counts as this many turns farther from a village. */
+export const CAMPAIGN_SLOW_CAPTURER_TURNS_V7 = 3;
+/** A hostile land unit this close to a hostile city holds it. */
+export const CAMPAIGN_FRONT_DEFENSE_RADIUS_V7 = 3;
+/** Steps a city costs when its holders are as strong as the free army. */
+export const CAMPAIGN_FRONT_DEFENSE_STEPS_V7 = 6;
+/** An army unit this close to a holder of a city is in contact there. */
+export const CAMPAIGN_FRONT_CONTACT_V7 = 3;
+/** Steps a city counts nearer where the army is already in contact. */
+export const CAMPAIGN_FRONT_WAR_STEPS_V7 = 4;
+/** Steps a further front counts nearer on a seat that has no front yet. */
+export const CAMPAIGN_FRONT_SAME_SEAT_STEPS_V7 = 3;
+/** The main front keeps at least this many units (and what it needs). */
+export const CAMPAIGN_FRONT_MAIN_UNITS_V7 = 10;
+/** A further front gets at least this many units. */
+export const CAMPAIGN_FRONT_MIN_UNITS_V7 = 6;
+/** ... and this share (percent) of its visible holders' strength. */
+export const CAMPAIGN_FRONT_NEED_RATIO_V7 = 200;
 
 /**
  * The plan side of a mission directive (docs/product/CAMPAIGN.md section
@@ -505,8 +557,36 @@ export function campaignPlanForPolicyV7(
         pairs.push({ errand: order, unit, steps });
     }
   });
+  // Tuning 7: an army seat sends its fastest capturer (a slow melee unit
+  // such as a Zombie last), and takes the villages away from the enemy
+  // first: two Skeletons walked one after the other onto the village
+  // beside the enemy's land, and a Zombie took one under seven Marksmen.
+  const armyFacts = facts.army;
+  const errandDanger = errands.map((errand) => {
+    if (armyFacts === undefined || errand.job !== "VILLAGE") return 0;
+    const at = coordOf(errand.index);
+    return Number(
+      hostileLand.some(
+        (unit) => chebyshev(unit.at, at) <= CAMPAIGN_VILLAGE_DANGER_RADIUS_V7,
+      ) ||
+        view.cities.some(
+          (city) =>
+            facts.isHostile(city.ownerId) &&
+            chebyshev(city.at, at) <= CAMPAIGN_VILLAGE_DANGER_RADIUS_V7,
+        ),
+    );
+  });
+  const errandTurns = (pair: (typeof pairs)[number]): number =>
+    armyFacts === undefined
+      ? pair.steps
+      : Math.ceil(
+          pair.steps / Math.max(1, unitRoleRuleV7(view, pair.unit).move),
+        ) +
+        (armyFacts.slowMelee(pair.unit) ? CAMPAIGN_SLOW_CAPTURER_TURNS_V7 : 0);
   pairs.sort(
     (left, right) =>
+      (errandDanger[left.errand] ?? 0) - (errandDanger[right.errand] ?? 0) ||
+      errandTurns(left) - errandTurns(right) ||
       left.steps - right.steps ||
       left.errand - right.errand ||
       left.unit.id - right.unit.id,
@@ -610,9 +690,45 @@ export function campaignPlanForPolicyV7(
   // A HOLD seat marches on no city outside its zone.
   const marchTargets =
     confine === null ? targets : targets.filter((city) => confine(city.at));
+  const raided = new Set<CityId>();
   if (marchTargets.length > 0) {
     const fields = marchTargets.map((city) => field([indexOf(city.at)]));
     workFields.push(...fields);
+    // Tuning 7: a hostile city with no unit on or next to its center gets
+    // the nearest fast capturer, alone and at once (undefended rear cities
+    // were left alone for whole games).
+    if (armyFacts !== undefined && !rush)
+      marchTargets.forEach((city, order) => {
+        if (
+          indexOf(city.at) === seaTargetIndex ||
+          hostileLand.some((unit) => chebyshev(unit.at, city.at) <= 1)
+        )
+          return;
+        let raider: PublicUnitV7 | null = null;
+        let raiderSteps = CAMPAIGN_RAID_STEPS_V7 + 1;
+        for (const unit of unassigned()) {
+          if (
+            !captures(unit) ||
+            unitRoleRuleV7(view, unit).move < CAMPAIGN_RAID_MOVE_V7
+          )
+            continue;
+          const steps = fields[order]?.get(unit.at);
+          if (steps !== undefined && steps < raiderSteps) {
+            raider = unit;
+            raiderSteps = steps;
+          }
+        }
+        const route = fields[order];
+        if (raider === null || route === undefined) return;
+        raided.add(city.id);
+        assignmentByUnitId.set(raider.id, {
+          job: "ATTACK",
+          at: city.at,
+          field: route,
+          targetCityId: city.id,
+          raid: true,
+        });
+      });
     // The nearest city, a walled one counting as farther. Visible
     // defenders do not move the choice: they come and go with every step,
     // and a unit that changes its target every turn never arrives.
@@ -675,8 +791,164 @@ export function campaignPlanForPolicyV7(
       .sort((left, right) => left - right);
     const onSeat = (seat: PlayerId): PublicUnitV7[] =>
       army.filter((unit) => seatOf(choice.get(unit.id) ?? -1) === seat);
+    // Tuning 7: an army seat concentrates, on opportunity and reach and
+    // not on weakness. Round 6 sent every unit to its own nearest city: 36
+    // units stood on three fronts, none of them with the numbers to
+    // assault. The first draft of this round marched on the seat with the
+    // fewest city levels, which leaves a strong neighbor (a competent
+    // human) for last however near its border city is.
+    //
+    // Now every known hostile city is a candidate front, at the cost of
+    // its reach (the walk from the nearest army unit or own center, a
+    // walled city counting as farther), plus up to
+    // `CAMPAIGN_FRONT_DEFENSE_STEPS_V7` for the visible units that hold it
+    // (their strength against the free army's), less
+    // `CAMPAIGN_FRONT_WAR_STEPS_V7` where the army is already in contact.
+    // Nothing about the seat as a whole counts: not its city levels, not
+    // its army elsewhere, not who plays it. The cheapest city is the main
+    // front. An army with more than its fronts need opens another: a front
+    // needs twice the strength of the visible units that hold its city, at
+    // least `CAMPAIGN_FRONT_MAIN_UNITS_V7` units for the main front and
+    // `CAMPAIGN_FRONT_MIN_UNITS_V7` for a further one. The surplus over
+    // the main front's need goes to the next cheapest city, a city of a
+    // seat that has no front yet counting
+    // `CAMPAIGN_FRONT_SAME_SEAT_STEPS_V7` nearer; everything else stays
+    // with the main front, which keeps its need once more for every front
+    // already open. The units of a holding force keep their nearest target.
+    // (An army seat sends no pair to every other seat either way.)
+    const concentrated = facts.army !== undefined;
+    if (facts.army !== undefined && marchTargets.length >= 2) {
+      const armyFacts7 = facts.army;
+      const free = army.filter((unit) => !armyFacts7.holds(unit));
+      const freeStrength = free.reduce(
+        (sum, unit) => sum + armyFacts7.strength(unit),
+        0,
+      );
+      const defenders = marchTargets.map((city) =>
+        hostileLand.filter(
+          (unit) =>
+            chebyshev(unit.at, city.at) <= CAMPAIGN_FRONT_DEFENSE_RADIUS_V7,
+        ),
+      );
+      const defense = defenders.map((units) =>
+        units.reduce((sum, unit) => sum + armyFacts7.strength(unit), 0),
+      );
+      const fronts: number[] = [];
+      const frontCost = (
+        order: number,
+        units: readonly PublicUnitV7[],
+      ): { readonly cost: number; readonly reach: number } => {
+        let reach = Number.POSITIVE_INFINITY;
+        for (const unit of units) reach = Math.min(reach, costTo(unit, order));
+        if (!Number.isFinite(reach))
+          return { cost: Number.POSITIVE_INFINITY, reach };
+        for (const center of ownCenters) {
+          const steps = fields[order]?.get(center);
+          if (steps !== undefined)
+            reach = Math.min(reach, steps + (penalties[order] ?? 0));
+        }
+        const held =
+          freeStrength <= 0
+            ? CAMPAIGN_FRONT_DEFENSE_STEPS_V7
+            : Math.min(
+                CAMPAIGN_FRONT_DEFENSE_STEPS_V7,
+                Math.floor(
+                  (CAMPAIGN_FRONT_DEFENSE_STEPS_V7 * (defense[order] ?? 0)) /
+                    freeStrength,
+                ),
+              );
+        const contact = (defenders[order] ?? []).some((hostile) =>
+          free.some(
+            (unit) =>
+              chebyshev(unit.at, hostile.at) <= CAMPAIGN_FRONT_CONTACT_V7,
+          ),
+        );
+        const seat = seatOf(order);
+        const fresh =
+          fronts.length > 0 && !fronts.some((front) => seatOf(front) === seat);
+        return {
+          cost:
+            reach +
+            held -
+            (contact ? CAMPAIGN_FRONT_WAR_STEPS_V7 : 0) -
+            (fresh ? CAMPAIGN_FRONT_SAME_SEAT_STEPS_V7 : 0),
+          reach,
+        };
+      };
+      const cheapest = (units: readonly PublicUnitV7[]): number => {
+        let best = -1;
+        let bestCost = Number.POSITIVE_INFINITY;
+        let bestReach = Number.POSITIVE_INFINITY;
+        marchTargets.forEach((city, order) => {
+          if (fronts.includes(order)) return;
+          const { cost, reach } = frontCost(order, units);
+          if (!Number.isFinite(cost)) return;
+          if (
+            cost < bestCost ||
+            (cost === bestCost &&
+              (reach < bestReach ||
+                (reach === bestReach &&
+                  city.id < (marchTargets[best]?.id ?? city.id))))
+          ) {
+            best = order;
+            bestCost = cost;
+            bestReach = reach;
+          }
+        });
+        return best;
+      };
+      const main = cheapest(free);
+      if (main >= 0) {
+        fronts.push(main);
+        let rest = free.filter((unit) => Number.isFinite(costTo(unit, main)));
+        for (const unit of rest) choice.set(unit.id, main);
+        /**
+         * The units of `units` nearest to a front, until they have twice
+         * the strength of what holds it (at least `least` of them), or
+         * null when they do not suffice.
+         */
+        const force = (
+          order: number,
+          units: readonly PublicUnitV7[],
+          least: number,
+        ): PublicUnitV7[] | null => {
+          const ordered = units
+            .filter((unit) => Number.isFinite(costTo(unit, order)))
+            .sort(
+              (left, right) =>
+                costTo(left, order) - costTo(right, order) ||
+                left.id - right.id,
+            );
+          const wanted =
+            (CAMPAIGN_FRONT_NEED_RATIO_V7 * (defense[order] ?? 0)) / 100;
+          const sent: PublicUnitV7[] = [];
+          let strength = 0;
+          for (const unit of ordered) {
+            if (sent.length >= least && strength >= wanted) break;
+            sent.push(unit);
+            strength += armyFacts7.strength(unit);
+          }
+          return sent.length >= least && strength >= wanted ? sent : null;
+        };
+        // What the main front keeps: what it needs, and that again for
+        // every further front (so a third front takes a much larger army).
+        const keep =
+          force(main, rest, CAMPAIGN_FRONT_MAIN_UNITS_V7)?.length ??
+          rest.length;
+        for (;;) {
+          const next = cheapest(rest);
+          if (next < 0) break;
+          const sent = force(next, rest, CAMPAIGN_FRONT_MIN_UNITS_V7);
+          if (sent === null || rest.length - sent.length < keep * fronts.length)
+            break;
+          fronts.push(next);
+          for (const unit of sent) choice.set(unit.id, next);
+          rest = rest.filter((unit) => !sent.includes(unit));
+        }
+      }
+    }
     const quota =
-      seats.length < 2
+      seats.length < 2 || concentrated
         ? 0
         : Math.min(
             CAMPAIGN_FRONT_UNITS_V7,
@@ -780,7 +1052,12 @@ export function campaignPlanForPolicyV7(
         home,
         out,
         needed,
-        push: rush || clash || home >= needed || out >= CAMPAIGN_WAVE_OUT_V7,
+        push:
+          rush ||
+          clash ||
+          raided.has(city.id) ||
+          home >= needed ||
+          out >= CAMPAIGN_WAVE_OUT_V7,
       });
     });
   }

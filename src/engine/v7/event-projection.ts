@@ -584,7 +584,12 @@ function eventVisible(
       );
     case "IMPROVEMENT_PILLAGED":
       return ids.every((id) => beforeVisible.has(id) || afterVisible.has(id));
+    // Tuning 7 (`pulp_wars-w49.10`): a Disband also reaches every viewer
+    // that saw the unit before it (it used to vanish from an observer's
+    // board without an event). The refund is half the role's public price,
+    // so the event tells such a viewer nothing private.
     case "UNIT_DISBANDED":
+      return event.playerId === viewerId || beforeVisible.has(event.unitId);
     case "UNIT_WAITED":
       return event.playerId === viewerId;
     case "WOUNDED_TENDED":

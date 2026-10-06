@@ -182,9 +182,13 @@ describe("ruleset-7 Normal AI campaign (pulp_wars-9s0.1)", () => {
         { seat: 0, role: "CAPTAIN", at: { x: 3, y: 9 } },
       ],
     });
+    // Tuning 7 (`pulp_wars-w49.10`): villages away from the enemy come
+    // first. (2, 5) is three tiles from the enemy capital and waits for a
+    // third capturer; the Fighter at (3, 8) walks to (8, 5) instead (it
+    // took (2, 5), its nearest, before).
     expect(jobOf(state, unitAt(state, { x: 3, y: 8 }).id)).toMatchObject({
       job: "VILLAGE",
-      at: { x: 2, y: 5 },
+      at: { x: 8, y: 5 },
     });
     expect(jobOf(state, unitAt(state, { x: 7, y: 8 }).id)).toMatchObject({
       job: "VILLAGE",
@@ -263,7 +267,7 @@ describe("ruleset-7 Normal AI campaign (pulp_wars-9s0.1)", () => {
     });
   });
 
-  it("opens a front against every hostile seat in reach", () => {
+  it("marches on one hostile seat of two in reach", () => {
     // Three seats (14 x 14): the viewer's capital (2, 2), hostile capitals
     // (11, 2) and (11, 11). Vampires (the Undead Knight role) cannot
     // capture, so the villages are no errand of theirs. (The Human Knight
@@ -290,12 +294,11 @@ describe("ruleset-7 Normal AI campaign (pulp_wars-9s0.1)", () => {
         `${item.at.x},${item.at.y}`,
         (byTarget.get(`${item.at.x},${item.at.y}`) ?? 0) + 1,
       );
-    // Every unit is nearest to one capital; a pair still marches on the
-    // other seat's.
-    expect([...byTarget].sort()).toEqual([
-      ["11,11", 2],
-      ["11,2", 2],
-    ]);
+    // Tuning 7 (`pulp_wars-w49.10`): the seat concentrates on one
+    // neighbor (the weakest it can reach; these two are equal) instead of
+    // sending a pair at each. A seat that already fights on a front keeps
+    // its units there (`ruleset-v7-tuning-7.test.ts`).
+    expect([...byTarget].sort()).toEqual([["11,11", 4]]);
   });
 
   it("lands a stranded transport where it can walk to a target", () => {

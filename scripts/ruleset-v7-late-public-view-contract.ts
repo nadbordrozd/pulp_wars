@@ -71,6 +71,15 @@ export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;
  * center and two cities can still train, so no construction that costs
  * Coins is a candidate; the five own units outweigh the hostile position
  * and are committed, so their Moves are those that close in on it.
+ *
+ * Tuning 7 (`pulp_wars-w49.10`): `policyDecisionHash` was 5c5ef6…500c. The
+ * command and the candidate count are unchanged. Research Marksmanship is a
+ * candidate again (1165): it is the due technology and unlocks a unit, and
+ * the wartime rule holds back only research that does neither. Of the
+ * committed units' Moves, unit 19 may step to (3, 3), into the reach of the
+ * position it attacks, and two Moves that close no distance to it are no
+ * candidates (unit 20 to (5, 1), unit 33 to (8, 6)); three more score
+ * differently (the march on the hostile center and the chain spacing).
  */
 export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   /** `canonicalHash` of the retained fixture as read from disk. */
@@ -90,8 +99,9 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // Tuning 5 (`pulp_wars-w49.4`): army play and the Swordsman, as in the
     // comment above (was 0cd4ad…5ea7).
     // Tuning 6 (`pulp_wars-w49.6`): the assault and the pressed seat, as
-    // in the comment above (was d083c1…4725).
-    "5c5ef67b01fe9b837a0f612cf8d6a960021ffcb2147efe7205565c5437f2500c",
+    // in the comment above (was d083c1…4725). Tuning 7
+    // (`pulp_wars-w49.10`): see the comment above (was 5c5ef6…500c).
+    "6d1529d3775f160db8240c1dbfb29e080da84ce51a50a9e544a60d407c4cf3da",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
@@ -101,7 +111,8 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   // longer buy a technology (a tier 1 as the sixth costs 13).
   // Tuning 5: 21. Two Train Swordsman candidates are new, and the army
   // play's garrison and formation rules leave fewer Moves as candidates.
-  // Tuning 6: 20 (see the comment above).
+  // Tuning 6: 20 (see the comment above). Tuning 7: 20 (one Move and
+  // Research Marksmanship are new, two Moves are gone).
   candidateCount: 20,
 });
 

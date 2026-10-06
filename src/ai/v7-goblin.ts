@@ -42,6 +42,17 @@ export const KABOOM_DOOMED_PRIORITY_V7 = 935;
 export const KABOOM_CHIP_PRIORITY_V7 = 895;
 /** A Move after which the unit's Kaboom kills (one wave, visible units). */
 export const KABOOM_SETUP_PRIORITY_V7 = 1177;
+/**
+ * Tuning 7 (`pulp_wars-w49.10`): a blast that damages this many hostile
+ * units is worth a Kaboom, and a Move to it, without a kill (an army seat).
+ */
+export const KABOOM_CLUSTER_HITS_V7 = 3;
+/**
+ * Tuning 7: the Warboss's Move to where its WAAAGH! reaches two or more
+ * units that will attack this turn: before the WAAAGH! (1235) and so before
+ * the attacks it strengthens.
+ */
+export const WAAAGH_SETUP_PRIORITY_V7 = 1236;
 /** A helper Move that turns another own attack into a kill (Gang Up). */
 export const GANG_UP_KILL_SETUP_PRIORITY_V7 = 1185;
 /** A helper Move that adds Gang Up damage to another own attack. */
@@ -230,6 +241,8 @@ export interface HypotheticalBlastV7 {
   readonly friendlyValue: number;
   readonly hostileKills: number;
   readonly friendlyHits: number;
+  /** Tuning 7: the hostile units the blast damages. */
+  readonly hostileHits: number;
 }
 
 /**
@@ -253,6 +266,7 @@ export function hypotheticalBlastV7(
   let friendly = 0;
   let hostileKills = 0;
   let friendlyHits = 0;
+  let hostileHits = 0;
   for (const original of view.units) {
     if (original.id === exploderId) continue;
     const at =
@@ -268,6 +282,7 @@ export function hypotheticalBlastV7(
     } else if (isHostile(original.ownerId)) {
       hostile += hostileValue(original, hit, dies);
       if (dies) hostileKills += 1;
+      if (hit > 0) hostileHits += 1;
     }
   }
   return {
@@ -275,6 +290,7 @@ export function hypotheticalBlastV7(
     friendlyValue: friendly,
     hostileKills,
     friendlyHits,
+    hostileHits,
   };
 }
 

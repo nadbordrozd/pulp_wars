@@ -230,7 +230,7 @@ export function buildMissionStateV7(
         population: 0,
         isCapital: cityIndex === 0,
         expanded: false,
-        landGrantUsed: false,
+        landGrantUsed: city.landGrant === true,
         cityActionAvailable: false,
         rewards: city.rewards.map((reward, index) => ({
           reachedLevel: index + 2,
@@ -247,6 +247,18 @@ export function buildMissionStateV7(
         const index = (city.at.y + dy) * size + city.at.x + dx;
         if (!territory.has(index)) territory.set(index, city.id);
       }
+  // A city with its Land Grant used also holds the neutral cells of its
+  // 5 x 5 footprint (after every 3 x 3 footprint, as a grant made later).
+  for (const city of draftCities) {
+    if (!city.landGrantUsed) continue;
+    for (let dy = -2; dy <= 2; dy += 1)
+      for (let dx = -2; dx <= 2; dx += 1) {
+        const cell = { x: city.at.x + dx, y: city.at.y + dy };
+        if (!onBoard(size, cell)) continue;
+        const index = cell.y * size + cell.x;
+        if (!territory.has(index)) territory.set(index, city.id);
+      }
+  }
   for (const city of draftCities)
     if (territory.get(city.at.y * size + city.at.x) !== city.id)
       fail(

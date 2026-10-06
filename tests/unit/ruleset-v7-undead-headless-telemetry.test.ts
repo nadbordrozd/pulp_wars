@@ -142,7 +142,9 @@ describe("ruleset-7 revision-13 headless Undead telemetry", () => {
     // since tuning 1 (`pulp_wars-w49.3`, 7r46), and seed 3 since tuning 3.
     // Seed 5 since tuning 6 (`pulp_wars-w49.6`: seed 3 trains its one Lich
     // too late to splash; seeds 2, 5, 8, 9, 10, and 14 of 0-15 splash).
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 5), {
+    // Seed 0 since tuning 7 (`pulp_wars-w49.10`: seed 5 is over in round
+    // 31 without a Lich; seeds 0, 3, 7, 14, and 15 of 0-15 splash).
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 0), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);

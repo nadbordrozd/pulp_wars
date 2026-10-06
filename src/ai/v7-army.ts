@@ -298,21 +298,59 @@ export function armyUnitStrengthV7(
 export type ArmyAssaultModeV7 = "COMMIT" | "STAGE" | "NONE";
 
 /**
+ * Tuning 7 (`pulp_wars-w49.10`): a position is local. The hostile units of
+ * one position stand within this many tiles of its seed (the unit of it
+ * nearest to an own fighting unit), so that an enemy's whole land is never
+ * weighed as one line.
+ */
+export const ARMY_POSITION_SPAN_V7 = 4;
+/**
+ * Tuning 7: with this many units for each of the position's (in percent),
+ * `ARMY_COMMIT_COUNT_WEIGHT_V7` percent of its weight commits: overwhelming
+ * numbers of cheap units are numbers.
+ */
+export const ARMY_COMMIT_COUNT_RATIO_V7 = 150;
+/**
+ * Weight, in percent of the position's, that commits with the numbers
+ * above: a tenth more, not parity (ten Fighters against five Swordsmen in
+ * cover have the numbers and equal weight, and only bleed).
+ */
+export const ARMY_COMMIT_COUNT_WEIGHT_V7 = 110;
+
+/**
  * The mode of one position from the strengths around it (`contact`: the
- * battle is joined).
+ * battle is joined). Tuning 7: with the unit counts given, one and a half
+ * times the position's units commit at 110% of its weight, and count as
+ * coming in strength.
  */
 export function armyAssaultModeV7(facts: {
   readonly hostile: number;
   readonly near: number;
   readonly coming: number;
   readonly contact: boolean;
+  readonly hostileUnits?: number;
+  readonly nearUnits?: number;
+  readonly comingUnits?: number;
 }): ArmyAssaultModeV7 {
   if (facts.hostile <= 0 || facts.near <= 0) return "NONE";
+  const outnumbers = (own: number | undefined): boolean =>
+    own !== undefined &&
+    facts.hostileUnits !== undefined &&
+    100 * own >= ARMY_COMMIT_COUNT_RATIO_V7 * facts.hostileUnits;
   const ratio = facts.contact
     ? ARMY_COMMIT_HELD_RATIO_V7
-    : ARMY_COMMIT_RATIO_V7;
+    : outnumbers(facts.nearUnits)
+      ? ARMY_COMMIT_COUNT_WEIGHT_V7
+      : ARMY_COMMIT_RATIO_V7;
   if (100 * facts.near >= ratio * facts.hostile) return "COMMIT";
-  if (100 * facts.coming < ARMY_COMMIT_RATIO_V7 * facts.hostile) return "NONE";
+  if (
+    100 * facts.coming < ARMY_COMMIT_RATIO_V7 * facts.hostile &&
+    !(
+      outnumbers(facts.comingUnits) &&
+      100 * facts.coming >= ARMY_COMMIT_COUNT_WEIGHT_V7 * facts.hostile
+    )
+  )
+    return "NONE";
   return 100 * facts.near >= ARMY_COMMIT_ARRIVED_V7 * facts.coming &&
     100 * facts.near >= ARMY_COMMIT_HELD_RATIO_V7 * facts.hostile
     ? "COMMIT"

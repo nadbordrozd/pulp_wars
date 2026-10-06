@@ -405,15 +405,19 @@ describe("headless parity and the CLI flag", () => {
         // Tuning 6 (`pulp_wars-w49.6`: research at 1 Coin a technology
         // owned, the Normal AI's assault, expansion, and research order):
         // recomputed.
-        rounds: 18,
+        // Tuning 7 (`pulp_wars-w49.10`: the Normal AI's local assault,
+        // growth at the unit limit, wartime spending, and target choice):
+        // 17 rounds (18 before), recomputed. The four pins below have a
+        // seat outside the army play and are unchanged.
+        rounds: 17,
         commandHash:
-          "84950321e2f9bcfb4272b4d88cee9c0d5f104dc53c763f5ea5721faf37a49573",
+          "e8ee7072a1696bfb14e183889d5ee127273d015698efd2b6fbca9dfd2b8804b7",
         eventHash:
-          "04930ba2da11394beb1087fd31f427740bfb2a369a6b63bd69c091356834f29b",
+          "e644337e9bb9b74f682338b36ea0f96c59b70b92727dd8f64c633c6c52d532ca",
         mapHash:
           "1f6ad08d476884229d6cb8a7319ea209b8667cf4e28e24cd07352ebafc3055de",
         finalPrngHash:
-          "6ecdac89b46e4cbd434c0c8eec3723232d5419d7308165da635935e8d0fbcca1",
+          "6182b6ed99dab3b7cdde3c354dd816c55a481218f6387349cf6c5b23ed138946",
       },
       {
         mapType: "PANGEA",

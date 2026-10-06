@@ -379,9 +379,13 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // the Undead by Drill, Marksmanship, and Administration to Sawmilling;
     // research at 1 Coin a technology owned) seed 2 trains three Liches
     // and plagues, over in round 30.
+    // With tuning 7 (`pulp_wars-w49.10`: the assault on a local position,
+    // growth research at the unit limit, wartime spending) seed 2 is over
+    // in round 18 without a Lich; seeds 10, 11, 13, and 14 of 0-15 train
+    // one and plague (seed 14: four Liches, over in round 22).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 2,
+      seed: 14,
       width: 11,
       height: 11,
       aiCount: 1,

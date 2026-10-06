@@ -1357,6 +1357,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         if (token !== this.#presentationToken) return;
         this.#crossfade = null;
         this.#presentedView = after;
+      } else if (step.kind === "DISBAND") {
+        // Tuning 7: the disbanded unit fades out where it stood.
+        if (step.followCamera === true) this.#followCamera(step.at);
+        this.#crossfade = { before, after, progress: 0 };
+        await this.#animate(step.durationMs * durationScale, (progress) => {
+          this.#crossfade = { before, after, progress };
+          this.#draw();
+        });
+        if (token !== this.#presentationToken) return;
+        this.#crossfade = null;
+        this.#presentedView = after;
       } else if (step.kind === "TACTICAL_STATUS") {
         this.#presentedView = after;
         await this.#animate(step.durationMs * durationScale, (progress) => {

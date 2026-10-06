@@ -211,6 +211,19 @@ export type CorePresentationStepV7 =
       readonly damage: number;
       readonly lethal: boolean;
       readonly durationMs: 100;
+    }
+  | {
+      /**
+       * Tuning 7 (`pulp_wars-w49.10`): a unit its owner disbanded fades
+       * from its tile (a unit another seat disbanded used to vanish from an
+       * observer's board between two frames).
+       */
+      readonly kind: "DISBAND";
+      readonly unitId: number;
+      readonly at: CoordV7;
+      readonly durationMs: 320;
+      /** Another player's Disband: the camera frames it, like enemy moves. */
+      readonly followCamera?: true;
     };
 
 /**
@@ -938,6 +951,17 @@ export function corePresentationPlanV7(
           effect: "ASSEMBLE",
           cells: [event.at],
           ...(engineer === undefined ? {} : { from: engineer.at }),
+        });
+    } else if (event.kind === "UNIT_DISBANDED") {
+      // Tuning 7: the disbanded unit fades where it stood.
+      const gone = before.units.find((unit) => unit.id === event.unitId);
+      if (gone !== undefined && isExplored(gone.at))
+        steps.push({
+          kind: "DISBAND",
+          unitId: gone.id,
+          at: gone.at,
+          durationMs: 320,
+          ...(enemyTurn ? { followCamera: true as const } : {}),
         });
     } else if (event.kind === "UNIT_DIED") {
       // Revision 19: a destroyed Egg scatters its shell.

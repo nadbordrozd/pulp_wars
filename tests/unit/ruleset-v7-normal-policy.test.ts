@@ -334,7 +334,12 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // Tuning 6 (`pulp_wars-w49.6`): the command is unchanged; the
       // candidates are scored by the assault, growth, and research rules of a
       // Human seat (was 59c61a…4603).
-      "4d40a9530cd7f98c957355979e71de1d3113c850b081b52298910d6b329532be",
+      // Tuning 7 (`pulp_wars-w49.10`): the command is unchanged. An enemy
+      // unit stands five tiles from the seat's Swordsman, which is a war: the
+      // capital can train, so the two Harvest Fruit and the Hunt Game are no
+      // candidates; the Swordsman's errand is the chest at (9, 9), away
+      // from the enemy, before the village at (5, 8) (was 4d40a9…32be).
+      "62b18a07d9c21f5c3a6917fd991421733042d892155a6c8fcb86c23a29009811",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -343,7 +348,8 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // Tuning 6 (`pulp_wars-w49.6`): the command is unchanged; the
       // candidates are scored by the assault, growth, and research rules of a
       // Human seat (was b44611…4ff5).
-      "8df833922cc2b054ad6f836483fc39b91079d71b921bc394d8bf59be23d516ad",
+      // Tuning 7 (`pulp_wars-w49.10`): as above (was 8df833…16ad).
+      "59257e97e18ff2789cbd5b12d47bbea0936cc83ca1a87f320dc753eb22b5efd3",
     );
     const basicCommands = queryPlayerCommandsV7(basicView);
     const basicWork = new NormalPolicyWorkV7(structuredClone(basicView));
@@ -503,7 +509,23 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const full = applyFixtureCommand(basic.state, redevelop);
     const fullView = viewForV7(full, full.humanPlayerId);
     expect(queryPlayerCommandsV7(fullView)).toContainEqual(rebuild);
-    const fullCandidates = chooseNormalCommandV7(fullView).candidates.map(
+    // Tuning 7 (`pulp_wars-w49.10`): an enemy unit five tiles from the
+    // seat's Swordsman is a war, and at war with an open unit slot nothing
+    // but units is bought (the Market was a candidate there, at 1200).
+    // Without that unit the seat is at peace, as it was read before.
+    const peaceView = viewForV7(
+      {
+        ...full,
+        units: full.units.filter((unit) => unit.ownerId === full.humanPlayerId),
+      },
+      full.humanPlayerId,
+    );
+    expect(
+      chooseNormalCommandV7(fullView).candidates.map(({ command }) =>
+        canonicalJson(command),
+      ),
+    ).not.toContain(canonicalJson(rebuild));
+    const fullCandidates = chooseNormalCommandV7(peaceView).candidates.map(
       ({ command }) => canonicalJson(command),
     );
     expect(fullCandidates).toContain(
@@ -1031,7 +1053,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // Tuning 6 (`pulp_wars-w49.6`): the command is unchanged; the
       // candidates are scored by the assault, growth, and research rules of a
       // Human seat (was 016439…56f8).
-      "c6512aa8d46507d1b1caae6990fe1500951b0ef0748e3b19e55439a76973dddd",
+      // Tuning 7 (`pulp_wars-w49.10`): the command is unchanged; the cause
+      // is in the pin's comment (was c6512a…dddd).
+      "0802a4dc2e1fed5509c5232a352982fc1de7f1b01413f863a41c90b802bdcb02",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',

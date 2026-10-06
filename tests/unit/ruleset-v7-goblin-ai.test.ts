@@ -575,10 +575,22 @@ describe("ruleset-7 revision-17 Normal AI: Gang Up", () => {
 });
 
 describe("ruleset-7 revision-17 Normal AI: exploder spacing", () => {
+  // Tuning 7 (`pulp_wars-w49.10`): three Swordsmen stand in front of the
+  // enemy capital and a Goblin Fighter on each village. Alone against one
+  // Fighter the two Goblins commit (a committed unit is not held back by
+  // the exploder spacing, and a fast one waits for the slow ones), and the
+  // Wolf Rider, the fastest capturer, is sent to a village or to raid the
+  // empty capital: then no other Move of it is a candidate.
   const pieces = (enemyAt: CoordV7): GoblinPieceV7[] => [
     { seat: 0, role: "CATAPULT", at: at(2, 3), hp: 2 },
     { seat: 0, role: "RAIDER", at: at(4, 2) },
     { seat: 1, role: "FIGHTER", at: enemyAt },
+    { seat: 1, role: "SWORDSMAN", at: at(2, 7) },
+    { seat: 1, role: "SWORDSMAN", at: at(1, 7) },
+    { seat: 1, role: "SWORDSMAN", at: at(3, 7) },
+    { seat: 0, role: "FIGHTER", at: at(5, 5) },
+    { seat: 0, role: "FIGHTER", at: at(8, 5) },
+    { seat: 0, role: "FIGHTER", at: at(5, 8) },
   ];
 
   it("keeps units off a Rocket Cart that visible enemies can kill", () => {
@@ -894,10 +906,17 @@ describe("ruleset-7 revision-17 Normal AI: balance-pass tuning", () => {
   it("keeps units off a Rocket Cart that any visible enemy can damage", () => {
     // A full-HP Rocket Cart a Fighter can reach is not killed this turn, but
     // splash, Wail, Plague, and follow-up attacks finish such carts later.
+    // (Tuning 7: with the Swordsmen and the village Fighters, as above.)
     const pieces = (enemy: "FIGHTER" | "GUARD"): GoblinPieceV7[] => [
       { seat: 0, role: "CATAPULT", at: at(2, 3) },
       { seat: 0, role: "RAIDER", at: at(4, 2) },
       { seat: 1, role: enemy, at: at(2, 5) },
+      { seat: 1, role: "SWORDSMAN", at: at(2, 7) },
+      { seat: 1, role: "SWORDSMAN", at: at(1, 7) },
+      { seat: 1, role: "SWORDSMAN", at: at(3, 7) },
+      { seat: 0, role: "FIGHTER", at: at(5, 5) },
+      { seat: 0, role: "FIGHTER", at: at(8, 5) },
+      { seat: 0, role: "FIGHTER", at: at(5, 8) },
     ];
     const exposed = arena(["GOBLIN", "ORIGINAL"], pieces("FIGHTER"));
     const rider = unitAtV7(exposed.state, at(4, 2)).id;

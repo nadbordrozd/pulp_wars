@@ -91,6 +91,11 @@ export interface MissionCityV7 {
   readonly level: number;
   /** One reward per reached level 2…level, e.g. ["SURVEY", "WALLS"]. */
   readonly rewards: readonly RewardIdV7[];
+  /**
+   * Tuning 7 (`pulp_wars-w49.10`): the city has used its Land Grant: its
+   * territory is the centered 5 x 5 footprint, and the grant is spent.
+   */
+  readonly landGrant?: true;
 }
 
 export interface MissionUnitV7 {

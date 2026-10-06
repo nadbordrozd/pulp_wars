@@ -93,6 +93,7 @@ import {
   roleMechanicsV7,
   seatCountAllowedV7,
   unitCapacitySlotsV7,
+  unitMayActAfterMoveV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   viewForV7,
@@ -1501,6 +1502,19 @@ function eventTextV7(
       );
       break;
     }
+    case "UNIT_DISBANDED": {
+      // Tuning 7 (`pulp_wars-w49.10`): a unit another seat disbands in
+      // your sight is reported (it used to vanish without a line).
+      const at = context.memory.position(event.unitId);
+      lines.push(
+        event.playerId === me
+          ? `DISBANDED ${context.memory.tag(event.unitId)}${at === null ? "" : ` @${xyV7(at)}`} for +${event.coinDelta}c`
+          : `DISBANDED ${context.memory.tag(event.unitId)}${at === null ? "" : ` @${xyV7(at)}`} by its owner: it left the board (no grave, no kill)`,
+      );
+      if (event.playerId !== me)
+        notes.push(`SAW DISBAND ${context.memory.tag(event.unitId)}`);
+      break;
+    }
     case "TECH_RESEARCHED":
       lines.push(
         `RESEARCHED ${seatLabelV7(context.view, event.playerId)} ${event.tech} for ${event.cost}c`,
@@ -1806,7 +1820,7 @@ function integerFlagV7(args: ArgsV7, name: string, fallback: number): number {
  * is for.
  */
 const BREAKTHROUGH_LAB_TEXT_V7 =
-  "hold a prepared line against numbers: you hold the only crossing between two lakes, eight tiles wide (Guards on two Mountains and two Field Defenses, Swordsmen in four Forests, three Marksmen and two Catapults behind, a walled capital three tiles back, 14 units, 12c a turn); the AI attacks with twice your units' value, three level-4 cities and 13c a turn";
+  "hold a prepared line against numbers: you hold the only crossing between two lakes, eight tiles wide (Guards on two Mountains and two Field Defenses, Swordsmen in four Forests, three Marksmen and two Catapults behind, a walled capital two tiles back whose land reaches the line, 14 units, 22c in hand, every unit slot full, 12c a turn); the AI attacks with twice your units' value and three level-4 cities: 13c in its first turn, 15c in its second and 19c a turn from its third (two free Monuments, Workshops and Markets)";
 
 export const TEXT_PLAY_LABS_V7: Readonly<Record<string, string>> = {
   LAB_SIEGE:
@@ -2248,6 +2262,12 @@ function freeMonumentLinesV7(
  * next turn (`queryThreatenedTilesV7`) and the damage formula on the public
  * stats, your unit standing where it stands now. It leaves out what
  * depends on the order of the enemy's turn (Gang Up, Rally, a blast).
+ *
+ * Tuning 7 (`pulp_wars-w49.10`): a unit that cannot attack after it moved
+ * (a Zombie, an Orc Brute, a Guard, a Lich, a Catapult, a Rocket Cart)
+ * counts only from where it stands; the list said "after moving into
+ * range" for those too. Under your own unit a last line gives the worst
+ * case: every listed attacker in turn, each on the HP the others leave.
  */
 function threatEstimateLinesV7(
   view: PlayerViewV7,
@@ -2270,6 +2290,12 @@ function threatEstimateLinesV7(
     for (const own of allOwnedUnitsV7(view, view.viewer.id))
       pairs.push({ attacker: unit, defender: own });
   const rows: string[] = [];
+  const held: string[] = [];
+  const hits: {
+    readonly attacker: PublicUnitV7;
+    readonly damage: number;
+    readonly direct: boolean;
+  }[] = [];
   const reachByAttacker = new Map<number, readonly CoordV7[]>();
   for (const { attacker, defender } of pairs) {
     let reach = reachByAttacker.get(attacker.id);
@@ -2284,6 +2310,15 @@ function threatEstimateLinesV7(
       stats !== undefined &&
       gap >= stats.minimumRange &&
       gap <= stats.maximumRange;
+    // A unit that cannot attack after it moved reaches only what stands
+    // in its range now.
+    if (!direct && !unitMayActAfterMoveV7(view, attacker)) {
+      if (!mine) continue;
+      held.push(
+        `  ${unitTagV7(view, attacker)} @${xyV7(attacker.at)}: no attack on it next turn (it cannot attack after it moves; it is ${gap} tiles away)`,
+      );
+      continue;
+    }
     const damage = publicProjectedDamageForPolicyV7(
       view,
       attacker,
@@ -2294,12 +2329,38 @@ function threatEstimateLinesV7(
     rows.push(
       `  ${unitTagV7(view, attacker)} @${xyV7(attacker.at)} on ${unitTagV7(view, defender)} @${xyV7(defender.at)}: deals about ${damage} (hp ${defender.hp}->${Math.max(0, defender.hp - damage)})${damage >= defender.hp ? " KILLS" : ""}${direct ? "" : " after moving into range"}`,
     );
+    hits.push({ attacker, damage, direct });
   }
   if (pairs.length === 0) return [];
+  // The worst case on an own unit: the attackers in turn, the hardest hit
+  // first, each on the HP the earlier ones leave (a wounded unit defends
+  // with less, so the sum of the single figures is too low).
+  if (mine && hits.length >= 2) {
+    let hp = unit.hp;
+    let used = 0;
+    for (const hit of [...hits].sort(
+      (left, right) =>
+        right.damage - left.damage || left.attacker.id - right.attacker.id,
+    )) {
+      if (hp <= 0) break;
+      hp -= publicProjectedDamageForPolicyV7(
+        view,
+        hit.attacker,
+        { ...unit, hp },
+        unit.at,
+        { maximumCharge: !hit.direct },
+      );
+      used += 1;
+    }
+    rows.push(
+      `  COMBINED worst case: ${used === hits.length ? `all ${hits.length}` : `${used} of the ${hits.length}`} in turn deal about ${unit.hp - Math.max(0, hp)} (hp ${unit.hp}->${Math.max(0, hp)})${hp <= 0 ? " KILLS" : ""}`,
+    );
+  }
+  rows.push(...held);
   return [
     "",
     mine
-      ? "ENEMY ATTACKS ON IT NEXT TURN (estimate from public information, each attacker alone)"
+      ? "ENEMY ATTACKS ON IT NEXT TURN (estimate from public information; each attacker alone, then all of them)"
       : "WHAT IT WOULD DEAL TO YOUR UNITS NEXT TURN (estimate from public information)",
     ...(rows.length === 0
       ? [
@@ -2942,7 +3003,11 @@ function moveRejectionReasonV7(view: PlayerViewV7, id: string): string | null {
   if (unit === undefined) return `no visible unit u${match[1]}`;
   if (unit.ownerId !== view.viewer.id) return "it is not your unit";
   const label = unitLabelV7(view, unit);
-  if (unit.activation.moved) return `the ${label} has already moved this turn`;
+  // Tuning 7 (`pulp_wars-w49.10`): a unit with its Escape move left has
+  // moved and may still move: the reason is the Escape's reach.
+  const escapes = unit.activation.escapeAvailable;
+  if (unit.activation.moved && !escapes)
+    return `the ${label} has already moved this turn`;
   const state = activationTextV7(unit);
   if (state === "spent") return `the ${label} arrived this turn and is spent`;
   if (sameV7(unit.at, to)) return "it already stands there";
@@ -2954,6 +3019,16 @@ function moveRejectionReasonV7(view: PlayerViewV7, id: string): string | null {
     return `the tile is occupied by ${unitTagV7(view, occupant)}`;
   const move = Number(statTotalV7(view, unit.id, "MOVE") ?? "0");
   const gap = chebyshevV7(unit.at, to);
+  if (escapes) {
+    const reach = queryPlayerCommandsV7(view).flatMap((command) => {
+      const end =
+        command.kind === "MOVE" && command.unitId === unit.id
+          ? command.path.at(-1)
+          : undefined;
+      return end === undefined ? [] : [xyV7(end)];
+    });
+    return `the ${label}'s Escape does not reach it (${gap} tiles away): after its attack it may still move to ${reach.length === 0 ? "no tile" : reach.join(" ")}`;
+  }
   if (Number.isFinite(move) && move > 0 && gap > move)
     return `the tile is ${gap} tiles away and the ${label} has Move ${move}`;
   const offeredMoves = queryPlayerCommandsV7(view).filter(

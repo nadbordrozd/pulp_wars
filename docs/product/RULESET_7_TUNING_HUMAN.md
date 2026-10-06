@@ -1,11 +1,13 @@
-# Ruleset 7: the Human tech tree, rounds 3 to 6
+# Ruleset 7: the Human tech tree, rounds 3 to 7
 
 **Status:** rounds 3 and 4 were implemented on `pulp-wars-poc-7r47` (bead
 `pulp_wars-w49.3`); [round 5](#12-round-5) (section 12, bead
 `pulp_wars-w49.4`) was implemented on `pulp-wars-poc-7r48` and played three times;
 [round 6](#13-round-6) (section 13, bead `pulp_wars-w49.6`, mostly the
-Normal AI) is implemented on `pulp-wars-poc-7r49` and has not been played
-yet. Round 3 (sections 1 to 10) was played by hand three times;
+Normal AI) is implemented on `pulp-wars-poc-7r49` and was played five
+times; [round 7](#14-round-7) (section 14, bead `pulp_wars-w49.10`, the
+Normal AI again) is implemented on the same identity and has not been
+played yet. Round 3 (sections 1 to 10) was played by hand three times;
 [round 4](#11-round-4) (section 11) is what those games changed, and was
 played four times. Where they differ, the later section is the rule. [Tuning 1 and its round 2](RULESET_7_TUNING_1.md)
 changed numbers and two rules after eight hand-played games. This round
@@ -1783,3 +1785,369 @@ the three labs with their bounded runs. The gate is in
 The older tests of the changed rules were updated in place, each with a
 note; the recorded matches and decision pins that tests read were
 recomputed.
+
+## 14. Round 7
+
+Round 6 was played by hand five times: the breakthrough lab defended
+against each of the three AI factions, a six-seat game on 20 x 20 (Humans
+against five AIs), and Humans against the Undead AI on the map of round 5.
+
+- **It breaks a line and does not finish.** Starting massed at twice the
+  value, all three AI factions broke a hand-defended line by round 4. The
+  Human AI took the capital in round 8. The Undead and Goblin AIs stalled:
+  once the defender stepped back a tile a turn, 22 units against 11 to 15
+  made no attack in some turns, their Zombies, Orc Brutes, Liches, and
+  Rocket Carts (which cannot attack after a move) never caught up, and all
+  four Liches moved together so that none fired.
+- **It parks.** In the six-seat game the Human AI had 14 cities and 42
+  units and kept 8 to 12 of them three or four tiles from the player's city
+  from round 19 to round 26 without an assault.
+- **Goblin and Undead seats do not grow.** A capital stood at 0 of 3
+  population for a whole game with Gathering and Hunting owned; seats sat at
+  their unit limit with 7 to 34 Coins.
+- **Smaller things.** Knights attacked a turn before the infantry and died
+  for it; wounded units stood beside the siege train as the first link of
+  an enemy Knight's chain; Catapults were trained onto frontier centers;
+  WAAAGH! came after the attacks; no Kaboom into three or four units
+  standing together; five Banshees made two Wails in ten rounds;
+  undefended rear cities were left alone.
+
+The user's direction of 2026-10-06 stands: the AI first, the mechanics
+second; with overwhelming numbers the AI must break through "my ranks", and
+keep going; bloody, with constant turnover; the units that are overpowering
+in the right situation stay; no new Coin sinks; judged on constructed
+positions and by hand play.
+
+Round 7 is implemented on the same identity, `pulp-wars-poc-7r49` (bead
+`pulp_wars-w49.10`): it changes the Normal AI of the Human, Undead, and
+Goblin seats, one lab, who is told of a Disband, and the text harness. No
+rule, command, state, or event shape changed, so a save, a replay, or a
+session of `7r49` stays valid (a session of a breakthrough lab does not:
+the lab is at revision 2). Where this section and sections 1 to 13 differ,
+this section is the rule. Nothing of it was played by hand yet.
+
+### 14.1 The changes
+
+| #   | What              | Round 6                                                                                            | Round 7                                                                                                                                                                                                                                     |
+| --- | ----------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | What it weighs    | every enemy unit linked by gaps of two tiles, however far the chain runs                           | the enemy units within four tiles of the one nearest to its army (section 14.3)                                                                                                                                                             |
+| 2   | When it commits   | half as much again by weight; equal weight while a unit is in contact                              | also a tenth more by weight with half as many units again; and the battle stays joined while an enemy is wounded, contact or not                                                                                                            |
+| 3   | Fast units        | went in as soon as the position was committed                                                      | wait behind the infantry until it strikes, then strike in the same turn; lead the chase of an enemy that moves (section 14.4)                                                                                                               |
+| 4   | Slow units        | a Zombie or an Orc Brute walked up alone; a Lich or a Rocket Cart never entered a Catapult's reach | they go as a block with units that strike on arrival, march on the enemy's center, and the siege units go under fire but not under an enemy melee unit                                                                                      |
+| 5   | Growth            | the harvest on offer                                                                               | population at the unit limit; with nothing to buy, the growth technology its land can use (section 14.5)                                                                                                                                    |
+| 6   | Spending in a war | nothing but units with an enemy within three tiles of a center                                     | also with an enemy within five tiles of its army: units, then growth, then research (section 14.6)                                                                                                                                          |
+| 7   | Abilities         |                                                                                                    | the Warboss steps up and calls WAAAGH! first; a Goblin walks into three units and blows up; a Banshee moves into range and Wails before the melee (section 14.7)                                                                            |
+| 8   | Whom it attacks   | every unit marched on its own nearest enemy city, a pair on every other seat                       | the free army marches on the city in its reach that is easiest to take, whoever holds it, and a surplus opens a second front; a fast unit raids an undefended city; villages go to the fast units, away from the enemy first (section 14.8) |
+| 9   | Labs              | the capital at (3, 7); the two Field Defenses of the line on neutral land                          | revision 2: the capital at (4, 7) with its Land Grant used, so that the Field Defenses lie in its territory and count (section 14.9)                                                                                                        |
+| 10  | A Disband         | an event for its owner only                                                                        | also for every seat that saw the unit; the browser fades it out, the text harness prints it                                                                                                                                                 |
+| 11  | Text harness      |                                                                                                    | the enemy-attack estimate respects what a unit can do and adds the worst case; the reason of a rejected Escape; the lab text states the Coins as they are                                                                                   |
+
+Not changed, by the user's ruling: the Knight and Overrun, the Zombie's
+conversion rule, the forced advance after a kill, the Goblin Bomb Chucker,
+every unit and price, the research prices, AI head starts and alliances.
+
+### 14.2 The bar again: the two bounded runs
+
+The lab is at revision 2 (section 14.9). The AI plays the Normal policy;
+the player's side is one of two scripts
+(`tests/fixtures/v7-breakthrough-lab.ts`):
+
+- **Hold** (round 6): focused fire, every favourable attack, a melee unit
+  in every city that can train, the units behind the line walk to its gaps.
+- **Give ground**: the Catapults fire; every other unit off the capital's
+  center with an enemy within four tiles steps one tile back toward the
+  capital's column (the Catapults one column behind it); then everything
+  shoots as above; the cities train a Catapult, a Swordsman, a Marksman, a
+  Guard, a Fighter, and what is trained far away walks to the capital.
+
+| Script      | Attacker | Round 6: capital taken | attackers lost | turns without an attack | Round 7: capital taken | attackers lost | turns without an attack |
+| ----------- | -------- | ---------------------- | -------------- | ----------------------- | ---------------------- | -------------- | ----------------------- |
+| Hold        | Human    | round 7                | 7              | 0                       | round 6                | 4              | 1                       |
+| Hold        | Goblin   | round 7                | 11             | 0                       | round 7                | 6              | 1                       |
+| Hold        | Undead   | round 7                | 8              | 2                       | round 7                | 7              | 1                       |
+| Give ground | Human    | round 4                | 1              | 0                       | round 7                | 4              | 0                       |
+| Give ground | Goblin   | round 6                | 9              | 0                       | round 5                | 7              | 0                       |
+| Give ground | Undead   | round 9                | 12             | 1                       | round 7                | 8              | 0                       |
+
+(Round 6 is the source of commit `dc8c3c47` run on the revision-2 lab.
+Losses are those up to the fall of the capital. "Turns without an attack"
+counts AI turns from round 2 on; against the holding script the one turn of
+round 7 is the approach of round 2, in which the fast units now wait.)
+
+**What these runs show.** Both policies take the capital against both
+scripts. Round 7 loses fewer units and is a round or two faster in three of
+the six rows; against the script that gives ground the round-6 Human
+attacker is three rounds faster, because its Knights rode into the
+retreating units in round 2 from one tile nearer (round 7 held them behind
+the infantry in round 1, while the line still stood). The script that gives
+ground is not the hand player: it walks its units back in the open and
+loses them to the Knights, and the round-6 Goblin and Undead attackers do
+not stall against it. Neither script reproduces the parked army; the
+position that does is the horde of section 14.3, where round 6 makes no
+attack in four turns and round 7 attacks in the first.
+
+### 14.3 Why it parked and why it stalled
+
+**The parked army.** Enemy units close to each other were one position,
+and "close" was a chain: every unit within two tiles of another, without a
+bound. In the six-seat game the player's 23 units stood in one chain from
+his capital to his frontier city, so the 12 AI units in front of that city
+were weighed against all 23 and never had half as much again. Locally they
+did not have it either (about 90% of the defenders by weight), and nothing
+brought more: every unit marched on its own nearest enemy city, so 36
+units stood on three fronts while 30 to 50 Coins lay unspent.
+
+Round 7: a position is the enemy units within four tiles of the one
+nearest to the AI's army. And the free army marches on one neighbour
+(section 14.8), so that it does get the numbers somewhere. Two tests
+build the shape of that game, a city with its defenders, an army in front
+of it, and six more enemy Swordsmen in a chain across the board:
+
+- **Mixed arms**: four defenders, ten units in front of them. Round 6 read
+  344 against 258 and was not committed; round 7 reads 169 against 258:
+  the Catapult fires at the unit on the center, the Marksman finishes it,
+  all five units that reach attack in the same turn, a Fighter steps onto
+  the center in the next turn and captures in the third. (Run from its
+  source on this position, round 6 attacked too: a Catapult and two
+  Marksmen had a combined kill on a Guard, and a combined kill needs no
+  commitment. The test shows what round 7 reads and does, not a
+  difference.)
+- **The horde**: twelve Fighters and two Guards (298) against three
+  Swordsmen in cover, a Marksman, and the first Swordsman of the chain
+  (209). That is 143%, and no three Fighters kill a Swordsman in a Forest
+  in one turn. Round 6, run from its source, made no attack in four turns.
+  Round 7 commits on the count (fourteen units against five, 143% by
+  weight), attacks with four or more units in the first turn, three of
+  them on one Swordsman, and has killed it by the end of the second.
+
+**The line that stepped back.** The battle counted as joined only while a
+unit stood next to the enemy; otherwise the assault needed half as much
+again by weight. A defender that steps back a tile breaks the contact, and
+22 cheap units against Catapults and Swordsmen weigh about 115%. Round 7:
+the battle stays joined while an enemy unit is wounded, and half as many
+units again commit at a tenth more weight. The test: thirteen Goblin units
+against eight a tile behind their old line (287 against 247 by weight, one
+Marksman wounded). Round 6 reads no commitment there and takes only the
+exchanges in its favor (it still finds some in this position; against the
+hand player, who shot and stepped back, it found none). Round 7 is
+committed: it attacks with its Bomb Chuckers and Wolf Riders in both turns
+played, and its Orc Brutes, Goblins, and Rocket Carts come up as a block
+behind them.
+
+### 14.4 Fast units, slow units, siege units
+
+- **Fast units wait for the infantry.** A Knight, a Scrap Buggy, a
+  Vampire, a Raider, a Wolf Rider, or a Ghoul of an army that masses or
+  commits stays out of the enemy's reach, and behind the foremost infantry
+  unit, until half of the slow units attack this turn or one of them is in
+  contact. Then all go in the same turn (the fast units first).
+- **Unless the enemy moves.** When half of the enemy position moved in its
+  last turn, it is no prepared line: the fast units go at once and lead
+  the chase. (What a unit did in its owner's last turn is public until that
+  owner's next turn.)
+- **Slow units go as a block.** A unit that cannot attack after it moved
+  and fights hand to hand (a Zombie, an Orc Brute, a Guard) does not walk
+  into the enemy's reach without a unit beside it that can strike on
+  arrival. With numbers it advances with its army, beside its own, and
+  marches on the enemy's center when one is within six tiles: a defender
+  that steps back from it gives the city up.
+- **Siege units.** One with a shot fires, one without moves to a tile with
+  a shot next turn, as in round 6; committed, it now takes that tile under
+  the enemy's shots, but not where an enemy melee unit reaches it, and it
+  prefers a tile behind its own line and one tile inside its range. A city
+  an enemy melee unit could attack after one more step trains a body, not
+  a siege unit. A siege unit cannot catch a unit that steps back a tile a
+  turn; the block that marches on the center is the answer to that.
+- **Kill chains.** A unit at half HP or less beside other weak units
+  (wounded ones, siege and ranged units), inside the reach of an enemy unit
+  with Overrun, steps to a tile with fewer of them before it recovers.
+
+### 14.5 Growth
+
+Why the Goblin and Undead seats did not grow: the growth rule of round 6
+was "buy the harvest or the level on offer". An Undead or Goblin seat eats
+its capital's Fruit and Game in the first rounds; after that nothing is on
+offer, and the research order holds only unit technologies (the Human
+order happens to pass through Forestry and Engineering). And a seat with an
+enemy within three tiles of a center bought "nothing but units while a city
+can still train", which was read as true of a city with an enemy standing
+on its center: such a seat bought nothing at all (25 and 34 Coins banked
+while it lost its cities).
+
+Round 7:
+
+| When                                                                                                       | What it buys                                                                                                                                            |
+| ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| no city can train now (every slot filled, or every city has trained)                                       | population: a harvest, a Farm, a Lumber Camp, a Mine, a building that adds population, before research                                                  |
+| every city is at its unit limit, it can train the first unit of its order, and its land has nothing to buy | the technology of the growth its land has the most use for per Coin of research (a Farm or a Mine counts 2 population), before the next unit technology |
+| an enemy stands on its center, or its garrison cannot step aside                                           | that city does not count as "can still train"                                                                                                           |
+
+In the one match read for this (the map of the hand-played Undead game,
+dry land 14 x 14, seed 4, both seats the Normal AI, sixteen rounds) the
+Undead seat stood at its unit limit in round 10, researched Engineering
+and built a Mine in round 12 and a Workshop in round 13, and had three
+level-3 cities and 17 units in round 16; the round-6 policy stood at ten
+units on four cities from round 10 to round 16 and researched
+Marksmanship, Scouting, and Roads.
+
+### 14.6 Spending in a war
+
+An enemy army is in the field when an enemy unit is within four tiles of an
+own center or within five of an own unit off its center. Then every city
+that can train trains first; with no city able to train, population is
+bought; research comes only when neither is possible, except the one
+technology that unlocks a unit whose class the army has none of. (In round
+6 an attacker far from its own centers was "unthreatened" and bought five
+economy technologies in ten rounds of battle.)
+
+### 14.7 Abilities
+
+| Ability           | Round 7                                                                                                                                                         |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WAAAGH!           | The Warboss moves to where its call reaches two or more units that will attack this turn, calls, and then they attack.                                          |
+| Kaboom            | Still only for a kill or on two or more enemies; a blast that damages three is now taken before the Goblin's own attack, and a Goblin walks to such a tile.     |
+| Wail              | A committed Banshee moves into range behind a line unit of its own and Wails before the melee.                                                                  |
+| Lich, Necromancer | Unchanged: the Lich fires at the units that stand together; Frenzy before the attacks of the units beside the Necromancer; Raise Dead where the Skeleton lives. |
+
+### 14.8 Whom it attacks
+
+- **One front, by reach and opportunity.** Every known enemy city is a
+  candidate: how far it is from the army or an own center, what stands
+  within three tiles of it (measured against the free army), and whether
+  the army is already fighting there. The cheapest is the front, and the
+  free army marches on it. The strength of the seat as a whole does not
+  count, nor who plays it: a strong neighbor with a border city in reach
+  is attacked at that city. (The first draft of this round chose the seat
+  with the fewest city levels. The root review overruled it: a competent
+  human would have been attacked last or never.)
+- **A surplus opens a second front.** The main front keeps what it needs
+  (twice its city's visible holders, at least 10 units); what is above
+  that marches, six units or more, on the next city, a neighbor without a
+  front first. A third front takes a much larger army (32 units against
+  lightly held cities).
+- **Holding forces.** Units near an own center with an enemy at its gates
+  stay where they are. The garrison of an enemy city three tiles away is
+  not such an enemy.
+- **Raids.** An enemy city with no unit on or next to its center gets the
+  nearest capturer with Move 2 or more, alone and at once.
+- **Villages.** The fastest capturer goes, a Zombie last, and the village
+  with an enemy within three tiles is taken last.
+
+### 14.9 Five defects
+
+- **The staged Field Defenses gave nothing.** A Field Defense fortifies a
+  unit only in its owner's territory, and the lab had staged its two on
+  neutral land: the lab was wrong, not the engine. Revision 2 moves the
+  capital one tile toward the line, to (4, 7), with its Land Grant used, so
+  that its territory covers the middle of the line; the Guards on the two
+  Field Defenses show two `fort` levels. (A mission city may now state
+  `landGrant`.)
+- **A Disband left no trace for an observer.** The event went to the
+  owner only. It now also goes to every seat that saw the unit; the refund
+  in it is half the role's public price. The text harness prints
+  `DISBANDED u55(S1 Zombie) @4,11 by its owner: it left the board (no
+grave, no kill)`; the browser fades the unit out.
+- **The enemy-attack estimate.** `options --unit` listed a Zombie, a
+  Lich, a Rocket Cart, or an Orc Brute as attacking "after moving into
+  range". A unit that cannot attack after it moved now counts only from
+  where it stands (`no attack on it next turn (it cannot attack after it
+moves; ...)`), and a last line gives the worst case: every listed
+  attacker in turn, each on the HP the others leave.
+- **The reason of a rejected Escape.** A Raider with its Escape move left
+  was told it "has already moved this turn"; the reason is now the reach
+  of the Escape, with the tiles it does reach.
+- **The lab text.** The AI of the lab earns 13 Coins in its first turn,
+  15 in its second, and 19 a turn from its third (two free Monuments,
+  Workshops, and Markets); the text said 13. It now also says that you
+  have 22 Coins in hand and every unit slot filled.
+
+**Bitten (asked, not changed).** A Human Swordsman bitten in round 13 died
+to a third player's Marksman in round 25 and rose as the biter's Zombie.
+That is the written rule
+([Bitten](RULESET_7_CURRENT.md#177-bitten)): Bitten has no duration, it
+ends when the unit leaves the board, when the biter's seat is eliminated,
+or when a Captain, a Shaman, or an Engineer cures it, and a Bitten unit
+rises for the biter "whoever killed it".
+
+### 14.10 Decisions that are forks, for the user to overrule
+
+1. **The fast units wait.** Against a line that stands still they attack
+   in the turn the infantry does, which is a turn or two later than in
+   round 6; against the script that gives ground this cost the Human
+   attacker three rounds (section 14.2). The alternative is the round-6
+   charge, which the hand players called the AI's first mistake.
+2. **"On the move" is half of the position having moved last turn.** A
+   defender that shuffles units inside its line every turn makes the fast
+   units come early.
+3. **Numbers commit at a tenth more weight** (with half as many units
+   again). The bar of half as much again by weight kept 22 cheap units out
+   of a fight with 12 dear ones; at equal weight twelve Fighters bled on
+   three Swordsmen in cover.
+4. **The battle stays joined while an enemy unit is wounded**, also one
+   wounded in another war. A stricter reading needs memory of the last
+   turn, which the policy does not have.
+5. **The army marches on the city that is nearest and least held**, and
+   a surplus on a second one. A seat with a border city in reach is a
+   target however strong it is; the human seat is neither preferred nor
+   spared. The front is chosen again every turn, so it can move.
+6. **Growth research waits for the first unit of the faction's order.** A
+   first draft researched growth before every unit technology and both
+   Goblin seats of a six-seat match were eliminated early.
+7. **In a war research waits for units and growth.** A seat that fights
+   all game researches only with what its cities cannot spend.
+8. **The lab changed.** The capital stands two tiles behind the line, not
+   three, so that the staged Field Defenses work. The alternative, a lab
+   without Field Defenses, would drop what the hand player asked to see.
+9. **The Disband event shows the refund to observers.** It is half the
+   public price; hiding it would change the event's shape and the identity.
+10. **The identity stays `7r49`** (ruled in the root review). Who
+    receives an event is observation, not a rule of play; state, commands,
+    and replays are unchanged.
+11. **An enemy unit within five tiles of the army is a war.** Units then
+    come before every harvest while a city can train, also against one
+    scout.
+
+### 14.11 What is still open
+
+- Nothing of this round was played by hand.
+- A siege unit still cannot catch a defender that steps back a tile a
+  turn, and no line unit moves to stand between the siege units and an
+  enemy Knight; the siege unit only picks the screened tile.
+- A seat boxed in by Mountains without Engineering still does not grow
+  (the Goblin seat of the six-seat match: two cities all game).
+- In the six-seat match read after this round (20 x 20, six Normal
+  seats, 30 rounds) the largest seat (Humans, 35 to 48 land units from
+  round 18) kept about twenty units on the nearest city of its Undead
+  neighbor, sent six at the level-4 capital of the Goblin seat on its
+  other border from round 24 and took it in round 30, and took six cities
+  from three seats (three before the correction of the target choice,
+  all from one seat). Its main front moved for three rounds to a city
+  that had just changed hands. One Goblin seat was eliminated. That is
+  one match and not evidence of balance.
+- A lone enemy unit within five tiles of the army is "an enemy army in
+  the field": the seat then buys no harvest while a city can train.
+- A seat with a naval plan steps a unit off a center only when no city
+  can train; with one free center its other garrisons stay.
+- The public threat query (`queryThreatenedTilesV7`) still counts a Move
+  and an attack for units that cannot attack after moving; only the text
+  harness corrects for it.
+
+### 14.12 Tests
+
+`tests/unit/ruleset-v7-tuning-7.test.ts`: the mode function with unit
+counts; the parked army (the local position, the assault, the center, the
+capture); the line that stepped back; the Zombie alone and the block; the
+fast units behind the infantry and after an enemy on the move; the step out
+of a kill chain; growth (the Undead and the Goblin opening at the unit
+limit, growth on offer, the enemy on the own center, the real opening);
+siege (one fires and one moves, the tile out of melee reach, the frontier
+city); wartime spending; abilities (WAAAGH!, Kaboom, Wail, the Lich, the
+Necromancer); the strategic choice (one city, the strong neighbor's
+border city before the weak seat far away, the second front, the holding
+force, the
+raid, the villages); the lab's Field Defenses; the Disband event and its
+browser step; the bounded run against the defender that gives ground.
+`tests/scripts/play-text-v7.test.ts`: the estimate, the Escape reason, the
+Disband line, the lab text. The bounded run against the defender that
+holds stays in `tests/unit/ruleset-v7-tuning-6.test.ts`, with its rounds
+updated; both runs share `tests/fixtures/v7-breakthrough-lab.ts`.

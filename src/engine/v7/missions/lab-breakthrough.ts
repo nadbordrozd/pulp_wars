@@ -13,9 +13,16 @@ import type { MissionDefinitionV7, MissionUnitV7 } from "./types";
  * The player (Humans) holds the only crossing between two lakes, a front
  * of eight tiles at x = 6: Guards on the two Mountains and the two Field
  * Defenses, Swordsmen in the four Forests (cover with Forestry), three
- * Marksmen and two Catapults behind, and a walled level-4 capital three
+ * Marksmen and two Catapults behind, and a walled level-4 capital two
  * tiles behind the line with a Guard on its center: 14 units, 63 Coins of
- * them, 12 Coins a turn. The AI attacks with twice the unit value
+ * them, 12 Coins a turn.
+ *
+ * Revision 2 (tuning 7, `pulp_wars-w49.10`): the capital stands at (4, 7)
+ * with its Land Grant used, so that the middle of the line, and both Field
+ * Defenses, lie in its territory. In revision 1 it stood at (3, 7) and the
+ * Field Defenses on neutral land, where a Field Defense gives nothing (the
+ * rule: a unit is fortified by a Field Defense of its owner's territory),
+ * so the Guards on them showed Defense 3 and no `fort` level. The AI attacks with twice the unit value
  * (two and a half to three times in the first draft of the lab,
  * which the round-5 policy also broke) in a mix of its own roster (line units,
  * defenders, ranged, siege, breakthrough, and fast units) and holds five level-5
@@ -33,7 +40,7 @@ import type { MissionDefinitionV7, MissionUnitV7 } from "./types";
  *    4   ......^.........      the line: x = 6, y = 4 to 11
  *    5   ......f....f..u.
  *    6   ......#.........      #: a Field Defense
- *    7   ...H..f.........      H: your walled capital
+ *    7   ....H.f.........      H: your walled capital
  *    8   ......f.......U.
  *    9   ......#.........
  *   10   ......f....f....
@@ -77,7 +84,7 @@ export const LAB_BREAKTHROUGH_LINE_V7: readonly CoordV7[] = [
 ].map((y) => ({ x: 6, y }));
 
 /** The player's walled capital behind the line. */
-export const LAB_BREAKTHROUGH_CAPITAL_V7: CoordV7 = { x: 3, y: 7 };
+export const LAB_BREAKTHROUGH_CAPITAL_V7: CoordV7 = { x: 4, y: 7 };
 
 export type BreakthroughAttackerV7 = "ORIGINAL" | "GOBLIN" | "UNDEAD";
 
@@ -220,7 +227,7 @@ function breakthroughLabV7(
   const army = BREAKTHROUGH_ARMIES_V7[faction];
   return {
     id,
-    revision: 1,
+    revision: 2,
     hidden: true,
     mirror: true,
     size: 16,
@@ -265,6 +272,8 @@ function breakthroughLabV7(
             at: LAB_BREAKTHROUGH_CAPITAL_V7,
             level: 4,
             rewards: ["STOCKPILE", "WALLS", "BOOM"],
+            // Its territory reaches the line: the Field Defenses count.
+            landGrant: true,
           },
           {
             at: { x: 1, y: 2 },

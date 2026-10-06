@@ -151,6 +151,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::armySupportedV7": "BOARD",
     "src/ai/v7.ts::armyHuntTargetsV7": "BOARD",
     "src/ai/v7.ts::armyScreenedV7": "BOARD",
+    // Tuning 7 (`pulp_wars-w49.10`): the own units a bomb would splash,
+    // the unit that strikes on arrival beside a slow one, and the units a
+    // WAAAGH! would reach are what stands on the board in the public view.
+    "src/ai/v7.ts::armyEngagementsForV7": "BOARD",
+    "src/ai/v7.ts::armyStrikerNearV7": "BOARD",
+    "src/ai/v7.ts::waaaghUsefulV7": "BOARD",
     // Tuning 6 (`pulp_wars-w49.6`): the own units weighed against a hostile
     // position, the own units near a lone unit, and the friend it walks back
     // to are what stands on the board in the public view.
@@ -195,7 +201,8 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::unitForCommand": "BOARD",
     "src/ai/v7.ts::vampireAttackAcceptableV7": "BOARD",
     "src/ai/v7.ts::vampireStrikesFromV7": "BOARD",
-    "src/ai/v7.ts::visibleImmediateDamage": "BOARD",
+    // (Tuning 7: `visibleImmediateDamage` is the cached entry to it.)
+    "src/ai/v7.ts::computeVisibleImmediateDamage": "BOARD",
     "src/ai/v7.ts::waaaghValueV7": "BOARD",
     "src/ai/v7.ts::warTrainingFirstV7": "BOARD",
     "src/engine/v7/achievements.ts::revision21AchievementCountsV7": "BOARD",

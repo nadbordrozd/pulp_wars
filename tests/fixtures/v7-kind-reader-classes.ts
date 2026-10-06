@@ -160,6 +160,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7.ts::bareContext": "SEAT",
   "src/ai/v7.ts::armyResearchTargetV7": "SEAT",
   "src/ai/v7.ts::armyVacatesCenterV7": "SEAT",
+  // Tuning 7 (`pulp_wars-w49.10`): the class of the unit the seat's next
+  // technology unlocks.
+  "src/ai/v7.ts::armyWarHoldsResearchV7": "SEAT",
   "src/ai/v7.ts::sharedTrainingCostV7": "SEAT",
   "src/ai/v7.ts::scoreCommandWithContext": "SEAT",
   "src/ai/v7.ts::raisedSkeletonDoomedV7": "SEAT",

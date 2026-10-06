@@ -1729,21 +1729,25 @@ describe("ruleset-7 all-Human parity digests", () => {
       // commands; round 20 and 228 before the correction pass gave each
       // faction its own research order), and every digest below was
       // recomputed.
-      acceptedCommands: 271,
-      rounds: 25,
+      // Tuning 7 (`pulp_wars-w49.10`: the Normal AI's local assault,
+      // growth at the unit limit, wartime spending, and target choice):
+      // the match ends in round 26 (331 commands), and every digest below
+      // but the human's final commands was recomputed.
+      acceptedCommands: 331,
+      rounds: 26,
       termination: "OUTCOME",
       mapHash:
         "251ae814b9c22679f8ed6b288c0a9ae2a06574b84b5b719521970f6f24a3e51c",
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "510df05a261d1725b945893c9eaab2d9c3bee69c7f8ace4245986ee91032f971",
+        "f77a73a6c1b71c07288cafae7f0efff48280aff2f4f6a72107f103593b127f1c",
       eventHash:
-        "21f76501dcb475ec8e97dab0d1e0a8c650f0f824d5b7c8efd04177de17b72cb5",
+        "426025245917186416a4017fc851e6dcb609f935197a8fdd16ff62ec5c1dd631",
       normalizedFinalStateHash:
-        "3673a7627098148cdcaedf48f4581469f4e0a1a089ba2c0cf451e59d5face5a6",
+        "b2d0aecddeed11084d59180bda9a1ee2e5e2801eb7bb30877c10e10d11be792b",
       normalizedHumanViewHash:
-        "2a20fab2591b9aefc7ffa7b85eb7de9bc8dedb17f24dcab6e2cbf404d3804ed1",
+        "24d5ad12956669f6cf66c47d7ff24b6e28441f14bc1c952d8327bf9660d71241",
       normalizedHumanCommandsHash:
         "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     },
@@ -1757,7 +1761,8 @@ describe("ruleset-7 all-Human parity digests", () => {
       // Tuning 4: 309 commands (337 before), recomputed.
       // Tuning 5: 313 commands, recomputed.
       // Tuning 6 (`pulp_wars-w49.6`): 354 commands, recomputed.
-      acceptedCommands: 354,
+      // Tuning 7 (`pulp_wars-w49.10`): 365 commands, recomputed.
+      acceptedCommands: 365,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1765,15 +1770,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "b11910d95aeab8c56bbf6f72f63d4e6f6b30f7e43f842d8354e7badf23e1050c",
       commandHash:
-        "a8f5b0a5517f22c68500b19374495b4fb62abfb5b4ea7f0193a8435debfa3944",
+        "fba0bec7e5f4b915ec66250035a894c0966c3aa3dcb91db3e0f001cd3588ed10",
       eventHash:
-        "fd49f0531e4871100e845776e7295252a7f6925a42e97254964ff6fa7e4929d3",
+        "4bcd6ad4acd50e527ed191291ef2976047cfc8afa23eeba7c62e1a7f673551ab",
       normalizedFinalStateHash:
-        "bdde6c73bc792fe90c743749c7c6c41cf935f154e8e9e03fc15143e718b48a13",
+        "5afb04e9327175f189a5f7e9ca5ecab6392dc28a063da4a237325d6b0271b651",
       normalizedHumanViewHash:
-        "84d4e81c263548738c54aa56e86d9a13df8df8c5cc339a6db093d1c3e58acca8",
+        "9da8c907cec98de213772c01548c317eab127a14069d6c13a019284e67efd2db",
       normalizedHumanCommandsHash:
-        "779440fb70914e029620786937ee97c157a1d303fdda0730ada7cb6b82048f0e",
+        "1850a9fde2e55cc96d209b1fcd02bac50d21aa72eec7d4937624d0137a851787",
     },
   ] as const;
 

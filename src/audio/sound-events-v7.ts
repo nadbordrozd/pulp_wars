@@ -305,6 +305,7 @@ export function soundCuesForStepV7(
       return [];
     case "VISIBILITY_CROSSFADE":
     case "TACTICAL_STATUS":
+    case "DISBAND":
       return [];
   }
 }

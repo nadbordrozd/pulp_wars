@@ -729,6 +729,195 @@ describe("text-mode play harness", () => {
     );
   }, 120_000);
 
+  // Tuning 7 (`pulp_wars-w49.10`): the defects of the round-6 hand play.
+  /**
+   * The seat's unit as `role`, and the other seat's units replaced by
+   * `enemies` on explored Grass exactly two tiles from it.
+   */
+  const surrounded = (
+    name: string,
+    role: "FIGHTER" | "RAIDER",
+    enemies: readonly ("FIGHTER" | "GUARD")[],
+    activation: Partial<GameStateV7["units"][number]["activation"]> = {},
+  ): { session: string; mine: number; enemyIds: number[] } => {
+    const session = newSession(name);
+    let mineId = 0;
+    const enemyIds: number[] = [];
+    patchState(session, (state) => {
+      const mine = state.units.find(
+        (unit) => unit.ownerId === state.humanPlayerId,
+      );
+      const other = state.units.find(
+        (unit) => unit.ownerId !== state.humanPlayerId,
+      );
+      const me = state.players.find(
+        (player) => player.id === state.humanPlayerId,
+      );
+      if (mine === undefined || other === undefined || me === undefined)
+        throw new Error("no unit");
+      mineId = mine.id;
+      const tiles = state.board.tiles
+        .filter(
+          (tile) =>
+            tile.terrain === "GRASS" &&
+            tile.site === null &&
+            Math.max(
+              Math.abs(tile.at.x - mine.at.x),
+              Math.abs(tile.at.y - mine.at.y),
+            ) === 2 &&
+            me.explored.some(
+              (where) => where.x === tile.at.x && where.y === tile.at.y,
+            ) &&
+            !state.units.some(
+              (unit) => unit.at.x === tile.at.x && unit.at.y === tile.at.y,
+            ),
+        )
+        .slice(0, enemies.length);
+      if (tiles.length !== enemies.length) throw new Error("no room");
+      const placed = enemies.map((enemyRole, index) => {
+        const maxHp = effectiveRoleRuleV7(enemyRole, "UNDEAD").maxHp;
+        const id = index === 0 ? other.id : state.nextEntityId + index - 1;
+        enemyIds.push(id);
+        return {
+          ...other,
+          id: id as typeof other.id,
+          role: enemyRole,
+          hp: maxHp,
+          maxHp,
+          at: (tiles[index] as (typeof tiles)[number]).at,
+        };
+      });
+      const maxHp = effectiveRoleRuleV7(role, "ORIGINAL").maxHp;
+      return {
+        ...state,
+        nextEntityId: (state.nextEntityId +
+          enemies.length) as typeof state.nextEntityId,
+        players: state.players.map((player) =>
+          player.id === state.humanPlayerId
+            ? { ...player, researchedTechs: [...TECHNOLOGY_IDS_V7] }
+            : player,
+        ),
+        units: [
+          {
+            ...mine,
+            role,
+            hp: maxHp,
+            maxHp,
+            activation: { ...mine.activation, ...activation },
+          },
+          ...placed,
+        ],
+      };
+    });
+    return { session, mine: mineId, enemyIds };
+  };
+
+  it("estimates an enemy's attack by what the unit can do, and adds the worst case of all of them", () => {
+    // Two Skeletons and a Zombie, each two tiles from the seat's Fighter.
+    // A Skeleton moves and attacks; a Zombie cannot attack after it moved.
+    const { session, mine, enemyIds } = surrounded("estimate", "FIGHTER", [
+      "FIGHTER",
+      "FIGHTER",
+      "GUARD",
+    ]);
+    const own = ok("options", "--session", session, "--unit", `u${mine}`);
+    expect(own).toContain(
+      "ENEMY ATTACKS ON IT NEXT TURN (estimate from public information; each attacker alone, then all of them)",
+    );
+    const rows = own
+      .split("\n")
+      .filter((row) => row.includes("after moving into range"));
+    expect(rows).toHaveLength(2);
+    for (const row of rows) expect(row).toContain("Skeleton");
+    const alone = rows.map((row) =>
+      Number(/deals about (\d+)/.exec(row)?.[1] ?? "0"),
+    );
+    // The second hit lands on a weakened unit: more than the sum.
+    const combined = /COMBINED worst case: all 2 in turn deal about (\d+)/.exec(
+      own,
+    );
+    expect(Number(combined?.[1] ?? "0")).toBeGreaterThan(
+      (alone[0] ?? 0) + (alone[1] ?? 0) - 1,
+    );
+    expect(own).toMatch(
+      /Zombie\) @\d+,\d+: no attack on it next turn \(it cannot attack after it moves; it is 2 tiles away\)/,
+    );
+    // And from the Zombie's side.
+    const zombie = ok(
+      "options",
+      "--session",
+      session,
+      "--unit",
+      `u${enemyIds[2] ?? 0}`,
+    );
+    expect(zombie).toContain("WHAT IT WOULD DEAL TO YOUR UNITS NEXT TURN");
+    expect(zombie).toContain("it can reach none of your units next turn");
+    expect(zombie).not.toContain("after moving into range");
+  });
+
+  it("gives the reach of the Escape as the reason of a rejected Escape move", () => {
+    // A Raider that has moved and attacked, with its Escape move left.
+    const { session, mine } = surrounded("escape", "RAIDER", ["FIGHTER"], {
+      moved: true,
+      movedPathLength: 1,
+      attacked: true,
+      attacksUsed: 1,
+      escapeAvailable: true,
+    });
+    const state = sessionState(session);
+    const raider = state.units.find((unit) => unit.id === mine);
+    if (raider === undefined) throw new Error("no Raider");
+    expect(offeredIds(session).some((id) => id.startsWith(`u${mine}.m.`))).toBe(
+      true,
+    );
+    const offered = new Set(offeredIds(session));
+    const gap = (where: { x: number; y: number }): number =>
+      Math.max(
+        Math.abs(where.x - raider.at.x),
+        Math.abs(where.y - raider.at.y),
+      );
+    // An explored, empty land tile the Escape does not reach.
+    const far = state.board.tiles.find(
+      (tile) =>
+        tile.biome !== null &&
+        gap(tile.at) >= 2 &&
+        !offered.has(`u${mine}.m.${tile.at.x},${tile.at.y}`) &&
+        (
+          state.players.find((player) => player.id === state.humanPlayerId)
+            ?.explored ?? []
+        ).some((where) => where.x === tile.at.x && where.y === tile.at.y) &&
+        !state.units.some(
+          (unit) => unit.at.x === tile.at.x && unit.at.y === tile.at.y,
+        ),
+    );
+    if (far === undefined) throw new Error("no far tile");
+    const rejected = run(
+      "do",
+      "--session",
+      session,
+      `u${mine}.m.${far.at.x},${far.at.y}`,
+    );
+    expect(rejected.exitCode).toBe(1);
+    expect(rejected.output).toContain(
+      `the Raider's Escape does not reach it (${gap(far.at)} tiles away): after its attack it may still move to `,
+    );
+    expect(rejected.output).not.toContain("has already moved");
+  });
+
+  it("prints a Disband, and states the labs as they are", () => {
+    const { session, mine } = surrounded("disband", "FIGHTER", ["FIGHTER"]);
+    const at = sessionState(session).units.find((unit) => unit.id === mine)?.at;
+    expect(ok("do", "--session", session, `u${mine}.disband`)).toContain(
+      `DISBANDED u${mine}(S0 Fighter) @${at?.x},${at?.y} for +1c`,
+    );
+    const listing = ok("lab");
+    expect(listing).toContain("a walled capital two tiles back");
+    expect(listing).toContain("22c in hand, every unit slot full, 12c a turn");
+    expect(listing).toContain(
+      "13c in its first turn, 15c in its second and 19c a turn from its third",
+    );
+  });
+
   it("rejects illegal and stale ids cleanly", () => {
     const session = newSession("reject");
     const before = JSON.parse(readFileSync(session, "utf8")) as Record<

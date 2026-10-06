@@ -217,6 +217,22 @@ Undead variants). **Where another passage of this document, or a faction's
 revision document, still gives a research price with a step of 2 Coins or a
 garrison pushed off its center by a reward unit, this paragraph and the
 sections it names are the rule.**
+**[Round 7 of the Human tuning](RULESET_7_TUNING_HUMAN.md#14-round-7)**
+(`pulp_wars-w49.10`) keeps the identity `pulp-wars-poc-7r49`: no rule of
+play, command, state, or event shape changed, and a save or a replay of
+`7r49` is unchanged. Who receives an event is observation, not a rule of
+play, so the wider `UNIT_DISBANDED` projection below needs no new
+identity. It changes the **Normal AI** of a Human, Undead, or
+Goblin seat (it weighs the enemy position in front of it and not the whole
+chain, commits with numbers and keeps attacking a line that steps back,
+holds its fast units for the infantry, grows at its unit limit, buys units
+before anything else while an enemy army is in the field, and marches on
+the hostile city in its reach that is easiest to take, a surplus on a
+second; [section 16](#16-normal-ai-summary)); **who is told of a
+Disband** (every seat that saw the unit, [section 15](#15-fog-and-observation));
+and the three breakthrough labs, now at revision 2 (the capital two tiles
+behind the line with its Land Grant used, so that the staged Field
+Defenses lie in its territory and count).
 `pulp-wars-poc-7r48` (`pulp_wars-w49.4`) is
 **[round 5 of the Human tuning](RULESET_7_TUNING_HUMAN.md#12-round-5)**, which followed four hand-played
 games on round 4. The Human **Guard** has Defense 1 against an attack from
@@ -4860,7 +4876,13 @@ Harbours from it.
   followed by its own splashed units; the event names no attacker and no
   tile of the attacker. Before `7r49` that viewer received nothing but the
   death. The browser shows the hit on the unit as it shows splash, and the
-  text harness prints a `HIT_UNSEEN` line. `PLUNDER_AWARDED` is
+  text harness prints a `HIT_UNSEEN` line. **Round 7**
+  (`pulp_wars-w49.10`, still `7r49`): `UNIT_DISBANDED` reaches the owner
+  and every viewer that could see the unit before the command, unchanged
+  in shape (its `coinDelta` is the public refund, half the role's printed
+  cost); before, only the owner received it and the unit vanished from an
+  observer's board without an event. The browser fades the unit out and
+  the text harness prints a `DISBANDED` line. `PLUNDER_AWARDED` is
   owner-only and names no victims; `UNITS_REGENERATED` is projected like
   `WINDMILL_HEALING_RESOLVED`. Explosion previews are computed from the
   viewer's visible units and flag `touchesUnexplored`
@@ -5055,6 +5077,42 @@ Harbours from it.
   every turn, and with Explosives a Mountain beside the gate is blasted
   first. Details:
   [Normal AI: the assault](../architecture/NORMAL_AI.md#the-assault-expansion-and-discipline-pulp_wars-w496).
+- **Committing, growing, and following through** (`pulp_wars-w49.10`,
+  round 7; the same three factions; where it differs from the two
+  paragraphs above, this one is the rule). A position is local: the enemy
+  units within four tiles of the one nearest to the seat's army, not every
+  unit of a chain. The seat also commits with half as many units again at
+  a tenth more weight, and the battle stays joined while an enemy unit of
+  the position is wounded, in contact or not, so a line that steps back is
+  attacked again. Fast units (Move 2 or more) stay out of the enemy's
+  reach and behind the foremost infantry until half of the slow units
+  attack that turn, and go at once after an enemy that moved in its last
+  turn. A unit that cannot attack after it moved and fights hand to hand
+  enters the enemy's reach only with a unit beside it that strikes on
+  arrival; committed, it marches on the enemy's center. A committed siege
+  unit takes a firing tile under enemy shots but not inside the reach of
+  an enemy melee unit; a city a hostile melee unit could attack after one
+  more step trains no siege unit. A wounded unit beside other weak units
+  inside the reach of an enemy unit with Overrun steps apart before it
+  recovers. When no city can train, population and city levels are bought
+  before research; a seat at its unit limit with nothing to buy researches
+  the growth technology its land has the most use for. While an enemy unit
+  is within four tiles of an own center or five of an own unit off its
+  center, units come first, then growth, then research (but for the
+  technology of a unit class the army lacks). The Warboss steps up and
+  calls WAAAGH! before the attacks, a Goblin walks into three enemies for
+  its Kaboom, a committed Banshee moves into range and Wails before the
+  melee. The free army marches on one hostile city, the cheapest by its reach,
+  by the visible units that hold it, and by whether the army already
+  fights there (the strength of the seat as a whole and who plays it do
+  not count, so a strong neighbor is attacked at its border city); an
+  army with more than that front needs sends six or more units at a
+  second city, a neighbor without a front first; a capturer with
+  Move 2 or more raids a hostile city with no unit on or next to its
+  center; villages away from the enemy are taken first. A seat with a
+  naval plan whose cities cannot train steps a unit off a center so that
+  one can. Details:
+  [Normal AI: committing](../architecture/NORMAL_AI.md#committing-growing-and-following-through-pulp_wars-w4910).
 - **Second pass** (`pulp_wars-9s0.8`): at war, with no own city threatened
   and at least three attack-capable land units, Normal saves for its
   Chivalry-tier unit (fewer than two of them) or for Chivalry itself when the
@@ -9521,6 +9579,7 @@ has no Candy step.
 | Tuning      | `pulp-wars-poc-7r47` | `pulp_wars-w49.3` [round 3 of the Human tuning](RULESET_7_TUNING_HUMAN.md), unpublished together with tuning 2 under the same identity: the Human Knight at Attack 4; Forest cover only with the defender's Forestry (every faction); Blast Mountain as an explosion of 5 on and around the tile, also next to an own unit outside the territory (explosion cause `BLAST`, `MOUNTAIN_BLASTED.cityId` nullable); land trade for every Road-linked city without the capital rule; the `HIRE` command (a Market hires at 1.5 times the price, one unit above the capacity); a Human Militia of two Fighters; no state shape change; no balance measurement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Tuning      | `pulp-wars-poc-7r48` | `pulp_wars-w49.4` [round 5 of the Human tuning](RULESET_7_TUNING_HUMAN.md#12-round-5) after four hand-played games on round 4: the Human Guard at Defense 1 against an attack from two or more tiles (`rangedDefense2`); the Human Swordsman (role `SWORDSMAN`, 5 Coins, 15 HP, Attack 3.5, Defense 2.5) at Engineering; Drill removed (`DRILL_UNIT` is no command kind); Land Grant at 1 Coin a cell with no minimum; a Blast Mountain spares the blasting player's weakest land unit next to the Mountain (`setterUnitId` in its preview); `LAB_BACKLINE` and `LAB_LATE` at revision 2 with Swordsmen. The Normal AI of a Human, Undead, or Goblin seat plays an army (`src/ai/v7-army.ts`). A `7r47` save, replay, or command stream is incompatible.                                                                                                                                                                                                                                                                                                                                                                                              |
 | Tuning      | `pulp-wars-poc-7r49` | `pulp_wars-w49.6` [round 6 of the Human tuning](RULESET_7_TUNING_HUMAN.md#13-round-6) after three hand-played games on round 5: research costs its tier base plus 1 Coin (2) for each technology owned beyond the first; a reward unit appears beside an occupied center and the occupant stays; the owner of a unit hit by an attacker it cannot see receives `COMBAT_SPLASH_DAMAGE` for it; the labs `LAB_BREAKTHROUGH`, `LAB_BREAKTHROUGH_GOBLIN`, and `LAB_BREAKTHROUGH_UNDEAD`. The Normal AI of a Human, Undead, or Goblin seat weighs positions, masses and commits (also at a single-file front), expands to three cities, and researches toward its faction's signature units (the Undead toward Zombies). A `7r48` save, replay, or command stream is incompatible.                                                                                                                                                                                                                                                                                                                                                                         |
+| Tuning      | `pulp-wars-poc-7r49` | `pulp_wars-w49.10` [round 7 of the Human tuning](RULESET_7_TUNING_HUMAN.md#14-round-7) after five hand-played games on round 6, no identity change: the Normal AI of a Human, Undead, or Goblin seat reads a local position, commits with numbers and stays committed against a line that steps back, holds fast units for the infantry, grows at its unit limit, spends on units first while an enemy army is in the field, and marches on the hostile city in its reach that is easiest to take (a surplus on a second); `UNIT_DISBANDED` also reaches every viewer that saw the unit; the three breakthrough labs at revision 2 (a mission city may state `landGrant`); not played by hand yet                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

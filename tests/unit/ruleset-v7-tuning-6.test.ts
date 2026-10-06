@@ -20,17 +20,13 @@ import {
 import { OBSOLETE_SAVE_STORAGE_KEYS_V7 } from "../../src/persistence/browser-v7";
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
 import {
-  MISSION_REGISTRY_V7,
   PRIOR_RULESET_7_IDS,
   RULESET_7_ID,
   SAVE_STORAGE_KEY_V7,
   TECHNOLOGY_IDS_V7,
   TECHNOLOGY_RESEARCH_COST_V7,
-  applyCommandV7,
-  createPlayableGameV7,
   effectiveRoleRuleV7,
   factionTreeV7,
-  missionMatchSetupV7,
   parseGameStateV7,
   playerTechnologyResearchCostV7,
   projectEventsV7,
@@ -52,6 +48,10 @@ import {
   LAB_BREAKTHROUGH_CAPITAL_V7,
   LAB_BREAKTHROUGH_LINE_V7,
 } from "../../src/engine/v7/missions/lab-breakthrough";
+import {
+  breakthroughLabV7,
+  runBreakthroughLabV7,
+} from "../fixtures/v7-breakthrough-lab";
 import { checkedV7 } from "../fixtures/v7-builders";
 import { rewardStateV7 } from "../fixtures/v7-dinosaur-arena";
 import {
@@ -902,7 +902,11 @@ describe("research toward the army", () => {
       }).state;
     const army = inspectNormalArmyV7(viewForV7(state, own));
     expect(army.expanding).toBe(false);
-    expect(army.research).toEqual({ tech: "HUNTING", cost: 5, due: true });
+    expect(army.research).toMatchObject({
+      tech: "HUNTING",
+      cost: 5,
+      due: true,
+    });
     const turn = policyTurn(state);
     expect(turn.commands[0]).toEqual({ kind: "RESEARCH", tech: "HUNTING" });
     expect(kindsOf(turn.commands)).toContain("TRAIN");
@@ -1049,7 +1053,7 @@ describe("the Undead field Zombies", () => {
     expect(attack?.targetUnitId).toBe(unitAtV7(state, at(4, 2)).id);
   });
 
-  it("a Zombie closes in on the infantry by the tile the Marksman does not reach", () => {
+  it("a Zombie values the tile the Marksman does not reach", () => {
     const state = bare(
       field(
         [
@@ -1072,7 +1076,10 @@ describe("the Undead field Zombies", () => {
     const moved = policyTurn(state).commands.find(
       (command) => command.kind === "MOVE" && command.unitId === zombie,
     );
-    expect(moved?.kind === "MOVE" && moved.path.at(-1)).toEqual(at(5, 4));
+    // Tuning 7 (`pulp_wars-w49.10`): a Zombie with no striker within two
+    // tiles does not enter the Fighter's reach, so it leaves the
+    // Marksman's by (6, 4) and not by (5, 4) (it took (5, 4) before).
+    expect(moved?.kind === "MOVE" && moved.path.at(-1)).toEqual(at(6, 4));
   });
 });
 
@@ -1655,15 +1662,9 @@ describe("LAB_BREAKTHROUGH: numbers against a prepared line", () => {
     ["LAB_BREAKTHROUGH_UNDEAD", "UNDEAD"],
   ] as const;
 
-  const lab = (id: string): GameStateV7 => {
-    const mission = MISSION_REGISTRY_V7.find((item) => item.id === id);
-    if (mission === undefined) throw new Error(id);
-    const setup = missionMatchSetupV7(mission);
-    if (setup === null) throw new Error(id);
-    const created = createPlayableGameV7(setup);
-    if (!created.ok) throw new Error(`${id} ${created.error.code}`);
-    return created.state;
-  };
+  const lab = breakthroughLabV7;
+  /** The round the capital falls to each attacker (the `HOLD` script). */
+  const HOLD_ROUNDS = [6, 7, 7] as const;
 
   const value = (state: GameStateV7, owner: number): number =>
     state.units
@@ -1764,219 +1765,29 @@ describe("LAB_BREAKTHROUGH: numbers against a prepared line", () => {
     }
   });
 
-  /**
-   * The player's side of the bounded run, what a competent player does
-   * cheaply (the correction pass; the first script never moved or trained,
-   * and the round-5 policy beat it too):
-   *
-   * 1. Focused fire: the shots that draw no retaliation go together at the
-   *    unit they kill, or else hurt most.
-   * 2. Every other attack that kills or deals at least what it takes.
-   * 3. Every city that can trains the best melee unit it can pay for.
-   * 4. A melee unit behind the line (not the capital's garrison) walks to
-   *    the nearest empty tile of the line.
-   */
-  function defend(start: GameStateV7): GameStateV7 {
-    const player = start.humanPlayerId;
-    let state = start;
-    const act = (command: CommandV7): boolean => {
-      const result = applyCommandV7(state, player, command);
-      if (result.accepted) state = result.state;
-      return result.accepted;
-    };
-    for (let guard = 0; guard < 40; guard += 1) {
-      const view = viewForV7(state, player);
-      const byTarget = new Map<UnitId, { total: number; shot: CommandV7 }>();
-      for (const command of queryPlayerCommandsV7(view)) {
-        if (command.kind !== "ATTACK") continue;
-        const preview = queryCombatPreviewV7(
-          view,
-          command.unitId,
-          command.targetUnitId,
-        );
-        if (
-          preview === null ||
-          preview.attackerDies ||
-          preview.damageToAttacker > 0 ||
-          preview.damageToDefender <= 0
-        )
-          continue;
-        const entry = byTarget.get(command.targetUnitId);
-        byTarget.set(command.targetUnitId, {
-          total: (entry?.total ?? 0) + preview.damageToDefender,
-          shot: entry?.shot ?? command,
-        });
-      }
-      let best: CommandV7 | null = null;
-      let bestValue = -1;
-      for (const [id, entry] of byTarget) {
-        const target = state.units.find((unit) => unit.id === id);
-        if (target === undefined) continue;
-        const worth =
-          (entry.total >= target.hp ? 1000 : 0) +
-          Math.floor((100 * Math.min(entry.total, target.hp)) / target.hp);
-        if (worth > bestValue) {
-          best = entry.shot;
-          bestValue = worth;
-        }
-      }
-      if (best === null || !act(best)) break;
-      if (state.outcome !== null) return state;
-    }
-    for (let guard = 0; guard < 64; guard += 1) {
-      const view = viewForV7(state, player);
-      const commands = queryPlayerCommandsV7(view);
-      let best: CommandV7 | null = null;
-      let bestValue = -1;
-      for (const command of commands) {
-        if (command.kind !== "ATTACK") continue;
-        const preview = queryCombatPreviewV7(
-          view,
-          command.unitId,
-          command.targetUnitId,
-        );
-        if (
-          preview === null ||
-          preview.attackerDies ||
-          (!preview.defenderDies &&
-            preview.damageToDefender < preview.damageToAttacker)
-        )
-          continue;
-        const worth =
-          (preview.defenderDies ? 1000 : 0) +
-          10 * preview.damageToDefender -
-          preview.damageToAttacker;
-        if (worth > bestValue) {
-          best = command;
-          bestValue = worth;
-        }
-      }
-      best ??=
-        commands.find((command) => command.kind === "CHOOSE_CITY_REWARD") ??
-        null;
-      if (best === null || !act(best)) break;
-      if (state.outcome !== null) return state;
-    }
-    for (const role of ["SWORDSMAN", "GUARD", "FIGHTER"] as const)
-      for (let guard = 0; guard < 6; guard += 1) {
-        const train = queryPlayerCommandsV7(viewForV7(state, player)).find(
-          (command) => command.kind === "TRAIN" && command.role === role,
-        );
-        if (train === undefined || !act(train)) break;
-      }
-    for (let guard = 0; guard < 40; guard += 1) {
-      const empty = LAB_BREAKTHROUGH_LINE_V7.filter(
-        (where) =>
-          !state.units.some(
-            (unit) => unit.at.x === where.x && unit.at.y === where.y,
-          ),
-      );
-      if (empty.length === 0) break;
-      const gap = (from: CoordV7): number =>
-        Math.min(...empty.map((where) => distance(where, from)));
-      let best: CommandV7 | null = null;
-      let bestGain = 0;
-      for (const command of queryPlayerCommandsV7(viewForV7(state, player))) {
-        if (command.kind !== "MOVE") continue;
-        const unit = state.units.find((item) => item.id === command.unitId);
-        const to = command.path.at(-1);
-        if (
-          unit === undefined ||
-          to === undefined ||
-          to.x > 6 ||
-          !["GUARD", "SWORDSMAN", "FIGHTER"].includes(unit.role) ||
-          LAB_BREAKTHROUGH_LINE_V7.some(
-            (where) => where.x === unit.at.x && where.y === unit.at.y,
-          ) ||
-          (unit.at.x === LAB_BREAKTHROUGH_CAPITAL_V7.x &&
-            unit.at.y === LAB_BREAKTHROUGH_CAPITAL_V7.y)
-        )
-          continue;
-        const gain = gap(unit.at) - gap(to);
-        if (gain > bestGain) {
-          best = command;
-          bestGain = gain;
-        }
-      }
-      if (best === null || !act(best)) break;
-    }
-    return applyOkV7(state, player, { kind: "END_TURN" }).state;
-  }
-
-  /** The AI seat's turn with the Normal policy. */
-  function attack(start: GameStateV7): GameStateV7 {
-    const actor = start.turnOrder[start.activeSeatIndex];
-    if (actor === undefined) throw new Error("no actor");
-    let state = start;
-    for (let accepted = 0; accepted < 128; accepted += 1) {
-      const view = viewForV7(state, actor);
-      const command = chooseNormalTurnCommandV7(
-        view,
-        accepted,
-        128,
-        chooseNormalCommandV7(view),
-      );
-      if (command === null) throw new Error("no command");
-      const result = applyCommandV7(state, actor, command);
-      if (!result.accepted) throw new Error(result.error.code);
-      state = result.state;
-      if (command.kind === "END_TURN" || state.outcome !== null) return state;
-    }
-    throw new Error("the turn did not end");
-  }
-
-  interface RunV7 {
-    readonly crossedInRound: number | null;
-    readonly capitalFellInRound: number | null;
-  }
-
-  function run(id: string, rounds: number): RunV7 {
-    let state = lab(id);
-    const player = state.humanPlayerId;
-    let crossedInRound: number | null = null;
-    let capitalFellInRound: number | null = null;
-    while (
-      state.outcome === null &&
-      state.round <= rounds &&
-      capitalFellInRound === null
-    ) {
-      const round = state.round;
-      if (state.turnOrder[state.activeSeatIndex] === player) {
-        state = defend(state);
-        continue;
-      }
-      state = attack(state);
-      if (
-        crossedInRound === null &&
-        state.units.some((unit) => unit.ownerId !== player && unit.at.x <= 6)
-      )
-        crossedInRound = round;
-      if (
-        state.cities.find(
-          (city) =>
-            city.at.x === LAB_BREAKTHROUGH_CAPITAL_V7.x &&
-            city.at.y === LAB_BREAKTHROUGH_CAPITAL_V7.y,
-        )?.ownerId !== player
-      )
-        capitalFellInRound = round;
-    }
-    return { crossedInRound, capitalFellInRound };
-  }
-
-  // Measured (docs/product/RULESET_7_TUNING_HUMAN.md section 13.2): this
-  // policy takes the capital in rounds 7, 8, and 8 and loses 7, 15, and 12
-  // units; the round-5 policy, run from its source on the same labs and the
-  // same script, takes it in rounds 9, 10, and 9 and loses 9, 17, and 17.
-  // So every bound below is one the round-5 policy fails, by one to two
-  // rounds: at twice the value both policies break this line.
+  // The bounded run (tests/fixtures/v7-breakthrough-lab.ts, the `HOLD`
+  // script): what a competent player does cheaply (the correction pass; the
+  // first script never moved or trained, and the round-5 policy beat it
+  // too): focused fire, every favourable attack, a melee unit in every
+  // city that can train, and the units behind the line walk to its gaps.
+  //
+  // Measured on revision 1 of the lab (docs/product/
+  // RULESET_7_TUNING_HUMAN.md section 13.2): the round-6 policy took the
+  // capital in rounds 7, 8, and 8 and lost 7, 15, and 12 units; the round-5
+  // policy in rounds 9, 10, and 9. Tuning 7 (`pulp_wars-w49.10`) moved the
+  // capital one tile toward the line so that the Field Defenses count
+  // (revision 2 of the lab), and its policy holds the fast units back for
+  // the infantry: on revision 2 the round-6 policy took the capital in
+  // rounds 7, 7, and 7 and lost 7, 11, and 8 units; the round-7 policy
+  // takes it in the rounds pinned here (section 14.2 has both tables).
   it.each([
-    ["LAB_BREAKTHROUGH", 2, 7],
-    ["LAB_BREAKTHROUGH_GOBLIN", 2, 8],
-    ["LAB_BREAKTHROUGH_UNDEAD", 3, 8],
+    ["LAB_BREAKTHROUGH", 3, HOLD_ROUNDS[0]],
+    ["LAB_BREAKTHROUGH_GOBLIN", 3, HOLD_ROUNDS[1]],
+    ["LAB_BREAKTHROUGH_UNDEAD", 3, HOLD_ROUNDS[2]],
   ] as const)(
     "%s: with twice the value the AI is on the line in round %i and takes the walled capital in round %i",
     (id, crossed, capital) => {
-      const result = run(id, 12);
+      const result = runBreakthroughLabV7(id, 12, "HOLD");
       expect(result.crossedInRound, id).toBe(crossed);
       expect(result.capitalFellInRound, id).toBe(capital);
     },
