@@ -11,6 +11,7 @@
     "format": "prettier --write src tests scripts index.html package.json package-lock.json tsconfig.json tsconfig.engine.json tsconfig.art.json vite.config.ts eslint.config.js",
     "format:check": "prettier --check src tests scripts index.html package.json package-lock.json tsconfig.json tsconfig.engine.json tsconfig.art.json vite.config.ts eslint.config.js",
     "audio:theme-prompts": "tsx scripts/audio/theme-prompts.ts",
+    "audio:stock-sound-choices": "tsx scripts/audio/stock-sound-choices.ts",
     "art:credentials": "tsx scripts/art/pixellab.ts credentials",
     "art:generate:samples": "tsx scripts/art/pixellab.ts generate --stage sample",
     "art:generate:batch": "tsx scripts/art/pixellab.ts generate --stage batch",

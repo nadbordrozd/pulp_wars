@@ -192,8 +192,8 @@ describe("Gallery Sounds tab", () => {
       expect(picture?.querySelector("svg, img")).not.toBeNull();
       expect(node.textContent ?? "").not.toMatch(COORDINATE);
     }
-    expect(card("attack.melee").getAttribute("aria-label")).toBe(
-      "Play: Melee swing. Generated",
+    expect(card("attack.ranged").getAttribute("aria-label")).toBe(
+      "Play: Arrow shot. Generated",
     );
     expect(card("city.capture").textContent).toBe(
       "City capturedYou take a cityGenerated",
@@ -470,22 +470,32 @@ describe("Gallery Sounds tab", () => {
     key(first, "ArrowUp");
     expect(document.activeElement).toBe(first);
     // Right goes through the card's own controls, then on to the next card.
-    key(first, "ArrowRight");
+    // The second card (the arrow) is generated: a lower and a higher.
+    second.focus();
+    key(second, "ArrowRight");
     const lower = document.activeElement as HTMLElement;
-    expect(lower.getAttribute("aria-label")).toBe("Play lower: Melee swing");
+    expect(lower.getAttribute("aria-label")).toBe("Play lower: Arrow shot");
     key(lower, "ArrowRight");
     expect(document.activeElement?.getAttribute("aria-label")).toBe(
-      "Play higher: Melee swing",
+      "Play higher: Arrow shot",
     );
+    const third = cards[2];
+    if (third === undefined) throw new Error("missing cards");
     key(document.activeElement as HTMLElement, "ArrowRight");
-    expect(document.activeElement).toBe(second);
-    key(second, "ArrowLeft");
+    expect(document.activeElement).toBe(third);
+    key(third, "ArrowLeft");
     expect(document.activeElement?.getAttribute("aria-label")).toBe(
-      "Play higher: Melee swing",
+      "Play higher: Arrow shot",
     );
     // Down from a variant goes to the next card.
     key(document.activeElement as HTMLElement, "ArrowDown");
-    expect(document.activeElement).toBe(second);
+    expect(document.activeElement).toBe(third);
+    // Left from a card is the last control of the card before it.
+    key(second, "ArrowLeft");
+    expect(first.closest(".v7-gallery-sound")).toBe(
+      (document.activeElement as HTMLElement).closest(".v7-gallery-sound"),
+    );
+    expect(document.activeElement).not.toBe(first);
     key(second, "End");
     expect(document.activeElement).toBe(cards.at(-1));
     // The last card is a pending theme: it can still be reached and read.
@@ -636,7 +646,7 @@ describe("Gallery Sounds tab: origins", () => {
     // The variants are reached with the arrow keys, the new one last.
     const controls = [
       ...row("impact.hit").querySelectorAll<HTMLElement>(
-        "[data-sound-control]",
+        ".v7-gallery-sound-play, .v7-gallery-sound-variant",
       ),
     ].filter((node) => !node.hidden);
     expect(controls.at(-1)).toBe(generated);

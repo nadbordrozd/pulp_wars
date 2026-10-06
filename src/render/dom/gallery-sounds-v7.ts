@@ -2,17 +2,25 @@ import type { ArtSubjectV7 } from "../../assets/chibi-art-v7";
 import {
   DEFAULT_AUDIO_SETTINGS_V1,
   SOUND_THEMES_V1,
+  STOCK_SOUND_GENERATED_CHOICE_V1,
+  stockSoundPickLinesV1,
+  stockSoundPickSummaryV1,
   type GameAudioV1,
   type SoundKeyV1,
+  type SoundPlayOptionsV1,
   type SoundThemeEntryV1,
 } from "../../audio/index";
 import { factionColourV7 } from "../canvas/faction-colours-v7";
 import {
   GALLERY_SOUND_GENERATED_TEXT_V7,
   gallerySoundCardLabelV7,
+  gallerySoundChoiceIdsV7,
+  gallerySoundChoicePlayLabelV7,
+  gallerySoundChoiceUseLabelV7,
   gallerySoundGroupsV7,
   gallerySoundOriginLabelV7,
   gallerySoundPlayLabelV7,
+  type GallerySoundChoiceV7,
   type GallerySoundEntryV7,
   type GallerySoundVariantV7,
 } from "../gallery-sounds-presentation-v7";
@@ -29,6 +37,13 @@ import { uiIconV7 } from "./ui-icons-v7";
  * second press starts the sound again. While a sound plays its card is
  * marked, and a long sound has a stop button. With sound off or the volume
  * at zero the tab says so and offers to turn it on.
+ *
+ * A sound with recordings (bead pulp_wars-2yc.24, docs/ui/SOUND.md
+ * "Choosing between recordings") lists them under its card as a numbered
+ * row, each with a control that plays it and one that picks it for this
+ * browser; the generated sound is the last of the row. A pick changes what
+ * the game plays here at once and is remembered. "Copy my picks" hands the
+ * picks to the developer as text.
  */
 
 export interface GallerySoundsPanelOptionsV7 {
@@ -41,6 +56,11 @@ export interface GallerySoundsPanelOptionsV7 {
   ) => void;
   /** The registered themes; the manifest's by default (tests pass theirs). */
   readonly themes?: readonly SoundThemeEntryV1[];
+  /**
+   * Puts text on the clipboard; the browser's by default (a test passes
+   * its own). When it fails the text is shown, selected, to copy by hand.
+   */
+  readonly copyText?: (text: string) => Promise<void>;
 }
 
 export interface GallerySoundsPanelV7 {
@@ -72,6 +92,9 @@ interface RowV7 {
   readonly stop: HTMLButtonElement | null;
 }
 
+/** The generated sound of a recorded card, as its "Generated" control. */
+const GENERATED_REQUEST: SoundPlayOptionsV1 = { generated: true };
+
 export function gallerySoundsPanelV7(
   documentRoot: Document,
   audio: GameAudioV1,
@@ -87,6 +110,8 @@ export function gallerySoundsPanelV7(
   let retry: ReturnType<typeof setTimeout> | null = null;
   /** The device could not play the last request. */
   let silent = false;
+  /** The last request was for a recording that could not be loaded. */
+  let unloaded = false;
   let destroyed = false;
 
   // ------------------------------------------------- volume and the notice
@@ -120,12 +145,16 @@ export function gallerySoundsPanelV7(
       ? "off"
       : volume === 0
         ? "volume"
-        : "device";
+        : unloaded
+          ? "file"
+          : "device";
     noticeText.textContent = !enabled
       ? "Sound is off"
       : volume === 0
         ? "Volume is at 0"
-        : "No sound on this device";
+        : unloaded
+          ? "That recording could not be loaded"
+          : "No sound on this device";
     unmute.hidden = !quiet;
     unmute.textContent = !quiet ? "" : !enabled ? "Turn on" : "Turn up";
     if (!quiet) delete notice.dataset.nudged;
@@ -145,8 +174,16 @@ export function gallerySoundsPanelV7(
 
   // ------------------------------------------------------ playing and state
 
-  const setPlaying = (row: RowV7, playing: boolean): void => {
+  const setPlaying = (
+    row: RowV7,
+    playing: boolean,
+    choice: number | null = null,
+  ): void => {
     row.node.dataset.playing = String(playing);
+    // Which of the numbered recordings is heard, when one of them is.
+    if (playing && choice !== null)
+      row.node.dataset.playingChoice = String(choice);
+    else delete row.node.dataset.playingChoice;
     if (row.stop !== null) row.stop.hidden = !playing;
   };
 
@@ -168,9 +205,14 @@ export function gallerySoundsPanelV7(
     }
   };
 
-  const started = (row: RowV7, key: SoundKeyV1): void => {
+  const started = (
+    row: RowV7,
+    key: SoundKeyV1,
+    choice: number | null,
+  ): void => {
     silent = false;
-    setPlaying(row, true);
+    unloaded = false;
+    setPlaying(row, true, choice);
     clearTimer(key);
     const remaining = audio.remainingMs(key);
     if (Number.isFinite(remaining))
@@ -188,29 +230,31 @@ export function gallerySoundsPanelV7(
     syncNotice();
   };
 
-  const play = (row: RowV7, variant: GallerySoundVariantV7 | null): void => {
-    const key = row.entry.key;
-    if (key === null || destroyed) return;
+  /** False (and the notice is pointed at) when nothing would be heard. */
+  const audible = (): boolean => {
     const { enabled, volume } = audio.settings;
-    if (!enabled || volume === 0) {
-      // Nothing would be heard: point at the notice instead.
-      notice.dataset.nudged = "true";
-      notice.scrollIntoView?.({ block: "nearest" });
-      return;
-    }
-    const request = {
-      ...(variant?.detune === undefined ? {} : { detune: variant.detune }),
-      ...(variant?.gain === undefined ? {} : { gain: variant.gain }),
-      ...(variant?.generated === true ? { generated: true } : {}),
-    };
+    if (enabled && volume !== 0) return true;
+    notice.dataset.nudged = "true";
+    notice.scrollIntoView?.({ block: "nearest" });
+    return false;
+  };
+
+  /**
+   * Plays a row's sound: as the game does, or as `request` says (a detune,
+   * a level, the generated sound, one recording by its number).
+   */
+  const playRequest = (rowId: string, request: SoundPlayOptionsV1): void => {
     const attempt = (last: boolean): void => {
-      if (destroyed) return;
+      // The card may have been drawn again since the press.
+      const row = rows.get(rowId);
+      const key = row?.entry.key ?? null;
+      if (destroyed || row === undefined || key === null) return;
       audio.unlock();
       // A second press starts the sound again from its beginning.
       audio.stop(key);
       const outcome = audio.play(key, request);
       if (outcome === "PLAYED") {
-        started(row, key);
+        started(row, key, request.candidate ?? null);
         return;
       }
       setPlaying(row, false);
@@ -225,9 +269,57 @@ export function gallerySoundsPanelV7(
       }
       // A hidden tab is silent on purpose; anything else is the device.
       silent = outcome !== "HIDDEN" && outcome !== "MUTED";
+      unloaded = false;
       syncNotice();
     };
     attempt(false);
+  };
+
+  const play = (row: RowV7, variant: GallerySoundVariantV7 | null): void => {
+    if (row.entry.key === null || destroyed || !audible()) return;
+    playRequest(row.entry.rowId, {
+      ...(variant?.detune === undefined ? {} : { detune: variant.detune }),
+      ...(variant?.gain === undefined ? {} : { gain: variant.gain }),
+      ...(variant?.generated === true ? { generated: true } : {}),
+    });
+  };
+
+  /**
+   * Plays one of a sound's choices: the generated sound, or one recording.
+   * A recording that is not the one in use is fetched first.
+   */
+  const playChoice = (row: RowV7, choice: GallerySoundChoiceV7): void => {
+    const key = row.entry.key;
+    if (key === null || destroyed || !audible()) return;
+    const rowId = row.entry.rowId;
+    if (choice.n === STOCK_SOUND_GENERATED_CHOICE_V1) {
+      playRequest(rowId, GENERATED_REQUEST);
+      return;
+    }
+    // The press opens the device if nothing has yet; the fetch needs it.
+    audio.unlock();
+    row.node.dataset.loadingChoice = String(choice.n);
+    void audio.prepareCandidate(key, choice.n).then((ready) => {
+      const current = rows.get(rowId);
+      if (current !== undefined) delete current.node.dataset.loadingChoice;
+      if (destroyed || current === undefined) return;
+      if (!ready) {
+        // There is no device, or the file could not be fetched or decoded.
+        silent = true;
+        unloaded = audio.unlocked;
+        syncNotice();
+        return;
+      }
+      playRequest(rowId, { candidate: choice.n });
+    });
+  };
+
+  /** Picks a choice for this browser; picking the default forgets the pick. */
+  const useChoice = (row: RowV7, choice: GallerySoundChoiceV7): void => {
+    const key = row.entry.key;
+    if (key === null || destroyed) return;
+    audio.unlock();
+    audio.setPick(key, choice.isDefault ? null : choice.n);
   };
 
   const stop = (row: RowV7): void => {
@@ -293,6 +385,7 @@ export function gallerySoundsPanelV7(
     if (pending) node.dataset.pending = "true";
     if (entry.origin !== null)
       node.dataset.origin = entry.origin.kind.toLowerCase();
+    if (entry.choices.length > 0) node.dataset.choices = "true";
 
     // The name of the control says what it plays and where that comes from.
     const playButton = control(
@@ -406,15 +499,239 @@ export function gallerySoundsPanelV7(
       node.append(extras);
     }
     const row: RowV7 = { entry, node, play: playButton, stop: stopButton };
+    if (entry.choices.length > 0) node.append(choiceList(row));
     rows.set(entry.rowId, row);
     playButton.onclick = () => play(row, null);
     return node;
   };
 
-  root.append(bar, notice);
-  for (const group of gallerySoundGroupsV7(options.themes ?? SOUND_THEMES_V1, {
+  /**
+   * The recordings of a sound and its generated version as a numbered
+   * list: each line plays one (its number, the file it was cut from and
+   * the stretch) and has a control that picks it for this browser. The
+   * default is marked, and so is the one in use.
+   */
+  const choiceList = (row: RowV7): HTMLElement => {
+    const { entry } = row;
+    const list = documentRoot.createElement("ul");
+    list.className = "v7-gallery-sound-choices";
+    list.setAttribute("aria-label", `Recordings of ${entry.name}`);
+    for (const choice of entry.choices) {
+      const item = documentRoot.createElement("li");
+      item.className = "v7-gallery-sound-choice";
+      item.dataset.choice = String(choice.n);
+      item.dataset.default = String(choice.isDefault);
+      item.dataset.chosen = String(choice.chosen);
+      item.dataset.soundOrigin = choice.origin.kind.toLowerCase();
+
+      const playLabel = gallerySoundChoicePlayLabelV7(entry, choice);
+      const playButton = control(
+        "v7-gallery-sound-choice-play",
+        "gallery-sound-choice-play",
+        playLabel,
+      );
+      playButton.dataset.soundId = entry.rowId;
+      playButton.dataset.choice = String(choice.n);
+      playButton.dataset.focusKey = `sound:${entry.rowId}:play:${choice.n}`;
+      playButton.tabIndex = -1;
+      const part = (className: string, text: string): HTMLElement => {
+        const span = documentRoot.createElement("span");
+        span.className = className;
+        span.textContent = text;
+        return span;
+      };
+      const number = part("v7-gallery-sound-choice-number", choice.label);
+      number.setAttribute("aria-hidden", "true");
+      if (choice.origin.kind === "RECORDED")
+        playButton.append(
+          number,
+          // One line, cut short; the whole origin is in the title.
+          part("v7-gallery-sound-choice-file", choice.origin.file),
+          part("v7-gallery-sound-choice-cut", choice.origin.cut),
+        );
+      else {
+        number.textContent = "";
+        number.append(uiIconV7(documentRoot, "sound"));
+        playButton.append(
+          number,
+          part("v7-gallery-sound-choice-file", choice.origin.text),
+        );
+      }
+      if (choice.isDefault)
+        playButton.append(part("v7-gallery-sound-choice-default", "default"));
+      playButton.onclick = () => {
+        const current = rows.get(entry.rowId);
+        if (current !== undefined) playChoice(current, choice);
+      };
+
+      const useButton = control(
+        "v7-gallery-sound-choice-use",
+        "gallery-sound-choice-use",
+        gallerySoundChoiceUseLabelV7(entry, choice),
+      );
+      useButton.dataset.soundId = entry.rowId;
+      useButton.dataset.choice = String(choice.n);
+      useButton.dataset.focusKey = `sound:${entry.rowId}:use:${choice.n}`;
+      useButton.tabIndex = -1;
+      useButton.setAttribute("aria-pressed", String(choice.chosen));
+      useButton.textContent = choice.chosen ? "In use" : "Use";
+      useButton.onclick = () => {
+        const current = rows.get(entry.rowId);
+        if (current !== undefined) useChoice(current, choice);
+      };
+      item.append(playButton, useButton);
+      list.append(item);
+    }
+    return list;
+  };
+
+  // ------------------------------------------------------------- the picks
+
+  const groupsNow = (): ReturnType<typeof gallerySoundGroupsV7> =>
+    gallerySoundGroupsV7(options.themes ?? SOUND_THEMES_V1, {
+      stockSounds: audio.stockSounds,
+      picks: audio.picks,
+    });
+
+  /**
+   * How many sounds have a pick, a control that copies the picks as text
+   * for the developer, and one that forgets them. The text is also shown,
+   * so it can be copied by hand where the clipboard is not allowed.
+   */
+  const picksBar = documentRoot.createElement("div");
+  picksBar.className = "v7-gallery-sounds-picks";
+  picksBar.dataset.v7SoundPicks = "true";
+  const choosable = gallerySoundChoiceIdsV7({
     stockSounds: audio.stockSounds,
-  })) {
+  }).length;
+  picksBar.hidden = choosable === 0;
+  const picksText = documentRoot.createElement("p");
+  picksText.className = "v7-gallery-sounds-picks-text";
+  const picksCount = documentRoot.createElement("strong");
+  picksCount.dataset.soundPickCount = "true";
+  picksText.append(
+    picksCount,
+    ` ${choosable} sounds have recordings. Play the numbered ones under a card and press Use on the one you like: the game plays it from then on, in this browser.`,
+  );
+  const picksButton = (action: string, text: string): HTMLButtonElement => {
+    const node = documentRoot.createElement("button");
+    node.type = "button";
+    node.className = "v7-gallery-sounds-picks-button";
+    node.dataset.action = action;
+    node.setAttribute(SILENT_CLICK_ATTRIBUTE_V7, "");
+    node.textContent = text;
+    return node;
+  };
+  const copyButton = picksButton("gallery-sound-picks-copy", "Copy my picks");
+  const resetButton = picksButton("gallery-sound-picks-reset", "Reset picks");
+  const picksStatus = documentRoot.createElement("span");
+  picksStatus.className = "v7-gallery-sounds-picks-status";
+  picksStatus.setAttribute("role", "status");
+  const picksOutput = documentRoot.createElement("textarea");
+  picksOutput.className = "v7-gallery-sounds-picks-output";
+  picksOutput.readOnly = true;
+  picksOutput.hidden = true;
+  picksOutput.rows = 4;
+  picksOutput.setAttribute("aria-label", "Your picks, as text");
+  picksOutput.dataset.soundPickOutput = "true";
+  const picksActions = documentRoot.createElement("span");
+  picksActions.className = "v7-gallery-sounds-picks-actions";
+  picksActions.append(copyButton, resetButton, picksStatus);
+  picksBar.append(picksText, picksActions, picksOutput);
+
+  const syncPicks = (): void => {
+    const count = stockSoundPickLinesV1(audio.picks).length;
+    picksBar.dataset.picks = String(count);
+    picksCount.textContent =
+      count === 0
+        ? "No picks yet."
+        : count === 1
+          ? "1 pick."
+          : `${count} picks.`;
+    resetButton.hidden = count === 0;
+    // A summary on show follows the picks.
+    if (!picksOutput.hidden)
+      picksOutput.value = stockSoundPickSummaryV1(audio.picks);
+  };
+
+  const copyText =
+    options.copyText ??
+    ((text: string): Promise<void> => {
+      const clipboard = documentRoot.defaultView?.navigator?.clipboard;
+      return clipboard === undefined
+        ? Promise.reject(new Error("No clipboard"))
+        : clipboard.writeText(text);
+    });
+
+  copyButton.onclick = () => {
+    const text = stockSoundPickSummaryV1(audio.picks);
+    picksOutput.value = text;
+    picksOutput.hidden = false;
+    picksStatus.textContent = "";
+    let copied: Promise<void>;
+    try {
+      copied = copyText(text);
+    } catch (error) {
+      copied = Promise.reject(
+        error instanceof Error ? error : new Error(String(error)),
+      );
+    }
+    copied.then(
+      () => {
+        if (!destroyed) picksStatus.textContent = "Copied";
+      },
+      () => {
+        if (destroyed) return;
+        // No clipboard here: the text is selected, to copy by hand.
+        picksStatus.textContent = "Select the text below and copy it";
+        picksOutput.focus();
+        picksOutput.select();
+      },
+    );
+  };
+
+  resetButton.onclick = () => {
+    audio.clearPicks();
+    picksStatus.textContent = "Picks cleared";
+    copyButton.focus();
+  };
+
+  /**
+   * Draws the cards of the sounds whose choice changed again: the origin
+   * line, the name of the play control and the marks of the numbered row
+   * all say what the sound is set to play.
+   */
+  const redrawChoices = (): void => {
+    const focused = documentRoot.activeElement;
+    const focusKey =
+      focused instanceof HTMLElement && root.contains(focused)
+        ? focused.dataset.focusKey
+        : undefined;
+    for (const group of groupsNow())
+      for (const entry of group.entries) {
+        const row = rows.get(entry.rowId);
+        if (row === undefined || entry.choices.length === 0) continue;
+        const before = row.entry.choices.find((choice) => choice.chosen)?.n;
+        const after = entry.choices.find((choice) => choice.chosen)?.n;
+        if (before === after) continue;
+        // What was playing is no longer what the card says.
+        if (entry.key !== null && row.node.dataset.playing === "true") {
+          audio.stop(entry.key);
+          clearTimer(entry.key);
+        }
+        row.node.replaceWith(card(entry));
+      }
+    if (focusKey !== undefined)
+      for (const node of root.querySelectorAll<HTMLElement>("[data-focus-key]"))
+        if (node.dataset.focusKey === focusKey) {
+          node.focus();
+          break;
+        }
+    syncPicks();
+  };
+
+  root.append(bar, notice, picksBar);
+  for (const group of groupsNow()) {
     const section = documentRoot.createElement("section");
     section.className = "v7-gallery-sound-group";
     section.dataset.group = group.id.toLowerCase();
@@ -524,7 +841,9 @@ export function gallerySoundsPanelV7(
     refresh();
     syncNotice();
   });
+  const unsubscribePicks = audio.subscribePicks(redrawChoices);
   syncNotice();
+  syncPicks();
 
   /** Ends what the tab was playing (a looping theme would go on). */
   const silence = (): void => {
@@ -547,6 +866,7 @@ export function gallerySoundsPanelV7(
       silence();
       destroyed = true;
       unsubscribe();
+      unsubscribePicks();
     },
   };
 }

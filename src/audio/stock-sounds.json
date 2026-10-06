@@ -1,5 +1,5 @@
 {
-  "bundle": "Sonniss #GameAudioGDC Bundle 2024, folder Sonniss.com-GDC2024-GameAudioBundle1of9",
+  "bundle": "Sonniss #GameAudioGDC Bundle 2024, the nine folders Sonniss.com-GDC2024-GameAudioBundle1of9 to 9of9",
   "licence": "The Sonniss #GameAudioGDC Bundle Licensing Agreement, the file 'License - GDC Game Audio.pdf' of the bundle (it prints no version number)",
   "output": {
     "folder": "public/assets/audio",
@@ -9,216 +9,1597 @@
     "codec": "AAC-LC in an .m4a file",
     "bitRate": 96000
   },
-  "clips": [
+  "sounds": [
+    {
+      "id": "attack.melee",
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "A blade drawn along metal stands in for the swing; the other is a designed energy sword.",
+      "why": "The Melee Weapons library has no swing or whoosh, only scrapes, drops and hits. A slow sword scrape is the nearest thing to a blade in motion; the anime library's sword cut is the only designed sword sound of the bundle.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "attack-melee-1.m4a",
+          "part": 2,
+          "library": "Justsoundeffects - Melee Weapons",
+          "originalFile": "WEAPSwrd_Weapon 03 Slow Scrapes_JSE_MW.wav",
+          "startSeconds": 16.93,
+          "endSeconds": 17.38,
+          "fadeInMs": 40,
+          "fadeOutMs": 160,
+          "highpassHz": 150,
+          "gain": 0.45,
+          "take": "The eighth of ten scrapes (16.89 to 17.54 s), the one with the quickest rise.",
+          "note": "A metal scrape that swells for 150 ms and rings out, around 5 kHz; 0.45 s."
+        },
+        {
+          "n": 2,
+          "file": "attack-melee-2.m4a",
+          "part": 6,
+          "library": "Rogue Waves - Anime Studio",
+          "originalFile": "WEAPSwrd_Mecha Energy Sword Cut_RogueWaves_AnimeStudio.wav",
+          "startSeconds": 0.06,
+          "endSeconds": 0.45,
+          "fadeInMs": 3,
+          "fadeOutMs": 150,
+          "highpassHz": 150,
+          "gain": 0.7,
+          "take": "The cut itself (it starts at 0.08 s), without the low tail that follows to 1.05 s.",
+          "note": "A sharp attack and a tone that climbs from 1.5 to 2.4 kHz in 150 ms: a designed 'shing', more science fiction; 0.39 s."
+        }
+      ]
+    },
     {
       "id": "attack.ray",
-      "file": "attack-ray.m4a",
-      "library": "Doex Studio - 90s Anime SFX Pack",
-      "originalFile": "Laser_Beam_004.wav",
-      "startSeconds": 0,
-      "endSeconds": 0.5,
-      "fadeInMs": 2,
-      "fadeOutMs": 260,
-      "highpassHz": 60,
-      "gain": 0.55,
-      "take": "The first of three identical takes; its opening burst, without the two-second low tail.",
-      "why": "A cartoon laser beam for the Martian ray. Named for it; the burst has its energy at 0.8 to 1.5 kHz in the first 200 ms."
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "The kept laser has a low body; the alternative is a noisier zap.",
+      "why": "The Martian ray wants a cartoon laser. The anime laser beam is named for it; the science-fiction 'zap' is the only other short energy sound whose energy is not all below 150 Hz.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "attack-ray-1.m4a",
+          "part": 1,
+          "library": "Doex Studio - 90s Anime SFX Pack",
+          "originalFile": "Laser_Beam_004.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.5,
+          "fadeInMs": 2,
+          "fadeOutMs": 260,
+          "highpassHz": 60,
+          "gain": 0.55,
+          "take": "The first of three identical takes; its opening burst, without the two-second low tail.",
+          "note": "A burst at 0.8 to 1.5 kHz for 200 ms, then a low body around 300 Hz; 0.5 s."
+        },
+        {
+          "n": 2,
+          "file": "attack-ray-2.m4a",
+          "part": 6,
+          "library": "Rescopic Sound - Parallax",
+          "originalFile": "SCIMisc_Zap Short 14_RSCPC_PX.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.5,
+          "fadeInMs": 2,
+          "fadeOutMs": 260,
+          "highpassHz": 120,
+          "gain": 0.5,
+          "take": "The first half second of a 1.9 s zap, faded out.",
+          "note": "A broad noisy crackle centred near 1.1 kHz, no clear pitch, steadier and rougher than the laser; 0.5 s."
+        }
+      ]
+    },
+    {
+      "id": "attack.magic",
+      "default": 0,
+      "confidence": "low",
+      "why": "Nothing in the bundle is named a spell or a bolt. A plasma fly-by is offered for comparison; the generated dark bolt stays the default.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "attack-magic-1.m4a",
+          "part": 6,
+          "library": "Rescopic Sound - Sci-Fi Energy Weapons",
+          "originalFile": "SCIWeap_Flyby Plasma J 01_RSCPC_SFEW.wav",
+          "startSeconds": 0.25,
+          "endSeconds": 1.15,
+          "fadeInMs": 60,
+          "fadeOutMs": 400,
+          "highpassHz": 120,
+          "gain": 0.55,
+          "take": "The loud middle of a 2 s fly-by: its rise and pass, without the low tail.",
+          "note": "A broad whoosh that swells over 300 ms, centred at 1 to 1.7 kHz, then sinks; 0.9 s, three times the length of the generated bolt."
+        }
+      ]
     },
     {
       "id": "attack.rocket",
-      "file": "attack-rocket.m4a",
-      "library": "BluezoneCorp - Steampunk Weapon And Textures",
-      "originalFile": "Bluezone_BC0296_steampunk_weapon_flare_shot_explosion_003.wav",
-      "startSeconds": 0,
-      "endSeconds": 0.5,
-      "fadeInMs": 2,
-      "fadeOutMs": 220,
-      "highpassHz": 70,
-      "gain": 0.45,
-      "take": "The flare shot (the first event, 0 to 0.64 s), without the burst that follows at 0.84 s.",
-      "why": "A flare leaving its tube for the Rocket Cart's firework: a noisy launch of a quarter of a second."
+      "default": 1,
+      "confidence": "medium",
+      "why": "A flare leaving its tube for the Rocket Cart's firework.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "attack-rocket-1.m4a",
+          "part": 1,
+          "library": "BluezoneCorp - Steampunk Weapon And Textures",
+          "originalFile": "Bluezone_BC0296_steampunk_weapon_flare_shot_explosion_003.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.5,
+          "fadeInMs": 2,
+          "fadeOutMs": 220,
+          "highpassHz": 70,
+          "gain": 0.45,
+          "take": "The flare shot (the first event, 0 to 0.64 s), without the burst that follows at 0.84 s.",
+          "note": "A noisy launch at 1 to 3 kHz for a quarter of a second; 0.5 s."
+        }
+      ]
     },
     {
       "id": "attack.gatling",
-      "file": "attack-gatling.m4a",
-      "library": "BluezoneCorp - Steampunk Weapon And Textures",
-      "originalFile": "Bluezone_BC0296_steampunk_weapon_gun_shot_026_02.wav",
-      "startSeconds": 0.185,
-      "endSeconds": 0.62,
-      "fadeInMs": 3,
-      "fadeOutMs": 200,
-      "highpassHz": 50,
-      "gain": 0.5,
-      "take": "The shot itself (it starts at 0.19 s), without the mechanism clicks before it and the long tail.",
-      "why": "A steampunk gun for the Clockwork Gunner. It is one shot, not a burst."
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "It is one shot, where the generated sound is a burst.",
+      "why": "A steampunk gun for the Clockwork Gunner. The firearm libraries of parts 3 to 6 are real pistols, rifles and automatic fire and were left out.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "attack-gatling-1.m4a",
+          "part": 1,
+          "library": "BluezoneCorp - Steampunk Weapon And Textures",
+          "originalFile": "Bluezone_BC0296_steampunk_weapon_gun_shot_026_02.wav",
+          "startSeconds": 0.185,
+          "endSeconds": 0.62,
+          "fadeInMs": 3,
+          "fadeOutMs": 200,
+          "highpassHz": 50,
+          "gain": 0.5,
+          "take": "The shot itself (it starts at 0.19 s), without the mechanism clicks before it and the long tail.",
+          "note": "A single dry shot with a short tail; 0.44 s."
+        }
+      ]
     },
     {
       "id": "attack.cannon",
-      "file": "attack-cannon.m4a",
-      "library": "BluezoneCorp - Steampunk Weapon And Textures",
-      "originalFile": "Bluezone_BC0296_steampunk_weapon_cannon_shot_013_02.wav",
-      "startSeconds": 0,
-      "endSeconds": 0.8,
-      "fadeInMs": 2,
-      "fadeOutMs": 320,
-      "highpassHz": 40,
-      "gain": 0.7,
-      "take": "The shot and the first 0.8 s of its 3.8 s tail.",
-      "why": "A steampunk cannon for the Steam Cannon: the name and the unit match."
+      "default": 1,
+      "confidence": "high",
+      "why": "Name and unit match: a steampunk cannon for the Steam Cannon.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "attack-cannon-1.m4a",
+          "part": 1,
+          "library": "BluezoneCorp - Steampunk Weapon And Textures",
+          "originalFile": "Bluezone_BC0296_steampunk_weapon_cannon_shot_013_02.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.8,
+          "fadeInMs": 2,
+          "fadeOutMs": 320,
+          "highpassHz": 40,
+          "gain": 0.7,
+          "take": "The shot and the first 0.8 s of its 3.8 s tail.",
+          "note": "A cannon shot with its body; 0.8 s."
+        }
+      ]
+    },
+    {
+      "id": "attack.pop",
+      "default": 1,
+      "confidence": "high",
+      "why": "The Kawaii UI library has a cartoon pop by name; a cork leaving a glass bottle is the natural alternative.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "attack-pop-1.m4a",
+          "part": 6,
+          "library": "Rogue Waves - Kawaii UI",
+          "originalFile": "TOONPop_Syringe Pop 4_RogueWaves_KawaiiUI.wav",
+          "startSeconds": 0.025,
+          "endSeconds": 0.16,
+          "fadeInMs": 2,
+          "fadeOutMs": 60,
+          "highpassHz": 60,
+          "gain": 0.7,
+          "take": "The pop (0.03 to 0.06 s) and its short ring.",
+          "note": "One dry pop of 20 ms around 0.8 kHz with a faint low ring; 0.14 s."
+        },
+        {
+          "n": 2,
+          "file": "attack-pop-2.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Glass",
+          "originalFile": "GLASMisc_Glass Bottle Open_01_MWSFX_GL.wav",
+          "startSeconds": 1.355,
+          "endSeconds": 1.5,
+          "fadeInMs": 3,
+          "fadeOutMs": 50,
+          "highpassHz": 100,
+          "gain": 0.45,
+          "take": "The second of six events: a cork pulled, with the bottle's ring.",
+          "note": "A brighter pop (energy to 8 kHz) followed by the bottle ringing at 1.1 kHz; 0.15 s."
+        }
+      ]
     },
     {
       "id": "impact.hit",
-      "file": "impact-hit.m4a",
-      "library": "Doex Studio - 90s Anime SFX Pack",
-      "originalFile": "Noise_Punch_006.wav",
-      "startSeconds": 0.075,
-      "endSeconds": 0.33,
-      "fadeInMs": 3,
-      "fadeOutMs": 50,
-      "highpassHz": 60,
-      "gain": 0.6,
-      "take": "The first of four punches in a row (they come 0.3 s apart): a thump at 0.12 s and its burst of noise.",
-      "why": "A cartoon punch for a hit that lands."
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "The most played sound of a match.",
+      "why": "A cartoon punch. Both anime libraries have one; a cardboard box thump is a softer, duller option.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "impact-hit-1.m4a",
+          "part": 1,
+          "library": "Doex Studio - 90s Anime SFX Pack",
+          "originalFile": "Noise_Punch_006.wav",
+          "startSeconds": 0.075,
+          "endSeconds": 0.33,
+          "fadeInMs": 3,
+          "fadeOutMs": 50,
+          "highpassHz": 60,
+          "gain": 0.6,
+          "take": "The first of four punches in a row (they come 0.3 s apart): a thump at 0.12 s and its burst of noise.",
+          "note": "A thump and 80 ms of noise around 2 kHz; 0.26 s."
+        },
+        {
+          "n": 2,
+          "file": "impact-hit-2.m4a",
+          "part": 6,
+          "library": "Rogue Waves - Anime Studio",
+          "originalFile": "FGHTImpt_Fight Combo x4_RogueWaves_AnimeStudio.wav",
+          "startSeconds": 0.605,
+          "endSeconds": 0.9,
+          "fadeInMs": 3,
+          "fadeOutMs": 120,
+          "highpassHz": 60,
+          "gain": 0.7,
+          "take": "The last of the four hits (0.62 s), the only one with room to ring out.",
+          "note": "A harder smack with more low end (half its energy below 150 Hz) and a rattling tail; 0.3 s."
+        },
+        {
+          "n": 3,
+          "file": "impact-hit-3.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Cardboard and Paper",
+          "originalFile": "OBJPack_Big Cardboard Box Impact_ 02_MWSFX_CDAP.wav",
+          "startSeconds": 0.012,
+          "endSeconds": 0.27,
+          "fadeInMs": 2,
+          "fadeOutMs": 90,
+          "highpassHz": 50,
+          "gain": 0.7,
+          "take": "The first of two thumps.",
+          "note": "A soft, dull thud around 100 to 300 Hz, nothing above 1 kHz; 0.26 s."
+        }
+      ]
     },
     {
       "id": "impact.heavy",
-      "file": "impact-heavy.m4a",
-      "library": "BluezoneCorp - Steampunk Machines",
-      "originalFile": "Bluezone_BC0305_steampunk_machine_mechanical_texture_heavy_impact_011.wav",
-      "startSeconds": 0.04,
-      "endSeconds": 0.45,
-      "fadeInMs": 3,
-      "fadeOutMs": 150,
-      "highpassHz": 45,
-      "gain": 0.7,
-      "take": "The impact (0.05 to 0.25 s and its ring), without the click that comes 50 ms before it.",
-      "why": "A heavy mechanical impact for a siege shot or a charge that lands: a tight thud around 100 Hz with a knock at 2 kHz."
+      "default": 1,
+      "confidence": "medium",
+      "why": "A tight heavy thud. The kept steampunk impact has the most weight; a hammered oil barrel and a dropped plastic pipe are hollower.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "impact-heavy-1.m4a",
+          "part": 1,
+          "library": "BluezoneCorp - Steampunk Machines",
+          "originalFile": "Bluezone_BC0305_steampunk_machine_mechanical_texture_heavy_impact_011.wav",
+          "startSeconds": 0.04,
+          "endSeconds": 0.45,
+          "fadeInMs": 3,
+          "fadeOutMs": 150,
+          "highpassHz": 45,
+          "gain": 0.7,
+          "take": "The impact (0.05 to 0.25 s and its ring), without the click that comes 50 ms before it.",
+          "note": "A thud near 100 Hz with a knock at 1.9 kHz; 0.41 s."
+        },
+        {
+          "n": 2,
+          "file": "impact-heavy-2.m4a",
+          "part": 6,
+          "library": "Pole Position - The Metal Hit Sweeteners Library",
+          "originalFile": "Oil Barrel - HIT - Hammer - Take 2.wav",
+          "startSeconds": 4.565,
+          "endSeconds": 4.78,
+          "fadeInMs": 1,
+          "fadeOutMs": 80,
+          "highpassHz": 50,
+          "gain": 0.7,
+          "take": "The third of ten hammer blows.",
+          "note": "A hollow metal bonk at 200 to 1000 Hz, shorter and lighter; 0.22 s."
+        },
+        {
+          "n": 3,
+          "file": "impact-heavy-3.m4a",
+          "part": 6,
+          "library": "Pole Position - The Plastic Textures Library",
+          "originalFile": "Flexible Sewer Pipe Big - Broken - DROP - Thump - Mono.wav",
+          "startSeconds": 9.855,
+          "endSeconds": 10.12,
+          "fadeInMs": 2,
+          "fadeOutMs": 110,
+          "highpassHz": 50,
+          "gain": 0.7,
+          "take": "The sixth of nine drops, the one that starts with the thump.",
+          "note": "A low thump near 80 Hz with a plastic rattle after it; 0.27 s."
+        }
+      ]
     },
     {
       "id": "impact.explosion",
-      "file": "impact-explosion.m4a",
-      "library": "DavidDumais - Explosion SFX Pack",
-      "originalFile": "EXPLReal_Medium Realistic Explosion 15_DDUMAIS_NONE.wav",
-      "startSeconds": 0,
-      "endSeconds": 1.05,
-      "fadeInMs": 2,
-      "fadeOutMs": 500,
-      "highpassHz": 40,
-      "gain": 0.7,
-      "take": "The blast and the first second of its tail (the file is one explosion of 1.9 s).",
-      "why": "A medium explosion for a bomb or a rocket that bursts."
+      "default": 1,
+      "confidence": "high",
+      "why": "A medium explosion; the other explosions of the bundle are nuclear, a car, a rocket through a car roof and a distant mine.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "impact-explosion-1.m4a",
+          "part": 1,
+          "library": "DavidDumais - Explosion SFX Pack",
+          "originalFile": "EXPLReal_Medium Realistic Explosion 15_DDUMAIS_NONE.wav",
+          "startSeconds": 0,
+          "endSeconds": 1.05,
+          "fadeInMs": 2,
+          "fadeOutMs": 500,
+          "highpassHz": 40,
+          "gain": 0.7,
+          "take": "The blast and the first second of its tail (the file is one explosion of 1.9 s).",
+          "note": "A full explosion with its rumble; 1.05 s."
+        }
+      ]
     },
     {
       "id": "impact.ice",
-      "file": "impact-ice.m4a",
-      "library": "BluezoneCorp - Alien Tripod",
-      "originalFile": "Bluezone_BC0292_alien_tripod_debris_glass_falling_003.wav",
-      "startSeconds": 0,
-      "endSeconds": 0.52,
-      "fadeInMs": 2,
-      "fadeOutMs": 60,
-      "highpassHz": 200,
-      "gain": 0.4,
-      "take": "The first half second: the break and the shards up to the second burst at 0.44 s.",
-      "why": "Glass breaking and falling stands in for ice that cracks: bright, between 3 and 9 kHz."
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "Glass stands in for ice in all three.",
+      "why": "Nothing in the bundle is breaking ice, so glass stands in. Three kinds: falling shards, one break, a small clink.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "impact-ice-1.m4a",
+          "part": 1,
+          "library": "BluezoneCorp - Alien Tripod",
+          "originalFile": "Bluezone_BC0292_alien_tripod_debris_glass_falling_003.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.52,
+          "fadeInMs": 2,
+          "fadeOutMs": 60,
+          "highpassHz": 200,
+          "gain": 0.4,
+          "take": "The first half second: the break and the shards up to the second burst at 0.44 s.",
+          "note": "Glass shards falling, 3 to 9 kHz; 0.52 s."
+        },
+        {
+          "n": 2,
+          "file": "impact-ice-2.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Glass",
+          "originalFile": "GLASBrk_Glass Break Hit_04_MWSFX_GL.wav",
+          "startSeconds": 0.07,
+          "endSeconds": 0.62,
+          "fadeInMs": 2,
+          "fadeOutMs": 200,
+          "highpassHz": 200,
+          "gain": 0.45,
+          "take": "The break and its falling pieces (0.08 to 0.6 s).",
+          "note": "One hard break, brighter (centre near 9 kHz) with three bursts of pieces after it; 0.55 s."
+        },
+        {
+          "n": 3,
+          "file": "impact-ice-3.m4a",
+          "part": 8,
+          "library": "Sonic Bat - Videogame Foley Essentials Vol. II",
+          "originalFile": "SBvfe2_Glass 114.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.3,
+          "fadeInMs": 1,
+          "fadeOutMs": 90,
+          "highpassHz": 200,
+          "gain": 0.45,
+          "take": "The whole clink, a quiet recording brought up to level.",
+          "note": "A small light clink and a second touch 150 ms later, 6 to 11 kHz; 0.3 s."
+        }
+      ]
+    },
+    {
+      "id": "impact.splat",
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "Both come from a library sold for gore; they are wet food foley, but hear them before anyone else does.",
+      "why": "A wet splat for the pie and the acid. The only splats of the bundle are in the Gore Mini Pack (made with fruit and vegetables); the designed water impacts of part 1 are nearly all below 150 Hz.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "impact-splat-1.m4a",
+          "part": 2,
+          "library": "Justsoundeffects - Gore Mini Pack",
+          "originalFile": "GORESplt_Gore Splatter 01_JSE_GMP.wav",
+          "startSeconds": 4.84,
+          "endSeconds": 5.3,
+          "fadeInMs": 4,
+          "fadeOutMs": 160,
+          "highpassHz": 120,
+          "gain": 0.7,
+          "take": "The third of six splatters, the shortest.",
+          "note": "A wet burst at 2 to 5 kHz that lands in 30 ms and spatters for 0.4 s; 0.46 s."
+        },
+        {
+          "n": 2,
+          "file": "impact-splat-2.m4a",
+          "part": 2,
+          "library": "Justsoundeffects - Gore Mini Pack",
+          "originalFile": "GOREFlsh_Flesh Drops on Floor 03_JSE_GMP.wav",
+          "startSeconds": 9.525,
+          "endSeconds": 9.95,
+          "fadeInMs": 3,
+          "fadeOutMs": 150,
+          "highpassHz": 120,
+          "gain": 0.45,
+          "take": "The fifth drop: the slap and the wet patter after it.",
+          "note": "A heavier slap with a low thud under it, then a thin wet patter at 6 to 8 kHz; 0.43 s."
+        }
+      ]
+    },
+    {
+      "id": "impact.shield",
+      "default": 1,
+      "confidence": "medium",
+      "why": "The Melee Weapons library has shield blocks by name. Most of a block's energy is a low thud, so its bright first 50 ms carry it; a ringing metal impact is the clangier alternative.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "impact-shield-1.m4a",
+          "part": 2,
+          "library": "Justsoundeffects - Melee Weapons",
+          "originalFile": "WEAPArmr_Metal Shield Block Hits_JSE_MW.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.42,
+          "fadeInMs": 1,
+          "fadeOutMs": 180,
+          "highpassHz": 120,
+          "gain": 0.6,
+          "take": "The first of five blocks.",
+          "note": "A bright metallic crack, then a body thud that fades in 0.3 s; little ring; 0.42 s."
+        },
+        {
+          "n": 2,
+          "file": "impact-shield-2.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Torturing Metal",
+          "originalFile": "METLImpt_Metal Impact-03_MWSFX_TM.wav",
+          "startSeconds": 0.04,
+          "endSeconds": 0.62,
+          "fadeInMs": 3,
+          "fadeOutMs": 220,
+          "highpassHz": 120,
+          "gain": 0.7,
+          "take": "The impact and its ring (0.07 to 0.6 s).",
+          "note": "A clang that rings at 1.3 kHz for half a second: more bell than block; 0.58 s."
+        }
+      ]
+    },
+    {
+      "id": "impact.splash",
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "Neither is a plain splash: one is water stirred, the other a plop heard under water.",
+      "why": "Water moving. The bundle's water is streams, drips, drains and hydrophone recordings; a hand moving through water is the closest to a splash.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "impact-splash-1.m4a",
+          "part": 2,
+          "library": "Justsoundeffects - Water in Motion",
+          "originalFile": "WATRMvmt_Soft Movement 01_JSE_WIM.wav",
+          "startSeconds": 5.3,
+          "endSeconds": 6.25,
+          "fadeInMs": 60,
+          "fadeOutMs": 380,
+          "highpassHz": 120,
+          "gain": 0.5,
+          "take": "The loud part of the second of eight movements.",
+          "note": "A soft slosh at 0.7 to 1.6 kHz that swells and falls away; 0.95 s."
+        },
+        {
+          "n": 2,
+          "file": "impact-splash-2.m4a",
+          "part": 2,
+          "library": "InMotionAudio - Submerge",
+          "originalFile": "WATRImpt_Impact20_InMotionAudio_Submerge.wav",
+          "startSeconds": 0.1,
+          "endSeconds": 0.75,
+          "fadeInMs": 20,
+          "fadeOutMs": 300,
+          "highpassHz": 100,
+          "gain": 0.55,
+          "take": "The impact (0.15 s) and the first bubbles after it.",
+          "note": "A round plop at 380 Hz and quiet bubbling: recorded under water, so it has no spray; 0.65 s."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt",
+      "default": 0,
+      "confidence": "low",
+      "why": "The bundle has no cartoon voice. A man's sharp gasp and a pig's squeal are offered for comparison; the generated sound stays the default.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "unit-hurt-1.m4a",
+          "part": 9,
+          "library": "UberDuo - Inhale – Owen – Character Playset",
+          "originalFile": "HMNBrth_Human, Adult, Male, Breath, Surprise, Gasp_UberDuo_INHL_17.wav",
+          "startSeconds": 0.215,
+          "endSeconds": 0.48,
+          "fadeInMs": 8,
+          "fadeOutMs": 70,
+          "highpassHz": 120,
+          "gain": 0.65,
+          "take": "The gasp itself.",
+          "note": "A breathy indrawn gasp, a real human voice; 0.27 s."
+        },
+        {
+          "n": 2,
+          "file": "unit-hurt-2.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Farm Animals",
+          "originalFile": "ANMLFarm_Pig Squeal and Snort-18_MWSFX_FA.wav",
+          "startSeconds": 0.27,
+          "endSeconds": 0.9,
+          "fadeInMs": 15,
+          "fadeOutMs": 120,
+          "highpassHz": 150,
+          "gain": 0.7,
+          "take": "The squeal, without the snort that follows.",
+          "note": "A pig's squeal that falls from 1.3 kHz to 0.7 kHz: comic, and unmistakably a pig; 0.63 s."
+        }
+      ]
+    },
+    {
+      "id": "unit.death",
+      "default": 0,
+      "confidence": "low",
+      "why": "No cartoon death in the bundle. An anime 'charge down' (a falling whistle) is offered for comparison; the generated sound stays the default.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "unit-death-1.m4a",
+          "part": 6,
+          "library": "Rogue Waves - Anime Studio",
+          "originalFile": "DSGNMisc_Charge Down Classic 1_RogueWaves_AnimeStudio.wav",
+          "startSeconds": 0.03,
+          "endSeconds": 0.8,
+          "fadeInMs": 5,
+          "fadeOutMs": 300,
+          "highpassHz": 150,
+          "gain": 0.45,
+          "take": "The first 0.8 s of a 1.3 s fall, faded out.",
+          "note": "A clean tone gliding down from 2 kHz to 0.5 kHz, bright (its overtones sit near 5 kHz); 0.77 s."
+        }
+      ]
+    },
+    {
+      "id": "unit.step",
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "A chess piece on a board, not a footstep.",
+      "why": "The bundle has no footstep on grass or earth (only heavy mechanical ones, a horse's trot and skis). A chess piece set down on its board suits a unit moved on a board.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "unit-step-1.m4a",
+          "part": 9,
+          "library": "UberDuo - Game Night Audio Props",
+          "originalFile": "GAMEBoard_Chess, Contact, King Takes_UberDuo_Game.wav",
+          "startSeconds": 1.975,
+          "endSeconds": 2.11,
+          "fadeInMs": 1,
+          "fadeOutMs": 60,
+          "highpassHz": 60,
+          "gain": 0.25,
+          "take": "The third of three contacts.",
+          "note": "A wooden tock at 0.5 to 1.4 kHz with a low thump under it; 0.14 s."
+        },
+        {
+          "n": 2,
+          "file": "unit-step-2.m4a",
+          "part": 9,
+          "library": "UberDuo - Game Night Audio Props",
+          "originalFile": "GAMEBoard_Chess, Contact, King Takes_UberDuo_Game.wav",
+          "startSeconds": 0.895,
+          "endSeconds": 0.985,
+          "fadeInMs": 1,
+          "fadeOutMs": 40,
+          "highpassHz": 60,
+          "gain": 0.25,
+          "take": "The second contact.",
+          "note": "A lighter, shorter tock around 350 Hz without the thump; 0.09 s."
+        }
+      ]
     },
     {
       "id": "unit.levelup",
-      "file": "unit-levelup.m4a",
-      "library": "Doex Studio - 90s Anime SFX Pack",
-      "originalFile": "Short_PowerUp_005.wav",
-      "startSeconds": 6.12,
-      "endSeconds": 6.86,
-      "fadeInMs": 3,
-      "fadeOutMs": 40,
-      "highpassHz": 100,
-      "gain": 0.3,
-      "take": "The third of four takes (6.15 to 6.83 s), the shortest: a tone that climbs from 0.75 to 5.9 kHz in half a second.",
-      "why": "A short power-up for a unit that is promoted or grows."
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "It climbs to 5.9 kHz and may be piercing.",
+      "why": "An anime power-up for a promotion.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "unit-levelup-1.m4a",
+          "part": 1,
+          "library": "Doex Studio - 90s Anime SFX Pack",
+          "originalFile": "Short_PowerUp_005.wav",
+          "startSeconds": 6.12,
+          "endSeconds": 6.86,
+          "fadeInMs": 3,
+          "fadeOutMs": 40,
+          "highpassHz": 100,
+          "gain": 0.3,
+          "take": "The third of four takes (6.15 to 6.83 s), the shortest: a tone that climbs from 0.75 to 5.9 kHz in half a second.",
+          "note": "A tone sweeping up from 0.75 to 5.9 kHz in half a second; 0.74 s."
+        }
+      ]
+    },
+    {
+      "id": "support.rally",
+      "default": 0,
+      "confidence": "low",
+      "why": "No war horn or drum. A cinematic low brass blast is offered for comparison; the generated call stays the default.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "support-rally-1.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Cinematic Feel",
+          "originalFile": "DSGNBram_Cinematic Horn_MWSFX_CF 05.wav",
+          "startSeconds": 0.25,
+          "endSeconds": 1.6,
+          "fadeInMs": 40,
+          "fadeOutMs": 600,
+          "highpassHz": 60,
+          "gain": 0.35,
+          "take": "The first 1.35 s of a 6.5 s blast, faded out.",
+          "note": "A low brass swell on one note (75 Hz with its overtones near 350 Hz): heavy and dark for this game; 1.35 s."
+        }
+      ]
+    },
+    {
+      "id": "support.dark",
+      "default": 0,
+      "confidence": "low",
+      "why": "A glass 'dark tone' is offered for comparison; the growls and sinister textures of part 1 are horror. The generated sound stays the default.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "support-dark-1.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Glass",
+          "originalFile": "GLASTonl_Dark Tone Thrill_07_MWSFX_GL.wav",
+          "startSeconds": 0.1,
+          "endSeconds": 1.15,
+          "fadeInMs": 60,
+          "fadeOutMs": 450,
+          "highpassHz": 100,
+          "gain": 0.5,
+          "take": "The first second of a 2.6 s tone.",
+          "note": "A hollow pulsing tone at 280 and 570 Hz that swells and dies away; eerie rather than comic; 1.05 s."
+        }
+      ]
+    },
+    {
+      "id": "support.drain",
+      "default": 0,
+      "confidence": "low",
+      "why": "A reversed metal ring (a sound that is sucked in) is offered for comparison. The generated sound stays the default.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "support-drain-1.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Torturing Metal",
+          "originalFile": "METLTonl_Reversed Metal-28_MWSFX_TM.wav",
+          "startSeconds": 1.55,
+          "endSeconds": 2.79,
+          "fadeInMs": 250,
+          "fadeOutMs": 25,
+          "highpassHz": 100,
+          "gain": 0.55,
+          "take": "The last 1.2 s of the reversed ring: the swell up to its sudden end.",
+          "note": "A tone at 300 Hz that grows louder and brighter for a second and stops dead; 1.24 s."
+        }
+      ]
+    },
+    {
+      "id": "special.beam",
+      "default": 0,
+      "confidence": "low",
+      "why": "Three short science-fiction transitions are offered for comparison (bead 2yc.20 found them too generic to choose one). The generated beam stays the default.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "special-beam-1.m4a",
+          "part": 1,
+          "library": "BluezoneCorp - Alien Interface",
+          "originalFile": "Bluezone_BC0300_alien_interface_sci_fi_transition_004.wav",
+          "startSeconds": 0,
+          "endSeconds": 1,
+          "fadeInMs": 20,
+          "fadeOutMs": 250,
+          "highpassHz": 150,
+          "gain": 0.4,
+          "take": "The whole transition.",
+          "note": "A bright shimmer that falls from 9 kHz to 3 kHz and ends on a tone near 2.2 kHz: a beam coming down; 1 s."
+        },
+        {
+          "n": 2,
+          "file": "special-beam-2.m4a",
+          "part": 1,
+          "library": "BluezoneCorp - Alien Interface",
+          "originalFile": "Bluezone_BC0300_alien_interface_sci_fi_transition_008.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.95,
+          "fadeInMs": 20,
+          "fadeOutMs": 250,
+          "highpassHz": 150,
+          "gain": 0.35,
+          "take": "The whole transition.",
+          "note": "A noisy swell and fade centred at 3 to 5 kHz, no pitch; 0.95 s."
+        },
+        {
+          "n": 3,
+          "file": "special-beam-3.m4a",
+          "part": 1,
+          "library": "CB Sounddesign - Activation 2",
+          "originalFile": "UIMvmt_UI Zooms 103_CB Soudndesign_ACTIVATION2.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.6,
+          "fadeInMs": 20,
+          "fadeOutMs": 20,
+          "highpassHz": 100,
+          "gain": 0.7,
+          "take": "The whole zoom; it ends abruptly by design.",
+          "note": "A buzzing tone on 190 Hz that grows for half a second and cuts off: a zoom in; 0.6 s."
+        }
+      ]
+    },
+    {
+      "id": "special.freeze",
+      "default": 1,
+      "confidence": "medium",
+      "why": "Ice by name: ice sizzling as it cracks in water. A reversed glass swell is the designed alternative.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "special-freeze-1.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Sound Effects Collection",
+          "originalFile": "ICEMisc_Ice Sizzle_05_MWSFX_SEC.wav",
+          "startSeconds": 0.26,
+          "endSeconds": 1.05,
+          "fadeInMs": 30,
+          "fadeOutMs": 350,
+          "highpassHz": 200,
+          "gain": 0.3,
+          "take": "The onset of an 8.5 s sizzle and its first 0.7 s.",
+          "note": "A crisp crackle at 5 to 7 kHz that starts hard and thins out; 0.79 s."
+        },
+        {
+          "n": 2,
+          "file": "special-freeze-2.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Glass",
+          "originalFile": "GLASMisc_Reverse Glass Effect_04_MWSFX_GL.wav",
+          "startSeconds": 0.45,
+          "endSeconds": 1,
+          "fadeInMs": 40,
+          "fadeOutMs": 30,
+          "highpassHz": 200,
+          "gain": 0.3,
+          "take": "The swell of the reversed break up to its stop.",
+          "note": "A glassy hiss near 10 kHz that rises in three steps and stops dead; 0.55 s."
+        }
+      ]
     },
     {
       "id": "special.burrow",
-      "file": "special-burrow.m4a",
-      "library": "BluezoneCorp - Alien Tripod",
-      "originalFile": "Bluezone_BC0292_alien_tripod_debris_rock_collapse_earthquake_rumble_large_005.wav",
-      "startSeconds": 0.45,
-      "endSeconds": 1.3,
-      "fadeInMs": 60,
-      "fadeOutMs": 320,
-      "highpassHz": 45,
-      "gain": 0.6,
-      "take": "0.85 s from the start of a 5.3 s rumble of falling rock, with its own fades.",
-      "why": "Earth and rock moving for a Mole that tunnels."
+      "default": 1,
+      "confidence": "medium",
+      "why": "Falling rock and earth for a tunnelling Mole.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "special-burrow-1.m4a",
+          "part": 1,
+          "library": "BluezoneCorp - Alien Tripod",
+          "originalFile": "Bluezone_BC0292_alien_tripod_debris_rock_collapse_earthquake_rumble_large_005.wav",
+          "startSeconds": 0.45,
+          "endSeconds": 1.3,
+          "fadeInMs": 60,
+          "fadeOutMs": 320,
+          "highpassHz": 45,
+          "gain": 0.6,
+          "take": "0.85 s from the start of a 5.3 s rumble of falling rock, with its own fades.",
+          "note": "A rumble of falling rock with its own fades; 0.85 s."
+        }
+      ]
+    },
+    {
+      "id": "special.hatch",
+      "default": 1,
+      "confidence": "medium",
+      "why": "A shell cracking: snapped celery (from the gore pack's 'bone breaks', which are a vegetable) and a snapped twig. A chick's cheeps are the comic alternative.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "special-hatch-1.m4a",
+          "part": 2,
+          "library": "Justsoundeffects - Gore Mini Pack",
+          "originalFile": "GOREBone_Bone Breaks Celery 01_JSE_GMP.wav",
+          "startSeconds": 5.66,
+          "endSeconds": 6.16,
+          "fadeInMs": 15,
+          "fadeOutMs": 60,
+          "highpassHz": 200,
+          "gain": 0.7,
+          "take": "Three crackles from the end of the fourth break.",
+          "note": "Three dry crackles 150 to 250 ms apart, 3 to 6 kHz; 0.5 s."
+        },
+        {
+          "n": 2,
+          "file": "special-hatch-2.m4a",
+          "part": 2,
+          "library": "Justsoundeffects - Gore Mini Pack",
+          "originalFile": "GOREBone_Bone Breaks Celery 01_JSE_GMP.wav",
+          "startSeconds": 8.54,
+          "endSeconds": 8.84,
+          "fadeInMs": 10,
+          "fadeOutMs": 50,
+          "highpassHz": 200,
+          "gain": 0.7,
+          "take": "The two snaps of the fifth break.",
+          "note": "Two sharper snaps 200 ms apart, brighter; 0.3 s."
+        },
+        {
+          "n": 3,
+          "file": "special-hatch-3.m4a",
+          "part": 2,
+          "library": "InMotionAudio - Wood",
+          "originalFile": "WOODBrk_Snap09_InMotionAudio_Wood.wav",
+          "startSeconds": 0.565,
+          "endSeconds": 0.72,
+          "fadeInMs": 4,
+          "fadeOutMs": 50,
+          "highpassHz": 150,
+          "gain": 0.45,
+          "take": "The second of three snaps, the loud one.",
+          "note": "One dry woody snap with a double crack, 3 to 4.5 kHz; 0.16 s."
+        },
+        {
+          "n": 4,
+          "file": "special-hatch-4.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Farm Animals",
+          "originalFile": "BIRDFowl_Chick Squawks-02_MWSFX_FA.wav",
+          "startSeconds": 8.6,
+          "endSeconds": 9.1,
+          "fadeInMs": 25,
+          "fadeOutMs": 60,
+          "highpassHz": 300,
+          "gain": 0.4,
+          "take": "Four cheeps from the second group.",
+          "note": "A chick cheeping at 2.4 kHz: what hatches, not the shell; 0.5 s."
+        }
+      ]
+    },
+    {
+      "id": "special.pop",
+      "default": 1,
+      "confidence": "medium",
+      "why": "A second pop, different from the gumball's: a cork, a run of four finger pops, a tin lid.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "special-pop-1.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Glass",
+          "originalFile": "GLASMisc_Glass Bottle Open_01_MWSFX_GL.wav",
+          "startSeconds": 3.14,
+          "endSeconds": 3.23,
+          "fadeInMs": 3,
+          "fadeOutMs": 35,
+          "highpassHz": 100,
+          "gain": 0.6,
+          "take": "The fourth of six events: the cork's pop.",
+          "note": "One round pop around 500 Hz with a bright edge; 0.09 s."
+        },
+        {
+          "n": 2,
+          "file": "special-pop-2.m4a",
+          "part": 6,
+          "library": "Rogue Waves - Kawaii UI",
+          "originalFile": "UIClick_Hand Pop UI Diminished 1_RogueWaves_KawaiiUI.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.221,
+          "fadeInMs": 1,
+          "fadeOutMs": 15,
+          "highpassHz": 100,
+          "gain": 0.7,
+          "take": "The whole file: four pops 60 ms apart.",
+          "note": "Four tiny pops climbing a chord (1.3, 1.7, 2 and 2.4 kHz): a little rising run, more of an interface sound; 0.22 s."
+        },
+        {
+          "n": 3,
+          "file": "special-pop-3.m4a",
+          "part": 6,
+          "library": "Rogue Waves - Kawaii UI",
+          "originalFile": "OBJCont_Coffee Tin Lid Open 3_RogueWaves_KawaiiUI.wav",
+          "startSeconds": 0.135,
+          "endSeconds": 0.31,
+          "fadeInMs": 5,
+          "fadeOutMs": 60,
+          "highpassHz": 100,
+          "gain": 0.7,
+          "take": "The lid coming off (0.15 to 0.27 s).",
+          "note": "A hollow tonk at 500 Hz with a second knock; a quiet recording brought up to level; 0.18 s."
+        }
+      ]
     },
     {
       "id": "special.puff",
-      "file": "special-puff.m4a",
-      "library": "BluezoneCorp - Alien Tripod",
-      "originalFile": "Bluezone_BC0292_alien_tripod_pneumatic_chemical_weapon_black_smoke_001.wav",
-      "startSeconds": 0,
-      "endSeconds": 0.38,
-      "fadeInMs": 6,
-      "fadeOutMs": 260,
-      "highpassHz": 200,
-      "gain": 0.2,
-      "take": "The first 0.38 s of a 5.7 s pneumatic hiss, faded out.",
-      "why": "A pneumatic hiss for a puff of steam. It is bright: its energy is around 8.7 kHz."
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "Both are hisses near 9 kHz and may be harsh.",
+      "why": "Named for it: a short release of steam. The clip of bead 2yc.20 (a pneumatic hiss from an alien weapon) stays as the alternative.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "special-puff-1.m4a",
+          "part": 2,
+          "library": "Justsoundeffects - Steampunk Gadgets",
+          "originalFile": "AIRBrst_Steam Release Short 03_JSE_SG_Mono.wav",
+          "startSeconds": 4.82,
+          "endSeconds": 5.35,
+          "fadeInMs": 15,
+          "fadeOutMs": 300,
+          "highpassHz": 200,
+          "gain": 0.2,
+          "take": "The first half second of the third of five releases.",
+          "note": "A burst of steam that holds for 0.4 s, 9 to 11 kHz; 0.53 s."
+        },
+        {
+          "n": 2,
+          "file": "special-puff-2.m4a",
+          "part": 1,
+          "library": "BluezoneCorp - Alien Tripod",
+          "originalFile": "Bluezone_BC0292_alien_tripod_pneumatic_chemical_weapon_black_smoke_001.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.38,
+          "fadeInMs": 6,
+          "fadeOutMs": 260,
+          "highpassHz": 200,
+          "gain": 0.2,
+          "take": "The first 0.38 s of a 5.7 s pneumatic hiss, faded out.",
+          "note": "A shorter pneumatic hiss around 8.7 kHz that fades at once; 0.38 s."
+        }
+      ]
     },
     {
       "id": "special.boing",
-      "file": "special-boing.m4a",
-      "library": "Doex Studio - 90s Anime SFX Pack",
-      "originalFile": "Comedic_006.wav",
-      "startSeconds": 0.02,
-      "endSeconds": 0.56,
-      "fadeInMs": 3,
-      "fadeOutMs": 40,
-      "highpassHz": 100,
-      "gain": 0.5,
-      "take": "The first of four identical takes: its first four swings (a tone going up and down between 0.4 and 1.1 kHz, each swing quieter).",
-      "why": "A cartoon spring for a Candy unit that bounces."
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "Chosen from its pitch curve alone.",
+      "why": "A cartoon spring for a bouncing candy unit.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "special-boing-1.m4a",
+          "part": 1,
+          "library": "Doex Studio - 90s Anime SFX Pack",
+          "originalFile": "Comedic_006.wav",
+          "startSeconds": 0.02,
+          "endSeconds": 0.56,
+          "fadeInMs": 3,
+          "fadeOutMs": 40,
+          "highpassHz": 100,
+          "gain": 0.5,
+          "take": "The first of four identical takes: its first four swings (a tone going up and down between 0.4 and 1.1 kHz, each swing quieter).",
+          "note": "A pure tone swinging between 0.4 and 1.1 kHz every 130 ms, each swing quieter; 0.54 s."
+        }
+      ]
+    },
+    {
+      "id": "city.lost",
+      "default": 0,
+      "confidence": "low",
+      "why": "No sad stinger in the bundle. A minor chord from a tape keyboard is offered for comparison; the generated tune stays the default.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "city-lost-1.m4a",
+          "part": 9,
+          "library": "Used Bin Loops - Lo-Tech Premium Degraded Tape FX",
+          "originalFile": "UBL_Lo-Tech_70_one_shot_key_Amin.wav",
+          "startSeconds": 0,
+          "endSeconds": 1.7,
+          "fadeInMs": 5,
+          "fadeOutMs": 700,
+          "highpassHz": 60,
+          "gain": 0.4,
+          "take": "The first 1.7 s of a 5 s chord, faded out.",
+          "note": "One held A minor chord on a worn keyboard, centred near 450 Hz: a mood, not a tune; 1.7 s."
+        }
+      ]
+    },
+    {
+      "id": "reward.chosen",
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "A designed interface 'confirm', where the generated sound is a short tune.",
+      "why": "Choosing a reward is a confirmation, and the User Interaction library has one by name.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "reward-chosen-1.m4a",
+          "part": 6,
+          "library": "Rescopic Sound - User Interaction",
+          "originalFile": "UIAlert_Confirm Middle 12_RSCPC_USIN.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.62,
+          "fadeInMs": 2,
+          "fadeOutMs": 200,
+          "highpassHz": 100,
+          "gain": 0.45,
+          "take": "The whole confirm, without the last faint 0.4 s.",
+          "note": "A soft mid knock around 1 kHz that opens into a bright airy tail; 0.62 s."
+        }
+      ]
+    },
+    {
+      "id": "research.complete",
+      "default": 0,
+      "confidence": "low",
+      "why": "A rising 'feedback up' chime from an interface library is offered for comparison; the generated tune stays the default.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "research-complete-1.m4a",
+          "part": 1,
+          "library": "CB Sounddesign - Activation 2",
+          "originalFile": "UIMisc_Feedback 36 up_CB Sounddesign_ACTIVATION2.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.5,
+          "fadeInMs": 4,
+          "fadeOutMs": 150,
+          "highpassHz": 100,
+          "gain": 0.45,
+          "take": "The whole chime.",
+          "note": "A bright two-step chime on one low note (235 Hz): its overtones near 0.9 kHz sound first, those near 1.4 kHz take over; 0.5 s."
+        }
+      ]
     },
     {
       "id": "economy.build",
-      "file": "economy-build.m4a",
-      "library": "BluezoneCorp - Stone Impact",
-      "originalFile": "Bluezone_BC0297_stone_impact_hammer_015.wav",
-      "startSeconds": 0,
-      "endSeconds": 0.2,
-      "fadeInMs": 1,
-      "fadeOutMs": 60,
-      "highpassHz": 120,
-      "gain": 0.45,
-      "take": "The blow and its ring (the first 0.2 s), without the chips that fall after it.",
-      "why": "A hammer on stone for something being built. It rings at 5.4 kHz."
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "The kept clip rings at 5.4 kHz, a chisel more than a hammer.",
+      "why": "A hammer blow. Four materials: stone, iron, a staple gun and a dropped piece of wood.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "economy-build-1.m4a",
+          "part": 1,
+          "library": "BluezoneCorp - Stone Impact",
+          "originalFile": "Bluezone_BC0297_stone_impact_hammer_015.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.2,
+          "fadeInMs": 1,
+          "fadeOutMs": 60,
+          "highpassHz": 120,
+          "gain": 0.45,
+          "take": "The blow and its ring (the first 0.2 s), without the chips that fall after it.",
+          "note": "A hammer on stone that rings at 5.4 kHz; 0.2 s."
+        },
+        {
+          "n": 2,
+          "file": "economy-build-2.m4a",
+          "part": 6,
+          "library": "Pole Position - The Metal Hit Sweeteners Library",
+          "originalFile": "Iron - Thick - HIT - Hammer.wav",
+          "startSeconds": 1.8,
+          "endSeconds": 1.91,
+          "fadeInMs": 1,
+          "fadeOutMs": 50,
+          "highpassHz": 150,
+          "gain": 0.7,
+          "take": "The second of eight blows, the loudest.",
+          "note": "A hammer on thick iron: a short tink at 3.3 kHz, half the length; 0.11 s."
+        },
+        {
+          "n": 3,
+          "file": "economy-build-3.m4a",
+          "part": 9,
+          "library": "UberDuo - The Workshop Audio Playset",
+          "originalFile": "TOOLHand_Staple Gun_UberDuo_TOOL.wav",
+          "startSeconds": 0.03,
+          "endSeconds": 0.21,
+          "fadeInMs": 2,
+          "fadeOutMs": 60,
+          "highpassHz": 150,
+          "gain": 0.45,
+          "take": "The trigger click and the shot.",
+          "note": "A click and a hard bright clack 75 ms later: ka-chunk; 0.18 s."
+        },
+        {
+          "n": 4,
+          "file": "economy-build-4.m4a",
+          "part": 2,
+          "library": "InMotionAudio - Wood",
+          "originalFile": "WOODImpt_Drops20_InMotionAudio_Wood.wav",
+          "startSeconds": 0.04,
+          "endSeconds": 0.32,
+          "fadeInMs": 2,
+          "fadeOutMs": 90,
+          "highpassHz": 100,
+          "gain": 0.7,
+          "take": "The drop and its bounce.",
+          "note": "A wooden clack at 1.7 kHz and a small bounce 150 ms later; 0.28 s."
+        }
+      ]
+    },
+    {
+      "id": "economy.harvest",
+      "default": 1,
+      "confidence": "medium",
+      "why": "A rustle of leaves from a corn field, and garden shears for the cut.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "economy-harvest-1.m4a",
+          "part": 2,
+          "library": "InMotionAudio - Sound of the Corn",
+          "originalFile": "VEGELeaf_CornLeafMovements02_InMotionAudio_SoundoftheCorn.wav",
+          "startSeconds": 0.42,
+          "endSeconds": 1.32,
+          "fadeInMs": 90,
+          "fadeOutMs": 300,
+          "highpassHz": 200,
+          "gain": 0.35,
+          "take": "The middle 0.9 s of a 2 s rustle.",
+          "note": "Dry leaves rustling, 3 to 6 kHz, no single hit; 0.9 s."
+        },
+        {
+          "n": 2,
+          "file": "economy-harvest-2.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Sound Effects Collection",
+          "originalFile": "TOOLHand_Shears Slide Open Close_ 01_MWSFX_SEC.wav",
+          "startSeconds": 0.99,
+          "endSeconds": 1.52,
+          "fadeInMs": 5,
+          "fadeOutMs": 80,
+          "highpassHz": 200,
+          "gain": 0.4,
+          "take": "The second open and close.",
+          "note": "Shears sliding open and snapping shut 350 ms later, bright (5 to 6 kHz); 0.53 s."
+        }
+      ]
+    },
+    {
+      "id": "economy.coin",
+      "default": 0,
+      "confidence": "low",
+      "why": "No coins in the bundle. Brass cartridge cases falling on a floor and game tiles dropped on a table are offered for comparison; the generated sound stays the default.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "economy-coin-1.m4a",
+          "part": 5,
+          "library": "Pole Position - Lynx 50 Cal Sniper Rifle",
+          "originalFile": "Lynx 50 - VAR SFX - Shell Ejections - Take 2 - CO100k.wav",
+          "startSeconds": 17.63,
+          "endSeconds": 17.96,
+          "fadeInMs": 5,
+          "fadeOutMs": 150,
+          "highpassHz": 400,
+          "gain": 0.45,
+          "take": "One large case landing and ringing (the sixteenth event).",
+          "note": "A bright ring near 6.5 kHz and above that dies in 0.3 s: thin and high; 0.33 s."
+        },
+        {
+          "n": 2,
+          "file": "economy-coin-2.m4a",
+          "part": 5,
+          "library": "Pole Position - Smith & Wesson .38 Chiefs Special Model 60",
+          "originalFile": "Smith & Wesson 60 - VAR SFX - Open Close Revovler with Shells - XY - RSM191.wav",
+          "startSeconds": 3.155,
+          "endSeconds": 3.36,
+          "fadeInMs": 2,
+          "fadeOutMs": 30,
+          "highpassHz": 400,
+          "gain": 0.45,
+          "take": "Three small cases landing one after another.",
+          "note": "Three tiny ticks 80 ms apart at 6 to 14 kHz, no ring; 0.2 s."
+        },
+        {
+          "n": 3,
+          "file": "economy-coin-3.m4a",
+          "part": 9,
+          "library": "UberDuo - Game Night Audio Props",
+          "originalFile": "GAMEBoard_Scrabble, Shotgun, Tiles, Drop_UberDuo_Game.wav",
+          "startSeconds": 0.15,
+          "endSeconds": 0.62,
+          "fadeInMs": 10,
+          "fadeOutMs": 120,
+          "highpassHz": 150,
+          "gain": 0.7,
+          "take": "The tiles landing.",
+          "note": "A clatter of small wooden tiles at 2 to 3 kHz: not metal; 0.47 s."
+        }
+      ]
+    },
+    {
+      "id": "economy.treasure",
+      "default": 0,
+      "confidence": "low",
+      "why": "No chest in the bundle. A wooden door's creak and a small wooden box shaken are offered for comparison; the generated tune stays the default.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "economy-treasure-1.m4a",
+          "part": 6,
+          "library": "Rogue Waves - Creaking Door",
+          "originalFile": "DOORCreak_Wooden Door, Opening and Closing 09_RogueWaves_CreakingDoor.wav",
+          "startSeconds": 0.74,
+          "endSeconds": 1.42,
+          "fadeInMs": 20,
+          "fadeOutMs": 120,
+          "highpassHz": 150,
+          "gain": 0.5,
+          "take": "The opening creak.",
+          "note": "A wooden creak whose pitch climbs from 300 Hz to 2 kHz in 0.6 s: a lid opening; 0.68 s."
+        },
+        {
+          "n": 2,
+          "file": "economy-treasure-2.m4a",
+          "part": 8,
+          "library": "Sonic Bat - Videogame Foley Essentials Vol. II",
+          "originalFile": "SBvfe2_Shaking Small Wooden Box 030.wav",
+          "startSeconds": 1.38,
+          "endSeconds": 1.78,
+          "fadeInMs": 10,
+          "fadeOutMs": 80,
+          "highpassHz": 150,
+          "gain": 0.7,
+          "take": "The last shake.",
+          "note": "Two or three wooden knocks at 850 Hz from inside a box; 0.4 s."
+        }
+      ]
+    },
+    {
+      "id": "turn.start",
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "A real hand bell, bright; the rooster is there for fun.",
+      "why": "A bell calls the player. A rooster's crow is the comic alternative.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "turn-start-1.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Sound Effects Collection",
+          "originalFile": "BELLHand_Metallic Bell_ 22_MWSFX_SEC.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.9,
+          "fadeInMs": 1,
+          "fadeOutMs": 400,
+          "highpassHz": 200,
+          "gain": 0.4,
+          "take": "The two strokes and 0.6 s of their ring.",
+          "note": "A small hand bell struck twice 250 ms apart, 5 to 8 kHz, ringing out; 0.9 s."
+        },
+        {
+          "n": 2,
+          "file": "turn-start-2.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Farm Animals",
+          "originalFile": "BIRDFowl_Rooster Call-12_MWSFX_FA.wav",
+          "startSeconds": 0.15,
+          "endSeconds": 2.25,
+          "fadeInMs": 40,
+          "fadeOutMs": 150,
+          "highpassHz": 200,
+          "gain": 0.4,
+          "take": "The whole crow.",
+          "note": "A rooster's full crow, 2.1 s: long for a sound heard every turn."
+        }
+      ]
+    },
+    {
+      "id": "turn.end",
+      "default": 0,
+      "confidence": "low",
+      "why": "A page turned and a clock's tick are offered for comparison; the generated sound stays the default.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "turn-end-1.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Cardboard and Paper",
+          "originalFile": "PAPRHndl_Large Book Squeak Page Turn_ 01_MWSFX_CDAP.wav",
+          "startSeconds": 1.48,
+          "endSeconds": 1.86,
+          "fadeInMs": 20,
+          "fadeOutMs": 100,
+          "highpassHz": 150,
+          "gain": 0.45,
+          "take": "The second movement of the page: the flip.",
+          "note": "A quick papery flick, 2 to 6 kHz; 0.38 s."
+        },
+        {
+          "n": 2,
+          "file": "turn-end-2.m4a",
+          "part": 1,
+          "library": "InMotionAudio - Sinister Textures 3",
+          "originalFile": "CLOCKTick_Clock53_InMotionAudio_SinisterTextures3.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.4,
+          "fadeInMs": 1,
+          "fadeOutMs": 200,
+          "highpassHz": 100,
+          "gain": 0.45,
+          "take": "The first tick and the start of its ring.",
+          "note": "A heavy clock tick with a low ring at 200 Hz; 0.4 s."
+        }
+      ]
+    },
+    {
+      "id": "achievement.monument",
+      "default": 0,
+      "confidence": "low",
+      "why": "A gong is offered for comparison; the generated fanfare stays the default.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "achievement-monument-1.m4a",
+          "part": 2,
+          "library": "Orbital Emitter - Cinematic Transitions for Editors Volume 2",
+          "originalFile": "80,TheGong.wav",
+          "startSeconds": 0.1,
+          "endSeconds": 2.7,
+          "fadeInMs": 10,
+          "fadeOutMs": 1100,
+          "highpassHz": 60,
+          "gain": 0.45,
+          "take": "The stroke and 2.6 s of a 4.3 s ring, faded out.",
+          "note": "A large gong, low (most of its energy below 400 Hz) and slow to fade; 2.6 s."
+        }
+      ]
+    },
+    {
+      "id": "match.defeat",
+      "default": 0,
+      "confidence": "low",
+      "why": "A guitar's 'dive bomb' (a note bent all the way down) is offered for comparison; the generated tune stays the default.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "match-defeat-1.m4a",
+          "part": 6,
+          "library": "Rogue Waves - Metal Tensions",
+          "originalFile": "MUSCStngr_Open String Dive Bomb Down, Whammy bar, Low_RogueWaves_MetalTensions_13.wav",
+          "startSeconds": 0,
+          "endSeconds": 2.7,
+          "fadeInMs": 3,
+          "fadeOutMs": 900,
+          "highpassHz": 60,
+          "gain": 0.7,
+          "take": "The first of two dives, faded out; a quiet recording brought up to level.",
+          "note": "One clean guitar note sliding down from 240 Hz to 90 Hz over 2.7 s."
+        }
+      ]
+    },
+    {
+      "id": "ui.select",
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "Heard on every selection.",
+      "why": "A tiny tick. The Kawaii UI library has an operating-system cursor click by name; one pop of its hand pops and the bright start of a designed 'select' are the alternatives.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "ui-select-1.m4a",
+          "part": 6,
+          "library": "Rogue Waves - Kawaii UI",
+          "originalFile": "UIClick_Operating System UI Cursor_RogueWaves_KawaiiUI.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.03,
+          "fadeInMs": 1,
+          "fadeOutMs": 12,
+          "highpassHz": 0,
+          "gain": 0.45,
+          "take": "The whole click: 10 ms.",
+          "note": "A single 10 ms tick at 2.8 kHz; nothing after it."
+        },
+        {
+          "n": 2,
+          "file": "ui-select-2.m4a",
+          "part": 6,
+          "library": "Rogue Waves - Kawaii UI",
+          "originalFile": "UIClick_Hand Pop UI Diminished 1_RogueWaves_KawaiiUI.wav",
+          "startSeconds": 0.055,
+          "endSeconds": 0.105,
+          "fadeInMs": 1,
+          "fadeOutMs": 15,
+          "highpassHz": 100,
+          "gain": 0.25,
+          "take": "The second of the four pops.",
+          "note": "One tiny pop at 1.7 kHz, rounder than the tick; 0.05 s."
+        },
+        {
+          "n": 3,
+          "file": "ui-select-3.m4a",
+          "part": 6,
+          "library": "Rescopic Sound - User Interaction",
+          "originalFile": "UIClick_Select Middle 29_RSCPC_USIN.wav",
+          "startSeconds": 0.015,
+          "endSeconds": 0.12,
+          "fadeInMs": 1,
+          "fadeOutMs": 40,
+          "highpassHz": 300,
+          "gain": 0.1,
+          "take": "The bright first 100 ms of a 0.36 s sound, without its bass.",
+          "note": "A crisp airy tick at 7 to 11 kHz with a short hiss; 0.1 s."
+        }
+      ]
     },
     {
       "id": "ui.click",
-      "file": "ui-click.m4a",
-      "library": "CB Sounddesign - Activation 2",
-      "originalFile": "UIClick_UI Click 33_CB Sounddesign_ACTIVATION2.wav",
-      "startSeconds": 0,
-      "endSeconds": 0.06,
-      "fadeInMs": 1,
-      "fadeOutMs": 8,
-      "highpassHz": 0,
-      "gain": 0.3,
-      "take": "The whole click: two ticks 30 ms apart, the second quieter.",
-      "why": "An interface click for a button."
+      "default": 1,
+      "confidence": "high",
+      "why": "An interface click.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "ui-click-1.m4a",
+          "part": 1,
+          "library": "CB Sounddesign - Activation 2",
+          "originalFile": "UIClick_UI Click 33_CB Sounddesign_ACTIVATION2.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.06,
+          "fadeInMs": 1,
+          "fadeOutMs": 8,
+          "highpassHz": 0,
+          "gain": 0.3,
+          "take": "The whole click: two ticks 30 ms apart, the second quieter.",
+          "note": "A double click of 50 ms at 1.8 kHz."
+        }
+      ]
     },
     {
       "id": "ui.toggle",
-      "file": "ui-toggle.m4a",
-      "library": "BluezoneCorp - Industrial Lever Switch",
-      "originalFile": "Bluezone_BC0302_industrial_lever_switch_small_003.wav",
-      "startSeconds": 0,
-      "endSeconds": 0.26,
-      "fadeInMs": 1,
-      "fadeOutMs": 40,
-      "highpassHz": 80,
-      "gain": 0.35,
-      "take": "The whole throw of the switch: two light clicks, then the clack at 0.12 s.",
-      "why": "A small lever switch for a setting switched on or off."
+      "default": 1,
+      "confidence": "medium",
+      "why": "A small lever switch for a toggle.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "ui-toggle-1.m4a",
+          "part": 1,
+          "library": "BluezoneCorp - Industrial Lever Switch",
+          "originalFile": "Bluezone_BC0302_industrial_lever_switch_small_003.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.26,
+          "fadeInMs": 1,
+          "fadeOutMs": 40,
+          "highpassHz": 80,
+          "gain": 0.35,
+          "take": "The whole throw of the switch: two light clicks, then the clack at 0.12 s.",
+          "note": "A small lever thrown: a click and its body; 0.26 s."
+        }
+      ]
+    },
+    {
+      "id": "ui.error",
+      "default": 0,
+      "confidence": "low",
+      "why": "Two buzzers are offered for comparison: an aircraft's stall warning and a small car's horn. The generated sound stays the default.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "ui-error-1.m4a",
+          "part": 3,
+          "library": "Pole Position - Beechcraft Baron 58 1969",
+          "originalFile": "Beechcraft Baron 58 - t12 - VAR SFX - Stall Warning - MS Decoded - RSM191.wav",
+          "startSeconds": 0.09,
+          "endSeconds": 0.34,
+          "fadeInMs": 4,
+          "fadeOutMs": 40,
+          "highpassHz": 150,
+          "gain": 0.45,
+          "take": "The first quarter second of a continuous buzzer.",
+          "note": "A harsh reedy buzz on 231 Hz, flat and insistent; 0.25 s."
+        },
+        {
+          "n": 2,
+          "file": "ui-error-2.m4a",
+          "part": 2,
+          "library": "Justsoundeffects - Renault R4",
+          "originalFile": "VEHHorn_Renault R4 GTL Horn Signal 01 Interior_JSE_RR4_Mono.wav",
+          "startSeconds": 0.035,
+          "endSeconds": 0.33,
+          "fadeInMs": 3,
+          "fadeOutMs": 40,
+          "highpassHz": 150,
+          "gain": 0.3,
+          "take": "The first of five short honks.",
+          "note": "A clean 'meep' at 414 Hz: comic, but a car horn; 0.3 s."
+        }
+      ]
+    }
+  ],
+  "generated": [
+    {
+      "id": "attack.ranged",
+      "why": "No bow, arrow or dart anywhere in the bundle; the whooshes are one to five seconds long.",
+      "wanted": "A bow release with a short arrow whoosh, under 0.4 s."
+    },
+    {
+      "id": "attack.siege",
+      "why": "No catapult, sling or throw. The whooshes are long science-fiction passes with most of their energy below 150 Hz.",
+      "wanted": "A catapult arm or sling release: a wooden creak-and-thump with a heavy whoosh, about 0.5 s."
+    },
+    {
+      "id": "unit.train",
+      "why": "No horn call, drum roll or fanfare; the one cinematic horn is a six-second low blast (offered under Rally).",
+      "wanted": "A short bright brass call or a snare flourish, about 0.5 s."
+    },
+    {
+      "id": "support.heal",
+      "why": "No chime or harp. The hand bell is used for the turn; the science-fiction 'ping' turns into a sub-bass boom after 0.2 s.",
+      "wanted": "A soft rising chime, harp gliss or glass bell, about 0.5 s."
+    },
+    {
+      "id": "special.mind",
+      "why": "Nothing that reads as a mind effect: the candidates are electromagnetic hums and a robot's babble.",
+      "wanted": "A wobbling theremin-like tone or a warbling 'hypnosis' swirl, about 0.6 s."
+    },
+    {
+      "id": "special.sparkle",
+      "why": "No sparkle, shimmer or wind chimes. Fizzing tablets are a steady hiss; falling glass is used for ice.",
+      "wanted": "A bright twinkle: wind chimes, a bell tree or a glockenspiel run, about 0.5 s."
+    },
+    {
+      "id": "special.dizzy",
+      "why": "The one comic sound of the bundle (a cartoon spring) is used for the bounce.",
+      "wanted": "A cartoon dizzy sound: a wobbling slide whistle or 'cuckoo' twitter, about 0.6 s."
+    },
+    {
+      "id": "city.capture",
+      "why": "No fanfare. The music in the bundle is background spill through a wall, tape pads and heavy-metal guitar stingers.",
+      "wanted": "A bright brass fanfare of four or five notes, about 1.5 s."
+    },
+    {
+      "id": "village.capture",
+      "why": "No short positive stinger.",
+      "wanted": "A short cheerful flourish (flute, pizzicato or small brass), under 1 s."
+    },
+    {
+      "id": "city.levelup",
+      "why": "No rising jingle.",
+      "wanted": "A rising three-note jingle on bells or mallets, about 0.8 s."
+    },
+    {
+      "id": "achievement.unlocked",
+      "why": "No achievement jingle; the interface libraries have clicks, confirms and data noises.",
+      "wanted": "A bright 'achievement' jingle with a sparkle, about 1 s."
+    },
+    {
+      "id": "match.victory",
+      "why": "No victory fanfare.",
+      "wanted": "A triumphant fanfare, two to three seconds."
     }
   ]
 }

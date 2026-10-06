@@ -5629,6 +5629,226 @@
   background: currentColor;
 }
 
+/* Choosing between recordings (pulp_wars-2yc.24): a sound with recordings
+   lists them under its card, one line each: a control that plays it (its
+   number, the file it was cut from on one line, the stretch) and one that
+   picks it for this browser. The generated sound is the last line. */
+.v7-gallery-sound[data-choices="true"] {
+  flex-wrap: wrap;
+}
+
+.v7-gallery-sound[data-choices="true"] .v7-gallery-sound-play {
+  flex-basis: 100%;
+}
+
+.v7-gallery-sound-choices {
+  display: grid;
+  flex-basis: 100%;
+  gap: 0.2rem;
+  min-width: 0;
+  margin: 0 0 0.35rem;
+  padding: 0;
+  list-style: none;
+}
+
+.v7-gallery-sound-choice {
+  display: flex;
+  gap: 0.3rem;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.v7-gallery-sound-choice-play {
+  display: flex;
+  flex: 1;
+  gap: 0.45rem;
+  align-items: center;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 0.55rem 0 0.35rem;
+  border: 1px solid var(--v7-edge);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-align: left;
+}
+
+.v7-gallery-sound-choice-use {
+  flex: none;
+  min-width: 3.6rem;
+  min-height: 44px;
+  padding: 0 0.5rem;
+  border: 1px solid var(--v7-edge);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.v7-gallery-sound-choice-play:hover,
+.v7-gallery-sound-choice-use:hover {
+  border-color: var(--v7-edge-strong);
+  color: var(--paper);
+}
+
+.v7-gallery-sound-choice-play:focus-visible,
+.v7-gallery-sound-choice-use:focus-visible,
+.v7-gallery-sounds-picks-button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.v7-gallery-sound-choice-number {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  color: var(--paper);
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.v7-gallery-sound-choice-number .v7-ui-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+/* The file name wraps anywhere and is cut after two lines; the title has
+   the whole origin. */
+.v7-gallery-sound-choice-file {
+  display: -webkit-box;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.v7-gallery-sound-choice[data-sound-origin="generated"]
+  .v7-gallery-sound-choice-file {
+  font-style: italic;
+}
+
+.v7-gallery-sound-choice-cut,
+.v7-gallery-sound-choice-default {
+  flex: none;
+  white-space: nowrap;
+}
+
+.v7-gallery-sound-choice-default {
+  padding: 0.05rem 0.35rem;
+  border: 1px solid var(--v7-edge-strong);
+  border-radius: 999px;
+  color: var(--paper);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* The one in use: what the game plays for this sound in this browser. */
+.v7-gallery-sound-choice[data-chosen="true"] .v7-gallery-sound-choice-play {
+  border-color: var(--gold);
+}
+
+.v7-gallery-sound-choice[data-chosen="true"] .v7-gallery-sound-choice-file {
+  color: var(--gold);
+}
+
+.v7-gallery-sound-choice-use[aria-pressed="true"] {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--ink);
+}
+
+/* The numbered recording being heard. */
+.v7-gallery-sound[data-playing-choice="1"]
+  .v7-gallery-sound-choice-play[data-choice="1"],
+.v7-gallery-sound[data-playing-choice="2"]
+  .v7-gallery-sound-choice-play[data-choice="2"],
+.v7-gallery-sound[data-playing-choice="3"]
+  .v7-gallery-sound-choice-play[data-choice="3"],
+.v7-gallery-sound[data-playing-choice="4"]
+  .v7-gallery-sound-choice-play[data-choice="4"] {
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 16%, var(--panel));
+}
+
+/* The picks: how many, and the controls that copy and forget them. */
+.v7-gallery-sounds-picks {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 46rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--v7-edge);
+  border-radius: 12px;
+  background: var(--v7-glass);
+}
+
+.v7-gallery-sounds-picks[hidden] {
+  display: none;
+}
+
+.v7-gallery-sounds-picks-text {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.v7-gallery-sounds-picks-text strong {
+  color: var(--paper);
+}
+
+.v7-gallery-sounds-picks-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.v7-gallery-sounds-picks-button {
+  min-height: 44px;
+  padding: 0 1rem;
+}
+
+.v7-gallery-sounds-picks-button[hidden] {
+  display: none;
+}
+
+.v7-gallery-sounds-picks-status {
+  color: var(--gold);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.v7-gallery-sounds-picks-output {
+  width: 100%;
+  min-height: 11rem;
+  padding: 0.5rem;
+  border: 1px solid var(--v7-edge);
+  border-radius: 8px;
+  background: rgb(0 0 0 / 25%);
+  color: var(--paper);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  resize: vertical;
+}
+
+.v7-gallery-sounds-picks-output[hidden] {
+  display: none;
+}
+
 @media (max-width: 720px) {
   .v7-gallery-sound-list {
     grid-template-columns: minmax(0, 1fr);

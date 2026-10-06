@@ -1,4 +1,9 @@
 import { playableSoundIdsV1, playableSoundV1 } from "../audio/playable-sound";
+import {
+  stockSoundChoiceV1,
+  type StockSoundPicksV1,
+} from "../audio/stock-sound-picks";
+import { stockSoundCandidateV1, stockSoundUrlV1 } from "../audio/stock-sounds";
 import { FACTION_IDS_V7, type FactionIdV7 } from "../engine/index";
 import { CHIBI_ART_ASSETS_V7 } from "./chibi-art-manifest";
 import type { ArtSetV7, ChibiArtAssetV7 } from "./chibi-art-v7";
@@ -168,12 +173,28 @@ export function assetInventoryForFactionsV7(
  * without waiting for them (src/app/v7-preload-boot.ts); a sound whose
  * file has not arrived plays its synthesised fallback.
  *
+ * A sound with several recordings (bead pulp_wars-2yc.24) lists one file:
+ * its default recording, or the one this browser picked (`picks`); none
+ * when that is the generated sound. The other candidates are fetched only
+ * when the Gallery plays them.
+ *
  * With `stockSounds` false (`?stock-sounds=0`) a file that has a
  * synthesised fallback is left out: that sound is synthesised.
  */
-export function soundAssetUrlsV7(stockSounds = true): readonly string[] {
+export function soundAssetUrlsV7(
+  stockSounds = true,
+  picks: StockSoundPicksV1 = {},
+): readonly string[] {
   const urls = new Set<string>();
   for (const id of playableSoundIdsV1()) {
+    // A sound with recordings: the one this browser picked, else its
+    // default; none when that is the generated sound.
+    const choice = stockSoundChoiceV1(id, picks);
+    if (choice !== null) {
+      const clip = stockSounds ? stockSoundCandidateV1(id, choice) : null;
+      if (clip !== null) urls.add(stockSoundUrlV1(clip));
+      continue;
+    }
     const source = playableSoundV1(id)?.source;
     if (source?.kind !== "FILE") continue;
     if (!stockSounds && source.fallback !== undefined) continue;

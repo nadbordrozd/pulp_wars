@@ -12,6 +12,13 @@ import type {
   AssetPreloaderV7,
 } from "../../src/app/asset-preloader-v7";
 import { bootstrapPreloadedRuleset7App } from "../../src/app/v7-preload-boot";
+import {
+  STOCK_SOUND_ALL_CLIPS_V1,
+  STOCK_SOUND_CLIPS_V1,
+  STOCK_SOUND_PICKS_STORAGE_KEY_V1,
+  stockSoundCandidateV1,
+  stockSoundUrlV1,
+} from "../../src/audio/index";
 import type {
   BoardHostCallbacksV7,
   BoardHostModelV7,
@@ -354,6 +361,59 @@ describe("Ruleset 7 start and the sound clips", () => {
     expect(query("[data-v7-loading]")).toBeNull();
     expect(appShown()).toBe(true);
     app.destroy();
+  });
+
+  it("asks for one clip a sound: its default, or the one this browser picked", async () => {
+    const urlOf = (id: string, n: number): string => {
+      const clip = stockSoundCandidateV1(id, n);
+      if (clip === null) throw new Error(`${id} #${n}`);
+      return stockSoundUrlV1(clip);
+    };
+    const start = async (): Promise<readonly string[]> => {
+      const { preloader, requests } = manualPreloader();
+      const asked: (readonly string[])[] = [];
+      const starting = bootstrapPreloadedRuleset7App(document, {
+        preloader,
+        loadingScreenDelayMs: 0,
+        storage: null,
+        boardHost: new Host(),
+        randomSeed: () => 7,
+        prefetchSounds: (urls) => asked.push(urls),
+      });
+      await flush();
+      requests[0]?.resolve({ total: 0, loaded: 0, failed: [], unfinished: 0 });
+      (await starting).destroy();
+      document.body.innerHTML = '<div id="app"></div>';
+      expect(asked).toHaveLength(1);
+      return asked[0] ?? [];
+    };
+    // Without a pick: the defaults, and no alternative.
+    const defaults = await start();
+    expect(defaults).toEqual(
+      STOCK_SOUND_CLIPS_V1.map((clip) => stockSoundUrlV1(clip)),
+    );
+    expect(defaults.length).toBeLessThan(STOCK_SOUND_ALL_CLIPS_V1.length);
+    expect(defaults).toContain(urlOf("impact.hit", 1));
+    expect(defaults).not.toContain(urlOf("impact.hit", 2));
+    expect(defaults).not.toContain(urlOf("unit.death", 1));
+    // With stored picks: the picked recordings instead.
+    window.localStorage.setItem(
+      STOCK_SOUND_PICKS_STORAGE_KEY_V1,
+      JSON.stringify({
+        "impact.hit": 2,
+        "unit.death": 1,
+        "impact.heavy": 0,
+        "impact.ice": 99,
+      }),
+    );
+    const picked = await start();
+    expect(picked).toContain(urlOf("impact.hit", 2));
+    expect(picked).not.toContain(urlOf("impact.hit", 1));
+    expect(picked).toContain(urlOf("unit.death", 1));
+    expect(picked).not.toContain(urlOf("impact.heavy", 1));
+    // A pick of a recording that does not exist is no pick.
+    expect(picked).toContain(urlOf("impact.ice", 1));
+    expect(picked.length).toBe(defaults.length);
   });
 
   it("starts the game when asking for the clips fails", async () => {

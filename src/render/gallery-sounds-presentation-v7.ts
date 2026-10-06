@@ -5,14 +5,20 @@ import {
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
   SOUND_THEMES_V1,
+  STOCK_SOUNDS_V1,
+  STOCK_SOUND_GENERATED_CHOICE_V1,
   playableRecipeV1,
   playableSoundV1,
-  stockSoundClipV1,
+  stockSoundCandidateV1,
+  stockSoundChoiceV1,
+  stockSoundV1,
   synthRecipeDurationMsV1,
   type SoundIdV1,
   type SoundKeyV1,
   type SoundSourceV1,
   type SoundThemeEntryV1,
+  type StockSoundClipV1,
+  type StockSoundPicksV1,
 } from "../audio/index";
 import type { FactionIdV7, UnitRoleIdV7 } from "../engine/index";
 import type { UiIconIdV7 } from "./dom/ui-icons-v7";
@@ -143,6 +149,27 @@ export type GallerySoundOriginV7 =
 /** What a synthesised sound's origin reads. */
 export const GALLERY_SOUND_GENERATED_TEXT_V7 = "Generated";
 
+/**
+ * One thing a sound with recordings can be set to play (bead
+ * pulp_wars-2yc.24): one of its recordings, or the generated sound. The
+ * Gallery shows them as a numbered row, so a listener can compare them
+ * and pick one for this browser.
+ */
+export interface GallerySoundChoiceV7 {
+  /** The candidate's number in the provenance manifest; 0 is generated. */
+  readonly n: number;
+  /** What its control reads: "1", "2", or "Generated". */
+  readonly label: string;
+  /** The checked-in default: what everyone hears without a pick. */
+  readonly isDefault: boolean;
+  /** What this browser is set to play: its pick, else the default. */
+  readonly chosen: boolean;
+  /** Where it comes from: a recording's library file, or "Generated". */
+  readonly origin: GallerySoundOriginV7;
+  /** Its character in a line ("brighter, shorter"); "" for generated. */
+  readonly note: string;
+}
+
 export interface GallerySoundEntryV7 {
   /**
    * The manifest id to play. Null for a faction whose theme is not in the
@@ -162,6 +189,12 @@ export interface GallerySoundEntryV7 {
   readonly faction: FactionIdV7 | null;
   /** Where the sound comes from; null for a theme that is not there yet. */
   readonly origin: GallerySoundOriginV7 | null;
+  /**
+   * What the sound can be set to play, when it has recordings: each of
+   * them in the manifest's order, then the generated sound. Empty for a
+   * sound without recordings, and with the recordings switched off.
+   */
+  readonly choices: readonly GallerySoundChoiceV7[];
 }
 
 export interface GallerySoundGroupV7 {
@@ -338,6 +371,8 @@ export interface GallerySoundOptionsV7 {
    * sound that has a synthesised version is then shown as generated).
    */
   readonly stockSounds?: boolean;
+  /** This browser's picks among the recordings; none by default. */
+  readonly picks?: StockSoundPicksV1;
 }
 
 /** Seconds as the manifest has them, without trailing zeros. */
@@ -366,15 +401,25 @@ function originOf(
     kind: "GENERATED",
     text: GALLERY_SOUND_GENERATED_TEXT_V7,
   };
+  // A sound with recordings: what it is set to play in this browser.
+  const choice =
+    options.stockSounds === false
+      ? null
+      : stockSoundChoiceV1(key, options.picks ?? {});
+  if (choice !== null) {
+    const clip = stockSoundCandidateV1(key, choice);
+    return clip === null ? generated : recordedOrigin(clip);
+  }
   if (source.kind === "SYNTH") return generated;
   if (options.stockSounds === false && source.fallback !== undefined)
     return generated;
-  const clip = stockSoundClipV1(key);
-  if (clip === null)
-    return {
-      kind: "FILE",
-      text: decodeURIComponent(source.url.split("/").at(-1) ?? source.url),
-    };
+  return {
+    kind: "FILE",
+    text: decodeURIComponent(source.url.split("/").at(-1) ?? source.url),
+  };
+}
+
+function recordedOrigin(clip: StockSoundClipV1): GallerySoundOriginV7 {
   return {
     kind: "RECORDED",
     library: clip.library,
@@ -384,6 +429,52 @@ function originOf(
     text: `${clip.library} / ${clip.originalFile}`,
     cut: `${seconds(clip.startSeconds)}–${seconds(clip.endSeconds)} s`,
   };
+}
+
+/**
+ * What a sound can be set to play (bead pulp_wars-2yc.24): its recordings
+ * and the generated sound, with the default and this browser's choice
+ * marked. Empty for a sound without recordings and with them switched off.
+ */
+export function gallerySoundChoicesV7(
+  key: SoundKeyV1,
+  options: GallerySoundOptionsV7 = {},
+): readonly GallerySoundChoiceV7[] {
+  const sound = stockSoundV1(key);
+  if (sound === null || options.stockSounds === false) return [];
+  const chosen = stockSoundChoiceV1(key, options.picks ?? {});
+  const choices: GallerySoundChoiceV7[] = [];
+  for (const candidate of sound.candidates) {
+    const clip = stockSoundCandidateV1(key, candidate.n);
+    if (clip === null) continue;
+    choices.push({
+      n: candidate.n,
+      label: String(candidate.n),
+      isDefault: sound.default === candidate.n,
+      chosen: chosen === candidate.n,
+      origin: recordedOrigin(clip),
+      note: candidate.note,
+    });
+  }
+  if (playableRecipeV1(key) !== null)
+    choices.push({
+      n: STOCK_SOUND_GENERATED_CHOICE_V1,
+      label: GALLERY_SOUND_GENERATED_TEXT_V7,
+      isDefault: sound.default === STOCK_SOUND_GENERATED_CHOICE_V1,
+      chosen: chosen === STOCK_SOUND_GENERATED_CHOICE_V1,
+      origin: { kind: "GENERATED", text: GALLERY_SOUND_GENERATED_TEXT_V7 },
+      note: "",
+    });
+  return choices;
+}
+
+/** The sounds that have recordings to choose from, in manifest order. */
+export function gallerySoundChoiceIdsV7(
+  options: GallerySoundOptionsV7 = {},
+): readonly string[] {
+  return options.stockSounds === false
+    ? []
+    : STOCK_SOUNDS_V1.map((sound) => sound.id);
 }
 
 /**
@@ -436,6 +527,7 @@ function effectEntry(
   const note = NOTES[id];
   const recipe = playableRecipeV1(id);
   const origin = gallerySoundOriginV7(id, options);
+  const choices = gallerySoundChoicesV7(id, options);
   const lengthMs =
     origin?.kind === "RECORDED"
       ? (origin.endSeconds - origin.startSeconds) * 1000
@@ -449,9 +541,19 @@ function effectEntry(
     when: note?.when ?? "",
     picture: note?.picture ?? icon("sound"),
     variants: variantsOf(id, origin),
-    long: lengthMs >= GALLERY_SOUND_LONG_MS_V7,
+    // A card whose longest recording is long has the stop control.
+    long:
+      Math.max(
+        lengthMs,
+        ...choices.map((choice) =>
+          choice.origin.kind === "RECORDED"
+            ? (choice.origin.endSeconds - choice.origin.startSeconds) * 1000
+            : 0,
+        ),
+      ) >= GALLERY_SOUND_LONG_MS_V7,
     faction: null,
     origin,
+    choices,
   };
 }
 
@@ -474,6 +576,7 @@ function themeEntry(
     // A theme has no synthesised version to fall back to, so the switch
     // for recordings does not change what its row says.
     origin: theme === undefined ? null : originOf(theme.id, theme.source, {}),
+    choices: [],
   };
 }
 
@@ -519,4 +622,36 @@ export function gallerySoundCardLabelV7(entry: GallerySoundEntryV7): string {
   return entry.origin === null
     ? label
     : `${label}. ${gallerySoundOriginLabelV7(entry.origin)}`;
+}
+
+/**
+ * The name of a choice's play control: "Play recording 2 of Hit: Vendor -
+ * Library / file.wav, 0.6–0.9 s. A harder smack.", "Play generated: Hit".
+ */
+export function gallerySoundChoicePlayLabelV7(
+  entry: GallerySoundEntryV7,
+  choice: GallerySoundChoiceV7,
+): string {
+  if (choice.origin.kind !== "RECORDED")
+    return `Play generated: ${entry.name}${choice.isDefault ? " (default)" : ""}`;
+  return (
+    `Play recording ${choice.label} of ${entry.name}` +
+    `${choice.isDefault ? " (default)" : ""}: ` +
+    `${choice.origin.text}, ${choice.origin.cut}` +
+    (choice.note === "" ? "" : `. ${choice.note}`)
+  );
+}
+
+/**
+ * The name of a choice's select control: "Use recording 2 for Hit", "Use
+ * the generated sound for Hit". Its pressed state says whether it is the
+ * one in use.
+ */
+export function gallerySoundChoiceUseLabelV7(
+  entry: GallerySoundEntryV7,
+  choice: GallerySoundChoiceV7,
+): string {
+  return choice.origin.kind === "RECORDED"
+    ? `Use recording ${choice.label} for ${entry.name}`
+    : `Use the generated sound for ${entry.name}`;
 }

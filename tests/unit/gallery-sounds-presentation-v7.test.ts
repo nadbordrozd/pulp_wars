@@ -4,9 +4,14 @@ import {
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
   SOUND_THEMES_V1,
+  STOCK_SOUNDS_V1,
   STOCK_SOUND_CLIPS_V1,
   playableSoundIdsV1,
   playableSoundV1,
+  soundRecipeV1,
+  stockSoundCandidateV1,
+  stockSoundV1,
+  synthRecipeDurationMsV1,
   type SoundThemeEntryV1,
 } from "../../src/audio/index";
 import { FACTION_IDS_V7 } from "../../src/engine/index";
@@ -15,6 +20,10 @@ import {
   GALLERY_SOUND_GROUP_IDS_V7,
   GALLERY_THEME_PENDING_TEXT_V7,
   gallerySoundCardLabelV7,
+  gallerySoundChoiceIdsV7,
+  gallerySoundChoicePlayLabelV7,
+  gallerySoundChoiceUseLabelV7,
+  gallerySoundChoicesV7,
   gallerySoundGroupOfV7,
   gallerySoundGroupsV7,
   gallerySoundHasNoteV7,
@@ -162,18 +171,33 @@ describe("Gallery sounds", () => {
     expect(gallerySoundPlayLabelV7(build, build.variants[0])).toBe(
       "Play lower: Build",
     );
-    // Only the long tunes and a recording of a second get a stop control.
-    expect(
-      entries
-        .filter((entry) => entry.faction === null && entry.long)
-        .map((entry) => entry.rowId),
-    ).toEqual([
+    // Only a sound of a second or more gets a stop control: a long tune,
+    // or a sound one of whose recordings is that long.
+    const long = entries
+      .filter((entry) => entry.faction === null && entry.long)
+      .map((entry) => entry.rowId);
+    for (const entry of entries) {
+      if (entry.faction !== null) continue;
+      const id = entry.rowId as (typeof SOUND_IDS_V1)[number];
+      const recipe = soundRecipeV1(id);
+      const lengths = [
+        recipe === null ? 0 : synthRecipeDurationMsV1(recipe),
+        ...(stockSoundV1(id)?.candidates ?? []).map(
+          (candidate) => (candidate.endSeconds - candidate.startSeconds) * 1000,
+        ),
+      ];
+      expect(long.includes(id), id).toBe(Math.max(...lengths) >= 1000);
+    }
+    for (const id of [
       "impact.explosion",
       "achievement.unlocked",
       "achievement.monument",
       "match.victory",
       "match.defeat",
-    ]);
+    ])
+      expect(long, id).toContain(id);
+    expect(long).not.toContain("impact.hit");
+    expect(long).not.toContain("ui.click");
   });
 
   it("has a pending theme row for every faction while none is registered", () => {
@@ -377,5 +401,170 @@ describe("Gallery sound origins", () => {
       themes?.entries.find((entry) => entry.faction === "GOBLIN")?.origin,
     ).toEqual({ kind: "GENERATED", text: "Generated" });
     expect(gallerySoundOriginV7("theme.none")).toBeNull();
+  });
+});
+
+/**
+ * The recordings a sound can be set to play (bead pulp_wars-2yc.24,
+ * docs/ui/SOUND.md "Choosing between recordings"): read from the
+ * provenance manifest, with the default and this browser's pick marked.
+ */
+describe("Gallery sound choices", () => {
+  const entriesWith = (
+    options: Parameters<typeof gallerySoundGroupsV7>[1] = {},
+  ) =>
+    gallerySoundGroupsV7(SOUND_THEMES_V1, options)
+      .flatMap((group) => group.entries)
+      .filter((entry) => entry.faction === null);
+  const entryOf = (
+    id: string,
+    options: Parameters<typeof gallerySoundGroupsV7>[1] = {},
+  ) => {
+    const entry = entriesWith(options).find(
+      (candidate) => candidate.rowId === id,
+    );
+    if (entry === undefined) throw new Error(`no card for ${id}`);
+    return entry;
+  };
+
+  it("lists a sound's recordings in order, then the generated sound", () => {
+    expect(gallerySoundChoiceIdsV7()).toEqual(
+      STOCK_SOUNDS_V1.map((sound) => sound.id),
+    );
+    for (const entry of entriesWith()) {
+      const sound = stockSoundV1(entry.rowId);
+      if (sound === null) {
+        // A sound without recordings has nothing to choose.
+        expect(entry.choices, entry.rowId).toEqual([]);
+        continue;
+      }
+      expect(entry.choices.map((choice) => choice.n)).toEqual([
+        ...sound.candidates.map((candidate) => candidate.n),
+        0,
+      ]);
+      expect(entry.choices.map((choice) => choice.label)).toEqual([
+        ...sound.candidates.map((candidate) => String(candidate.n)),
+        "Generated",
+      ]);
+      // Exactly one default and one in use, and without a pick the same.
+      expect(
+        entry.choices.filter((choice) => choice.isDefault).map((c) => c.n),
+        entry.rowId,
+      ).toEqual([sound.default]);
+      expect(
+        entry.choices.filter((choice) => choice.chosen).map((c) => c.n),
+        entry.rowId,
+      ).toEqual([sound.default]);
+      for (const choice of entry.choices) {
+        if (choice.n === 0) {
+          expect(choice.origin).toEqual({
+            kind: "GENERATED",
+            text: "Generated",
+          });
+          expect(choice.note).toBe("");
+          continue;
+        }
+        const clip = stockSoundCandidateV1(entry.rowId, choice.n);
+        if (clip === null) throw new Error("missing candidate");
+        expect(choice.origin).toMatchObject({
+          kind: "RECORDED",
+          library: clip.library,
+          file: clip.originalFile,
+          text: `${clip.library} / ${clip.originalFile}`,
+          cut: `${clip.startSeconds}–${clip.endSeconds} s`,
+        });
+        expect(choice.note).toBe(clip.note);
+      }
+      if (entry.key !== null)
+        expect(gallerySoundChoicesV7(entry.key)).toEqual(entry.choices);
+    }
+  });
+
+  it("names a choice's controls with its whole origin and its note", () => {
+    const hit = entryOf("impact.hit");
+    const first = hit.choices[0];
+    const second = hit.choices[1];
+    const generated = hit.choices.at(-1);
+    const clip = stockSoundCandidateV1("impact.hit", 2);
+    if (
+      first === undefined ||
+      second === undefined ||
+      generated === undefined ||
+      clip === null
+    )
+      throw new Error("missing choice");
+    expect(gallerySoundChoicePlayLabelV7(hit, second)).toBe(
+      `Play recording 2 of Hit: ${clip.library} / ${clip.originalFile}, ${clip.startSeconds}–${clip.endSeconds} s. ${clip.note}`,
+    );
+    expect(gallerySoundChoicePlayLabelV7(hit, first)).toMatch(
+      /^Play recording 1 of Hit \(default\): /,
+    );
+    expect(gallerySoundChoicePlayLabelV7(hit, generated)).toBe(
+      "Play generated: Hit",
+    );
+    expect(gallerySoundChoiceUseLabelV7(hit, second)).toBe(
+      "Use recording 2 for Hit",
+    );
+    expect(gallerySoundChoiceUseLabelV7(hit, generated)).toBe(
+      "Use the generated sound for Hit",
+    );
+    // A sound that is generated by default says so on that choice.
+    const death = entryOf("unit.death");
+    const deathGenerated = death.choices.at(-1);
+    if (deathGenerated === undefined) throw new Error("missing choice");
+    expect(deathGenerated.isDefault).toBe(true);
+    expect(gallerySoundChoicePlayLabelV7(death, deathGenerated)).toBe(
+      "Play generated: Death (default)",
+    );
+  });
+
+  it("shows the picked recording as the card's origin and marks it", () => {
+    const picks = { "impact.hit": 3, "unit.death": 1, "impact.heavy": 0 };
+    const hit = entryOf("impact.hit", { picks });
+    const clip = stockSoundCandidateV1("impact.hit", 3);
+    if (clip === null) throw new Error("missing candidate");
+    expect(hit.origin).toMatchObject({
+      kind: "RECORDED",
+      file: clip.originalFile,
+    });
+    expect(
+      hit.choices.filter((choice) => choice.chosen).map((c) => c.n),
+    ).toEqual([3]);
+    // The default is still marked: the pick is this browser's alone.
+    expect(
+      hit.choices.filter((choice) => choice.isDefault).map((c) => c.n),
+    ).toEqual([1]);
+    expect(gallerySoundOriginV7("impact.hit", { picks })).toEqual(hit.origin);
+
+    // A sound that is generated by default, set to its recording.
+    const death = entryOf("unit.death", { picks });
+    expect(death.origin?.kind).toBe("RECORDED");
+    expect(death.variants.map((variant) => variant.id)).toContain("GENERATED");
+    expect(entryOf("unit.death").origin?.kind).toBe("GENERATED");
+    expect(
+      entryOf("unit.death").variants.map((variant) => variant.id),
+    ).not.toContain("GENERATED");
+
+    // A recorded sound set to its generated version.
+    const heavy = entryOf("impact.heavy", { picks });
+    expect(heavy.origin).toEqual({ kind: "GENERATED", text: "Generated" });
+    expect(heavy.choices.at(-1)?.chosen).toBe(true);
+    expect(gallerySoundCardLabelV7(heavy)).toBe("Play: Heavy hit. Generated");
+
+    // A pick the sound does not have is no pick.
+    expect(entryOf("impact.hit", { picks: { "impact.hit": 99 } })).toEqual(
+      entryOf("impact.hit"),
+    );
+  });
+
+  it("offers no choice with the recordings switched off", () => {
+    expect(gallerySoundChoiceIdsV7({ stockSounds: false })).toEqual([]);
+    for (const entry of entriesWith({
+      stockSounds: false,
+      picks: { "impact.hit": 2 },
+    })) {
+      expect(entry.choices, entry.rowId).toEqual([]);
+      expect(entry.origin?.kind, entry.rowId).toBe("GENERATED");
+    }
   });
 });

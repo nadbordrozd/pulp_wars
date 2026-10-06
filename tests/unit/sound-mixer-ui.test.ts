@@ -35,6 +35,16 @@ class FakeOutput implements WebAudioOutputV1 {
   soundSource(): "GENERATED" {
     return "GENERATED";
   }
+  readonly picked: [SoundKeyV1, number | null][] = [];
+  soundCandidate(): number | null {
+    return null;
+  }
+  setPick(id: SoundKeyV1, pick: number | null): void {
+    this.picked.push([id, pick]);
+  }
+  prepareCandidate(): Promise<boolean> {
+    return Promise.resolve(false);
+  }
   unlock(): void {
     this.unlockCalls += 1;
     this.unlocked = true;

@@ -5,6 +5,7 @@ import {
   type AssetLookV7,
 } from "../assets/asset-inventory-v7";
 import { prefetchSoundFilesV1 } from "../audio/sound-file-store";
+import { loadStockSoundPicksV1 } from "../audio/stock-sound-picks";
 import { stockSoundsEnabledV1 } from "../audio/stock-sounds";
 import {
   lazyRasterLoadsV7,
@@ -91,8 +92,10 @@ export async function bootstrapPreloadedRuleset7App(
   // first screen does not depend on them, and a sound whose clip has not
   // arrived plays its synthesised fallback.
   try {
+    // Of a sound with several recordings, the one this browser picked.
     const sounds = soundAssetUrlsV7(
       stockSoundsEnabledV1(browser?.location.search ?? ""),
+      loadStockSoundPicksV1(settingsStorage),
     );
     if (options.prefetchSounds !== undefined) options.prefetchSounds(sounds);
     else if (browser !== null && typeof browser.fetch === "function")

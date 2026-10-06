@@ -3,15 +3,18 @@ import { join, relative } from "node:path";
 import { downmixV1, readWavFramesV1, readWavInfoV1 } from "./wav-pcm";
 
 /**
- * Measures every WAV file of a sound library folder (bead pulp_wars-2yc.20,
- * docs/ui/SOUND.md "Stock recordings"), for choosing clips without
- * listening: format, length, the separate events in the file (found from
- * the loudness envelope) and, for each event, its length, level, attack,
- * decay and where its energy lies in the spectrum.
+ * Measures every WAV file of a sound library folder (beads pulp_wars-2yc.20
+ * and pulp_wars-2yc.24, docs/ui/SOUND.md "Stock recordings"), for choosing
+ * clips without listening: format, length, the separate events in the file
+ * (found from the loudness envelope) and, for each event, its length,
+ * level, attack, decay, where its energy lies in the spectrum and how its
+ * pitch moves.
  *
  *   npx tsx scripts/audio/measure-stock-sounds.ts <library-folder> <out-folder>
  *
- * It only reads the library folder. It writes `measurements.json` and
+ * The folder is one unpacked part of the bundle, or the folder the parts
+ * were unpacked in (every WAV file below it is measured). It only reads
+ * the library folder. It writes `measurements.json` and
  * `measurements.txt` to the out folder, which must be outside the
  * repository (the measurements name library files).
  */
@@ -35,6 +38,11 @@ export interface StockEventMeasurementV1 {
   readonly flatness: number;
   /** Shares of the energy below 150 Hz, to 1 kHz, to 4 kHz, and above. */
   readonly bands: readonly [number, number, number, number];
+  /**
+   * The pitch in Hz at six points of the event, 0 where there is no clear
+   * pitch: a rising jingle reads low to high, a falling one high to low.
+   */
+  readonly pitch: readonly number[];
   /** The envelope of the event as 24 levels, 0 (silent) to 8 (its peak). */
   readonly shape: string;
 }
@@ -248,6 +256,87 @@ export function spectrumSummaryV1(
   };
 }
 
+export interface PitchPointV1 {
+  /** The pitch in Hz; 0 when none was found. */
+  readonly hz: number;
+  /** How periodic the stretch is: 1 is a pure tone, below 0.5 is noise. */
+  readonly clarity: number;
+}
+
+/**
+ * The pitch of a stretch of samples, from its autocorrelation (70 Hz to
+ * 3 kHz). The stretch is averaged down to about 12 kHz first; the lags
+ * before the correlation first falls are skipped, since a low sound
+ * correlates with itself there whatever its pitch.
+ */
+export function pitchV1(
+  samples: Float32Array,
+  sampleRate: number,
+): PitchPointV1 {
+  const step = Math.max(1, Math.floor(sampleRate / 12000));
+  const count = Math.floor(samples.length / step);
+  if (count < 32) return { hz: 0, clarity: 0 };
+  const values = new Float64Array(count);
+  let mean = 0;
+  for (let i = 0; i < count; i += 1) {
+    let sum = 0;
+    for (let j = 0; j < step; j += 1) sum += samples[i * step + j] ?? 0;
+    values[i] = sum / step;
+    mean += (values[i] ?? 0) / count;
+  }
+  for (let i = 0; i < count; i += 1) values[i] = (values[i] ?? 0) - mean;
+  const rate = sampleRate / step;
+  const minLag = Math.max(2, Math.floor(rate / 3000));
+  const maxLag = Math.min(Math.floor(count / 2), Math.floor(rate / 70));
+  let best = 0;
+  let bestLag = 0;
+  let dipped = false;
+  for (let lag = minLag; lag <= maxLag; lag += 1) {
+    let product = 0;
+    let left = 0;
+    let right = 0;
+    for (let i = 0; i + lag < count; i += 1) {
+      const a = values[i] ?? 0;
+      const b = values[i + lag] ?? 0;
+      product += a * b;
+      left += a * a;
+      right += b * b;
+    }
+    const correlation = product / Math.sqrt(left * right + 1e-30);
+    if (!dipped) {
+      if (correlation < 0.2) dipped = true;
+      continue;
+    }
+    if (correlation > best + 0.02) {
+      best = correlation;
+      bestLag = lag;
+    }
+  }
+  return {
+    hz: bestLag > 0 ? Math.round(rate / bestLag) : 0,
+    clarity: round(best, 2),
+  };
+}
+
+/** The pitch at `points` equal steps of the samples (at most 0.2 s each). */
+export function pitchContourV1(
+  samples: Float32Array,
+  sampleRate: number,
+  points: number,
+): PitchPointV1[] {
+  const contour: PitchPointV1[] = [];
+  const span = Math.floor(samples.length / points);
+  const window = Math.min(span, Math.round(0.2 * sampleRate));
+  for (let point = 0; point < points; point += 1)
+    contour.push(
+      pitchV1(
+        samples.subarray(point * span, point * span + window),
+        sampleRate,
+      ),
+    );
+  return contour;
+}
+
 export function measureMonoV1(
   mono: Float32Array,
   sampleRate: number,
@@ -288,6 +377,11 @@ export function measureMonoV1(
       attackMs: Math.round((top - from) * hop * 1000),
       decay20Ms: Math.round((fallen - top) * hop * 1000),
       ...spectrumSummaryV1(mono.subarray(firstSample, lastSample), sampleRate),
+      pitch: pitchContourV1(
+        mono.subarray(firstSample, lastSample),
+        sampleRate,
+        6,
+      ).map((point) => (point.clarity < 0.5 ? 0 : point.hz)),
       shape: sparkline(envelope, from, to, 24),
     };
   });
@@ -372,7 +466,7 @@ function main(): void {
       );
       for (const event of row.events.slice(0, 40))
         text.push(
-          `  #${event.index} ${event.startSeconds}-${event.endSeconds}s ${event.durationMs}ms peak ${event.peakDb} rms ${event.rmsDb} att ${event.attackMs} dec20 ${event.decay20Ms} cen ${event.centroidHz} dom ${event.dominantHz} flat ${event.flatness} bands ${event.bands.join("/")} ${event.shape}`,
+          `  #${event.index} ${event.startSeconds}-${event.endSeconds}s ${event.durationMs}ms peak ${event.peakDb} rms ${event.rmsDb} att ${event.attackMs} dec20 ${event.decay20Ms} cen ${event.centroidHz} dom ${event.dominantHz} flat ${event.flatness} bands ${event.bands.join("/")} pitch ${event.pitch.join(",")} ${event.shape}`,
         );
       if (row.events.length > 40)
         text.push(`  ... ${row.events.length - 40} more events`);

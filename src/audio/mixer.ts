@@ -29,6 +29,13 @@ export interface SoundStartV1 {
    * recording (the Gallery's "generated" control).
    */
   readonly generated?: true;
+  /**
+   * Present to play one particular recording of the sound (a candidate's
+   * number in the provenance manifest), whatever the sound plays by
+   * default: the Gallery's numbered controls. It is not started when that
+   * recording is not loaded.
+   */
+  readonly candidate?: number;
 }
 
 /** A started sound: stops it (also before a delayed start). */
@@ -39,9 +46,10 @@ export interface SoundOutputV1 {
   start(request: SoundStartV1): { readonly stop: SoundStopV1 } | null;
   /**
    * Length of a sound in ms at rate 1 (for voice counting): of what a play
-   * would use now, or of the synthesised sound when `generated` is true.
+   * would use now, of the synthesised sound when `generated` is true, or
+   * of one recording when `candidate` names it.
    */
-  durationMs(id: SoundKeyV1, generated?: boolean): number;
+  durationMs(id: SoundKeyV1, generated?: boolean, candidate?: number): number;
 }
 
 export type SoundPlayOutcomeV1 =
@@ -78,6 +86,11 @@ export interface SoundPlayOptionsV1 {
    * game never passes it; the Gallery does, so both can be heard.
    */
   readonly generated?: boolean;
+  /**
+   * Plays one particular recording of the sound, by its candidate number.
+   * The game never passes it; the Gallery does, to compare recordings.
+   */
+  readonly candidate?: number;
 }
 
 export interface SoundMixerOptionsV1 {
@@ -188,6 +201,9 @@ export class SoundMixerV1 {
       delaySeconds: delayMs / 1000,
       ...(entry.loop ? { loop: true as const } : {}),
       ...(options.generated === true ? { generated: true as const } : {}),
+      ...(options.candidate === undefined
+        ? {}
+        : { candidate: options.candidate }),
     });
     if (started === null) return "UNAVAILABLE";
     for (const voice of replaced) voice.stop();
@@ -202,7 +218,12 @@ export class SoundMixerV1 {
       endsAt: entry.loop
         ? Infinity
         : startsAt +
-          this.#output.durationMs(id, options.generated === true) / rate,
+          this.#output.durationMs(
+            id,
+            options.generated === true,
+            options.candidate,
+          ) /
+            rate,
       stop: started.stop,
     });
     return "PLAYED";

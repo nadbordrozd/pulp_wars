@@ -1,29 +1,44 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { extname, join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import {
+  STOCK_SOUND_CHOICES_DOC_PATH,
+  renderStockSoundChoicesV1,
+  stockSoundChoicesMarkdownV1,
+  stockSoundStatusRowsV1,
+  stockSoundStatusTextV1,
+} from "../../scripts/audio/stock-sound-choices";
 import { soundAssetUrlsV7 } from "../../src/assets/asset-inventory-v7";
 import {
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
   STOCK_SOUNDS_ENABLED_V1,
+  STOCK_SOUNDS_V1,
+  STOCK_SOUND_ALL_CLIPS_V1,
+  STOCK_SOUND_BUNDLE_V1,
   STOCK_SOUND_CLIPS_V1,
+  STOCK_SOUND_GENERATED_V1,
   STOCK_SOUND_LICENCE_V1,
   STOCK_SOUND_OUTPUT_V1,
   STOCK_SOUND_PUBLIC_PATH_V1,
   measureSynthSamplesV1,
   renderSynthRecipeV1,
   soundRecipeV1,
+  stockSoundCandidateV1,
   stockSoundClipV1,
   stockSoundUrlV1,
+  stockSoundV1,
   stockSoundsEnabledV1,
   type SoundIdV1,
 } from "../../src/audio/index";
 
 /**
- * The recorded clips and their provenance manifest (bead pulp_wars-2yc.20,
- * docs/ui/SOUND.md "Stock recordings"): every recorded sound has a clip, a
- * provenance row and still its synthesised fallback; the repository holds
- * only short clips under the game's own names, never a library file.
+ * The recorded clips and their provenance manifest (beads pulp_wars-2yc.20
+ * and pulp_wars-2yc.24, docs/ui/SOUND.md "Stock recordings"): every sound
+ * with recordings has a clip for each candidate, exactly one default and
+ * still its synthesised fallback; the repository holds only short clips
+ * under the game's own names, never a library file; and the document of
+ * the choices is what the manifest says.
  */
 
 const ROOT = resolve(import.meta.dirname, "../..");
@@ -32,9 +47,16 @@ const FOLDER = join(ROOT, STOCK_SOUND_OUTPUT_V1.folder);
 const MAX_AUDIO_FILE_BYTES = 200_000;
 /** What a clip is expected to stay under. */
 const MAX_CLIP_BYTES = 60_000;
+/**
+ * Every clip together, the alternatives included (78 clips are 0.9 MB).
+ * Bead pulp_wars-2yc.24 kept the 1.5 MB of bead pulp_wars-2yc.20: raise it
+ * on purpose, and not past about 3 MB.
+ */
 const MAX_TOTAL_BYTES = 1_500_000;
 /** The longest clip the game needs (a fanfare). */
 const MAX_CLIP_SECONDS = 3.2;
+/** A sound keeps at most this many recordings to choose from. */
+const MAX_CANDIDATES = 4;
 const AUDIO_EXTENSIONS = new Set([
   ".wav",
   ".aif",
@@ -61,69 +83,129 @@ function audioFilesUnder(folder: string): string[] {
 }
 
 describe("recorded sound clips", () => {
-  it("gives every provenance row a game sound, a clip and a synth fallback", () => {
-    expect(STOCK_SOUND_CLIPS_V1.length).toBeGreaterThan(0);
-    const ids = STOCK_SOUND_CLIPS_V1.map((clip) => clip.id);
-    expect(new Set(ids).size, "one clip per sound").toBe(ids.length);
-    for (const clip of STOCK_SOUND_CLIPS_V1) {
-      expect(SOUND_IDS_V1 as readonly string[], clip.id).toContain(clip.id);
-      const id = clip.id as SoundIdV1;
-      const source = SOUND_MANIFEST_V1[id].source;
-      expect(source.kind, clip.id).toBe("FILE");
-      if (source.kind !== "FILE") continue;
-      expect(source.url, clip.id).toBe(stockSoundUrlV1(clip));
-      expect(source.url.endsWith(STOCK_SOUND_PUBLIC_PATH_V1 + clip.file)).toBe(
-        true,
+  it("gives every sound with recordings one default and a synth fallback", () => {
+    expect(STOCK_SOUNDS_V1.length).toBeGreaterThan(0);
+    const ids = STOCK_SOUNDS_V1.map((sound) => sound.id);
+    expect(new Set(ids).size, "one entry per sound").toBe(ids.length);
+    for (const sound of STOCK_SOUNDS_V1) {
+      expect(SOUND_IDS_V1 as readonly string[], sound.id).toContain(sound.id);
+      const id = sound.id as SoundIdV1;
+      expect(sound.candidates.length, sound.id).toBeGreaterThan(0);
+      expect(sound.candidates.length, sound.id).toBeLessThanOrEqual(
+        MAX_CANDIDATES,
       );
-      expect(source.gain, clip.id).toBe(clip.gain);
-      expect(clip.gain, clip.id).toBeGreaterThan(0);
-      expect(clip.gain, clip.id).toBeLessThanOrEqual(1);
+      const numbers = sound.candidates.map((candidate) => candidate.n);
+      expect(new Set(numbers).size, `${sound.id}: numbers`).toBe(
+        numbers.length,
+      );
+      for (const n of numbers) {
+        expect(Number.isInteger(n), `${sound.id} #${n}`).toBe(true);
+        expect(n, `${sound.id} #${n}`).toBeGreaterThan(0);
+      }
+      // Exactly one default: one of the candidates, or the generated sound.
+      expect([0, ...numbers], `${sound.id}: default`).toContain(sound.default);
+      expect(
+        sound.candidates.filter((candidate) => candidate.n === sound.default),
+        sound.id,
+      ).toHaveLength(sound.default === 0 ? 0 : 1);
+      expect(["high", "medium", "low"], sound.id).toContain(sound.confidence);
+      expect(sound.why.length, sound.id).toBeGreaterThan(10);
+      if (sound.listenFirst !== undefined) {
+        expect(sound.listenFirst.length, sound.id).toBeGreaterThan(10);
+        // "Listen first" is about what already plays in the game.
+        expect(sound.default, sound.id).toBeGreaterThan(0);
+      }
       // The synthesised sound is still there, and still a sound.
       const recipe = soundRecipeV1(id);
-      expect(recipe, clip.id).not.toBeNull();
-      expect(source.fallback, clip.id).toBe(recipe);
+      expect(recipe, sound.id).not.toBeNull();
       if (recipe === null) continue;
       const measured = measureSynthSamplesV1(renderSynthRecipeV1(recipe));
-      expect(measured.rms, clip.id).toBeGreaterThan(0.01);
-      expect(existsSync(join(FOLDER, clip.file)), clip.file).toBe(true);
+      expect(measured.rms, sound.id).toBeGreaterThan(0.01);
+      const source = SOUND_MANIFEST_V1[id].source;
+      const clip = stockSoundClipV1(id);
+      if (sound.default === 0) {
+        // Generated by default: the recordings are only there to compare.
+        expect(clip, sound.id).toBeNull();
+        expect(source.kind, sound.id).toBe("SYNTH");
+        continue;
+      }
+      expect(clip?.n, sound.id).toBe(sound.default);
+      expect(source.kind, sound.id).toBe("FILE");
+      if (source.kind !== "FILE" || clip === null) continue;
+      expect(source.url, sound.id).toBe(stockSoundUrlV1(clip));
+      expect(source.gain, sound.id).toBe(clip.gain);
+      expect(source.fallback, sound.id).toBe(recipe);
     }
   });
 
-  it("leaves every other sound synthesised", () => {
+  it("accounts for every game sound: recordings, or the reason for none", () => {
+    const generated = STOCK_SOUND_GENERATED_V1.map((entry) => entry.id);
+    expect(new Set(generated).size).toBe(generated.length);
     for (const id of SOUND_IDS_V1) {
-      const recorded = stockSoundClipV1(id) !== null;
+      const recorded = stockSoundV1(id) !== null;
+      expect(generated.includes(id), id).toBe(!recorded);
       expect(SOUND_MANIFEST_V1[id].source.kind, id).toBe(
-        recorded ? "FILE" : "SYNTH",
+        stockSoundClipV1(id) === null ? "SYNTH" : "FILE",
       );
     }
+    for (const entry of STOCK_SOUND_GENERATED_V1) {
+      expect(SOUND_IDS_V1 as readonly string[], entry.id).toContain(entry.id);
+      expect(entry.why.length, entry.id).toBeGreaterThan(10);
+      expect(entry.wanted.length, entry.id).toBeGreaterThan(10);
+    }
+    expect(STOCK_SOUNDS_V1.length + STOCK_SOUND_GENERATED_V1.length).toBe(
+      SOUND_IDS_V1.length,
+    );
   });
 
-  it("records where each clip was cut from and how", () => {
+  it("records where each candidate was cut from and how", () => {
     expect(STOCK_SOUND_LICENCE_V1).toMatch(/Sonniss/);
-    for (const clip of STOCK_SOUND_CLIPS_V1) {
-      expect(clip.library, clip.id).toMatch(/^\S.* - .*\S$/);
-      expect(clip.originalFile, clip.id).toMatch(/\.wav$/i);
-      expect(clip.startSeconds, clip.id).toBeGreaterThanOrEqual(0);
-      expect(clip.endSeconds, clip.id).toBeGreaterThan(clip.startSeconds);
+    expect(STOCK_SOUND_BUNDLE_V1).toMatch(/Sonniss/);
+    for (const clip of STOCK_SOUND_ALL_CLIPS_V1) {
+      const name = `${clip.id} #${clip.n}`;
+      expect(stockSoundCandidateV1(clip.id, clip.n), name).toEqual(clip);
+      expect(clip.part, name).toBeGreaterThanOrEqual(1);
+      expect(clip.part, name).toBeLessThanOrEqual(9);
+      expect(clip.library, name).toMatch(/^\S.* - .*\S$/);
+      expect(clip.originalFile, name).toMatch(/\.wav$/i);
+      expect(clip.startSeconds, name).toBeGreaterThanOrEqual(0);
+      expect(clip.endSeconds, name).toBeGreaterThan(clip.startSeconds);
       expect(
         clip.endSeconds - clip.startSeconds,
-        `${clip.id} is one short event`,
+        `${name} is one short event`,
       ).toBeLessThanOrEqual(MAX_CLIP_SECONDS);
-      expect(clip.fadeInMs, clip.id).toBeGreaterThan(0);
-      expect(clip.fadeOutMs, clip.id).toBeGreaterThan(0);
-      expect(clip.highpassHz, clip.id).toBeGreaterThanOrEqual(0);
-      expect(clip.take.length, clip.id).toBeGreaterThan(10);
-      expect(clip.why.length, clip.id).toBeGreaterThan(10);
+      expect(clip.fadeInMs, name).toBeGreaterThan(0);
+      expect(clip.fadeOutMs, name).toBeGreaterThan(0);
+      expect(clip.highpassHz, name).toBeGreaterThanOrEqual(0);
+      expect(clip.gain, name).toBeGreaterThan(0);
+      expect(clip.gain, name).toBeLessThanOrEqual(1);
+      expect(clip.take.length, name).toBeGreaterThan(10);
+      // Its character in a line, for the person who chooses.
+      expect(clip.note.length, name).toBeGreaterThan(10);
+      expect(clip.note, name).not.toMatch(/\n/);
+    }
+    // Two candidates of a sound are never the same stretch of the same file.
+    for (const sound of STOCK_SOUNDS_V1) {
+      const cuts = sound.candidates.map(
+        (candidate) =>
+          `${candidate.library}/${candidate.originalFile}@${candidate.startSeconds}`,
+      );
+      expect(new Set(cuts).size, sound.id).toBe(cuts.length);
     }
   });
 
   it("names the clips after the game's sounds, never after a library file", () => {
-    for (const clip of STOCK_SOUND_CLIPS_V1) {
-      expect(clip.file, clip.id).toBe(`${clip.id.replaceAll(".", "-")}.m4a`);
+    for (const clip of STOCK_SOUND_ALL_CLIPS_V1) {
+      // The sound's id with dashes, and the candidate's number.
+      expect(clip.file, `${clip.id} #${clip.n}`).toBe(
+        `${clip.id.replaceAll(".", "-")}-${clip.n}.m4a`,
+      );
       expect(clip.file.toLowerCase()).not.toBe(clip.originalFile.toLowerCase());
     }
+    const files = STOCK_SOUND_ALL_CLIPS_V1.map((clip) => clip.file);
+    expect(new Set(files).size, "one file per candidate").toBe(files.length);
     const originals = new Set(
-      STOCK_SOUND_CLIPS_V1.map((clip) => clip.originalFile.toLowerCase()),
+      STOCK_SOUND_ALL_CLIPS_V1.map((clip) => clip.originalFile.toLowerCase()),
     );
     for (const path of audioFilesUnder(join(ROOT, "public")))
       expect(
@@ -132,8 +214,8 @@ describe("recorded sound clips", () => {
       ).toBe(false);
   });
 
-  it("holds only the clips of the manifest, each small and an MP4 file", () => {
-    const expected = STOCK_SOUND_CLIPS_V1.map((clip) => clip.file).sort();
+  it("holds a clip for every candidate and nothing else, each small and an MP4 file", () => {
+    const expected = STOCK_SOUND_ALL_CLIPS_V1.map((clip) => clip.file).sort();
     expect(readdirSync(FOLDER).sort()).toEqual(expected);
     let total = 0;
     for (const file of expected) {
@@ -153,11 +235,15 @@ describe("recorded sound clips", () => {
       ...audioFilesUnder(join(ROOT, "public")),
       ...audioFilesUnder(join(ROOT, "src")),
     ];
-    // Every one of them is a file the audio manifest plays.
+    // Every one of them is a clip of the provenance manifest, or another
+    // file the audio manifest plays (a theme).
     expect(files.map((path) => path.split("/").at(-1)).sort()).toEqual(
-      soundAssetUrlsV7()
-        .map((url) => url.split("/").at(-1))
-        .sort(),
+      [
+        ...new Set([
+          ...STOCK_SOUND_ALL_CLIPS_V1.map((clip) => clip.file),
+          ...soundAssetUrlsV7().map((url) => url.split("/").at(-1) ?? url),
+        ]),
+      ].sort(),
     );
     for (const path of files) {
       const bytes = statSync(path).size;
@@ -187,11 +273,107 @@ describe("recorded sound clips", () => {
     expect(offenders).toEqual([]);
   });
 
-  it("lists the clips for the game's start, and none with the switch off", () => {
-    expect(soundAssetUrlsV7()).toEqual(
+  it("lists only the default clips for the game's start, and none with the switch off", () => {
+    const urls = soundAssetUrlsV7();
+    expect(urls).toEqual(
       STOCK_SOUND_CLIPS_V1.map((clip) => stockSoundUrlV1(clip)),
     );
+    expect(urls.length).toBe(
+      STOCK_SOUNDS_V1.filter((sound) => sound.default !== 0).length,
+    );
+    // One clip a sound: no alternative is fetched at the start.
+    for (const clip of STOCK_SOUND_ALL_CLIPS_V1) {
+      const isDefault = stockSoundV1(clip.id)?.default === clip.n;
+      expect(urls.includes(stockSoundUrlV1(clip)), clip.file).toBe(isDefault);
+      expect(
+        stockSoundUrlV1(clip).endsWith(STOCK_SOUND_PUBLIC_PATH_V1 + clip.file),
+      ).toBe(true);
+    }
     expect(soundAssetUrlsV7(false)).toEqual([]);
+  });
+
+  it("lists the picked clip of a sound instead of its default", () => {
+    const hit = "impact.hit";
+    const death = "unit.death";
+    const picked = soundAssetUrlsV7(true, { [hit]: 2, [death]: 1 });
+    const url = (id: string, n: number): string => {
+      const clip = stockSoundCandidateV1(id, n);
+      if (clip === null) throw new Error(`${id} #${n}`);
+      return stockSoundUrlV1(clip);
+    };
+    expect(picked).toContain(url(hit, 2));
+    expect(picked).not.toContain(url(hit, 1));
+    expect(picked).toContain(url(death, 1));
+    expect(picked.length).toBe(soundAssetUrlsV7().length + 1);
+    // The generated sound picked: no clip for that sound.
+    expect(soundAssetUrlsV7(true, { [hit]: 0 })).not.toContain(url(hit, 1));
+    expect(soundAssetUrlsV7(true, { [hit]: 0 }).length).toBe(
+      soundAssetUrlsV7().length - 1,
+    );
+    // A pick the sound does not have is no pick.
+    expect(soundAssetUrlsV7(true, { [hit]: 99 })).toEqual(soundAssetUrlsV7());
+    expect(soundAssetUrlsV7(false, { [hit]: 2 })).toEqual([]);
+  });
+});
+
+describe("the document of the choices", () => {
+  it("is what the manifest says (npm run audio:stock-sound-choices -- render)", async () => {
+    expect(readFileSync(STOCK_SOUND_CHOICES_DOC_PATH, "utf8")).toBe(
+      await renderStockSoundChoicesV1(),
+    );
+  });
+
+  it("gives every game sound a status", () => {
+    const rows = stockSoundStatusRowsV1();
+    expect(rows.map((row) => row.id)).toEqual([...SOUND_IDS_V1]);
+    const text = stockSoundChoicesMarkdownV1();
+    for (const row of rows) {
+      const sound = stockSoundV1(row.id);
+      expect(row.status, row.id).toBe(
+        sound === null
+          ? "GENERATED"
+          : sound.default === 0
+            ? "GENERATED_OPTIONS"
+            : sound.candidates.length === 1
+              ? "RECORDED_SINGLE"
+              : "RECORDED_OPTIONS",
+      );
+      // Its row in the table of every sound.
+      expect(text, row.id).toContain(
+        `| \`${row.id}\` | ${row.label} | ${stockSoundStatusTextV1(row)} |`,
+      );
+    }
+    expect(
+      stockSoundStatusTextV1({
+        id: "x",
+        label: "X",
+        status: "RECORDED_OPTIONS",
+        candidates: 3,
+        default: 1,
+      }),
+    ).toBe("Recorded — 3 options awaiting your pick");
+  });
+
+  it("names every candidate's origin and note, and what to listen to first", () => {
+    const text = stockSoundChoicesMarkdownV1();
+    for (const clip of STOCK_SOUND_ALL_CLIPS_V1) {
+      expect(text, `${clip.id} #${clip.n}`).toContain(
+        `${clip.library} / \`${clip.originalFile}\``,
+      );
+      expect(text, `${clip.id} #${clip.n}`).toContain(
+        clip.note.replaceAll("|", "\\|"),
+      );
+    }
+    const first = text.slice(
+      text.indexOf("## Listen to these first"),
+      text.indexOf("## Every sound"),
+    );
+    for (const sound of STOCK_SOUNDS_V1)
+      expect(first.includes(`| \`${sound.id}\` |`), sound.id).toBe(
+        sound.listenFirst !== undefined,
+      );
+    for (const entry of STOCK_SOUND_GENERATED_V1)
+      expect(text, entry.id).toContain(entry.wanted);
   });
 });
 

@@ -2016,15 +2016,22 @@ and replays do not import the module or see its preference.
 - Both mappings read only the viewer's views and projected events, so sound
   reveals nothing the board does not show.
 - Some sounds play a recorded clip instead of the synthesiser
-  (`pulp_wars-2yc.20`, [Stock recordings](../ui/SOUND.md#stock-recordings)).
-  The clips are files under `public/assets/audio/`, listed in
-  `src/audio/stock-sounds.json`. `soundAssetUrlsV7` in
-  `src/assets/asset-inventory-v7.ts` lists them for the start of the game,
-  which fetches them beside the art without waiting for them
-  (`src/app/v7-preload-boot.ts`); the audio device decodes them after the
-  first gesture. A clip that is missing or late is replaced by its
-  synthesised sound. `?stock-sounds=0` plays every sound from the
+  (`pulp_wars-2yc.20`, `pulp_wars-2yc.24`,
+  [Stock recordings](../ui/SOUND.md#stock-recordings)). The clips are files
+  under `public/assets/audio/`, listed in `src/audio/stock-sounds.json`: a
+  sound may have several candidates, one of them (or the synthesised sound)
+  its default. `soundAssetUrlsV7` in `src/assets/asset-inventory-v7.ts`
+  lists one clip a sound for the start of the game (the default, or the one
+  this browser picked), which fetches them beside the art without waiting
+  for them (`src/app/v7-preload-boot.ts`); the audio device decodes them
+  after the first gesture. Another candidate is fetched when the Gallery
+  plays it or a pick selects it. A clip that is missing or late is replaced
+  by its synthesised sound. `?stock-sounds=0` plays every sound from the
   synthesiser.
+- A browser's picks among the recordings are a presentation preference in
+  local storage (`pulpWars.stockSoundPicks.v1`,
+  `src/audio/stock-sound-picks.ts`), like the sound preference: outside the
+  settings envelope, never in a save, a replay or the engine.
 
 ## 9. Application and screen state
 

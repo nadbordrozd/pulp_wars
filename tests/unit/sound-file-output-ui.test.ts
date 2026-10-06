@@ -140,10 +140,10 @@ describe("a sound with a recorded clip", () => {
     expect(device.sources.at(-1)?.seconds).toBe(CLIP_SECONDS);
     expect(output.durationMs(HIT)).toBeCloseTo(CLIP_SECONDS * 1000, 6);
     // A sound without a clip is untouched.
-    expect(output.soundSource("attack.melee")).toBe("GENERATED");
-    start(output, "attack.melee");
+    expect(output.soundSource("attack.ranged")).toBe("GENERATED");
+    start(output, "attack.ranged");
     expect(device.sources.at(-1)?.seconds).toBeCloseTo(
-      synthSeconds("attack.melee"),
+      synthSeconds("attack.ranged"),
       6,
     );
   });
@@ -271,7 +271,7 @@ describe("the game's audio over a recorded clip", () => {
     const { audio } = await audioWithClips();
     expect(audio.stockSounds).toBe(true);
     expect(audio.soundSource(HIT)).toBe("RECORDED");
-    expect(audio.soundSource("attack.melee")).toBe("GENERATED");
+    expect(audio.soundSource("attack.ranged")).toBe("GENERATED");
     const silent = new GameAudioV1({ storage: null, output: null });
     expect(silent.stockSounds).toBe(true);
     expect(silent.soundSource(HIT)).toBeNull();

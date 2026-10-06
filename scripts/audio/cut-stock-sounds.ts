@@ -4,24 +4,30 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  readdirSync,
   rmSync,
   statSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { delimiter, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { soundRecipeV1, type SoundIdV1 } from "../../src/audio/sound-manifest";
 import {
-  STOCK_SOUND_CLIPS_V1,
+  STOCK_SOUND_ALL_CLIPS_V1,
   STOCK_SOUND_OUTPUT_V1,
+  stockSoundV1,
   type StockSoundClipV1,
 } from "../../src/audio/stock-sounds";
 import {
   measureSynthSamplesV1,
   renderSynthRecipeV1,
 } from "../../src/audio/synth";
-import { envelopeV1, spectrumSummaryV1 } from "./measure-stock-sounds";
+import {
+  envelopeV1,
+  pitchContourV1,
+  spectrumSummaryV1,
+} from "./measure-stock-sounds";
 import {
   downmixV1,
   encodeWav16V1,
@@ -31,29 +37,68 @@ import {
 } from "./wav-pcm";
 
 /**
- * Cuts the game's recorded sound clips out of a sound library (bead
- * pulp_wars-2yc.20, docs/ui/SOUND.md "Stock recordings").
+ * Cuts the game's recorded sound clips out of a sound library (beads
+ * pulp_wars-2yc.20 and pulp_wars-2yc.24, docs/ui/SOUND.md "Stock
+ * recordings").
  *
- *   npx tsx scripts/audio/cut-stock-sounds.ts <library-folder> [--evidence <folder>]
- *   STOCK_SOUNDS_BUNDLE=<library-folder> npx tsx scripts/audio/cut-stock-sounds.ts
+ *   npx tsx scripts/audio/cut-stock-sounds.ts <folder>... [--only <sound id>] [--prune] [--evidence <folder>]
+ *   STOCK_SOUNDS_BUNDLE=<folder>[:<folder>...] npx tsx scripts/audio/cut-stock-sounds.ts
+ *
+ * A folder is one unpacked part of the bundle (it holds the "Vendor -
+ * Library" folders) or the folder the parts were unpacked in (it holds
+ * `...GameAudioBundle1of9` and the others); several may be given.
  *
  * The clips are listed in `src/audio/stock-sounds.json`: for each game
- * sound, the library file, the stretch to cut, the fades and the filter.
- * For each one this reads only that stretch of the library file, mixes it
- * to mono, filters, resamples, fades, scales its peak to a common level
- * and writes it under `public/assets/audio/` with the game's own name.
+ * sound its candidates, and for each candidate the library file, the
+ * stretch to cut, the fades and the filter. For every candidate this reads
+ * only that stretch of the library file, mixes it to mono, filters,
+ * resamples, fades, scales its peak to a common level and writes it under
+ * `public/assets/audio/` with the game's own name. `--only` cuts the
+ * candidates of one sound; `--prune` removes clips the manifest no longer
+ * lists.
  *
- * The library folder is only read. It is not part of the repository and
- * the game does not need it: the clips written here are checked in. The
- * script needs macOS (`afconvert` encodes the AAC).
+ * The library folders are only read. They are not part of the repository
+ * and the game does not need them: the clips written here are checked in.
+ * The script needs macOS (`afconvert` encodes the AAC).
  */
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const AFCONVERT = "/usr/bin/afconvert";
+/** A folder of one part of the bundle, inside the folder they share. */
+const PART_FOLDER = /GameAudioBundle\d+of\d+$/;
 
 function fail(message: string): never {
   console.error(message);
   process.exit(1);
+}
+
+/**
+ * The folders that hold library folders: each given folder, and each part
+ * of the bundle found directly inside one.
+ */
+export function libraryRootsV1(folders: readonly string[]): string[] {
+  const roots: string[] = [];
+  for (const folder of folders) {
+    roots.push(folder);
+    for (const entry of readdirSync(folder).sort()) {
+      const path = join(folder, entry);
+      if (PART_FOLDER.test(entry) && statSync(path).isDirectory())
+        roots.push(path);
+    }
+  }
+  return roots;
+}
+
+/** Where a clip's library file is, or null when no root has it. */
+export function libraryFileV1(
+  roots: readonly string[],
+  clip: Pick<StockSoundClipV1, "library" | "originalFile">,
+): string | null {
+  for (const root of roots) {
+    const path = join(root, clip.library, clip.originalFile);
+    if (existsSync(path)) return path;
+  }
+  return null;
 }
 
 /** A two-pole Butterworth high-pass (removes rumble below `hz`). */
@@ -102,14 +147,18 @@ function fade(
 
 /** Processes one clip to mono samples at the output rate. */
 export function cutClipV1(
-  library: string,
+  roots: readonly string[],
   clip: StockSoundClipV1,
 ): Float32Array {
-  const path = join(library, clip.library, clip.originalFile);
-  if (!existsSync(path)) fail(`Library file not found: ${path}`);
+  const path = libraryFileV1(roots, clip);
+  if (path === null)
+    fail(
+      `Library file not found for ${clip.file}: ${clip.library}/${clip.originalFile}\n` +
+        `(part ${clip.part} of the bundle; looked in ${roots.join(", ")})`,
+    );
   const info = readWavInfoV1(path);
   if (clip.endSeconds > info.durationSeconds + 0.001)
-    fail(`${clip.id}: the cut ends after the end of ${clip.originalFile}`);
+    fail(`${clip.file}: the cut ends after the end of ${clip.originalFile}`);
   const first = Math.round(clip.startSeconds * info.sampleRate);
   const count = Math.round(
     (clip.endSeconds - clip.startSeconds) * info.sampleRate,
@@ -133,7 +182,7 @@ export function cutClipV1(
   );
   let peak = 0;
   for (const value of samples) peak = Math.max(peak, Math.abs(value));
-  if (peak <= 0) fail(`${clip.id}: the cut is silent`);
+  if (peak <= 0) fail(`${clip.file}: the cut is silent`);
   const scale = STOCK_SOUND_OUTPUT_V1.peak / peak;
   for (let i = 0; i < samples.length; i += 1)
     samples[i] = (samples[i] ?? 0) * scale;
@@ -179,25 +228,57 @@ function sparkline(samples: Float32Array, sampleRate: number): string {
   return text;
 }
 
-function main(): void {
-  const args = process.argv.slice(2);
-  const evidenceAt = args.indexOf("--evidence");
-  const evidence = evidenceAt >= 0 ? args[evidenceAt + 1] : undefined;
-  const library =
-    args.find(
-      (arg, index) =>
-        !arg.startsWith("--") && (evidenceAt < 0 || index !== evidenceAt + 1),
-    ) ?? process.env.STOCK_SOUNDS_BUNDLE;
-  if (library === undefined || library === "")
-    fail(
-      "Usage: tsx scripts/audio/cut-stock-sounds.ts <library-folder> [--evidence <folder>]\n" +
-        "(or set STOCK_SOUNDS_BUNDLE). The library folder is the unpacked sound bundle;\n" +
-        "it is not in the repository. The game does not need it: the cut clips are checked in.",
+interface CutArgumentsV1 {
+  readonly folders: readonly string[];
+  readonly evidence: string | undefined;
+  readonly only: string | undefined;
+  readonly prune: boolean;
+}
+
+function readArguments(args: readonly string[]): CutArgumentsV1 {
+  const folders: string[] = [];
+  let evidence: string | undefined;
+  let only: string | undefined;
+  let prune = false;
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index] ?? "";
+    if (arg === "--evidence") evidence = args[(index += 1)];
+    else if (arg === "--only") only = args[(index += 1)];
+    else if (arg === "--prune") prune = true;
+    else if (arg.startsWith("--")) fail(`Unknown option: ${arg}`);
+    else folders.push(arg);
+  }
+  if (folders.length === 0)
+    folders.push(
+      ...(process.env.STOCK_SOUNDS_BUNDLE ?? "")
+        .split(delimiter)
+        .filter((folder) => folder !== ""),
     );
-  if (!existsSync(library) || !statSync(library).isDirectory())
-    fail(`Library folder not found: ${library}`);
+  return { folders, evidence, only, prune };
+}
+
+function main(): void {
+  const { folders, evidence, only, prune } = readArguments(
+    process.argv.slice(2),
+  );
+  if (folders.length === 0)
+    fail(
+      "Usage: tsx scripts/audio/cut-stock-sounds.ts <folder>... [--only <sound id>] [--prune] [--evidence <folder>]\n" +
+        "(or set STOCK_SOUNDS_BUNDLE). A folder is an unpacked part of the sound bundle, or the\n" +
+        "folder the parts were unpacked in. The bundle is not in the repository, and the game\n" +
+        "does not need it: the cut clips are checked in.",
+    );
+  for (const folder of folders)
+    if (!existsSync(folder) || !statSync(folder).isDirectory())
+      fail(`Library folder not found: ${folder}`);
   if (!existsSync(AFCONVERT))
     fail(`${AFCONVERT} not found: this script needs macOS to encode AAC.`);
+  if (only !== undefined && stockSoundV1(only) === null)
+    fail(`No recordings are listed for the sound "${only}".`);
+  const roots = libraryRootsV1(folders);
+  const clips = STOCK_SOUND_ALL_CLIPS_V1.filter(
+    (clip) => only === undefined || clip.id === only,
+  );
 
   const out = join(ROOT, STOCK_SOUND_OUTPUT_V1.folder);
   mkdirSync(out, { recursive: true });
@@ -205,11 +286,11 @@ function main(): void {
   const work = mkdtempSync(join(tmpdir(), "stock-sounds-"));
   const rate = STOCK_SOUND_OUTPUT_V1.sampleRate;
   const lines: string[] = [];
-  const records: Record<string, string | number>[] = [];
+  const records: Record<string, string | number | boolean>[] = [];
   let total = 0;
   try {
-    for (const clip of STOCK_SOUND_CLIPS_V1) {
-      const samples = cutClipV1(library, clip);
+    for (const clip of clips) {
+      const samples = cutClipV1(roots, clip);
       const wav = join(work, `${clip.file}.wav`);
       writeFileSync(wav, encodeWav16V1([samples], rate));
       const encoded = join(work, clip.file);
@@ -237,19 +318,22 @@ function main(): void {
       const decoded = downmixV1(readWavFramesV1(readWavInfoV1(back)));
       const measured = measureSynthSamplesV1(samples, rate);
       const spectrum = spectrumSummaryV1(samples, rate);
+      const pitch = pitchContourV1(samples, rate, 8);
       const recipe = soundRecipeV1(clip.id as SoundIdV1);
       const synth =
         recipe === null
           ? null
           : measureSynthSamplesV1(renderSynthRecipeV1(recipe, rate), rate);
+      const isDefault = stockSoundV1(clip.id)?.default === clip.n;
       let decodedPeak = 0;
       for (const value of decoded)
         decodedPeak = Math.max(decodedPeak, Math.abs(value));
       lines.push(
-        `${clip.id}  ->  ${clip.file}  ${bytes.length} bytes`,
-        `  from ${clip.library} / ${clip.originalFile}`,
+        `${clip.id} #${clip.n}${isDefault ? " (default)" : ""}  ->  ${clip.file}  ${bytes.length} bytes`,
+        `  from part ${clip.part}: ${clip.library} / ${clip.originalFile}`,
         `  cut ${clip.startSeconds}-${clip.endSeconds} s, fades ${clip.fadeInMs}/${clip.fadeOutMs} ms, high-pass ${clip.highpassHz} Hz`,
         `  clip   ${Math.round(measured.durationMs)} ms  peak ${measured.peak.toFixed(3)}  rms ${measured.rms.toFixed(3)}  brightness ${Math.round(measured.brightnessHz)} Hz  centroid ${spectrum.centroidHz} Hz  bands ${spectrum.bands.join("/")}`,
+        `  pitch  ${pitch.map((point) => (point.clarity < 0.5 ? "-" : String(point.hz))).join(" ")}  (Hz in eight steps; - is no clear pitch)`,
         `  decoded ${decoded.length} frames (cut ${samples.length}), peak ${decodedPeak.toFixed(3)}`,
         synth === null
           ? "  synth  none"
@@ -267,6 +351,8 @@ function main(): void {
       );
       records.push({
         id: clip.id,
+        n: clip.n,
+        default: isDefault,
         file: clip.file,
         bytes: bytes.length,
         frames: samples.length,
@@ -274,6 +360,7 @@ function main(): void {
         onsetMs: Math.round((onset / rate) * 10000) / 10,
         peak: Math.round(measured.peak * 1000) / 1000,
         rms: Math.round(measured.rms * 1000) / 1000,
+        synthRms: synth === null ? 0 : Math.round(synth.rms * 1000) / 1000,
         centroidHz: spectrum.centroidHz,
         gain: clip.gain,
       });
@@ -281,8 +368,17 @@ function main(): void {
   } finally {
     rmSync(work, { recursive: true, force: true });
   }
+  // Clips the manifest does not list: said always, removed with --prune.
+  const listed = new Set(STOCK_SOUND_ALL_CLIPS_V1.map((clip) => clip.file));
+  for (const file of readdirSync(out).sort()) {
+    if (listed.has(file)) continue;
+    if (prune) rmSync(join(out, file));
+    lines.push(
+      `${file} is not in the manifest${prune ? ": removed" : " (--prune removes it)"}`,
+    );
+  }
   lines.push(
-    `${STOCK_SOUND_CLIPS_V1.length} clips, ${total} bytes in ${STOCK_SOUND_OUTPUT_V1.folder}`,
+    `${clips.length} clips, ${total} bytes in ${STOCK_SOUND_OUTPUT_V1.folder}`,
   );
   console.log(lines.join("\n"));
   if (evidence !== undefined) {
