@@ -14,3 +14,15 @@ dist/
 .batch-*.lock
 .records.lock
 *.json.*.tmp
+
+# Sound libraries (pulp_wars-2yc.20, docs/ui/SOUND.md "Stock recordings"): the
+# game keeps only the short clips cut from them, in public/assets/audio/.
+# A library, its raw files and uncut recordings never enter the repository.
+Sonniss*/
+*GameAudioBundle*/
+*.wav
+*.aif
+*.aiff
+*.flac
+*.caf
+*.bwf

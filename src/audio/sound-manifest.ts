@@ -1,4 +1,5 @@
 import type { FactionIdV7 } from "../engine/index";
+import { STOCK_SOUND_CLIPS_V1, stockSoundUrlV1 } from "./stock-sounds";
 import type { SynthLayerV1, SynthRecipeV1, SynthWaveV1 } from "./synth";
 
 /**
@@ -7,6 +8,10 @@ import type { SynthLayerV1, SynthRecipeV1, SynthWaveV1 } from "./synth";
  * never by how it is made. Call sites and the event mapping name these ids
  * only, so a stock recording can replace a synthesised sound by changing
  * its entry's `source` here and nothing else.
+ *
+ * The sounds that have a recording are listed in `stock-sounds.json` (bead
+ * pulp_wars-2yc.20, docs/ui/SOUND.md "Stock recordings"): their source is
+ * the clip, and the synthesised sound written here is its fallback.
  */
 
 export const SOUND_IDS_V1 = [
@@ -97,6 +102,8 @@ export type SoundSourceV1 =
       readonly url: string;
       /** Played until the file has loaded, and if it cannot be loaded. */
       readonly fallback?: SynthRecipeV1;
+      /** The level the recording is played at, 0 to 1 (1 when absent). */
+      readonly gain?: number;
     };
 
 export interface SoundEntryV1 {
@@ -244,7 +251,8 @@ function round(at: number): SynthLayerV1[] {
   ];
 }
 
-export const SOUND_MANIFEST_V1: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
+/** Every sound as the synthesiser makes it. */
+const SYNTH_SOUNDS: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
   "attack.melee": synth("Melee swing", "combat", 2, 60, 0.3, [
     {
       wave: "noise",
@@ -998,6 +1006,33 @@ export const SOUND_MANIFEST_V1: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
     ),
   ]),
 };
+
+/**
+ * The manifest: the synthesised sounds, and for each sound with a clip in
+ * `stock-sounds.json` the clip as its source and the synthesised sound as
+ * its fallback. A clip whose id is not a sound of the game is left out (a
+ * unit test names it).
+ */
+export const SOUND_MANIFEST_V1: Readonly<Record<SoundIdV1, SoundEntryV1>> =
+  (() => {
+    const manifest: Record<SoundIdV1, SoundEntryV1> = { ...SYNTH_SOUNDS };
+    for (const clip of STOCK_SOUND_CLIPS_V1) {
+      const id = SOUND_IDS_V1.find((sound) => sound === clip.id);
+      if (id === undefined) continue;
+      const entry = SYNTH_SOUNDS[id];
+      if (entry.source.kind !== "SYNTH") continue;
+      manifest[id] = {
+        ...entry,
+        source: {
+          kind: "FILE",
+          url: stockSoundUrlV1(clip),
+          fallback: entry.source.recipe,
+          gain: clip.gain,
+        },
+      };
+    }
+    return manifest;
+  })();
 
 /** The synth recipe an entry plays when no recording is available. */
 export function soundRecipeV1(id: SoundIdV1): SynthRecipeV1 | null {

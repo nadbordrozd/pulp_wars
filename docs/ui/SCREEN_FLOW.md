@@ -1672,7 +1672,11 @@ This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset
   ("Coming soon" until a theme exists). A playing card is outlined, a long
   sound has a stop button, and with sound off the tab says so and offers
   to turn it on. Every card is a tab stop; the arrow keys move between
-  cards and their controls.
+  cards and their controls. Each card also says where its sound comes from
+  (`pulp_wars-2yc.20`): the library file of a recorded sound and the
+  stretch cut from it, or "Generated"; a recorded card has a **Generated**
+  button that plays the synthesised sound it replaced
+  ([Stock recordings](SOUND.md#stock-recordings)).
 - **Filters.** A "Filters" disclosure (open on a wide screen, closed on a
   phone) holds a chip per faction and a chip per row, each group with All
   and None. The tab and both selections are remembered per viewer in this

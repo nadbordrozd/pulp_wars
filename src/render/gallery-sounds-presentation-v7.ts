@@ -6,9 +6,12 @@ import {
   SOUND_MANIFEST_V1,
   SOUND_THEMES_V1,
   playableRecipeV1,
+  playableSoundV1,
+  stockSoundClipV1,
   synthRecipeDurationMsV1,
   type SoundIdV1,
   type SoundKeyV1,
+  type SoundSourceV1,
   type SoundThemeEntryV1,
 } from "../audio/index";
 import type { FactionIdV7, UnitRoleIdV7 } from "../engine/index";
@@ -104,13 +107,41 @@ export type GallerySoundPictureV7 =
 
 /** One more way to hear a sound, beside its plain Play. */
 export interface GallerySoundVariantV7 {
-  readonly id: "LOW" | "HIGH" | "FAR";
+  readonly id: "LOW" | "HIGH" | "FAR" | "GENERATED";
   /** The accessible name's verb: "Play lower". */
   readonly label: string;
   /** Detune as a share of the sound's range (the mixer's `detune`). */
   readonly detune?: number;
   readonly gain?: number;
+  /** Plays the synthesised sound of a recorded entry. */
+  readonly generated?: true;
 }
+
+/**
+ * Where a sound comes from (bead pulp_wars-2yc.20): a recording cut from a
+ * library file, the synthesiser, or a registered file without a record of
+ * its origin. A recording's origin is read from the provenance manifest
+ * (`src/audio/stock-sounds.json`), which is the only list of them.
+ */
+export type GallerySoundOriginV7 =
+  | {
+      readonly kind: "RECORDED";
+      /** The library's folder in the bundle: "Vendor - Library". */
+      readonly library: string;
+      /** The original file name, exactly as the bundle has it. */
+      readonly file: string;
+      readonly startSeconds: number;
+      readonly endSeconds: number;
+      /** "Vendor - Library / file.wav". */
+      readonly text: string;
+      /** The stretch that was cut: "0.075–0.33 s". */
+      readonly cut: string;
+    }
+  | { readonly kind: "GENERATED"; readonly text: string }
+  | { readonly kind: "FILE"; readonly text: string };
+
+/** What a synthesised sound's origin reads. */
+export const GALLERY_SOUND_GENERATED_TEXT_V7 = "Generated";
 
 export interface GallerySoundEntryV7 {
   /**
@@ -129,6 +160,8 @@ export interface GallerySoundEntryV7 {
   readonly long: boolean;
   /** The faction of a theme row. */
   readonly faction: FactionIdV7 | null;
+  /** Where the sound comes from; null for a theme that is not there yet. */
+  readonly origin: GallerySoundOriginV7 | null;
 }
 
 export interface GallerySoundGroupV7 {
@@ -298,12 +331,83 @@ export function gallerySoundHasNoteV7(id: SoundIdV1): boolean {
   return NOTES[id] !== undefined;
 }
 
+/** What the tab is drawn for. */
+export interface GallerySoundOptionsV7 {
+  /**
+   * Whether recorded clips are in use (false with `?stock-sounds=0`: every
+   * sound that has a synthesised version is then shown as generated).
+   */
+  readonly stockSounds?: boolean;
+}
+
+/** Seconds as the manifest has them, without trailing zeros. */
+function seconds(value: number): string {
+  return String(Number(value.toFixed(3)));
+}
+
+/**
+ * The origin of a registered sound: its row in the provenance manifest
+ * when it has one (and recordings are in use), else what its source says.
+ */
+export function gallerySoundOriginV7(
+  key: SoundKeyV1,
+  options: GallerySoundOptionsV7 = {},
+): GallerySoundOriginV7 | null {
+  const source = playableSoundV1(key)?.source;
+  return source === undefined ? null : originOf(key, source, options);
+}
+
+function originOf(
+  key: SoundKeyV1,
+  source: SoundSourceV1,
+  options: GallerySoundOptionsV7,
+): GallerySoundOriginV7 {
+  const generated: GallerySoundOriginV7 = {
+    kind: "GENERATED",
+    text: GALLERY_SOUND_GENERATED_TEXT_V7,
+  };
+  if (source.kind === "SYNTH") return generated;
+  if (options.stockSounds === false && source.fallback !== undefined)
+    return generated;
+  const clip = stockSoundClipV1(key);
+  if (clip === null)
+    return {
+      kind: "FILE",
+      text: decodeURIComponent(source.url.split("/").at(-1) ?? source.url),
+    };
+  return {
+    kind: "RECORDED",
+    library: clip.library,
+    file: clip.originalFile,
+    startSeconds: clip.startSeconds,
+    endSeconds: clip.endSeconds,
+    text: `${clip.library} / ${clip.originalFile}`,
+    cut: `${seconds(clip.startSeconds)}–${seconds(clip.endSeconds)} s`,
+  };
+}
+
+/**
+ * An origin in words, for the name of a play control: "Recorded: Vendor -
+ * Library / file.wav, 0–0.8 s", "Generated", "File: theme.ogg".
+ */
+export function gallerySoundOriginLabelV7(
+  origin: GallerySoundOriginV7,
+): string {
+  if (origin.kind === "RECORDED")
+    return `Recorded: ${origin.text}, ${origin.cut}`;
+  return origin.kind === "FILE" ? `File: ${origin.text}` : origin.text;
+}
+
 /**
  * The other ways the game plays a sound. A detuned sound is played a
  * little flat or sharp at random, so its two ends are offered; a building
- * of another player is heard quieter than one's own.
+ * of another player is heard quieter than one's own. A recorded sound also
+ * offers the synthesised sound it replaced, so both can be heard.
  */
-function variantsOf(id: SoundIdV1): readonly GallerySoundVariantV7[] {
+function variantsOf(
+  id: SoundIdV1,
+  origin: GallerySoundOriginV7 | null,
+): readonly GallerySoundVariantV7[] {
   const variants: GallerySoundVariantV7[] = [];
   if (SOUND_MANIFEST_V1[id].jitterCents > 0)
     variants.push(
@@ -316,23 +420,38 @@ function variantsOf(id: SoundIdV1): readonly GallerySoundVariantV7[] {
       label: "Play as another player's",
       gain: OTHER_PLAYER_BUILD_GAIN_V7,
     });
+  if (origin?.kind === "RECORDED" && playableRecipeV1(id) !== null)
+    variants.push({
+      id: "GENERATED",
+      label: "Play generated",
+      generated: true,
+    });
   return variants;
 }
 
-function effectEntry(id: SoundIdV1): GallerySoundEntryV7 {
+function effectEntry(
+  id: SoundIdV1,
+  options: GallerySoundOptionsV7,
+): GallerySoundEntryV7 {
   const note = NOTES[id];
   const recipe = playableRecipeV1(id);
+  const origin = gallerySoundOriginV7(id, options);
+  const lengthMs =
+    origin?.kind === "RECORDED"
+      ? (origin.endSeconds - origin.startSeconds) * 1000
+      : recipe === null
+        ? Infinity
+        : synthRecipeDurationMsV1(recipe);
   return {
     key: id,
     rowId: id,
     name: SOUND_MANIFEST_V1[id].label,
     when: note?.when ?? "",
     picture: note?.picture ?? icon("sound"),
-    variants: variantsOf(id),
-    long:
-      recipe === null ||
-      synthRecipeDurationMsV1(recipe) >= GALLERY_SOUND_LONG_MS_V7,
+    variants: variantsOf(id, origin),
+    long: lengthMs >= GALLERY_SOUND_LONG_MS_V7,
     faction: null,
+    origin,
   };
 }
 
@@ -352,6 +471,9 @@ function themeEntry(
     variants: [],
     long: true,
     faction,
+    // A theme has no synthesised version to fall back to, so the switch
+    // for recordings does not change what its row says.
+    origin: theme === undefined ? null : originOf(theme.id, theme.source, {}),
   };
 }
 
@@ -362,6 +484,7 @@ function themeEntry(
  */
 export function gallerySoundGroupsV7(
   themes: readonly SoundThemeEntryV1[] = SOUND_THEMES_V1,
+  options: GallerySoundOptionsV7 = {},
 ): readonly GallerySoundGroupV7[] {
   const groups: GallerySoundGroupV7[] = [];
   for (const id of GALLERY_SOUND_GROUP_IDS_V7) {
@@ -370,7 +493,7 @@ export function gallerySoundGroupsV7(
         ? GALLERY_FACTIONS_V7.map((faction) => themeEntry(faction, themes))
         : SOUND_IDS_V1.filter(
             (sound) => gallerySoundGroupOfV7(sound) === id,
-          ).map(effectEntry);
+          ).map((sound) => effectEntry(sound, options));
     if (entries.length > 0)
       groups.push({ id, label: GROUP_LABELS[id], entries });
   }
@@ -384,4 +507,16 @@ export function gallerySoundPlayLabelV7(
 ): string {
   const name = entry.faction === null ? entry.name : `${entry.name} theme`;
   return `${variant?.label ?? "Play"}: ${name}`;
+}
+
+/**
+ * The full name of a card's play control, with where its sound comes from:
+ * "Play: Explosion. Recorded: Vendor - Library / file.wav, 0–1.05 s",
+ * "Play: Melee swing. Generated".
+ */
+export function gallerySoundCardLabelV7(entry: GallerySoundEntryV7): string {
+  const label = gallerySoundPlayLabelV7(entry);
+  return entry.origin === null
+    ? label
+    : `${label}. ${gallerySoundOriginLabelV7(entry.origin)}`;
 }

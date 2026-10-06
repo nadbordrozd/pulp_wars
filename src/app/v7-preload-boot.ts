@@ -1,8 +1,11 @@
 import {
   assetLookV7,
   assetPreloadUrlsV7,
+  soundAssetUrlsV7,
   type AssetLookV7,
 } from "../assets/asset-inventory-v7";
+import { prefetchSoundFilesV1 } from "../audio/sound-file-store";
+import { stockSoundsEnabledV1 } from "../audio/stock-sounds";
 import {
   lazyRasterLoadsV7,
   markRasterPreloadCompleteV7,
@@ -45,6 +48,11 @@ export interface PreloadedBootOptionsV7 extends BootstrapRuleset7Options {
    */
   readonly loadingScreenDelayMs?: number;
   readonly now?: () => number;
+  /**
+   * Starts fetching the sound files and returns at once; the browser's
+   * `fetch` into the sound file store by default (a test passes its own).
+   */
+  readonly prefetchSounds?: (urls: readonly string[]) => void;
 }
 
 export interface PreloadedRuleset7App extends BootstrappedRuleset7App {
@@ -78,6 +86,20 @@ export async function bootstrapPreloadedRuleset7App(
   const look = assetLookV7(artSet, loadBoardClassicLookV7(settingsStorage));
   const preloader = options.preloader ?? browserAssetPreloaderV7(documentRoot);
   const now = options.now ?? ((): number => performance.now());
+
+  // The sound clips are asked for beside the art and never waited for: the
+  // first screen does not depend on them, and a sound whose clip has not
+  // arrived plays its synthesised fallback.
+  try {
+    const sounds = soundAssetUrlsV7(
+      stockSoundsEnabledV1(browser?.location.search ?? ""),
+    );
+    if (options.prefetchSounds !== undefined) options.prefetchSounds(sounds);
+    else if (browser !== null && typeof browser.fetch === "function")
+      prefetchSoundFilesV1(sounds, (url) => browser.fetch(url));
+  } catch {
+    // Sound files are optional; the game starts without them.
+  }
 
   const started = now();
   let screen: ReturnType<typeof mountLoadingScreenV7> | null = null;

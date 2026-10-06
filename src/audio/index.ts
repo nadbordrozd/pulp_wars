@@ -76,6 +76,28 @@ export {
   type SynthWaveV1,
 } from "./synth";
 export {
+  clearSoundFilesV1,
+  prefetchSoundFilesV1,
+  requestedSoundFilesV1,
+  soundFileBytesV1,
+  type SoundFileFetchV1,
+} from "./sound-file-store";
+export {
+  STOCK_SOUNDS_ENABLED_V1,
+  STOCK_SOUNDS_PARAMETER_V1,
+  STOCK_SOUND_BUNDLE_V1,
+  STOCK_SOUND_CLIPS_V1,
+  STOCK_SOUND_LICENCE_V1,
+  STOCK_SOUND_OUTPUT_V1,
+  STOCK_SOUND_PUBLIC_PATH_V1,
+  stockSoundClipV1,
+  stockSoundUrlV1,
+  stockSoundsEnabledV1,
+  type StockSoundClipV1,
+  type StockSoundOutputV1,
+} from "./stock-sounds";
+export {
   createWebAudioOutputV1,
+  type WebAudioOutputOptionsV1,
   type WebAudioOutputV1,
 } from "./web-audio-output";

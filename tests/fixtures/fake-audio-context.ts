@@ -44,8 +44,18 @@ function gainNode(): FakeNode {
   };
 }
 
+export interface FakeAudioContextOptionsV1 {
+  /**
+   * Decodes a sound file (bead pulp_wars-2yc.20): the length in seconds of
+   * the buffer the bytes become, or a throw for bytes that are not sound.
+   * Without it the device decodes nothing, like jsdom.
+   */
+  readonly decode?: (data: ArrayBuffer) => number;
+}
+
 export function installFakeAudioContext(
   target: Window & typeof globalThis,
+  options: FakeAudioContextOptionsV1 = {},
 ): FakeAudioDeviceV1 {
   let contexts = 0;
   let master: FakeNode | null = null;
@@ -76,6 +86,22 @@ export function installFakeAudioContext(
     createBuffer(_channels: number, length: number, rate: number): unknown {
       const data = new Float32Array(length);
       return { duration: length / rate, getChannelData: () => data };
+    }
+    decodeAudioData(data: ArrayBuffer): Promise<unknown> {
+      const decode = options.decode;
+      if (decode === undefined)
+        return Promise.reject(new Error("This device decodes nothing"));
+      try {
+        const duration = decode(data);
+        return Promise.resolve({
+          duration,
+          getChannelData: () => new Float32Array(1),
+        });
+      } catch (error) {
+        return Promise.reject(
+          error instanceof Error ? error : new Error(String(error)),
+        );
+      }
     }
     createBufferSource(): unknown {
       let level: FakeNode | null = null;

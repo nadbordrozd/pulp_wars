@@ -8,7 +8,10 @@ import {
 } from "../../audio/index";
 import { factionColourV7 } from "../canvas/faction-colours-v7";
 import {
+  GALLERY_SOUND_GENERATED_TEXT_V7,
+  gallerySoundCardLabelV7,
   gallerySoundGroupsV7,
+  gallerySoundOriginLabelV7,
   gallerySoundPlayLabelV7,
   type GallerySoundEntryV7,
   type GallerySoundVariantV7,
@@ -59,6 +62,7 @@ const VARIANT_GLYPHS: Readonly<Record<GallerySoundVariantV7["id"], string>> = {
   LOW: "♭",
   HIGH: "♯",
   FAR: "",
+  GENERATED: "",
 };
 
 interface RowV7 {
@@ -197,6 +201,7 @@ export function gallerySoundsPanelV7(
     const request = {
       ...(variant?.detune === undefined ? {} : { detune: variant.detune }),
       ...(variant?.gain === undefined ? {} : { gain: variant.gain }),
+      ...(variant?.generated === true ? { generated: true } : {}),
     };
     const attempt = (last: boolean): void => {
       if (destroyed) return;
@@ -286,12 +291,16 @@ export function gallerySoundsPanelV7(
     if (entry.faction !== null) node.dataset.faction = entry.faction;
     const pending = entry.key === null;
     if (pending) node.dataset.pending = "true";
+    if (entry.origin !== null)
+      node.dataset.origin = entry.origin.kind.toLowerCase();
 
-    const playLabel = gallerySoundPlayLabelV7(entry);
+    // The name of the control says what it plays and where that comes from.
     const playButton = control(
       "v7-gallery-sound-play",
       "gallery-sound-play",
-      pending ? `${playLabel}, ${entry.when.toLowerCase()}` : playLabel,
+      pending
+        ? `${gallerySoundPlayLabelV7(entry)}, ${entry.when.toLowerCase()}`
+        : gallerySoundCardLabelV7(entry),
     );
     playButton.dataset.soundPlay = entry.rowId;
     playButton.dataset.focusKey = `sound:${entry.rowId}`;
@@ -310,6 +319,34 @@ export function gallerySoundsPanelV7(
       when.className = "v7-gallery-sound-when";
       when.textContent = entry.when;
       words.append(when);
+    }
+    if (entry.origin !== null) {
+      // Where the sound comes from: the library and the file of a
+      // recording and the stretch cut from it, or "Generated". The library
+      // has a line, the file name up to two (it wraps anywhere and is cut
+      // after them); the whole of it is in the title and in the name of
+      // the control.
+      const origin = documentRoot.createElement("span");
+      origin.className = "v7-gallery-sound-origin";
+      origin.dataset.soundOrigin = entry.origin.kind.toLowerCase();
+      origin.title = gallerySoundOriginLabelV7(entry.origin);
+      const part = (className: string, text: string): HTMLElement => {
+        const node = documentRoot.createElement("span");
+        node.className = className;
+        node.textContent = text;
+        return node;
+      };
+      if (entry.origin.kind === "RECORDED")
+        origin.append(
+          part("v7-gallery-sound-origin-library", `${entry.origin.library} /`),
+          " ",
+          part("v7-gallery-sound-origin-file", entry.origin.file),
+          " ",
+          part("v7-gallery-sound-origin-cut", entry.origin.cut),
+        );
+      else
+        origin.append(part("v7-gallery-sound-origin-file", entry.origin.text));
+      words.append(origin);
     }
     const mark = documentRoot.createElement("span");
     mark.className = "v7-gallery-sound-mark";
@@ -342,7 +379,11 @@ export function gallerySoundsPanelV7(
         // Tab moves from card to card; the arrow keys reach these.
         button.tabIndex = -1;
         const glyph = VARIANT_GLYPHS[variant.id];
-        if (glyph === "") button.append(uiIconV7(documentRoot, "sight"));
+        if (variant.id === "GENERATED") {
+          // The synthesised sound this recording replaced, named in words.
+          button.classList.add("v7-gallery-sound-variant-generated");
+          button.textContent = GALLERY_SOUND_GENERATED_TEXT_V7;
+        } else if (glyph === "") button.append(uiIconV7(documentRoot, "sight"));
         else button.textContent = glyph;
         button.onclick = () => play(row, variant);
         extras.append(button);
@@ -371,7 +412,9 @@ export function gallerySoundsPanelV7(
   };
 
   root.append(bar, notice);
-  for (const group of gallerySoundGroupsV7(options.themes ?? SOUND_THEMES_V1)) {
+  for (const group of gallerySoundGroupsV7(options.themes ?? SOUND_THEMES_V1, {
+    stockSounds: audio.stockSounds,
+  })) {
     const section = documentRoot.createElement("section");
     section.className = "v7-gallery-sound-group";
     section.dataset.group = group.id.toLowerCase();

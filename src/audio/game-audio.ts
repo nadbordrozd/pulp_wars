@@ -12,6 +12,7 @@ import {
 } from "./mixer";
 import type { SoundKeyV1 } from "./sound-manifest";
 import type { SoundCueV1 } from "./sound-events-v7";
+import { stockSoundsEnabledV1 } from "./stock-sounds";
 import {
   createWebAudioOutputV1,
   type WebAudioOutputV1,
@@ -98,6 +99,23 @@ export class GameAudioV1 {
   /** True once a gesture has opened the device. */
   get unlocked(): boolean {
     return this.#output?.unlocked === true;
+  }
+
+  /**
+   * Whether recorded clips replace the sounds that have one (`false` with
+   * `?stock-sounds=0`). Without a device it is the default, on.
+   */
+  get stockSounds(): boolean {
+    return this.#output?.stockSounds ?? true;
+  }
+
+  /**
+   * What a play of this sound uses right now: its recording once the device
+   * has decoded it, else the synthesiser. Null without a device, and for a
+   * sound with neither (a test, smoke and Gallery hook).
+   */
+  soundSource(id: SoundKeyV1): "RECORDED" | "GENERATED" | null {
+    return this.#output?.soundSource(id) ?? null;
   }
 
   /** The most recent requests, oldest first (a test and smoke hook). */
@@ -224,7 +242,11 @@ export function createBrowserGameAudioV1(
   };
   const audio = new GameAudioV1({
     storage,
-    output: createWebAudioOutputV1(documentRoot.defaultView),
+    output: createWebAudioOutputV1(documentRoot.defaultView, {
+      stockSounds: stockSoundsEnabledV1(
+        documentRoot.defaultView?.location.search ?? "",
+      ),
+    }),
     isHidden: () => documentRoot.visibilityState === "hidden",
     onDestroy: () => {
       for (const gesture of GESTURES)

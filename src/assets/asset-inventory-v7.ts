@@ -1,3 +1,4 @@
+import { playableSoundIdsV1, playableSoundV1 } from "../audio/playable-sound";
 import { FACTION_IDS_V7, type FactionIdV7 } from "../engine/index";
 import { CHIBI_ART_ASSETS_V7 } from "./chibi-art-manifest";
 import type { ArtSetV7, ChibiArtAssetV7 } from "./chibi-art-v7";
@@ -158,6 +159,27 @@ export function assetInventoryForFactionsV7(
   return assetInventoryV7(look).filter(
     (entry) => entry.group === "SHARED" || playing.has(entry.group),
   );
+}
+
+/**
+ * The sound files of the client (bead pulp_wars-2yc.20, docs/ui/SOUND.md
+ * "Stock recordings"): the file of every sound and theme of the audio
+ * manifest that names one. The game's start fetches them beside the art,
+ * without waiting for them (src/app/v7-preload-boot.ts); a sound whose
+ * file has not arrived plays its synthesised fallback.
+ *
+ * With `stockSounds` false (`?stock-sounds=0`) a file that has a
+ * synthesised fallback is left out: that sound is synthesised.
+ */
+export function soundAssetUrlsV7(stockSounds = true): readonly string[] {
+  const urls = new Set<string>();
+  for (const id of playableSoundIdsV1()) {
+    const source = playableSoundV1(id)?.source;
+    if (source?.kind !== "FILE") continue;
+    if (!stockSounds && source.fallback !== undefined) continue;
+    urls.add(source.url);
+  }
+  return [...urls];
 }
 
 /** Preload order of a look: the shared art first, then each faction's. */

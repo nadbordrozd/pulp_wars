@@ -8,7 +8,9 @@ import {
   OTHER_PLAYER_BUILD_GAIN_V7,
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
+  STOCK_SOUND_CLIPS_V1,
   audioVolumeGainV1,
+  type SoundIdV1,
 } from "../../src/audio/index";
 import { FACTION_IDS_V7 } from "../../src/engine/index";
 import { GALLERY_FILTERS_STORAGE_KEY_V7 } from "../../src/render/gallery-presentation-v7";
@@ -191,13 +193,14 @@ describe("Gallery Sounds tab", () => {
       expect(node.textContent ?? "").not.toMatch(COORDINATE);
     }
     expect(card("attack.melee").getAttribute("aria-label")).toBe(
-      "Play: Melee swing",
+      "Play: Melee swing. Generated",
     );
     expect(card("city.capture").textContent).toBe(
-      "City capturedYou take a city",
+      "City capturedYou take a cityGenerated",
     );
     // No manifest id is shown as text.
-    expect(panel.textContent ?? "").not.toMatch(/[a-z]+\.[a-z]+/);
+    for (const id of SOUND_IDS_V1)
+      expect(panel.textContent ?? "", id).not.toContain(id);
   });
 
   it("plays a card through the mixer at the player's volume, and marks it", () => {
@@ -291,6 +294,7 @@ describe("Gallery Sounds tab", () => {
     expect(variants.map((node) => node.getAttribute("aria-label"))).toEqual([
       "Play lower: Hit",
       "Play higher: Hit",
+      "Play generated: Hit",
     ]);
     const cents = SOUND_MANIFEST_V1["impact.hit"].jitterCents;
     variants[0]?.click();
@@ -527,5 +531,135 @@ describe("Gallery Sounds tab", () => {
     // Back in the Gallery the tab is silent and unmarked.
     button("gallery").click();
     expect(playing()).toEqual([]);
+  });
+});
+
+/**
+ * Where each sound comes from (bead pulp_wars-2yc.20, docs/ui/SOUND.md
+ * "Stock recordings"): the card of a recorded sound shows the library file
+ * it was cut from and the cut, a generated one says so, and a recorded card
+ * also plays the generated sound it replaced.
+ */
+describe("Gallery Sounds tab: origins", () => {
+  function origin(id: string): HTMLElement {
+    return required(`[data-sound-row="${id}"] .v7-gallery-sound-origin`);
+  }
+
+  it("shows the origin file and the cut of every recorded sound", () => {
+    mount();
+    openSounds();
+    expect(STOCK_SOUND_CLIPS_V1.length).toBeGreaterThan(0);
+    for (const clip of STOCK_SOUND_CLIPS_V1) {
+      // A provenance row without a card fails here (the card is required).
+      expect(row(clip.id).dataset.origin).toBe("recorded");
+      const node = origin(clip.id);
+      expect(node.dataset.soundOrigin).toBe("recorded");
+      const text = `${clip.library} / ${clip.originalFile}`;
+      const cut = `${clip.startSeconds}–${clip.endSeconds} s`;
+      // The folder and the file name exactly as the bundle has them.
+      expect(
+        node.querySelector(".v7-gallery-sound-origin-library")?.textContent,
+      ).toBe(`${clip.library} /`);
+      expect(
+        node.querySelector(".v7-gallery-sound-origin-file")?.textContent,
+      ).toBe(clip.originalFile);
+      expect(
+        node.querySelector(".v7-gallery-sound-origin-cut")?.textContent,
+      ).toBe(cut);
+      expect(node.textContent).toBe(`${text} ${cut}`);
+      // The whole name on hover and for a screen reader, however it wraps.
+      expect(node.title).toBe(`Recorded: ${text}, ${cut}`);
+      const play = card(clip.id);
+      expect(play.getAttribute("aria-label")).toBe(
+        `Play: ${SOUND_MANIFEST_V1[clip.id as SoundIdV1].label}. Recorded: ${text}, ${cut}`,
+      );
+      expect(play.title).toBe(play.getAttribute("aria-label"));
+    }
+    expect(origin("impact.explosion").textContent).toBe(
+      "DavidDumais - Explosion SFX Pack / EXPLReal_Medium Realistic Explosion 15_DDUMAIS_NONE.wav 0–1.05 s",
+    );
+  });
+
+  it("says Generated on every other card, and agrees with the manifest", () => {
+    mount();
+    openSounds();
+    const recorded = new Set(STOCK_SOUND_CLIPS_V1.map((clip) => clip.id));
+    for (const id of SOUND_IDS_V1) {
+      const node = origin(id);
+      // A card whose origin disagrees with the manifest fails here.
+      expect(node.dataset.soundOrigin, id).toBe(
+        SOUND_MANIFEST_V1[id].source.kind === "FILE" ? "recorded" : "generated",
+      );
+      expect(node.dataset.soundOrigin === "recorded", id).toBe(
+        recorded.has(id),
+      );
+      if (recorded.has(id)) continue;
+      expect(node.textContent, id).toBe("Generated");
+      expect(node.title, id).toBe("Generated");
+      expect(card(id).getAttribute("aria-label"), id).toBe(
+        `Play: ${SOUND_MANIFEST_V1[id].label}. Generated`,
+      );
+      expect(
+        row(id).querySelector('[data-variant="generated"]'),
+        id,
+      ).toBeNull();
+    }
+    expect(
+      document.querySelectorAll('.v7-gallery-sound[data-origin="recorded"]')
+        .length,
+    ).toBe(STOCK_SOUND_CLIPS_V1.length);
+    // A theme that is not there yet has no origin to show.
+    expect(
+      document.querySelector(
+        '[data-sound-row="theme:UNDEAD"] .v7-gallery-sound-origin',
+      ),
+    ).toBeNull();
+  });
+
+  it("plays the generated sound of a recorded card from its own control", () => {
+    const view = mount().view;
+    openSounds();
+    const play = vi.spyOn(view.audio, "play");
+    const generated = required<HTMLButtonElement>(
+      '[data-sound-row="impact.hit"] [data-variant="generated"]',
+    );
+    // Each control is named after what it plays.
+    expect(generated.textContent).toBe("Generated");
+    expect(generated.getAttribute("aria-label")).toBe("Play generated: Hit");
+    expect(generated.title).toBe("Play generated: Hit");
+    generated.click();
+    expect(play).toHaveBeenLastCalledWith("impact.hit", { generated: true });
+    expect(playing()).toEqual(["impact.hit"]);
+    // The card itself plays the sound as a match does.
+    card("impact.hit").click();
+    expect(play).toHaveBeenLastCalledWith("impact.hit", {});
+    // The variants are reached with the arrow keys, the new one last.
+    const controls = [
+      ...row("impact.hit").querySelectorAll<HTMLElement>(
+        "[data-sound-control]",
+      ),
+    ].filter((node) => !node.hidden);
+    expect(controls.at(-1)).toBe(generated);
+    controls.at(-2)?.focus();
+    key(controls.at(-2) as HTMLElement, "ArrowRight");
+    expect(document.activeElement).toBe(generated);
+  });
+
+  it("shows every card as generated with ?stock-sounds=0", () => {
+    window.history.replaceState(null, "", "?stock-sounds=0");
+    try {
+      const view = mount().view;
+      expect(view.audio.stockSounds).toBe(false);
+      openSounds();
+      expect(
+        document.querySelectorAll('.v7-gallery-sound[data-origin="recorded"]')
+          .length,
+      ).toBe(0);
+      expect(document.querySelector('[data-variant="generated"]')).toBeNull();
+      for (const id of SOUND_IDS_V1)
+        expect(origin(id).textContent, id).toBe("Generated");
+    } finally {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
   });
 });

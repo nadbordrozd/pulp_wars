@@ -4,17 +4,22 @@ import {
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
   SOUND_THEMES_V1,
+  STOCK_SOUND_CLIPS_V1,
   playableSoundIdsV1,
   playableSoundV1,
   type SoundThemeEntryV1,
 } from "../../src/audio/index";
 import { FACTION_IDS_V7 } from "../../src/engine/index";
 import {
+  GALLERY_SOUND_GENERATED_TEXT_V7,
   GALLERY_SOUND_GROUP_IDS_V7,
   GALLERY_THEME_PENDING_TEXT_V7,
+  gallerySoundCardLabelV7,
   gallerySoundGroupOfV7,
   gallerySoundGroupsV7,
   gallerySoundHasNoteV7,
+  gallerySoundOriginLabelV7,
+  gallerySoundOriginV7,
   gallerySoundPlayLabelV7,
 } from "../../src/render/gallery-sounds-presentation-v7";
 
@@ -126,7 +131,9 @@ describe("Gallery sounds", () => {
     for (const entry of entries) {
       if (entry.faction !== null) continue;
       const id = entry.rowId as (typeof SOUND_IDS_V1)[number];
-      const pitches = entry.variants.filter((variant) => variant.id !== "FAR");
+      const pitches = entry.variants.filter(
+        (variant) => variant.id === "LOW" || variant.id === "HIGH",
+      );
       // A sound the mixer detunes has a lower and a higher; a tune has none.
       expect(
         pitches.map((variant) => [variant.id, variant.detune]),
@@ -141,7 +148,7 @@ describe("Gallery sounds", () => {
       );
     }
     const build = entries.find((entry) => entry.rowId === "economy.build");
-    expect(build?.variants.at(-1)).toEqual({
+    expect(build?.variants.find((variant) => variant.id === "FAR")).toEqual({
       id: "FAR",
       label: "Play as another player's",
       gain: OTHER_PLAYER_BUILD_GAIN_V7,
@@ -155,12 +162,13 @@ describe("Gallery sounds", () => {
     expect(gallerySoundPlayLabelV7(build, build.variants[0])).toBe(
       "Play lower: Build",
     );
-    // Only the long tunes get a stop control.
+    // Only the long tunes and a recording of a second get a stop control.
     expect(
       entries
         .filter((entry) => entry.faction === null && entry.long)
         .map((entry) => entry.rowId),
     ).toEqual([
+      "impact.explosion",
       "achievement.unlocked",
       "achievement.monument",
       "match.victory",
@@ -233,5 +241,141 @@ describe("Gallery sounds", () => {
         false,
       );
     }
+  });
+});
+
+/**
+ * Where each sound comes from (bead pulp_wars-2yc.20, docs/ui/SOUND.md
+ * "Stock recordings"): read from the provenance manifest, which is the
+ * only list of recordings.
+ */
+describe("Gallery sound origins", () => {
+  const entries = gallerySoundGroupsV7().flatMap((group) => group.entries);
+  const effects = entries.filter((entry) => entry.faction === null);
+
+  it("shows the library file and the cut of every recorded sound", () => {
+    expect(STOCK_SOUND_CLIPS_V1.length).toBeGreaterThan(0);
+    for (const clip of STOCK_SOUND_CLIPS_V1) {
+      // A provenance row without a card fails here.
+      const entry = effects.find((candidate) => candidate.rowId === clip.id);
+      expect(entry, `${clip.id} has no card`).toBeDefined();
+      const origin = entry?.origin;
+      expect(origin?.kind, clip.id).toBe("RECORDED");
+      if (origin?.kind !== "RECORDED" || entry === undefined) continue;
+      expect(origin.library).toBe(clip.library);
+      expect(origin.file).toBe(clip.originalFile);
+      expect(origin.startSeconds).toBe(clip.startSeconds);
+      expect(origin.endSeconds).toBe(clip.endSeconds);
+      // The vendor folder and the file name exactly as the bundle has them.
+      expect(origin.text).toBe(`${clip.library} / ${clip.originalFile}`);
+      expect(origin.cut).toBe(`${clip.startSeconds}–${clip.endSeconds} s`);
+      expect(gallerySoundOriginLabelV7(origin)).toBe(
+        `Recorded: ${clip.library} / ${clip.originalFile}, ${clip.startSeconds}–${clip.endSeconds} s`,
+      );
+      expect(gallerySoundCardLabelV7(entry)).toBe(
+        `Play: ${entry.name}. Recorded: ${origin.text}, ${origin.cut}`,
+      );
+    }
+    const explosion = effects.find(
+      (entry) => entry.rowId === "impact.explosion",
+    );
+    expect(explosion?.origin).toMatchObject({
+      kind: "RECORDED",
+      text: "DavidDumais - Explosion SFX Pack / EXPLReal_Medium Realistic Explosion 15_DDUMAIS_NONE.wav",
+      cut: "0–1.05 s",
+    });
+  });
+
+  it("says Generated for every sound without a recording, and no other", () => {
+    const recorded = new Set(STOCK_SOUND_CLIPS_V1.map((clip) => clip.id));
+    for (const entry of effects) {
+      const expected = recorded.has(entry.rowId) ? "RECORDED" : "GENERATED";
+      // A card whose origin disagrees with the manifest fails here.
+      expect(entry.origin?.kind, entry.rowId).toBe(expected);
+      expect(
+        SOUND_MANIFEST_V1[entry.rowId as (typeof SOUND_IDS_V1)[number]].source
+          .kind,
+        entry.rowId,
+      ).toBe(expected === "RECORDED" ? "FILE" : "SYNTH");
+      if (expected === "RECORDED") continue;
+      expect(entry.origin).toEqual({
+        kind: "GENERATED",
+        text: GALLERY_SOUND_GENERATED_TEXT_V7,
+      });
+      expect(gallerySoundCardLabelV7(entry)).toBe(
+        `Play: ${entry.name}. Generated`,
+      );
+    }
+    expect(
+      effects.filter((entry) => entry.origin?.kind === "RECORDED").length,
+    ).toBe(STOCK_SOUND_CLIPS_V1.length);
+    expect(GALLERY_SOUND_GENERATED_TEXT_V7).toBe("Generated");
+  });
+
+  it("offers the generated version of a recorded sound, and of no other", () => {
+    for (const entry of effects) {
+      const generated = entry.variants.filter(
+        (variant) => variant.id === "GENERATED",
+      );
+      if (entry.origin?.kind !== "RECORDED") {
+        expect(generated, entry.rowId).toEqual([]);
+        continue;
+      }
+      expect(generated, entry.rowId).toEqual([
+        { id: "GENERATED", label: "Play generated", generated: true },
+      ]);
+      // It is the last control of the card.
+      expect(entry.variants.at(-1)?.id).toBe("GENERATED");
+      expect(gallerySoundPlayLabelV7(entry, generated[0])).toBe(
+        `Play generated: ${entry.name}`,
+      );
+    }
+  });
+
+  it("shows every sound as generated when recordings are switched off", () => {
+    const off = gallerySoundGroupsV7(SOUND_THEMES_V1, { stockSounds: false })
+      .flatMap((group) => group.entries)
+      .filter((entry) => entry.faction === null);
+    expect(off.length).toBe(SOUND_IDS_V1.length);
+    for (const entry of off) {
+      expect(entry.origin?.kind, entry.rowId).toBe("GENERATED");
+      expect(
+        entry.variants.some((variant) => variant.id === "GENERATED"),
+        entry.rowId,
+      ).toBe(false);
+    }
+    expect(
+      gallerySoundOriginV7("impact.explosion", { stockSounds: false }),
+    ).toEqual({ kind: "GENERATED", text: "Generated" });
+    expect(gallerySoundOriginV7("impact.explosion")?.kind).toBe("RECORDED");
+  });
+
+  it("shows a theme's source once one is registered", () => {
+    const pending = gallerySoundGroupsV7([]).at(-1);
+    for (const entry of pending?.entries ?? [])
+      expect(entry.origin, entry.rowId).toBeNull();
+    const themes = gallerySoundGroupsV7([
+      TEST_THEME,
+      {
+        id: "theme.goblin",
+        faction: "GOBLIN",
+        loop: false,
+        source: {
+          kind: "SYNTH",
+          recipe: { peak: 0.2, layers: [{ wave: "sine", ms: 300, hz: 220 }] },
+        },
+      },
+    ]).at(-1);
+    const undead = themes?.entries.find((entry) => entry.faction === "UNDEAD");
+    // A registered file without a provenance row is named by its file.
+    expect(undead?.origin).toEqual({ kind: "FILE", text: "theme-undead.ogg" });
+    if (undead === undefined) throw new Error("missing Undead theme");
+    expect(gallerySoundCardLabelV7(undead)).toBe(
+      "Play: Undead theme. File: theme-undead.ogg",
+    );
+    expect(
+      themes?.entries.find((entry) => entry.faction === "GOBLIN")?.origin,
+    ).toEqual({ kind: "GENERATED", text: "Generated" });
+    expect(gallerySoundOriginV7("theme.none")).toBeNull();
   });
 });

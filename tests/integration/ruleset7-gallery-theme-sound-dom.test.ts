@@ -129,10 +129,19 @@ describe("a registered faction theme", () => {
     const undead = required<HTMLButtonElement>(
       '[data-sound-play="theme:UNDEAD"]',
     );
-    expect(undead.getAttribute("aria-label")).toBe("Play: Undead theme");
+    // A theme's row says where it comes from, like a card's.
+    expect(undead.getAttribute("aria-label")).toBe(
+      "Play: Undead theme. File: theme-undead.ogg",
+    );
+    expect(undead.querySelector(".v7-gallery-sound-origin")?.textContent).toBe(
+      "theme-undead.ogg",
+    );
+    expect(
+      required('[data-sound-play="theme:GOBLIN"]').getAttribute("aria-label"),
+    ).toBe("Play: Goblin theme. Generated");
     expect(undead.getAttribute("aria-disabled")).toBeNull();
     expect(undead.dataset.soundId).toBe("theme.undead");
-    expect(undead.textContent).toBe("UndeadTheme");
+    expect(undead.textContent).toBe("UndeadThemetheme-undead.ogg");
 
     app.view.audio.clearLog();
     undead.click();

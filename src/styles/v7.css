@@ -5299,6 +5299,9 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
   gap: 0.45rem;
+  /* A recorded card is taller than a generated one beside it; neither is
+     stretched to the other's height. */
+  align-items: start;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -5419,6 +5422,69 @@
   white-space: nowrap;
 }
 
+/* Where the sound comes from (pulp_wars-2yc.20): "Generated", or the
+   library of a recording on one line with the stretch that was cut, and
+   the file name under it. A long file name wraps anywhere and is cut after
+   two lines; the title has the whole of it. */
+.v7-gallery-sound-origin {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 0.5em;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.v7-gallery-sound-origin[data-sound-origin="generated"] {
+  opacity: 0.75;
+  font-style: italic;
+}
+
+.v7-gallery-sound-origin-library {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.v7-gallery-sound-origin-file {
+  display: -webkit-box;
+  grid-row: 2;
+  grid-column: 1 / -1;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.v7-gallery-sound-origin:not([data-sound-origin="recorded"])
+  .v7-gallery-sound-origin-file {
+  grid-row: 1;
+}
+
+.v7-gallery-sound-origin[data-sound-origin="recorded"]
+  .v7-gallery-sound-origin-file {
+  color: var(--gold);
+}
+
+.v7-gallery-sound-origin-cut {
+  grid-row: 1;
+  grid-column: 2;
+  white-space: nowrap;
+}
+
+/* A recorded card has a file name and one more control: its controls go
+   under it, so the words keep the card's width. */
+.v7-gallery-sound[data-origin="recorded"] {
+  flex-wrap: wrap;
+}
+
+.v7-gallery-sound[data-origin="recorded"] .v7-gallery-sound-play {
+  flex-basis: 100%;
+}
+
 .v7-gallery-sound-mark {
   display: grid;
   place-items: center;
@@ -5535,6 +5601,16 @@
 .v7-gallery-sound-variant .v7-ui-icon {
   width: 1.15rem;
   height: 1.15rem;
+}
+
+/* The synthesised sound a recording replaced, named in words. */
+.v7-gallery-sound-variant-generated {
+  width: auto;
+  padding: 0 0.5rem;
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-style: italic;
+  font-weight: 600;
 }
 
 .v7-gallery-sound-stop {

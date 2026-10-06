@@ -24,6 +24,11 @@ export interface SoundStartV1 {
   readonly delaySeconds: number;
   /** Present (true) for a sound that repeats until it is stopped. */
   readonly loop?: true;
+  /**
+   * Present (true) to play the synthesised sound although the entry has a
+   * recording (the Gallery's "generated" control).
+   */
+  readonly generated?: true;
 }
 
 /** A started sound: stops it (also before a delayed start). */
@@ -32,8 +37,11 @@ export type SoundStopV1 = () => void;
 export interface SoundOutputV1 {
   /** Starts a sound, or returns null when it cannot (no device yet). */
   start(request: SoundStartV1): { readonly stop: SoundStopV1 } | null;
-  /** Length of a sound in ms at rate 1 (for voice counting). */
-  durationMs(id: SoundKeyV1): number;
+  /**
+   * Length of a sound in ms at rate 1 (for voice counting): of what a play
+   * would use now, or of the synthesised sound when `generated` is true.
+   */
+  durationMs(id: SoundKeyV1, generated?: boolean): number;
 }
 
 export type SoundPlayOutcomeV1 =
@@ -65,6 +73,11 @@ export interface SoundPlayOptionsV1 {
    * uses it to play the two ends of a sound's variation.
    */
   readonly detune?: number;
+  /**
+   * True plays the synthesised sound of an entry that has a recording. The
+   * game never passes it; the Gallery does, so both can be heard.
+   */
+  readonly generated?: boolean;
 }
 
 export interface SoundMixerOptionsV1 {
@@ -174,6 +187,7 @@ export class SoundMixerV1 {
       rate,
       delaySeconds: delayMs / 1000,
       ...(entry.loop ? { loop: true as const } : {}),
+      ...(options.generated === true ? { generated: true as const } : {}),
     });
     if (started === null) return "UNAVAILABLE";
     for (const voice of replaced) voice.stop();
@@ -187,7 +201,8 @@ export class SoundMixerV1 {
       startsAt,
       endsAt: entry.loop
         ? Infinity
-        : startsAt + this.#output.durationMs(id) / rate,
+        : startsAt +
+          this.#output.durationMs(id, options.generated === true) / rate,
       stop: started.stop,
     });
     return "PLAYED";

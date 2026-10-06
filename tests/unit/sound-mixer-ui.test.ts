@@ -31,6 +31,10 @@ class FakeOutput implements WebAudioOutputV1 {
   volume = -1;
   closed = false;
   unlocked = false;
+  stockSounds = true;
+  soundSource(): "GENERATED" {
+    return "GENERATED";
+  }
   unlock(): void {
     this.unlockCalls += 1;
     this.unlocked = true;

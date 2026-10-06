@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   assetInventoryV7,
   assetPreloadUrlsV7,
+  soundAssetUrlsV7,
 } from "../../src/assets/asset-inventory-v7";
 import type {
   AssetPreloadProgressV7,
@@ -312,5 +313,88 @@ describe("loading screen", () => {
     ).toBe("100");
     screen.destroy();
     expect(root.childElementCount).toBe(0);
+  });
+});
+
+/**
+ * The recorded sound clips at the start (bead pulp_wars-2yc.20,
+ * docs/ui/SOUND.md "Stock recordings"): asked for beside the art, never
+ * waited for, and never in the way of the game starting.
+ */
+describe("Ruleset 7 start and the sound clips", () => {
+  it("asks for every clip at once and does not wait for any of them", async () => {
+    const { preloader, requests } = manualPreloader();
+    const asked: (readonly string[])[] = [];
+    const starting = bootstrapPreloadedRuleset7App(document, {
+      preloader,
+      loadingScreenDelayMs: 0,
+      storage: null,
+      boardHost: new Host(),
+      randomSeed: () => 7,
+      // Nothing ever answers: the clips are still loading.
+      prefetchSounds: (urls) => asked.push(urls),
+    });
+    await flush();
+    // Asked for while the loading screen shows, before the art is in.
+    expect(query("[data-v7-loading]")).not.toBeNull();
+    expect(asked).toEqual([soundAssetUrlsV7()]);
+    expect(asked[0]?.length).toBeGreaterThan(0);
+    // The art's own list has no sound file in it.
+    expect(
+      requests[0]?.urls.filter((url) => url.includes("assets/audio/")),
+    ).toEqual([]);
+    requests[0]?.resolve({
+      total: 1,
+      loaded: 1,
+      failed: [],
+      unfinished: 0,
+    });
+    const app = await starting;
+    // The game is there although no clip has arrived.
+    expect(query("[data-v7-loading]")).toBeNull();
+    expect(appShown()).toBe(true);
+    app.destroy();
+  });
+
+  it("starts the game when asking for the clips fails", async () => {
+    const { preloader, requests } = manualPreloader();
+    const starting = bootstrapPreloadedRuleset7App(document, {
+      preloader,
+      loadingScreenDelayMs: 0,
+      storage: null,
+      boardHost: new Host(),
+      randomSeed: () => 7,
+      prefetchSounds: () => {
+        throw new Error("no network");
+      },
+    });
+    await flush();
+    requests[0]?.resolve({ total: 0, loaded: 0, failed: [], unfinished: 0 });
+    const app = await starting;
+    expect(appShown()).toBe(true);
+    app.destroy();
+  });
+
+  it("asks for no clip with ?stock-sounds=0", async () => {
+    window.history.replaceState(null, "", "?stock-sounds=0");
+    try {
+      const { preloader, requests } = manualPreloader();
+      const asked: (readonly string[])[] = [];
+      const starting = bootstrapPreloadedRuleset7App(document, {
+        preloader,
+        loadingScreenDelayMs: 0,
+        storage: null,
+        boardHost: new Host(),
+        randomSeed: () => 7,
+        prefetchSounds: (urls) => asked.push(urls),
+      });
+      await flush();
+      expect(asked).toEqual([[]]);
+      expect(soundAssetUrlsV7(false)).toEqual([]);
+      requests[0]?.resolve({ total: 0, loaded: 0, failed: [], unfinished: 0 });
+      (await starting).destroy();
+    } finally {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
   });
 });
