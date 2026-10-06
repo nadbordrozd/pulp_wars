@@ -68,10 +68,177 @@
         "recipe": "frost-garden-edit-a"
       },
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "Bead pulp_wars-2o7.2: the same candidate as a whole plot: the three snow banks of four cabbages as drawn, seated 6 px above the bottom: 64 x 68 in the 80 x 80 tile. Reviewed at 1:1 and x4.",
+        "notes": "Bead pulp_wars-2o7.2: the same candidate as a whole plot: the three snow banks of four cabbages as drawn, seated 6 px above the bottom: 64 x 68 in the 80 x 80 tile. Reviewed at 1:1 and x4. Superseded by frost-garden-plot-a.",
         "reviewedAt": "2026-10-05T12:32:18.845Z"
+      }
+    },
+    "frost-garden-plot-a": {
+      "id": "frost-garden-plot-a",
+      "asset": "chibi-ice-folk-frost-garden",
+      "jobId": "3290a68b-0f2e-45dc-980f-37ecd1f1feaf",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-ice-folk",
+        "asset": "chibi-ice-folk-frost-garden",
+        "subject": "IMPROVEMENT:ICE_FOLK:FARM",
+        "faction": "ICE_FOLK",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 21531,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: a charming little winter garden: one small square plot enclosed by a low rounded wall of packed snow blocks with pale blue shadows and an open gap at the front; inside grow, well apart, tall pointed ice-crystal plants in bright cyan and deep teal, two star-shaped violet-blue frost flowers and one round dark-green holly bush covered in bright red berries; a tiny snow lantern with a warm yellow glow sits on a corner of the wall. No cabbages; the snow has a blue-grey outline. Garden only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a charming little winter garden: one small square plot enclosed by a low rounded wall of packed snow blocks with pale blue shadows and an open gap at the front; inside grow, well apart, tall pointed ice-crystal plants in bright cyan and deep teal, two star-shaped violet-blue frost flowers and one round dark-green holly bush covered in bright red berries; a tiny snow lantern with a warm yellow glow sits on a corner of the wall. No cabbages; the snow has a blue-grey outline. Garden only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a charming little winter garden: one small square plot enclosed by a low rounded wall of packed snow blocks with pale blue shadows and an open gap at the front; inside grow, well apart, tall pointed ice-crystal plants in bright cyan and deep teal, two star-shaped violet-blue frost flowers and one round dark-green holly bush covered in bright red berries; a tiny snow lantern with a warm yellow glow sits on a corner of the wall. No cabbages; the snow has a blue-grey outline. Garden only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-06T12:08:53.631Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-ice-folk/frost-garden-plot-a.png",
+      "rawSheetSha256": "2159a6af479a9292c22de00349ce60610146892a7a639ddf5d53f2bf14dc44d2",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6719,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0272,
+          "footprintWidthShare": 0.6719,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.875,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6563,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.625,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6875,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.625,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0258,
+          "footprintWidthShare": 0.6875,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5625,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5625,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5625,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5313,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0142,
+          "footprintWidthShare": 0.6563,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5313,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:10:31.995Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 2,
+        "notes": "Candidate 2 of 16: a round snow-walled plot with two ice-crystal plants, three violet frost flowers on green leaves and a small lantern on the wall; the snow wall is the subject's own (the user asked for a little snow-walled plot), outlined in blue-grey so it shows on Snow. No cabbages. Candidate 0 (a holly bush with red berries) was the first choice, but its berries are 20 pixels of the owner key red on an unowned building; candidate 2 has none.",
+        "reviewedAt": "2026-10-06T12:39:01.943Z"
       }
     }
   },
@@ -81,20 +248,20 @@
       "subject": "IMPROVEMENT:ICE_FOLK:FARM",
       "assetClass": "BUILDING",
       "status": "ACCEPTED",
-      "recipe": "frost-garden-edit-a",
-      "candidate": 0,
-      "candidateSha256": "c2ce043ac28fcf9b11ab5a13e49b3eb63e9c6015f885f08ab9b0a8f61d03ee99",
+      "recipe": "frost-garden-plot-a",
+      "candidate": 2,
+      "candidateSha256": "909f6bab39f2de70f182081dc80a3043d13416ab3fc1bf575ba420008227a49c",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-ice-folk-frost-garden.png",
-        "sha256": "c2ce043ac28fcf9b11ab5a13e49b3eb63e9c6015f885f08ab9b0a8f61d03ee99",
-        "pixelSha256": "642fe97a62ec80254536090fe301e70b26a8e823a05e30021e40785a98d6b92c",
+        "sha256": "074acb1db56e5793f2717f9f34962cc97139d5653cb1f682a24b18c7fa60ec6a",
+        "pixelSha256": "b5d3841f5c97937a5e1175fc3f63e1f58b3f9f25e7b85008cdc7d9d42231771b",
         "width": 80,
         "height": 80
       },
       "derivation": {
         "kind": "seated",
         "seat": {
-          "bottomMargin": 6
+          "bottomMargin": 8
         }
       },
       "anchor": {
@@ -114,8 +281,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Bead pulp_wars-2o7.2: the same candidate as a whole plot: the three snow banks of four cabbages as drawn, seated 6 px above the bottom: 64 x 68 in the 80 x 80 tile. Reviewed at 1:1 and x4.",
-      "acceptedAt": "2026-10-05T12:32:18.845Z"
+      "notes": "Candidate 2 of 16: a round snow-walled plot with two ice-crystal plants, three violet frost flowers on green leaves and a small lantern on the wall; the snow wall is the subject's own (the user asked for a little snow-walled plot), outlined in blue-grey so it shows on Snow. No cabbages. Candidate 0 (a holly bush with red berries) was the first choice, but its berries are 20 pixels of the owner key red on an unowned building; candidate 2 has none.",
+      "acceptedAt": "2026-10-06T12:39:01.943Z"
     }
   }
 }

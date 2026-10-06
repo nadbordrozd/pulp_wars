@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments",
+  "title": "Achievement Monuments: one Monument look per achievement",
+  "bead": "pulp_wars-2yc.15",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:EXPLORER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": { "width": 48, "height": 72 },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:ENGINEER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": { "width": 48, "height": 72 },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:MUSTER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": { "width": 48, "height": 72 },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:CONQUEROR",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": { "width": 48, "height": 72 },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:LAND_BARON",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": { "width": 48, "height": 72 },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:SEA_DOG",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": { "width": 48, "height": 72 },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:SLAYER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": { "width": 48, "height": 72 },
+      "ownerColour": false
+    }
+  ],
+  "recipes": [
+    {
+      "id": "explorer-a",
+      "asset": "chibi-monument-explorer",
+      "endpoint": "generate-image-v2",
+      "seed": 21501,
+      "requestSize": { "width": 48, "height": 72 },
+      "notes": "Bead pulp_wars-2yc.15 (the user, 2026-10-06: 'generate a separate monument sprite for each achievement'): first sample of the class calm-feature, at the 48 x 72 canvas of the shared Monument."
+    },
+    {
+      "id": "engineer-a",
+      "asset": "chibi-monument-engineer",
+      "endpoint": "generate-image-v2",
+      "seed": 21502,
+      "requestSize": { "width": 48, "height": 72 },
+      "notes": "First sample."
+    },
+    {
+      "id": "muster-a",
+      "asset": "chibi-monument-muster",
+      "endpoint": "generate-image-v2",
+      "seed": 21503,
+      "requestSize": { "width": 48, "height": 72 },
+      "notes": "First sample."
+    },
+    {
+      "id": "conqueror-a",
+      "asset": "chibi-monument-conqueror",
+      "endpoint": "generate-image-v2",
+      "seed": 21504,
+      "requestSize": { "width": 48, "height": 72 },
+      "notes": "First sample."
+    },
+    {
+      "id": "land-baron-a",
+      "asset": "chibi-monument-land-baron",
+      "endpoint": "generate-image-v2",
+      "seed": 21505,
+      "requestSize": { "width": 48, "height": 72 },
+      "notes": "First sample."
+    },
+    {
+      "id": "sea-dog-a",
+      "asset": "chibi-monument-sea-dog",
+      "endpoint": "generate-image-v2",
+      "seed": 21506,
+      "requestSize": { "width": 48, "height": 72 },
+      "notes": "First sample."
+    },
+    {
+      "id": "slayer-a",
+      "asset": "chibi-monument-slayer",
+      "endpoint": "generate-image-v2",
+      "seed": 21507,
+      "requestSize": { "width": 48, "height": 72 },
+      "notes": "First sample."
+    }
+  ]
+}

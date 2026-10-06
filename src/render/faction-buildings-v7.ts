@@ -74,7 +74,7 @@ const FACTION_BUILDINGS: Readonly<
     building("WINDMILL", "Solar Array", "Drinks the light of a lesser star."),
   ]),
   ICE_FOLK: new Map([
-    building("FARM", "Frost Garden", "Cabbages that like the cold."),
+    building("FARM", "Frost Garden", "Frost flowers that like the cold."),
   ]),
   DWARF: new Map([
     building("FARM", "Mushroom Farm", "Grown in the dark, eaten with ale."),

@@ -1,14 +1,17 @@
 import type {
   CommandV7,
+  CoordV7,
   FactionIdV7,
   ImprovementIdV7,
   NavalRoleIdV7,
+  PlayerViewV7,
   RewardIdV7,
   TechnologyIdV7,
   UnitRoleIdV7,
 } from "../engine/index";
 import {
   factionHasImprovementLookV7,
+  monumentArtSubjectV7,
   navalArtSubjectV7,
   type ArtSubjectV7,
   type DinosaurArtRoleV7,
@@ -102,6 +105,37 @@ export function factionImprovementSubjectV7(
   return factionHasImprovementLookV7(improvement, faction)
     ? `IMPROVEMENT:${faction}:${improvement}`
     : improvementSubjectV7(improvement);
+}
+
+/**
+ * The subject of an improvement standing on a tile of the viewer's map
+ * (bead pulp_wars-2yc.15): a Monument is drawn in the look of the
+ * achievement that earned it, every other improvement in the look of the
+ * faction that owns its territory (factionImprovementSubjectV7).
+ *
+ * The view names a Monument's achievement only to the Monument's current
+ * owner (`visibility: "FULL"`, docs/product/RULESET_7.md: the source
+ * achievement is owner-only), so another player's Monument is the shared
+ * `IMPROVEMENT:MONUMENT`.
+ */
+export function tileImprovementSubjectV7(
+  view: Pick<PlayerViewV7, "populationContributions">,
+  at: CoordV7,
+  improvement: ImprovementIdV7,
+  faction: FactionIdV7 | null | undefined,
+): ArtSubjectV7 {
+  if (improvement !== "MONUMENT")
+    return factionImprovementSubjectV7(improvement, faction);
+  for (const { source } of view.populationContributions)
+    if (
+      source.kind === "MONUMENT" &&
+      source.at.x === at.x &&
+      source.at.y === at.y
+    )
+      return monumentArtSubjectV7(
+        source.visibility === "FULL" ? source.achievement : null,
+      );
+  return monumentArtSubjectV7(null);
 }
 
 /**
@@ -281,6 +315,9 @@ export function commandSubjectV7(
       return navalArtSubjectV7(faction, "UNIT", "EMBARKED_TRANSPORT");
     case "CHOOSE_CITY_REWARD":
       return rewardSubjectV7(command.reward, faction);
+    // The Monument of the achievement that pays for it (pulp_wars-2yc.15).
+    case "BUILD_MONUMENT":
+      return monumentArtSubjectV7(command.achievement);
     case "RALLY":
       if (faction === "UNDEAD") return "ICON:ACTION:UNDEAD:RALLY";
       if (faction === "GOBLIN") return "ICON:ACTION:GOBLIN:RALLY";

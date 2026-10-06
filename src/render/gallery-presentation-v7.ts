@@ -1,4 +1,5 @@
 import {
+  ACHIEVEMENT_IDS_V7,
   BASIC_ECONOMIC_ACTIONS_V7,
   EGG_DEFENSE2_V7,
   EGG_HP_V7,
@@ -15,6 +16,7 @@ import {
   isEggLaidRoleV7,
   isNavalRoleV7,
   roleMechanicsV7,
+  type AchievementIdV7,
   type FactionIdV7,
   type ImprovementIdV7,
   type TechnologyIdV7,
@@ -22,6 +24,7 @@ import {
 } from "../engine/index";
 import {
   cityArtSubjectV7,
+  monumentArtSubjectV7,
   navalArtSubjectV7,
   territoryGroundV7,
   territoryTerrainSubjectV7,
@@ -29,6 +32,10 @@ import {
   type ArtSubjectV7,
   type CuriosityOverlayIdV7,
 } from "../assets/chibi-art-v7";
+import {
+  ACHIEVEMENT_GOALS_V7,
+  achievementNameV7,
+} from "./achievement-presentation-v7";
 import { factionBuildingV7 } from "./faction-buildings-v7";
 import {
   factionImprovementSubjectV7,
@@ -168,16 +175,60 @@ export const GALLERY_UNIT_ROWS_V7: readonly GalleryUnitRowIdV7[] = [
   "EGG",
 ];
 
-/** A Buildings row: a city by art level, the Village, an improvement. */
+/**
+ * A Monument as one achievement draws it (bead pulp_wars-2yc.15): a row of
+ * its own under the shared Monument, which is how a Monument looks when
+ * its achievement is not the viewer's to see.
+ */
+export type GalleryMonumentRowIdV7 = `MONUMENT_${AchievementIdV7}`;
+
+/**
+ * A Buildings row: a city by art level, the Village, an improvement, an
+ * achievement's Monument.
+ */
 export type GalleryBuildingRowIdV7 =
-  "CITY_1" | "CITY_2" | "CITY_3" | "VILLAGE" | ImprovementIdV7;
+  | "CITY_1"
+  | "CITY_2"
+  | "CITY_3"
+  | "VILLAGE"
+  | ImprovementIdV7
+  | GalleryMonumentRowIdV7;
+
+/** The improvement of a Buildings row that is one, else null. */
+function galleryRowImprovement(
+  row: GalleryBuildingRowIdV7,
+): ImprovementIdV7 | null {
+  return (IMPROVEMENT_IDS_V7 as readonly string[]).includes(row)
+    ? (row as ImprovementIdV7)
+    : null;
+}
+
+/** The achievement of a Monument row, or null for every other row. */
+export function galleryMonumentAchievementV7(
+  row: GalleryBuildingRowIdV7,
+): AchievementIdV7 | null {
+  return (
+    ACHIEVEMENT_IDS_V7.find(
+      (achievement) => row === `MONUMENT_${achievement}`,
+    ) ?? null
+  );
+}
 
 export const GALLERY_BUILDING_ROWS_V7: readonly GalleryBuildingRowIdV7[] = [
   "CITY_1",
   "CITY_2",
   "CITY_3",
   "VILLAGE",
-  ...IMPROVEMENT_IDS_V7,
+  ...IMPROVEMENT_IDS_V7.flatMap((improvement): GalleryBuildingRowIdV7[] =>
+    improvement === "MONUMENT"
+      ? [
+          improvement,
+          ...ACHIEVEMENT_IDS_V7.map(
+            (achievement): GalleryMonumentRowIdV7 => `MONUMENT_${achievement}`,
+          ),
+        ]
+      : [improvement],
+  ),
 ];
 
 function title(value: string): string {
@@ -204,6 +255,11 @@ const ROW_LABELS: Readonly<Record<string, string>> = {
 export function galleryRowLabelV7(
   row: GalleryUnitRowIdV7 | GalleryBuildingRowIdV7 | GalleryCuriosityRowIdV7,
 ): string {
+  const achievement = ACHIEVEMENT_IDS_V7.find(
+    (candidate) => row === `MONUMENT_${candidate}`,
+  );
+  if (achievement !== undefined)
+    return `${achievementNameV7(achievement)} Monument`;
   return ROW_LABELS[row] ?? title(row);
 }
 
@@ -431,7 +487,10 @@ export function galleryBuildingSubjectV7(
       faction,
     });
   if (row === "VILLAGE") return "SITE:VILLAGE";
-  return factionImprovementSubjectV7(row, faction);
+  const improvement = galleryRowImprovement(row);
+  return improvement === null
+    ? monumentArtSubjectV7(galleryMonumentAchievementV7(row))
+    : factionImprovementSubjectV7(improvement, faction);
 }
 
 /**
@@ -464,7 +523,12 @@ export function galleryBuildingNameV7(
   if (row === "CITY_1" || row === "CITY_2" || row === "CITY_3")
     return galleryRowLabelV7(row);
   if (row === "VILLAGE") return galleryRowLabelV7(row);
-  return factionBuildingV7(row, faction)?.name ?? galleryRowLabelV7(row);
+  const improvement = galleryRowImprovement(row);
+  return (
+    (improvement === null
+      ? null
+      : factionBuildingV7(improvement, faction)?.name) ?? galleryRowLabelV7(row)
+  );
 }
 
 /**
@@ -527,25 +591,26 @@ function buildingFormula(improvement: ImprovementIdV7): string | null {
   return null;
 }
 
-const BUILDING_DESCRIPTIONS: Readonly<Record<GalleryBuildingRowIdV7, string>> =
-  {
-    CITY_1: "A city. Earns Coins and trains units.",
-    CITY_2: "A level 2 city.",
-    CITY_3: "A city of level 3 and up.",
-    VILLAGE: "Take it with a unit to found a city.",
-    FARM: "Built on Fertile Ground.",
-    LUMBER_CAMP: "Built in a Forest.",
-    MINE: "Built on Ore in the mountains.",
-    WINDMILL: "Built next to farms.",
-    SAWMILL: "Built next to lumber camps.",
-    FORGE: "Built next to mines.",
-    WORKSHOP: "Built among varied buildings.",
-    MARKET: "Built among varied buildings.",
-    MONUMENT:
-      "Each achievement earns a free Monument: +2 population, one per city.",
-    PORT: "Built on Shallow Water. Puts land units to sea and trains ships.",
-    SHIPYARD: "An upgraded Port. Ships cost less.",
-  };
+const BUILDING_DESCRIPTIONS: Readonly<
+  Record<Exclude<GalleryBuildingRowIdV7, GalleryMonumentRowIdV7>, string>
+> = {
+  CITY_1: "A city. Earns Coins and trains units.",
+  CITY_2: "A level 2 city.",
+  CITY_3: "A city of level 3 and up.",
+  VILLAGE: "Take it with a unit to found a city.",
+  FARM: "Built on Fertile Ground.",
+  LUMBER_CAMP: "Built in a Forest.",
+  MINE: "Built on Ore in the mountains.",
+  WINDMILL: "Built next to farms.",
+  SAWMILL: "Built next to lumber camps.",
+  FORGE: "Built next to mines.",
+  WORKSHOP: "Built among varied buildings.",
+  MARKET: "Built among varied buildings.",
+  MONUMENT:
+    "Each achievement earns a free Monument: +2 population, one per city.",
+  PORT: "Built on Shallow Water. Puts land units to sea and trains ships.",
+  SHIPYARD: "An upgraded Port. Ships cost less.",
+};
 
 /** Port and Shipyard costs (the engine's economic preview, query.ts). */
 const NAVAL_BUILDING_COSTS: Partial<Record<ImprovementIdV7, number>> = {
@@ -559,26 +624,31 @@ export function galleryBuildingDetailsV7(
 ): GalleryBuildingDetailsV7 {
   const name = galleryBuildingNameV7(row, faction);
   const factionName = faction === null ? null : factionNameV7(faction);
+  // An achievement's Monument (bead pulp_wars-2yc.15): the Monument's
+  // rules, led by what earns it.
+  const achievement = galleryMonumentAchievementV7(row);
+  const improvement = galleryRowImprovement(row);
+  if (achievement !== null || improvement === null)
+    return {
+      name,
+      factionName,
+      description:
+        achievement === null
+          ? BUILDING_DESCRIPTIONS[row as "CITY_1" | "VILLAGE"]
+          : `The Monument of the ${achievementNameV7(achievement)} achievement: ${ACHIEVEMENT_GOALS_V7[achievement]} ${BUILDING_DESCRIPTIONS.MONUMENT}`,
+      effects: [],
+      cost: null,
+      technology: null,
+    };
+  row = improvement;
   // A faction's own look: its flavour line ("... Counts as a Farm.") leads;
   // the rules, effects and cost below are the generic building's.
-  const own =
-    row === "CITY_1" ||
-    row === "CITY_2" ||
-    row === "CITY_3" ||
-    row === "VILLAGE"
-      ? null
-      : factionBuildingV7(row, faction);
+  const own = factionBuildingV7(row, faction);
   const description =
     own === null
       ? BUILDING_DESCRIPTIONS[row]
       : `${own.flavour} ${BUILDING_DESCRIPTIONS[row]}`;
-  if (
-    row === "CITY_1" ||
-    row === "CITY_2" ||
-    row === "CITY_3" ||
-    row === "VILLAGE" ||
-    row === "MONUMENT"
-  )
+  if (row === "MONUMENT")
     return {
       name,
       factionName,

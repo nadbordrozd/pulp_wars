@@ -81,6 +81,7 @@ the Human-era owner text they were generated with.
 | `calm-settlement` | as `calm-building`                                                          | **seated**: cities and the Village in the calm style                                                     |
 | `crop-rows`       | Pixen or Pixflux, crops on strips of soil, then edits; no faction layer     | **crop-rows**: the Farm as a seamless pattern of crop rows                                               |
 | `calm-markers`    | `generate-image-v2`, chibi style, light layer, no faction layer             | **seated**: free-standing things with nothing under them (the Undead Graveyard, bead `pulp_wars-2yc.14`) |
+| `calm-feature`    | as `calm-markers`, for a BUILDING or a RESOURCE                             | **seated**: one free-standing piece, with what its subject names under it (bead `pulp_wars-2yc.15`)      |
 
 "Generate at the display size" is enforced: a non-terrain request must
 equal its master canvas. Pixen sizes must be multiples of 4.
@@ -1525,6 +1526,35 @@ Three pipeline pieces:
   the light layer, a class text that asks for a few upright things with
   nothing under or between them, seated, no faction layer. Pixen and
   Pixflux are listed only for the rejected samples and the retired rows.
+
+### Free-standing features (bead `pulp_wars-2yc.15`)
+
+The seven achievement Monuments (batch `monuments`), the Frost Garden's
+snow-walled plot and the soil patch of Fertile Ground
+([what and why](FACTION_BUILDINGS.md#11-achievement-monuments-a-richer-graveyard-the-frost-garden-plot-and-the-soil-of-fertile-ground-bead-pulp_wars-2yc15)).
+
+- **The `calm-feature` class** is `calm-markers` for any subject: the same
+  layers (chibi style, camera, light, class, subject), `generate-image-v2`,
+  seated, no faction layer. Its class text names no subject and says
+  "nothing is drawn under or around it except what the subject names", so a
+  subject may carry a snow wall or be a patch of earth. It makes a BUILDING
+  or a RESOURCE; a RESOURCE is seated in its 48 x 48 canvas by the asset's
+  `bottomMargin` (Fertile Ground: 5, which centres its 38 px). Pixen is
+  listed only for the wheat recipe Fertile Ground keeps as history.
+- **Monument subjects** are `IMPROVEMENT:MONUMENT:<ACHIEVEMENT>`, with
+  their texts in `SHARED.json`.
+- **What `generate-image-v2` did.** A request of 48 x 72 or 48 x 48 gives
+  16 candidates like one of 80 x 80. It fills the request: with no word
+  about a margin most Graveyard and Slayer candidates touch or cross an
+  edge; "the group is small, with a wide empty margin all round" in the
+  subject gave 61 x 61 in 80 x 80. One description is at most 2000
+  characters with every layer, so a subject of this class has about 450.
+- **A subject text is live for its asset's old recipes too**: the manifest
+  check measures the description of every `generate-image-v2` recipe of the
+  asset with today's `subjectKey`, so a longer subject fails the check for
+  the recipes already generated. The records keep the text that was sent.
+- **Red on an unowned piece** is caught by the owner-key check of the
+  tests (the Frost Garden's holly berries); pick another candidate.
 
 ## The Candy batches (bead `pulp_wars-jdb.5`)
 

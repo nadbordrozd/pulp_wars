@@ -36,6 +36,14 @@
  *   `gallery-buildings-farm-<desktop|phone>.png`: the Gallery's Buildings
  *   tab, at its top and scrolled to the Farm row, which has one cell per
  *   faction since the faction looks.
+ * - `scene-monuments-<before|after>-<viewport>-zoom-<step>.png` and
+ *   `gallery-buildings-monuments-<desktop|phone>.png` (bead
+ *   pulp_wars-2yc.15): a Human city with one Monument per achievement and
+ *   Fertile Ground bare and under a Farm, beside another player's city
+ *   with the same (its seven Monuments are the shared one: the view names
+ *   an achievement to the Monument's owner only); "before" is the shared
+ *   Monument everywhere. And the Gallery's Buildings tab at its Monument
+ *   rows.
  * - `before-after-contact.png`: every scene's before and after side by side
  *   (desktop at zoom 1 and phone at zoom 0.75), labelled.
  * - `index.json`.
@@ -779,6 +787,8 @@ interface SceneCapture {
   readonly grass: SceneGrassV7 | null;
   /** The Human city and its territory were taken by the faction. */
   readonly captured: boolean;
+  /** The Monument scene (bead pulp_wars-2yc.15) instead of the buildings. */
+  readonly monuments?: boolean;
   readonly viewports: readonly string[];
   readonly zooms: readonly string[];
 }
@@ -818,6 +828,17 @@ function sceneCaptures(): SceneCapture[] {
         : { viewports: ["desktop"], zooms: ["1"] }),
     });
   }
+  // One Monument per achievement and the Fertile Ground (pulp_wars-2yc.15).
+  for (const after of [false, true])
+    captures.push({
+      name: `scene-monuments-${after ? "after" : "before"}`,
+      faction: "ORIGINAL",
+      after,
+      grass: null,
+      captured: false,
+      monuments: true,
+      ...everywhere,
+    });
   for (const spec of UNDEAD_GRASS_VARIANTS)
     if (spec.id !== RECOMMENDED_UNDEAD_GRASS)
       captures.push({
@@ -869,7 +890,18 @@ async function captureGallery(
     name: `gallery-buildings-farm-${viewport}.png`,
     png: await settledScreenshot(connection),
   });
-  console.log(`captured gallery-buildings-${viewport}.png and its Farm row`);
+  await evaluate(
+    connection,
+    `(() => { document.querySelector('[data-action="gallery-open-building"][data-row="MONUMENT_CONQUEROR"]').scrollIntoView({ block: 'center' }); return true; })()`,
+  );
+  await waitFor(connection, ready, 300);
+  shots.push({
+    name: `gallery-buildings-monuments-${viewport}.png`,
+    png: await settledScreenshot(connection),
+  });
+  console.log(
+    `captured gallery-buildings-${viewport}.png, its Farm row and its Monument rows`,
+  );
   await evaluate(
     connection,
     `(() => { document.querySelector('[data-action="gallery-back"]').click(); return true; })()`,
@@ -973,6 +1005,7 @@ async function captureAll(
           after: capture.after,
           grass: capture.grass,
           captured: capture.captured,
+          monuments: capture.monuments === true,
         };
         await evaluate(
           connection,
@@ -1060,7 +1093,10 @@ async function contactSheet(
   const factions = [
     ...new Set(
       captures
-        .filter((capture) => !capture.name.includes("-grass-"))
+        .filter(
+          (capture) =>
+            !capture.name.includes("-grass-") && capture.monuments !== true,
+        )
         .map((capture) => capture.faction),
     ),
   ];

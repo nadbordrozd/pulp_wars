@@ -192,13 +192,23 @@ describe("faction building batches", () => {
     // The Graveyard was redone again in bead pulp_wars-2yc.14 (the user: "it
     // shouldn't be on a plate. it should be tomb stones directly on grass"):
     // the class calm-markers; its fenced plot stays in the batch as history.
+    // Bead pulp_wars-2yc.15 made it richer in the same class (the user: "a
+    // bit basic and boring") and gave the Frost Garden a snow-walled plot
+    // (the user: "looks just like frozen cabbage").
     for (const [batch, id, recipe, retired, recipeClass] of [
       [
         BATCHES.UNDEAD,
         "chibi-undead-graveyard",
+        "graveyard-rich-c",
         "graveyard-stones-e",
-        "graveyard-plot-c-edit",
         "calm-markers",
+      ],
+      [
+        BATCHES.ICE_FOLK,
+        "chibi-ice-folk-frost-garden",
+        "frost-garden-plot-a",
+        "frost-garden-edit-a",
+        "calm-feature",
       ],
       [
         BATCHES.DWARF,
@@ -265,7 +275,10 @@ describe("the Undead Graveyard", () => {
       productionLayout(ROOT, BATCHES.UNDEAD),
       BATCHES.UNDEAD,
     );
-    const request = records.recipes["graveyard-stones-e"]?.request;
+    expect(records.assets["chibi-undead-graveyard"]?.recipe).toBe(
+      "graveyard-rich-c",
+    );
+    const request = records.recipes["graveyard-rich-c"]?.request;
     if (request === undefined) throw new Error("no record");
     expect(request.endpoint).toBe("generate-image-v2");
     expect(request.noBackground).toBe(true);

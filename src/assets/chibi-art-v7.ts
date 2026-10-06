@@ -1,4 +1,5 @@
 import type {
+  AchievementIdV7,
   CommandV7,
   FactionIdV7,
   ImprovementIdV7,
@@ -37,6 +38,7 @@ export type ArtSubjectV7 =
    * (chibiFallbackSubjectV7).
    */
   | FactionImprovementSubjectV7
+  | MonumentArtSubjectV7
   | FactionTerrainSubjectV7
   | `UNIT:${UnitRoleIdV7 | "EMBARKED_TRANSPORT" | "SUBMARINE_SUBMERGED"}`
   | `UNIT:UNDEAD:${UndeadArtRoleV7}`
@@ -477,6 +479,25 @@ export function factionHasImprovementLookV7(
 }
 
 /**
+ * A Monument as its achievement draws it (bead pulp_wars-2yc.15, the user:
+ * "a separate monument sprite for each achievement"): the Explorer's
+ * obelisk with a compass, the Conqueror's arch, the Slayer's sword in the
+ * stone. Purely visual. Each falls back to the shared `IMPROVEMENT:MONUMENT`
+ * (chibiFallbackSubjectV7), which also draws a Monument whose achievement
+ * the viewer may not see: another player's.
+ */
+export type MonumentArtSubjectV7 = `IMPROVEMENT:MONUMENT:${AchievementIdV7}`;
+
+/** The subject of a Monument: its achievement's look, or the shared one. */
+export function monumentArtSubjectV7(
+  achievement: AchievementIdV7 | null | undefined,
+): ArtSubjectV7 {
+  return achievement === null || achievement === undefined
+    ? "IMPROVEMENT:MONUMENT"
+    : `IMPROVEMENT:MONUMENT:${achievement}`;
+}
+
+/**
  * The ground of a faction's territory (FACTION_BUILDINGS.md, section 4):
  * the Undead "gloam" Grass, a cooler, duller green, under the Grass, the
  * Forest trees and the Mountain fringe inside Undead borders.
@@ -655,6 +676,10 @@ export function moundArtSubjectV7(rider: boolean): ArtSubjectV7 {
 export function chibiFallbackSubjectV7(
   subject: ArtSubjectV7,
 ): ArtSubjectV7 | null {
+  // An achievement's Monument (bead pulp_wars-2yc.15) without a raster (the
+  // Classic look) is the shared Monument.
+  if (subject.startsWith("IMPROVEMENT:MONUMENT:"))
+    return "IMPROVEMENT:MONUMENT";
   if (subject === "UNIT:DINOSAUR:EGG") return null;
   if (subject === "UNIT:DWARF:MOUND" || subject === "UNIT:DWARF:MOUND_RIDER")
     return null;

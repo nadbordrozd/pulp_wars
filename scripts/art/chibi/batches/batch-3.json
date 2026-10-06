@@ -20,11 +20,14 @@
       "id": "chibi-fertile-ground",
       "subject": "RESOURCE:FERTILE_GROUND",
       "assetClass": "RESOURCE",
-      "recipeClass": "resource",
+      "recipeClass": "calm-feature",
       "canvas": {
         "width": 48,
         "height": 48
-      }
+      },
+      "ownerColour": false,
+      "subjectKey": "RESOURCE:FERTILE_GROUND/SOIL",
+      "bottomMargin": 5
     },
     {
       "id": "chibi-game",
@@ -197,6 +200,29 @@
         "height": 48
       },
       "negativeAddendum": "field, farm, fence, basket, sack, person, character, scarecrow"
+    },
+    {
+      "id": "fertile-soil-a",
+      "asset": "chibi-fertile-ground",
+      "endpoint": "generate-image-v2",
+      "seed": 21521,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Bead pulp_wars-2yc.15 (the user, 2026-10-06: 'regenerate the fertile ground sprite. right now it's a bunch of wheat stalks. make it look like actually the ground'): a patch of dark tilled soil with furrows and three sprouts, class calm-feature."
+    },
+    {
+      "id": "fertile-soil-b",
+      "asset": "chibi-fertile-ground",
+      "endpoint": "generate-image-v2",
+      "seed": 21522,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The patch is as wide as the image, with a ragged crumbly edge.",
+      "notes": "fertile-soil-a reads as tilled soil, but most candidates are small round discs with a thick rim (a cookie); a second sample asked wide with a ragged edge."
     },
     {
       "id": "game-a",

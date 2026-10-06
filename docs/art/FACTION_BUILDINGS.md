@@ -538,3 +538,105 @@ Weak spots:
   candidate.
 - **Light slate on ashen grey-green is a calm pair**; the dark outlines
   carry the shapes. On default Grass and on Snow the stones stand out more.
+
+## 11. Achievement Monuments, a richer Graveyard, the Frost Garden plot and the soil of Fertile Ground (bead `pulp_wars-2yc.15`)
+
+The user, 2026-10-06: "generate a separate monument sprite for each
+achievement", "regenerate the fertile ground sprite. right now it's a bunch
+of wheat stalks. make it look like actually the ground", "recreate the snow
+garden sprite. Looks just like frozen cabbage. Make it more interesting",
+and "the graveyard is better than it was but looks a bit basic and boring."
+Purely visual: no rule, command, save or identity changed.
+
+### The art
+
+| Asset (subject)                                             | Shows                                                                                                                                | Recipe, candidate                      |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
+| `chibi-monument-explorer` (`IMPROVEMENT:MONUMENT:EXPLORER`) | a stone obelisk with a golden compass rose and a brass spyglass at its foot, 34 x 67                                                 | `explorer-a`, 0 of 16                  |
+| `chibi-monument-engineer` (`…:ENGINEER`)                    | a square pillar carrying a bronze cogwheel with a crossed hammer and spanner, 32 x 62                                                | `engineer-a`, 0                        |
+| `chibi-monument-muster` (`…:MUSTER`)                        | a pillar hung with four different shields under a golden war horn, 28 x 62                                                           | `muster-a`, 3                          |
+| `chibi-monument-conqueror` (`…:CONQUEROR`)                  | a small triumphal arch on fluted pillars with a golden laurel wreath, 39 x 61                                                        | `conqueror-a`, 9                       |
+| `chibi-monument-land-baron` (`…:LAND_BARON`)                | a stout boundary stone with a carved shield, a golden crown on top and a signpost, 43 x 61                                           | `land-baron-a`, 5                      |
+| `chibi-monument-sea-dog` (`…:SEA_DOG`)                      | a fluted column with a golden ship's wheel, a bronze anchor and a coil of rope, 40 x 66                                              | `sea-dog-a`, 0                         |
+| `chibi-monument-slayer` (`…:SLAYER`)                        | a sword with a golden hilt in a block of stone, a laurel wreath and a bronze helmet, 39 x 70                                         | `slayer-a`, 5                          |
+| `chibi-undead-graveyard` (`IMPROVEMENT:UNDEAD:FARM`)        | a small mausoleum, a dead tree with a raven, a leaning cross, a cracked slab and a lantern with a violet flame, five pieces, 61 x 61 | `graveyard-rich-c`, 5 (`calm-markers`) |
+| `chibi-ice-folk-frost-garden` (`IMPROVEMENT:ICE_FOLK:FARM`) | a round snow-walled plot with two ice-crystal plants, three violet frost flowers and a small lantern, 64 x 63                        | `frost-garden-plot-a`, 2               |
+| `chibi-fertile-ground` (`RESOURCE:FERTILE_GROUND`)          | a low patch of dark tilled soil with four furrows, four sprouts and crumbs at a ragged edge, 46 x 38 in the 48 x 48 resource canvas  | `fertile-soil-b`, 1                    |
+
+- **The seven Monuments are one family**: the pale grey-beige stone of the
+  shared Monument, bronze and gold trim, no owner colour, the shared
+  Monument's 48 x 72 canvas, anchor and seat (batch `monuments`). The shared
+  obelisk (`chibi-direction-monument`) stays: it is the Monument of the
+  Classic look and of a Monument whose achievement the viewer may not see.
+- **Class `calm-feature`** (`class-calm-feature.txt`): `calm-markers`
+  without the word "gravestones", and it lets the subject name what lies
+  under the piece (a snow wall, a patch of soil). Light layer,
+  `generate-image-v2`, seated; it makes a BUILDING or a RESOURCE.
+- **The Frost Garden keeps its name** and has a new flavour line, "Frost
+  flowers that like the cold. Counts as a Farm." (it has no cabbages now).
+- **PixelLab calls: 13**, all `generate-image-v2` through the chibi
+  pipeline, 16 candidates each: the seven Monuments once each, the Frost
+  Garden once, Fertile Ground twice, the Graveyard three times.
+- Rejected, with the reason in the records: `fertile-soil-a` (small round
+  discs with a thick rim, a cookie), `graveyard-rich-a` (the group fills
+  the image edge to edge and is cut off, in a mid slate that sinks into the
+  ashen ground), `graveyard-rich-b` (fits, but one or two gravestones only:
+  a crypt and a tree). The first Frost Garden choice, candidate 0 with a
+  holly bush, was dropped for its berries: 20 pixels of the owner key red
+  on an unowned building.
+- Lighting QA (`scripts/art/lighting-qa.ts`, faces): the Monuments +11.8 to
+  +33.3, the Graveyard +11.5, the Frost Garden +4.3, Fertile Ground +2.9;
+  all lit from the left.
+
+### In the game
+
+- **Which Monument.** `tileImprovementSubjectV7`
+  ([`chibi-ui-art-v7.ts`](../../src/assets/chibi-ui-art-v7.ts)) gives the
+  board plan and the tile dock `IMPROVEMENT:MONUMENT:<ACHIEVEMENT>` from
+  the Monument's population contribution in the player's view. The state
+  already records the achievement (`source.achievement`), so no save
+  changed.
+- **Only your own.** The view names the achievement to the Monument's
+  current owner only (`visibility: "FULL"`; another viewer gets
+  `BUILDING_ONLY`, [RULESET_7.md](../product/RULESET_7.md): "only its
+  source achievement is limited to the current owner"). Another player's
+  Monument is therefore the shared obelisk. Showing it in its own look
+  would be a rules decision and a change of the view projection
+  (`src/engine/v7/view.ts`), not an art change.
+- The Monument build button shows its achievement's Monument
+  (`commandSubjectV7`), the Achievements screen shows each one beside its
+  card, the "achievement complete" notice shows it in the badge, and the
+  Gallery's Buildings tab has one row per achievement under the shared
+  Monument ("Explorer Monument", ...). A subject without a raster (the
+  Classic look) falls back to the shared Monument.
+
+### Evidence
+
+`npm run art:faction-buildings-review` also writes
+`scene-monuments-<before|after>-*.png` (a Human city with the seven
+Monuments and Fertile Ground bare and under a Farm, beside another
+player's city, whose seven Monuments are the shared one) and
+`gallery-buildings-monuments-*.png`. Tests:
+`tests/unit/chibi-monuments-assets.test.ts`.
+
+![The seven Monuments and Fertile Ground on the board](../../art/pixellab/reviews/faction-buildings-study/scene-monuments-after-desktop-zoom-1.png)
+
+### Weak spots
+
+- **The seven Monuments are bolder than the calm set**: near-black
+  outlines and more detail than the shared obelisk and the other shared
+  buildings, which have toned outlines.
+- **The shared obelisk is lit from the right** (faces -19.8); it was not
+  part of this bead.
+- **The Slayer's wreath is green**, not gold, and its sprite fills the
+  canvas (70 of 72 px), so it is seated 2 px above the bottom, not 3.
+- **The Conqueror has no crossed swords**: the candidates with them had
+  mottled or blue-grey stone.
+- **The Graveyard has no mist and no bones.** A haze sits on the roof
+  ridge; the seated derivation makes alpha binary, and the class forbids
+  bones. Its five pieces stand in two rows.
+- **The Frost Garden has no winter berries**, and its wall is a thick ring
+  of snow; on Snow the blue-grey outline and the wall's shadow carry it.
+- **Fertile Ground is a dark brown patch with a near-black outline**: it
+  reads as dug earth, but it is an object lying on the Grass, not a change
+  of the tile's own ground.

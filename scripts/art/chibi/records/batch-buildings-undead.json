@@ -1062,6 +1062,507 @@
         "reviewedAt": "2026-10-05T12:51:08.225Z"
       }
     },
+    "graveyard-rich-a": {
+      "id": "graveyard-rich-a",
+      "asset": "chibi-undead-graveyard",
+      "jobId": "63fb05b7-ba29-4977-80db-b590ced2d0ce",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-graveyard",
+        "subject": "IMPROVEMENT:UNDEAD:FARM",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-markers",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 21541,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-markers.txt + scripts/art/chibi/fragments/class-calm-markers.negative.txt",
+            "text": "Class: one small group of free-standing gravestones for one square tile of a strategy map: a few big simple things standing upright, clearly apart, calmer and less saturated than units, no face. They stand on the empty transparent background with nothing drawn under or between them: no ground, no earth, no grass, no slab, no base, no snow.",
+            "negative": "ground plate, platform, grass square, soil patch, mound, slab, isometric block, base, snow, background, buildings, people, fence, skull, bones"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a tiny spooky graveyard, six different things well apart: a small stone mausoleum with a peaked roof and dark arched door; a tall leaning stone cross; a round-topped headstone; a cracked slab broken in two; a bare twisted dead tree with a black raven on a branch; a short lantern post with a glowing violet flame. Light slate blue-grey stone (#8b92a3), darker on the right sides, a little moss, a thin pale wisp of mist; dark slate outline, never black."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small group of free-standing gravestones for one square tile of a strategy map: a few big simple things standing upright, clearly apart, calmer and less saturated than units, no face. They stand on the empty transparent background with nothing drawn under or between them: no ground, no earth, no grass, no slab, no base, no snow. Subject: a tiny spooky graveyard, six different things well apart: a small stone mausoleum with a peaked roof and dark arched door; a tall leaning stone cross; a round-topped headstone; a cracked slab broken in two; a bare twisted dead tree with a black raven on a branch; a short lantern post with a glowing violet flame. Light slate blue-grey stone (#8b92a3), darker on the right sides, a little moss, a thin pale wisp of mist; dark slate outline, never black.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, mound, slab, isometric block, base, snow, background, buildings, people, fence, skull, bones",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small group of free-standing gravestones for one square tile of a strategy map: a few big simple things standing upright, clearly apart, calmer and less saturated than units, no face. They stand on the empty transparent background with nothing drawn under or between them: no ground, no earth, no grass, no slab, no base, no snow. Subject: a tiny spooky graveyard, six different things well apart: a small stone mausoleum with a peaked roof and dark arched door; a tall leaning stone cross; a round-topped headstone; a cracked slab broken in two; a bare twisted dead tree with a black raven on a branch; a short lantern post with a glowing violet flame. Light slate blue-grey stone (#8b92a3), darker on the right sides, a little moss, a thin pale wisp of mist; dark slate outline, never black. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, mound, slab, isometric block, base, snow, background, buildings, people, fence, skull, bones."
+      },
+      "submittedAt": "2026-10-06T12:10:32.301Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/graveyard-rich-a.png",
+      "rawSheetSha256": "4cd572f7856d61277574b7d8d9f715444b5d55a135d50b851c569e46d354b5b2",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6522,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7297,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0024,
+          "footprintWidthShare": 0.6757,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0022,
+          "footprintWidthShare": 0.7429,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.0039,
+          "footprintWidthShare": 0.7183,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.0039,
+          "footprintWidthShare": 0.6711,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.68,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.0103,
+          "footprintWidthShare": 0.675,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.0078,
+          "footprintWidthShare": 0.6618,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5405,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.004,
+          "footprintWidthShare": 0.6933,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.0061,
+          "footprintWidthShare": 0.5875,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.0118,
+          "footprintWidthShare": 0.6111,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0035,
+          "footprintWidthShare": 0.6447,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0092,
+          "footprintWidthShare": 0.6389,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0072,
+          "footprintWidthShare": 0.6714,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:12:43.739Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right things, but the group fills the image edge to edge (78 to 80 px, pieces cut off) in a mid slate that sinks into the ashen ground.",
+        "reviewedAt": "2026-10-06T12:31:55.800Z"
+      }
+    },
+    "graveyard-rich-b": {
+      "id": "graveyard-rich-b",
+      "asset": "chibi-undead-graveyard",
+      "jobId": "7fe9dd69-f7b3-4ddf-a31a-d763b7829045",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-graveyard",
+        "subject": "IMPROVEMENT:UNDEAD:FARM",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-markers",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 21542,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-markers.txt + scripts/art/chibi/fragments/class-calm-markers.negative.txt",
+            "text": "Class: one small group of free-standing gravestones for one square tile of a strategy map: a few big simple things standing upright, clearly apart, calmer and less saturated than units, no face. They stand on the empty transparent background with nothing drawn under or between them: no ground, no earth, no grass, no slab, no base, no snow.",
+            "negative": "ground plate, platform, grass square, soil patch, mound, slab, isometric block, base, snow, background, buildings, people, fence, skull, bones"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a tiny spooky graveyard, five things well apart: a small stone mausoleum with a peaked roof and dark arched door; a tall leaning stone cross; a cracked slab broken in two; a bare twisted dead tree with a black raven on a branch; a short lantern post with a glowing violet flame. Pale silvery blue-grey stone (#aab2c2), darker on the right sides, a thin wisp of white mist; dark slate outline. The group is small, with a wide empty margin on every side."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small group of free-standing gravestones for one square tile of a strategy map: a few big simple things standing upright, clearly apart, calmer and less saturated than units, no face. They stand on the empty transparent background with nothing drawn under or between them: no ground, no earth, no grass, no slab, no base, no snow. Subject: a tiny spooky graveyard, five things well apart: a small stone mausoleum with a peaked roof and dark arched door; a tall leaning stone cross; a cracked slab broken in two; a bare twisted dead tree with a black raven on a branch; a short lantern post with a glowing violet flame. Pale silvery blue-grey stone (#aab2c2), darker on the right sides, a thin wisp of white mist; dark slate outline. The group is small, with a wide empty margin on every side.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, mound, slab, isometric block, base, snow, background, buildings, people, fence, skull, bones",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small group of free-standing gravestones for one square tile of a strategy map: a few big simple things standing upright, clearly apart, calmer and less saturated than units, no face. They stand on the empty transparent background with nothing drawn under or between them: no ground, no earth, no grass, no slab, no base, no snow. Subject: a tiny spooky graveyard, five things well apart: a small stone mausoleum with a peaked roof and dark arched door; a tall leaning stone cross; a cracked slab broken in two; a bare twisted dead tree with a black raven on a branch; a short lantern post with a glowing violet flame. Pale silvery blue-grey stone (#aab2c2), darker on the right sides, a thin wisp of white mist; dark slate outline. The group is small, with a wide empty margin on every side. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, mound, slab, isometric block, base, snow, background, buildings, people, fence, skull, bones."
+      },
+      "submittedAt": "2026-10-06T12:23:20.156Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/graveyard-rich-b.png",
+      "rawSheetSha256": "cb0773f999c319a09551392f8dbc9395ad6ab54d45d53ff800ea485b84314dee",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2576,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5652,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2656,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1029,
+          "footprintWidthShare": 0.3281,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2727,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3731,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.623,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0811,
+          "footprintWidthShare": 0.4603,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5397,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4655,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3175,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4844,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.65,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6034,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7424,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4308,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:24:49.253Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Fits the tile, and candidate 0 is pale with a wisp of mist, but every candidate has one or two gravestones only: a crypt and a tree, not a graveyard.",
+        "reviewedAt": "2026-10-06T12:31:56.285Z"
+      }
+    },
+    "graveyard-rich-c": {
+      "id": "graveyard-rich-c",
+      "asset": "chibi-undead-graveyard",
+      "jobId": "ccafa2ff-e1ca-48df-9d81-b3764789aefc",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-graveyard",
+        "subject": "IMPROVEMENT:UNDEAD:FARM",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-markers",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 21543,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-markers.txt + scripts/art/chibi/fragments/class-calm-markers.negative.txt",
+            "text": "Class: one small group of free-standing gravestones for one square tile of a strategy map: a few big simple things standing upright, clearly apart, calmer and less saturated than units, no face. They stand on the empty transparent background with nothing drawn under or between them: no ground, no earth, no grass, no slab, no base, no snow.",
+            "negative": "ground plate, platform, grass square, soil patch, mound, slab, isometric block, base, snow, background, buildings, people, fence, skull, bones"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a tiny spooky graveyard, six things well apart: at the back a small pale stone mausoleum with a peaked roof and dark arched door, and a bare dead tree with a raven on a branch; in front a leaning stone cross, a round-topped headstone, a cracked slab, and a short lantern post with a glowing violet flame. All stone is pale blue-grey (#aab2c2), darker on the right; a wisp of mist; dark slate outline. The group is small, with a wide empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small group of free-standing gravestones for one square tile of a strategy map: a few big simple things standing upright, clearly apart, calmer and less saturated than units, no face. They stand on the empty transparent background with nothing drawn under or between them: no ground, no earth, no grass, no slab, no base, no snow. Subject: a tiny spooky graveyard, six things well apart: at the back a small pale stone mausoleum with a peaked roof and dark arched door, and a bare dead tree with a raven on a branch; in front a leaning stone cross, a round-topped headstone, a cracked slab, and a short lantern post with a glowing violet flame. All stone is pale blue-grey (#aab2c2), darker on the right; a wisp of mist; dark slate outline. The group is small, with a wide empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, mound, slab, isometric block, base, snow, background, buildings, people, fence, skull, bones",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small group of free-standing gravestones for one square tile of a strategy map: a few big simple things standing upright, clearly apart, calmer and less saturated than units, no face. They stand on the empty transparent background with nothing drawn under or between them: no ground, no earth, no grass, no slab, no base, no snow. Subject: a tiny spooky graveyard, six things well apart: at the back a small pale stone mausoleum with a peaked roof and dark arched door, and a bare dead tree with a raven on a branch; in front a leaning stone cross, a round-topped headstone, a cracked slab, and a short lantern post with a glowing violet flame. All stone is pale blue-grey (#aab2c2), darker on the right; a wisp of mist; dark slate outline. The group is small, with a wide empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, mound, slab, isometric block, base, snow, background, buildings, people, fence, skull, bones."
+      },
+      "submittedAt": "2026-10-06T12:27:42.572Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/graveyard-rich-c.png",
+      "rawSheetSha256": "dee81de501888915b8554f05dd077c4e43d95e0aa1f69ca289767cf47956842e",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0163,
+          "footprintWidthShare": 0.7541,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0256,
+          "footprintWidthShare": 0.7541,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0163,
+          "footprintWidthShare": 0.7541,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0186,
+          "footprintWidthShare": 0.7541,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0023,
+          "footprintWidthShare": 0.7541,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0029,
+          "footprintWidthShare": 0.5902,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0046,
+          "footprintWidthShare": 0.7541,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0029,
+          "footprintWidthShare": 0.6066,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0117,
+          "footprintWidthShare": 0.7541,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0143,
+          "footprintWidthShare": 0.6066,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0173,
+          "footprintWidthShare": 0.5968,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0118,
+          "footprintWidthShare": 0.7541,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0141,
+          "footprintWidthShare": 0.7377,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0117,
+          "footprintWidthShare": 0.5902,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0189,
+          "footprintWidthShare": 0.7213,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0116,
+          "footprintWidthShare": 0.7541,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:30:09.263Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 5,
+        "notes": "Candidate 5 of 16: a small mausoleum with an arched door, a dead tree with a raven, a leaning cross, a cracked slab and a lantern with a violet flame, five separate pieces on the tile's own ground, 61 x 61, pale slate with dark slate outlines. No mist to speak of (a pale haze on the roof ridge) and no bones (the class forbids them).",
+        "reviewedAt": "2026-10-06T12:31:56.678Z"
+      }
+    },
     "graveyard-stones-a": {
       "id": "graveyard-stones-a",
       "asset": "chibi-undead-graveyard",
@@ -1704,9 +2205,9 @@
       "completedAt": "2026-10-06T10:27:26.598Z",
       "usageUsd": 0.125,
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 4,
-        "notes": "Sixteen candidates, none on a plate. 4 is the Graveyard: a stone cross, a round-topped headstone, a slab and a leaning slab in light slate with dark slate outlines and a little moss at their feet, and a bare dead shrub, standing straight on the tile's ground, 60 x 58. Lit from the front left, the right edges in shade. Others: 0 and 8 crowd a cross among four stones, 3 has a blank pointed slab in front, 5 and 12 are rows of identical stones, 1, 6, 9 and 11 are scattered small stones without a cross, 2, 14 and 15 are tight stacks, 13 has no cross.",
+        "notes": "Sixteen candidates, none on a plate. 4 is the Graveyard: a stone cross, a round-topped headstone, a slab and a leaning slab in light slate with dark slate outlines and a little moss at their feet, and a bare dead shrub, standing straight on the tile's ground, 60 x 58. Lit from the front left, the right edges in shade. Others: 0 and 8 crowd a cross among four stones, 3 has a blank pointed slab in front, 5 and 12 are rows of identical stones, 1, 6, 9 and 11 are scattered small stones without a cross, 2, 14 and 15 are tight stacks, 13 has no cross. Superseded by graveyard-rich-c.",
         "reviewedAt": "2026-10-06T10:28:04.006Z"
       }
     }
@@ -1758,13 +2259,13 @@
       "subject": "IMPROVEMENT:UNDEAD:FARM",
       "assetClass": "BUILDING",
       "status": "ACCEPTED",
-      "recipe": "graveyard-stones-e",
-      "candidate": 4,
-      "candidateSha256": "0c31112e1751e0c7a31666ca235cc9454781c14aa718b3e9c213eaf3df3c774e",
+      "recipe": "graveyard-rich-c",
+      "candidate": 5,
+      "candidateSha256": "a9c4f6e1744e9efc7e04bb6e3ee85c0ff2dfae1ac4e4a0c106b8c68e7105d808",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-undead-graveyard.png",
-        "sha256": "2baa400785c9becc94ee8fbf1e85c5e35280c298ceaa167baeebc94f95078007",
-        "pixelSha256": "5eda70e557eb5c816498c4fd776df2eb685fbbe3eb71cf6258611646e84013ad",
+        "sha256": "78729a53f14727ef718c3f864383d66903944356ee4fd67916c157e8b774cc5f",
+        "pixelSha256": "78c78ad117c767c3cdac571766eb1ce961fef0a01e9c4d252e2713bc68933e85",
         "width": 80,
         "height": 80
       },
@@ -1791,8 +2292,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Sixteen candidates, none on a plate. 4 is the Graveyard: a stone cross, a round-topped headstone, a slab and a leaning slab in light slate with dark slate outlines and a little moss at their feet, and a bare dead shrub, standing straight on the tile's ground, 60 x 58. Lit from the front left, the right edges in shade. Others: 0 and 8 crowd a cross among four stones, 3 has a blank pointed slab in front, 5 and 12 are rows of identical stones, 1, 6, 9 and 11 are scattered small stones without a cross, 2, 14 and 15 are tight stacks, 13 has no cross.",
-      "acceptedAt": "2026-10-06T10:28:04.006Z"
+      "notes": "Candidate 5 of 16: a small mausoleum with an arched door, a dead tree with a raven, a leaning cross, a cracked slab and a lantern with a violet flame, five separate pieces on the tile's own ground, 61 x 61, pale slate with dark slate outlines. No mist to speak of (a pale haze on the roof ridge) and no bones (the class forbids them).",
+      "acceptedAt": "2026-10-06T12:31:56.678Z"
     }
   }
 }

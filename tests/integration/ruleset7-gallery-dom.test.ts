@@ -517,9 +517,25 @@ describe("Ruleset 7 Gallery", () => {
       "WORKSHOP",
       "MARKET",
       "MONUMENT",
+      // One Monument look per achievement (bead pulp_wars-2yc.15).
+      "MONUMENT_EXPLORER",
+      "MONUMENT_ENGINEER",
+      "MONUMENT_MUSTER",
+      "MONUMENT_CONQUEROR",
+      "MONUMENT_LAND_BARON",
+      "MONUMENT_SEA_DOG",
+      "MONUMENT_SLAYER",
       "PORT",
       "SHIPYARD",
     ]);
+    const slayer = rows[19]?.querySelectorAll<HTMLElement>(".v7-gallery-cell");
+    expect(slayer).toHaveLength(1);
+    expect(slayer?.[0]?.getAttribute("aria-label")).toBe(
+      "Slayer Monument, every faction",
+    );
+    expect(slayer?.[0]?.querySelector("canvas")?.dataset.subject).toBe(
+      "IMPROVEMENT:MONUMENT:SLAYER",
+    );
     expect(rows[0]?.querySelectorAll(".v7-gallery-cell").length).toBe(8);
     expect(
       cell("CITY_2", "MARTIAN").querySelector("canvas")?.dataset.subject,

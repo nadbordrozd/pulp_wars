@@ -79,6 +79,13 @@ export type ChibiRecipeClass =
    * on grass").
    */
   | "calm-markers"
+  /**
+   * One free-standing map piece that may carry its own small thing under it
+   * when the subject names one (bead pulp_wars-2yc.15): the seven
+   * achievement Monuments, the Ice Folk Frost Garden and the Fertile Ground
+   * soil patch. Light stated, `generate-image-v2`, seated.
+   */
+  | "calm-feature"
   /** The Farm as a seamless full-cell pattern of crop rows with gaps. */
   | "crop-rows"
   /**
@@ -488,6 +495,26 @@ export const CHIBI_CLASS_RECIPES: Readonly<
       "create-image-pixen",
       "create-image-pixflux",
     ],
+    editPass: true,
+    noBackground: true,
+    derivation: "seated",
+    options: {
+      "create-image-pixen": { ...PIECE_OPTIONS, outline: "selective outline" },
+    },
+  },
+  // Bead pulp_wars-2yc.15: the achievement Monuments, the Frost Garden and
+  // the Fertile Ground patch. Like calm-markers (the light layer, the chibi
+  // style layer, generate-image-v2, seated), but the class text names no
+  // subject and lets the subject line name what lies under the piece (a
+  // snow wall, a patch of tilled soil). A RESOURCE is seated in its 48 x 48
+  // canvas by the asset's `bottomMargin`. Pixen is listed only for the
+  // recipes the Fertile Ground keeps as history.
+  "calm-feature": {
+    camera: "three-quarter",
+    factionLayer: false,
+    light: true,
+    assetClasses: ["BUILDING", "RESOURCE"],
+    generators: ["generate-image-v2", "create-image-pixen"],
     editPass: true,
     noBackground: true,
     derivation: "seated",
@@ -1245,7 +1272,7 @@ export function requestBody(
 }
 
 const SUBJECT_PATTERN =
-  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT|IMPROVEMENT):(UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:|DINOSAUR:|MARTIAN:|ICE_FOLK:|DWARF:|CANDY:)?[A-Z_]+$|^ICON:STATUS:(SHIELD|COOLING|CHILLED|FROZEN|CLOCKWORK|DUG_IN|RUSHED|CRASHED|SPLATTED)$|^CITY:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^CRUMBS$|^STATUS:(PLAGUED|BITTEN|PROVOKED)$|^EFFECT:[A-Z_]+$|^CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK)$|^ICON:CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK|BOUNTY)$|^OVERLAY:ICEBOUND$/;
+  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT|IMPROVEMENT):(UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:|DINOSAUR:|MARTIAN:|ICE_FOLK:|DWARF:|CANDY:)?[A-Z_]+$|^ICON:STATUS:(SHIELD|COOLING|CHILLED|FROZEN|CLOCKWORK|DUG_IN|RUSHED|CRASHED|SPLATTED)$|^CITY:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^CRUMBS$|^STATUS:(PLAGUED|BITTEN|PROVOKED)$|^EFFECT:[A-Z_]+$|^CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK)$|^ICON:CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK|BOUNTY)$|^OVERLAY:ICEBOUND$|^IMPROVEMENT:MONUMENT:(EXPLORER|ENGINEER|MUSTER|CONQUEROR|LAND_BARON|SEA_DOG|SLAYER)$/;
 const ID_PATTERN = /^chibi-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RECIPE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA_PATTERN = /^[a-f0-9]{64}$/;

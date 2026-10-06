@@ -279,7 +279,7 @@ import {
   unitArtSubjectV7,
   type TerritoryGroundV7,
 } from "../../assets/chibi-art-v7";
-import { factionImprovementSubjectV7 } from "../../assets/chibi-ui-art-v7";
+import { tileImprovementSubjectV7 } from "../../assets/chibi-ui-art-v7";
 import { factionBuildingV7 } from "../faction-buildings-v7";
 import {
   resolveChibiWithFallbackV7,
@@ -1051,8 +1051,14 @@ export function buildBoardRenderPlanV7(
           farm?.assetId ?? RULESET7_IMPROVEMENT_ART_IDS[tile.improvement],
         // The look of the faction that owns the territory (epic
         // pulp_wars-xdh): it changes when the city changes hands. A faction
-        // subject without a raster falls back to the shared building.
-        artSubject: factionImprovementSubjectV7(tile.improvement, tileFaction),
+        // subject without a raster falls back to the shared building. The
+        // viewer's own Monument is its achievement's (pulp_wars-2yc.15).
+        artSubject: tileImprovementSubjectV7(
+          view,
+          tile.at,
+          tile.improvement,
+          tileFaction,
+        ),
         ownerId: tile.territoryOwnerId,
         ...ownerPresentation(view, tile.territoryOwnerId),
         ...(farm?.sourceCrop === undefined

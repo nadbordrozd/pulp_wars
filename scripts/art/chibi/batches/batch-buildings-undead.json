@@ -16,7 +16,7 @@
         "height": 80
       },
       "ownerColour": false,
-      "subjectKey": "IMPROVEMENT:UNDEAD:FARM/STONES",
+      "subjectKey": "IMPROVEMENT:UNDEAD:FARM/RICH",
       "bottomMargin": 5
     },
     {
@@ -257,6 +257,39 @@
         "height": 80
       },
       "notes": "Pixen stands the gravestones on an isometric slab whatever the text says (graveyard-stones-a to -d and the two edits). The generator of the forest clumps draws free-standing things with nothing under them: the class calm-markers now generates with it, in the chibi style layer. The same request was first tried once through scripts/art/chibi-mountain-ranges.ts in a scratch run; those sixteen candidates were not kept (the generator is not deterministic, this call drew others)."
+    },
+    {
+      "id": "graveyard-rich-a",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "generate-image-v2",
+      "seed": 21541,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "notes": "Bead pulp_wars-2yc.15 (the user, 2026-10-06: 'the graveyard is better than it was but looks a bit basic and boring'): the same free-standing class with a richer subject: a small mausoleum, a leaning cross, a cracked slab, a dead tree with a raven, a lantern with a violet glow, a wisp of mist."
+    },
+    {
+      "id": "graveyard-rich-b",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "generate-image-v2",
+      "seed": 21542,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "notes": "graveyard-rich-a drew the right things (mausoleum, leaning cross, cracked slab, tree with raven, violet lantern) but filled the image to its edges (a group 78 to 80 px wide, pieces cut off) in a mid slate that sinks into the ashen ground. The subject now names five things, a paler stone (#aab2c2) and a wide empty margin."
+    },
+    {
+      "id": "graveyard-rich-c",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "generate-image-v2",
+      "seed": 21543,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "notes": "graveyard-rich-b fits the tile and candidate 0 is pale enough for the ashen ground, but every candidate has one or two gravestones only (a crypt and a tree with one cross). The subject now places the mausoleum and the tree at the back and three different stones and the lantern in front, all in the pale stone."
     },
     {
       "id": "bone-mill-edit-a",

@@ -10,13 +10,14 @@
       "id": "chibi-ice-folk-frost-garden",
       "subject": "IMPROVEMENT:ICE_FOLK:FARM",
       "assetClass": "BUILDING",
-      "recipeClass": "crop-rows",
+      "recipeClass": "calm-feature",
       "canvas": {
         "width": 80,
         "height": 80
       },
       "ownerColour": false,
-      "bottomMargin": 6
+      "subjectKey": "IMPROVEMENT:ICE_FOLK:FARM/GARDEN",
+      "bottomMargin": 8
     }
   ],
   "recipes": [
@@ -36,6 +37,17 @@
       },
       "editInstruction": "Turn each of the three raised beds of soil into a long bank of white snow with pale blue shadows (no brown soil left), and turn every vegetable plant into a round hardy cabbage in a cold blue-green (#5fa39a) with pale frosted leaf edges. Keep the three rows, the size and place of every plant, the empty transparent gaps between the rows, the outline and the art style exactly the same.",
       "notes": "The Ice Folk Farm as an edit of the accepted Farm candidate (veg-flux-a)."
+    },
+    {
+      "id": "frost-garden-plot-a",
+      "asset": "chibi-ice-folk-frost-garden",
+      "endpoint": "generate-image-v2",
+      "seed": 21531,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "notes": "Bead pulp_wars-2yc.15 (the user, 2026-10-06: 'recreate the snow garden sprite. Looks just like frozen cabbage. Make it more interesting'): a snow-walled plot of ice-crystal plants, frost flowers and a berry bush, class calm-feature."
     }
   ]
 }

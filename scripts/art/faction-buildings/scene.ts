@@ -24,15 +24,17 @@
  * - **`grass`** replaces the Undead ground with another candidate of the
  *   study (the rejected "cool", "dusk" and "wilt").
  */
-import type {
-  CityId,
-  CoordV7,
-  FactionIdV7,
-  ImprovementIdV7,
-  PlayerId,
-  PlayerViewV7,
-  TerrainIdV7,
-  UnitRoleIdV7,
+import {
+  ACHIEVEMENT_IDS_V7,
+  type AchievementIdV7,
+  type CityId,
+  type CoordV7,
+  type FactionIdV7,
+  type ImprovementIdV7,
+  type PlayerId,
+  type PlayerViewV7,
+  type TerrainIdV7,
+  type UnitRoleIdV7,
 } from "../../../src/engine/index";
 import {
   type ArtSubjectV7,
@@ -61,6 +63,11 @@ export interface FactionBuildingsSceneOptionsV7 {
   readonly grass: SceneGrassV7 | null;
   /** The Human half belongs to the studied faction (its city was taken). */
   readonly captured?: boolean;
+  /**
+   * The Monument scene (bead pulp_wars-2yc.15) instead of the buildings:
+   * one Monument per achievement, Fertile Ground bare and under a Farm.
+   */
+  readonly monuments?: boolean;
 }
 
 const TERRAIN: Readonly<Record<string, TerrainIdV7>> = {
@@ -78,6 +85,7 @@ const IMPROVEMENT: Readonly<Record<string, ImprovementIdV7>> = {
   G: "FORGE",
   K: "WORKSHOP",
   R: "MARKET",
+  N: "MONUMENT",
 };
 
 /**
@@ -93,6 +101,22 @@ const HALF: readonly (readonly string[])[] = [
   ["g/G", "g/u", "g/R", "g"],
   ["g", "f", "g/K", "g"],
 ];
+/**
+ * The Monument scene (bead pulp_wars-2yc.15): seven Monuments, one per
+ * achievement in the order of ACHIEVEMENT_IDS_V7 (`N`), and Fertile Ground
+ * (`x`) bare, under a Farm and beside plain Grass. The left half is the
+ * viewer's, so each Monument is its achievement's; the right half is
+ * another player's, whose achievements the view does not name: seven
+ * shared Monuments.
+ */
+const MONUMENT_HALF: readonly (readonly string[])[] = [
+  ["g/N", "g/N", "g/N", "g/N"],
+  ["g", "g/u", "g/c/r", "g/r"],
+  ["g/N", "g/N", "g/N", "g"],
+  ["g/x", "g/x/F", "g/x", "g"],
+  ["g", "g/x", "g", "f"],
+  ["g", "g", "g/x", "g"],
+];
 const COLUMNS = 8;
 const ROWS = HALF.length;
 const CITY_LOCAL: CoordV7 = { x: 2, y: 1 };
@@ -104,10 +128,19 @@ interface ParsedCell {
   readonly city: boolean;
   readonly unit: boolean;
   readonly road: boolean;
+  /** Fertile Ground on the cell. */
+  readonly fertile: boolean;
+  /** The achievement of the Monument on the cell, by its place in the half. */
+  readonly achievement: AchievementIdV7 | null;
 }
 
-function cellAtLocal(x: number, y: number): ParsedCell | undefined {
-  const row = HALF[y];
+function cellAtLocal(
+  x: number,
+  y: number,
+  monuments = false,
+): ParsedCell | undefined {
+  const half = monuments ? MONUMENT_HALF : HALF;
+  const row = half[y];
   if (row === undefined || x < 0 || x >= COLUMNS) return undefined;
   const seat = x < COLUMNS / 2 ? 0 : 1;
   const text = row[x % (COLUMNS / 2)];
@@ -115,7 +148,20 @@ function cellAtLocal(x: number, y: number): ParsedCell | undefined {
   const [head = "g", ...items] = text.split("/");
   let improvement: ImprovementIdV7 | null = null;
   for (const item of items) improvement = IMPROVEMENT[item] ?? improvement;
+  const monumentIndex = half
+    .flatMap((cells, rowIndex) =>
+      cells.map((cell, column) => ({ cell, rowIndex, column })),
+    )
+    .filter(({ cell }) => cell.split("/").includes("N"))
+    .findIndex(
+      (entry) => entry.rowIndex === y && entry.column === x % (COLUMNS / 2),
+    );
   return {
+    fertile: items.includes("x"),
+    achievement:
+      improvement === "MONUMENT"
+        ? (ACHIEVEMENT_IDS_V7[monumentIndex] ?? null)
+        : null,
     terrain: TERRAIN[head] ?? "GRASS",
     seat,
     improvement,
@@ -131,6 +177,8 @@ export function factionBuildingsSceneViewV7(
   faction: FactionIdV7,
   /** The Human city and its territory belong to the studied faction. */
   captured = false,
+  /** The Monument scene instead of the buildings. */
+  monuments = false,
 ): {
   readonly view: PlayerViewV7;
   /** The board cells of the studied faction's own (left) territory. */
@@ -180,7 +228,7 @@ export function factionBuildingsSceneViewV7(
   const factionCells: CoordV7[] = [];
   const tiles: Tile[] = live.board.tiles.map((tile) => {
     const local = { x: tile.at.x - origin.x, y: tile.at.y - origin.y };
-    const cell = cellAtLocal(local.x, local.y);
+    const cell = cellAtLocal(local.x, local.y, monuments);
     if (cell === undefined) return { at: tile.at, explored: false };
     if (cell.seat === 0) factionCells.push(tile.at);
     return {
@@ -188,7 +236,7 @@ export function factionBuildingsSceneViewV7(
       explored: true,
       biome: null,
       terrain: cell.terrain,
-      resource: null,
+      resource: cell.fertile ? "FERTILE_GROUND" : null,
       improvement: cell.improvement,
       road: cell.road,
       fieldDefense: false,
@@ -202,11 +250,14 @@ export function factionBuildingsSceneViewV7(
         : {}),
     } as Tile;
   });
+  // A Monument's achievement is in the view for its owner only.
+  const populationContributions: PlayerViewV7["populationContributions"][number][] =
+    [];
   const cities: PlayerViewV7["cities"][number][] = [];
   const units: PlayerViewV7["units"][number][] = [];
   for (let y = 0; y < ROWS; y += 1)
     for (let x = 0; x < COLUMNS; x += 1) {
-      const cell = cellAtLocal(x, y);
+      const cell = cellAtLocal(x, y, monuments);
       if (cell === undefined) continue;
       const at = { x: origin.x + x, y: origin.y + y };
       if (cell.city)
@@ -218,6 +269,22 @@ export function factionBuildingsSceneViewV7(
           level: 2,
           population: 2,
           isCapital: cell.seat === 0,
+        });
+      if (cell.achievement !== null)
+        populationContributions.push({
+          id: 9700 + y * COLUMNS + x,
+          cityId: cityId(cell.seat),
+          category: "LIVE",
+          amount: 2,
+          source:
+            playerId(cell.seat) === viewerId
+              ? {
+                  kind: "MONUMENT",
+                  visibility: "FULL",
+                  achievement: cell.achievement,
+                  at,
+                }
+              : { kind: "MONUMENT", visibility: "BUILDING_ONLY", at },
         });
       if (cell.unit)
         units.push({
@@ -272,6 +339,7 @@ export function factionBuildingsSceneViewV7(
       board: { ...live.board, tiles, territoryBorders },
       cities,
       units,
+      populationContributions,
       naval: {
         ownedPorts: [],
         tradeCityIds: [],
@@ -357,6 +425,7 @@ export function showFactionBuildingsSceneV7(
     live,
     options.faction,
     options.captured === true,
+    options.monuments === true,
   );
   const host = new CanvasBoardHostV7(document);
   host.mount(container, {
@@ -365,7 +434,7 @@ export function showFactionBuildingsSceneV7(
   });
   const look = liveBoardLookV7("CHIBI");
   host.update({
-    matchInstanceId: `faction-buildings-${options.faction}-${options.after ? "after" : "before"}-${options.captured === true ? "captured" : "own"}`,
+    matchInstanceId: `faction-buildings-${options.faction}-${options.after ? "after" : "before"}-${options.captured === true ? "captured" : "own"}${options.monuments === true ? "-monuments" : ""}`,
     view: scene.view,
     offeredCommands: [],
     interaction: {

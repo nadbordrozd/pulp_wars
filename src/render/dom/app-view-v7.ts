@@ -189,6 +189,7 @@ import { uiIconV7, type UiIconIdV7 } from "./ui-icons-v7";
 import { TitleSceneViewV7 } from "./title-scene-view-v7";
 import {
   cityArtSubjectV7,
+  monumentArtSubjectV7,
   territoryGroundV7,
   territoryTerrainSubjectV7,
   unitArtSubjectV7,
@@ -197,10 +198,10 @@ import {
 } from "../../assets/chibi-art-v7";
 import {
   commandSubjectV7,
-  factionImprovementSubjectV7,
   portraitSubjectV7,
   rewardSubjectV7,
   technologySubjectV7,
+  tileImprovementSubjectV7,
 } from "../../assets/chibi-ui-art-v7";
 import {
   FACTION_BUILDINGS_HELP_V7,
@@ -4632,7 +4633,12 @@ export class Ruleset7DomAppView {
           );
         const tileSubject: ArtSubjectV7 =
           tile.improvement !== null
-            ? factionImprovementSubjectV7(tile.improvement, tileFaction)
+            ? tileImprovementSubjectV7(
+                view,
+                tile.at,
+                tile.improvement,
+                tileFaction,
+              )
             : tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE"
               ? `RESOURCE:${tile.resource}`
               : tile.terrain === "RIFT"
@@ -6348,6 +6354,16 @@ export class Ruleset7DomAppView {
           theme,
         ),
       );
+      // The Monument this achievement earns (bead pulp_wars-2yc.15).
+      const monument = this.#chibiArt(
+        monumentArtSubjectV7(achievement),
+        CHIBI_DOM_BOXES_V7.action,
+      )?.element;
+      if (monument !== undefined) {
+        monument.classList.add("v7-achievement-monument");
+        monument.alt = "";
+        symbols.append(monument);
+      }
       const meter = el(this.#document, "div", "v7-achievement-meter");
       const fill = el(this.#document, "span", "v7-achievement-fill");
       fill.style.width = `${Math.min(100, Math.round((current / Math.max(1, required)) * 100))}%`;
@@ -6784,7 +6800,18 @@ export class Ruleset7DomAppView {
     );
     if (achievement === undefined) return modal;
     const badge = el(this.#document, "div", "v7-achievement-badge");
-    badge.append(uiIconV7(this.#document, "trophy"));
+    // The Monument it earns, where the look has one (pulp_wars-2yc.15).
+    const monument = this.#chibiArt(
+      monumentArtSubjectV7(achievement),
+      CHIBI_DOM_BOXES_V7.action,
+    )?.element;
+    if (monument === undefined)
+      badge.append(uiIconV7(this.#document, "trophy"));
+    else {
+      monument.alt = "";
+      badge.classList.add("has-monument");
+      badge.append(monument);
+    }
     modal.append(
       badge,
       text(

@@ -15,6 +15,7 @@ import {
   CHIBI_FACTION_BUILDING_ART_ASSETS_V7,
   CHIBI_UNDEAD_GROUND_ART_ASSETS_V7,
 } from "./chibi-faction-buildings-art-manifest";
+import { CHIBI_MONUMENT_ART_ASSETS_V7 } from "./chibi-monuments-art-manifest";
 import { CHIBI_RANGE_MINED_MOUNTAIN_ART_ASSETS_V7 } from "./chibi-mountain-ranges-manifest";
 import { CHIBI_NAVAL_FACTION_ART_ASSETS_V7 } from "./chibi-naval-faction-art-manifest";
 import { CHIBI_SUBMERGED_SUBMARINE_ART_ASSETS_V7 } from "./chibi-naval-submarine-art-manifest";
@@ -599,6 +600,8 @@ export function chibiDirectionArtAssetsV7(): readonly ChibiArtAssetV7[] {
     // --- Faction building looks and the Undead territory ground
     // (pulp_wars-xdh.2) ---
     ...CHIBI_FACTION_BUILDING_ART_ASSETS_V7,
+    // --- One Monument look per achievement (pulp_wars-2yc.15) ---
+    ...CHIBI_MONUMENT_ART_ASSETS_V7,
     // --- The range-style mined mountain (pulp_wars-6kn) ---
     ...CHIBI_RANGE_MINED_MOUNTAIN_ART_ASSETS_V7,
     ...CHIBI_UNDEAD_GROUND_ART_ASSETS_V7,

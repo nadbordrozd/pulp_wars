@@ -1581,10 +1581,349 @@
       "completedAt": "2026-09-29T17:51:58.335Z",
       "usageUsd": 0.007759456290139093,
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "Golden wheat sheaf, muted straw gold; its flared stalk ends are part of the sheaf, not a plate.",
+        "notes": "Golden wheat sheaf, muted straw gold; its flared stalk ends are part of the sheaf, not a plate. Superseded by fertile-soil-b.",
         "reviewedAt": "2026-09-29T18:11:19.546Z"
+      }
+    },
+    "fertile-soil-a": {
+      "id": "fertile-soil-a",
+      "asset": "chibi-fertile-ground",
+      "jobId": "9150a3bd-e87f-4889-93cf-6a393e6bc62b",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "3",
+        "asset": "chibi-fertile-ground",
+        "subject": "RESOURCE:FERTILE_GROUND",
+        "faction": "ORIGINAL",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 21521,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a patch of fertile ground seen from above: one low flat rounded patch of rich dark chocolate-brown tilled soil, wider than it is tall, with four neat curved furrows running across it (the ridges a warmer mid brown, the grooves near-black brown), a few small clods and pebbles, and three tiny bright green two-leaf sprouts poking out of the ridges. It is bare ploughed earth, flat on the ground, no thick sides, no crops, no wheat, no fence. Soil patch only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a patch of fertile ground seen from above: one low flat rounded patch of rich dark chocolate-brown tilled soil, wider than it is tall, with four neat curved furrows running across it (the ridges a warmer mid brown, the grooves near-black brown), a few small clods and pebbles, and three tiny bright green two-leaf sprouts poking out of the ridges. It is bare ploughed earth, flat on the ground, no thick sides, no crops, no wheat, no fence. Soil patch only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a patch of fertile ground seen from above: one low flat rounded patch of rich dark chocolate-brown tilled soil, wider than it is tall, with four neat curved furrows running across it (the ridges a warmer mid brown, the grooves near-black brown), a few small clods and pebbles, and three tiny bright green two-leaf sprouts poking out of the ridges. It is bare ploughed earth, flat on the ground, no thick sides, no crops, no wheat, no fence. Soil patch only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-06T12:07:44.036Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-3/fertile-soil-a.png",
+      "rawSheetSha256": "c8984f2ce99e8a340adbfecc9f3ede9c2ae935781d5465786eaedf124e791c7a",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.2133,
+          "footprintWidthShare": 0.7895,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.1185,
+          "footprintWidthShare": 0.6047,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.1342,
+          "footprintWidthShare": 0.6889,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.1948,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.2109,
+          "footprintWidthShare": 0.5952,
+          "suspect": false
+        },
+        {
+          "bandRows": 6,
+          "groundShare": 0.1607,
+          "footprintWidthShare": 0.7879,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.2027,
+          "footprintWidthShare": 0.3659,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.1852,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.7467,
+          "footprintWidthShare": 0.7317,
+          "suspect": true
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.1333,
+          "footprintWidthShare": 0.7317,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.1074,
+          "footprintWidthShare": 0.7317,
+          "suspect": false
+        },
+        {
+          "bandRows": 5,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9048,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.0118,
+          "footprintWidthShare": 0.825,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.137,
+          "footprintWidthShare": 0.7317,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.1301,
+          "footprintWidthShare": 0.7317,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.284,
+          "footprintWidthShare": 0.8049,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-06T12:08:53.346Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Reads as tilled soil, but most candidates are small round discs with a thick rim, like a cookie; fertile-soil-b is wider with a crumbly edge.",
+        "reviewedAt": "2026-10-06T12:31:54.526Z"
+      }
+    },
+    "fertile-soil-b": {
+      "id": "fertile-soil-b",
+      "asset": "chibi-fertile-ground",
+      "jobId": "3cedab2b-9301-4c1e-b438-5f6ba158f1a3",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "3",
+        "asset": "chibi-fertile-ground",
+        "subject": "RESOURCE:FERTILE_GROUND",
+        "faction": "ORIGINAL",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 21522,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a patch of fertile ground seen from above: one low flat rounded patch of rich dark chocolate-brown tilled soil, wider than it is tall, with four neat curved furrows running across it (the ridges a warmer mid brown, the grooves near-black brown), a few small clods and pebbles, and three tiny bright green two-leaf sprouts poking out of the ridges. It is bare ploughed earth, flat on the ground, no thick sides, no crops, no wheat, no fence. Soil patch only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The patch is as wide as the image, with a ragged crumbly edge."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a patch of fertile ground seen from above: one low flat rounded patch of rich dark chocolate-brown tilled soil, wider than it is tall, with four neat curved furrows running across it (the ridges a warmer mid brown, the grooves near-black brown), a few small clods and pebbles, and three tiny bright green two-leaf sprouts poking out of the ridges. It is bare ploughed earth, flat on the ground, no thick sides, no crops, no wheat, no fence. Soil patch only. The patch is as wide as the image, with a ragged crumbly edge.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a patch of fertile ground seen from above: one low flat rounded patch of rich dark chocolate-brown tilled soil, wider than it is tall, with four neat curved furrows running across it (the ridges a warmer mid brown, the grooves near-black brown), a few small clods and pebbles, and three tiny bright green two-leaf sprouts poking out of the ridges. It is bare ploughed earth, flat on the ground, no thick sides, no crops, no wheat, no fence. Soil patch only. The patch is as wide as the image, with a ragged crumbly edge. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-06T12:24:49.625Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-3/fertile-soil-b.png",
+      "rawSheetSha256": "5fbcc94aa86d0615586ed4e3e82daea918de84e95f8ccb0ca93541a64f470c95",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.189,
+          "footprintWidthShare": 0.7674,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.2513,
+          "footprintWidthShare": 0.7826,
+          "suspect": true
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.189,
+          "footprintWidthShare": 0.7174,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.1402,
+          "footprintWidthShare": 0.6512,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.2419,
+          "footprintWidthShare": 0.8372,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.1921,
+          "footprintWidthShare": 0.7391,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7391,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.1975,
+          "footprintWidthShare": 0.7857,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.25,
+          "footprintWidthShare": 0.6977,
+          "suspect": true
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.1882,
+          "footprintWidthShare": 0.7391,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.1007,
+          "footprintWidthShare": 0.7273,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.1824,
+          "footprintWidthShare": 0.8095,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.1893,
+          "footprintWidthShare": 0.7907,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.152,
+          "footprintWidthShare": 0.6222,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.3491,
+          "footprintWidthShare": 0.8,
+          "suspect": true
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.1852,
+          "footprintWidthShare": 0.7857,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-06T12:26:13.753Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "Candidate 1 of 16: a low patch of dark tilled soil, 46 x 38, four furrows, four small sprouts, clods and crumbs at a ragged edge; reads as bare dug ground at 1:1 on Grass and is clearly not a crop. Seated 5 px above the bottom of the 48 x 48 canvas, so it is centred like the other resources.",
+        "reviewedAt": "2026-10-06T12:31:54.960Z"
       }
     },
     "fish-a": {
@@ -3401,18 +3740,21 @@
       "subject": "RESOURCE:FERTILE_GROUND",
       "assetClass": "RESOURCE",
       "status": "ACCEPTED",
-      "recipe": "fertile-ground-a",
-      "candidate": 0,
-      "candidateSha256": "7457fc52b2473970638f916542b3b9e163184cc47690446f39c840bf2171560d",
+      "recipe": "fertile-soil-b",
+      "candidate": 1,
+      "candidateSha256": "073c23885f872adf72c62aea9fbc252794874cd485f2523e231d1c995309111d",
       "master": {
         "path": "public/assets/chibi/resources/chibi-fertile-ground.png",
-        "sha256": "7457fc52b2473970638f916542b3b9e163184cc47690446f39c840bf2171560d",
-        "pixelSha256": "8dfa058a3c878776a47157730381cbd41febee5ed4a1ca4b024a484aef76238e",
+        "sha256": "5e20ddf8bd2ff6a88db39e34b43c0fa9de3c22eb7ae7a60374da030e985e7c5e",
+        "pixelSha256": "05154f466bbcd2ff4fc628c744bcf3b2e94f89becc9e0b81af660bd9243c0016",
         "width": 48,
         "height": 48
       },
       "derivation": {
-        "kind": "as-is"
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 5
+        }
       },
       "anchor": {
         "x": 24,
@@ -3424,12 +3766,6 @@
         "up": 0,
         "down": 0
       },
-      "plateCheck": {
-        "bandRows": 7,
-        "groundShare": 0.3908,
-        "footprintWidthShare": 0.5357,
-        "suspect": false
-      },
       "reviewChecks": {
         "native": true,
         "enlarged": true,
@@ -3437,8 +3773,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Golden wheat sheaf, muted straw gold; its flared stalk ends are part of the sheaf, not a plate.",
-      "acceptedAt": "2026-09-29T18:11:19.544Z"
+      "notes": "Candidate 1 of 16: a low patch of dark tilled soil, 46 x 38, four furrows, four small sprouts, clods and crumbs at a ragged edge; reads as bare dug ground at 1:1 on Grass and is clearly not a crop. Seated 5 px above the bottom of the 48 x 48 canvas, so it is centred like the other resources.",
+      "acceptedAt": "2026-10-06T12:31:54.960Z"
     },
     "chibi-fish": {
       "id": "chibi-fish",
