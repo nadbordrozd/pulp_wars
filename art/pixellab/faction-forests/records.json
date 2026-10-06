@@ -488,5 +488,187 @@
         "sha256": "53701fadb4d8a4c20cde16051dbba59dabadbce6e020e459dc7a0dd077db0e59"
       }
     ]
+  },
+  "candy-c": {
+    "id": "candy-c",
+    "jobId": "3d40f41b-1406-43fe-9828-1b592b63ffbc",
+    "at": "2026-10-06T10:16:19.950Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a low candy grove, not trees: one striped candy cane with a hooked top (cream, brick-red stripes), two round swirl lollipops on thin sticks (caramel and cream; dusty raspberry and cream), one chocolate stick (#5a3a28) and low gumdrop bushes at the foot (caramel #c98f52, raspberry #b8667a); muted colours, no mint green, no bright pink; outline a dark chocolate tone, never black. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, background, buildings, people, leaves.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93503,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a low candy grove, not trees: one striped candy cane with a hooked top (cream, brick-red stripes), two round swirl lollipops on thin sticks (caramel and cream; dusty raspberry and cream), one chocolate stick (#5a3a28) and low gumdrop bushes at the foot (caramel #c98f52, raspberry #b8667a); muted colours, no mint green, no bright pink; outline a dark chocolate tone, never black."
+        }
+      ]
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-c-0.png",
+        "sha256": "fe38100f58eb0eee7a82c3d66b8bf67648cfa12be00dda30f90a904b282173cd"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-c-1.png",
+        "sha256": "b5442a905615b4873d01ff664f6c5c55ed3d07aeb2847b56b214c32051aa1c51"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-c-2.png",
+        "sha256": "f4153fe745dfae5b2860f011877663a48ca6caf386684b0173537c8f59749034"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-c-3.png",
+        "sha256": "9ed385e10accc10dc3769eb96482526dc7600c8d091cbf2194e0a55399c7c3cd"
+      }
+    ]
+  },
+  "candy-d": {
+    "id": "candy-d",
+    "jobId": "c28695aa-ccc3-4321-bd63-b23fba1e7f44",
+    "at": "2026-10-06T10:18:11.379Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a low candy grove, the same sweets and colours as the style image: two big round swirl lollipops on thin sticks (caramel and cream; dusty raspberry and cream), one short chocolate stick and a row of big plain gumdrop bushes at the foot (caramel, raspberry, cream); big calm shapes, few stripes, no candy cane; every sweet lighter on its left side; no mint green, no bright pink. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, background, buildings, people, leaves.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93504,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a low candy grove, the same sweets and colours as the style image: two big round swirl lollipops on thin sticks (caramel and cream; dusty raspberry and cream), one short chocolate stick and a row of big plain gumdrop bushes at the foot (caramel, raspberry, cream); big calm shapes, few stripes, no candy cane; every sweet lighter on its left side; no mint green, no bright pink."
+        }
+      ],
+      "style_image": "recipe candy-c#1 sha256 b5442a905615b4873d01ff664f6c5c55ed3d07aeb2847b56b214c32051aa1c51",
+      "style_options": {
+        "color_palette": true,
+        "outline": true,
+        "detail": true,
+        "shading": true
+      }
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-d-0.png",
+        "sha256": "886b9020d5fe65ca1680b73137b1bf518de34054b5d5142f5bd9bf9bb482e057"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-d-1.png",
+        "sha256": "368326e21e9111f8c11df365392f29d8f493b76ce11697cacdea13287dd2a78e"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-d-2.png",
+        "sha256": "a3ce625724884306f6202313abaab0d9eb992b128bfbf197c2c367140bbf8a4e"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-d-3.png",
+        "sha256": "c1aac1ff760785f555651b5ea4c1e537501fbe03848517175cdd39382106ff4b"
+      }
+    ]
+  },
+  "candy-e": {
+    "id": "candy-e",
+    "jobId": "8906a2e9-0129-4348-b436-da0b4182fdf0",
+    "at": "2026-10-06T10:18:52.759Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a low candy grove, the same sweets and colours as the style image: one thick chocolate stick trunk with a big round caramel swirl sweet on top, one striped candy cane beside it, one small raspberry lollipop, and big plain gumdrop bushes at the foot (caramel, raspberry, cream); big calm shapes; every sweet lighter on its left side; no mint green, no bright pink. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, background, buildings, people, leaves.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93505,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a low candy grove, the same sweets and colours as the style image: one thick chocolate stick trunk with a big round caramel swirl sweet on top, one striped candy cane beside it, one small raspberry lollipop, and big plain gumdrop bushes at the foot (caramel, raspberry, cream); big calm shapes; every sweet lighter on its left side; no mint green, no bright pink."
+        }
+      ],
+      "style_image": "recipe candy-c#0 sha256 fe38100f58eb0eee7a82c3d66b8bf67648cfa12be00dda30f90a904b282173cd",
+      "style_options": {
+        "color_palette": true,
+        "outline": true,
+        "detail": true,
+        "shading": true
+      }
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-e-0.png",
+        "sha256": "db3df7b45ed59f1743f6c1f583aee26372ed22be65efe9fef36ab37c07200752"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-e-1.png",
+        "sha256": "7ba979e8ebb409cadd4ac26b10d8f2dde8c0fcde69258288e09dcbd7e3f91159"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-e-2.png",
+        "sha256": "1cbe27ed90b739ce97a4b30b546944ee6a7bd38135e98a13879d800cc9bcf7c0"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-e-3.png",
+        "sha256": "dbf9010ca5cd4ca60221ed432dc73f32422ee182ae77ceeac1f0f647becd6305"
+      }
+    ]
   }
 }

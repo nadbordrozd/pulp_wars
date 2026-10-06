@@ -29,7 +29,7 @@ board host builds no faction art, and every Forest is drawn as before.
 | Dinosaurs | Jungle: leaning palms, cycads and fern fronds in deep greens.                                                                                            | 3      | default   |
 | Martians  | Alien growths: red-ochre fungal stalks with teal caps and teal bulbs at the foot.                                                                        | 3      | calmer    |
 | Dwarves   | Sturdy dark pines among mossy grey boulders.                                                                                                             | 3      | default   |
-| Candy     | Sweet trees: chocolate trunks under round mint and cream canopies, a lollipop here and there.                                                            | 4      | default   |
+| Candy     | A candy grove, no trees: striped candy canes, caramel and raspberry swirl lollipops, chocolate sticks and gumdrop bushes (bead `pulp_wars-2yc.13`).      | 4      | default   |
 | Ice Folk  | None of their own. Their territory is Snow by rule, and the snow caps the board already draws on every tree over Snow make the default pines snow-laden. | n/a    | n/a       |
 
 Each faction's forest is a whole piece set of the
@@ -41,7 +41,7 @@ that a clearing keeps a single clump are the default Forest's.
 
 ### How the sets are made
 
-The clumps are PixelLab candidates: 8 calls, 4 candidates each, 21 used.
+The clumps are PixelLab candidates: 11 calls, 4 candidates each, 21 used.
 The recipes, the credential-free requests, the hash and the review of every
 candidate are in `art/pixellab/faction-forests/` (`recipes.json`,
 `records.json`, `raw/`), made with the style-image generator of the mountain
@@ -63,6 +63,14 @@ npm run art:faction-forests -- sheet <out.png>
   style image, because the generator copies the style image's palette; the
   words alone gave the same pixel density and outline weight. The second
   Undead and Candy calls were styled from an accepted clump of their own.
+- **The candy grove** (bead `pulp_wars-2yc.13`; the user, 2026-10-06: "make
+  candy forest into candy canes and lollipops and such"). Recipes
+  `candy-c`, `-d` and `-e` replace the sweet trees of `candy-a` and `-b`,
+  whose candidates stay in the run but are no longer used. The palette is
+  caramel, dusty raspberry, cream and chocolate, with no mint (the ground
+  is mint) and no pink on white. A clump of three canes was left out:
+  packed, its stripes made a busy thicket. Two of the four clumps carry one
+  striped cane each.
 - **Light.** Every recipe carries the fragment `light-south-west` (the sun
   at the bottom left, the user 2026-10-05). **Nothing is mirrored**: a
   mirrored clump is lit from the other side. The default set still stamps
@@ -70,9 +78,10 @@ npm run art:faction-forests -- sheet <out.png>
 - **Lighting QA.** `scripts/art/lighting-qa.ts` measures every clump (left
   half minus right half of every run of paint, in luma points). The bake
   refuses a clump lit from the right (-1.5 or less). The 21 clumps measure
-  -1.2 to +30.5: 16 from the left, 5 flat, none from the right. On foliage
+  -1.5 to +30.5: 14 from the left, 7 flat, none from the right. On foliage
   the measure is weak (the default clumps themselves measure -4.9 to +5.0)
-  and on two-colour canopies it reads colour as light: three candidates
+  and on sweets of two colours it reads colour as light (three of the
+  candy grove's four clumps are flat on it): five of its twelve candidates
   were left out on it all the same.
 - **The bake** is the default Forest's
   ([`chibi-forest-pieces.ts`](../../scripts/art/chibi-forest-pieces.ts),
@@ -137,7 +146,8 @@ Human one with a wood across the border, and an eight-seat map.
   default clump it always drew, also inside a faction's territory.
 - **The Undead and Goblin forests are the busiest.** Bare branches and twig
   scrub are many thin lines; even softened they are less calm than a
-  canopy. The Candy forest is the lightest and the largest shapes.
+  canopy. The Candy grove is the lightest, and its caramel is near the
+  Candy units' own toffee; the softening keeps it paler than they are.
 - **Fewer clumps than the default set draws from** (three or four, never
   mirrored, against four mirrored), so a large wood repeats sooner.
 - **The Ice Folk have no set.** Their forest is the default one under snow

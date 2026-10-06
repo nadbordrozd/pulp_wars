@@ -119,19 +119,19 @@
       "grass": "public/assets/chibi/terrain/faction-grass/chibi-candy-grass-1.png",
       "clumps": [
         {
-          "recipe": "candy-a",
+          "recipe": "candy-c",
           "candidate": 0
         },
         {
-          "recipe": "candy-a",
+          "recipe": "candy-c",
           "candidate": 1
         },
         {
-          "recipe": "candy-b",
-          "candidate": 1
+          "recipe": "candy-d",
+          "candidate": 0
         },
         {
-          "recipe": "candy-b",
+          "recipe": "candy-e",
           "candidate": 3
         }
       ]

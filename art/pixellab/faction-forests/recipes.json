@@ -92,7 +92,7 @@
       "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text",
       "subject": "Subject: a clump of sweet trees: chocolate-brown trunks (#5a3a28) with round mint-green (#8fd4b0) and cream-white candy-floss canopies, and one small striped lollipop as an accent; mostly mint, cream and chocolate, very little pink; the outline is a dark chocolate tone, never pure black.",
       "notes": "Sweet trees without a style image: the palette is the faction's, not the Forest's.",
-      "review": "Chocolate trunks under round mint and cream canopies, two with swirls, each clump with a small lollipop: mint, cream and chocolate, no pink. 0 and 1 are clumps of the set. 2 and 3 measure lit from the right (faces -2.6 and -9.8): the cream canopies stand on the right, which the measure reads as light from that side; they are left out all the same."
+      "review": "Chocolate trunks under round mint and cream canopies, two with swirls, each clump with a small lollipop: mint, cream and chocolate, no pink. 0 and 1 are clumps of the set. 2 and 3 measure lit from the right (faces -2.6 and -9.8): the cream canopies stand on the right, which the measure reads as light from that side; they are left out all the same. Superseded: bead pulp_wars-2yc.13 replaced the sweet trees with the candy grove of candy-c, -d and -e; no candidate of this recipe is used now."
     },
     {
       "id": "undead-b",
@@ -126,7 +126,54 @@
         "candidate": 0
       },
       "notes": "More Candy clumps lit from the left, styled from candy-a-0.",
-      "review": "Four clumps of plain round mint and cream canopies on chocolate trunks with one lollipop each, lit from the left (faces +1.3 to +23.7); the swirls of candy-a are gone. 1 and 3 are clumps of the set."
+      "review": "Four clumps of plain round mint and cream canopies on chocolate trunks with one lollipop each, lit from the left (faces +1.3 to +23.7); the swirls of candy-a are gone. 1 and 3 are clumps of the set. Superseded: bead pulp_wars-2yc.13 replaced the sweet trees with the candy grove of candy-c, -d and -e; no candidate of this recipe is used now."
+    },
+    {
+      "id": "candy-c",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93503,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text, leaves",
+      "subject": "Subject: a low candy grove, not trees: one striped candy cane with a hooked top (cream, brick-red stripes), two round swirl lollipops on thin sticks (caramel and cream; dusty raspberry and cream), one chocolate stick (#5a3a28) and low gumdrop bushes at the foot (caramel #c98f52, raspberry #b8667a); muted colours, no mint green, no bright pink; outline a dark chocolate tone, never black.",
+      "notes": "Bead pulp_wars-2yc.13 (the user, 2026-10-06: candy canes and lollipops and such). Sample: the candy grove without a style image, the palette the faction's chocolate, caramel and cream.",
+      "review": "Four candy groves, no trees: striped canes, caramel and raspberry swirl lollipops, chocolate sticks, gumdrops at the foot; muted caramel, raspberry, cream and chocolate, no mint, no pink-on-white. 0 (61 x 78, faces +0.4) and 1 (56 x 73, +0.8) are clumps of the set. 2 measures lit from the right (-2.9: the raspberry lollipop stands left of the paler caramel one, which the measure reads as light) and is left out. 3 is three canes and two chocolate sticks: fine alone, but packed it made the pieces a thicket of red stripes, so it is left out."
+    },
+    {
+      "id": "candy-d",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93504,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text, leaves",
+      "subject": "Subject: a low candy grove, the same sweets and colours as the style image: two big round swirl lollipops on thin sticks (caramel and cream; dusty raspberry and cream), one short chocolate stick and a row of big plain gumdrop bushes at the foot (caramel, raspberry, cream); big calm shapes, few stripes, no candy cane; every sweet lighter on its left side; no mint green, no bright pink.",
+      "styleImage": {
+        "recipe": "candy-c",
+        "candidate": 1
+      },
+      "notes": "Bead pulp_wars-2yc.13. Batch: calmer clumps of big lollipops and gumdrop bushes, styled from candy-c-1, because three striped canes in one clump made the packed pieces busy.",
+      "review": "Four calmer groves in the same hand: two big lollipops over gumdrops, with chocolate sticks. 0 (49 x 73, faces -1.5 rounded, inside the bake's limit) is a clump of the set. 1 has two cut chocolate rolls that read as logs; 2 (-7.3) and 3 (-1.5, past the limit) measure lit from the right, and 3 is also a thin clump. Left out."
+    },
+    {
+      "id": "candy-e",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93505,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text, leaves",
+      "subject": "Subject: a low candy grove, the same sweets and colours as the style image: one thick chocolate stick trunk with a big round caramel swirl sweet on top, one striped candy cane beside it, one small raspberry lollipop, and big plain gumdrop bushes at the foot (caramel, raspberry, cream); big calm shapes; every sweet lighter on its left side; no mint green, no bright pink.",
+      "styleImage": {
+        "recipe": "candy-c",
+        "candidate": 0
+      },
+      "notes": "Bead pulp_wars-2yc.13. Batch: a chocolate-stick trunk with a swirl sweet, one cane and gumdrop bushes, styled from candy-c-0.",
+      "review": "0: a chocolate trunk under a big caramel swirl, the best single shape, but it measures -6.4 (dark trunk left of pale gumdrops) and the bake refuses it. 1: three canes, busy, -6.7. 2 (+8.8) is nearly candy-c-0 again. 3 (69 x 84, +17.5): a thick chocolate-stick trunk, a lollipop each side, a plain cane and big gumdrops, drawn a little larger than the others; it is the set's fourth clump."
     }
   ]
 }

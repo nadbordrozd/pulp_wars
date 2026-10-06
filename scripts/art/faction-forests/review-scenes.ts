@@ -59,6 +59,36 @@ export const sceneIceFolk = (): GameStateV7 =>
   forested(borderScene("ICE_FOLK"));
 export const sceneDwarf = (): GameStateV7 => forested(borderScene("DWARF"));
 export const sceneCandy = (): GameStateV7 => forested(borderScene("CANDY"));
+
+/**
+ * The Candy scene with units standing in the wood of the Candy territory
+ * (bead pulp_wars-2yc.13: the grove must stay behind the units on it).
+ */
+export function sceneCandyGrove(): GameStateV7 {
+  const state = sceneCandy();
+  const [left, top, right, bottom] = [8, 4, 11, 6];
+  const free = state.board.tiles
+    .filter(
+      (tile) =>
+        tile.terrain === "FOREST" &&
+        tile.at.x - ORIGIN.x >= left &&
+        tile.at.x - ORIGIN.x <= right &&
+        tile.at.y - ORIGIN.y >= top &&
+        tile.at.y - ORIGIN.y <= bottom,
+    )
+    .filter((_, index) => index % 3 === 1)
+    .map((tile) => tile.at);
+  let moved = 0;
+  return {
+    ...state,
+    units: state.units.map((unit) => {
+      const at = free[moved];
+      if (at === undefined) return unit;
+      moved += 1;
+      return { ...unit, at };
+    }),
+  };
+}
 export const sceneOverview = (): GameStateV7 => overviewScene();
 
 export const SWITCH_PARAMETER = "faction-forests";
@@ -81,6 +111,7 @@ export const REVIEW_SHOTS: readonly LookSwitchShot[] = [
   shot("martian", "sceneMartian"),
   shot("dwarf", "sceneDwarf"),
   shot("candy", "sceneCandy"),
+  shot("candy-grove", "sceneCandyGrove"),
   shot("ice-folk", "sceneIceFolk"),
   {
     name: "overview",
