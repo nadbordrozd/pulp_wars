@@ -217,12 +217,16 @@ describe("ruleset-7 Normal AI campaign (pulp_wars-9s0.1)", () => {
       "EXPLORE",
     ]);
     const [first, second, third] = jobs.map((item) => item.at);
-    // Two scouts take stretches of frontier at least four tiles apart; the
-    // third unit follows the first scout.
+    // Two scouts take stretches of frontier at least four tiles apart.
     expect(distance(required(first), required(second))).toBeGreaterThanOrEqual(
       4,
     );
-    expect(third).toEqual(first);
+    // Tuning 8 (`pulp_wars-w49.11`): this seat still expands (one city),
+    // so the third unit scouts too: its own stretch, or, with every
+    // stretch taken as here, the frontier nearest to it. (It followed the
+    // first scout before; a seat with three cities still does.)
+    expect(third).not.toEqual(first);
+    expect(third).not.toEqual(second);
     const scout = unitAt(state, { x: 2, y: 7 });
     const goal = required(jobOf(state, scout.id)).at;
     expect(

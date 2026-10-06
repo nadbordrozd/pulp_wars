@@ -23,9 +23,10 @@ import {
 
 /**
  * The bounded runs of the breakthrough labs (tuning 6, `pulp_wars-w49.6`,
- * and tuning 7, `pulp_wars-w49.10`;
- * docs/product/RULESET_7_TUNING_HUMAN.md sections 13.2 and 14.2): the AI
- * seat plays the Normal policy, the player's seat one of two scripts.
+ * tuning 7, `pulp_wars-w49.10`, and tuning 8, `pulp_wars-w49.11`;
+ * docs/product/RULESET_7_TUNING_HUMAN.md sections 13.2, 14.2, and 15.2):
+ * the AI seat plays the Normal policy, the player's seat one of three
+ * scripts.
  *
  * - `HOLD`: the defender of tuning 6. It holds the line: focused fire,
  *   every favourable attack, a melee unit in every city that can train, and
@@ -37,14 +38,25 @@ import {
  *   column behind it), then everything shoots as in `HOLD`; the cities
  *   train a Catapult, a Swordsman, a Marksman, a Guard, a Fighter, and the
  *   units trained far away walk to the capital.
+ * - `STANDOFF`: the defender that kept its capital for twelve rounds in
+ *   the hand play of round 7. It gives ground as `RETREAT` does, so its
+ *   Catapults end up two and three tiles behind the capital's center, out
+ *   of the attacker's reach; the capital retrains a cheap garrison on its
+ *   center every turn it stands empty (a Swordsman with 13 Coins or more,
+ *   otherwise a Fighter) and the other cities train Catapults, then
+ *   Swordsmen.
  */
-export type BreakthroughScriptV7 = "HOLD" | "RETREAT";
+export type BreakthroughScriptV7 = "HOLD" | "RETREAT" | "STANDOFF";
 
 export interface BreakthroughRunV7 {
   /** The round an attacker first stands on or behind the line. */
   readonly crossedInRound: number | null;
   readonly capitalFellInRound: number | null;
-  /** AI turns from round 2 on without an attack, a Wail, or a Kaboom. */
+  /**
+   * AI turns from round 2 on without an attack, a Wail, a Kaboom, or a
+   * capture (tuning 8: the turn in which a unit that walked onto an empty
+   * center captures it is no idle turn).
+   */
   readonly turnsWithoutAttack: number;
   readonly attackersLost: number;
   readonly defendersLost: number;
@@ -224,8 +236,11 @@ export function breakthroughHoldTurnV7(start: GameStateV7): GameStateV7 {
   return endTurn(state);
 }
 
-/** The player's turn by the `RETREAT` script. */
-export function breakthroughRetreatTurnV7(start: GameStateV7): GameStateV7 {
+/** The player's turn by the `RETREAT` script (`standoff`: by `STANDOFF`). */
+export function breakthroughRetreatTurnV7(
+  start: GameStateV7,
+  standoff = false,
+): GameStateV7 {
   const player = start.humanPlayerId;
   const capital = LAB_BREAKTHROUGH_CAPITAL_V7;
   let state = start;
@@ -312,6 +327,25 @@ export function breakthroughRetreatTurnV7(start: GameStateV7): GameStateV7 {
   }
   state = fire(state);
   if (state.outcome !== null) return state;
+  if (standoff) {
+    // The garrison first: a Swordsman when the Coins are there, a Fighter
+    // otherwise; then Catapults and Swordsmen in the other cities.
+    const home = state.cities.find((city) => same(city.at, capital));
+    const coins =
+      state.players.find((entry) => entry.id === player)?.coins ?? 0;
+    const garrison = queryPlayerCommandsV7(viewForV7(state, player)).find(
+      (candidate) =>
+        candidate.kind === "TRAIN" &&
+        candidate.cityId === home?.id &&
+        candidate.role === (coins >= 13 ? "SWORDSMAN" : "FIGHTER"),
+    );
+    if (garrison !== undefined) {
+      const result = applyCommandV7(state, player, garrison);
+      if (result.accepted) state = result.state;
+    }
+    state = train(state, ["CATAPULT", "SWORDSMAN", "FIGHTER"]);
+    return endTurn(state);
+  }
   state = train(state, [
     "CATAPULT",
     "SWORDSMAN",
@@ -343,7 +377,8 @@ export function breakthroughPolicyTurnV7(start: GameStateV7): {
     if (
       command.kind === "ATTACK" ||
       command.kind === "WAIL" ||
-      command.kind === "KABOOM"
+      command.kind === "KABOOM" ||
+      command.kind === "CAPTURE"
     )
       attacks += 1;
     const result = applyCommandV7(state, actor, command);
@@ -387,7 +422,7 @@ export function runBreakthroughLabV7(
       state =
         script === "HOLD"
           ? breakthroughHoldTurnV7(state)
-          : breakthroughRetreatTurnV7(state);
+          : breakthroughRetreatTurnV7(state, script === "STANDOFF");
       count(before, state);
       continue;
     }

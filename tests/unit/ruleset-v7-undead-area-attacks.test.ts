@@ -859,8 +859,10 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // (`pulp_wars-w49.4`: the Normal AI's army play) the Liches of seed 3
     // never splash; those of seed 9 do, ten times. With tuning 6
     // (`pulp_wars-w49.6`: the Undead research the Lich sixth) seed 9
-    // fields none in time; the three of seed 3 splash.
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 3), {
+    // fields none in time; the three of seed 3 splash. With tuning 8
+    // (`pulp_wars-w49.11`) seed 3 fields none; the five of seed 15 splash
+    // (of seeds 0-15, the Liches of seeds 0, 2, 5, 6, 8, 14, and 15 do).
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 15), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);

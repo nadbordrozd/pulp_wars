@@ -1055,7 +1055,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // Human seat (was 016439…56f8).
       // Tuning 7 (`pulp_wars-w49.10`): the command is unchanged; the cause
       // is in the pin's comment (was c6512a…dddd).
-      "0802a4dc2e1fed5509c5232a352982fc1de7f1b01413f863a41c90b802bdcb02",
+      // Tuning 8 (`pulp_wars-w49.11`): the command is Research
+      // Marksmanship (it was Train Swordsman); the cause is in the pin's
+      // comment (was 0802a4…cb02).
+      "e8b765d72273d33c2589e5ca101361aaef5bcbef7f70871e79b32b08017a17d1",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -1395,12 +1398,18 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       kind: "DISBAND" as const,
       unitId: directActor.id,
     };
+    // Tuning 8, correction pass (`pulp_wars-w49.11`): an army seat never
+    // disbands a unit that stands next to an enemy unit (a wounded Guard
+    // beside the player's capital was disbanded in the middle of an
+    // assault), so the surrounded unit is no candidate either; the Disband
+    // is still offered.
+    expect(queryPlayerCommandsV7(directView)).toContainEqual(directDisband);
     expect(
       chooseNormalCommandV7(directView).candidates.some(
         ({ command }) =>
           canonicalJson(command) === canonicalJson(directDisband),
       ),
-    ).toBe(true);
+    ).toBe(false);
   });
 
   it("sums each injured Catapult preview and public minimum healing", () => {

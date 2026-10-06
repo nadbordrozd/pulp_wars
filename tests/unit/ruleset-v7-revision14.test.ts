@@ -1121,8 +1121,11 @@ describe("ruleset-7 revision-14 natural play and persistence", () => {
     // 0-23, seeds 2, 3, 5, 8, 11, 18, 22, and 23 plague). With tuning 6
     // (`pulp_wars-w49.6`: the Undead research Drill first and a third of
     // their army is Zombies) seed 3 has 25 Plague applications and 15
-    // bites.
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 3);
+    // bites. With tuning 8 (`pulp_wars-w49.11`: research on a clock while
+    // at war) seed 3 is over in round 29 without a Lich; seed 15 has 19
+    // Plague applications and 43 bites (of seeds 0-15, seeds 0, 2, 5, 6,
+    // 8, 14, and 15 plague).
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 15);
     const match = runAiMatchV7(setup, { maxRounds: 45 });
     expect(match.errors).toEqual([]);
     expect(match.stalls).toEqual([]);

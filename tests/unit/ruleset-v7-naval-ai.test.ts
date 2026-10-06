@@ -879,6 +879,55 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
       expect(result.metrics.commandsByKind[kind]).toBe(0);
   });
 
+  it("lands a unit and captures with it in the natural Continents match of the naval validator (army seats)", () => {
+    // `scripts/validate-ruleset7-naval-playable.ts`, the natural match:
+    // 16 x 16 Continents, seed 0, four Human seats. Tuning 8 as first
+    // written (`pulp_wars-w49.11`) held a unit "of a holding force too
+    // weak to stage" outside every reach also on a seat whose naval plan
+    // is active: what it lands arrives one or two units at a time and
+    // never has the numbers, so nine units landed in 2,000 commands and
+    // none captured. The gate does not apply to a seat with an active
+    // naval plan; the first landed unit captures by accepted command 914.
+    const result = runAiMatchV7(
+      {
+        ...setupV7(0, 3),
+        width: 16,
+        height: 16,
+        aiMode: "RIVAL",
+        mapType: "CONTINENTS",
+        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
+        curiosities: false,
+        factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
+        allowDuplicateFactions: true,
+      },
+      { maxRounds: 60, maxCommands: 1_000 },
+    );
+    expect(result.errors).toEqual([]);
+    expect(result.stalls).toEqual([]);
+    const embarked = new Set<number>();
+    const landed = new Map<number, number>();
+    let lifecycle = false;
+    for (const [index, entry] of result.commandLog.entries()) {
+      if (entry.playerId === result.state.humanPlayerId) continue;
+      const command = entry.command;
+      if (
+        command.kind === "MOVE" &&
+        entry.events.some((event) => event.kind === "UNIT_EMBARKED")
+      )
+        embarked.add(command.unitId);
+      else if (command.kind === "DISEMBARK" && embarked.has(command.unitId))
+        landed.set(command.unitId, index);
+      else if (
+        command.kind === "CAPTURE" &&
+        entry.events.some((event) => event.kind === "CITY_CAPTURED") &&
+        (landed.get(command.unitId) ?? Infinity) < index
+      )
+        lifecycle = true;
+    }
+    expect(landed.size).toBeGreaterThan(0);
+    expect(lifecycle).toBe(true);
+  }, 600_000);
+
   it("avoids redundant landing and reboarding on the cooperative seed-7 Continents map", () => {
     const result = runAiMatchV7(
       {

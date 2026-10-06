@@ -133,6 +133,7 @@ import {
   missionByIdV7,
   missionMatchSetupV7,
 } from "../src/engine/index";
+import { FOUNTAIN_HEAL_V7 } from "../src/engine/v7/curiosities";
 import {
   BLAST_MOUNTAIN_UNLOCK_TEXT_V7,
   BREACH_UNLOCK_TEXT_V7,
@@ -1046,6 +1047,34 @@ const COMBAT_BASE_KEYS_V7 = new Set([
   "advances",
 ]);
 
+/**
+ * Tuning 8 (`pulp_wars-w49.11`): what the `def` of a combat line is made
+ * of, when it is more than the unit's own Defense: each fortification
+ * level adds 1, and a Guard that is open to ranged attacks starts from 1.
+ * A Lich on a Guard on a Field Defense read `def 3 fort 2` (1 for the
+ * Guard, 2 for the Field Defense) beside a Rocket Cart's `def 1 x3/2` on a
+ * Guard in a Forest, and looked as if the first shot had met Defense 3.
+ */
+function defenseBreakdownTextV7(
+  preview: {
+    readonly targetUnitId: number;
+    readonly defense2: number;
+    readonly fortificationLevel: number;
+  },
+  context: TextContextV7,
+): string {
+  const base2 = preview.defense2 - 2 * preview.fortificationLevel;
+  const target =
+    context.view.units.find((unit) => unit.id === preview.targetUnitId) ??
+    context.before?.units.find((unit) => unit.id === preview.targetUnitId);
+  const open =
+    target !== undefined &&
+    unitRoleMechanicsV7(context.view, target).rangedDefense2 === base2 &&
+    unitRoleRuleV7(context.view, target).defense2 !== base2;
+  if (preview.fortificationLevel <= 0) return open ? " (open to ranged)" : "";
+  return ` (${halfV7(base2)}${open ? " open to ranged" : ""} + fort ${preview.fortificationLevel})`;
+}
+
 function combatTextV7(
   preview: Readonly<Record<string, unknown>> & {
     readonly attackerId: number;
@@ -1077,13 +1106,27 @@ function combatTextV7(
     preview.retaliation
       ? `takes ${preview.damageToAttacker}${after(hp.attacker, preview.damageToAttacker)}${preview.attackerDies ? " ATTACKER DIES" : ""}`
       : `no retaliation${preview.noRetaliationReason === null ? "" : ` (${preview.noRetaliationReason})`}`,
-    `atk ${halfV7(preview.attack2)} vs def ${halfV7(preview.defense2)}${preview.defenseBonusNumerator === preview.defenseBonusDenominator ? "" : ` x${preview.defenseBonusNumerator}/${preview.defenseBonusDenominator}`}${preview.fortificationLevel > 0 ? ` fort ${preview.fortificationLevel}` : ""}`,
+    `atk ${halfV7(preview.attack2)} vs def ${halfV7(preview.defense2)}${defenseBreakdownTextV7(preview, context)}${preview.defenseBonusNumerator === preview.defenseBonusDenominator ? "" : ` x${preview.defenseBonusNumerator}/${preview.defenseBonusDenominator}`}`,
   ];
   // Tuning 5 (`pulp_wars-w49.4`): Overrun has no budget, so no count is
   // shown ("attacks left 1" never changed); the line says what the kill
   // earns.
-  if (preview.attacksRemaining > 0 && preview.defenderDies)
-    parts.push("Overrun: attacks again after this kill");
+  // Correction pass of tuning 8 (`pulp_wars-w49.11`): the chain needs the
+  // advance (RULESET_7_CURRENT.md section 13.4, Overrun: "after the unit
+  // kills and advances"). A kill of a unit on a tile the attacker cannot
+  // enter, or of a unit that rises in place, ends it, and the line says so.
+  const overrunner =
+    context.view.units.find((unit) => unit.id === preview.attackerId) ??
+    context.before?.units.find((unit) => unit.id === preview.attackerId);
+  if (preview.overrunAdvance === true && preview.defenderDies)
+    parts.push("Overrun: advances and may attack again after this kill");
+  else if (
+    preview.defenderDies &&
+    !preview.attackerDies &&
+    overrunner !== undefined &&
+    unitRoleRuleV7(context.view, overrunner).abilities.includes("OVERRUN")
+  )
+    parts.push("Overrun ends: it does not advance after this kill");
   if (preview.push !== "BLOCKED") parts.push(`push ${preview.push}`);
   // Tuning 2 (7r47): whether the attacker takes the target's tile (after a
   // kill, or following a Charge! push); a ranged unit never does.
@@ -1471,8 +1514,26 @@ function eventTextV7(
       lines.push(
         `MOVE ${context.memory.tag(event.unitId)} ${from === null ? "" : `${xyV7(from)}>`}${event.path.map(xyV7).join(">")}`,
       );
+      // Tuning 8 (`pulp_wars-w49.11`): a unit that ends on the Fountain is
+      // told what it does (it prints nothing for a unit at full HP).
+      const end = event.path.at(-1);
+      if (
+        ownCommand &&
+        end !== undefined &&
+        context.view.curiosities.some(
+          (entry) => entry.kind === "FOUNTAIN" && sameV7(entry.at, end),
+        )
+      )
+        lines.push(
+          `  on the Fountain of Youth @${xyV7(end)}: a land unit that starts your turn here heals up to ${FOUNTAIN_HEAL_V7} HP (nothing for a unit at full HP)`,
+        );
       break;
     }
+    case "FOUNTAIN_HEALED":
+      lines.push(
+        `FOUNTAIN ${context.memory.tag(event.unitId)} @${xyV7(event.at)} healed +${event.amount} (hp ${event.hpAfter - event.amount}->${event.hpAfter})`,
+      );
+      break;
     case "COMBAT_RESOLVED": {
       const preview = event.preview;
       lines.push(
@@ -2476,7 +2537,11 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
     "",
     "MAP",
     ...mapLinesV7(view),
-    ...LEGEND_V7.slice(0, full ? 5 : 1),
+    // Tuning 8 (`pulp_wars-w49.11`): the feature glyphs too (K Workshop,
+    // M Mine, O Monument: a Workshop was taken for a city).
+    ...(full
+      ? LEGEND_V7
+      : LEGEND_V7.filter((_line, index) => index === 0 || index === 2)),
   );
   if (!full) lines.push("  (view --full prints the whole legend)");
 
@@ -2653,10 +2718,17 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
                 : `${entry.currentDistinctTrainableRoles}/${entry.requiredDistinctTrainableRoles}`;
         // Slayer reads the most kills held by ONE of the viewer's units
         // that is still on the board, not the seat's total kills.
+        // Tuning 8 (`pulp_wars-w49.11`): what Muster and Engineer count
+        // (MUSTER read 2/4 with seven units; ENGINEER 3/6 with seven
+        // Mines and four Workshops built).
         const meaning =
           entry.achievement === "SLAYER"
             ? " (most kills by one living unit)"
-            : "";
+            : entry.achievement === "MUSTER"
+              ? " (different unit kinds you have on the board at once)"
+              : entry.achievement === "ENGINEER"
+                ? " (highest output of one Windmill, Sawmill, Forge, or Workshop; Mines do not count)"
+                : "";
         // Tuning 5 (`pulp_wars-w49.4`): Explorer, Engineer, and Muster
         // count before their technology is researched but unlock only
         // with it (a meter read 139/100 and nothing said why).
@@ -2922,6 +2994,15 @@ function commandOptionsV7(args: ArgsV7): string {
   section("REWARD CHOICE (must be made first)", group("reward"));
   section("RESEARCH", group("research"));
   groupedSection("TRAIN", group("train"));
+  // Tuning 8 (`pulp_wars-w49.11`): say why no city trains (the section was
+  // simply absent with every slot filled).
+  if (group("train").length === 0 && group("reward").length === 0) {
+    const reasons = ownCitiesV7(view).map(
+      (city) => `c${city.id} ${noTrainingReasonV7(view, city)}`,
+    );
+    if (reasons.length > 0)
+      lines.push("", "TRAIN", `nothing to train: ${reasons.join(" | ")}`);
+  }
   section("CITY", group("city"));
   groupedSection("TILES", group("tile"));
   if (grouped)
@@ -3039,6 +3120,35 @@ function moveRejectionReasonV7(view: PlayerViewV7, id: string): string | null {
   return `no legal path ends there this turn: entering a Forest or a Mountain ends a Move (unless both tiles are on your Road, or Fieldcraft frees Forests), a tile next to an enemy unit stops it (zone of control; a Raider slips by), a unit cannot pass an enemy unit, and some terrain needs a technology (Mountain: Engineering; water: Shorecraft)`;
 }
 
+/**
+ * Tuning 8: why a city offers no training now, in the words of the city
+ * line of `view`.
+ */
+function noTrainingReasonV7(
+  view: PlayerViewV7,
+  city: PlayerViewV7["cities"][number],
+): string {
+  const slots = citySlotsV7(view, city);
+  if (city.cityActionAvailable !== true) return "city action used";
+  if (cityBesiegedV7(view, city)) return "besieged";
+  if (slots.used >= slots.capacity)
+    return `no free slot (${slots.used}/${slots.capacity})`;
+  if (view.units.some((unit) => sameV7(unit.at, city.at)))
+    return "center occupied";
+  return "too dear";
+}
+
+/** Tuning 8: the reason behind a rejected `cN.t.ROLE`. */
+function noTrainingHintV7(
+  prefix: string,
+  segments: readonly string[],
+  view: PlayerViewV7 | undefined,
+): string {
+  if (view === undefined || segments[1] !== "t") return "";
+  const city = ownCitiesV7(view).find((entry) => `c${entry.id}` === prefix);
+  return city === undefined ? "" : ` (${noTrainingReasonV7(view, city)})`;
+}
+
 function unknownIdMessageV7(
   id: string,
   offered: readonly OfferedV7[],
@@ -3064,7 +3174,7 @@ function unknownIdMessageV7(
     state.pendingChoices.length > 0
       ? `a city reward choice is pending and only it is offered: ${offered.map((entry) => entry.id).join(" ")}`
       : related.length === 0
-        ? `nothing is offered for "${prefix}" now`
+        ? `nothing is offered for "${prefix}" now${noTrainingHintV7(prefix, segments, view)}`
         : `offered for ${prefix}: ${related.slice(0, 24).join(" ")}${related.length > 24 ? " ..." : ""}`;
   return `"${id}" is not an offered command at state #${state.commandIndex} (unknown, illegal, or from an older state); ${hint}`;
 }

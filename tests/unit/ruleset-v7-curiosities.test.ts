@@ -409,15 +409,21 @@ describe("headless parity and the CLI flag", () => {
         // growth at the unit limit, wartime spending, and target choice):
         // 17 rounds (18 before), recomputed. The four pins below have a
         // seat outside the army play and are unchanged.
-        rounds: 17,
+        // Tuning 8 (`pulp_wars-w49.11`: the capture of a reached center,
+        // research on a clock while at war, group sizes): 15 rounds,
+        // recomputed; the four pins below are unchanged again.
+        // Its correction pass (the research clock under pressure, the
+        // battery, the weak garrison): 16 rounds, recomputed (the final
+        // PRNG state too: the match ends a round later).
+        rounds: 16,
         commandHash:
-          "e8ee7072a1696bfb14e183889d5ee127273d015698efd2b6fbca9dfd2b8804b7",
+          "33eee3593b76a684533e9def11d9ced08afe5f436a9e4f7c130f3110171281b7",
         eventHash:
-          "e644337e9bb9b74f682338b36ea0f96c59b70b92727dd8f64c633c6c52d532ca",
+          "5969a82c2e9b6640fd2f834cd1452bde0ca8a9de4c2335593c4358e61d601815",
         mapHash:
           "1f6ad08d476884229d6cb8a7319ea209b8667cf4e28e24cd07352ebafc3055de",
         finalPrngHash:
-          "6182b6ed99dab3b7cdde3c354dd816c55a481218f6387349cf6c5b23ed138946",
+          "6ecdac89b46e4cbd434c0c8eec3723232d5419d7308165da635935e8d0fbcca1",
       },
       {
         mapType: "PANGEA",

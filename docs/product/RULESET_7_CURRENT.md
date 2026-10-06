@@ -233,6 +233,14 @@ Disband** (every seat that saw the unit, [section 15](#15-fog-and-observation));
 and the three breakthrough labs, now at revision 2 (the capital two tiles
 behind the line with its Land Grant used, so that the staged Field
 Defenses lie in its territory and count).
+**[Round 8 of the Human tuning](RULESET_7_TUNING_HUMAN.md#15-round-8)**
+(`pulp_wars-w49.11`) keeps the identity `pulp-wars-poc-7r49` again: it
+changes only the **Normal AI** of a Human, Undead, or Goblin seat (a unit
+on an enemy center stays and captures, an empty or doomed center is
+entered in the turn its garrison is shot, research runs on a clock while
+at war, a held city is attacked by a group sized to its holders and never
+by one unit; [section 16](#16-normal-ai-summary)) and the text of the
+text harness. No rule of play, command, state, or event shape changed.
 `pulp-wars-poc-7r48` (`pulp_wars-w49.4`) is
 **[round 5 of the Human tuning](RULESET_7_TUNING_HUMAN.md#12-round-5)**, which followed four hand-played
 games on round 4. The Human **Guard** has Defense 1 against an attack from
@@ -5113,6 +5121,44 @@ Harbours from it.
   naval plan whose cities cannot train steps a unit off a center so that
   one can. Details:
   [Normal AI: committing](../architecture/NORMAL_AI.md#committing-growing-and-following-through-pulp_wars-w4910).
+- **Capturing, researching, and real numbers** (`pulp_wars-w49.11`,
+  round 8; the same three factions; where it differs from the three
+  paragraphs above, this one is the rule). A capturer on a hostile center
+  makes no Move and no attack that would take it off the tile until it has
+  captured, and the three nearest fighting units come up beside it. Two
+  to five capturers are kept within a step of a hostile center that is
+  empty or whose garrison the seat's shots kill this turn; the shots come
+  first, and the sturdiest of them steps in the same turn. At war, every
+  city that can train trains, and research runs on a clock: one technology
+  of the faction's order for every three rounds played (two for a seat
+  with an income of 15 or with twelve units and half as many again as its
+  largest enemy; for a seat whose income is small the turns it needs to
+  pay the price plus one), bought before the units when due, with the
+  Coins kept for it meanwhile (only a city with a hostile unit within two
+  tiles of its center trains regardless); one growth technology once the
+  first two units of the order are in; after the last unit Fieldcraft,
+  Fortification, Metallurgy, and Explosives; no other technology in a war.
+  No unit steps onto a hostile center where the enemy's siege units kill
+  it before it can capture: the units near go for those siege units
+  first, a fast unit's kill of a siege unit before anything. A hostile
+  unit at half its HP or less on a center without Walls is attacked by
+  two or more units within three tiles of it whatever the enemy has
+  behind it. An army seat never disbands a unit beside an enemy. A holding force too weak to stage
+  attacks nobody outside its own land, a raid goes only to a city with no
+  hostile unit within two tiles, a front is sized at half as much again as
+  the holders within four tiles weighed with their cover and Walls (a
+  third of it ranged or siege units against Walls or shooters), and a
+  position with the weight commits when half of what is coming stands in
+  its front ranks. Enemy siege units are preferred targets. A Goblin seat
+  below three cities sends every free capturer to scout its own stretch,
+  throws its bombs before its units close in and whenever one step
+  brings a target into range, trains no Bomb Chucker onto a center with
+  an enemy melee unit within two tiles while another unit can be, blows a
+  Goblin up in three enemies, calls WAAAGH! only with attacks to follow, and pulls a spent
+  Scrap Buggy back. Growth goes to the capital first, the best defender
+  stays on a threatened center, and a unit that is lost anyway attacks.
+  Details:
+  [Normal AI: capturing](../architecture/NORMAL_AI.md#capturing-researching-and-real-numbers-pulp_wars-w4911).
 - **Second pass** (`pulp_wars-9s0.8`): at war, with no own city threatened
   and at least three attack-capable land units, Normal saves for its
   Chivalry-tier unit (fewer than two of them) or for Chivalry itself when the
@@ -9580,6 +9626,7 @@ has no Candy step.
 | Tuning      | `pulp-wars-poc-7r48` | `pulp_wars-w49.4` [round 5 of the Human tuning](RULESET_7_TUNING_HUMAN.md#12-round-5) after four hand-played games on round 4: the Human Guard at Defense 1 against an attack from two or more tiles (`rangedDefense2`); the Human Swordsman (role `SWORDSMAN`, 5 Coins, 15 HP, Attack 3.5, Defense 2.5) at Engineering; Drill removed (`DRILL_UNIT` is no command kind); Land Grant at 1 Coin a cell with no minimum; a Blast Mountain spares the blasting player's weakest land unit next to the Mountain (`setterUnitId` in its preview); `LAB_BACKLINE` and `LAB_LATE` at revision 2 with Swordsmen. The Normal AI of a Human, Undead, or Goblin seat plays an army (`src/ai/v7-army.ts`). A `7r47` save, replay, or command stream is incompatible.                                                                                                                                                                                                                                                                                                                                                                                              |
 | Tuning      | `pulp-wars-poc-7r49` | `pulp_wars-w49.6` [round 6 of the Human tuning](RULESET_7_TUNING_HUMAN.md#13-round-6) after three hand-played games on round 5: research costs its tier base plus 1 Coin (2) for each technology owned beyond the first; a reward unit appears beside an occupied center and the occupant stays; the owner of a unit hit by an attacker it cannot see receives `COMBAT_SPLASH_DAMAGE` for it; the labs `LAB_BREAKTHROUGH`, `LAB_BREAKTHROUGH_GOBLIN`, and `LAB_BREAKTHROUGH_UNDEAD`. The Normal AI of a Human, Undead, or Goblin seat weighs positions, masses and commits (also at a single-file front), expands to three cities, and researches toward its faction's signature units (the Undead toward Zombies). A `7r48` save, replay, or command stream is incompatible.                                                                                                                                                                                                                                                                                                                                                                         |
 | Tuning      | `pulp-wars-poc-7r49` | `pulp_wars-w49.10` [round 7 of the Human tuning](RULESET_7_TUNING_HUMAN.md#14-round-7) after five hand-played games on round 6, no identity change: the Normal AI of a Human, Undead, or Goblin seat reads a local position, commits with numbers and stays committed against a line that steps back, holds fast units for the infantry, grows at its unit limit, spends on units first while an enemy army is in the field, and marches on the hostile city in its reach that is easiest to take (a surplus on a second); `UNIT_DISBANDED` also reaches every viewer that saw the unit; the three breakthrough labs at revision 2 (a mission city may state `landGrant`); not played by hand yet                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Tuning      | `pulp-wars-poc-7r49` | `pulp_wars-w49.11` [round 8 of the Human tuning](RULESET_7_TUNING_HUMAN.md#15-round-8) after four hand-played games on round 7, no identity change: the Normal AI of a Human, Undead, or Goblin seat keeps a unit on an enemy center until it captures and enters a center in the turn its garrison is shot, researches on a clock while at war, attacks a held city with a group sized to its holders, scouts and expands as a Goblin seat, and grows its capital; corrected before publication after four hand-played games (the research clock under pressure, the answer to the defender's Catapults, the weak garrison, the Bomb Chucker's throw); the text harness breaks a fortified Defense down and says why no city trains; a third bounded-run script; not played by hand yet                                                                                                                                                                                                                                                                                                                                                              |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

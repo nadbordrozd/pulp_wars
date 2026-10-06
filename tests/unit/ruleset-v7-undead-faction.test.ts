@@ -1733,21 +1733,25 @@ describe("ruleset-7 all-Human parity digests", () => {
       // growth at the unit limit, wartime spending, and target choice):
       // the match ends in round 26 (331 commands), and every digest below
       // but the human's final commands was recomputed.
-      acceptedCommands: 331,
-      rounds: 26,
+      // Tuning 8 (`pulp_wars-w49.11`: the capture of a reached center,
+      // research on a clock while at war, group sizes): the match ends in
+      // round 25 (296 commands), and the same digests were recomputed.
+      // Its correction pass: round 24 (284 commands), recomputed.
+      acceptedCommands: 284,
+      rounds: 24,
       termination: "OUTCOME",
       mapHash:
         "251ae814b9c22679f8ed6b288c0a9ae2a06574b84b5b719521970f6f24a3e51c",
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "f77a73a6c1b71c07288cafae7f0efff48280aff2f4f6a72107f103593b127f1c",
+        "f039938634d4433ebfa1f448af1ee87fa5a25f31d4e66f1dcfc97f26c4ba2ad2",
       eventHash:
-        "426025245917186416a4017fc851e6dcb609f935197a8fdd16ff62ec5c1dd631",
+        "01092870c1e94f0c88dcdc221a4968ca04d16353b22f72655a403d99a089c107",
       normalizedFinalStateHash:
-        "b2d0aecddeed11084d59180bda9a1ee2e5e2801eb7bb30877c10e10d11be792b",
+        "6b91eec789c90d82fcc4c8e04c3bfe6819b06f6b951695fa1661dd41f682cc62",
       normalizedHumanViewHash:
-        "24d5ad12956669f6cf66c47d7ff24b6e28441f14bc1c952d8327bf9660d71241",
+        "5a168b9e44ab550286a018f6ad522cc5831149d9ad2ac4b9162eaacc846bcca6",
       normalizedHumanCommandsHash:
         "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     },
@@ -1762,7 +1766,8 @@ describe("ruleset-7 all-Human parity digests", () => {
       // Tuning 5: 313 commands, recomputed.
       // Tuning 6 (`pulp_wars-w49.6`): 354 commands, recomputed.
       // Tuning 7 (`pulp_wars-w49.10`): 365 commands, recomputed.
-      acceptedCommands: 365,
+      // Tuning 8 (`pulp_wars-w49.11`): 364 commands, recomputed.
+      acceptedCommands: 364,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1770,15 +1775,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "b11910d95aeab8c56bbf6f72f63d4e6f6b30f7e43f842d8354e7badf23e1050c",
       commandHash:
-        "fba0bec7e5f4b915ec66250035a894c0966c3aa3dcb91db3e0f001cd3588ed10",
+        "f0241a8a168d8dbb2a17b637ccc8860bd8a99929ed94f45c8045a7479e2ce2f2",
       eventHash:
-        "4bcd6ad4acd50e527ed191291ef2976047cfc8afa23eeba7c62e1a7f673551ab",
+        "6194fb10b8d381ef5251762bc77f8decdfca71df6b736dfe77574f7f5511cc7c",
       normalizedFinalStateHash:
-        "5afb04e9327175f189a5f7e9ca5ecab6392dc28a063da4a237325d6b0271b651",
+        "1f799a2cd1f5c9842f30ec65ecf5dc4e97eaeb04ab6332d6487fdc156b100828",
       normalizedHumanViewHash:
-        "9da8c907cec98de213772c01548c317eab127a14069d6c13a019284e67efd2db",
+        "6111b84bfecfa191038e9a4a973da1d50e72f67f59947e1cfbfe92fec4ad5070",
       normalizedHumanCommandsHash:
-        "1850a9fde2e55cc96d209b1fcd02bac50d21aa72eec7d4937624d0137a851787",
+        "75cd9968da27bbad9639f79f7f3054b1941f70bc677ab943f3822c0dfb9898bf",
     },
   ] as const;
 

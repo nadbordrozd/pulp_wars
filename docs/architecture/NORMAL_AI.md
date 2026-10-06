@@ -570,6 +570,246 @@ the bounded lab run against the defender that gives ground
 (`tests/fixtures/v7-breakthrough-lab.ts`); the run against the defender
 that holds is in `tests/unit/ruleset-v7-tuning-6.test.ts`.
 
+## Capturing, researching, and real numbers (`pulp_wars-w49.11`)
+
+**The Human tuning, round 8**
+([round 8](../product/RULESET_7_TUNING_HUMAN.md#15-round-8)). Round 7 was
+played by hand four times. The AI broke lines and then did not take what it
+had reached: a Raider rode onto an undefended center and rode off again, an
+army stood two tiles from an empty capital for four turns, seats at war all
+game owned three technologies in round 25, single units rode at held
+cities, and the Goblin seats stayed at two cities. The user's ruling
+stands: **the AI first; with overwhelming numbers it must break through.**
+This section is what changed. It applies to the seats that play the army
+rules (a Human, Undead, or Goblin seat in a match of only those three),
+replaces the passages of the three sections above that it names, and
+changes no rule of the game: the identity stays `pulp-wars-poc-7r49`. The
+numbers are in `src/ai/v7-army.ts` and `src/ai/v7-campaign.ts`; the hooks
+in `src/ai/v7.ts` (`armyStormV7`, `armyHoldsCenterV7`, `armyStormWaitsV7`,
+`armyStormMoveV7`, `armyResearchClockDueV7`, `armyResearchFloorV7`,
+`armyWarHoldsResearchV7`, `armyGatedV7`, `armySpentV7`, `armyLostAnywayV7`,
+`armyGarrisonYieldsV7`, `armyCapitalGrowthV7`, `waaaghAttacksV7`);
+`inspectNormalArmyV7(view)` also reports `expanding`, the research clock,
+and each position's `heldCity`.
+
+### What was seen, and why
+
+| Seen (hand-played game)                                                                   | Root cause                                                                                                                                                                                                                                                                   |
+| ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A Raider killed the garrison, advanced onto the center, and left it (`r7c`, twice)        | The Raider's Escape after an attack (priority 700) and the rejoin of a lone unit knew nothing of the center under the unit. Nothing held a capturer on a hostile center but the capture itself, which is offered a turn later.                                               |
+| An empty capital two tiles from the army for four turns (`r7a`)                           | The position was staged (not enough weight for the units behind the capital), and a staged unit makes no Move into the enemy's reach. The step onto an empty hostile center (1290) existed, but no capturer stood within one Move of the center, and nothing sent one there. |
+| Three technologies in round 25 (`r7b`, `r7d`)                                             | Round 7 put units, then growth, then research while an enemy army is in the field. A seat that fights all game spends every Coin on units, and "pressed" (an enemy within three tiles of a center) allowed nothing else.                                                     |
+| One unit at a time at a held city (`r7c`)                                                 | A unit of a holding force whose position has mode `NONE` (too weak to stage) still took every "move in and kill" (1177) and every hunt. And the raid on an "undefended" city looked one tile around its center.                                                              |
+| A second front of six against a walled city with Catapults                                | A front was sized at twice the holders within three tiles by plain weight, and took the nearest units whatever they were.                                                                                                                                                    |
+| Two cities all game for a Goblin seat with a village three tiles from its capital (`r7d`) | Before contact every unit followed the first scout; it walked into a pocket of Mountains, and the rally rule of round 6 kept the rest beside it.                                                                                                                             |
+| Bomb Chuckers that did not throw                                                          | Their own units closed in first; a bomb that splashes its own units is not thrown.                                                                                                                                                                                           |
+| WAAAGH! with no attack after it                                                           | The call counted the units in its radius that had an enemy in reach, not the ones that would strike.                                                                                                                                                                         |
+| A Zombie left its walled last center for a fresh Skeleton; a doomed unit made no attack   | The step off a center so that the city can train did not compare the two garrisons; an attack at a loss was filtered also for a unit that dies anyway.                                                                                                                       |
+
+### Capturing what it reaches
+
+- **A capturer on a hostile center stays** (`armyHoldsCenterV7`, a
+  filter): no Move, no Escape, no Pillage elsewhere, and no attack that
+  would move it off the tile (a melee kill advances). It attacks what it
+  can hit from the center without leaving, recovers, and captures at the
+  start of its next turn.
+- **A center is stormed** (`armyStormV7`) when an own capturer stands on
+  it, when it is empty, or when the shots on offer this turn kill its
+  garrison ("doomed"). The stormers are the nearest capturers within
+  `ARMY_STORM_RADIUS_V7` (6) tiles: two, and one more for every two hostile
+  ranged or siege units within four tiles of the center, at most five. A
+  stormer moves toward the center at priority 762 (`ARMY_STORM_PRIORITY_V7`,
+  just above a committed advance), whatever the mode of its position: a
+  staged army still walks its stormers up. A stormer never raids, pillages,
+  or rejoins.
+- **Shots first, then the step, in one turn.** A shot at the garrison of
+  a stormed center with a stormer one Move away scores 1344
+  (`ARMY_STORM_FIRE_PRIORITY_V7`); the first stormer in reach waits while
+  the garrison is doomed (`armyStormWaitsV7`), and then takes the step onto
+  the empty center (1290).
+- **The sturdiest unit goes in.** The step onto an empty hostile center
+  adds the unit's HP times its Defense (the mean of the Defense hand to
+  hand and against shots; `ARMY_CENTER_HOLDER_WORTH_V7`) to its strategic
+  value, so of two units beside the center the one more likely to live
+  through the enemy's turn takes it.
+- **Cover.** With an own unit on a hostile center, the three nearest
+  fighting units come up beside it (`ARMY_COVER_UNITS_V7`), also from a
+  staged position.
+
+### Research while at war
+
+Round 7's order (units, growth, research) is replaced for a seat at war:
+
+1. **Every city that can train trains** (1215), as before.
+2. **Research is on a clock** (`armyResearchClockDueV7`): the next
+   technology of the faction's order is due when the round is at least
+   `ARMY_WAR_RESEARCH_ROUNDS_V7` (3) times the technologies owned; for a
+   poor seat the factor is the turns its income needs to pay the price
+   plus one (`armyResearchRoundsV7`,
+   `ARMY_WAR_RESEARCH_SPARE_TURNS_V7`); for a rich seat
+   (income of 15 or more, or twelve units and half as many again as the
+   largest hostile seat it sees: `armyRichV7`) it is 2. A due technology is
+   bought before the units (1219).
+3. **The floor.** While a technology is due and not yet affordable, the
+   seat keeps its price less one turn's income (`armyResearchFloorV7`):
+   training and paid building that does not level a city wait, whatever
+   stands at the seat's gates. Only a city with a hostile land unit
+   within two tiles of its center trains regardless
+   (`armyAtTheGatesV7`).
+4. **One growth technology** (`armyWarGrowthDueV7`): at war a seat with
+   the first two roles of its order unlocked and no population-building
+   technology buys the one its land has the most use for; not a second.
+   A seat at its unit limit with an enemy within three tiles of a center
+   buys its next unit first.
+5. **No economy technology in an assault** (`armyWarHoldsResearchV7`):
+   while the army is engaged only the army's target (or that one growth
+   technology) is a candidate, and Roads and Commerce are never the
+   target. With every unit of the order unlocked the target is the next
+   of Fieldcraft, Fortification, Metallurgy, and Explosives
+   (`ARMY_LATE_RESEARCH_V7`), on the same clock.
+6. A rich seat's clock runs faster, and that is all that separates it:
+   its training already prefers the dear units its army is short of
+   (`ARMY_DEAR_UNIT_VALUE_V7`, round 7).
+
+### Real numbers at a held city
+
+- **No lone attack from a holding force** (`armyGatedV7`): a unit of a
+  position with mode `NONE` that holds a hostile city is treated as staged
+  outside its own territory: no Move into the enemy's reach, no
+  move-and-kill, and it is no hunter.
+- **A raid goes to a city with no hostile unit within two tiles**
+  (`CAMPAIGN_RAID_CLEAR_RADIUS_V7`; one tile before).
+- **A front is sized against the holders with their cover**: the hostile
+  units within four tiles of the city (`CAMPAIGN_FRONT_SIZE_RADIUS_V7`),
+  each weighed with the cover it stands in and with Walls
+  (`holdStrength`), times 150% (`CAMPAIGN_FRONT_NEED_RATIO_V7`, 200% of
+  the plain weight before). Against Walls, or a ranged or siege unit among
+  the holders, a third of the group is ranged or siege units
+  (`CAMPAIGN_FRONT_SHOOTER_SHARE_V7`): the nearest ones replace the units
+  that would have walked farthest.
+- **Massed before it commits** (`ARMY_MASSED_RANKS_V7`): a position that
+  has the weight still stages until half of the units coming at it stand
+  within one tile of its foremost rank, unless the battle is joined, an own
+  unit is in contact or under fire, or the enemy is on the move. The gap
+  is measured as it was at the start of the turn, so a position does not
+  flip in mid-turn.
+- **Reinforcements rally** out of the enemy's reach and go in with the
+  position (round 6's rally rule, which now exempts units with a job of
+  their own: scouts, village errands, raids).
+- **Siege units are targets.** A hostile siege unit is worth 15 more
+  (`ARMY_SIEGE_TARGET_VALUE_V7`) to a fast, ranged, or siege unit, and
+  siege units count among the fragile units the hunters go for.
+
+### Goblin seats
+
+- **Scouts.** Before contact an army seat below three cities sends every
+  free capturer at its own stretch of frontier; after contact it keeps
+  two scouts (`CAMPAIGN_SCOUTS_EXPANDING_V7`), and a capturer with no route
+  to any known city explores. A seat whose naval plan sails keeps the
+  round-7 behavior (its second unit is for the Port).
+- **Bombs first.** A committed Bomb Chucker's Move to a firing tile and
+  its throw (1187, 1188) go before every other Move of the assault, while
+  no own unit stands beside the target; a Goblin Bomb Chucker's approach
+  is worth 3 more.
+- **Kaboom on a cluster.** A blast that hits three hostile units and no
+  own unit goes at 1181, with or without a kill.
+- **WAAAGH!** is called when two units in its radius have an attack this
+  turn (`waaaghAttacksV7`), not merely an enemy in reach.
+- **A spent fast unit pulls back** (`armySpentV7`): a unit of the
+  breakthrough class with Move 2 or more, at half HP or less, without
+  Lifesteal and without a kill on offer, moves to a tile out of the
+  enemy's reach (937) before it considers a hit that does not kill (905).
+
+### Small seats
+
+- **The capital grows too**: growth in the seat's first capital is worth
+  3 more while it is at level 2 or below, or below another own city
+  (`armyCapitalGrowthV7`).
+- **The best defender stays** on a threatened center: the unit steps
+  aside for training only when the seat can train a garrison at least as
+  good now (`armyGarrisonYieldsV7`), and training onto a threatened empty
+  center prefers the better garrison (`ARMY_GARRISON_TRAINING_VALUE_V7`).
+- **Lost anyway.** A unit the visible enemies can kill where it stands
+  attacks a unit beside it whatever the exchange (`armyLostAnywayV7`).
+- The counterattack at home is the commit rule of round 7; nothing was
+  changed for it.
+
+### The correction pass
+
+Four hand-played games on this section as first written
+([section 15.11](../product/RULESET_7_TUNING_HUMAN.md#1511-the-correction-pass))
+changed the following; the research rules above are stated as corrected.
+
+- **The battery** (`armyBatteryOverV7`, `armyCenterDeadlyV7`,
+  `armyBatteryTargetV7`). The hostile siege units whose range covers a
+  hostile center are its battery. A center is deadly for a unit when a
+  battery covers it, the visible enemies kill the unit there before its
+  next turn, and an own fighting unit stands within
+  `ARMY_BATTERY_REACH_V7` (7) tiles of a unit of the battery. No unit
+  Moves onto a deadly center or kills its way onto it (a filter). For a
+  center the seat storms, the units within seven tiles go for the nearest
+  unit of its battery instead (764, `ARMY_BATTERY_PRIORITY_V7`; one above
+  the endgame's approach where that moves the unit): a siege or ranged
+  unit always (to its own range), any other unit when the center is deadly
+  for it; a fast unit only to a tile with an own unit beside it. A fast
+  unit's Move that kills a siege unit is a breakthrough Move (1177)
+  whatever the mode of its position, and is not held with the fast units.
+- **A weak garrison** (`armyWeakGarrisonV7`): a hostile unit at half its
+  HP or less on the center of a city without Walls, with two own fighting
+  units within three tiles. It is a hunt target, the Move that attacks it
+  is a committed one, and the attack is accepted and scored as a
+  committed one, whatever the position weighs.
+- **Bombers** (the Goblin Bomb Chucker; `armyBomberCrowdV7`,
+  `armyHelplessGarrisonV7`). A bomber that moves and throws takes the
+  Move to a tile with a throw whatever the mode (1187 committed, 1175
+  otherwise), from its own land whatever comes back, elsewhere when it
+  lives. Its end tile costs 30 for every hostile melee unit beside it and
+  12 for every other own bomber. A role that cannot attack a neighbour is
+  not trained onto a contested center (a hostile melee unit within two
+  tiles) while another role can be, and counts a quarter as a garrison.
+- **The frontier at home** (`CAMPAIGN_EARLY_ROUNDS_V7`,
+  `CAMPAIGN_HOME_FRONTIER_RADIUS_V7`): in its first ten rounds, and while
+  it has fewer than three cities, an army seat's scouts take the
+  unexplored land within four tiles of an own center before the frontier
+  toward the enemy, up to three scouts. Not a seat with an active naval
+  plan or with Shorecraft.
+- **Small rules.** An army seat never disbands a unit next to an enemy
+  unit or center. A garrison's hit that does not kill is made before the
+  step aside that lets its city train when it is worth 30 or more
+  (`ARMY_GARRISON_HIT_VALUE_V7`). The front gate (`armyGatedV7`) does not
+  apply to a seat whose naval plan is active: a landed unit acts.
+
+### Cost
+
+No new cache was needed. Nothing draws from the PRNG or depends on elapsed
+time.
+
+| Run (development machine)                                                                      | Round 7                               | Round 8                                |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------- | -------------------------------------- |
+| The three labs (revision 2), three scripts, per decision                                       | 6.7 to 9.6 ms, slowest 104 ms         | 5.6 to 8.0 ms, slowest 71 ms           |
+| 20 x 20, six seats, 30 rounds: per AI turn                                                     | mean 169 ms, p95 1.0 s, slowest 2.7 s | mean 149 ms, p95 0.92 s, slowest 2.3 s |
+| The same match: per decision                                                                   | mean 8.6 ms                           | mean 8.6 ms                            |
+| 25 x 25, eight seats, 30 rounds: per AI turn (measured one correction before the final source) | (24 rounds) mean 148 ms, p95 0.47 s   | mean 230 ms, p95 0.83 s, slowest 2.9 s |
+
+(The budget of `pulp_wars-ykw.4` is a mean of 1.5 s and a p95 of 5 s per AI
+turn. The matches differ between the two policies.)
+
+### What it does not do
+
+- A Goblin army still closes in with its fast and its cheap units ahead
+  of its Bomb Chuckers; only the throw is ordered first. Two formations
+  that put the shooters in front were tried and both lost the labs a
+  round or more.
+- A siege unit answers only a battery over a center the seat storms
+  (the correction pass above); elsewhere it prefers a siege unit as a
+  target when it has the shot.
+- A Rocket Cart leapfrogs no better than in round 7.
+- An army without Engineering does not research it because the enemy
+  stands on Mountains. In one diagnostic match an Undead seat needed 18 rounds to take a city behind a belt of Mountains at two or three to one, and took it the round after Engineering came up on its clock
+  (section 15.6 of the tuning document).
+- The clock counts technologies owned, not their kind: a seat that
+  researched economy early is "ahead" and waits.
+
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and

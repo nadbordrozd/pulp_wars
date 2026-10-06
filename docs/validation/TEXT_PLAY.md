@@ -109,7 +109,9 @@ y2   |.C-00Fi|fa-0---|
 
 `.C-00Fi` is grass (`.`), your capital (`C`), no mark (`-`), territory of
 seat 0 (`0`), and a Fighter of seat 0 (`0Fi`). `fa-0---` is forest with game
-in seat 0's territory and no unit. `view --full` prints the whole legend.
+in seat 0's territory and no unit. `view` prints the legend of the cell and
+of the feature letters under the map; `view --full` prints the whole legend
+(terrain, marks, and unit codes too).
 Unit codes are mechanical roles (`Gd` is the Guard role, which the Undead
 call a Zombie); the unit lists give the faction's own name.
 
@@ -234,8 +236,12 @@ home c1 fresh options 6`: the stats are the current totals with every
 - **Attack previews** are exact: `u20.a.u24 attack u24(S1 Skeleton) @3,5:
 deals 2 (hp 10->8) | takes 5 (hp 17->12) | atk 1.5 vs def 2 x3/2`. `KILLS`
   and `ATTACKER DIES` are spelled out; `no retaliation (OUT_OF_RANGE)` gives
-  the reason; `x3/2` is the defender's Defense bonus and `fort N` its
-  fortification level. Both describe the damage you deal: what you take
+  the reason; `x3/2` is the defender's Defense bonus. A fortified defender
+  is broken down: `def 3 (1 open to ranged + fort 2)` is a Guard shot at
+  from two tiles (Defense 1 against ranged attacks) on a Field Defense
+  (two fortification levels, 1 Defense each), and `def 5 (3 + fort 2)` is
+  the same Guard attacked hand to hand; `def 1 (open to ranged)` is the
+  Guard with no fortification. Both describe the damage you deal: what you take
   back comes from the defender's base Defense alone, without fortification
   or cover. `advances to x,y` says that the unit will move onto the
   target's tile (after a kill by a melee unit, or following a Charge!
@@ -247,8 +253,10 @@ deals 2 (hp 10->8) | takes 5 (hp 17->12) | atk 1.5 vs def 2 x3/2`. `KILLS`
 - **Unit notes.** A unit line ends with what its card says and its
   numbers do not: a Guard is `Open to ranged: Defense 1 against attacks from
 2 or more tiles`, a Raider's Charge states when it applies,
-  and an attack that grants an Overrun says `Overrun: attacks again after
-this kill`. A Blast Mountain line names the unit that `sets the charge and
+  and an attack that grants an Overrun says `Overrun: advances and may
+attack again after this kill`; a kill after which the unit cannot advance
+  (the victim stands on a tile it cannot enter, or rises in place) says
+  `Overrun ends: it does not advance after this kill`. A Blast Mountain line names the unit that `sets the charge and
 is not hit`.
 - **Reward names.** A Human seat's level-2 reward is printed as `SCOUTS`
   (the engine's `SURVEY`, which also gives a Raider); `c1.reward.SURVEY`
@@ -258,12 +266,23 @@ is not hit`.
   command levels the city. A level-up queues a reward choice, and nothing
   else is offered until you choose it (`PENDING CHOICE` in the header).
 - **Move lines** say what stands on the destination and which hostile units
-  would be next to it.
+  would be next to it. A Move that ends on the Fountain of Youth is followed
+  by what the Fountain does (`a land unit that starts your turn here heals
+up to 12 HP`), and the heal itself prints as `FOUNTAIN u7(S0 Fighter) @6,6
+healed +3 (hp 7->10)` at the start of your turn; a unit at full HP prints
+  nothing.
+- **Achievement meters** say what they count: `SLAYER` the most kills by
+  one living unit, `MUSTER` the different unit kinds you have on the board
+  at once, `ENGINEER` the highest output of one Windmill, Sawmill, Forge,
+  or Workshop (Mines do not count).
 - **City lines.** `slots 2/3` is used and total unit capacity; `action ready`
   means the city can still train or use Land Grant this turn. The `train`
   line lists every unlocked role with its cost here and either its id or why
   it is not offered (`center occupied`, `too dear`, `no free slot`, `city
-action used`).
+action used`). When no city can train, `options` still prints a `TRAIN`
+  section with the reason for every city (`nothing to train: c1 no free
+slot (3/3) | c9 center occupied`), and a rejected `c1.t.fighter` names the
+  same reason.
 - **Events** are the engine's projected events. The common ones have a short
   form (`MOVE`, `COMBAT`, `DIED`, `TRAINED`, `RESEARCHED`, `INCOME`,
   `REVEALED`, `CITY_CAPTURED`, `CITY_LEVELED_UP`); every other event prints

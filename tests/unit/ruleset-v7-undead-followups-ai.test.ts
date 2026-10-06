@@ -282,6 +282,8 @@ describe("vkq.21 Normal AI: Liches and Vampires stay ashore", () => {
     // With tuning 7 (`pulp_wars-w49.10`) seed 15 embarks none; seed 20
     // embarks six (Zombies and Skeletons; 10 of seeds 0-32 embark. Seeds 4,
     // 6, 18, and 25 embark a unit out of a chest, as seed 4 did).
+    // With tuning 8 and its correction pass (`pulp_wars-w49.11`) seed 20
+    // embarks three (two Zombies and a Skeleton).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",

@@ -1,4 +1,4 @@
-# Ruleset 7: the Human tech tree, rounds 3 to 7
+# Ruleset 7: the Human tech tree, rounds 3 to 8
 
 **Status:** rounds 3 and 4 were implemented on `pulp-wars-poc-7r47` (bead
 `pulp_wars-w49.3`); [round 5](#12-round-5) (section 12, bead
@@ -6,8 +6,12 @@
 [round 6](#13-round-6) (section 13, bead `pulp_wars-w49.6`, mostly the
 Normal AI) is implemented on `pulp-wars-poc-7r49` and was played five
 times; [round 7](#14-round-7) (section 14, bead `pulp_wars-w49.10`, the
-Normal AI again) is implemented on the same identity and has not been
-played yet. Round 3 (sections 1 to 10) was played by hand three times;
+Normal AI again) is implemented on the same identity and was played four
+times; [round 8](#15-round-8) (section 15, bead `pulp_wars-w49.11`, the
+Normal AI a third time) is implemented on the same identity; it was
+played four times before it was published and corrected for what those
+games showed (section 15.11), and the corrected source has not been played
+yet. Round 3 (sections 1 to 10) was played by hand three times;
 [round 4](#11-round-4) (section 11) is what those games changed, and was
 played four times. Where they differ, the later section is the rule. [Tuning 1 and its round 2](RULESET_7_TUNING_1.md)
 changed numbers and two rules after eight hand-played games. This round
@@ -2151,3 +2155,400 @@ browser step; the bounded run against the defender that gives ground.
 Disband line, the lab text. The bounded run against the defender that
 holds stays in `tests/unit/ruleset-v7-tuning-6.test.ts`, with its rounds
 updated; both runs share `tests/fixtures/v7-breakthrough-lab.ts`.
+
+## 15. Round 8
+
+Round 7 was played by hand four times: the breakthrough lab defended
+against the Human AI (`r7a`), against the Undead and the Goblin AI
+(`r7b`), a six-seat game on 20 x 20 (Humans against five AIs, `r7c`), and
+Humans against the Undead AI on the map of rounds 5 and 6 (`r7d`).
+
+- **It breaks through now, and then does not take what it reached.** All
+  three AI factions took the capital of the lab against a defence that
+  gives ground (the Undead in round 9, the Goblins in round 6). But in
+  `r7c` a Raider twice killed a garrison, advanced onto the center, and
+  rode off again the same turn; and in `r7a` the Human AI's Catapults
+  emptied the capital's center and its army stood two tiles away for four
+  turns while the player retrained a garrison each turn.
+- **It does not research while it fights.** A seat at war all game owned
+  three technologies in round 25; the Undead seat of `r7d` never got a
+  ranged unit.
+- **It sends single units at held cities**, and a second front too small
+  to take a walled city with Catapults behind it.
+- **Goblin seats stay small.** One sat at two cities all game with a
+  free village three tiles from its capital; its Bomb Chuckers rarely
+  threw; WAAAGH! was called with no attack after it.
+- **Small seats give up.** A capital at level 1 in round 20, a Zombie that
+  left its walled last center for a fresh Skeleton, units that died beside
+  an enemy without attacking it.
+
+The user's direction stands (2026-10-06): the AI first, the mechanics
+second; "the problem is if even with overwhelming numbers the AI can't
+break through my ranks"; bloody, with constant turnover; no unit is
+weakened; judged on constructed positions and by hand play.
+
+Round 8 is implemented on the same identity, `pulp-wars-poc-7r49` (bead
+`pulp_wars-w49.11`): it changes the Normal AI of the Human, Undead, and
+Goblin seats and the text of the text harness. No rule, command, state, or
+event shape changed, so a save, a replay, or a session of `7r49` stays
+valid. Where this section and sections 1 to 14 differ, this section is the
+rule. Nothing of it was played by hand yet.
+
+### 15.1 The changes
+
+| #   | What                            | Round 7                                                   | Round 8                                                                                                                                                                                                                        |
+| --- | ------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | A unit on an enemy center       | free to Escape, raid, pillage, or rejoin                  | stays until it has captured; the three nearest fighting units come up beside it (section 15.3)                                                                                                                                 |
+| 2   | An empty or doomed enemy center | entered when a capturer happened to stand one Move away   | two to five capturers are kept within a step; the shots at the garrison come first and the sturdiest unit steps in the same turn                                                                                               |
+| 3   | Research at war                 | after units and growth: in practice never                 | on a clock: one technology of the faction's order every three rounds (two for a rich seat, more for a poor one), bought before the units; Coins kept for it; one growth technology; no economy technology in an assault (15.4) |
+| 4   | A held city                     | every unit of a holding force took a kill it could reach  | a holding force too weak to stage attacks nobody; no raid on a city with a hostile unit within two tiles (15.5)                                                                                                                |
+| 5   | The size of a front             | twice the plain weight of the holders within three tiles  | half as much again as the holders within four tiles weighed with their cover and Walls, and a third of the group ranged or siege units against Walls or shooters                                                               |
+| 6   | Going in                        | a position with the weight committed as its units arrived | it stages until half of what is coming stands in its front ranks (not once the battle is joined, a unit is under fire, or the enemy moves)                                                                                     |
+| 7   | Enemy siege units               | a target like any ranged unit                             | worth more to fast, ranged, and siege units                                                                                                                                                                                    |
+| 8   | Goblin seats                    | every unit followed the first scout                       | every free capturer scouts its own stretch until the seat has three cities; the Bomb Chucker throws before the others close in; Kaboom on three units; WAAAGH! only with attacks to follow; a spent Scrap Buggy pulls back     |
+| 9   | Small seats                     |                                                           | growth goes to the capital first; the best defender stays on a threatened center; a unit that is lost anyway attacks                                                                                                           |
+| 10  | Text harness                    | `def 3 fort 2`                                            | `def 3 (1 open to ranged + fort 2)`; what Muster and Engineer count; the legend under every `view`; the Fountain's heal; why no city trains (15.7)                                                                             |
+| 11  | Labs                            | two scripts for the bounded runs                          | a third, `STANDOFF` (15.2); the lab positions are unchanged                                                                                                                                                                    |
+
+Not changed, by the user's ruling: every unit and price, the research
+prices, the Knight and Overrun, the Zombie's conversion rule, the Bomb
+Chucker and the Scrap Buggy, the forced advance after a kill, AI head
+starts and alliances, the other factions.
+
+### 15.2 The bounded runs
+
+The lab is unchanged (revision 2). A third script was added to
+`tests/fixtures/v7-breakthrough-lab.ts`:
+
+- **Stand off** (`STANDOFF`): the script that gives ground, with the
+  capital retraining a Swordsman (13 Coins) or else a Fighter on its
+  center every turn, and a Catapult, a Swordsman, or a Fighter elsewhere.
+  It is the nearest a script comes to the defence of `r7a`.
+
+| Script      | Attacker | Round 7: capital taken | attackers lost | turns without an attack | Round 8: capital taken | attackers lost | turns without an attack |
+| ----------- | -------- | ---------------------- | -------------- | ----------------------- | ---------------------- | -------------- | ----------------------- |
+| Hold        | Human    | round 6                | 4              | 1                       | round 6                | 4              | 1                       |
+| Hold        | Goblin   | round 7                | 6              | 1                       | round 7                | 7              | 1                       |
+| Hold        | Undead   | round 7                | 7              | 1                       | round 7                | 7              | 1                       |
+| Give ground | Human    | round 7                | 4              | 0                       | round 5                | 3              | 0                       |
+| Give ground | Goblin   | round 5                | 7              | 0                       | round 5                | 7              | 0                       |
+| Give ground | Undead   | round 7                | 8              | 0                       | round 7                | 8              | 0                       |
+| Stand off   | Human    | round 6                | 4              | 0                       | round 6                | 4              | 0                       |
+| Stand off   | Goblin   | round 7                | 11             | 0                       | round 8                | 14             | 0                       |
+| Stand off   | Undead   | round 8                | 8              | 0                       | round 8                | 8              | 0                       |
+
+(Round 7 is the source of commit `6faebcb3`; its stand-off row was run
+with the new script. "Turns without an attack" counts AI turns from round
+2 on without an attack, a Wail, a Kaboom, or a capture.)
+
+**What these runs show.** Not much, and that is the finding: all three
+scripts are beaten by both policies in the same rounds, within one. The
+Human attacker is two rounds faster against the script that gives ground
+(its Raider stays on the center it rides onto). The Goblin attacker is a
+round slower and loses three more units against the stand-off: it now
+waits for half of its army before it goes in, and its cheap units pay for
+the wait under the Catapults. No script
+reproduces the four turns beside an empty capital; the position that does
+is `r7a` in round 9 itself (`tests/unit/ruleset-v7-tuning-8.test.ts`,
+"r7a round 9"): played on with the stand-off script, round 7's policy
+takes the capital in round 12 and round 8's in round 11. By hand the
+player kept the capital past round 12.
+
+### 15.3 Capturing what it reaches
+
+A capturer that stands on a hostile center makes no Move and no attack
+that would take it off the tile, and captures at the start of its next
+turn. A hostile center is **stormed** when an own capturer stands on it,
+when it is empty, or when the shots the seat has this turn kill its
+garrison. Two capturers are told off for it (one more for every two
+hostile ranged or siege units within four tiles, at most five); they walk
+to within a step whatever the army is doing, the shots at the garrison are
+fired first, and the unit that steps in is the one that holds a tile best.
+With a unit on the center the three nearest fighting units come up beside
+it.
+
+Root causes: the Raider's Escape and the rejoin of a lone unit did not
+know that the unit stood on a center; a staged army made no Move into the
+enemy's reach, and nothing kept a capturer within a step of a center the
+Catapults were emptying.
+
+### 15.4 Research at war
+
+Round 7 bought units, then growth, then research while an enemy army was
+in the field. A seat that fights all game never reached the third step.
+Now:
+
+1. every city that can train trains;
+2. one technology of the faction's order is due for every three rounds
+   played (the round has reached three times the technologies owned); a
+   seat with an income of 15 or more, or with twelve units and half as
+   many again as the largest enemy it sees, counts two rounds; a seat
+   whose income is small against the price counts the turns its income
+   needs to pay it, plus one;
+3. a due technology is bought before the units, and while it is due and
+   too dear the seat keeps its price less one turn's income, whatever
+   stands at its gates (only a city with a hostile unit within two tiles
+   of its center trains regardless);
+4. at war a seat without a population-building technology buys one, once
+   its first two unit technologies are in;
+5. while the army is engaged no other technology is bought (never Roads
+   or Commerce); after the last unit of the order the clock goes on to
+   Fieldcraft, Fortification, Metallurgy, and Explosives.
+
+(Items 2, 3, and 5 are as corrected in section 15.11.)
+
+On the map of `r7d` (Undead against Humans, 14 x 14, seed 4, both Normal,
+the Undead moving first) the Undead seat buys Gathering in round 1, Drill
+in 3, Hunting in 5, Marksmanship in 10, Scouting, Roads, and Farming
+between its fights in rounds 12 to 15, Administration in 17, Sawmilling in
+19, and Chivalry in 24, and trains every turn it can. (Roads in round 13
+is an economy technology bought by a seat at war: its army was not
+engaged that turn.) In the six-seat match of section 15.6 the seats own 10 to 12
+technologies in round 30, the two Goblin seats 6 and 10.
+
+### 15.5 Numbers
+
+- A holding force that cannot stage attacks nobody outside its own
+  territory: no unit rides in alone for a kill.
+- A fast capturer raids only a city with no hostile unit within two
+  tiles.
+- A front needs half as much again as the weight of the holders within
+  four tiles of the city, each weighed in the cover it stands in and with
+  Walls; against Walls, a Catapult, or a Marksman a third of the group is
+  ranged or siege units. An army that cannot spare that opens no second
+  front.
+- A position with the weight stages until half of the units coming at it
+  stand within a tile of its foremost rank, then commits; reinforcements
+  rally out of reach and go in with it.
+- Enemy siege units are worth more as targets to the units that can
+  reach them.
+
+### 15.6 Three diagnostic matches
+
+Each is one match between Normal AIs, read for what the seats do, not
+for who wins. They were run several times while the policy changed (the
+six-seat match five times, the two-seat match eight times in two seat orders, the eight-seat match once); the figures are those of the final
+source.
+
+- **Six seats, 20 x 20, seed 21 (the map of `r7c`), 30 rounds.** Every
+  seat researches all game: the two Human seats own 12 and 11
+  technologies in round 30, the Undead seats 11 each, the Goblin seats 6
+  and 10. The large Human seat has Knights, Swordsmen, and Catapults by
+  round 25 and takes seven cities from three seats. The Goblin seats reach
+  three and four cities (two in `r7c`) and then lose them, their capitals
+  too; one has one city and no unit in round 30. One Undead seat reaches
+  five cities and is back to one.
+- **Undead against Humans, 14 x 14, seed 4 (the map of `r7d`), the Undead
+  moving first.** The Undead seat has seven cities and 25 units against
+  four cities and nine units in round 25, and takes the first of the four
+  in round 33 and the last in round 36. For eighteen rounds it stood at
+  two or three to one in front of a belt of Mountains with a gap three
+  tiles wide: the Humans (with Engineering) stood on the Mountains, the
+  Undead (without) could not enter them, Zombies filled the gap, and the
+  Skeletons and Liches behind them had no tile to attack from. It attacked
+  every turn (four to eight attacks), and three turns running a unit of its stood on the center of a city and was killed before it could capture. It bought Engineering in round 32, as the last technology its clock had left, and took the first city in round 33. **This is
+  the user's complaint, still open, in one position**: numbers alone do
+  not break a line that can only be reached three units at a time.
+- **Eight seats, 25 x 25, 30 rounds**: for the cost only (below).
+
+Cost on the development machine: a decision in the labs takes 5.6 to
+8.0 ms (the slowest 71 ms); an AI turn in the six-seat match 149 ms on
+average, 0.92 s at the 95th percentile, 2.3 s at most; in the eight-seat
+match 230 ms, 0.83 s, and 2.9 s (the budget is a mean of 1.5 s and a 95th
+percentile of 5 s).
+
+### 15.7 Defects and the text harness
+
+1. **A Lich's shot on a Guard on a Field Defense** read `atk 3 vs def 3
+fort 2` beside a Rocket Cart's `def 1 x3/2` on a Guard in a Forest, and
+   looked like a rule broken. It is not: the Guard has Defense 1 against an
+   attack from two or more tiles, and each of the two fortification levels
+   adds 1. Only the text was unclear; it now reads `def 3 (1 open to
+ranged + fort 2)`. No rule changed, so the identity stays.
+2. `MUSTER` and `ENGINEER` say what they count (different unit kinds on
+   the board at once; the highest output of one Windmill, Sawmill, Forge,
+   or Workshop, Mines not counted).
+3. The legend of the map cell and of the feature letters is printed
+   under every `view`, not only under `view --full`.
+4. A Move onto the Fountain of Youth says what it does, and the heal
+   prints as a `FOUNTAIN` line.
+5. `options` prints `nothing to train:` with the reason for every city
+   when no training is offered, and a rejected training id names it.
+
+Reported, and not changed:
+
+- **The forced advance.** A melee unit that kills moves onto its
+  victim's tile; it is not a choice (section 13.2 of the current rules).
+  The hand players lost units to it (a Swordsman pulled out of a Forest
+  into three attackers). The AI now refuses such an attack only for a
+  capturer on a hostile center.
+- **Bitten has no duration, and a seat with no unit is not eliminated.**
+  A Bitten unit stays Bitten until it leaves the board, is cured, or its
+  biter is eliminated; a seat is eliminated when it owns no city. In `r7c`
+  an Undead seat had no unit in rounds 19 and 21, and units bitten in
+  rounds 10 to 15 rose for it in rounds 22 to 25; twice the unit that
+  stood on its last center was shot by a third seat and rose as its
+  Zombie on that center. Both rules are as written; whether Bitten should
+  end is the user's call.
+
+### 15.8 Decisions that are forks, for the user to overrule
+
+1. **Research before units when it is due.** A seat at war gives up one
+   unit in about three rounds for a technology. The alternative (units
+   first, as in round 7) is what left the AI with three technologies.
+2. **The clock counts technologies, not which.** A seat that bought
+   economy technologies early is ahead of its clock and buys its next unit
+   technology later.
+3. **It waits for half of its army.** Against a prepared line this costs
+   a turn (and the Goblin attacker of the lab a round and three units);
+   without it reinforcements went in one at a time.
+4. **A holding force too weak to stage attacks nobody.** It also passes
+   up a kill it could have had for free.
+5. **Storming ignores the mode.** Two to five capturers walk at an empty
+   or doomed center from a staged army, into the enemy's reach.
+6. **The best defender stays on a threatened center**, so that city
+   trains nothing that turn unless the new unit is as good.
+7. **A third script, `STANDOFF`**, was added to the lab fixture; the lab
+   itself is unchanged.
+8. **The identity stays `7r49`.** Only the Normal AI and harness text
+   changed.
+
+### 15.9 What is still open
+
+- Nothing of this round was played by hand.
+- **A front three tiles wide** (section 15.6): the AI does not rotate its
+  units, does not keep its weak attackers out of the front rank, and does not research Engineering because the enemy stands on Mountains (in that match Engineering came in round 32 and the city fell in round 33).
+- **Goblin formation.** The Bomb Chuckers throw first when they have the
+  shot, but the army still closes in with its fast and cheap units ahead
+  of them. Two formations with the shooters in front lost the labs a round
+  or more and were dropped.
+- Siege units do not reposition to answer enemy siege units, and a
+  Rocket Cart leapfrogs no better than before.
+- Goblin seats still lose their cities in a six-seat match once a large
+  neighbor turns on them.
+- The public threat query still counts a Move and an attack for units
+  that cannot attack after moving (section 14.11).
+
+### 15.10 Tests
+
+`tests/unit/ruleset-v7-tuning-8.test.ts`: the identity; capture (`r7c`
+rounds 13 and 24, `r7a` round 9 played on, the shots and the step in one
+turn, the number of stormers, the sturdier unit); research (the clock, the
+Coins kept, an enemy at the gates, an engaged army, a rich seat, the
+Undead seat of `r7d` to round 14); numbers (no lone unit, the group in one
+turn, the size and the shooters of a second front, no token front, the
+Catapult's target, the rally); Goblin seats (scouts, the bomb first, Kaboom
+on a cluster, WAAAGH!, the spent Scrap Buggy); small seats (the capital's
+harvest, the counterattack at home, the unit that is lost anyway, the
+garrison); the Lich and the Guard; the bounded run against the stand-off.
+Twenty-two of the 32 fail on round 7's source. Those that also pass on it
+pin behavior that was right already (among them the Catapult's target and
+the counterattack at home). `tests/scripts/play-text-v7.test.ts`: the
+Defense breakdown, the two meters, the legend, the training reason (the
+Fountain lines have no test). The bounded runs that hold and that give
+ground stay in the tuning-6 and tuning-7 tests with their rounds updated
+(give ground: 5, 5, and 7).
+
+### 15.11 The correction pass
+
+Round 8 as first written was played by hand four times before it was
+published: the breakthrough lab against the Human AI (`r8a`), a six-seat
+game (`r8c`), Humans against the Undead AI (`r8d`), and Humans against the
+Goblin AI (`r8e`). What held: a unit stays on a center it reaches (nine of
+nine) and an emptied center is entered the same turn; a rich seat
+researches and buys Knights, Swordsmen, and Catapults; the Goblins throw
+their bombs first. What did not, and what was changed (same bead, same
+identity; where this section and sections 15.1 to 15.10 differ, this one
+is the rule):
+
+| #   | Seen                                                                                                                                                                        | Root cause                                                                                                                                                                                                                                                                                                                                                                        | Now                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | The research clock stopped: the Goblin AI bought nothing in rounds 10 to 22, the Undead AI nothing for 14 rounds, a rich Human seat nothing in rounds 21 to 29              | The Coins kept for a due technology were dropped with an enemy within three tiles of a center, so a seat under pressure spent every Coin on units; a poor seat's clock was stretched until it never struck; a seat at its unit limit aimed at growth before its next unit; with every unit of its order unlocked a seat had no target, and no other technology is bought in a war | The Coins are kept whatever stands at the gates (only a city with a hostile unit within two tiles of its center trains regardless); a poor seat's clock is the turns its income needs to pay the price plus one; with an enemy within three tiles of a center the next unit comes before growth; after the last unit of the order the clock goes on to Fieldcraft, Fortification, Metallurgy, and Explosives                                        |
+| 2   | The player's Catapults were never attacked; six units in a row stepped onto the capital under two to four of them and died                                                  | The step onto an empty hostile center had no test for what covers it; the AI's Catapults had a shot at the garrison every turn and so never moved; Knights were told off as stormers of the center                                                                                                                                                                                | No unit steps onto, or kills its way onto, a center where a battery kills it before it can capture; the units within seven tiles go for the battery instead, the siege and ranged units always; a fast unit's kill of a siege unit goes first whatever the position; a fast unit goes at a battery with company, not alone                                                                                                                          |
+| 3   | Twelve units stood within four tiles of two border cities the player had just taken, each held by one wounded unit without Walls                                            | The player's whole line was one position the seat had not the numbers for, and a holding force "too weak to stage" attacks nobody                                                                                                                                                                                                                                                 | A weak garrison (half its HP or less, on a center without Walls) is attacked by the group that stands there (two fighting units within three tiles), whatever the position weighs                                                                                                                                                                                                                                                                   |
+| 4   | Ten Bomb Chuckers made seven throws; Chuckers were trained onto centers beside the player's melee units; three stood side by side and died in a chain; three cities to five | A seat on the defensive "stages", and a staging unit enters no reach, so a Chucker three tiles from a target did not step and throw; the garrison rules knew nothing of a unit that cannot hit its neighbour; the scouts went toward the enemy and the villages three tiles behind the second city stayed unexplored                                                              | A Chucker throws whenever one step brings a target into range (from its own land whatever comes back); no Chucker is trained onto a contested center while another unit can be, and it counts a quarter as a garrison; its end tile costs 30 for every enemy melee unit beside it and 12 for every other Chucker; in its first ten rounds, and while it has fewer than three cities, a seat explores the land within four tiles of its cities first |
+| 5   | A wounded Guard beside the capital was disbanded; Roads was bought in round 3 of an assault; a walled Zombie did not hit the Knight beside it                               | The Disband rule weighed only the refund against the unit; with no target left any technology was allowed; a garrison's hit that does not kill waited for the step aside that lets the city train                                                                                                                                                                                 | An army seat never disbands a unit next to an enemy unit or center; the late technologies above are the target, never Roads; a garrison's hit worth 30 or more (10 a point dealt, 8 a point taken) is made first                                                                                                                                                                                                                                    |
+| 6   | The natural Continents match of `validate:ruleset7-naval-playable` landed nine units and captured with none                                                                 | The rule of item 3's root cause again: a landed unit never has "the numbers" and waited outside every reach; and the scouting rule for an expanding seat took units from the Port                                                                                                                                                                                                 | Neither rule applies to a seat whose naval plan is active (the scouting rule: or that owns Shorecraft)                                                                                                                                                                                                                                                                                                                                              |
+
+Not changed: "nothing trained in rounds 1 to 4" of `r8a`. The lab's
+attacker starts above its unit limit; the engine offers it no training
+until it has lost seven units (round 5), whatever it has in Coins.
+
+**The bounded runs** (the same three scripts; "before" is round 8 as
+first written):
+
+| Script      | Attacker | Before: capital taken | attackers lost | After: capital taken | attackers lost |
+| ----------- | -------- | --------------------- | -------------- | -------------------- | -------------- |
+| Hold        | Human    | round 6               | 4              | round 6              | 4              |
+| Hold        | Goblin   | round 7               | 7              | round 7              | 7              |
+| Hold        | Undead   | round 7               | 7              | round 7              | 7              |
+| Give ground | Human    | round 5               | 3              | round 5              | 3              |
+| Give ground | Goblin   | round 5               | 7              | round 5              | 7              |
+| Give ground | Undead   | round 7               | 8              | round 7              | 9              |
+| Stand off   | Human    | round 6               | 4              | round 6              | 4              |
+| Stand off   | Goblin   | round 8               | 14             | round 7              | 13             |
+| Stand off   | Undead   | round 8               | 8              | round 8              | 9              |
+
+The scripts hardly tell the two apart; the positions of `r8a` do. From
+the AI's turn of rounds 8, 9, 10, 11, and 12 of that game, played on
+against the stand-off script for eight rounds: before, the capital falls
+in round 11, never, in round 11, never, never; after, in rounds 12, 11,
+14, 17, and 15. The staged position of `r7a` (section 15.2) now falls in
+round 12, a round later than before: nothing steps onto the center while
+six Catapults cover it.
+
+**Two diagnostic matches**, each run once on the final source (dry land
+14 x 14, both seats the Normal AI, the seat read is the second):
+
+- **Goblins against Humans, seed 11.** Research: Gathering in round 1,
+  Hunting 2, Marksmanship 5, Scouting 9, Forestry 12, Sawmilling 13,
+  Raiding 14, Chivalry 16, Drill 17, Administration 18, Fieldcraft 20.
+  Three cities in round 10 (four in round 11, seven in round 19). Bomb
+  Chuckers: the first in round 7, four from round 9; throws by round from
+  round 9: 2, 0, 2, 0, 1, 2, 1, 2, 0, 1, 1, 2, 3, 3 (20 throws in 14
+  rounds by three to five Chuckers). It eliminated the Human AI in round 24.
+- **Undead against Humans, seed 4.** Research: Gathering 1, Drill 3,
+  Hunting 6, Marksmanship 10, Engineering 13, Administration 17, Forestry
+  20, Sawmilling 22, Scouting 24. Four cities in round 10 against five. It
+  has four cities to eight in round 25 and is losing.
+
+**Two questions answered, no rule changed.**
+
+- **A Knight's chain that ended after a kill.** The written rule is that
+  Overrun continues "after the unit kills and advances"
+  ([current rules, section 13.4](RULESET_7_CURRENT.md#134-after-combat)):
+  a kill of a unit on a tile the Knight cannot enter (a Mountain without
+  Engineering), or of a unit that rises in place as a Zombie, is a kill
+  without an advance, and the chain ends. The engine does that. The text
+  harness said otherwise ("one more attack after every kill, with no
+  limit"); the unit note and the attack preview now say when the chain
+  stops. The browser's own text ("Knights advance after a kill and may
+  attack again") was right.
+- **A Wolf Rider's death marked `(KABOOM)`.** By rule the Goblin, the
+  Wolf Rider, the Bomb Chucker, the Rocket Cart, and the Scrap Buggy can
+  Kaboom ([current rules, section 18](RULESET_7_CURRENT.md#18-goblin-faction-rules));
+  the cause is right.
+
+**Standing rulings** (user, 2026-10-06): the forced advance after a kill
+stays; Bitten stays permanent.
+
+**Still open after this pass.** Nothing of it was played by hand. The
+capital of a small seat still grows only by what its land offers. A
+Chucker still walks ahead of its screen when the screen is slower. The
+Undead seat of the diagnostic match loses to the Human AI on equal terms.
+The front three tiles wide of section 15.6 is as it was.
+
+**Tests** (`tests/unit/ruleset-v7-tuning-8.test.ts`, 44 in all): the two
+stalled seats of `r8e` and `r8d` buy their next technology within three
+turns and still train; the `r8a` battery (no step onto the covered center,
+the Knight that rides the Catapults down, the units that move on them,
+the own Catapults that move up); the weak garrison of `r8c`; the Chucker
+that steps and throws, no Chucker on a contested center, the scouts at
+home; no Disband beside an enemy; the garrison's hit. Seven of these
+eleven fail on round 8 as first written; the Knight in reach, the
+Catapults that move up, the scouts, and the Disband also pass on it (the
+Disband was confirmed on the `r8a` position itself, where the earlier
+source offers it and this one does not).
+`tests/unit/ruleset-v7-naval-ai.test.ts`: the natural Continents match to
+1,000 commands lands a unit and captures with it (it fails on the earlier
+source).

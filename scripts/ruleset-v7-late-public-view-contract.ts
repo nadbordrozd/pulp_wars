@@ -80,6 +80,15 @@ export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;
  * position it attacks, and two Moves that close no distance to it are no
  * candidates (unit 20 to (5, 1), unit 33 to (8, 6)); three more score
  * differently (the march on the hostile center and the chain spacing).
+ *
+ * Tuning 8 (`pulp_wars-w49.11`): the command was the training of a
+ * Swordsman in city 16 and `policyDecisionHash` 6d1529…f3da. The view is
+ * round 16 with five technologies and an enemy army in the field: on the
+ * research clock (three rounds a technology) Marksmanship is due, and a due
+ * technology is bought before the units (1219; it was 1165, after them).
+ * The candidate count is unchanged. Unit 19's step to (3, 3) is a stormer's
+ * (762; the hostile center beside it is empty), and unit 20's two Moves
+ * score lower.
  */
 export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   /** `canonicalHash` of the retained fixture as read from disk. */
@@ -101,18 +110,19 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // Tuning 6 (`pulp_wars-w49.6`): the assault and the pressed seat, as
     // in the comment above (was d083c1…4725). Tuning 7
     // (`pulp_wars-w49.10`): see the comment above (was 5c5ef6…500c).
-    "6d1529d3775f160db8240c1dbfb29e080da84ce51a50a9e544a60d407c4cf3da",
+    // Tuning 8 (`pulp_wars-w49.11`): see the comment above (was
+    // 6d1529…f3da).
+    "2a38fdd484004795fbee27848425559f26442374ebae2d5b332f610d05d3aae3",
   command: Object.freeze({
-    kind: "TRAIN",
-    cityId: 16,
-    role: "SWORDSMAN",
+    kind: "RESEARCH",
+    tech: "MARKSMANSHIP",
   }),
   // Tuning 4 (`pulp_wars-w49.3`): 27 (28 before): the view's 12 Coins no
   // longer buy a technology (a tier 1 as the sixth costs 13).
   // Tuning 5: 21. Two Train Swordsman candidates are new, and the army
   // play's garrison and formation rules leave fewer Moves as candidates.
   // Tuning 6: 20 (see the comment above). Tuning 7: 20 (one Move and
-  // Research Marksmanship are new, two Moves are gone).
+  // Research Marksmanship are new, two Moves are gone). Tuning 8: 20.
   candidateCount: 20,
 });
 

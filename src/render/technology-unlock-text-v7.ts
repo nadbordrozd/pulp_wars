@@ -81,7 +81,7 @@ export const CHARGE_CONDITION_TEXT_V7 =
 export const NO_MOVE_AND_ATTACK_TEXT_V7 =
   "cannot move and attack in the same turn";
 export const OVERRUN_BUDGET_TEXT_V7 =
-  "Overrun: one more attack after every kill, with no limit; an attack that does not kill ends it";
+  "Overrun: after a kill it advances onto the victim's tile and may attack again from there, with no limit; a hit that does not kill ends it, and so does a kill it cannot advance after (a tile it cannot enter, a victim that rises in place)";
 
 /**
  * Tuning 4: a Land Grant the city could take but the player cannot pay

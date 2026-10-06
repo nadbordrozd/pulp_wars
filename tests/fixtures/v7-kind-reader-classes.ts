@@ -163,6 +163,14 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // Tuning 7 (`pulp_wars-w49.10`): the class of the unit the seat's next
   // technology unlocks.
   "src/ai/v7.ts::armyWarHoldsResearchV7": "SEAT",
+  // Tuning 8 (`pulp_wars-w49.11`): what the seat can train as a garrison,
+  // the growth technology and the roles of its faction's research order,
+  // and whether the seat plays the Goblin rules.
+  "src/ai/v7.ts::armyBestDefenderWorthV7": "SEAT",
+  "src/ai/v7.ts::armyWarGrowthDueV7": "SEAT",
+  "src/ai/v7.ts::armyFrontShooterV7": "SEAT",
+  // Tuning 8, correction pass: what the seat can train onto a center.
+  "src/ai/v7.ts::armyHelplessGarrisonV7": "SEAT",
   "src/ai/v7.ts::sharedTrainingCostV7": "SEAT",
   "src/ai/v7.ts::scoreCommandWithContext": "SEAT",
   "src/ai/v7.ts::raisedSkeletonDoomedV7": "SEAT",

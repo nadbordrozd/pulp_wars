@@ -499,7 +499,10 @@ describe("1. commit: a position is local, and numbers are numbers", () => {
       const first = attacks[0];
       const shooter = current.units.find((unit) => unit.id === first?.unitId);
       expect(shooter?.role, `turn ${turn}`).toMatch(/MARKSMAN|RAIDER/);
-      // Nobody of the front walks away from the enemy.
+      // Nobody of the front walks away from the enemy (measured against
+      // the enemy units that are left: tuning 8 kills more of them in
+      // these two turns, and a unit whose nearest enemy died did not walk
+      // away from it).
       for (const unit of current.units) {
         if (unit.ownerId !== own || unit.at.x >= 8) continue;
         const after = played.state.units.find((item) => item.id === unit.id);
@@ -507,7 +510,7 @@ describe("1. commit: a position is local, and numbers are numbers", () => {
         expect(
           gap(played.state, after.at),
           `turn ${turn} unit ${unit.id}`,
-        ).toBeLessThanOrEqual(gap(current, unit.at));
+        ).toBeLessThanOrEqual(gap(played.state, unit.at));
       }
       current = nextRound(played.state);
     }
@@ -928,8 +931,14 @@ describe("2. every faction's seat grows", () => {
       }
     }
     // A growth technology that is on no Undead unit's way before the
-    // fifth unit technology, and a building of it.
+    // fifth unit technology, and a building of it. Tuning 8, correction
+    // pass (`pulp_wars-w49.11`): the Banshee's technology comes before it
+    // (the first two units of the order, then the one growth technology).
     expect(bought).toContain("RESEARCH ENGINEERING");
+    expect(bought.indexOf("RESEARCH MARKSMANSHIP")).toBeGreaterThanOrEqual(0);
+    expect(bought.indexOf("RESEARCH MARKSMANSHIP")).toBeLessThan(
+      bought.indexOf("RESEARCH ENGINEERING"),
+    );
     expect(
       bought.some((kind) => kind === "BUILD_MINE" || kind === "BUILD_WORKSHOP"),
     ).toBe(true);
@@ -1666,8 +1675,12 @@ describe("the defects of the round-6 hand play", () => {
   });
 });
 
-/** The round the capital falls to each attacker (the `RETREAT` script). */
-const RETREAT_ROUNDS = [7, 5, 7] as const;
+/**
+ * The round the capital falls to each attacker (the `RETREAT` script).
+ * Tuning 8 (`pulp_wars-w49.11`): 5, 5, and 7 (round 7: 7, 5, and 7); the
+ * Human attacker's Raider now stays on the center it rides onto.
+ */
+const RETREAT_ROUNDS = [5, 5, 7] as const;
 
 describe("the bounded lab runs", () => {
   // The `RETREAT` script of tests/fixtures/v7-breakthrough-lab.ts: the

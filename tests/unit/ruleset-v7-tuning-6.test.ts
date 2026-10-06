@@ -395,9 +395,13 @@ describe("the assault: massing, fire first, and the gap", () => {
     const gap = (where: CoordV7): number =>
       Math.min(...enemies.map((enemy) => distance(enemy, where)));
     expect(new Set(modesOf(state))).toEqual(new Set(["STAGE"]));
-    // Two turns of staging: nobody attacks, nobody steps inside the reach
+    // Three turns of staging: nobody attacks, nobody steps inside the reach
     // of the Marksman (its Move and its range: 3 tiles) or of the Fighter.
-    for (let turn = 0; turn < 2; turn += 1) {
+    // (Two before tuning 8, `pulp_wars-w49.11`: the position was weighed
+    // again after every Move, so the two front units stepped into reach in
+    // the turn the others were still walking up. An army now goes in at
+    // the start of a turn, massed.)
+    for (let turn = 0; turn < 3; turn += 1) {
       const played = policyTurn(state);
       expect(kindsOf(played.commands)).not.toContain("ATTACK");
       for (const unit of played.state.units)

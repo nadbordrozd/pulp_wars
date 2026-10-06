@@ -157,6 +157,20 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::armyEngagementsForV7": "BOARD",
     "src/ai/v7.ts::armyStrikerNearV7": "BOARD",
     "src/ai/v7.ts::waaaghUsefulV7": "BOARD",
+    // Tuning 8 (`pulp_wars-w49.11`): the units that storm or cover a
+    // hostile center, the own units an attack would free a shot for, and
+    // the unit standing beside a threatened center are what stands on the
+    // board in the public view.
+    "src/ai/v7.ts::armyStormV7": "BOARD",
+    "src/ai/v7.ts::armyAttackValueV7": "BOARD",
+    "src/ai/v7.ts::armyBesideCenterWorthV7": "BOARD",
+    // Tuning 8, correction pass: the hostile unit at a city's gates, the
+    // own units near a weak garrison or a battery, and the units beside a
+    // bomber's end tile are what stands on the board in the public view.
+    "src/ai/v7.ts::armyAtTheGatesV7": "BOARD",
+    "src/ai/v7.ts::armyWeakGarrisonV7": "BOARD",
+    "src/ai/v7.ts::armyCenterDeadlyV7": "BOARD",
+    "src/ai/v7.ts::armyBomberCrowdV7": "BOARD",
     // Tuning 6 (`pulp_wars-w49.6`): the own units weighed against a hostile
     // position, the own units near a lone unit, and the friend it walks back
     // to are what stands on the board in the public view.

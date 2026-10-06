@@ -648,7 +648,7 @@ describe("text-mode play harness", () => {
     );
     expect(started).toContain("| cannot move and attack in the same turn");
     expect(started).toContain(
-      "| Overrun: one more attack after every kill, with no limit",
+      "| Overrun: after a kill it advances onto the victim's tile and may attack again from there, with no limit",
     );
     expect(started).toContain(
       "| Slips past: enemy zones of control do not stop it",
@@ -915,6 +915,133 @@ describe("text-mode play harness", () => {
     expect(listing).toContain("22c in hand, every unit slot full, 12c a turn");
     expect(listing).toContain(
       "13c in its first turn, 15c in its second and 19c a turn from its third",
+    );
+  });
+
+  // Tuning 8 (`pulp_wars-w49.11`).
+  it("breaks a fortified Defense down, explains the Muster and Engineer counts, keeps the glyph legend, and says why no city trains", () => {
+    // A Marksman's shot on a Guard on a Field Defense in the Guard's own
+    // territory: the Guard is open to ranged attacks (Defense 1) and the
+    // Field Defense adds two levels.
+    const session = path.join(root, "tuning-8-defense.json");
+    ok(
+      "new",
+      "--session",
+      session,
+      "--map",
+      "dry-land",
+      "--size",
+      "11",
+      "--seed",
+      SEED,
+      "--factions",
+      "original,original",
+    );
+    patchState(session, (state) => {
+      const mine = state.units.find(
+        (unit) => unit.ownerId === state.humanPlayerId,
+      );
+      const other = state.units.find(
+        (unit) => unit.ownerId !== state.humanPlayerId,
+      );
+      if (mine === undefined || other === undefined) throw new Error("no unit");
+      const land = (x: number, y: number): boolean =>
+        state.board.tiles.some(
+          (tile) =>
+            tile.at.x === x &&
+            tile.at.y === y &&
+            (tile.terrain === "GRASS" || tile.terrain === "FOREST") &&
+            tile.site === null,
+        );
+      // The Guard one step from its capital, the Marksman two steps on.
+      const step = (
+        [
+          [1, 0],
+          [-1, 0],
+          [0, 1],
+          [0, -1],
+          [1, 1],
+          [-1, 1],
+          [1, -1],
+          [-1, -1],
+        ] as const
+      ).find(
+        ([dx, dy]) =>
+          land(other.at.x + dx, other.at.y + dy) &&
+          land(other.at.x + 3 * dx, other.at.y + 3 * dy),
+      );
+      if (step === undefined) throw new Error("no open line at the capital");
+      const target = { x: other.at.x + step[0], y: other.at.y + step[1] };
+      const stand = {
+        x: other.at.x + 3 * step[0],
+        y: other.at.y + 3 * step[1],
+      };
+      const guard = effectiveRoleRuleV7("GUARD", "ORIGINAL");
+      return {
+        ...state,
+        players: state.players.map((player) => ({
+          ...player,
+          researchedTechs: [...TECHNOLOGY_IDS_V7],
+          explored: state.board.tiles.map((tile) => tile.at),
+        })),
+        board: {
+          ...state.board,
+          tiles: state.board.tiles.map((tile) =>
+            tile.at.x === target.x && tile.at.y === target.y
+              ? { ...tile, fieldDefense: true }
+              : tile,
+          ),
+        },
+        units: state.units.map((unit) =>
+          unit.id === mine.id
+            ? { ...unit, role: "MARKSMAN" as const, at: stand }
+            : {
+                ...unit,
+                role: "GUARD" as const,
+                hp: guard.maxHp,
+                maxHp: guard.maxHp,
+                at: target,
+              },
+        ),
+      };
+    });
+    const state = sessionState(session);
+    const mine = state.units.find(
+      (unit) => unit.ownerId === state.humanPlayerId,
+    );
+    if (mine === undefined) throw new Error("no unit");
+    const shot = ok("options", "--session", session, "--unit", `u${mine.id}`)
+      .split("\n")
+      .find((row) => row.startsWith(`u${mine.id}.a.`));
+    expect(shot).toContain("vs def 3 (1 open to ranged + fort 2)");
+
+    // The ordinary view: the legend of the cell and of its marks, and what
+    // the two achievements count.
+    const plain = newSession("tuning-8-view");
+    const view = ok("view", "--session", plain);
+    expect(view).toContain("LEGEND cell = terrain feature mark owner unit");
+    expect(view).toContain("  feature: C capital  c city  v neutral village");
+    expect(view).not.toContain("  terrain: . grass");
+    const full = ok("view", "--session", plain, "--full");
+    expect(full).toContain("  terrain: . grass");
+    expect(full).toMatch(
+      /MUSTER \d+\/\d+ \(different unit kinds you have on the board at once\)/,
+    );
+    expect(full).toMatch(
+      /ENGINEER \d+\/\d+ \(highest output of one Windmill, Sawmill, Forge, or Workshop; Mines do not count\)/,
+    );
+
+    // The first unit stands on the capital's center: the section says why
+    // nothing is offered, and so does a rejected training id.
+    const reason = /nothing to train: (c\d+) center occupied/.exec(
+      ok("options", "--session", plain),
+    );
+    if (reason === null) throw new Error("no reason is given");
+    const city = reason[1] ?? "";
+    const rejected = run("do", "--session", plain, `${city}.t.fighter`);
+    expect(rejected.exitCode).toBe(1);
+    expect(rejected.output).toContain(
+      `nothing is offered for "${city}" now (center occupied)`,
     );
   });
 

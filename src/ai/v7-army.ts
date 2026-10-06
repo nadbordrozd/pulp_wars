@@ -3,7 +3,11 @@ import {
   unitRoleRuleV7,
   type EffectiveRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
-import type { FactionIdV7, UnitRoleIdV7 } from "../engine/v7/types";
+import type {
+  FactionIdV7,
+  TechnologyIdV7,
+  UnitRoleIdV7,
+} from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 
 /**
@@ -567,3 +571,156 @@ export function armyRoleScoreV7(
 
 /** What a Coin of price adds to the score of a role the army is short of. */
 export const ARMY_DEAR_UNIT_VALUE_V7 = 20;
+
+// ---------------------------------------------------------------------------
+// Tuning 8 (`pulp_wars-w49.11`, docs/product/RULESET_7_TUNING_HUMAN.md
+// section 15): capture what it reaches, research in a war, real numbers on
+// a front, Goblin growth and fire, and the small seat. The hooks are in
+// `src/ai/v7.ts` (`armyStormV7`, `armyHoldsCenterV7`, `armyStormWaitsV7`,
+// `armyStormMoveV7`).
+// ---------------------------------------------------------------------------
+
+/** A hostile center this close to an own capturer is stormed. */
+export const ARMY_STORM_RADIUS_V7 = 6;
+/**
+ * Capturers told off for one hostile center: two, and one more for every
+ * two hostile ranged or siege units within `ARMY_STORM_SHOOTER_RADIUS_V7`
+ * of it, at most `ARMY_STORM_UNITS_MAXIMUM_V7`.
+ */
+export const ARMY_STORM_UNITS_V7 = 2;
+export const ARMY_STORM_UNITS_MAXIMUM_V7 = 5;
+export const ARMY_STORM_SHOOTER_RADIUS_V7 = 4;
+/** Fighting units that come up to an own unit holding a hostile center. */
+export const ARMY_COVER_UNITS_V7 = 3;
+/** A stormer's Move toward its center: just above a committed advance. */
+export const ARMY_STORM_PRIORITY_V7 = 762;
+/**
+ * The shots that empty a center a stormer then enters: with the kills that
+ * open a capture (1344, 1345), above the step onto the center (1290).
+ */
+export const ARMY_STORM_FIRE_PRIORITY_V7 = 1344;
+
+/**
+ * Research in a war: one technology of the army's order (or its one growth
+ * technology) is due for every this many rounds played (more for a seat
+ * whose income is small against the price: `ARMY_WAR_RESEARCH_SHARE_V7`).
+ */
+export const ARMY_WAR_RESEARCH_ROUNDS_V7 = 3;
+/** The same for a rich seat. */
+export const ARMY_RICH_RESEARCH_ROUNDS_V7 = 2;
+/** A seat with this income a turn is rich. */
+export const ARMY_RICH_INCOME_V7 = 15;
+/** ... or one with this many units and this share (percent) of the largest hostile seat's. */
+export const ARMY_RICH_ARMY_V7 = 12;
+export const ARMY_RICH_ARMY_RATIO_V7 = 150;
+/**
+ * A seat that earns little waits longer for each technology: the turns its
+ * income needs to pay the price, plus this many (the turns of a cycle whose
+ * income goes to units). A seat on 4 Coins a turn buys a 10-Coin
+ * technology every fourth round, not every third.
+ */
+export const ARMY_WAR_RESEARCH_SPARE_TURNS_V7 = 1;
+/**
+ * A city with a hostile land unit this close to its center trains whatever
+ * the Coins kept for the due technology.
+ */
+export const ARMY_RESEARCH_FLOOR_GATES_V7 = 2;
+
+/**
+ * What a hostile siege unit is worth more than another ranged or support
+ * target to a fast, ranged, or siege unit of the seat.
+ */
+export const ARMY_SIEGE_TARGET_VALUE_V7 = 15;
+
+/**
+ * A committed bomb that splashes whatever stands beside its target (the
+ * Goblin Bomb Chucker's), with no own unit there: its Move and its throw go
+ * before every other Move of the assault (the Gang Up and Kaboom ladders
+ * end at 1185), so that the own units close in afterwards.
+ */
+export const ARMY_BOMB_MOVE_PRIORITY_V7 = 1187;
+export const ARMY_BOMB_FIRE_PRIORITY_V7 = 1188;
+/** A spent fast unit's Move out of the enemy's reach: above Recover (930). */
+export const ARMY_PULL_BACK_PRIORITY_V7 = 937;
+/** ... and its hit that does not kill: after that Move. */
+export const ARMY_SPENT_ATTACK_PRIORITY_V7 = 905;
+/**
+ * Training onto the empty center of a threatened city: what a role adds to
+ * its score for being a better garrison (HP times Defense) than the best
+ * own unit beside the center.
+ */
+export const ARMY_GARRISON_TRAINING_VALUE_V7 = 5000;
+
+/**
+ * Growth in the seat's own first capital goes before the same growth
+ * elsewhere (strategic value) while the capital is at this level or below,
+ * or below another own city.
+ */
+export const ARMY_CAPITAL_GROWTH_LEVEL_V7 = 2;
+export const ARMY_CAPITAL_GROWTH_VALUE_V7 = 3;
+
+/**
+ * An army is massed when half of the units coming at a position stand
+ * within this many tiles of its foremost unit (or those that do have the
+ * numbers by themselves, or the battle is joined). Before that it stages.
+ */
+export const ARMY_MASSED_RANKS_V7 = 1;
+
+/**
+ * The step onto an empty hostile center: 1 strategic value for every this
+ * much worth (HP times Defense in half-points, the mean of the Defense
+ * hand to hand and against an attack from two tiles) of the unit, at
+ * most `ARMY_CENTER_HOLDER_VALUE_MAXIMUM_V7`, so the sturdiest unit in
+ * reach goes in.
+ */
+export const ARMY_CENTER_HOLDER_WORTH_V7 = 1;
+export const ARMY_CENTER_HOLDER_VALUE_MAXIMUM_V7 = 150;
+
+/**
+ * The technologies the research order goes on to once every unit of the
+ * faction's order is unlocked: what an army uses, never Roads or Commerce
+ * (those are bought in peace).
+ */
+export const ARMY_LATE_RESEARCH_V7: readonly TechnologyIdV7[] = Object.freeze([
+  "FIELDCRAFT",
+  "FORTIFICATION",
+  "METALLURGY",
+  "EXPLOSIVES",
+] as const);
+
+/**
+ * A weak garrison (half its HP or less, on a center without Walls) is
+ * attacked by a group of this many own fighting units within this many
+ * tiles of it, whatever the position weighs.
+ */
+export const ARMY_RETAKE_UNITS_V7 = 2;
+export const ARMY_RETAKE_RADIUS_V7 = 3;
+
+/**
+ * A battery (the hostile siege units whose range covers a center the seat
+ * storms) is answered by the own units within this many tiles of it.
+ */
+export const ARMY_BATTERY_REACH_V7 = 7;
+/** The Move toward a battery: above a stormer's approach (762). */
+export const ARMY_BATTERY_PRIORITY_V7 = 764;
+
+/** A hostile melee unit this close to a center makes it contested. */
+export const ARMY_CONTESTED_RADIUS_V7 = 2;
+/**
+ * The garrison worth of a unit that cannot attack a neighbour (the Bomb
+ * Chucker) is divided by this.
+ */
+export const ARMY_HELPLESS_GARRISON_DIVISOR_V7 = 4;
+/**
+ * What a bomber's Move loses in strategic value for every hostile melee
+ * unit beside its end tile, and for every other own bomber beside it.
+ */
+export const ARMY_BOMBER_MELEE_COST_V7 = 30;
+export const ARMY_BOMBER_NEIGHBOUR_COST_V7 = 12;
+
+/**
+ * A garrison's hit that does not kill is made before the step aside that
+ * lets its city train when it is worth this much (10 a point dealt, 8 a
+ * point taken).
+ */
+export const ARMY_GARRISON_HIT_VALUE_V7 = 30;

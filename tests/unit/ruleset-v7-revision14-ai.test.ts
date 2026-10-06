@@ -383,9 +383,16 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // growth research at the unit limit, wartime spending) seed 2 is over
     // in round 18 without a Lich; seeds 10, 11, 13, and 14 of 0-15 train
     // one and plague (seed 14: four Liches, over in round 22).
+    // With tuning 8 (`pulp_wars-w49.11`: research on a clock while at war,
+    // the capture of a reached center) seed 14 is over in round 24 without
+    // a Lich; seeds 0, 2, 10, and 13 of 0-15 train one and plague (seed 0:
+    // six Liches, ten Plague applications, 40 rounds). With its correction
+    // pass seed 0 trains two Liches that never plague; seeds 2 and 6 of
+    // 0-15 train one and plague (seed 2: three Liches, 17 Plague
+    // applications, 38 rounds).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 14,
+      seed: 2,
       width: 11,
       height: 11,
       aiCount: 1,

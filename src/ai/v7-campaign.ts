@@ -214,6 +214,25 @@ export interface CampaignArmyFactsV7 {
   readonly slowMelee: (unit: PublicUnitV7) => boolean;
   /** What a visible land unit is worth in an assault (`armyUnitStrengthV7`). */
   readonly strength: (unit: PublicUnitV7) => number;
+  /**
+   * Tuning 8 (`pulp_wars-w49.11`): what a hostile unit is worth where it
+   * stands: its strength with its cover (Walls, a Field Defense, a Forest,
+   * a Mountain, a center) counted. Absent: `strength`.
+   */
+  readonly holdStrength?: (unit: PublicUnitV7) => number;
+  /** Tuning 8: a ranged or siege unit (it attacks from two or more tiles). */
+  readonly shoots?: (unit: PublicUnitV7) => boolean;
+  /**
+   * Tuning 8: the seat still expands (it owns fewer cities than
+   * `ARMY_EXPANSION_CITIES_V7`): before contact every free capturer scouts
+   * its own stretch of frontier instead of following the first scout.
+   */
+  readonly expanding?: boolean;
+  /**
+   * Correction pass: the seat's naval plan is active, or it owns
+   * Shorecraft. Its scouting is not changed by the rule for the opening.
+   */
+  readonly naval?: boolean;
 }
 
 /** A raider is a capturer with at least this much Move. */
@@ -238,8 +257,31 @@ export const CAMPAIGN_FRONT_SAME_SEAT_STEPS_V7 = 3;
 export const CAMPAIGN_FRONT_MAIN_UNITS_V7 = 10;
 /** A further front gets at least this many units. */
 export const CAMPAIGN_FRONT_MIN_UNITS_V7 = 6;
-/** ... and this share (percent) of its visible holders' strength. */
-export const CAMPAIGN_FRONT_NEED_RATIO_V7 = 200;
+/**
+ * ... and this share (percent) of its visible holders' strength. Tuning 8
+ * (`pulp_wars-w49.11`): half as much again as the holders within
+ * `CAMPAIGN_FRONT_SIZE_RADIUS_V7`, their cover counted (round 7: twice the
+ * raw strength of those within three tiles, which left out the Catapults
+ * behind a city and its Walls).
+ */
+export const CAMPAIGN_FRONT_NEED_RATIO_V7 = 150;
+/** The holders of a city a front is sized against stand this close to it. */
+export const CAMPAIGN_FRONT_SIZE_RADIUS_V7 = 4;
+/**
+ * A front on a city with Walls, or with a ranged or siege unit among its
+ * holders, takes one ranged or siege unit for every this many units.
+ */
+export const CAMPAIGN_FRONT_SHOOTER_SHARE_V7 = 3;
+/** Tuning 8: a raid goes to a city with no hostile unit this close. */
+export const CAMPAIGN_RAID_CLEAR_RADIUS_V7 = 2;
+/** Tuning 8: scouts of a seat that knows an enemy city but still expands. */
+export const CAMPAIGN_SCOUTS_EXPANDING_V7 = 2;
+/** Correction pass: an army seat's opening, in rounds. */
+export const CAMPAIGN_EARLY_ROUNDS_V7 = 10;
+/** Unexplored land this close to an own center is the frontier at home. */
+export const CAMPAIGN_HOME_FRONTIER_RADIUS_V7 = 4;
+/** Scouts an expanding seat sends at the frontier at home, at most. */
+export const CAMPAIGN_SCOUTS_HOME_V7 = 3;
 
 /**
  * The plan side of a mission directive (docs/product/CAMPAIGN.md section
@@ -450,6 +492,24 @@ export function campaignPlanForPolicyV7(
     const at = coordOf(index);
     return leads.some((lead) => chebyshev(lead, at) <= CAMPAIGN_LEAD_RADIUS_V7);
   });
+  // Correction pass (`pulp_wars-w49.11`): the frontier at home. An army
+  // seat that still expands, or plays one of its first
+  // `CAMPAIGN_EARLY_ROUNDS_V7` rounds, looks around its own cities before
+  // it looks for the enemy: a Goblin seat had three free villages three
+  // tiles south of its second city, unexplored for eleven rounds, while
+  // its scouts went toward the player.
+  const early =
+    facts.army !== undefined &&
+    facts.army.naval !== true &&
+    (facts.army.expanding === true || view.round <= CAMPAIGN_EARLY_ROUNDS_V7);
+  const homeFrontier = early
+    ? frontier.filter((index) => {
+        const at = coordOf(index);
+        return ownCenters.some(
+          (center) => chebyshev(center, at) <= CAMPAIGN_HOME_FRONTIER_RADIUS_V7,
+        );
+      })
+    : [];
   const frontierSteps = frontier.length > 0 ? search(frontier) : null;
   // Scouts can capture, so they take the villages they find; siege and
   // support units wait for a target instead. The fastest unit scouts, then
@@ -486,7 +546,8 @@ export function campaignPlanForPolicyV7(
         }
         return best;
       };
-      let goal = nearest(leadFrontier) ?? nearest(frontier);
+      let goal =
+        nearest(homeFrontier) ?? nearest(leadFrontier) ?? nearest(frontier);
       if (goal === null) {
         // Every reachable stretch is taken: share the nearest one.
         taken.fill(0);
@@ -671,11 +732,29 @@ export function campaignPlanForPolicyV7(
   // Exploration: the second scout before contact, the only one after.
   if (!rush)
     sendScouts(
-      targets.length === 0 ? CAMPAIGN_SCOUTS_BEFORE_CONTACT_V7 - 1 : 1,
+      targets.length === 0
+        ? CAMPAIGN_SCOUTS_BEFORE_CONTACT_V7 - 1
+        : facts.army?.expanding === true && facts.seaTarget === null
+          ? Math.max(
+              CAMPAIGN_SCOUTS_EXPANDING_V7,
+              // One scout for every stretch of unexplored land at home.
+              Math.min(CAMPAIGN_SCOUTS_HOME_V7, homeFrontier.length),
+            )
+          : early && facts.seaTarget === null && homeFrontier.length > 0
+            ? CAMPAIGN_SCOUTS_EXPANDING_V7
+            : 1,
     );
   // Before contact the rest of the army follows the first scout, so the
   // enemy it finds meets a group and not one unit.
   if (targets.length === 0 && main !== null) {
+    // Tuning 8 (`pulp_wars-w49.11`): an army seat that still expands
+    // spreads out instead: every free capturer takes its own stretch of
+    // frontier. (A Goblin seat followed its first scout into a pocket of
+    // Mountains for ten rounds and never saw the village three tiles south
+    // of its capital.)
+    // Not a seat whose naval plan sails: its second unit goes to the Port.
+    if (facts.army?.expanding === true && facts.seaTarget === null)
+      sendScouts(Number.POSITIVE_INFINITY);
     const lead: CampaignAssignmentV7 = main;
     for (const unit of scoutCandidates())
       if (lead.field.get(unit.at) !== undefined)
@@ -701,7 +780,11 @@ export function campaignPlanForPolicyV7(
       marchTargets.forEach((city, order) => {
         if (
           indexOf(city.at) === seaTargetIndex ||
-          hostileLand.some((unit) => chebyshev(unit.at, city.at) <= 1)
+          // Tuning 8: no lone raid on a held city.
+          hostileLand.some(
+            (unit) =>
+              chebyshev(unit.at, city.at) <= CAMPAIGN_RAID_CLEAR_RADIUS_V7,
+          )
         )
           return;
         let raider: PublicUnitV7 | null = null;
@@ -833,6 +916,26 @@ export function campaignPlanForPolicyV7(
       const defense = defenders.map((units) =>
         units.reduce((sum, unit) => sum + armyFacts7.strength(unit), 0),
       );
+      // Tuning 8: what a front on each city must outweigh, and whether it
+      // needs its shooters (Walls, or a ranged or siege unit among the
+      // holders).
+      const holdStrength = armyFacts7.holdStrength ?? armyFacts7.strength;
+      const sized = marchTargets.map((city) =>
+        hostileLand.filter(
+          (unit) =>
+            chebyshev(unit.at, city.at) <= CAMPAIGN_FRONT_SIZE_RADIUS_V7,
+        ),
+      );
+      const need = sized.map((units) =>
+        units.reduce((sum, unit) => sum + holdStrength(unit), 0),
+      );
+      const fortified = marchTargets.map(
+        (city, order) =>
+          city.rewards.some((record) => record.reward === "WALLS") ||
+          (sized[order] ?? []).some(
+            (unit) => armyFacts7.shoots?.(unit) === true,
+          ),
+      );
       const fronts: number[] = [];
       const frontCost = (
         order: number,
@@ -920,7 +1023,7 @@ export function campaignPlanForPolicyV7(
                 left.id - right.id,
             );
           const wanted =
-            (CAMPAIGN_FRONT_NEED_RATIO_V7 * (defense[order] ?? 0)) / 100;
+            (CAMPAIGN_FRONT_NEED_RATIO_V7 * (need[order] ?? 0)) / 100;
           const sent: PublicUnitV7[] = [];
           let strength = 0;
           for (const unit of ordered) {
@@ -928,7 +1031,34 @@ export function campaignPlanForPolicyV7(
             sent.push(unit);
             strength += armyFacts7.strength(unit);
           }
-          return sent.length >= least && strength >= wanted ? sent : null;
+          if (sent.length < least || strength < wanted) return null;
+          // Tuning 8: against Walls, Catapults, or Marksmen the group
+          // brings its own shooters: a third of it, the nearest ones, in
+          // place of the units that would have walked the farthest.
+          if (fortified[order] === true && armyFacts7.shoots !== undefined) {
+            const shoots = armyFacts7.shoots;
+            const share = Math.floor(
+              sent.length / CAMPAIGN_FRONT_SHOOTER_SHARE_V7,
+            );
+            const extra = ordered.filter(
+              (unit) => !sent.includes(unit) && shoots(unit),
+            );
+            for (
+              let have = sent.filter((unit) => shoots(unit)).length;
+              have < share && extra.length > 0;
+              have += 1
+            ) {
+              let last = -1;
+              for (let index = sent.length - 1; index >= 0; index -= 1)
+                if (!shoots(sent[index] as PublicUnitV7)) {
+                  last = index;
+                  break;
+                }
+              if (last < 0) break;
+              sent.splice(last, 1, extra.shift() as PublicUnitV7);
+            }
+          }
+          return sent;
         };
         // What the main front keeps: what it needs, and that again for
         // every further front (so a third front takes a much larger army).
@@ -1061,6 +1191,16 @@ export function campaignPlanForPolicyV7(
       });
     });
   }
+  // Tuning 8 (`pulp_wars-w49.11`): an army seat's capturer with no job (no
+  // route to any known city) explores; it used to stand at home. Not a
+  // seat whose naval plan sails: its jobless capturers are for the Port.
+  if (
+    facts.army !== undefined &&
+    !rush &&
+    targets.length > 0 &&
+    facts.seaTarget === null
+  )
+    sendScouts(Number.POSITIVE_INFINITY);
   return {
     atWar: targets.length > 0,
     assignmentByUnitId,
