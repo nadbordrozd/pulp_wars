@@ -377,7 +377,12 @@ describe("headless parity and the CLI flag", () => {
     // event hashes of all five pins were recomputed at 7r46 (the Archipelago
     // match keeps its commands and changes only its events), with the
     // rounds of the Dry Land pin (16, was 17); the maps and the PRNG ends
-    // did not change.
+    // did not change. Tuning 2 (7r47: no ranged unit advances, the Human
+    // Knight captures) moved the commands and events of the Pangea pin (the
+    // only one with a Martian seat); the other four are unchanged. Tuning 3
+    // (`pulp_wars-w49.3`: the Knight's Attack, Forest cover from Forestry,
+    // land trade, Blast Mountain) recomputed the commands and events of
+    // the pins it moved (the Dry Land one is back at 17 rounds).
     const pins: readonly {
       readonly mapType: MapTypeV7;
       readonly factions: readonly FactionIdV7[];
@@ -394,11 +399,12 @@ describe("headless parity and the CLI flag", () => {
         mapType: "DRY_LAND",
         factions: ["ORIGINAL", "UNDEAD"],
         seed: 3,
-        rounds: 16,
+        // Tuning 4 (`pulp_wars-w49.3`): 18 rounds (17 before), recomputed.
+        rounds: 18,
         commandHash:
-          "ff6fde78c2498b7855a79af33fbc86ff180d2fb611945a119027f339ba992972",
+          "41fa97bee9871e414ae96bb9aa11fc6f370d4ce593cf75f628c2971c8b33c34d",
         eventHash:
-          "dee0ca1f3d202b97f8da6f601f0cc05ba2ec6cea513c874ebe086325eae1c5d1",
+          "20c02dd89388825900f94bf63549c68f8617e2784a0ead0ed5e2327248d214e2",
         mapHash:
           "1f6ad08d476884229d6cb8a7319ea209b8667cf4e28e24cd07352ebafc3055de",
         finalPrngHash:
@@ -410,9 +416,9 @@ describe("headless parity and the CLI flag", () => {
         seed: 11,
         rounds: 15,
         commandHash:
-          "1bac0025a353492cfe34b28455b5500671e72a4bff83476142ed3a2fdeabf466",
+          "79687de9bb6b0699f24179957e67d3ca54e9ea9aaefb872138fe316b50ec6655",
         eventHash:
-          "8794fa3fde3b60175f3b1eb10d253c119232265dc28b0a604b2d6e9d50ac312a",
+          "fd31b51d2530366c7c9b544b82e304cc0900e60da2feeddc56502f7c7e00eaf6",
         mapHash:
           "5b286bbe8cdb2f8a339cd7a74ba219bc2b57a4322370548442b3c8f26bef4ad9",
         finalPrngHash:
@@ -425,11 +431,11 @@ describe("headless parity and the CLI flag", () => {
         // was 18 rounds, commands 2c1c37…d518, events bd9d09…7c62).
         factions: ["ICE_FOLK", "DWARF"],
         seed: 5,
-        rounds: 20,
+        rounds: 22,
         commandHash:
-          "3d25812fcf13acd3253388b1aabdd2ceed2a13aa9ab1c0f2c1607cae491c9551",
+          "dcbe79d20690e149305287bf895d9adcad621cf8920a7607335c7127313fb5df",
         eventHash:
-          "468ba32f1ae45e1560c4d8a90ba46e9b073aa1af57a1d409170337a657c50d78",
+          "d67485a757fd03fb7327de28623547f512c6a1b3f606e720d90d5ed6557bfb5b",
         mapHash:
           "2cbf36a1c5d03e70dd785be13a1ed7d5dd04fecdd54925baa1b483261d71c9be",
         finalPrngHash:
@@ -439,11 +445,11 @@ describe("headless parity and the CLI flag", () => {
         mapType: "ARCHIPELAGO",
         factions: ["MARTIAN", "ORIGINAL", "GOBLIN"],
         seed: 7,
-        rounds: 14,
+        rounds: 15,
         commandHash:
-          "78f067971e0f8aec5855e7fd25f519c8cbd69092772228fbc8cfaf3b868187ae",
+          "ef2e6f1b4e589bad07cb1ad406b9d05c6a3ba7f93f93a610c8fca176f489c98d",
         eventHash:
-          "6a3b1afa5700e15a39c0d97b449ca24459a38441a39dac161500d72ddccb0964",
+          "d375ba20cf45f56e033d85dee32b03504c2f7b33a608b41f435a2b3d7c8a0b54",
         mapHash:
           "be112bd78cfeb3f5ae72a6b67f8f91bd45b81814c5d0cdad9abe7f31f221be5d",
         finalPrngHash:
@@ -455,9 +461,9 @@ describe("headless parity and the CLI flag", () => {
         seed: 2,
         rounds: 11,
         commandHash:
-          "85af21c6f2b103ab8cadf424b9ff6a9e79af2704bfdafaa2948abf9cb0937e03",
+          "ee1a960bd9f26527dd162cf455e5b7c1927858aff74a009cd12d734de357f2c2",
         eventHash:
-          "263a856e6f75939ab7543a001764b37528c5e072e84513ca6da06295e732a9e5",
+          "94dbfde0bec02c3eb1434abdfdcb140909b2a286cdfea6946efc36e8bebc502b",
         mapHash:
           "70ff339440ce86f231bca6b2be56c748891436934f614f6ef66fa53933f3d5ab",
         finalPrngHash:
@@ -844,18 +850,12 @@ describe("the Shrine (section 6)", () => {
       accepted: false,
       error: { code: "PROMOTION_NOT_ELIGIBLE" },
     });
-    // A Shrine veteran with no kills persists; without the option it would
-    // not parse (only a Shrine promotes without the kills).
+    // A Shrine veteran with no kills persists. (Before tuning 4 such a
+    // veteran did not parse without the option; a Barracks Drill promotes
+    // without the kills too, in any match.)
     expect(parseGameStateV7(JSON.parse(JSON.stringify(result.state)))).toEqual(
       result.state,
     );
-    expect(
-      parseGameStateV7({
-        ...result.state,
-        setup: { ...result.state.setup, curiosities: false },
-        curiosities: [],
-      }),
-    ).toBeNull();
   });
 
   it("is not claimed by a veteran, a growing Dinosaur, or a unit passing over it", () => {

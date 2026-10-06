@@ -1042,7 +1042,7 @@ describe("ruleset-7 Dinosaur Wild", () => {
     const state = withTileV7(base, { x: 3, y: 7 }, { fieldDefense: true });
     expect(
       fortificationLevelForUnitV7(state, unitAtV7(state, { x: 3, y: 7 })),
-    ).toBe(1);
+    ).toBe(2);
     // Without Explosives the defense stays; with it a melee attack clears it.
     const fortified = checkedV7({
       ...state,
@@ -1055,8 +1055,8 @@ describe("ruleset-7 Dinosaur Wild", () => {
     });
     const result = attack(fortified, { x: 4, y: 7 }, { x: 3, y: 7 });
     expect(combat(result.events)).toMatchObject({
-      fortificationLevel: 1,
-      defense2: 6,
+      fortificationLevel: 2,
+      defense2: 8,
     });
     expect(combat(result.events).damageToDefender).toBeLessThan(
       combat(plain.events).damageToDefender,
@@ -1093,7 +1093,7 @@ describe("ruleset-7 Dinosaur Acid", () => {
     const state = walled("DINOSAUR", true);
     expect(
       fortificationLevelForUnitV7(state, unitAtV7(state, { x: 8, y: 8 })),
-    ).toBe(3);
+    ).toBe(4);
     const result = attack(state, { x: 6, y: 8 }, { x: 8, y: 8 });
     expect(combat(result.events)).toMatchObject({
       acid: true,
@@ -1112,15 +1112,15 @@ describe("ruleset-7 Dinosaur Acid", () => {
         result.state,
         unitAtV7(result.state, { x: 8, y: 8 }),
       ),
-    ).toBe(3);
+    ).toBe(4);
     // The Human Marksman of the same position deals 2 through the same forts.
     const human = walled("ORIGINAL", true);
     expect(
       combat(attack(human, { x: 6, y: 8 }, { x: 8, y: 8 }).events),
     ).toMatchObject({
       acid: false,
-      defense2: 12,
-      fortificationLevel: 3,
+      defense2: 14,
+      fortificationLevel: 4,
       damageToDefender: 2,
     });
     // Each fortification source alone is ignored as well.
@@ -1187,7 +1187,7 @@ describe("ruleset-7 Dinosaur Acid", () => {
     const state = withTileV7(base, { x: 3, y: 7 }, { fieldDefense: true });
     expect(
       fortificationLevelForUnitV7(state, unitAtV7(state, { x: 3, y: 7 })),
-    ).toBe(1);
+    ).toBe(2);
     const result = attack(state, { x: 3, y: 5 }, { x: 3, y: 7 });
     expect(combat(result.events)).toMatchObject({
       acid: true,
@@ -1706,7 +1706,7 @@ describe("ruleset-7 Dinosaur ability parities", () => {
       maximumRange: 1,
       runUp: 0,
       fortificationLevel: 0,
-      fortificationIgnored: 1,
+      fortificationIgnored: 2,
       damageToDefender: 8,
       damageToAttacker: 4,
       retaliation: true,

@@ -26,6 +26,14 @@ import {
   afflictionHumanFixtureV7,
   undeadShowcaseFixtureV7,
 } from "../fixtures/v7-undead-ui";
+import { rewardStateV7 } from "../fixtures/v7-dinosaur-arena";
+import { applyOkV7, seatIdV7 } from "../fixtures/v7-goblin-arena";
+import {
+  at,
+  fieldV7,
+  mountainV7,
+  patchTileV7,
+} from "../fixtures/v7-revision20";
 
 /**
  * Bead pulp_wars-3gf: the selection dock is a wide bottom bar. Its children
@@ -65,8 +73,21 @@ describe("Ruleset 7 selection dock layout", () => {
     const stats = requiredElement<HTMLElement>(".v7-city-stats");
     expect(stats.tagName).toBe("DL");
     expect(
-      [...stats.children].map((child) => child.getAttribute("data-stat")),
-    ).toEqual(["level", "population", "units", "income", "city-action"]);
+      [...stats.children].map(
+        (child) =>
+          child.getAttribute("data-stat") ??
+          // Tunings 2 and 3: with Commerce, the land trade line of a
+          // city no Road links to another of the player's cities.
+          `land-trade:${child.getAttribute("data-land-trade")}`,
+      ),
+    ).toEqual([
+      "level",
+      "population",
+      "units",
+      "income",
+      "city-action",
+      "land-trade:not_linked",
+    ]);
     const actions = requiredElement<HTMLElement>(
       ".v7-selection-dock > .v7-context-actions",
     );
@@ -175,6 +196,192 @@ describe("Ruleset 7 selection dock layout", () => {
     );
   });
 
+  // Tuning 2 (`pulp_wars-w49.3`, 7r47): the city panel says why a city
+  // trains nothing with a unit on its center, and how Commerce's land trade
+  // stands for it.
+  it("says why a garrisoned city trains nothing and why it earns no land trade", () => {
+    const garrisoned = fieldV7([{ seat: 0, role: "FIGHTER", at: at(8, 8) }], {
+      factions: ["ORIGINAL", "DWARF"],
+    });
+    const capitalOf = (state: GameStateV7) =>
+      requiredValue(
+        viewForV7(state, state.humanPlayerId).cities.find(
+          (city) => city.ownerId === state.humanPlayerId && city.isCapital,
+        ),
+      );
+    const host = new RecordingBoardHost();
+    const app = mount(garrisoned, host);
+    host.callbacks?.onSelection({
+      kind: "CITY",
+      cityId: capitalOf(garrisoned).id,
+    });
+    const blocked = requiredElement<HTMLElement>(
+      '.v7-city-stats > [data-disabled-reason="center-occupied"]',
+    );
+    expect(blocked.textContent).toBe(
+      "Training blocked: a unit is on the city center",
+    );
+    expect(document.querySelector(".v7-train-card")).toBeNull();
+    const trade = requiredElement<HTMLElement>(
+      '.v7-city-stats > [data-land-trade="not_linked"]',
+    );
+    expect(trade.textContent).toBe(
+      "No land trade: no Road link to another of your cities",
+    );
+    expect(trade.title).toBe(
+      "Each city linked by Road to another of your cities: +1 Coin each turn",
+    );
+    app.destroy();
+
+    // An empty center trains, and says nothing.
+    document.body.innerHTML = '<div id="app"></div>';
+    const open = fieldV7([{ seat: 0, role: "FIGHTER", at: at(8, 7) }], {
+      factions: ["ORIGINAL", "DWARF"],
+    });
+    const openHost = new RecordingBoardHost();
+    const openApp = mount(open, openHost);
+    openHost.callbacks?.onSelection({
+      kind: "CITY",
+      cityId: capitalOf(open).id,
+    });
+    expect(document.querySelector("[data-disabled-reason]")).toBeNull();
+    expect(document.querySelector(".v7-train-card")).not.toBeNull();
+    openApp.destroy();
+  });
+
+  // Tuning 3 (`pulp_wars-w49.3`): a Market tile offers the hires with their
+  // prices, and a Blast Mountain button says what the blast would hit.
+  it("offers hires on a Market tile and previews a Blast Mountain on its button", () => {
+    const market = at(9, 9);
+    const mountain = at(7, 7);
+    const state = mountainV7(
+      patchTileV7(
+        fieldV7(
+          [
+            { seat: 0, role: "FIGHTER", at: at(8, 7) },
+            { seat: 1, role: "GUARD", at: at(6, 6) },
+          ],
+          { factions: ["ORIGINAL", "ORIGINAL"] },
+        ),
+        market,
+        { improvement: "MARKET" },
+      ),
+      mountain,
+    );
+    const host = new RecordingBoardHost();
+    const app = mount(state, host);
+    host.callbacks?.onSelection({ kind: "TILE", at: market });
+    const hires = [
+      ...document.querySelectorAll<HTMLElement>('[data-action="command-hire"]'),
+    ];
+    expect(hires.map((button) => button.getAttribute("aria-label"))).toEqual([
+      "Hire Fighter for 3 Coins",
+      "Hire Raider for 6 Coins",
+      "Hire Marksman for 6 Coins",
+      "Hire Guard for 5 Coins",
+      "Hire Captain for 8 Coins",
+      "Hire Catapult for 12 Coins",
+      "Hire Knight for 14 Coins",
+    ]);
+    expect(hires[0]?.querySelector(".v7-action-label")?.textContent).toBe(
+      "Hire Fighter",
+    );
+    host.callbacks?.onSelection({ kind: "TILE", at: mountain });
+    const blast = requiredElement<HTMLElement>(
+      '[data-action="command-blast_mountain"]',
+    );
+    expect(blast.title).toBe(
+      "Blast · 5 damage on and around the tile, to your units too",
+    );
+    // The own Fighter and the enemy Guard next to the Mountain.
+    expect(blast.dataset.blastHits).toBe("2");
+    expect(blast.getAttribute("aria-label")).toContain(
+      "5 damage on and around the tile, to your units too",
+    );
+    expect(blast.querySelector('[data-friendly-fire="true"]')).not.toBeNull();
+    app.destroy();
+  });
+
+  // Tuning 4 (`pulp_wars-w49.3`): the Drill button of a unit on a Barracks
+  // center, the price of a Land Grant the player cannot pay for yet, and
+  // what a Blast Mountain of an Ore Mountain gives up.
+  it("shows Drill at a Barracks, a Land Grant that is too dear, and the Ore a blast gives up", () => {
+    const fixture = rewardStateV7("JUGGERNAUT", "ORIGINAL", [
+      { role: "FIGHTER", at: at(8, 8) },
+    ]);
+    const actor = seatIdV7(fixture.state, 0);
+    const withBarracks = applyOkV7(fixture.state, actor, {
+      ...fixture.command,
+      reward: "BARRACKS",
+    }).state;
+    const host = new RecordingBoardHost();
+    const app = mount(withBarracks, host);
+    selectUnitAt(withBarracks, host, at(8, 8));
+    const drill = requiredElement<HTMLElement>(
+      '[data-action="command-drill_unit"]',
+    );
+    expect(drill.querySelector(".v7-action-label")?.textContent).toBe(
+      "Drill (10 Coins)",
+    );
+    expect(drill.title).toBe(
+      "Drill: for 10 Coins the unit becomes a veteran, +5 HP and maximum HP, and its turn ends",
+    );
+    app.destroy();
+
+    // 5 Coins: the Land Grant is not offered, and the panel says its price.
+    document.body.innerHTML = '<div id="app"></div>';
+    const poor: GameStateV7 = {
+      ...withBarracks,
+      players: withBarracks.players.map((player) =>
+        player.id === actor ? { ...player, coins: 5 } : player,
+      ),
+    };
+    const poorHost = new RecordingBoardHost();
+    const poorApp = mount(poor, poorHost);
+    const capital = requiredValue(
+      viewForV7(poor, actor).cities.find(
+        (city) => city.ownerId === actor && city.isCapital,
+      ),
+    );
+    poorHost.callbacks?.onSelection({ kind: "CITY", cityId: capital.id });
+    expect(
+      requiredElement<HTMLElement>(
+        '.v7-city-stats > [data-disabled-reason="land-grant-coins"]',
+      ).textContent,
+    ).toBe("Land grant: 32 Coins for 16 tiles. Not enough Coins");
+    expect(
+      document.querySelector('[data-action="command-land_grant"]'),
+    ).toBeNull();
+    poorApp.destroy();
+
+    // An Ore Mountain next to an own unit.
+    document.body.innerHTML = '<div id="app"></div>';
+    const ore = patchTileV7(
+      mountainV7(
+        fieldV7([{ seat: 0, role: "FIGHTER", at: at(5, 2) }], {
+          factions: ["ORIGINAL", "ORIGINAL"],
+        }),
+        at(5, 3),
+      ),
+      at(5, 3),
+      { resource: "ORE" },
+    );
+    const oreHost = new RecordingBoardHost();
+    const oreApp = mount(ore, oreHost);
+    oreHost.callbacks?.onSelection({ kind: "TILE", at: at(5, 3) });
+    const blast = requiredElement<HTMLElement>(
+      '[data-action="command-blast_mountain"]',
+    );
+    expect(
+      blast.querySelector('[data-forfeits-mine="true"]')?.textContent,
+    ).toBe("Ore here: blasting it gives up a Mine (+2 population)");
+    // Outside the territory the button still shows the price.
+    expect(blast.querySelector(".v7-economy-chip.is-cost")?.textContent).toBe(
+      "3",
+    );
+    oreApp.destroy();
+  });
+
   it("stacks unit and city stats into a two-column stat column", () => {
     expect(rule(".v7-unit-stats")).toMatch(
       /\n {2}grid-template-columns: repeat\(2, max-content\);/,
@@ -186,7 +393,7 @@ describe("Ruleset 7 selection dock layout", () => {
     );
     expect(city).not.toMatch(/max-width/);
     expect(CSS).toMatch(
-      /\.v7-city-stats > \[data-stat="city-action"\],\n\.v7-city-stats > \[data-stat="siege"\],\n\.v7-city-stats > \[data-discount\] \{\n {2}grid-column: 1 \/ -1;\n\}/,
+      /\.v7-city-stats > \[data-stat="city-action"\],\n\.v7-city-stats > \[data-stat="siege"\],\n\.v7-city-stats > \[data-discount\],\n\.v7-city-stats > \[data-land-trade\],\n\.v7-city-stats > \[data-disabled-reason\] \{\n {2}grid-column: 1 \/ -1;\n\}/,
     );
   });
 

@@ -133,7 +133,7 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
       errors: [],
       stalls: [],
       metrics: {
-        rulesetId: "pulp-wars-poc-7r46",
+        rulesetId: "pulp-wars-poc-7r47",
         commandCapHits: 1,
       },
     });
@@ -431,7 +431,9 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
       chainsStarted: 1,
       attacks: 2,
       continuations: 1,
-      advances: 1,
+      // Tuning 3 (`pulp_wars-w49.3`): at Attack 4 the Knight kills the
+      // second Fighter too and advances onto its tile (1 before).
+      advances: 2,
       completedChains: 1,
       longestChain: 2,
       continuationWithoutAdvanceViolations: 0,
@@ -439,8 +441,9 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
       attacksPerChain: { "2": 1 },
     });
     expect(metrics.roles.damage.GUARD).toBe(preview.damageToAttacker);
-    expect(metrics.roles.kills.KNIGHT).toBe(1);
-    expect(metrics.roles.losses.FIGHTER).toBe(1);
+    // Tuning 3: both Fighters die to the Knight (one before).
+    expect(metrics.roles.kills.KNIGHT).toBe(2);
+    expect(metrics.roles.losses.FIGHTER).toBe(2);
   });
 });
 

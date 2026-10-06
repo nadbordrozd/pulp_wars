@@ -47,23 +47,25 @@ import {
  * instead of revision 16's 12, the step of 5 unchanged
  * (docs/product/RULESET_7_CURRENT.md section 6.1).
  */
-// Tuning 1 (`pulp_wars-w49.3`, 7r46): the per-city steps are 1 / 2 / 2
-// (1 / 3 / 5 before, when eight cities paid 28 and 44 for tiers 2 and 3).
+// Tuning 1 (`pulp_wars-w49.3`, 7r46): the per-city steps were 1 / 2 / 2
+// (1 / 3 / 5 before). Tuning 4: the price no longer reads the city count;
+// the step is 2 Coins per technology the player already owns beyond its
+// first, for every tier. Rows: 1..8 owned technologies.
 const RESEARCH_COST_TABLE: readonly (readonly [number, number, number])[] = [
   [5, 7, 9],
-  [6, 9, 11],
-  [7, 11, 13],
-  [8, 13, 15],
-  [9, 15, 17],
-  [10, 17, 19],
-  [11, 19, 21],
-  [12, 21, 23],
+  [7, 9, 11],
+  [9, 11, 13],
+  [11, 13, 15],
+  [13, 15, 17],
+  [15, 17, 19],
+  [17, 19, 21],
+  [19, 21, 23],
 ];
 
 describe("ruleset-7 revision-16 research costs", () => {
-  it("prices every tier at C = 1-8 as section 6.2 states", () => {
+  it("prices every tier by the technologies already owned (tuning 4)", () => {
     expect(TECHNOLOGY_RESEARCH_COST_V7).toEqual({
-      1: { base: 5, step: 1 },
+      1: { base: 5, step: 2 },
       2: { base: 7, step: 2 },
       3: { base: 9, step: 2 },
     });
@@ -74,35 +76,39 @@ describe("ruleset-7 revision-16 research costs", () => {
         ),
       ),
     ).toEqual(RESEARCH_COST_TABLE);
+    // No owned technology prices like one (the free opener is separate).
+    expect(technologyResearchCostV7(2, 0)).toBe(7);
   });
 
-  it("keeps the free opener: the first tier-1 technology costs 0 at any C", () => {
-    for (let cities = 1; cities <= 8; cities += 1) {
-      const [tier1, tier2, tier3] = RESEARCH_COST_TABLE[cities - 1] ?? [];
-      expect(playerTechnologyResearchCostV7(1, cities, 0)).toBe(0);
-      // Only tier 1 is free, and only while nothing is researched.
-      expect(playerTechnologyResearchCostV7(2, cities, 0)).toBe(tier2);
-      expect(playerTechnologyResearchCostV7(3, cities, 0)).toBe(tier3);
-      expect(playerTechnologyResearchCostV7(1, cities, 1)).toBe(tier1);
-      expect(playerTechnologyResearchCostV7(2, cities, 1)).toBe(tier2);
-      expect(playerTechnologyResearchCostV7(3, cities, 5)).toBe(tier3);
+  it("keeps the free opener: the first tier-1 technology costs 0", () => {
+    expect(playerTechnologyResearchCostV7(1, 0)).toBe(0);
+    // Only tier 1 is free, and only while nothing is researched.
+    expect(playerTechnologyResearchCostV7(2, 0)).toBe(7);
+    expect(playerTechnologyResearchCostV7(3, 0)).toBe(9);
+    for (let owned = 1; owned <= 8; owned += 1) {
+      const [tier1, tier2, tier3] = RESEARCH_COST_TABLE[owned - 1] ?? [];
+      expect(playerTechnologyResearchCostV7(1, owned)).toBe(tier1);
+      expect(playerTechnologyResearchCostV7(2, owned)).toBe(tier2);
+      expect(playerTechnologyResearchCostV7(3, owned)).toBe(tier3);
     }
   });
 
-  it("prices the whole tree as the section 6.2 table (one tier-1 free)", () => {
-    const whole = (cities: number, dryLand: boolean) =>
+  it("prices the whole tree in tier order (one tier-1 free)", () => {
+    const whole = (dryLand: boolean) =>
       factionTreeV7("ORIGINAL")
         .nodes.filter((node) => !dryLand || node.branch !== "NAVAL")
+        .map((node) => node.tier)
+        .sort((left, right) => left - right)
         .reduce(
-          (total, node) => total + technologyResearchCostV7(node.tier, cities),
+          (total, tier, owned) =>
+            total + playerTechnologyResearchCostV7(tier, owned),
           0,
-        ) - technologyResearchCostV7(1, cities);
+        );
     expect(factionTreeV7("ORIGINAL").nodes).toHaveLength(25);
-    expect([1, 2, 3, 5, 6, 8].map((cities) => whole(cities, false))).toEqual([
-      180, 224, 268, 356, 400, 488,
-    ]);
-    // Dry Land has 20 technologies (no Naval branch of five).
-    expect(whole(1, true)).toBe(180 - 5 - 7 - 9 - 7 - 9);
+    // Dry Land has 20 technologies (no Naval branch of five): 21 Coins of
+    // tier 1, 160 of tier 2 and 304 of tier 3.
+    expect(whole(true)).toBe(485);
+    expect(whole(false)).toBe(732);
   });
 
   it("offers the revision-16 costs in the public tree and charges them", () => {
@@ -210,10 +216,14 @@ describe("ruleset-7 revision-16 income caps", () => {
 describe("ruleset-7 revision-16 income previews", () => {
   it("previews equal Start Turn income in natural play with capped levels and Markets", () => {
     // pulp_wars-w49.3: an 11 x 11 Pangea duel of 30 rounds (a few seconds)
-    // replaces the 20 x 20 duel of 40 rounds, which took minutes. Under
-    // identity 7r46 seed 2 has a city above the income cap from round 16 and
-    // a Market at its cap from round 18 (of seeds 0-9, seeds 1, 5, 7, and 9
-    // also show both within 30 rounds).
+    // replaces the 20 x 20 duel of 40 rounds, which took minutes. With
+    // tuning 3 seed 7 runs to the round cap with a city above the income
+    // cap from round 23 and a Market at its cap from round 18 (of seeds
+    // 0-12, seeds 1, 5, 9, and 11 also do; seed 2, used at tuning 1, now
+    // ends in round 27). With tuning 4 seed 7 has a capped Market and no
+    // capped city; seed 2 runs to the round cap with a city above the
+    // income cap from round 20 and a Market at its cap from round 16 (of
+    // seeds 0-12, seeds 9 and 12 also do).
     const setup: MatchSetupV7 = {
       ...setupV7(2, 1),
       width: 11,

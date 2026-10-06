@@ -186,11 +186,13 @@ describe("Martian heat rays: full and half power (sections 6.1 and 6.3)", () => 
   it("the section 6.3 rows of a Guard on Field Defense and on a Walled center", () => {
     // Field Defense on an own-territory tile of seat 1; shooter at range 2.
     for (const [role, power, hit] of [
-      ["MARKSMAN", "FULL", 6],
+      // Tuning 4 (`pulp_wars-w49.3`): a Field Defense is two levels, so the
+      // full-power rows lost a point (6 / 9 / 9 before).
+      ["MARKSMAN", "FULL", 5],
       ["MARKSMAN", "HALF", 2],
-      ["CATAPULT", "FULL", 9],
+      ["CATAPULT", "FULL", 8],
       ["CATAPULT", "HALF", 3],
-      ["JUGGERNAUT", "FULL", 9],
+      ["JUGGERNAUT", "FULL", 8],
       ["JUGGERNAUT", "HALF", 3],
     ] as const) {
       const state = fieldDefenseV7(
@@ -210,10 +212,10 @@ describe("Martian heat rays: full and half power (sections 6.1 and 6.3)", () => 
       );
       expect(
         fortificationLevelForUnitV7(state, unitAtV7(state, at(3, 7))),
-      ).toBe(1);
+      ).toBe(2);
       expect(uncapped(state, at(5, 7), at(3, 7)), `${role} ${power}`).toBe(hit);
     }
-    // A Walled center: the Guard of seat 0 on (8, 8), the shooter on (6, 8).
+    // A Walled center: the Guard of seat 0 on (8, 8), the shooter on (5, 8).
     for (const [role, power, hit] of [
       ["MARKSMAN", "FULL", 5],
       ["MARKSMAN", "HALF", 2],
@@ -833,15 +835,17 @@ describe("Martian heat rays: Pierce (section 6.4)", () => {
     ).toBeNull();
   });
 
-  it("a Ray Gunner and a Colossus advance after an adjacent kill; the Colossus pushes at range 1 only", () => {
+  // Tuning 2 (`pulp_wars-w49.3`, 7r47): a ranged unit never advances (both
+  // advanced after an adjacent kill before).
+  it("a Ray Gunner and a Colossus stay after an adjacent kill; the Colossus pushes at range 1 only", () => {
     for (const role of ["MARKSMAN", "JUGGERNAUT"] as const) {
       const state = martianFieldV7([
         { seat: 0, role, at: at(4, 2) },
         { seat: 1, role: "FIGHTER", at: at(5, 2), hp: 1 },
       ]);
       const run = attackV7(state, at(4, 2), at(5, 2));
-      expect(run.combat.advances, role).toBe(true);
-      expect(run.attacker?.at, role).toEqual(at(5, 2));
+      expect(run.combat.advances, role).toBe(false);
+      expect(run.attacker?.at, role).toEqual(at(4, 2));
       // No Pierce for either.
       expect(run.combat.splash).toEqual([]);
     }
@@ -874,8 +878,8 @@ describe("Martian heat rays: the Disintegrator (section 6.5)", () => {
 
   it("removes Field Defense for a ray, full or half, and reports the removed level", () => {
     for (const [role, without, withIt] of [
-      ["MARKSMAN", 6, 7],
-      ["CATAPULT", 9, 10],
+      ["MARKSMAN", 5, 7],
+      ["CATAPULT", 8, 10],
     ] as const) {
       const plain = fieldDefenseV7(
         martianFieldV7(pieces(role), { techs: NO_DISINTEGRATOR }),
@@ -886,7 +890,7 @@ describe("Martian heat rays: the Disintegrator (section 6.5)", () => {
       const run = attackV7(state, at(5, 7), at(3, 7));
       expect(run.combat).toMatchObject({
         fortificationLevel: 0,
-        fortificationIgnored: 1,
+        fortificationIgnored: 2,
         damageToDefender: withIt,
       });
       // The rule destroys nothing; only a Tripod removes Field Defense.
@@ -898,7 +902,7 @@ describe("Martian heat rays: the Disintegrator (section 6.5)", () => {
 
   it("a Walled center with Field Defense: a Ray Gunner deals 7 instead of 5, a Tripod 10 instead of 7", () => {
     for (const [role, without, withIt] of [
-      ["MARKSMAN", 5, 7],
+      ["MARKSMAN", 4, 7],
       ["CATAPULT", 7, 10],
     ] as const) {
       const plain = walledV7({
@@ -909,7 +913,7 @@ describe("Martian heat rays: the Disintegrator (section 6.5)", () => {
       });
       expect(
         fortificationLevelForUnitV7(plain, unitAtV7(plain, at(8, 8))),
-      ).toBe(3);
+      ).toBe(4);
       expect(uncapped(plain, at(6, 8), at(8, 8)), role).toBe(without);
       const state = walledV7({
         attackerFaction: "MARTIAN",
@@ -919,7 +923,7 @@ describe("Martian heat rays: the Disintegrator (section 6.5)", () => {
       const run = attackV7(state, at(6, 8), at(8, 8));
       expect(run.combat, role).toMatchObject({
         fortificationLevel: 0,
-        fortificationIgnored: 3,
+        fortificationIgnored: 4,
         damageToDefender: withIt,
       });
     }
@@ -956,10 +960,10 @@ describe("Martian heat rays: the Disintegrator (section 6.5)", () => {
     };
     const plain = attackV7(build(false), at(4, 7), at(3, 7));
     const ignored = attackV7(build(true), at(4, 7), at(3, 7));
-    expect(plain.combat.fortificationLevel).toBe(1);
+    expect(plain.combat.fortificationLevel).toBe(2);
     expect(ignored.combat).toMatchObject({
       fortificationLevel: 0,
-      fortificationIgnored: 1,
+      fortificationIgnored: 2,
     });
     // Cover stays: the Forest bonus is still applied.
     expect(
@@ -1009,7 +1013,7 @@ describe("Martian heat rays: the Disintegrator (section 6.5)", () => {
     );
     expect(attackV7(state, at(4, 7), at(3, 7)).combat).toMatchObject({
       fortificationLevel: 0,
-      fortificationIgnored: 1,
+      fortificationIgnored: 2,
       breachApplied: true,
       rayPower: "NONE",
     });
@@ -1024,7 +1028,7 @@ describe("Martian heat rays: the Disintegrator (section 6.5)", () => {
       at(3, 7),
     );
     expect(attackV7(plain, at(4, 7), at(3, 7)).combat).toMatchObject({
-      fortificationLevel: 1,
+      fortificationLevel: 2,
       fortificationIgnored: 0,
       breachApplied: false,
       rayPower: "NONE",

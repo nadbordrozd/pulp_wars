@@ -151,7 +151,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
   });
 
   it("has 53 command kinds and 81 event kinds, with the new kinds at the stated positions", () => {
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(58);
+    // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL (59), and
+    // tuning 4 DRILL_UNIT after PROMOTE (60).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(60);
     const snap = COMMAND_KIND_ORDER_V7.indexOf("FREEZE");
     expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 4)).toEqual([
       "FREEZE", // the frozen sea (pulp_wars-5ti.3), after COLD_SNAP
@@ -1238,8 +1240,9 @@ describe("Dwarf Showcase (section 2.4)", () => {
       [3, 6],
       [3, 6],
     ]);
-    // 19 since land trade pays 2 Coins (tuning 1, 7r46; 17 before).
-    expect(playerIncomeV7(state, dwarfId).totalCoins).toBe(19);
+    // 21: land trade pays 2 Coins (tuning 1, 7r46; 17 before) and since
+    // tuning 3 the linked capital earns it too (19 before).
+    expect(playerIncomeV7(state, dwarfId).totalCoins).toBe(18);
   });
 
   it("offers a Tunnel, an Assemble, and a Cannon shot with a blocked Knockback on turn 1; every offered command is accepted", () => {

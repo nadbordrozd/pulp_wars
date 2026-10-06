@@ -40,9 +40,12 @@ import {
   SPATIAL_ECONOMIC_ACTIONS_V7,
   type BasicEconomicCommandKindV7,
   type SpatialEconomicCommandKindV7,
+  cityBarracksV7,
+  CITY_REWARD_COINS_V7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import { knockbackDestinationV7 } from "../engine/v7/dwarf";
+import { publicUnitHasTerrainCoverV7 } from "../engine/v7/units";
 import { cooperativeAlliesV7, marketCoinsV7 } from "../engine/v7/economy";
 import { forbiddenTechnologiesV7 } from "../engine/v7/forbidden-technologies";
 import type { CombatPreviewV7 } from "../engine/v7/events";
@@ -65,6 +68,7 @@ import {
   previewBombRunV7,
   previewEconomicV7,
   previewKaboomV7,
+  previewBlastMountainV7,
   previewMonumentV7,
   queryAiReadyCommandsV7,
   queryCombatPreviewV7,
@@ -2921,6 +2925,7 @@ function warTrainingFirstV7(context: PolicyContextV7): boolean {
         city.level,
         view.viewer.researchedTechs,
         view.viewer.faction,
+        cityBarracksV7(city),
       );
     }
     let used = 0;
@@ -3536,6 +3541,22 @@ function isPolicyCandidate(
     command.kind === "LAY_EGG"
   )
     return preferredSharedCityActionV7(context, command.cityId) === command;
+  // Tuning 3 (`pulp_wars-w49.3`): the Normal AI does not hire, and it
+  // blasts a Mountain only as the economic action it was: in its own
+  // territory, when the blast would hit none of its own or allied units.
+  // Tuning 4: nor does it Drill (the paid Promotion at a Barracks).
+  if (command.kind === "HIRE" || command.kind === "DRILL_UNIT") return false;
+  if (command.kind === "BLAST_MOUNTAIN") {
+    const tile = findPublicTileV7(context.view, command.at);
+    const blast = previewBlastMountainV7(context.view, command.at);
+    if (
+      tile?.explored !== true ||
+      tile.territoryOwnerId !== context.view.viewer.id ||
+      blast === null ||
+      blast.totals.friendlyDamage > 0
+    )
+      return false;
+  }
   // Revision 19: Hatch is scored by its public preview.
   if (command.kind === "HATCH") return true;
   if (command.kind === "CHOOSE_CITY_REWARD")
@@ -4480,6 +4501,7 @@ function* sharedCityContextWorkV7(
             city.level,
             view.viewer.researchedTechs,
             view.viewer.faction,
+            cityBarracksV7(city),
           );
     const free =
       city === undefined ? 0 : capacity - (assignedByCity.get(cityId) ?? 0);
@@ -5055,7 +5077,7 @@ function scoreCommandWithContext(
     priority = 1300;
     immediateValue =
       command.reward === "TREASURY"
-        ? 12
+        ? CITY_REWARD_COINS_V7.TREASURY
         : command.reward === "STOCKPILE"
           ? 4
           : command.reward === "BOOM"
@@ -12965,9 +12987,13 @@ function preferredReward(
     juggernauts < cityCount &&
     (threatenedCity(context, command.cityId) || context.view.viewer.coins >= 12)
     ? "JUGGERNAUT"
-    : offered.includes("TREASURY")
-      ? "TREASURY"
-      : (offered[0] ?? command.reward);
+    : // Tuning 4 (`pulp_wars-w49.3`): a Barracks (+1 unit in the city) before
+      // the 6-Coin Treasury.
+      offered.includes("BARRACKS")
+      ? "BARRACKS"
+      : offered.includes("TREASURY")
+        ? "TREASURY"
+        : (offered[0] ?? command.reward);
 }
 
 function trainingStrategicValue(
@@ -13505,6 +13531,7 @@ function publicProjectedDamageWithLookupV7(
     defender.form === "LAND" &&
     !terrainGivesCoverV7(
       defenderTile?.explored === true ? defenderTile.terrain : null,
+      policyForestCoverV7(view, defender, defenderAt),
     ) &&
     defenderTile?.explored === true &&
     defenderTile.snow === true &&
@@ -13663,9 +13690,33 @@ function projectedDefenseBonus(
   if (!unitTakesCoverV7(view, unit)) return { numerator: 1, denominator: 1 };
   const tile = findPublicTileV7(view, at);
   return tile?.explored === true &&
-    (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN")
+    terrainGivesCoverV7(tile.terrain, policyForestCoverV7(view, unit, at))
     ? { numerator: 3, denominator: 2 }
     : { numerator: 1, denominator: 1 };
+}
+
+/**
+ * Tuning 3 (`pulp_wars-w49.3`): whether `unit` would have the Forest cover
+ * on `at`. The viewer's own units have it with the viewer's Forestry.
+ * Another seat's technologies are private: where such a unit stands now its
+ * public Defense breakdown says, and anywhere else the estimate assumes
+ * the cover.
+ */
+function policyForestCoverV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  at: CoordV7,
+): boolean {
+  if (unit.ownerId === view.viewer.id)
+    return technologyCapabilitiesV7(
+      view.viewer.researchedTechs,
+      view.viewer.faction,
+    ).forestCover;
+  if (!same(unit.at, at)) return true;
+  const tile = findPublicTileV7(view, at);
+  return tile?.explored === true && tile.terrain === "FOREST"
+    ? publicUnitHasTerrainCoverV7(view, unit.id)
+    : true;
 }
 
 function visibleImprovementValueAt(
@@ -13928,6 +13979,7 @@ function freeCapacity(view: PlayerViewV7, cityId: CityId | null): number {
     city.level,
     view.viewer.researchedTechs,
     view.viewer.faction,
+    cityBarracksV7(city),
   );
   // Revision 19 section 5.1: used capacity is a slot sum.
   const assigned = view.units

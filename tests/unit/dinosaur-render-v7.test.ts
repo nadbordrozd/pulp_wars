@@ -334,7 +334,8 @@ describe("Revision 19 board plan", () => {
     const text = goblinAttackPreviewTextV7(view, preview, chain);
     expect(text.warnings).toHaveLength(3);
     expect(attack).toMatchObject({
-      previewNote: "Charge +2",
+      // Tuning 2 (7r47): a kill says that the attacker takes the tile.
+      previewNote: "Charge +2 · Advances",
       previewWarnings: text.warnings,
       previewWarningSummary: text.summary,
     });

@@ -687,12 +687,17 @@ export function validateMissionDefinitionV7(
     }
   }
   const [human, ...ai] = mission.seats;
-  for (const faction of missionSeatFactionsV7(human as MissionSeatV7))
-    if (ai.some((seat) => missionSeatFactionsV7(seat).includes(faction)))
-      fail(`an AI seat plays ${faction}, which seat 0 may choose`);
-  const aiFactions = ai.flatMap((seat) => missionSeatFactionsV7(seat));
-  if (new Set(aiFactions).size !== aiFactions.length)
-    fail("two seats play the same faction");
+  // A mirror (`mission.mirror`, hidden fixtures only) may repeat a faction.
+  if (mission.mirror === true && mission.hidden !== true)
+    fail("only a hidden mission may be a mirror");
+  if (mission.mirror !== true) {
+    for (const faction of missionSeatFactionsV7(human as MissionSeatV7))
+      if (ai.some((seat) => missionSeatFactionsV7(seat).includes(faction)))
+        fail(`an AI seat plays ${faction}, which seat 0 may choose`);
+    const aiFactions = ai.flatMap((seat) => missionSeatFactionsV7(seat));
+    if (new Set(aiFactions).size !== aiFactions.length)
+      fail("two seats play the same faction");
+  }
   for (const village of mission.villages) siteFree(village, "village");
   /** Land that is not a Rift (the Rift holds nothing). */
   const land = (coord: CoordV7, what: string): void => {
@@ -915,8 +920,12 @@ function rewardFitsLevel(reward: RewardIdV7, level: number): boolean {
     : level === 3
       ? reward === "WALLS" || reward === "MILITIA"
       : level === 4
-        ? reward === "BOOM" || reward === "TREASURY_6"
-        : level >= 5 && (reward === "JUGGERNAUT" || reward === "TREASURY");
+        ? // Tuning 4 (`pulp_wars-w49.3`): Barracks at level 4 and above.
+          reward === "BOOM" || reward === "TREASURY_6" || reward === "BARRACKS"
+        : level >= 5 &&
+          (reward === "JUGGERNAUT" ||
+            reward === "TREASURY" ||
+            reward === "BARRACKS");
 }
 
 function freshActivationV7(): UnitStateV7["activation"] {

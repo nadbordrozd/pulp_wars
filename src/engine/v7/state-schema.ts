@@ -7,7 +7,6 @@ import {
   MIND_CONTROL_COOLDOWN_TURNS_V7,
   MIND_CONTROL_LIMIT_V7,
   PROMOTION_HP_V7,
-  PROMOTION_KILLS_V7,
   NEUTRAL_MONSTER_ROLE_RULE_V7,
   BOOM_POPULATION_V7,
   MONUMENT_POPULATION_V7,
@@ -93,6 +92,7 @@ import {
   harbourPopulationForV7,
   rewardCandidatesForLevelV7,
   roadPopulationForCityV7,
+  isOwnersFirstCapitalV7,
 } from "./economy";
 import {
   compareCoordsV7,
@@ -196,8 +196,6 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   // The Mind Control revision (section 2.1): a unit's role rule resolves
   // through its kind, so the controlled list is read first.
   const mindControlled = parseMindControlled(input.mindControlled);
-  // Map curiosities (section 6): a Shrine promotes without the kills.
-  const shrinePromotions = setup !== null && setupHasCuriositiesV7(setup);
   // Map curiosities (section 10.2): the Monsters, read before the units so
   // that exactly the listed units may have the neutral owner.
   const monsters = setup === null ? null : parseMonsters(input.monsters, setup);
@@ -208,7 +206,6 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
           input.units,
           players,
           mindControlled,
-          shrinePromotions,
           new Set(monsters.map((entry) => entry.unitId)),
         );
   const treasureChests = parseSortedCoords(input.treasureChests);
@@ -233,12 +230,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const burrowed =
     players === null || mindControlled === null
       ? null
-      : parseBurrowed(
-          input.burrowed,
-          players,
-          mindControlled,
-          shrinePromotions,
-        );
+      : parseBurrowed(input.burrowed, players, mindControlled);
   const surfacedThisTurn = parseSortedUnitIds(input.surfacedThisTurn);
   const bombedThisTurn = parseSortedUnitIds(input.bombedThisTurn);
   // The Martian balance revision (`pulp_wars-1wy.3`): the per-turn lists of
@@ -842,19 +834,12 @@ function parseUnits(
   input: unknown,
   players: readonly PlayerStateV7[],
   mindControlled: readonly MindControlledStatusV7[],
-  shrinePromotions: boolean,
   neutralUnitIds: ReadonlySet<number>,
 ): readonly UnitStateV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: UnitStateV7[] = [];
   for (const candidate of input) {
-    const unit = parseUnit(
-      candidate,
-      players,
-      mindControlled,
-      shrinePromotions,
-      neutralUnitIds,
-    );
+    const unit = parseUnit(candidate, players, mindControlled, neutralUnitIds);
     if (unit === null || (values.at(-1)?.id ?? 0) >= unit.id) return null;
     values.push(unit);
   }
@@ -862,10 +847,9 @@ function parseUnits(
 }
 
 /**
- * One unit. `shrinePromotions` (map curiosities,
- * docs/product/RULESET_7_MAP_CURIOSITIES.md section 6): in a match whose
- * board can carry a Shrine, a veteran may have fewer than
- * `PROMOTION_KILLS_V7` kills (the Shrine promotes without them).
+ * One unit. A veteran may have fewer than `PROMOTION_KILLS_V7` kills: a
+ * Shrine (docs/product/RULESET_7_MAP_CURIOSITIES.md section 6) and, since
+ * tuning 4 (`pulp_wars-w49.3`), a Barracks Drill promote without them.
  * `neutralUnitIds` (section 10.2): the units listed in `monsters`, exactly
  * the ones that have the neutral owner.
  */
@@ -873,7 +857,6 @@ function parseUnit(
   input: unknown,
   players: readonly PlayerStateV7[],
   mindControlled: readonly MindControlledStatusV7[],
-  shrinePromotions: boolean,
   neutralUnitIds: ReadonlySet<number>,
 ): UnitStateV7 | null {
   if (
@@ -980,7 +963,6 @@ function parseUnit(
         input.maxHp !==
           rule.maxHp + GROWTH_HP_V7 * growthStageForKillsV7(input.kills)
       : input.maxHp !== rule.maxHp + (input.veteran ? PROMOTION_HP_V7 : 0)) ||
-    (input.veteran && !shrinePromotions && input.kills < PROMOTION_KILLS_V7) ||
     (input.captureEligible && !rule.abilities.includes("CAPTURE")) ||
     // The Dwarf revision section 7.3: an unmoved Clockwork Gunner fires
     // twice.
@@ -991,7 +973,8 @@ function parseUnit(
     (activation.escapeAvailable &&
       ((!rule.abilities.includes("ESCAPE") && rushPerk !== "ESCAPE") ||
         input.form !== "LAND" ||
-        !activation.attacked ||
+        // Tuning 4: after an attack, or after a Pillage (a special action).
+        (!activation.attacked && !activation.specialActed) ||
         activation.handled)) ||
     activation.attacked !== activation.attacksUsed > 0 ||
     isNavalRoleV7(role) !== (input.form === "NAVAL")
@@ -1440,19 +1423,12 @@ function parseBurrowed(
   input: unknown,
   players: readonly PlayerStateV7[],
   mindControlled: readonly MindControlledStatusV7[],
-  shrinePromotions: boolean,
 ): readonly BurrowedEntryV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: BurrowedEntryV7[] = [];
   for (const candidate of input) {
     if (!hasExactKeysV7(candidate, ["moleUnitId", "unit"])) return null;
-    const unit = parseUnit(
-      candidate.unit,
-      players,
-      mindControlled,
-      shrinePromotions,
-      new Set(),
-    );
+    const unit = parseUnit(candidate.unit, players, mindControlled, new Set());
     const moleUnitId =
       candidate.moleUnitId === null
         ? null
@@ -1911,6 +1887,7 @@ function validateCrossReferences(value: CrossInput): boolean {
         rewardCandidatesForLevelV7(
           firstUnrewarded.level,
           firstUnrewarded.city.rewards,
+          isOwnersFirstCapitalV7(players, firstUnrewarded.city),
         ).join()
     )
       return false;
@@ -2608,33 +2585,34 @@ function rewardMatchesLevel(reward: RewardIdV7, level: number): boolean {
     : level === 3
       ? reward === "WALLS" || reward === "MILITIA"
       : level === 4
-        ? reward === "BOOM" || reward === "TREASURY_6"
-        : level >= 5 && (reward === "JUGGERNAUT" || reward === "TREASURY");
+        ? reward === "BOOM" || reward === "TREASURY_6" || reward === "BARRACKS"
+        : level >= 5 &&
+          (reward === "JUGGERNAUT" ||
+            reward === "TREASURY" ||
+            reward === "BARRACKS");
 }
 
 function candidateRewardsMatchLevel(
   rewards: readonly RewardIdV7[],
   level: number,
 ): boolean {
-  const expected =
+  // Tuning 4 (`pulp_wars-w49.3`): the lists `rewardCandidatesForLevelV7`
+  // can return for a level (which one, by the city's history and whether
+  // it is its owner's first capital, is a state invariant).
+  const lists: readonly (readonly RewardIdV7[])[] =
     level === 2
-      ? ["SURVEY", "STOCKPILE"]
+      ? [["SURVEY", "STOCKPILE"]]
       : level === 3
-        ? ["WALLS", "MILITIA"]
+        ? [["WALLS", "MILITIA"]]
         : level === 4
-          ? ["BOOM", "TREASURY_6"]
+          ? [["BOOM", "TREASURY_6", "BARRACKS"]]
           : level >= 5
-            ? ["JUGGERNAUT", "TREASURY"]
+            ? [
+                ["JUGGERNAUT", "TREASURY", "BARRACKS"],
+                ["TREASURY", "BARRACKS"],
+              ]
             : [];
-  // Tuning 1 (7r46): a city that already took its reward unit is offered
-  // the Treasury alone at level 5 and above (checked against the city's
-  // reward history by the state invariants).
-  if (level >= 5 && rewards.length === 1) return rewards[0] === "TREASURY";
-  return (
-    rewards.length === 2 &&
-    rewards[0] === expected[0] &&
-    rewards[1] === expected[1]
-  );
+  return lists.some((list) => list.join() === rewards.join());
 }
 
 function growthSpent(level: number): number | null {

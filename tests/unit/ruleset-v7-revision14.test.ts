@@ -101,10 +101,10 @@ interface ArenaOptions {
 }
 
 describe("ruleset-7 revision-14 identity and roster", () => {
-  it("keeps rejecting r13 after the r46 identity and cleans the r13 through r45 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r46.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-33)).toEqual([
+  it("keeps rejecting r13 after the r47 identity and cleans the r13 through r46 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r47.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-34)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
@@ -138,6 +138,7 @@ describe("ruleset-7 revision-14 identity and roster", () => {
       "pulpWars.save.v7r43.current",
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
+      "pulpWars.save.v7r46.current",
     ]);
     const state = arena(["UNDEAD", "ORIGINAL"], []);
     expect(
@@ -1092,7 +1093,8 @@ describe("ruleset-7 revision-14 villages and economy", () => {
       factionTreeV7("ORIGINAL")
         .nodes.find((node) => node.id === "COMMERCE")
         ?.unlocks.map((unlock) => unlock.kind),
-    ).toEqual(["LAND_TRADE_INCOME"]);
+      // Tuning 3 (`pulp_wars-w49.3`): and the Hire command.
+    ).toEqual(["LAND_TRADE_INCOME", "COMMAND"]);
     const state = arena(["ORIGINAL", "ORIGINAL"], []);
     const capital = required(
       state.cities.find((city) => city.ownerId === state.humanPlayerId),
@@ -1112,8 +1114,10 @@ describe("ruleset-7 revision-14 natural play and persistence", () => {
     // longer plagues, as seed 16 before it). With tuning 1
     // (`pulp_wars-w49.3`, 7r46) seed 5 trains no Lich; seed 12 has 33
     // Plague applications and 42 bites (of seeds 0-15, seeds 6, 7, 11, 12,
-    // 13, and 15 plague).
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 12);
+    // 13, and 15 plague). With tuning 3 (`pulp_wars-w49.3`) seed 12 trains
+    // no Lich; seed 3 has 37 Plague applications and 62 bites (of seeds
+    // 0-23, seeds 2, 3, 5, 8, 11, 18, 22, and 23 plague).
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 3);
     const match = runAiMatchV7(setup, { maxRounds: 45 });
     expect(match.errors).toEqual([]);
     expect(match.stalls).toEqual([]);

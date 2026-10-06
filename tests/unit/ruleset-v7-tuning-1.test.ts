@@ -65,7 +65,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r46`;
+ * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r47`;
  * docs/product/RULESET_7_TUNING_1.md): the Human tech tree and economy
  * changes that followed the five hand-played games. One block per decision
  * A to G of that document.
@@ -111,11 +111,16 @@ const applied = (state: GameStateV7, seat: number, command: CommandV7) => {
 };
 
 describe("tuning 1 identity", () => {
-  it("is 7r46 with 7r45 last in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r46.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r45");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(45);
+  // Tuning 1 took 7r46; tuning 2 (tests/unit/ruleset-v7-tuning-2.test.ts)
+  // took 7r47, so 7r46 is the last prior identity.
+  it("was 7r46, after 7r45 in the prior list", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r47.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r45",
+      "pulp-wars-poc-7r46",
+    ]);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(46);
   });
 });
 
@@ -129,8 +134,8 @@ describe("A: retaliation uses the base Defense, without fortification or cover",
     });
     const run = attackV7(state, at(7, 7), at(8, 8));
     // The defender still takes the hit against its full fortified Defense.
-    expect(run.combat.fortificationLevel).toBe(3);
-    expect(run.combat.defense2).toBe(rule("GUARD", "ORIGINAL").defense2 + 6);
+    expect(run.combat.fortificationLevel).toBe(4);
+    expect(run.combat.defense2).toBe(rule("GUARD", "ORIGINAL").defense2 + 8);
     expect(run.combat.damageToDefender).toBe(2);
     // Before 7r46 the fortified Defense 6 answered with 20: the Fighter died.
     expect(run.combat.damageToAttacker).toBe(
@@ -268,20 +273,22 @@ describe("A: retaliation uses the base Defense, without fortification or cover",
   });
 });
 
-describe("B: research cost steps of 1, 2, and 2 per extra city", () => {
-  it("costs 5/7/9 with one city and 10/17/19 with six", () => {
-    const table = [1, 2, 3, 4, 5, 6].map((cities) => [
-      technologyResearchCostV7(1, cities),
-      technologyResearchCostV7(2, cities),
-      technologyResearchCostV7(3, cities),
+// Tuning 4 replaced the per-city steps of tuning 1 (1, 2, and 2) by 2 Coins
+// per technology already owned beyond the first, for every tier.
+describe("B: research cost steps of 2 per technology owned", () => {
+  it("costs 5/7/9 with one technology and 15/17/19 with six", () => {
+    const table = [1, 2, 3, 4, 5, 6].map((owned) => [
+      technologyResearchCostV7(1, owned),
+      technologyResearchCostV7(2, owned),
+      technologyResearchCostV7(3, owned),
     ]);
     expect(table).toEqual([
       [5, 7, 9],
-      [6, 9, 11],
-      [7, 11, 13],
-      [8, 13, 15],
-      [9, 15, 17],
-      [10, 17, 19],
+      [7, 9, 11],
+      [9, 11, 13],
+      [11, 13, 15],
+      [13, 15, 17],
+      [15, 17, 19],
     ]);
   });
 });
@@ -346,11 +353,13 @@ describe("C: the Catapult and the Knight", () => {
     expect(knight).toMatchObject({
       maxHp: 13,
       cost: 9,
-      attack2: 6,
+      // Tuning 3: Attack 4 (tests/unit/ruleset-v7-tuning-3.test.ts).
+      attack2: 8,
       defense2: 2,
       move: 3,
     });
-    expect(knight.abilities).toEqual(["ATTACK", "OVERRUN"]);
+    // Tuning 2 (7r47) added Capture.
+    expect(knight.abilities).toEqual(["ATTACK", "CAPTURE", "OVERRUN"]);
     // An Overrun kill still advances and offers the next attack.
     const state = fieldV7(
       [
@@ -389,6 +398,9 @@ describe("D: the Marksman", () => {
     }
   });
 
+  // Tuning 2 (7r47) stopped every ranged unit from advancing through the
+  // role's range (tests/unit/ruleset-v7-tuning-2.test.ts); the mechanics
+  // flag of the other factions is as it was.
   it("leaves the other factions' ranged units as they were", () => {
     expect(roleMechanicsV7("MARKSMAN", "DINOSAUR").advancesAfterKill).toBe(
       true,
@@ -460,14 +472,25 @@ describe("E: the level-reward loop", () => {
     return applied(fruited, 0, { kind: "HARVEST_FRUIT", at: free.at });
   };
 
-  it("offers the reward unit once per city: later levels offer the Treasury alone", () => {
-    expect(rewardCandidatesForLevelV7(5)).toEqual(["JUGGERNAUT", "TREASURY"]);
-    expect(
-      rewardCandidatesForLevelV7(6, [{ reward: "WALLS" }, { reward: "BOOM" }]),
-    ).toEqual(["JUGGERNAUT", "TREASURY"]);
-    expect(rewardCandidatesForLevelV7(6, [{ reward: "JUGGERNAUT" }])).toEqual([
+  // Tuning 4: the reward unit is the first capital's (so once per player),
+  // and the other choices are Barracks and the 6-Coin Treasury.
+  it("offers the reward unit once, in the first capital: later levels offer Barracks or the Treasury", () => {
+    expect(rewardCandidatesForLevelV7(5, [], true)).toEqual([
+      "JUGGERNAUT",
       "TREASURY",
+      "BARRACKS",
     ]);
+    expect(
+      rewardCandidatesForLevelV7(
+        6,
+        [{ reward: "WALLS" }, { reward: "BOOM" }],
+        true,
+      ),
+    ).toEqual(["JUGGERNAUT", "TREASURY", "BARRACKS"]);
+    expect(
+      rewardCandidatesForLevelV7(6, [{ reward: "JUGGERNAUT" }], true),
+    ).toEqual(["TREASURY", "BARRACKS"]);
+    expect(rewardCandidatesForLevelV7(5)).toEqual(["TREASURY", "BARRACKS"]);
 
     const fixture = pendingLevelFive();
     const actor = seatIdV7(fixture.state, 0);
@@ -479,14 +502,14 @@ describe("E: the level-reward loop", () => {
       kind: "CITY_REWARD_QUEUED",
       cityId: city.id,
       reachedLevel: 6,
-      candidates: ["TREASURY"],
+      candidates: ["TREASURY", "BARRACKS"],
     });
     expect(grown.state.pendingChoices).toEqual([
       {
         kind: "CITY_REWARD",
         cityId: city.id,
         reachedLevel: 6,
-        candidates: ["TREASURY"],
+        candidates: ["TREASURY", "BARRACKS"],
       },
     ]);
     expect(
@@ -499,6 +522,12 @@ describe("E: the level-reward loop", () => {
         cityId: city.id,
         reachedLevel: 6,
         reward: "TREASURY",
+      },
+      {
+        kind: "CHOOSE_CITY_REWARD",
+        cityId: city.id,
+        reachedLevel: 6,
+        reward: "BARRACKS",
       },
     ]);
     const second = applyCommandV7(grown.state, actor, {
@@ -518,7 +547,7 @@ describe("E: the level-reward loop", () => {
       reachedLevel: 6,
       reward: "TREASURY",
     });
-    expect(coins(treasury.state) - coins(grown.state)).toBe(12);
+    expect(coins(treasury.state) - coins(grown.state)).toBe(6);
     // A stored choice that offers the unit again is not a valid state.
     expect(
       parseGameStateV7(
@@ -528,7 +557,7 @@ describe("E: the level-reward loop", () => {
             pendingChoices: [
               {
                 ...grown.state.pendingChoices[0],
-                candidates: ["JUGGERNAUT", "TREASURY"],
+                candidates: ["JUGGERNAUT", "TREASURY", "BARRACKS"],
               },
             ],
           }),
@@ -548,6 +577,7 @@ describe("E: the level-reward loop", () => {
     expect(grown.state.pendingChoices[0]?.candidates).toEqual([
       "JUGGERNAUT",
       "TREASURY",
+      "BARRACKS",
     ]);
   });
 
@@ -555,9 +585,13 @@ describe("E: the level-reward loop", () => {
     expect(CITY_REWARD_COINS_V7).toEqual({
       STOCKPILE: 4,
       TREASURY_6: 6,
-      TREASURY: 12,
+      TREASURY: 6,
     });
-    expect(rewardCandidatesForLevelV7(4)).toEqual(["BOOM", "TREASURY_6"]);
+    expect(rewardCandidatesForLevelV7(4)).toEqual([
+      "BOOM",
+      "TREASURY_6",
+      "BARRACKS",
+    ]);
     const fixture = pendingLevelFive();
     const actor = seatIdV7(fixture.state, 0);
     const city = cityOfV7(fixture.state, 0);
@@ -578,7 +612,7 @@ describe("E: the level-reward loop", () => {
           kind: "CITY_REWARD" as const,
           cityId: city.id,
           reachedLevel: 4,
-          candidates: ["BOOM", "TREASURY_6"] as const,
+          candidates: ["BOOM", "TREASURY_6", "BARRACKS"] as const,
         },
       ],
     });
@@ -686,7 +720,9 @@ describe("E: the level-reward loop", () => {
       expect(coins(state) - coins(result.state)).toBe(32);
     });
 
-    it("claims unexplored neutral tiles for free and never below 6 Coins", () => {
+    // Tuning 4: unexplored tiles are neither claimed nor charged (tuning 1
+    // claimed them free, which told the player what lay in the fog).
+    it("leaves unexplored neutral tiles alone and never goes below 6 Coins", () => {
       const open = grantState();
       const actor = seatIdV7(open, 0);
       const tiles = footprint(open);
@@ -705,8 +741,10 @@ describe("E: the level-reward loop", () => {
         const granted = result.events[0];
         if (granted?.kind !== "LAND_GRANTED") throw new Error("no grant");
         expect(granted.cost).toBe(cost);
-        expect(granted.tiles).toHaveLength(16);
-        expect(result.events[1]).toMatchObject({ kind: "TILES_REVEALED" });
+        expect(granted.tiles).toHaveLength(16 - hidden);
+        expect(
+          result.events.some((event) => event.kind === "TILES_REVEALED"),
+        ).toBe(false);
       }
     });
 
@@ -860,23 +898,23 @@ describe("F: Commerce, Explosives, and Field Defense", () => {
       );
     };
     expect(card("EXPLOSIVES")).toEqual([
-      "Blast Mountain: removes a Mountain in your territory (and its Ore); its city gains +1 population",
+      "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too; in your territory its city gains +1 population",
       "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
     ]);
     expect(card("COMMERCE")).toContain(
-      "Road-linked cities: +2 Coins each turn",
+      "Each city linked by Road to another of your cities: +1 Coin each turn",
     );
     expect(card("FORTIFICATION")).toContain(
-      "Build Field Defense: the builder keeps its move and attack",
+      "Build Field Defense: +2 Defense for the unit on it; the builder keeps its move and attack",
     );
   });
 
-  it("Commerce pays 2 Coins per connected city in every tree but the Goblin one", () => {
-    expect(LAND_TRADE_INCOME_COINS_V7).toBe(2);
+  it("Commerce pays 1 Coin per linked city in every tree but the Goblin one (2 before tuning 4)", () => {
+    expect(LAND_TRADE_INCOME_COINS_V7).toBe(1);
     for (const faction of FACTION_IDS_V7) {
       const capabilities = technologyCapabilitiesV7(ALL, faction);
       expect(capabilities.landTradeIncomeCoins, faction).toBe(
-        faction === "GOBLIN" ? 0 : 2,
+        faction === "GOBLIN" ? 0 : 1,
       );
       expect(capabilities.plunderCoins, faction).toBe(
         faction === "GOBLIN" ? 1 : 0,
@@ -905,7 +943,7 @@ describe("F: Commerce, Explosives, and Field Defense", () => {
     expect(run.combat).toMatchObject({
       breachApplied: true,
       fortificationLevel: 0,
-      fortificationIgnored: 3,
+      fortificationIgnored: 4,
       defense2: rule("GUARD", "ORIGINAL").defense2,
       // The open-ground exchange: 2 of 5 force, Attack 2.
       damageToDefender: 4,
@@ -938,7 +976,7 @@ describe("F: Commerce, Explosives, and Field Defense", () => {
     expect(run.combat).toMatchObject({
       breachApplied: true,
       fortificationLevel: 0,
-      fortificationIgnored: 1,
+      fortificationIgnored: 2,
       defenseBonusNumerator: 3,
       defenseBonusDenominator: 2,
       attackerDies: true,
@@ -974,7 +1012,7 @@ describe("F: Commerce, Explosives, and Field Defense", () => {
     const ranged = attackV7(scene("MARKSMAN", at(5, 5)), at(5, 5), at(7, 7));
     expect(ranged.combat).toMatchObject({
       breachApplied: false,
-      fortificationLevel: 1,
+      fortificationLevel: 2,
       fortificationIgnored: 0,
     });
     expect(tileV7(ranged.state, at(7, 7)).fieldDefense).toBe(true);
@@ -985,7 +1023,7 @@ describe("F: Commerce, Explosives, and Field Defense", () => {
     );
     expect(plain.combat).toMatchObject({
       breachApplied: false,
-      fortificationLevel: 1,
+      fortificationLevel: 2,
       fortificationIgnored: 0,
     });
     expect(tileV7(plain.state, at(7, 7)).fieldDefense).toBe(true);

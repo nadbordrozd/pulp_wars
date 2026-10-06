@@ -101,3 +101,33 @@ export function isBurrowedV7(
     burrowed.some((entry) => entry.unit.id === unitId)
   );
 }
+
+/**
+ * Tuning 3 (`pulp_wars-w49.3`): whether a visible unit has the Forest or
+ * Mountain cover now, from its public Defense breakdown (the cover is a
+ * modifier there exactly when it applies). Forest cover needs the owner's
+ * Forestry, and another seat's technologies are private, so the public
+ * combat preview, the public Wail, and the Normal AI read it here.
+ */
+export function publicUnitHasTerrainCoverV7(
+  view: {
+    readonly unitStats: readonly {
+      readonly unitId: UnitId;
+      readonly stats: readonly {
+        readonly id: string;
+        readonly modifiers: readonly { readonly source: string }[];
+      }[];
+    }[];
+  },
+  unitId: UnitId,
+): boolean {
+  return (
+    view.unitStats
+      .find((stats) => stats.unitId === unitId)
+      ?.stats.find((stat) => stat.id === "DEFENSE")
+      ?.modifiers.some(
+        (modifier) =>
+          modifier.source === "FOREST" || modifier.source === "MOUNTAIN",
+      ) === true
+  );
+}

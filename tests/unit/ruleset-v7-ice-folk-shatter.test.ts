@@ -155,13 +155,13 @@ describe("Shatter worked examples (section 5.6)", () => {
     const state = fieldDefenseV7(base, at(3, 7));
     const [first, second] = hits(state, [at(4, 7), at(4, 6)], at(3, 7));
     expect(first?.combat).toMatchObject({
-      fortificationLevel: 1,
-      damageToDefender: 4,
+      fortificationLevel: 2,
+      damageToDefender: 3,
       damageToAttacker: 5,
     });
     expect(second?.combat).toMatchObject({
-      shatters: true,
-      damageToDefender: 8,
+      shatters: false,
+      damageToDefender: 4,
     });
   });
 

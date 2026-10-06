@@ -879,10 +879,10 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
       expect(result.metrics.commandsByKind[kind]).toBe(0);
   });
 
-  it("avoids redundant landing and reboarding on the cooperative seed-3 Continents map", () => {
+  it("avoids redundant landing and reboarding on the cooperative seed-7 Continents map", () => {
     const result = runAiMatchV7(
       {
-        ...setupV7(3, 3),
+        ...setupV7(7, 3),
         aiMode: "COOPERATIVE",
         mapType: "CONTINENTS",
       },
@@ -899,7 +899,11 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
       // (`pulp_wars-ykw.3`) seed 3 lands and captures inside the window
       // without reboarding; on seed 0 a unit lands and reboards once
       // (a Normal AI finding for `pulp_wars-eru`, not tuned here), and
-      // seeds 1 and 2 take no city from a landing inside the window.
+      // seeds 1 and 2 take no city from a landing inside the window. With
+      // tuning 4 (`pulp_wars-w49.3`) seed 3 lands eight units and takes no
+      // city inside the window; seed 7 takes one at accepted command 435
+      // without reboarding (of seeds 0-11, seeds 2, 9, and 10 also take one;
+      // a unit reboards once on seeds 2 and 4).
       { maxRounds: 30, maxCommands: 800 },
     );
     expect(result.errors).toEqual([]);

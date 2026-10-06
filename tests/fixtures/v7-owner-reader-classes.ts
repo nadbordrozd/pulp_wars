@@ -34,6 +34,8 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // The resolvers: the owner's research and the unit's kind resolve the
   // neutral registration; the seat-level role reads are a seat's.
   "src/engine/rules/ruleset-v7.ts::ownerResearchedTechsV7": "NEUTRAL_AWARE",
+  // Tuning 3 (`pulp_wars-w49.3`): the neutral owner keeps the Forest cover.
+  "src/engine/rules/ruleset-v7.ts::ownerHasForestCoverV7": "NEUTRAL_AWARE",
   "src/engine/rules/ruleset-v7.ts::seatRoleMechanicsV7": "PLAYER_ONLY",
   "src/engine/rules/ruleset-v7.ts::seatRoleRuleV7": "PLAYER_ONLY",
   "src/engine/rules/ruleset-v7.ts::unitFactionV7": "NEUTRAL_AWARE",
@@ -75,6 +77,7 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // The viewer seat's city commands and previews; a chain preview's risings
   // belong to the biter's or killer's seat, releases to an original owner.
   "src/engine/v7/query.ts::appendPublicCityCommandsV7": "PLAYER_ONLY",
+  "src/engine/v7/query.ts::appendPublicHireCommandsV7": "PLAYER_ONLY",
   "src/engine/v7/query.ts::createPublicChainSimulationV7": "PLAYER_ONLY",
   "src/engine/v7/query.ts::previewCityCapacityV7": "PLAYER_ONLY",
   "src/engine/v7/query.ts::previewLayEggV7": "PLAYER_ONLY",
@@ -87,6 +90,13 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/reducer.ts::applyEndTurn": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyFieldDefense": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyInfrastructure": "PLAYER_ONLY",
+  // Tuning 3: commands of a player (never the neutral owner).
+  "src/engine/v7/reducer.ts::applyBlastMountain": "PLAYER_ONLY",
+  "src/engine/v7/reducer.ts::applyHire": "PLAYER_ONLY",
+  // Tuning 4: a command of a player, and a city's owner (a city is never
+  // the neutral owner's).
+  "src/engine/v7/reducer.ts::applyDrillUnit": "PLAYER_ONLY",
+  "src/engine/v7/economy.ts::isOwnersFirstCapitalV7": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyLandGrant": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyLayEgg": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyMonument": "PLAYER_ONLY",

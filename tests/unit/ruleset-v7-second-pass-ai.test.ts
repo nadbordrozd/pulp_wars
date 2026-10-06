@@ -112,7 +112,9 @@ describe("Normal AI second pass: the savings plan", () => {
 
   it("saves for Chivalry once its prerequisites are researched", () => {
     const techs = TECHNOLOGY_IDS_V7.filter((tech) => tech !== "CHIVALRY");
-    const rich = field(ARMY, { coins: 30, techs });
+    // 60 Coins: as the 25th technology Chivalry costs 55 (tuning 4; 30
+    // Coins bought it before).
+    const rich = field(ARMY, { coins: 60, techs });
     const research = candidatesV7(rich).find(
       (candidate) =>
         candidate.command.kind === "RESEARCH" &&
@@ -193,8 +195,12 @@ describe("Normal AI second pass: the siege", () => {
       expect(candidate.score.priority).not.toBe(1178);
   });
 
+  // Tuning 2 (7r47): a Human Knight is a capturer itself, so the seat
+  // without one fields Vampires (the Undead Knight role cannot capture).
   it("does not move in without a capturer to take the city", () => {
-    const state = field([defender, ...knights]);
+    const state = field([defender, ...knights], {
+      factions: ["UNDEAD", "ORIGINAL"],
+    });
     const knight = unitCandidatesV7(state, at(5, 7), "MOVE")[0];
     expect(knight?.score.priority).not.toBe(1177);
   });

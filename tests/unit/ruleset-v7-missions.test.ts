@@ -101,6 +101,13 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   "TEST_NECK@1:ORIGINAL":
     "12888fadf662936bf1658b22795874f9ec6d27caa67d6dcee32a8fe4fa5083e4",
+  // The Human tuning labs (`pulp_wars-w49.3`, tuning 4).
+  "LAB_SIEGE@1:ORIGINAL":
+    "4dfd821eba726c3103d795c00fb6b02b8048e7904e1d216f4d26d9917a122466",
+  "LAB_BACKLINE@1:ORIGINAL":
+    "145050eb743f0deb7cba22f753be2d60b0e4a6e4f41d7f004e6dc1ec4c8b5552",
+  "LAB_LATE@1:ORIGINAL":
+    "4942d9dc5b610f9a9f920a20d58624f3c1aca32936bbf9a921de3801256aa872",
 };
 
 /**
@@ -185,6 +192,14 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "8086b3eaccd3ed40218d8f022356072bf09368a9c54d594f94792deb425fee8c",
   "TEST_NECK@1:ORIGINAL":
     "2f66fa9637b24763b0193cd54cad72170fcf4912f8cf21d950c532a9da88bd02",
+  // The Human tuning labs (tuning 4) were never built before map
+  // curiosities; their digests here are the same reduction of the state.
+  "LAB_SIEGE@1:ORIGINAL":
+    "08e89649ece323a8d5284cc1895331f236d702a507a8c68df6ff443175b539ed",
+  "LAB_BACKLINE@1:ORIGINAL":
+    "ad1dfe30f7c32601e73087dfecccbb231512769bae8d45551fef9211e5515768",
+  "LAB_LATE@1:ORIGINAL":
+    "aa5066ead4b8c7c45f57cf02ccb8d962642e6fde059571f1f8ec5bcc494556a4",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {
@@ -863,9 +878,10 @@ describe("forbidden technologies", () => {
         state: "DISABLED",
         affordable: false,
       });
-    // Two cities: the ordinary tier-1 cost is 6; the free opener (cost 0)
-    // applies to Hunting but never to the disabled Shorecraft.
-    expect(tree.nodes.find((node) => node.id === "SHORECRAFT")?.cost).toBe(6);
+    // The ordinary tier-1 cost is 5 (the city count does not matter since
+    // tuning 4); the free opener (cost 0) applies to Hunting but never to
+    // the disabled Shorecraft.
+    expect(tree.nodes.find((node) => node.id === "SHORECRAFT")?.cost).toBe(5);
     expect(tree.nodes.find((node) => node.id === "HUNTING")).toMatchObject({
       state: "AVAILABLE",
       cost: 0,

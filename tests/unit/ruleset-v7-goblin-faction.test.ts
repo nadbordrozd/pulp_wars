@@ -81,12 +81,12 @@ import {
 // 9, and 13).
 
 describe("ruleset-7 revision-17 identity", () => {
-  it("keeps r16 among the prior identities after the r46 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r46.current");
-    expect(PRIOR_RULESET_7_IDS.at(-30)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(45);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-30)).toBe(
+  it("keeps r16 among the prior identities after the r47 identity and cleans the r16 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r47.current");
+    expect(PRIOR_RULESET_7_IDS.at(-31)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(46);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-31)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -698,7 +698,11 @@ describe("ruleset-7 Goblin technology", () => {
           ),
         );
       else if (human.id === "COMMERCE")
-        expect(goblin.unlocks).toEqual([{ kind: "PLUNDER", coins: 1 }]);
+        // Tuning 3 (`pulp_wars-w49.3`): Commerce also hires, in every tree.
+        expect(goblin.unlocks).toEqual([
+          { kind: "PLUNDER", coins: 1 },
+          { kind: "COMMAND", command: "HIRE" },
+        ]);
       else expect(goblin.unlocks).toEqual(human.unlocks);
     });
     // Chivalry keeps Overrun (labelled Ram for Goblins).
@@ -719,15 +723,16 @@ describe("ruleset-7 Goblin technology", () => {
         ];
       }),
     ).toEqual([
-      // Tuning 1 (`pulp_wars-w49.3`, 7r46): land trade pays 2 Coins.
-      ["ORIGINAL", 2, 0],
-      ["UNDEAD", 2, 0],
+      // Tuning 4 (`pulp_wars-w49.3`): land trade pays 1 Coin (2 since
+      // tuning 1).
+      ["ORIGINAL", 1, 0],
+      ["UNDEAD", 1, 0],
       ["GOBLIN", 0, 1],
-      ["DINOSAUR", 2, 0],
-      ["MARTIAN", 2, 0],
-      ["ICE_FOLK", 2, 0],
-      ["DWARF", 2, 0],
-      ["CANDY", 2, 0],
+      ["DINOSAUR", 1, 0],
+      ["MARTIAN", 1, 0],
+      ["ICE_FOLK", 1, 0],
+      ["DWARF", 1, 0],
+      ["CANDY", 1, 0],
     ]);
     const goblin = technologyCapabilitiesV7(all, "GOBLIN");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
@@ -779,11 +784,15 @@ describe("ruleset-7 Goblin technology", () => {
         (group) => group.items,
       );
     };
+    const hire =
+      "Hire: each Market hires one extra unit a turn on its tile, at 1.5× the price; its city may hold 1 unit above its limit";
     expect(text(0, "COMMERCE")).toEqual([
+      hire,
       "+1 Coin for each enemy unit your units or blasts kill",
     ]);
     expect(text(1, "COMMERCE")).toEqual([
-      "Road-linked cities: +2 Coins each turn",
+      hire,
+      "Each city linked by Road to another of your cities: +1 Coin each turn",
     ]);
     expect(text(0, "ADMINISTRATION")).toEqual([
       "Train Orc Warboss",
@@ -1003,8 +1012,9 @@ describe("ruleset-7 Goblin reward substitutions", () => {
     }
     for (const event of result.events)
       expect(parseEventV7(event).ok).toBe(true);
-    // Human and Undead Militia stay one unit.
-    for (const faction of ["ORIGINAL", "UNDEAD"] as const) {
+    // An Undead Militia stays one unit (a Human one is two since tuning 3;
+    // tests/unit/ruleset-v7-tuning-3.test.ts).
+    for (const faction of ["UNDEAD"] as const) {
       const other = rewardState("MILITIA", [], faction);
       const done = applyOkV7(
         other.state,
@@ -1560,7 +1570,7 @@ function rewardState(
         candidates:
           reward === "MILITIA"
             ? (["WALLS", "MILITIA"] as const)
-            : (["JUGGERNAUT", "TREASURY"] as const),
+            : (["JUGGERNAUT", "TREASURY", "BARRACKS"] as const),
       },
     ],
   });

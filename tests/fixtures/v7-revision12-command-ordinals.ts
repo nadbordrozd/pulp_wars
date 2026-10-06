@@ -45,6 +45,10 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   "REBAKE",
   "SUGAR_TOSS",
   "LAY_EGG",
+  // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL.
+  "HIRE",
+  // Tuning 4 inserts DRILL_UNIT after PROMOTE.
+  "DRILL_UNIT",
 ];
 const REVISION_12_COMMAND_KIND_ORDER = COMMAND_KIND_ORDER_V7.filter(
   (kind) => !LATER_COMMAND_KINDS.includes(kind),

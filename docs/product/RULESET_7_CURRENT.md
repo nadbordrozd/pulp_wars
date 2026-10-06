@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r46`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r47`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -199,7 +199,46 @@ balance on water maps, `pulp_wars-5ti.8`; and the polish items of
 a unit on ice has no fortification, so a Dwarf Hammerer or Steam Mole is
 never dug in on an ice tile ([section 22.7](#227-dig-in)). No shape changed,
 and a match without both a Dwarf and an Ice Folk seat plays as at `7r44`.
-`pulp-wars-poc-7r46` (`pulp_wars-w49.3`) is
+`pulp-wars-poc-7r47` (`pulp_wars-w49.3`) also holds
+**[round 4 of the Human tuning](RULESET_7_TUNING_HUMAN.md#11-round-4)**,
+which followed three hand-played games on round 3: land trade pays 1 Coin
+([section 9.3](#93-road-population-and-land-trade)); research costs its
+tier's base plus 2 Coins for each technology the player already owns beyond
+the first, whatever the number of cities
+([section 6.1](#61-research-cost)); the city rewards are Scouts (Human) or
+Stockpile, Walls or one Militia unit, Boom, Treasury, or Barracks, and from
+level 5 Barracks or a 6-Coin Treasury, with the reward unit offered once,
+in the player's first capital ([section 4.8](#48-city-rewards)); a unit on
+the center of a Barracks city may **Drill** for 10 Coins
+([section 4.8](#48-city-rewards)); the Human Raider is not stopped by
+zones of control, a Pillage pays 3 Coins and leaves a Raider its Move, and
+Fieldcraft lets every ground unit march through Forest
+([sections 12.1](#121-movement) and [12.2](#122-activation)); a Field
+Defense is two fortification levels ([section 13.3](#133-fortification));
+a Land Grant claims and charges explored cells only
+([section 4.1](#41-territory)); and a Blast Mountain outside the territory
+has an exact preview and is shown to both sides with every unit it hit.
+**Where another passage of this document, or a faction's revision
+document, still gives a round-3 value for one of these rules (a Field
+Defense of one level in a worked example, land trade of 2 Coins, a
+per-city research price, a Juggernaut reward per city), this paragraph and
+the sections it names are the rule.** It also holds
+**[round 3 of the Human tuning](RULESET_7_TUNING_HUMAN.md)**: the Human
+Knight has Attack 4 ([section 11](#11-unit-roster)); Forest cover needs the
+defender's Forestry, for every faction ([section 13.2](#132-damage)); Blast
+Mountain is an explosion that damages every unit on and around the tile and
+may be set off next to an own unit outside the territory
+([section 8.4](#84-terrain-and-infrastructure-actions)); Commerce pays land
+trade to every city a Road links to another of the player's cities, and
+Markets hire ([sections 9.3](#93-road-population-and-land-trade) and
+[9.4](#94-market)); and a Human Militia is two Fighters
+([section 4.8](#48-city-rewards)).
+`pulp-wars-poc-7r47` (`pulp_wars-w49.3`) is
+**[tuning 2](RULESET_7_TUNING_1.md#10-round-2-tuning-2-pulp-wars-poc-7r47)**:
+a ranged unit of any faction never advances after a kill
+([section 13.4](#134-after-combat)), and the Human Knight captures
+settlements ([section 11](#11-unit-roster)); the city panel says why a
+garrisoned city trains nothing and how its land trade stands. `pulp-wars-poc-7r46` (`pulp_wars-w49.3`) is
 **[tuning 1](RULESET_7_TUNING_1.md)**, the Human tech tree and economy
 changes that followed five hand-played games: the retaliation uses the
 defender's base Defense, without fortification or cover
@@ -311,7 +350,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r46`.
+resolved ones as of `pulp-wars-poc-7r47`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -412,10 +451,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r46`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r47`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r46.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r47.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -1197,11 +1236,12 @@ for them.
   spatial rules compute, and
   `population = permanent + live − growthSpent(level)`.
 - First income ([section 4.3](#43-income)): the capital pays 4 + 1 + 2
-  (Market); North 4 + 2 land trade; Coast 4 + 2 land trade: 19 Coins for a
-  Human, Undead, Dinosaur, Martian, Ice Folk, Dwarf, or Candy seat (17
-  before `7r46`, when land trade paid 1) and 15 for a Goblin seat (Plunder
+  (Market) + 1 land trade; North 4 + 1 land trade; Coast 4 + 1 land trade:
+  18 Coins for a Human, Undead, Dinosaur, Martian, Ice Folk, Dwarf, or Candy
+  seat (21 at round 3 of the Human tuning, when land trade paid 2) and 15
+  for a Goblin seat (Plunder
   replaces land trade; its North and Coast cities pay 4 each, and the table
-  above shows the other factions' 6). No city has sea trade: the Port and Shipyard belong
+  above shows the other factions' 5). No city has sea trade: the Port and Shipyard belong
   to one city.
 
 **Players.** Every seat has all 25 technologies (nothing is left to
@@ -1882,17 +1922,21 @@ Gallery has a Curiosities tab.
   belongs to at most one city.
 - Capturing a neutral village founds a level-1 non-capital city that claims its
   neutral 3 x 3 cells.
-- **Land Grant** (Planning, city action) assigns every currently
-  neutral cell of the centered, board-clipped 5 x 5 footprint to a level-3+
-  city and reveals those cells. It requires no siege, no pending reward for the
-  city, and at least one claimable cell. Each city ID may be granted once ever,
-  even across ownership changes. The rule is canonical: unexplored neutral
-  cells count and are claimed. **Cost** (tuning 1, `7r46`; a flat 6 Coins
-  before): **2 Coins for each claimed cell the owner has explored, at least
-  6** (`landGrantCostV7`, `LAND_GRANT_COST_PER_TILE_V7` 2,
-  `LAND_GRANT_MINIMUM_COST_V7` 6), so a full ring of 16 explored cells costs
-  32; unexplored neutral cells are claimed for nothing, and the price never
-  depends on a hidden cell. The public command query offers Land Grant
+- **Land Grant** (Planning, city action) assigns the neutral cells of the
+  centered, board-clipped 5 x 5 footprint **that the owner has explored** to
+  a level-3+ city. It requires no siege, no pending reward for the city, and
+  at least one such cell. Each city ID may be granted once ever, even
+  across ownership changes. **Round 4** (`7r47`): unexplored cells are
+  neither claimed nor charged and stay neutral (before, they were claimed
+  for nothing and revealed), so the canonical rule and the offer read the
+  same cells and the reducer refuses a grant with no explored neutral cell
+  (`INVALID_TILE`). **Cost** (tuning 1, `7r46`; a flat 6 Coins before):
+  **2 Coins for each claimed cell, at least 6** (`landGrantCostV7`,
+  `LAND_GRANT_COST_PER_TILE_V7` 2, `LAND_GRANT_MINIMUM_COST_V7` 6), so a
+  full ring of 16 explored cells costs 32.
+  `publicLandGrantPriceV7(view, cityId)` returns the price and cells of the
+  grant a city could take whether or not the player can pay (the city panel
+  shows it when the Coins are short). The public command query offers Land Grant
   only when an explored footprint cell has no public territory owner (the
   view hides the city of territory whose center is unexplored, but not its
   owner) and the player has the cost, so every offer is accepted and no
@@ -1991,6 +2035,10 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
   spend it; reward units still appear after the action is spent.
 - The flag is visible only to the city's owner.
 
+- **Hiring** (round 3, [section 9.4](#94-market)) may take a Market's city
+  one unit above this capacity (`HIRE_EXTRA_CAPACITY_V7`); the capacity
+  itself, and ordinary training against it, do not change.
+
 ### 4.6 Training and city-center spawning
 
 - **Land training** requires the role's technology, an available city action,
@@ -2067,13 +2115,42 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
 
 Each reached level grants exactly one reward, chosen by the owner:
 
-| Reached level | Option A                                 | Option B              |
-| ------------: | ---------------------------------------- | --------------------- |
-|             2 | Survey: explore radius 3 around the city | Stockpile: +4 Coins   |
-|             3 | Walls: +2 fortification at the center    | Militia: free Fighter |
-|             4 | Boom: +3 permanent population            | Treasury: +6 Coins    |
-|         5, 6… | Juggernaut reward unit (once per city)   | Treasury: +12 Coins   |
+| Reached level | Choices                                                                                                                         |
+| ------------: | ------------------------------------------------------------------------------------------------------------------------------- |
+|             2 | Survey: explore radius 3 around the city (Human, "Scouts": and a free Raider); Stockpile: +4 Coins                              |
+|             3 | Walls: +2 fortification at the center; Militia: one free Fighter-role unit (Goblin: two Goblins)                                |
+|             4 | Boom: +3 permanent population; Treasury: +6 Coins; Barracks: +1 unit capacity                                                   |
+|         5, 6… | Treasury: +6 Coins; Barracks: +1 unit capacity; in the owner's first capital, until taken once: the Juggernaut-role reward unit |
 
+- **Round 4** (`7r47`, [the Human tuning](RULESET_7_TUNING_HUMAN.md#11-round-4)).
+  `rewardCandidatesForLevelV7(level, rewards, firstCapital)` lists, in
+  reward-ID order: level 2 `SURVEY`, `STOCKPILE`; level 3 `WALLS`,
+  `MILITIA`; level 4 `BOOM`, `TREASURY_6`, `BARRACKS`; level 5 and above
+  `JUGGERNAUT`, `TREASURY`, `BARRACKS` when the city is its owner's first
+  capital (`originalCapitalCityId`) and its history holds no `JUGGERNAUT`
+  record, otherwise `TREASURY`, `BARRACKS`. So **each player gets at most
+  one reward unit**, and a captured city never gives one. `TREASURY` pays 6
+  (12 before). A Human Militia is one Fighter again (two at round 3). A
+  Human `SURVEY` also grants a Raider (`SURVEY_RAIDERS_V7`), placed like any
+  reward unit, without Scouting.
+- **Barracks** (`BARRACKS`, the last reward ID). A record in the city's
+  reward history; each adds 1 to the city's unit capacity
+  (`cityBarracksV7`, `BARRACKS_CAPACITY_V7`), stays with the city across a
+  capture, and may be taken at every level from 4. It also makes the city
+  center a drill ground: **Drill** (`DRILL_UNIT`, `DRILL_COST_V7` 10 Coins)
+  is offered for an own land-form unit that stands on the center of an own
+  city with a Barracks, is not a veteran, does not grow, is not Crashed,
+  and has not used its primary action. It becomes a veteran: maximum HP and
+  HP both rise by 5 (`PROMOTION_HP_V7`; it is not healed), the event is
+  `UNIT_PROMOTED`, and its turn ends. A veteran may therefore have fewer
+  than three kills in any match. The Normal AI never drills.
+- **Reward units and the unit limit.** A level reward is never lost to a
+  full city: the Scouts Raider, the Militia unit, and the reward unit are
+  placed even when the city is at its limit, and count against it
+  afterwards.
+
+- **Round 3** (`7r47`, superseded by round 4). A Human Militia was two
+  Fighters.
 - **Tuning 1** (`7r46`). The level-4 Treasury pays 6 Coins (8 before); its
   reward ID is `TREASURY_6` (`TREASURY_8` before), and the Coin rewards are
   `CITY_REWARD_COINS_V7` (Stockpile 4, `TREASURY_6` 6, `TREASURY` 12). **A
@@ -2200,10 +2277,17 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
 ### 6.1 Research cost
 
 ```text
-tier 1 = 5  + 1 * (C - 1)
-tier 2 = 7  + 2 * (C - 1)
-tier 3 = 9  + 2 * (C - 1)
+tier 1 = 5  + 2 * (N - 1)
+tier 2 = 7  + 2 * (N - 1)
+tier 3 = 9  + 2 * (N - 1)
 ```
+
+`N` is the number of technologies the researcher already owns (at least 1;
+the first technology of a match is free, below). **Round 4** of the Human
+tuning (`7r47`, [section 11](RULESET_7_TUNING_HUMAN.md#11-round-4)): the
+price no longer reads the city count. The table below is the rule it
+replaced (`C` cities, steps 1, 2, and 2), kept for the record; the whole
+land tree of 20 technologies now costs 485 Coins in tier order.
 
 | Cities `C` | Tier 1 | Tier 2 | Tier 3 |
 | ---------: | -----: | -----: | -----: |
@@ -2248,33 +2332,33 @@ ordinary formula applies to every technology.
 
 ### 6.2 Technology tree
 
-| Branch     | Tier | ID                  | Requires       | Exact unlocks                                                                      |
-| ---------- | ---: | ------------------- | -------------- | ---------------------------------------------------------------------------------- |
-| Settlement |    1 | `GATHERING`         | —              | reveal Fertile Ground; Harvest Fruit                                               |
-| Settlement |    2 | `FARMING`           | Gathering      | Farm; connected-Farm visuals                                                       |
-| Settlement |    3 | `MILLING`           | Farming        | Windmill; Windmill Start Turn healing (6 HP)                                       |
-| Settlement |    2 | `ADMINISTRATION`    | Gathering      | Captain (Rally, Tend Wounded); Market; Disband                                     |
-| Settlement |    3 | `PLANNING`          | Administration | +1 capacity in every owned city; Land Grant                                        |
-| Wilds      |    1 | `HUNTING`           | —              | Hunt Game                                                                          |
-| Wilds      |    2 | `FORESTRY`          | Hunting        | Lumber Camp; Clear Forest                                                          |
-| Wilds      |    3 | `SAWMILLING`        | Forestry       | Sawmill; Catapult                                                                  |
-| Wilds      |    2 | `MARKSMANSHIP`      | Hunting        | Marksman                                                                           |
-| Wilds      |    3 | `FIELDCRAFT`        | Marksmanship   | Replant Forest; Raider and Marksman ignore Forest movement stops; Marksman Sight 2 |
-| Mobility   |    1 | `SCOUTING`          | —              | Raider; Raider Sight 2                                                             |
-| Mobility   |    2 | `ROADS`             | Scouting       | Build Road; half-cost Road movement; connected-city Road population                |
-| Mobility   |    3 | `COMMERCE`          | Roads          | +2 Coins land trade per connected city                                             |
-| Mobility   |    2 | `RAIDING`           | Scouting       | Pillage for all trainable land roles; Raider Charge                                |
-| Mobility   |    3 | `CHIVALRY`          | Raiding        | Knight; Overrun; Cultivate Forest                                                  |
-| Industry   |    1 | `DRILL`             | —              | reveal Ore; Guard; first-hostile-capture Spoils (2 Coins)                          |
-| Industry   |    2 | `ENGINEERING`       | Drill          | land units enter Mountain; +1 Sight on Mountain; Mine; Workshop; Redevelop         |
-| Industry   |    3 | `METALLURGY`        | Engineering    | Forge; Arms Industry (−1 land training cost)                                       |
-| Industry   |    2 | `FORTIFICATION`     | Drill          | Fighter/Guard Build Field Defense                                                  |
-| Industry   |    3 | `EXPLOSIVES`        | Fortification  | Blast Mountain (+1 population); Breach                                             |
-| Naval      |    1 | `SHORECRAFT`        | —              | Harvest Fish; Build Port; embarkation and Shallow Water transport; Patrol Boat     |
-| Naval      |    2 | `NAVIGATION`        | Shorecraft     | Deep Water movement; Gather Pearls; sea trade                                      |
-| Naval      |    3 | `NAVAL_ENGINEERING` | Navigation     | Battleship; Shipyard; −2 Coin naval training at a Shipyard                         |
-| Naval      |    2 | `SEAMANSHIP`        | Shorecraft     | Ram (Patrol Boats); Board (every ship)                                             |
-| Naval      |    3 | `SUBMERSIBLES`      | Seamanship     | Submarine; Harbours (+1 population from every active Port and Shipyard)            |
+| Branch     | Tier | ID                  | Requires       | Exact unlocks                                                                            |
+| ---------- | ---: | ------------------- | -------------- | ---------------------------------------------------------------------------------------- |
+| Settlement |    1 | `GATHERING`         | —              | reveal Fertile Ground; Harvest Fruit                                                     |
+| Settlement |    2 | `FARMING`           | Gathering      | Farm; connected-Farm visuals                                                             |
+| Settlement |    3 | `MILLING`           | Farming        | Windmill; Windmill Start Turn healing (6 HP)                                             |
+| Settlement |    2 | `ADMINISTRATION`    | Gathering      | Captain (Rally, Tend Wounded); Market; Disband                                           |
+| Settlement |    3 | `PLANNING`          | Administration | +1 capacity in every owned city; Land Grant                                              |
+| Wilds      |    1 | `HUNTING`           | —              | Hunt Game                                                                                |
+| Wilds      |    2 | `FORESTRY`          | Hunting        | Lumber Camp; Clear Forest; Forest cover (round 3)                                        |
+| Wilds      |    3 | `SAWMILLING`        | Forestry       | Sawmill; Catapult                                                                        |
+| Wilds      |    2 | `MARKSMANSHIP`      | Hunting        | Marksman                                                                                 |
+| Wilds      |    3 | `FIELDCRAFT`        | Marksmanship   | Replant Forest; Forest march (round 4: no ground unit stops in Forest); Marksman Sight 2 |
+| Mobility   |    1 | `SCOUTING`          | —              | Raider; Raider Sight 2                                                                   |
+| Mobility   |    2 | `ROADS`             | Scouting       | Build Road; half-cost Road movement; connected-city Road population                      |
+| Mobility   |    3 | `COMMERCE`          | Roads          | +1 Coin land trade for every Road-linked city (round 4; 2 before); Hire at a Market      |
+| Mobility   |    2 | `RAIDING`           | Scouting       | Pillage (3 Coins; a Raider keeps its Move) for all trainable land roles; Raider Charge   |
+| Mobility   |    3 | `CHIVALRY`          | Raiding        | Knight; Overrun; Cultivate Forest                                                        |
+| Industry   |    1 | `DRILL`             | —              | reveal Ore; Guard; first-hostile-capture Spoils (2 Coins)                                |
+| Industry   |    2 | `ENGINEERING`       | Drill          | land units enter Mountain; +1 Sight on Mountain; Mine; Workshop; Redevelop               |
+| Industry   |    3 | `METALLURGY`        | Engineering    | Forge; Arms Industry (−1 land training cost)                                             |
+| Industry   |    2 | `FORTIFICATION`     | Drill          | Fighter/Guard Build Field Defense                                                        |
+| Industry   |    3 | `EXPLOSIVES`        | Fortification  | Blast Mountain (an explosion; +1 population in the territory); Breach                    |
+| Naval      |    1 | `SHORECRAFT`        | —              | Harvest Fish; Build Port; embarkation and Shallow Water transport; Patrol Boat           |
+| Naval      |    2 | `NAVIGATION`        | Shorecraft     | Deep Water movement; Gather Pearls; sea trade                                            |
+| Naval      |    3 | `NAVAL_ENGINEERING` | Navigation     | Battleship; Shipyard; −2 Coin naval training at a Shipyard                               |
+| Naval      |    2 | `SEAMANSHIP`        | Shorecraft     | Ram (Patrol Boats); Board (every ship)                                                   |
+| Naval      |    3 | `SUBMERSIBLES`      | Seamanship     | Submarine; Harbours (+1 population from every active Port and Shipyard)                  |
 
 There are 25 technologies. Since `pulp-wars-poc-7r43` the Naval branch has
 the shape of every other branch: one tier-1 root (Shorecraft), two tier-2
@@ -2662,15 +2746,15 @@ and no tile command changes a tile into water, a Rift, or a site.
 
 ### 8.4 Terrain and infrastructure actions
 
-| Action              | Tech          | Target                                                                            | Cost | Result                                             |
-| ------------------- | ------------- | --------------------------------------------------------------------------------- | ---: | -------------------------------------------------- |
-| Clear Forest        | Forestry      | owned Forest with no site, resource, or improvement                               |    0 | becomes Grass; +1 Coin                             |
-| Replant Forest      | Fieldcraft    | owned Grass with no site, resource, or improvement                                |    4 | becomes Forest                                     |
-| Cultivate Forest    | Chivalry      | owned Forest with no site, resource, or improvement                               |    4 | becomes Grass + Fertile Ground                     |
-| Blast Mountain      | Explosives    | owned Mountain with no site, improvement, or Field Defense (Ore allowed and lost) |    3 | becomes Grass; +1 permanent population             |
-| Build Road          | Roads         | owned or neutral land without site or Road                                        |    2 | adds Road ([section 9](#9-roads-trade-and-market)) |
-| Redevelop           | Engineering   | any owned improvement                                                             |    0 | removes it with no refund; re-exposes its resource |
-| Build Field Defense | Fortification | see [section 12.3](#123-field-defense)                                            |    3 | adds Field Defense                                 |
+| Action              | Tech          | Target                                                                                                           | Cost | Result                                                                                |
+| ------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------- | ---: | ------------------------------------------------------------------------------------- |
+| Clear Forest        | Forestry      | owned Forest with no site, resource, or improvement                                                              |    0 | becomes Grass; +1 Coin                                                                |
+| Replant Forest      | Fieldcraft    | owned Grass with no site, resource, or improvement                                                               |    4 | becomes Forest                                                                        |
+| Cultivate Forest    | Chivalry      | owned Forest with no site, resource, or improvement                                                              |    4 | becomes Grass + Fertile Ground                                                        |
+| Blast Mountain      | Explosives    | a Mountain with no site, improvement, or Field Defense (Ore allowed and lost), owned or next to an own land unit |    3 | becomes Grass; an explosion of 5 on and around it; +1 permanent population when owned |
+| Build Road          | Roads         | owned or neutral land without site or Road                                                                       |    2 | adds Road ([section 9](#9-roads-trade-and-market))                                    |
+| Redevelop           | Engineering   | any owned improvement                                                                                            |    0 | removes it with no refund; re-exposes its resource                                    |
+| Build Field Defense | Fortification | see [section 12.3](#123-field-defense)                                                                           |    3 | adds Field Defense                                                                    |
 
 - Terrain changes preserve Road, Field Defense, and territory.
 - **Blast Mountain** (tuning 1, `7r46`) gives the tile's city +1 permanent
@@ -2679,6 +2763,28 @@ and no tile command changes a tile into water, a Rift, or a site.
   Ore is removed; before, it gave nothing and Ore blocked it. The economic
   preview shows the population and any level it reaches. `MOUNTAIN_BLASTED`
   still reports `resourceBefore: null` for every tile.
+- **Blast Mountain explodes** (round 3, `7r47`;
+  [the Human tuning, section 6.3](RULESET_7_TUNING_HUMAN.md#63-blast-mountain)).
+  - **Where.** A Mountain of the player's territory, as before (the city not
+    besieged, no reward pending), or a Mountain outside it that is not in an
+    ally's territory and has one of the player's land-form units next to it;
+    then no city is involved and no population is gained
+    (`MOUNTAIN_BLASTED.cityId` is null).
+  - **The blast.** After the terrain change, an explosion of cause `BLAST`
+    resolves on the tile with the chain rules of
+    [section 18.6](#186-blast-resolution): every unit on the tile and on the
+    eight tiles around it, of any owner, takes `BLAST_MOUNTAIN_DAMAGE_V7`
+    (5), Shields first and Armoured 1 less; a Field Defense in the area is
+    destroyed; a unit that explodes when it dies explodes in the next wave.
+    The kills are credited to the blasting player (Plunder counts them) and
+    to no unit. The `EXPLOSION_RESOLVED` event has the charge's fresh ID as
+    `unitId` (no unit has it) and role `FIGHTER`.
+  - **Preview.** `previewBlastMountainV7(view, at)` is the exact public
+    preview of that explosion (it is exact unless part of the area is
+    unexplored, like a Kaboom preview); the button and the text harness
+    list what it would hit.
+  - **Normal AI.** It blasts only in its own territory and only when the
+    preview hits no unit of its own or of an ally.
 - Redevelop can remove Monuments, Ports, and Shipyards (Port or Shipyard only
   when unoccupied); it never removes Roads, Field Defense, terrain, city
   centers, or Walls. A Fish or Pearls marker under a removed Port stays.
@@ -2739,13 +2845,27 @@ and no tile command changes a tile into water, a Rift, or a site.
   still owns it.
 - With Roads, each other owned city in that component gets +1 live
   population, and the original capital gets +1 per such connected city.
-- With Commerce, each such connected non-original-capital city also earns +2
-  Coins land trade at Start Turn (`LAND_TRADE_INCOME_COINS_V7`; +1 before
-  tuning 1, `7r46`). In the income formula of
-  [section 4.3](#43-income) `landTrade` is therefore 0 or 2. Goblin Commerce is Plunder and grants no land
-  trade ([section 6.2](#62-technology-tree)).
-- A captured foreign capital counts as an ordinary city. Losing the original
-  capital drops all Road population and land trade to zero until recaptured.
+- **Land trade** (round 3, `7r47`; the amount is round 4's). With Commerce,
+  every city of the player that a Road links to at least one other city of
+  the player earns **+1 Coin** (2 at round 3)
+  at Start Turn (`LAND_TRADE_INCOME_COINS_V7`; `landTradeCityIdsV7`: every
+  own city of a Road component that holds two or more of them). The first
+  capital earns it like any other city, and no capital is needed. (Through
+  `7r46` only the cities linked to the first capital earned, the capital
+  itself never did, and nothing was paid while it was lost.) In the income
+  formula of [section 4.3](#43-income) `landTrade` is 0 or 1. Goblin
+  Commerce is Plunder and grants no land trade
+  ([section 6.2](#62-technology-tree)).
+- Road **population** keeps its root: a captured foreign capital counts as
+  an ordinary city, and losing the original capital drops all Road
+  population to zero until it is recaptured (`originalCapitalCityId` never
+  changes).
+- **Shown** (`src/render/technology-unlock-text-v7.ts`): the Commerce card
+  reads "Each city linked by Road to another of your cities: +1 Coin each
+  turn"; with Commerce the city panel of an own city that earns it has the
+  Land trade +1 stat, and one that does not says "No land trade: no Road
+  link to another of your cities". The text harness prints the same line
+  under each city.
 - Ports, sea routes, and allies never join this graph. Disconnection removes
   the population without lowering level or repeating rewards.
 
@@ -2756,7 +2876,10 @@ market income = min(3, 1 + distinct adjacent families)
 ```
 
 - Families: Agriculture (Farm, Windmill), Timber (Lumber Camp, Sawmill), Metal
-  (Mine, Forge). Workshops do not count.
+  (Mine, Forge). Workshops do not count. A Market can be built only next to
+  at least one of them (its card and the text harness say so since round 4
+  of the Human tuning: "needs one of your Farms, Lumber Camps, Mines or
+  their mills next to it").
 - Contributors may belong to any city of the same owner, and each counts
   for one Market: its own city's if that Market is adjacent, otherwise the
   first adjacent one in (y, x) order
@@ -2765,6 +2888,28 @@ market income = min(3, 1 + distinct adjacent families)
   Market with no remaining family still pays its 1 base Coin.
 - A Market pays 1–3 Coins (`MARKET_INCOME_CAP_V7`): 2 with one family, 3 with
   two or more. Commerce does not change Market income.
+
+- **Hiring** (round 3, `7r47`;
+  [the Human tuning, section 6.4](RULESET_7_TUNING_HUMAN.md#64-commerce)).
+  With Commerce (`HIRE` is a command of the technology in every tree, the
+  Goblin one too), the owner of a Market may hire on it:
+  `HIRE { cityId, at, role }`, with `at` the Market tile and `cityId` the
+  city whose territory holds it.
+  - **What.** Any land role the player could train (its technology
+    researched; never a ship, an egg-laid role, or a reward-only role).
+  - **Price.** `hireCostV7`: the training price in that city (the Forge
+    discount first) times 3/2, rounded up.
+  - **Conditions.** The Market tile holds no unit; the city is not besieged
+    and has no reward pending; the Coins are in hand; after the hire the
+    city holds at most its capacity plus 1 (`HIRE_EXTRA_CAPACITY_V7`). The
+    city action is not needed and not used, and an occupied center does not
+    matter.
+  - **Result.** The unit appears on the Market tile with every action
+    spent, homed to the city (`UNIT_TRAINED` with the hire price and the
+    Market's tile as `at`), and reveals its sight. A Market hires once a
+    turn because the hired unit stands on its tile until its owner's next
+    turn.
+  - The Normal AI never hires.
 
 ### 9.5 Sea trade
 
@@ -2918,19 +3063,19 @@ market income = min(3, 1 + distinct adjacent families)
 
 Attack and Defense are shown in whole units (the code stores half-units).
 
-| Unit        | Tech              | Cost |  HP | Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                 |
-| ----------- | ----------------- | ---: | --: | -----: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------- |
-| Fighter     | start             |    2 | 12² |      2 |       2 |    1 |     1 |     1 | yes               | yes     | Field Defense             |
-| Raider      | Scouting          |    4 | 12² |      2 |       1 |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Escape  |
-| Marksman    | Marksmanship      |   4³ | 12² |      2 |       1 |    1 |   1–2 |    1¹ | yes               | yes     | never advances³           |
-| Guard       | Drill             |    3 | 17² |    1.5 |       3 |    1 |     1 |     1 | no                | yes     | Field Defense             |
-| Captain     | Administration    |    5 |  10 |      1 |       1 |    1 |     1 |     1 | yes               | no      | Rally; Tend Wounded       |
-| Catapult    | Sawmilling        |    8 |  10 |     3³ |     0.5 |    1 |   2–3 |     1 | no                | no      | —                         |
-| Knight      | Chivalry          |    9 | 13³ |      3 |       1 |    3 |     1 |     1 | yes               | no      | Overrun                   |
-| Juggernaut  | reward only       |    — |  40 |      4 |       4 |    1 |     1 |     1 | yes               | yes     | Push                      |
-| Patrol Boat | Shorecraft        |    5 |  10 |      2 |       2 |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)   |
-| Battleship  | Naval Engineering |   16 |  25 |      6 |       4 |    2 |   1–3 |     3 | no                | no      | naval; splash             |
-| Submarine   | Submersibles      |    9 |  12 |      4 |       2 |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo |
+| Unit        | Tech              | Cost |  HP | Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                    |
+| ----------- | ----------------- | ---: | --: | -----: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------------------ |
+| Fighter     | start             |    2 | 12² |      2 |       2 |    1 |     1 |     1 | yes               | yes     | Field Defense                                                |
+| Raider      | Scouting          |    4 | 12² |      2 |       1 |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Escape; ignores zones of control (round 4) |
+| Marksman    | Marksmanship      |   4³ | 12² |      2 |       1 |    1 |   1–2 |    1¹ | yes               | yes     | never advances³                                              |
+| Guard       | Drill             |    3 | 17² |    1.5 |       3 |    1 |     1 |     1 | no                | yes     | Field Defense                                                |
+| Captain     | Administration    |    5 |  10 |      1 |       1 |    1 |     1 |     1 | yes               | no      | Rally; Tend Wounded                                          |
+| Catapult    | Sawmilling        |    8 |  10 |     3³ |     0.5 |    1 |   2–3 |     1 | no                | no      | —                                                            |
+| Knight      | Chivalry          |    9 | 13³ |     4⁵ |       1 |    3 |     1 |     1 | yes               | yes⁴    | Overrun                                                      |
+| Juggernaut  | reward only       |    — |  40 |      4 |       4 |    1 |     1 |     1 | yes               | yes     | Push                                                         |
+| Patrol Boat | Shorecraft        |    5 |  10 |      2 |       2 |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                                      |
+| Battleship  | Naval Engineering |   16 |  25 |      6 |       4 |    2 |   1–3 |     3 | no                | no      | naval; splash                                                |
+| Submarine   | Submersibles      |    9 |  12 |      4 |       2 |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                                    |
 
 ¹ Marksman Sight becomes 2 with Fieldcraft.
 ² [Revision 20 section 6.3](RULESET_7_REVISION_20.md#63-tuning-record)
@@ -2948,6 +3093,22 @@ shot); the Knight has 13 HP (10 before; promoted 18). The Knight has
 Overrun and no Charge. These are Human numbers: the Lich, Rocket Cart,
 Steam Cannon, Vampire, Scrap Buggy, and the other factions' ranged units
 are unchanged. Human Disband refunds follow the cost (a Marksman's is 2).
+
+⁴ [Tuning 2](RULESET_7_TUNING_1.md#10-round-2-tuning-2-pulp-wars-poc-7r47)
+(`pulp_wars-w49.3`, `pulp-wars-poc-7r47`): the Human Knight has the
+`CAPTURE` ability and captures a settlement like a Fighter (the same
+`CAPTURE` command and timing: it must have stood on the center since its
+turn began). The Knight-role units of the other factions (Vampire, Scrap
+Buggy, T-Rex, Mothership, Sabretooth, Steam Tank, Chocolate Bunny) still
+cannot capture.
+
+⁵ [Round 3](RULESET_7_TUNING_HUMAN.md) (`pulp_wars-w49.3`,
+`pulp-wars-poc-7r47`): the Human Knight has Attack 4 (3 before). At full HP
+it kills a full-HP Raider, Marksman, Captain, Catapult, or Knight in one
+attack, in the open and in cover, and a Fighter in the open (12 of 12); it
+deals 10 to a Fighter in cover, on a Field Defense, or on a walled center,
+and 10 of 17 to a Guard. The other factions' Knight-role units are
+unchanged.
 
 The **Submarine** (role `SUBMARINE`, tactical label `NAVAL_HUNTER`;
 `pulp-wars-poc-7r43`) is the third ship: trained with `TRAIN_NAVAL` like the
@@ -3190,7 +3351,8 @@ applied after the Martians won about 75% of the coarse Dry Land games at
   center. Its attack is a **ray pistol**: an ordinary attack at range 1 or
   2 (minimum range 1), not a heat ray (full Attack after moving, no
   Cooling). Like any attacker with range 2 it retaliates against an
-  attacker two tiles away and advances only after an adjacent kill.
+  attacker two tiles away. Having range 2 it is a ranged unit and never
+  advances (tuning 2, `7r47`; before, it advanced after an adjacent kill).
 - **Saucer** flies. It has Raider parity for Sight 2 and for Charge with
   Raiding, labelled **Strafe** (+1 Attack at range 1 on its first attack
   after a Move of at least two tiles); it has no Escape, no capture, no
@@ -3198,8 +3360,9 @@ applied after the Martians won about 75% of the coarse Dry Land games at
   Attack, Beam Down ([section 20.7](#207-beam-down)), and the Tractor Beam
   ([section 20.10](#2010-tractor-beam)).
 - **Ray Gunner** has Marksman parity (range 1–2, minimum range 1, capture,
-  Pillage, Disband, Fieldcraft Forest freedom and Sight, the advance after an
-  adjacent kill) and a heat ray ([section 20.4](#204-heat-rays-and-cooling)).
+  Pillage, Disband, Fieldcraft Forest freedom and Sight; no advance since
+  tuning 2, `7r47`) and a heat ray
+  ([section 20.4](#204-heat-rays-and-cooling)).
 - **Shield Projector** has Guard parity for "cannot attack after moving" and
   capture, cannot build Field Defense, and projects the Force Field
   ([section 20.3](#203-force-field-and-force-fields)).
@@ -3223,7 +3386,8 @@ applied after the Martians won about 75% of the coarse Dry Land games at
   and its primary action. It is never a treasure unit.
 - **Colossus** is a walker with a heat ray and Juggernaut parity otherwise:
   reward only, capture, Push on an adjacent surviving target (never at
-  range 2), the advance after an adjacent kill, no Pillage, no Disband.
+  range 2), no advance since tuning 2 (`7r47`; it is a ranged unit), no
+  Pillage, no Disband.
 - **Mind-controlled units** keep their own kind's statline
   ([section 20.9](#209-mind-controlled-units)); there is no Thrall (retired
   in `7r33`).
@@ -3281,8 +3445,8 @@ units cross Mountains without Engineering and without stopping
   Raiding; it has no Escape. Its primary actions are Attack and Bolas
   ([section 21.9](#219-bolas-and-cold-blood)).
 - **Snow Hunter** has Marksman parity (range 1–2, minimum range 1, capture,
-  Pillage, Disband, Fieldcraft Forest freedom and Sight, the advance after
-  an adjacent kill) and Cold Blood
+  Pillage, Disband, Fieldcraft Forest freedom and Sight; no advance since
+  tuning 2, `7r47`) and Cold Blood
   ([section 21.9](#219-bolas-and-cold-blood)).
 - **Mammoth** has Guard parity for capture only: unlike the Guard it may
   attack after moving, and it cannot build Field Defense. Every attack it
@@ -3450,8 +3614,8 @@ living, and every Candy land unit is a ground unit:
   Raiding, Pillage, capture, the advance, and Fieldcraft Forest freedom. It
   has Escape only while Rushed. It is the treasure unit.
 - **Gumball Gunner** has Marksman parity (range 1–2, capture, Pillage,
-  Disband, Fieldcraft Forest freedom and Sight, the advance after an
-  adjacent kill) and **Sugar Toss**
+  Disband, Fieldcraft Forest freedom and Sight; no advance since tuning 2,
+  `7r47`) and **Sugar Toss**
   ([section 23.7](#237-frosting-and-sugar-toss)).
 - **Marshmallow** has Guard parity for "cannot attack after moving",
   capture, and the advance. It cannot build Field Defense, and it
@@ -3559,7 +3723,11 @@ General roster rules:
   the same Fieldcraft freedom; `SNOW_STOPS_MOVE`), an ice tile for a
   land-form ground unit of any kind but the Ice Folk (the slip; nothing
   waives it), or a cell in hostile ZOC
-  (never for a Sabretooth, which Prowls). A path that continues past such a
+  (never for a Sabretooth, which Prowls, nor, since round 4 of the Human
+  tuning, for a Human Raider: `ignoresZocStops`). **Forest march** (round
+  4): with Fieldcraft no ground unit of the owner stops on entering Forest,
+  whatever its role (`forestMarch`); the Snow stop still reads the two
+  Fieldcraft roles. A path that continues past such a
   stop is illegal. A Martian walker or flyer and a Dwarf Gyrocopter (a
   flyer) are never stopped by terrain, Snow and ice included, and a flyer not by ZOC
   ([section 20.6](#206-movement-stride-flying-and-crossing-water)). Snow is
@@ -3760,9 +3928,11 @@ General roster rules:
   or a flyer (a Martian Saucer or Mothership, a Dwarf Gyrocopter; rejected
   with `PILLAGE_INVALID_TARGET` and never offered), standing on an
   improvement in hostile territory
-  destroys it for +1
-  Coin, re-exposing any resource it hid. It may follow a Move but no primary
-  action and is terminal. Roads, Field Defense, terrain, resources, city
+  destroys it for **+3 Coins** (`PILLAGE_COINS_V7`; 1 before round 4 of the
+  Human tuning), re-exposing any resource it hid. It may follow a Move but
+  no primary action and is terminal, except for a unit whose role has
+  Escape (the Human Raider): it keeps one Move after the Pillage, as after
+  an attack. Roads, Field Defense, terrain, resources, city
   centers, and Walls cannot be pillaged.
 
 ### 12.3 Field Defense
@@ -3850,7 +4020,8 @@ attack  = base Attack (a half-power heat ray: half, rounded down;
         + Gang Up (0–2) + 1 (Alpha) + run-up (Charge!: 0–2)
         + 1 (Planted) + 0.5 (Cold Blood) + 1 (Ram)
 defense = base Defense + fortification level          (embarked or Egg: 1)
-cover   = 1.5 on Forest or Mountain for land-form ground defenders
+cover   = 1.5 on a Mountain, and in a Forest when the defender's owner has
+          Forestry, for land-form ground defenders
           (never a Martian walker or flyer), else 1.25 on Snow, or on ice
           with Glacier, for an Ice Folk defender with no fortification of
           its own, else 1
@@ -3976,8 +4147,12 @@ For a land-form defender standing in its owner's territory:
 
 ```text
 fortification level = 2 (own city center with Walls)
-                    + max(1 if the tile has Field Defense, 1 if the unit is dug in)
+                    + max(2 if the tile has Field Defense, 1 if the unit is dug in)
 ```
+
+A Field Defense is two levels since round 4 of the Human tuning
+(`FIELD_DEFENSE_FORTIFICATION_LEVELS_V7`; one before), so a walled center
+with a Field Defense has four, and `fortificationIgnored` may be 4.
 
 Each level adds 1 flat Defense before cover. Naval, embarked, and foreign
 units, Eggs, and Martian walkers and flyers and the Dwarf Gyrocopter on the
@@ -4032,11 +4207,14 @@ Disintegrator ([section 21.5](#215-snow)).
 
 ### 13.4 After combat
 
-- **Advance:** a surviving adjacent land attacker (not a Catapult, Lich,
-  Rocket Cart, Zombie, Tripod, Saucer, Mothership, Boulder Yeti, Clockwork
-  Gunner, or Steam Cannon, and since tuning 1 (`7r46`) not a Human
-  Marksman; the Triceratops, the Ray Gunner, the Colossus,
-  and the Steam Mole do advance; role mechanic `advancesAfterKill`) that
+- **Only the attacker of an exchange can advance.** A defender never moves
+  because of a fight it did not start: a unit that kills its attacker by
+  retaliation stays on its tile (it always did; tuning 2 records it and
+  tests it). A defender moves only when the attack itself moves it (Push,
+  the Charge! push, Knockback, a ram's shove).
+- **Advance:** a surviving adjacent land attacker that is **not a ranged
+  unit** and whose role advances (role mechanic `advancesAfterKill`: not a
+  Zombie, Saucer, or Mothership) and that
   kills a land defender or an Egg moves into its cell if explored and
   enterable (Mountain needs Engineering unless the attacker strides or is
   Mountain-born; an ice tile a land-form defender died on is entered like
@@ -4050,6 +4228,21 @@ Disintegrator ([section 21.5](#215-snow)).
   [section 22.7](#227-dig-in)); no other unit's advance does. Nothing advances onto a **Rift** (only a flyer
   stands there, and flyers never advance), so a kill there continues no
   Overrun and a Charge! does not follow a target pushed off a Rift.
+- **A ranged unit never advances** (tuning 2, `pulp-wars-poc-7r47`;
+  `isRangedRoleRuleV7`). A unit is ranged when its kind's role has a range
+  above 1, whatever the distance of the attack: the Marksman (since tuning
+  1), Spitter, Grunt, Ray Gunner, Colossus, Snow Hunter, Boulder Yeti,
+  Clockwork Gunner, and Gumball Gunner stay where they are after killing an
+  adjacent unit (before `7r47` the Spitter, Grunt, Ray Gunner, Colossus,
+  Snow Hunter, and Gumball Gunner advanced after a kill from distance 1).
+  The Catapult, Lich, Rocket Cart, Bomb Chucker, Tripod, Steam Cannon, and
+  Pie Launcher cannot attack an adjacent unit, a ship never advances (the
+  advance needs a land-form attacker), and a Yeti's Rockfall is an attack
+  from distance 2 by a range-1 unit, so none of them ever advanced. The
+  sentences of sections 19 to 23 that give a ranged unit "the advance
+  after an adjacent kill" describe the rule before `7r47`. The public
+  combat preview carries `advances`, equal to the resolution, and the
+  board and the text harness show it for a kill ("Advances", "Stays").
 - **Push:** a Juggernaut, Abomination, Troll, Brontosaurus, Colossus, Frost
   Giant, or Brass Titan pushes a surviving adjacent target one cell directly
   away (never at range 2) if the cell is on the board, explored by the
@@ -9178,6 +9371,8 @@ has no Candy step.
 | Naval       | `pulp-wars-poc-7r44` | `pulp_wars-5ti.6` naval art (a Submarine and portrait per seafaring faction, the sea ice, the Icebound overlay), `pulp_wars-5ti.7` naval UI (Board, Bow Ram, the Submarine, Harbours; Freeze, ice, the slide, Icebound), and the `pulp_wars-5ti.9` fold, no identity change; the Normal AI's use of the branch and the balance check are open                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | [sections 14](#14-naval-rules) and [21.16](#2116-the-frozen-sea)                                                                      |
 | Naval       | `pulp-wars-poc-7r45` | `pulp_wars-5ti.11` no fortification on ice: a Dwarf Hammerer or Steam Mole on an ice tile is never dug in (it was, within 1 of its own city center); every interaction row of the frozen sea has a focused test; no shape changed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | [sections 21.16](#2116-the-frozen-sea) and [22.7](#227-dig-in)                                                                        |
 | Tuning      | `pulp-wars-poc-7r46` | `pulp_wars-w49.3` [tuning 1](RULESET_7_TUNING_1.md) after five hand-played games: the retaliation from the defender's base Defense, without fortification or cover; technology cost steps of 1 / 2 / 2 per extra city (were 1 / 3 / 5); the Catapult at Attack 3, the Knight at 13 HP, the Marksman at 4 Coins and never advancing; the level-5+ reward unit once per city, the Monument at +2 population, the level-4 Treasury at 6 Coins (reward ID `TREASURY_6`), Land Grant at 2 Coins per explored claimed tile and at least 6, one contributor for one Windmill, Sawmill, Forge, and Market; Commerce at 2 Coins per connected city, Breach and a Blast Mountain that pays +1 population with Explosives, Field Defense that keeps the builder's turn; no tier 3 chest unit before round 15; the preview query `queryLandGrantPreviewV7`; a pending reward may carry one candidate; the Candy `FIGHTER`-role unit displayed as Toffee Trooper (was Gumdrop), the `KNIGHT`-role unit as Chocolate Bunny (was Gummy Bear), and the `JUGGERNAUT`-role unit as Gingerbread Giant (was Rock Candy Golem), display names only; no balance measurement |
+| Tuning      | `pulp-wars-poc-7r47` | `pulp_wars-w49.3` [tuning 2](RULESET_7_TUNING_1.md#10-round-2-tuning-2-pulp-wars-poc-7r47) after three more hand-played games: a ranged unit of any faction never advances after a kill (the role's range above 1; the Spitter, Grunt, Ray Gunner, Colossus, Snow Hunter, and Gumball Gunner advanced after an adjacent kill before); the Human Knight has `CAPTURE`; no shape change; the capital rule of Commerce, the blocked training of a garrisoned city, and the advance of an attack preview are shown; no balance measurement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Tuning      | `pulp-wars-poc-7r47` | `pulp_wars-w49.3` [round 3 of the Human tuning](RULESET_7_TUNING_HUMAN.md), unpublished together with tuning 2 under the same identity: the Human Knight at Attack 4; Forest cover only with the defender's Forestry (every faction); Blast Mountain as an explosion of 5 on and around the tile, also next to an own unit outside the territory (explosion cause `BLAST`, `MOUNTAIN_BLASTED.cityId` nullable); land trade for every Road-linked city without the capital rule; the `HIRE` command (a Market hires at 1.5 times the price, one unit above the capacity); a Human Militia of two Fighters; no state shape change; no balance measurement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -9606,7 +9801,7 @@ and autosave key (it is `7r43`). The overlay's own corrections are in its
 
 ## 25. Known discrepancies
 
-As of `pulp-wars-poc-7r46` the rules in this document match the code for
+As of `pulp-wars-poc-7r47` the rules in this document match the code for
 the eight factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
 Martian overlay with the engine of the Mind Control overlay, the Ice Folk
@@ -9618,18 +9813,32 @@ Folk balance round of `7r37` with the Grunt's 8 HP of `7r39`, and the
 village density of `7r40`, and the starting Coins and tier 3 technology base
 cost of `7r41`, and the many seats of `7r42`, and the naval branch of
 `7r43` and `7r44` with the ice fortification fix of `7r45`, and
-[tuning 1](RULESET_7_TUNING_1.md) of `7r46`,
+[tuning 1](RULESET_7_TUNING_1.md) of `7r46` and its round 2 of `7r47`,
 with these
 open items: what is left of the naval branch after the fold, the Candy
 items left after the fold, and the pending balance steps below.
 
 **Open.**
 
+- **The Human tuning, round 3: what is open** (`pulp_wars-w49.3`, `7r47`;
+  [the Human tuning](RULESET_7_TUNING_HUMAN.md)). Nothing of round 3 was
+  played by hand yet; its three playtests are in section 9 of that
+  document. Its forks for the user are in its section 1.1 (Forest cover
+  gated for every faction, a Knight that kills a Fighter in the open,
+  blasting outside the territory, one unit above the capacity through a
+  hire). Fieldcraft still has no good reason to be bought, and Raiding
+  is worth its price mainly as the road to Chivalry. The
+  Normal AI does not hire, does not blast as a weapon, and does not value
+  Forestry for its cover.
 - **Tuning 1: what is left** (`pulp_wars-w49.3`, `7r46`;
   [tuning 1 sections 3 to 6](RULESET_7_TUNING_1.md#3-deviations-from-the-direction-given)).
-  The Knight's advance after an Overrun kill is still forced (an optional
-  advance needs a UI flow); only the Human Marksman stopped advancing, and
-  the other factions' ranged units still do; the level-5 Treasury (12
+  The advance of a melee attacker after a kill is still forced, also off
+  its own city center (the user's rule of tuning 2; an optional advance
+  was not asked for); since tuning 2 no ranged unit advances, which
+  includes the Martian Grunt and Colossus (range 2) and is to be looked at
+  in the Martian pass; only the Human Knight captures, and the other
+  factions' Knight-role units wait for their faction passes; the level-5
+  Treasury (12
   Coins) is above the cheapest price of that level's population (10); the
   Dinosaur Wallbreaker adds nothing beyond Breach; the Normal AI was not
   retuned (its damage estimate does not know Breach and its Land Grant

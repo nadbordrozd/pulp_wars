@@ -548,7 +548,7 @@ describe("Ruleset 7 DOM shell", () => {
     ).not.toContain("Coins");
     requiredButton('[data-action="tech-commerce"]').click();
     expect(document.querySelector(".v7-tech-detail")?.textContent).toContain(
-      "Road-linked cities: +2 Coins each turn",
+      "Each city linked by Road to another of your cities: +1 Coin each turn",
     );
     // Revision 14 (E2): Commerce no longer doubles Markets.
     expect(document.querySelector(".v7-tech-detail")?.textContent).not.toMatch(
@@ -699,7 +699,11 @@ describe("Ruleset 7 DOM shell", () => {
     expect(modal.textContent).toContain(
       "After a kill, advances and can attack another adjacent enemy.",
     );
-    expect(modal.textContent).toContain("Can't capture.");
+    // Tuning 2 (7r47): the Human Knight captures.
+    expect(modal.textContent).not.toContain("Can't capture.");
+    expect(modal.textContent).toContain(
+      "Capture: Can take villages and enemy cities.",
+    );
     expect(modal.textContent).not.toContain("Needs action");
     expect(dispatch).not.toHaveBeenCalled();
     expect(initial.view.commandIndex).toBe(beforeIndex);

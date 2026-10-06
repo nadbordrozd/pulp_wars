@@ -1463,7 +1463,9 @@
 /* Long facts take a whole row of the stat column. */
 .v7-city-stats > [data-stat="city-action"],
 .v7-city-stats > [data-stat="siege"],
-.v7-city-stats > [data-discount] {
+.v7-city-stats > [data-discount],
+.v7-city-stats > [data-land-trade],
+.v7-city-stats > [data-disabled-reason] {
   grid-column: 1 / -1;
 }
 

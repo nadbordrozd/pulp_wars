@@ -359,12 +359,12 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
       );
     };
     expect(text(0, "EXPLOSIVES")).toEqual([
-      "Blast Mountain: removes a Mountain in your territory (and its Ore); its city gains +1 population",
+      "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too; in your territory its city gains +1 population",
       "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
       "Dinosaurs ignore City Walls",
     ]);
     expect(text(1, "EXPLOSIVES")).toEqual([
-      "Blast Mountain: removes a Mountain in your territory (and its Ore); its city gains +1 population",
+      "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too; in your territory its city gains +1 population",
       "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
     ]);
     expect(text(0, "FORTIFICATION")).toEqual([
@@ -420,7 +420,7 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
         `${role} without`,
       ).toEqual(without);
       expect(plain.combat).toMatchObject({
-        fortificationLevel: fieldDefense ? 3 : 2,
+        fortificationLevel: fieldDefense ? 4 : 2,
         fortificationIgnored: 0,
       });
       const broken = onWalls(role, {
@@ -435,7 +435,7 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
       // Breach removes the Field Defense level with the two Walls levels.
       expect(broken.combat).toMatchObject({
         fortificationLevel: 0,
-        fortificationIgnored: fieldDefense ? 3 : 2,
+        fortificationIgnored: fieldDefense ? 4 : 2,
         breachApplied: true,
         acid: false,
         runUp: 0,
@@ -550,7 +550,7 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
     const run = onWalls("KNIGHT", { wallbreaker: true, fieldDefense: true });
     expect(run.combat).toMatchObject({
       fortificationLevel: 0,
-      fortificationIgnored: 3,
+      fortificationIgnored: 4,
     });
     // The Walls reward stays, and so does the fortification of the center.
     expect(cityOfV7(run.state, 0).rewards).toContainEqual({
@@ -595,12 +595,12 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
       );
     expect(attackV7(fortified(true), at(4, 7), at(3, 7)).combat).toMatchObject({
       fortificationLevel: 0,
-      fortificationIgnored: 1,
+      fortificationIgnored: 2,
       breachApplied: true,
     });
     expect(attackV7(fortified(false), at(4, 7), at(3, 7)).combat).toMatchObject(
       {
-        fortificationLevel: 1,
+        fortificationLevel: 2,
         fortificationIgnored: 0,
         breachApplied: false,
       },

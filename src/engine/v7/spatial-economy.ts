@@ -271,7 +271,7 @@ function spatialPlacementSupportV7(
 }
 
 /**
- * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r46`; current rules section
+ * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r47`; current rules section
  * 8.3): one contributor counts for exactly one building of a kind. A Farm,
  * Lumber Camp, or Mine counts for one Windmill, Sawmill, or Forge, and each
  * Farm, Windmill, Lumber Camp, Sawmill, Mine, or Forge counts for one

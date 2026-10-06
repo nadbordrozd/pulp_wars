@@ -80,6 +80,8 @@ export type CommandV7 =
         | "RECOVER"
         | "CAPTURE"
         | "PROMOTE"
+        /** Tuning 4: the paid Promotion on a city center with a Barracks. */
+        | "DRILL_UNIT"
         | "PILLAGE"
         | "DISBAND"
         | "WAIT"
@@ -240,6 +242,18 @@ export type CommandV7 =
       readonly role: NavalRoleIdV7;
     }
   | {
+      /**
+       * Tuning 3 (`pulp_wars-w49.3`): hire a land unit of `role` on the
+       * Market tile `at` of the own city `cityId`, for
+       * `hireCostV7` of its training price there. It does not use the city
+       * action; the Market tile must be empty.
+       */
+      readonly kind: "HIRE";
+      readonly cityId: CityId;
+      readonly at: CoordV7;
+      readonly role: UnitRoleIdV7;
+    }
+  | {
       readonly kind: "DISEMBARK";
       readonly unitId: UnitId;
       readonly at: CoordV7;
@@ -290,6 +304,7 @@ const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
   "RECOVER",
   "CAPTURE",
   "PROMOTE",
+  "DRILL_UNIT",
   "PILLAGE",
   "DISBAND",
   "WAIT",
@@ -539,6 +554,25 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       ? invalid(kind)
       : { ok: true, value: { kind, cityId: city, at, role: candidate.role } };
   }
+  if (kind === "HIRE") {
+    const city = hasExactKeysV7(input, ["at", "cityId", "kind", "role"])
+      ? parseCityIdV7(candidate.cityId)
+      : null;
+    const at = city === null ? null : parseCoordV7(candidate.at);
+    return city === null ||
+      at === null ||
+      !UNIT_ROLE_IDS_V7.includes(candidate.role as UnitRoleIdV7)
+      ? invalid(kind)
+      : {
+          ok: true,
+          value: {
+            kind,
+            cityId: city,
+            at,
+            role: candidate.role as UnitRoleIdV7,
+          },
+        };
+  }
   if (kind === "DISEMBARK" || kind === "REBAKE") {
     const unit = hasExactKeysV7(input, ["at", "kind", "unitId"])
       ? parseUnitIdV7(candidate.unitId)
@@ -664,6 +698,7 @@ function referencedOrdinal(command: CommandV7): number {
   if (
     command.kind === "TRAIN" ||
     command.kind === "TRAIN_NAVAL" ||
+    command.kind === "HIRE" ||
     command.kind === "LAY_EGG"
   )
     return UNIT_ROLE_IDS_V7.indexOf(command.role);

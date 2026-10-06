@@ -162,7 +162,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
   // The Dwarf revision (`pulp_wars-78i.3`) adds three command kinds after
   // COLD_SNAP and four event kinds (ruleset-v7-dwarf-faction.test.ts).
   it("has 53 command kinds and 81 event kinds, with the new kinds at the stated positions", () => {
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(58);
+    // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL (59), and
+    // tuning 4 DRILL_UNIT after PROMOTE (60).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(60);
     const tractor = COMMAND_KIND_ORDER_V7.indexOf("TRACTOR_BEAM");
     expect(COMMAND_KIND_ORDER_V7.slice(tractor, tractor + 4)).toEqual([
       "TRACTOR_BEAM",
@@ -660,7 +662,9 @@ describe("Ice Folk roster (section 3)", () => {
         ).toMatchObject({
           mountainBorn: false,
           glides: false,
-          ignoresZocStops: false,
+          // Tuning 4 (`pulp_wars-w49.3`): the Human Raider slips past zones
+          // of control too (a mechanic, not the Prowl ability).
+          ignoresZocStops: faction === "ORIGINAL" && role === "RAIDER",
           sweepDamage: 0,
           tramplesFieldDefense: false,
           ignoresFortification: false,
@@ -1220,8 +1224,9 @@ describe("Ice Folk Showcase (section 2.4)", () => {
       [3, 6],
       [0, 6],
     ]);
-    // 19 since land trade pays 2 Coins (tuning 1, 7r46; 17 before).
-    expect(playerIncomeV7(state, iceId).totalCoins).toBe(19);
+    // 21: land trade pays 2 Coins (tuning 1, 7r46; 17 before) and since
+    // tuning 3 the linked capital earns it too (19 before).
+    expect(playerIncomeV7(state, iceId).totalCoins).toBe(18);
   });
 
   it("every Ice Folk ability can be offered on the first turns, and every offered command is accepted", () => {

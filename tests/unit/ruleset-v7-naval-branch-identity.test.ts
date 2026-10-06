@@ -396,7 +396,8 @@ describe("the five-node Naval branch in every tree", () => {
     });
     const second = applyResearch(first.state, "SUBMERSIBLES");
     if (!second.accepted) throw new Error(second.error.code);
-    expect(second.events[0]).toMatchObject({ tech: "SUBMERSIBLES", cost: 9 });
+    // Tier 3 as the third technology: 9 + 2 (tuning 4).
+    expect(second.events[0]).toMatchObject({ tech: "SUBMERSIBLES", cost: 11 });
     // The stored list keeps the frozen technology order.
     expect(
       second.state.players.find((player) => player.id === actor)

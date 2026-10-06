@@ -53,7 +53,7 @@ import {
   ROAD_MOVEMENT_TEXT_V7,
   technologyEffectGroupsV7,
 } from "../../src/render/dom/app-view-v7";
-import { checkedV7 } from "../fixtures/v7-builders";
+import { PRE_NAVAL_BRANCH_TECHS_V7, checkedV7 } from "../fixtures/v7-builders";
 import {
   goblinArenaV7,
   goblinSetupV7,
@@ -91,7 +91,17 @@ function band(
   options: BandOptions = {},
 ): GameStateV7 {
   const factions = options.factions ?? ["ORIGINAL", "ORIGINAL"];
-  const base = goblinArenaV7(factions, pieces, options);
+  // Without Fieldcraft: its Forest march (tuning 4) would lift the Forest
+  // stop these revision-18 movement cases are written against.
+  const base = goblinArenaV7(factions, pieces, {
+    techs: Object.fromEntries(
+      factions.map((_, seat) => [
+        seat,
+        PRE_NAVAL_BRANCH_TECHS_V7.filter((tech) => tech !== "FIELDCRAFT"),
+      ]),
+    ),
+    ...options,
+  });
   const water = options.water ?? [];
   const inBand = (where: CoordV7) =>
     factions.length === 2 ? where.y <= 3 : where.y >= 11 && where.x <= 8;
@@ -267,22 +277,22 @@ const MOVER_BY_MOVE: Readonly<Record<1 | 2 | 3, UnitRoleIdV7>> = {
 };
 
 describe("ruleset-7 revision-18 identity", () => {
-  it("keeps r17 and r18 among the gap-free prior identities after the r46 identity and cleans their keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r46.current");
+  it("keeps r17 and r18 among the gap-free prior identities after the r47 identity and cleans their keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r47.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 44 },
+        { length: 45 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-29)).toBe("pulp-wars-poc-7r17");
-    expect(PRIOR_RULESET_7_IDS.at(-28)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-30)).toBe("pulp-wars-poc-7r17");
+    expect(PRIOR_RULESET_7_IDS.at(-29)).toBe("pulp-wars-poc-7r18");
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 44 },
+        { length: 45 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -319,7 +329,7 @@ describe("ruleset-7 revision-18 identity", () => {
     const setup = goblinSetupV7(["GOBLIN", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r46");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r47");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r17" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -524,7 +534,11 @@ describe("ruleset-7 revision-18 friendly pass-through", () => {
         { seat: 0, role: "RAIDER", at: line(1) },
         { seat: 0, role: "FIGHTER", at: line(2) },
       ],
-      { water: corridor, tiles: [[line(2), { terrain: "FOREST" }]] },
+      {
+        water: corridor,
+        tiles: [[line(2), { terrain: "FOREST" }]],
+        techs: { 0: TECHNOLOGY_IDS_V7 },
+      },
     );
     expect(both(fieldcraft, line(1), [line(2), line(3)])).toEqual({
       legal: true,
@@ -961,8 +975,10 @@ describe("ruleset-7 revision-18 interrupted moves", () => {
     });
 
     it(`falls back to the starting tile after ${item.name}`, () => {
-      // A Raider starts next to the own-occupied tile: no free tile entered.
-      const state = item.build("RAIDER", 1);
+      // A Raider starts next to the own-occupied tile: no free tile entered
+      // (a Knight for the zone of control, which a Human Raider ignores
+      // since tuning 4).
+      const state = item.build(item.reason === "ZOC" ? "KNIGHT" : "RAIDER", 1);
       const start = at(1, item.y);
       const own = at(2, item.y);
       const owner = unitAtV7(state, start).ownerId;

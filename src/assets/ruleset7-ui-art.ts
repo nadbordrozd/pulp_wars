@@ -189,7 +189,12 @@ const STATIC_COMMAND_ART_IDS: Readonly<
 export function commandArtIdV7(command: CommandV7): string | null {
   if (command.kind === "MOVE" || command.kind === "ATTACK") return null;
   if (command.kind === "RESEARCH") return RULESET7_TECH_ART_IDS[command.tech];
-  if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL")
+  if (
+    command.kind === "TRAIN" ||
+    command.kind === "TRAIN_NAVAL" ||
+    // Tuning 3: a hired unit is shown as the unit.
+    command.kind === "HIRE"
+  )
     return RULESET7_UNIT_ART_IDS[command.role];
   if (command.kind === "CHOOSE_CITY_REWARD")
     return rewardArtIdV7(command.reward);
@@ -204,7 +209,9 @@ export function rewardArtIdV7(reward: RewardIdV7): string {
     case "TREASURY":
     case "TREASURY_6":
       return "ui-hud-gold-coin-v7";
+    // Tuning 4: Barracks has no art of its own; it stands in with the Walls.
     case "WALLS":
+    case "BARRACKS":
       return "ui-reward-city-wall";
     case "MILITIA":
       return RULESET7_PORTRAIT_ART_IDS.FIGHTER;

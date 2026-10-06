@@ -269,7 +269,9 @@ function validateMissionSetupV7(input: unknown): MatchSetupValidationV7 {
     )
   )
     return invalid;
-  const duplicate = duplicateFactionV7(factions);
+  // A mirror fixture (`mission.mirror`, hidden) repeats a faction.
+  const duplicate =
+    mission.mirror === true ? null : duplicateFactionV7(factions);
   if (duplicate !== null)
     return {
       ok: false,

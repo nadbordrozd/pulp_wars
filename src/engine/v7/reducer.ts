@@ -66,6 +66,12 @@ import {
   treasureUnitRoleForRoundV7,
   type BasicEconomicCommandKindV7,
   type SpatialEconomicCommandKindV7,
+  hireCostV7,
+  HIRE_EXTRA_CAPACITY_V7,
+  BLAST_MOUNTAIN_COST_V7,
+  PILLAGE_COINS_V7,
+  DRILL_COST_V7,
+  cityBarracksV7,
 } from "../rules/ruleset-v7";
 import { hasExactKeysV7 } from "./schema";
 import {
@@ -122,6 +128,7 @@ import {
   seaTradeCityIdsV7,
   startTurnEconomyV7,
   type CityEconomyChangeV7,
+  isOwnersFirstCapitalV7,
 } from "./economy";
 import type { DomainEventV7 } from "./events";
 import {
@@ -170,6 +177,7 @@ import {
   MILITIA_FIGHTERS_V7,
   createInitialMapStateV7,
   type CreateInitialMapStateResultV7,
+  SURVEY_RAIDERS_V7,
 } from "./map";
 import {
   beamDownCarrierReadyV7,
@@ -677,12 +685,13 @@ function applyCommandCoreV7(
       actor,
       command as Extract<CommandV7, { at: CoordV7 }>,
     );
+  if (command.kind === "BLAST_MOUNTAIN")
+    return applyBlastMountain(stateInput, state, actor, command.at);
   if (
     [
       "CLEAR_FOREST",
       "REPLANT_FOREST",
       "CULTIVATE_FOREST",
-      "BLAST_MOUNTAIN",
       "BUILD_ROAD",
       "REDEVELOP",
     ].includes(command.kind)
@@ -697,6 +706,8 @@ function applyCommandCoreV7(
     return applyTrain(stateInput, state, actor, command);
   if (command.kind === "TRAIN_NAVAL")
     return applyTrainNaval(stateInput, state, actor, command);
+  if (command.kind === "HIRE")
+    return applyHire(stateInput, state, actor, command);
   if (command.kind === "GATHER_PEARLS")
     return applyPearls(stateInput, state, actor, command.at);
   if (command.kind === "BUILD_PORT")
@@ -725,6 +736,8 @@ function applyCommandCoreV7(
     return applyRecover(stateInput, state, actor, command.unitId);
   if (command.kind === "PROMOTE")
     return applyPromote(stateInput, state, actor, command.unitId);
+  if (command.kind === "DRILL_UNIT")
+    return applyDrillUnit(stateInput, state, actor, command.unitId);
   if (command.kind === "WAIT")
     return applyWait(stateInput, state, actor, command.unitId);
   if (command.kind === "CAPTURE")
@@ -876,12 +889,10 @@ function applyResearch(
       prerequisite: missing,
     });
   try {
-    const cityCount = state.cities.filter(
-      (city) => city.ownerId === actor,
-    ).length;
+    // Tuning 4 (`pulp_wars-w49.3`): the price grows with the technologies
+    // the player owns, not with its cities.
     const cost = playerTechnologyResearchCostV7(
       node.tier,
-      cityCount,
       player.researchedTechs.length,
     );
     if (player.coins < cost)
@@ -1280,6 +1291,210 @@ function applyMonument(
   }
 }
 
+/**
+ * Whether `actor` may blast the Mountain tile `tile` as far as its place
+ * goes (tuning 3, `pulp_wars-w49.3`): a tile of its own territory, or a
+ * tile outside it, not in an ally's territory, next to one of its land-form
+ * units.
+ */
+function blastPlaceV7(
+  state: GameStateV7,
+  actor: PlayerId,
+  tile: TileStateV7,
+): { readonly city: CityStateV7 | null } | null {
+  const city =
+    state.cities.find((item) => item.id === tile.territoryCityId) ?? null;
+  if (city?.ownerId === actor) return { city };
+  if (city !== null && arePlayersAlliedV7(state, actor, city.ownerId))
+    return null;
+  return state.units.some(
+    (unit) =>
+      unit.hp > 0 &&
+      unit.ownerId === actor &&
+      unit.form === "LAND" &&
+      chebyshev(unit.at, tile.at) === 1,
+  )
+    ? { city: null }
+    : null;
+}
+
+/**
+ * Explosives, Blast Mountain. Tuning 1: the Mountain (and its Ore) becomes
+ * Grass and, in the player's own territory, the tile's city gains permanent
+ * population. Tuning 3 (`pulp_wars-w49.3`): it is also a weapon. It may be
+ * set off on a Mountain outside the player's territory next to one of its
+ * land-form units, and it explodes: every unit on the tile and on the eight
+ * tiles around it, friend and foe, takes `BLAST_MOUNTAIN_DAMAGE_V7` as an
+ * explosion of cause `BLAST` (Shields first, Armoured less, Field Defense in
+ * the area destroyed, exploding units it kills chain on), credited to the
+ * blasting player. Then Plunder, rising reveals, and the ordinary economy,
+ * reward-settlement, and achievement tail, as after a Kaboom.
+ */
+function applyBlastMountain(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  at: CoordV7,
+): ApplyCommandResultV7 {
+  const player = requirePlayer(state, actor);
+  const tile = tileAtV7(state.board, at);
+  if (tile === undefined) return rejected(original, "TILE_NOT_FOUND");
+  if (!isExplored(player, at)) return rejected(original, "TILE_UNEXPLORED");
+  if (!player.researchedTechs.includes("EXPLOSIVES"))
+    return rejected(original, "TECH_REQUIRED", { tech: "EXPLOSIVES" });
+  if (
+    // Tuning 1 (`pulp_wars-w49.3`, 7r46): an Ore Mountain may be blasted
+    // (the Ore is lost); an improvement still blocks it.
+    tile.terrain !== "MOUNTAIN" ||
+    tile.site !== null ||
+    (tile.resource !== null && tile.resource !== "ORE") ||
+    tile.improvement !== null ||
+    tile.fieldDefense
+  )
+    return rejected(original, "INVALID_TILE", { action: "BLAST_MOUNTAIN" });
+  const place = blastPlaceV7(state, actor, tile);
+  if (place === null) return rejected(original, "TERRITORY_NOT_OWNED");
+  const city = place.city;
+  if (city !== null && isCityBesiegedV7(state, city))
+    return rejected(original, "CITY_BESIEGED");
+  if (city !== null && hasCityChoice(state, city.id))
+    return rejected(original, "CITY_REWARD_PENDING");
+  const cost = BLAST_MOUNTAIN_COST_V7;
+  if (player.coins < cost)
+    return rejected(original, "INSUFFICIENT_COINS", { cost });
+  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  try {
+    const board = replaceTile(state, at, {
+      ...tile,
+      terrain: "GRASS",
+      resource: null,
+    });
+    // The charge: a fresh ID that names no unit, so the chain hits every
+    // unit in the area, the one on the tile included.
+    const charge = allocateUnitId(state.nextEntityId);
+    let nextEntityId = charge.nextEntityId;
+    const contributions: readonly PopulationContributionV7[] =
+      city === null
+        ? state.populationContributions
+        : [
+            ...state.populationContributions,
+            {
+              id: nextEntityId,
+              cityId: city.id,
+              category: "PERMANENT",
+              amount: BLAST_MOUNTAIN_POPULATION_V7,
+              source: {
+                kind: "RESOURCE_ACTION",
+                action: "BLAST_MOUNTAIN",
+                at,
+              },
+            },
+          ];
+    if (city !== null) nextEntityId = nextSafe(nextEntityId);
+    const events: DomainEventV7[] = [
+      {
+        kind: "MOUNTAIN_BLASTED",
+        playerId: actor,
+        cityId: city?.id ?? null,
+        at,
+        cost,
+        terrainBefore: "MOUNTAIN",
+        terrainAfter: "GRASS",
+        resourceBefore: null,
+        resourceAfter: null,
+      },
+    ];
+    const chain = resolveStateExplosionChainV7(
+      state,
+      {
+        units: state.units,
+        board,
+        graves: state.graves,
+        nextEntityId,
+        bitten: state.bitten,
+        shields: state.shields,
+        mindControlled: state.mindControlled,
+        burrowed: state.burrowed,
+      },
+      [
+        {
+          unit: {
+            id: charge.id,
+            ownerId: actor,
+            homeCityId: null,
+            role: "FIGHTER",
+            form: "LAND",
+            at,
+            hp: 0,
+            maxHp: 1,
+            kills: 0,
+            veteran: false,
+            captureEligible: false,
+            activation: exhaustedActivation(),
+          },
+          cause: "BLAST",
+        },
+      ],
+      events,
+    );
+    const units = [...chain.units];
+    const plunder = plunderAwardsV7(state, state.players, chain.credits);
+    events.push(...plunder.events);
+    let players = debit(plunder.players, actor, cost);
+    for (const risen of chain.risings) {
+      const risenState = {
+        ...state,
+        board: chain.board,
+        players,
+        units,
+      } as GameStateV7;
+      const reveal = revealRadius(
+        risenState,
+        risen.ownerId,
+        risen.at,
+        unitSightRadiusAtV7(risenState, risen),
+      );
+      players = setExplored(players, risen.ownerId, reveal.explored);
+      if (reveal.revealed.length)
+        events.push({
+          kind: "TILES_REVEALED",
+          playerId: risen.ownerId,
+          tiles: reveal.revealed,
+        });
+    }
+    const economy = recomputeLiveEconomyV7(
+      state,
+      { board: chain.board, cities: state.cities, units },
+      contributions,
+    );
+    events.push(...economyAndGrowth(economy.changes));
+    const settlement = settleCityRewardsV7(
+      {
+        ...state,
+        board: chain.board,
+        commandIndex: nextSafe(state.commandIndex),
+        nextEntityId: chain.nextEntityId,
+        players,
+        cities: economy.cities,
+        units,
+        graves: chain.graves,
+        shields: chain.shields,
+        mindControlled: chain.mindControlled,
+        burrowed: chain.burrowed,
+        populationContributions: economy.populationContributions,
+      },
+      actor,
+    );
+    events.push(...settlement.events);
+    const achievements = evaluateAchievementsV7(settlement.state, actor);
+    events.push(...achievements.events);
+    return accepted(checked(achievements.state), events);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
 function applyInfrastructure(
   original: GameStateV7,
   state: GameStateV7,
@@ -1484,25 +1699,17 @@ function applyInfrastructure(
                 at: command.at,
                 coinDelta: 0,
               }
-            : command.kind === "CULTIVATE_FOREST" ||
-                command.kind === "BLAST_MOUNTAIN"
+            : command.kind === "CULTIVATE_FOREST"
               ? {
-                  kind:
-                    command.kind === "CULTIVATE_FOREST"
-                      ? "FOREST_CULTIVATED"
-                      : "MOUNTAIN_BLASTED",
+                  kind: "FOREST_CULTIVATED",
                   playerId: actor,
                   cityId: requireValue(city).id,
                   at: command.at,
                   cost,
-                  terrainBefore:
-                    command.kind === "CULTIVATE_FOREST" ? "FOREST" : "MOUNTAIN",
+                  terrainBefore: "FOREST",
                   terrainAfter: "GRASS",
                   resourceBefore: null,
-                  resourceAfter:
-                    command.kind === "CULTIVATE_FOREST"
-                      ? "FERTILE_GROUND"
-                      : null,
+                  resourceAfter: "FERTILE_GROUND",
                 }
               : {
                   kind: "ECONOMIC_BUILDING_REMOVED",
@@ -1836,6 +2043,133 @@ function applyTrainNaval(
         },
       ],
     );
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * Tuning 3 (`pulp_wars-w49.3`): Commerce, a Market hires. A land unit the
+ * player can train appears, with every action spent, on an empty Market
+ * tile of the own city, homed to it, for `hireCostV7` of its training
+ * price there. It does not use the city action, and the city may hold
+ * `HIRE_EXTRA_CAPACITY_V7` units above its capacity through it.
+ */
+function applyHire(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "HIRE" }>,
+): ApplyCommandResultV7 {
+  const city = state.cities.find((item) => item.id === command.cityId);
+  if (city === undefined) return rejected(original, "CITY_NOT_FOUND");
+  if (city.ownerId !== actor) return rejected(original, "CITY_NOT_OWNED");
+  const player = requirePlayer(state, actor);
+  if (
+    !technologyCapabilitiesV7(
+      player.researchedTechs,
+      player.faction,
+    ).commands.includes("HIRE")
+  )
+    return rejected(original, "TECH_REQUIRED", { tech: "COMMERCE" });
+  const tile = tileAtV7(state.board, command.at);
+  if (tile?.territoryCityId !== city.id || tile.improvement !== "MARKET")
+    return rejected(original, "INVALID_TILE", { action: "HIRE" });
+  if (isCityBesiegedV7(state, city))
+    return rejected(original, "CITY_BESIEGED", { cityId: city.id });
+  if (hasCityChoice(state, city.id))
+    return rejected(original, "CITY_REWARD_PENDING", { cityId: city.id });
+  const rule = effectiveRoleRuleV7(command.role, player.faction);
+  if (
+    isNavalRoleV7(command.role) ||
+    rule.cost === null ||
+    isEggLaidRoleV7(command.role, player.faction)
+  )
+    return rejected(original, "UNIT_ROLE_INVALID", { role: command.role });
+  if (
+    rule.technology !== null &&
+    !player.researchedTechs.includes(rule.technology)
+  )
+    return rejected(original, "TECH_REQUIRED", { tech: rule.technology });
+  if (state.units.some((unit) => unit.hp > 0 && same(unit.at, command.at)))
+    return rejected(original, "CITY_SPAWN_OCCUPIED", { cityId: city.id });
+  if (
+    assignedUnitCountV7(state, city.id) +
+      seatRoleMechanicsV7(state, actor, command.role).capacitySlots >
+    cityUnitCapacityV7(state, city) + HIRE_EXTRA_CAPACITY_V7
+  )
+    return rejected(original, "CITY_CAPACITY_FULL", { cityId: city.id });
+  const forgeActive = state.board.tiles.some(
+    (item) =>
+      item.territoryCityId === city.id &&
+      item.improvement === "FORGE" &&
+      spatialContributionAtV7(state, item.at, "FORGE").population > 0,
+  );
+  const cost = hireCostV7(Math.max(1, rule.cost - (forgeActive ? 1 : 0)));
+  if (player.coins < cost)
+    return rejected(original, "INSUFFICIENT_COINS", { cost });
+  if (
+    state.nextEntityId >= Number.MAX_SAFE_INTEGER ||
+    state.commandIndex >= Number.MAX_SAFE_INTEGER
+  )
+    return rejected(original, "INTEGER_OVERFLOW");
+  try {
+    const allocation = allocateUnitId(state.nextEntityId);
+    const hired: UnitStateV7 = {
+      id: allocation.id,
+      ownerId: actor,
+      homeCityId: city.id,
+      role: command.role,
+      form: "LAND",
+      at: command.at,
+      hp: rule.maxHp,
+      maxHp: rule.maxHp,
+      kills: 0,
+      veteran: false,
+      captureEligible: false,
+      activation: exhaustedActivation(),
+    };
+    const placed: GameStateV7 = {
+      ...state,
+      nextEntityId: allocation.nextEntityId,
+      commandIndex: nextSafe(state.commandIndex),
+      players: debit(state.players, actor, cost),
+      units: [...state.units, hired],
+      // The Martian revision: a new unit starts with its full Shield.
+      shields: withFullShieldsV7(state, state.shields, [hired]),
+    };
+    const reveal = revealRadius(
+      placed,
+      actor,
+      hired.at,
+      unitSightRadiusAtV7(placed, hired),
+    );
+    const staged: GameStateV7 = {
+      ...placed,
+      players: setExplored(placed.players, actor, reveal.explored),
+    };
+    const achievements = evaluateAchievementsV7(staged, actor);
+    return accepted(checked(achievements.state), [
+      {
+        kind: "UNIT_TRAINED",
+        playerId: actor,
+        cityId: city.id,
+        unitId: hired.id,
+        role: hired.role,
+        cost,
+        at: hired.at,
+      },
+      ...(reveal.revealed.length > 0
+        ? [
+            {
+              kind: "TILES_REVEALED" as const,
+              playerId: actor,
+              tiles: reveal.revealed,
+            },
+          ]
+        : []),
+      ...achievements.events,
+    ]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
@@ -3080,10 +3414,16 @@ function applyLandGrant(
   if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
+  // Tuning 4 (`pulp_wars-w49.3`): a Land Grant claims only the neutral
+  // tiles its owner has explored, and charges for each of them (2 Coins a
+  // tile, at least 6). Unexplored tiles stay neutral, so neither the price
+  // nor the claim depends on hidden tiles. (Tuning 1 claimed them free.)
+  const exploredKeys = new Set(player.explored.map(key));
   const claimed = state.board.tiles
     .filter(
       (tile) =>
         tile.territoryCityId === null &&
+        exploredKeys.has(key(tile.at)) &&
         Math.abs(tile.at.x - city.at.x) <= 2 &&
         Math.abs(tile.at.y - city.at.y) <= 2,
     )
@@ -3091,13 +3431,7 @@ function applyLandGrant(
     .sort(compareCoords);
   if (claimed.length === 0)
     return rejected(original, "INVALID_TILE", { action: "LAND_GRANT" });
-  // Tuning 1 (`pulp_wars-w49.3`, 7r46): 2 Coins per claimed tile the actor
-  // has explored, at least 6. Unexplored neutral tiles are still claimed
-  // and cost nothing, so the price never depends on hidden tiles.
-  const exploredKeys = new Set(player.explored.map(key));
-  const cost = landGrantCostV7(
-    claimed.filter((at) => exploredKeys.has(key(at))).length,
-  );
+  const cost = landGrantCostV7(claimed.length);
   if (player.coins < cost)
     return rejected(original, "INSUFFICIENT_COINS", { cost });
   try {
@@ -3188,12 +3522,19 @@ function applyReward(
       reachedLevel: command.reachedLevel,
       reward: command.reward,
     });
+  // Tuning 4 (`pulp_wars-w49.3`): a Human Survey ("Scouts") also grants a
+  // Raider. Every reward unit is granted whether or not its city has a free
+  // unit slot (a level reward is never lost to a full city); it uses a slot
+  // from then on.
   const unitRole =
     command.reward === "MILITIA"
       ? "FIGHTER"
       : command.reward === "JUGGERNAUT"
         ? "JUGGERNAUT"
-        : null;
+        : command.reward === "SURVEY" &&
+            SURVEY_RAIDERS_V7[requirePlayer(state, actor).faction] === 1
+          ? "RAIDER"
+          : null;
   try {
     let nextEntityId = state.nextEntityId;
     let players = state.players;
@@ -3274,7 +3615,9 @@ function applyReward(
       cities = recalc.cities;
       contributions = recalc.populationContributions;
       events.push(...economyAndGrowth(recalc.changes));
-    } else if (unitRole !== null) {
+    }
+    // Tuning 4: Barracks is its record alone (`cityBarracksV7` reads it).
+    if (unitRole !== null) {
       const allocation = allocateUnitId(nextEntityId);
       nextEntityId = allocation.nextEntityId;
       // Revision 13: MILITIA and JUGGERNAUT grant the owner's faction unit.
@@ -5070,6 +5413,74 @@ function applyPromote(
   );
 }
 
+/**
+ * Tuning 4 (`pulp_wars-w49.3`): Drill, the paid Promotion. The unit stands
+ * on the center of an own city whose reward history holds a Barracks, has
+ * not used its primary action, and is not a veteran yet; for `DRILL_COST_V7`
+ * Coins it becomes one (maximum HP and HP both rise by the Promotion's
+ * amount; it is not healed) and its turn ends.
+ */
+function applyDrillUnit(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+): ApplyCommandResultV7 {
+  const actorCheck = validateUnitActor(state, actor, unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const unit = actorCheck.unit;
+  if (unitIsCrashedV7(state, unit.id))
+    return rejected(original, "UNIT_CRASHED", { unitId });
+  if (primaryUsed(unit) || unit.activation.overrunActive)
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
+  const city = state.cities.find(
+    (candidate) => candidate.ownerId === actor && same(candidate.at, unit.at),
+  );
+  if (
+    unit.form !== "LAND" ||
+    unit.veteran ||
+    unitGrowsV7(state, unit) ||
+    city === undefined ||
+    cityBarracksV7(city) === 0
+  )
+    return rejected(original, "PROMOTION_NOT_ELIGIBLE", { unitId });
+  const player = requirePlayer(state, actor);
+  if (player.coins < DRILL_COST_V7)
+    return rejected(original, "INSUFFICIENT_COINS", { cost: DRILL_COST_V7 });
+  const maxHp = unit.maxHp + PROMOTION_HP_V7;
+  if (
+    !Number.isSafeInteger(maxHp) ||
+    state.commandIndex >= Number.MAX_SAFE_INTEGER
+  )
+    return rejected(original, "INTEGER_OVERFLOW");
+  return accepted(
+    checked({
+      ...state,
+      commandIndex: nextSafe(state.commandIndex),
+      players: debit(state.players, actor, DRILL_COST_V7),
+      units: state.units.map((candidate) =>
+        candidate.id === unitId
+          ? {
+              ...candidate,
+              veteran: true,
+              maxHp,
+              hp: candidate.hp + PROMOTION_HP_V7,
+              activation: {
+                ...candidate.activation,
+                moved: true,
+                escapeAvailable: false,
+                specialActed: true,
+                handled: true,
+              },
+            }
+          : candidate,
+      ),
+    }),
+    [{ kind: "UNIT_PROMOTED", unitId, maxHp }],
+  );
+}
+
 function applyWait(
   original: GameStateV7,
   state: GameStateV7,
@@ -5160,13 +5571,20 @@ function applyPillage(
         : state.populationContributions.filter(
             (item) => item.id !== contribution.id,
           );
-    const coins = player.coins + 1;
+    // Tuning 4 (`pulp_wars-w49.3`): a Pillage pays `PILLAGE_COINS_V7` (1
+    // before), and a unit with Escape (the Raider) keeps its one Move
+    // after it, as after an attack.
+    const coins = player.coins + PILLAGE_COINS_V7;
     if (!Number.isSafeInteger(coins)) throw new RangeError("INTEGER_OVERFLOW");
     const recalc = recomputeLiveEconomyV7(
       state,
       { board, cities: state.cities },
       contributions,
     );
+    const escapes =
+      unitRoleRuleV7(state, unit).abilities.includes("ESCAPE") &&
+      !unit.activation.escapeAvailable &&
+      !unit.activation.attacked;
     const units = state.units.map((item) =>
       item.id === unit.id
         ? {
@@ -5174,7 +5592,8 @@ function applyPillage(
             activation: {
               ...item.activation,
               specialActed: true,
-              handled: true,
+              escapeAvailable: escapes,
+              handled: !escapes,
             },
           }
         : item,
@@ -5202,7 +5621,7 @@ function applyPillage(
         at: tile.at,
         improvement,
         resourceRestored,
-        coinDelta: 1,
+        coinDelta: PILLAGE_COINS_V7,
       },
       ...economyAndGrowth(recalc.changes),
       ...settlement.events,
@@ -6769,7 +7188,11 @@ function settleCityRewardsV7(
       if (city === undefined) throw new RangeError("INVALID_STATE");
       if (city.rewards.some((reward) => reward.reachedLevel === reachedLevel))
         continue;
-      const candidates = rewardCandidatesForLevelV7(reachedLevel, city.rewards);
+      const candidates = rewardCandidatesForLevelV7(
+        reachedLevel,
+        city.rewards,
+        isOwnersFirstCapitalV7(players, city),
+      );
       const owner = players.find((player) => player.id === city.ownerId);
       if (owner?.status !== "ACTIVE") throw new RangeError("INVALID_STATE");
       const pendingChoices: readonly PendingChoiceV7[] = [

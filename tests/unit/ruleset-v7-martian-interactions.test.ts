@@ -138,7 +138,9 @@ describe("Goblin rules (section 10.2)", () => {
     expect(attackV7(martian, at(4, 3), at(5, 3)).combat.gangUp).toBe(0);
   });
 
-  it("chains: a melee attacker advances into the blast, a flyer stays next to it, a ray at range 2 is outside", () => {
+  // Tuning 2 (`pulp_wars-w49.3`, 7r47): the Grunt has range 2, so it is a
+  // ranged unit and stays (it advanced onto the exploder's tile before).
+  it("chains: a Grunt and a flyer stay next to the blast and are hit, a ray at range 2 is outside", () => {
     // A Bomb Chucker at 1 HP (death blast 2 around its tile).
     const build = (role: "FIGHTER" | "RAIDER" | "MARKSMAN", from: CoordV7) =>
       martianFieldV7(
@@ -149,11 +151,11 @@ describe("Goblin rules (section 10.2)", () => {
         ],
         { factions: ["MARTIAN", "GOBLIN"] },
       );
-    // The Grunt advances onto the exploder's tile and is hit there.
+    // The Grunt stays next to the exploder's tile and is hit there.
     const grunt = attackV7(build("FIGHTER", at(4, 3)), at(4, 3), at(5, 3));
-    expect(grunt.attacker?.at).toEqual(at(5, 3));
+    expect(grunt.attacker?.at).toEqual(at(4, 3));
     expect(kindsV7(grunt.events)).toContain("EXPLOSION_RESOLVED");
-    expect(shieldAtV7(grunt.state, at(5, 3))).toBe(0);
+    expect(shieldAtV7(grunt.state, at(4, 3))).toBe(0);
     expect(grunt.attacker?.hp).toBe(8);
     // The Saucer does not advance and is still in the blast area.
     const saucer = attackV7(build("RAIDER", at(4, 3)), at(4, 3), at(5, 3));
@@ -357,7 +359,7 @@ describe("Human abilities (section 10.4)", () => {
       at(3, 7),
     );
     const run = attackV7(state, at(4, 7), at(3, 7));
-    expect(run.combat.fortificationLevel).toBe(1);
+    expect(run.combat.fortificationLevel).toBe(2);
     // Without Explosives the melee attack does not demolish it.
     expect(tileV7(run.state, at(3, 7)).fieldDefense).toBe(true);
   });

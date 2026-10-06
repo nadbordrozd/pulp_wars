@@ -23,6 +23,11 @@ import {
   effectiveRoleRuleV7,
   rebakeHpV7,
   rebakePriceV7,
+  hireCostV7,
+  BLAST_MOUNTAIN_DAMAGE_V7,
+  BLAST_MOUNTAIN_COST_V7,
+  CITY_REWARD_COINS_V7,
+  PILLAGE_COINS_V7,
 } from "../rules/ruleset-v7";
 import {
   ACHIEVEMENT_IDS_V7,
@@ -930,8 +935,11 @@ function validPayload(
       );
     case "MOUNTAIN_BLASTED":
       return (
-        playerCityAt(e) &&
-        e.cost === 3 &&
+        id(e.playerId) &&
+        // Tuning 3: null outside the blasting player's territory.
+        (e.cityId === null || id(e.cityId)) &&
+        parseCoordV7(e.at) !== null &&
+        e.cost === BLAST_MOUNTAIN_COST_V7 &&
         e.terrainBefore === "MOUNTAIN" &&
         e.terrainAfter === "GRASS" &&
         e.resourceBefore === null &&
@@ -1007,13 +1015,11 @@ function validPayload(
         REWARD_IDS_V7.includes(e.reward as never) &&
         rewardMatches(e.reward as RewardIdV7, e.reachedLevel as number) &&
         e.coinDelta ===
-          (e.reward === "STOCKPILE"
-            ? 4
-            : e.reward === "TREASURY"
-              ? 12
-              : e.reward === "TREASURY_6"
-                ? 6
-                : 0)
+          (e.reward === "STOCKPILE" ||
+          e.reward === "TREASURY" ||
+          e.reward === "TREASURY_6"
+            ? CITY_REWARD_COINS_V7[e.reward]
+            : 0)
       );
     case "CITY_REWARD_AUTOMATICALLY_GRANTED":
       return (
@@ -1022,7 +1028,7 @@ function validPayload(
         pos(e.reachedLevel) &&
         (e.reachedLevel as number) >= 5 &&
         e.reward === "TREASURY" &&
-        e.coins === 12
+        e.coins === CITY_REWARD_COINS_V7.TREASURY
       );
     case "CITY_TERRITORY_EXPANDED":
       return id(e.playerId) && id(e.cityId) && sortedCoords(e.tiles);
@@ -1044,8 +1050,12 @@ function validPayload(
         id(e.cityId) &&
         id(e.unitId) &&
         UNIT_ROLE_IDS_V7.includes(e.role as never) &&
-        trainingCosts(e.role as UnitRoleIdV7).some(
-          (cost) => e.cost === cost || e.cost === Math.max(1, cost - 1),
+        // Tuning 3 (`pulp_wars-w49.3`): a unit hired at a Market costs
+        // `hireCostV7` of its training price (the Forge discount first).
+        trainingCosts(e.role as UnitRoleIdV7).some((cost) =>
+          [cost, Math.max(1, cost - 1)].some(
+            (price) => e.cost === price || e.cost === hireCostV7(price),
+          ),
         ) &&
         parseCoordV7(e.at) !== null
       );
@@ -1201,6 +1211,8 @@ function validPayload(
         pos(e.reachedLevel) &&
         id(e.unitId) &&
         ((e.reachedLevel === 3 && e.role === "FIGHTER") ||
+          // Tuning 4: the Raider of a Human Survey ("Scouts").
+          (e.reachedLevel === 2 && e.role === "RAIDER") ||
           ((e.reachedLevel as number) >= 5 && e.role === "JUGGERNAUT"))
       );
     case "UNIT_SPAWN_DISPLACED":
@@ -1341,9 +1353,10 @@ function validPayload(
         id(e.unitId) &&
         UNIT_ROLE_IDS_V7.includes(e.role as never) &&
         parseCoordV7(e.at) !== null &&
-        (e.cause === "KABOOM" || e.cause === "DEATH") &&
+        (e.cause === "KABOOM" || e.cause === "DEATH" || e.cause === "BLAST") &&
         pos(e.wave) &&
         (e.cause === "DEATH" || e.wave === 1) &&
+        (e.cause !== "BLAST" || e.damage === BLAST_MOUNTAIN_DAMAGE_V7) &&
         pos(e.damage) &&
         splashEntries(e.results, false) &&
         (
@@ -1374,7 +1387,7 @@ function validPayload(
           e.resourceRestored,
           e.improvement as ImprovementIdV7,
         ) &&
-        e.coinDelta === 1
+        e.coinDelta === PILLAGE_COINS_V7
       );
     case "UNIT_DISBANDED":
       return (
@@ -1599,12 +1612,14 @@ function combat(input: unknown): boolean {
     isPositiveSafeIntegerV7(input.attacksUsed) &&
     (input.gangUp === 0 || input.gangUp === 1 || input.gangUp === 2) &&
     // Revision 20: the Charge! run-up and the fortification levels removed
-    // by Charge! (up to 3) or Wallbreaker (2); Acid reports none.
+    // by Charge! (up to 4 since tuning 4, when a Field Defense became two
+    // levels; 3 before) or Wallbreaker (2); Acid reports none.
     (input.runUp === 0 || input.runUp === 1 || input.runUp === 2) &&
     (input.fortificationIgnored === 0 ||
       input.fortificationIgnored === 1 ||
       input.fortificationIgnored === 2 ||
-      input.fortificationIgnored === 3) &&
+      input.fortificationIgnored === 3 ||
+      input.fortificationIgnored === 4) &&
     (input.acid !== true || input.fortificationIgnored === 0) &&
     // Revision 19: the Acid and Armoured flags.
     [input.acid, input.defenderArmoured, input.attackerArmoured].every(
@@ -2243,18 +2258,24 @@ function healingResults(input: unknown): boolean {
   return true;
 }
 function rewards(input: unknown, level: number): boolean {
-  // Tuning 1 (7r46): the Treasury alone, for a city that already took its
-  // reward unit.
-  if (isDenseArrayV7(input) && input.length === 1)
-    return level >= 5 && input[0] === "TREASURY";
+  // Tuning 4 (`pulp_wars-w49.3`): the candidate lists of
+  // `rewardCandidatesForLevelV7`.
+  const lists: readonly (readonly RewardIdV7[])[] =
+    level === 2
+      ? [["SURVEY", "STOCKPILE"]]
+      : level === 3
+        ? [["WALLS", "MILITIA"]]
+        : level === 4
+          ? [["BOOM", "TREASURY_6", "BARRACKS"]]
+          : level >= 5
+            ? [
+                ["JUGGERNAUT", "TREASURY", "BARRACKS"],
+                ["TREASURY", "BARRACKS"],
+              ]
+            : [];
   return (
     isDenseArrayV7(input) &&
-    input.length === 2 &&
-    REWARD_IDS_V7.indexOf(input[0] as never) >= 0 &&
-    REWARD_IDS_V7.indexOf(input[1] as never) >
-      REWARD_IDS_V7.indexOf(input[0] as never) &&
-    rewardMatches(input[0] as RewardIdV7, level) &&
-    rewardMatches(input[1] as RewardIdV7, level)
+    lists.some((list) => list.join() === (input as unknown[]).join())
   );
 }
 function rewardMatches(reward: RewardIdV7, level: number): boolean {
@@ -2263,8 +2284,11 @@ function rewardMatches(reward: RewardIdV7, level: number): boolean {
     : level === 3
       ? reward === "WALLS" || reward === "MILITIA"
       : level === 4
-        ? reward === "BOOM" || reward === "TREASURY_6"
-        : level >= 5 && (reward === "JUGGERNAUT" || reward === "TREASURY");
+        ? reward === "BOOM" || reward === "TREASURY_6" || reward === "BARRACKS"
+        : level >= 5 &&
+          (reward === "JUGGERNAUT" ||
+            reward === "TREASURY" ||
+            reward === "BARRACKS");
 }
 function improvementCost(improvement: ImprovementIdV7): number {
   switch (improvement) {

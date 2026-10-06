@@ -569,6 +569,11 @@ describe("ruleset-7 revision-13 Normal AI determinism and headless play", () => 
       // of the cases above reaches a Devour any more (they still Raise
       // Dead, Wail, and Rally); this Pangea match Devours three times.
       { factions: ["UNDEAD", "ORIGINAL"], seed: 3, mapType: "PANGEA" },
+      // Tuning 4 (`pulp_wars-w49.3`): research is priced by the technologies
+      // owned and none of the cases above trains a Banshee any more; this
+      // Dry Land match Wails 20 times (the only one of seeds 0-9, either
+      // seat order, that Wails).
+      { factions: ["UNDEAD", "ORIGINAL"], seed: 9, mapType: "DRY_LAND" },
     ];
     const used: Record<string, number> = {
       RAISE_DEAD: 0,

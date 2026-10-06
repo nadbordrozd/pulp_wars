@@ -1,9 +1,32 @@
 # Greedy Normal AI
 
+**The Human tuning, round 4** (`pulp_wars-w49.3`;
+[round 4](../product/RULESET_7_TUNING_HUMAN.md#11-round-4)): the policy was
+kept legal. It never uses `DRILL_UNIT`. At a level-5+ reward it takes the
+reward unit under its old conditions when it is offered (now only in its
+first capital, once), otherwise a Barracks, otherwise the Treasury; at
+level 4 it still takes Boom (or the Treasury with four neutral tiles
+around). Its threat estimate reads `ignoresZocStops`, so it knows a Human
+Raider passes its screens. It was not taught that research is now priced by
+the technologies owned: it researches as broadly as before and reaches its
+tier-3 technologies later (of sixteen Undead mirror matches of 40 rounds
+two trained a Vampire; of sixteen Undead against Human matches on Pangea
+three trained a Lich).
+
+**The Human tuning, round 3** (`pulp_wars-w49.3`;
+[the Human tech tree, round 3](../product/RULESET_7_TUNING_HUMAN.md)): the
+policy was kept legal and not taught the new tools. It never uses `HIRE`.
+It uses `BLAST_MOUNTAIN` only as the economic action it was, on a Mountain
+of its own territory whose blast (`previewBlastMountainV7`) hits no unit of
+its own or of an ally. Its combat estimate gives its own units Forest cover
+only with its Forestry, reads an enemy's cover where it stands from the
+public Defense breakdown, and assumes the cover for an enemy on any other
+Forest tile. It does not value Forestry for the cover.
+
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r46`. Role facts resolve through the unit's
+previews under `pulp-wars-poc-7r47`. Role facts resolve through the unit's
 kind (`unitFactionV7`: its owner's faction registration, or its original
 owner's while it is mind-controlled,
 [Mind Control revision](../product/RULESET_7_MIND_CONTROL.md)); the revision-13 Undead tactics, the revision-14

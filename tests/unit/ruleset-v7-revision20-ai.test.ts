@@ -628,7 +628,8 @@ describe("ruleset-7 revision-20 Normal AI: against Dinosaurs", () => {
     expect(estimate("FIGHTER", "DINOSAUR")).toBe(
       estimate("FIGHTER", "ORIGINAL"),
     );
-    expect(estimate("KNIGHT", "ORIGINAL")).toBe(5);
+    // Tuning 3 (`pulp_wars-w49.3`): the Human Knight has Attack 4 (5 at 3).
+    expect(estimate("KNIGHT", "ORIGINAL")).toBe(7);
   });
 
   it("values killing a wounded dinosaur before its next kill fully heals it", () => {

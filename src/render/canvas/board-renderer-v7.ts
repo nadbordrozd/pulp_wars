@@ -1,4 +1,5 @@
 import { ACCEPTED_ART_URLS } from "../../assets/generated-art-manifest";
+import { advanceCombatNotesV7 } from "../technology-unlock-text-v7";
 import {
   RULESET7_IMPROVEMENT_ART_IDS,
   RULESET7_FARM_ART_IDS,
@@ -5856,6 +5857,11 @@ function commandMapTargets(
         unansweredNoted:
           undeadNote !== null && preview?.noRetaliationReason === "UNANSWERED",
       });
+      // A ship never advances, so only a land-form attacker has the note.
+      const advanceNotes =
+        preview === null || attacker?.form !== "LAND"
+          ? []
+          : advanceCombatNotesV7(preview);
       const noteParts = [
         monsterNote,
         undeadNote,
@@ -5870,6 +5876,8 @@ function commandMapTargets(
         ...(preview === null ? [] : frozenSeaCombatNotesV7(preview)),
         // Tuning 1 (7r46): Breach (Explosives) ignores fortification.
         ...(preview === null ? [] : breachCombatNotesV7(preview)),
+        // Tuning 2 (7r47): whether a kill moves the attacker.
+        ...advanceNotes,
       ].filter((part): part is string => part !== null);
       const note = noteParts.length === 0 ? null : noteParts.join(" · ");
       const semanticParts = [
@@ -5879,6 +5887,7 @@ function commandMapTargets(
         dinosaurMatch && preview !== null
           ? dinosaurCombatSemanticNoteV7(preview, view)
           : null,
+        ...advanceNotes.map((note) => `Attacker ${note.toLowerCase()}.`),
       ].filter((part): part is string => part !== null);
       const semanticNote =
         semanticParts.length === 0 ? null : semanticParts.join(" ");

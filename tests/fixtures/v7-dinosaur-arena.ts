@@ -297,7 +297,7 @@ export function rewardStateV7(
         candidates:
           reward === "MILITIA"
             ? (["WALLS", "MILITIA"] as const)
-            : (["JUGGERNAUT", "TREASURY"] as const),
+            : (["JUGGERNAUT", "TREASURY", "BARRACKS"] as const),
       },
     ],
   });

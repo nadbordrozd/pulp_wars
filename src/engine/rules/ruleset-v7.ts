@@ -59,6 +59,8 @@ export type TechnologyUnlockedCommandV7 = Extract<
   | "LAND_GRANT"
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.2).
   | "BOARD"
+  // Tuning 3 (`pulp_wars-w49.3`): Commerce, hiring at a Market.
+  | "HIRE"
 >;
 
 export type TechnologyUnlockV7 =
@@ -98,7 +100,7 @@ export type TechnologyUnlockV7 =
   | { readonly kind: "LAND_ROAD_POPULATION"; readonly amount: 1 }
   | { readonly kind: "MARKET_INCOME_MULTIPLIER"; readonly multiplier: 2 }
   | { readonly kind: "ARMS_INDUSTRY_DISCOUNT"; readonly coins: 1 }
-  | { readonly kind: "LAND_TRADE_INCOME"; readonly coins: 2 }
+  | { readonly kind: "LAND_TRADE_INCOME"; readonly coins: 1 }
   | { readonly kind: "SEA_TRADE_INCOME"; readonly coins: 1 }
   /** Revision 17 Goblins: 1 Coin for each credited hostile kill. */
   | { readonly kind: "PLUNDER"; readonly coins: 1 }
@@ -194,6 +196,17 @@ export type TechnologyUnlockV7 =
       readonly minimumMove: 2;
     }
   | { readonly kind: "MELEE_FIELD_DEMOLITION" }
+  /**
+   * Tuning 3 (`pulp_wars-w49.3`): the Forest cover of the owner's ground
+   * units (`TERRAIN_COVER_V7`); without it a Forest gives no cover.
+   */
+  | { readonly kind: "FOREST_COVER" }
+  /**
+   * Tuning 4 (`pulp_wars-w49.3`): a Forest never ends the Move of the
+   * owner's ground units, whatever their role. It waives the Forest stop
+   * only; the Snow stop still reads `FOREST_MOVEMENT_FREEDOM`'s roles.
+   */
+  | { readonly kind: "FOREST_MARCH" }
   | { readonly kind: "NAVAL_TRAINING_DISCOUNT"; readonly coins: 2 }
   /**
    * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.1):
@@ -668,22 +681,43 @@ export const SPATIAL_ECONOMIC_ACTIONS_V7 = deepFreeze({
 >);
 
 /**
- * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r46`,
+ * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r47`,
  * docs/product/RULESET_7_TUNING_1.md): the economy numbers the hand
  * playtest moved.
  */
 /** Commerce: Coins of land trade per connected city (1 before). */
-export const LAND_TRADE_INCOME_COINS_V7 = 2 as const;
+export const LAND_TRADE_INCOME_COINS_V7 = 1 as const;
 /** A Monument's live population (3 before). */
 export const MONUMENT_POPULATION_V7 = 2 as const;
 /** The Boom reward's permanent population (unchanged). */
 export const BOOM_POPULATION_V7 = 3 as const;
-/** Coins of the three Coin rewards (the level-4 Treasury was 8). */
+/**
+ * Coins of the three Coin rewards (the level-4 Treasury was 8). Tuning 4
+ * (`pulp_wars-w49.3`): the level-5+ Treasury pays 6 (12 before), so no
+ * reward returns more than the population of its level costs. The level-4
+ * Treasury keeps its own ID, `TREASURY_6`.
+ */
 export const CITY_REWARD_COINS_V7 = Object.freeze({
   STOCKPILE: 4,
   TREASURY_6: 6,
-  TREASURY: 12,
+  TREASURY: 6,
 } as const);
+/** Tuning 4: the unit capacity one Barracks reward adds to its city. */
+export const BARRACKS_CAPACITY_V7 = 1 as const;
+/**
+ * Tuning 4: the Coins a Pillage pays (1 before), and the Field Defense's
+ * fortification levels (1 before).
+ */
+export const PILLAGE_COINS_V7 = 3 as const;
+export const FIELD_DEFENSE_FORTIFICATION_LEVELS_V7 = 2 as const;
+/**
+ * Tuning 4: Drill (`DRILL_UNIT`), the paid Promotion of a unit that stands
+ * on the center of an own city with a Barracks: for these Coins the unit
+ * becomes a veteran (the Promotion's maximum HP, and as many HP; it is not
+ * healed otherwise) and its turn ends. Every faction's Barracks drills; a
+ * unit that grows instead of being promoted cannot.
+ */
+export const DRILL_COST_V7 = 10 as const;
 /** Land Grant: 2 Coins per explored tile it claims, at least 6 (flat 6 before). */
 export const LAND_GRANT_COST_PER_TILE_V7 = 2 as const;
 export const LAND_GRANT_MINIMUM_COST_V7 = 6 as const;
@@ -700,6 +734,23 @@ export function landGrantCostV7(exploredClaimableTiles: number): number {
 }
 /** Blast Mountain: permanent population for the tile's city (0 before). */
 export const BLAST_MOUNTAIN_POPULATION_V7 = 1 as const;
+/** Blast Mountain: its price in Coins. */
+export const BLAST_MOUNTAIN_COST_V7 = 3 as const;
+/**
+ * Tuning 3 (`pulp_wars-w49.3`): the fixed damage of a Blast Mountain to
+ * every unit on the blasted tile and on the eight tiles around it, friend
+ * and foe (an explosion of cause `BLAST`).
+ */
+export const BLAST_MOUNTAIN_DAMAGE_V7 = 5 as const;
+/**
+ * Tuning 3 (`pulp_wars-w49.3`): a hired unit costs its training price in
+ * the Market's city times 3/2, rounded up.
+ */
+export function hireCostV7(trainingCost: number): number {
+  return Math.ceil((trainingCost * 3) / 2);
+}
+/** Tuning 3: a Market's city may hold this many units above its capacity. */
+export const HIRE_EXTRA_CAPACITY_V7 = 1 as const;
 /**
  * Treasure chests: before this round a chest never gives a unit of a tier 3
  * technology; the seat's `RAIDER`-role unit appears instead.
@@ -793,6 +844,8 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
     [
       { kind: "COMMAND", command: "BUILD_LUMBER_CAMP" },
       { kind: "COMMAND", command: "CLEAR_FOREST" },
+      // Tuning 3 (`pulp_wars-w49.3`): Forest cover is this technology's.
+      { kind: "FOREST_COVER" },
     ],
   ),
   node(
@@ -825,6 +878,9 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
     [
       { kind: "COMMAND", command: "REPLANT_FOREST" },
       { kind: "FOREST_MOVEMENT_FREEDOM", roles: ["RAIDER", "MARKSMAN"] },
+      // Tuning 4 (`pulp_wars-w49.3`): every ground unit marches through
+      // Forest.
+      { kind: "FOREST_MARCH" },
       { kind: "ROLE_SIGHT", role: "MARKSMAN", radius: 2 },
     ],
   ),
@@ -861,7 +917,11 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
     // Revision 14 (E2): Commerce no longer doubles Market income.
     // Tuning 1 (`pulp_wars-w49.3`, 7r46): 2 Coins per connected city (1
     // before).
-    [{ kind: "LAND_TRADE_INCOME", coins: LAND_TRADE_INCOME_COINS_V7 }],
+    // Tuning 3 (`pulp_wars-w49.3`): Markets hire (`HIRE`).
+    [
+      { kind: "LAND_TRADE_INCOME", coins: LAND_TRADE_INCOME_COINS_V7 },
+      { kind: "COMMAND", command: "HIRE" },
+    ],
   ),
   node(
     "RAIDING",
@@ -1127,7 +1187,11 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     cost: 9,
     // Tuning 1 (`pulp_wars-w49.3`, 7r46): 13 HP (10 before).
     maxHp: 13,
-    attack2: 6,
+    // Tuning 3 (`pulp_wars-w49.3`): Attack 4 (3 before): it kills a full-HP
+    // Raider, Marksman, Captain, Catapult, or Knight in one attack also in
+    // Forest cover, and a Fighter in the open but not one in cover, behind
+    // a Field Defense, or on a walled center; never a Guard.
+    attack2: 8,
     defense2: 2,
     move: 3,
     range: 1,
@@ -1135,7 +1199,10 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "OVERRUN"],
+    // Tuning 2 (`pulp_wars-w49.3`, 7r47): the Human Knight captures
+    // settlements like the other capturing units. The Knight-role units of
+    // the other factions do not (each has its own `abilities`).
+    abilities: ["ATTACK", "CAPTURE", "OVERRUN"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -1258,12 +1325,29 @@ const mechanics = (
     ) as Record<UnitRoleIdV7, RoleMechanicsV7>,
   );
 
+/**
+ * Tuning 2 (`pulp_wars-w49.3`, 7r47): a ranged unit never advances. A unit
+ * is ranged when its kind's role rule has a range above 1, whatever the
+ * distance of the attack (a Spitter that kills an adjacent unit stays). A
+ * reach that an ability adds to a range-1 role (Rockfall) does not make it
+ * ranged; such an attack is from distance 2 and never advanced.
+ */
+export function isRangedRoleRuleV7(
+  rule: Pick<EffectiveRoleRuleV7, "range">,
+): boolean {
+  return rule.range > 1;
+}
+
 export const ORIGINAL_ROLE_MECHANICS_V7 = mechanics({
   // Tuning 1 (`pulp_wars-w49.3`, 7r46): a Marksman never advances after a
   // kill (it used to, after a kill from distance 1).
   MARKSMAN: { advancesAfterKill: false },
   CATAPULT: { advancesAfterKill: false },
   BATTLESHIP: { splash: true },
+  // Tuning 4 (`pulp_wars-w49.3`): a Human Raider is not stopped by hostile
+  // zones of control (the Sabretooth's Prowl mechanic), so it slips past a
+  // screen to the units behind it.
+  RAIDER: { ignoresZocStops: true },
 });
 
 export const ORIGINAL_BASELINE_V5_TREE: FactionTechnologyTreeV7 = deepFreeze({
@@ -3041,14 +3125,26 @@ export function factionRulesV7(faction: UnitKindV7): FactionRulesV7 {
  * (training, Egg laying, treasure placement, previews, the city panel, and
  * the Normal AI) uses this formula.
  */
+/** Tuning 4: how many Barracks rewards a city's reward history holds. */
+export function cityBarracksV7(city: {
+  readonly rewards?: readonly { readonly reward: string }[];
+}): number {
+  return (city.rewards ?? []).filter((record) => record.reward === "BARRACKS")
+    .length;
+}
+
 export function cityUnitCapacityForV7(
   level: number,
   ownerResearchedTechs: readonly string[],
   ownerFaction: FactionIdV7,
+  // Tuning 4 (`pulp_wars-w49.3`): the city's Barracks rewards
+  // ({@link cityBarracksV7}), each one more unit.
+  barracks = 0,
 ): number {
   return (
     level +
     1 +
+    barracks * BARRACKS_CAPACITY_V7 +
     (ownerResearchedTechs.includes("PLANNING") ? 1 : 0) +
     factionRulesV7(ownerFaction).cityCapacityBonus +
     (ownerResearchedTechs.length === 0
@@ -3090,30 +3186,41 @@ export const RULESET_7 = deepFreeze({
  * base is 9 (12 before), so the one-city costs read 5 / 7 / 9. The per-city
  * steps are unchanged: tier 3 is `9 + 5(C - 1)`.
  *
- * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r46`): the per-city steps
+ * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r47`): the per-city steps
  * are 1 / 2 / 2 (1 / 3 / 5 before), so tier 2 is `7 + 2(C - 1)` and tier 3
  * `9 + 2(C - 1)`; the bases are unchanged.
  */
 export const TECHNOLOGY_RESEARCH_COST_V7: Readonly<
   Record<1 | 2 | 3, { readonly base: number; readonly step: number }>
 > = deepFreeze({
-  1: { base: 5, step: 1 },
+  // Tuning 4 (`pulp_wars-w49.3`): `step` is per technology the player
+  // already owns beyond its first (2 for every tier); it was per city the
+  // player owned beyond its first (1 / 2 / 2). The city count no longer
+  // enters the price.
+  1: { base: 5, step: 2 },
   2: { base: 7, step: 2 },
   3: { base: 9, step: 2 },
 });
 
+/**
+ * The price of a technology of `tier` for a player that already owns
+ * `ownedTechnologyCount` technologies (at least 1; the free opener is
+ * {@link playerTechnologyResearchCostV7}): the tier's base plus the step for
+ * each owned technology beyond the first.
+ */
 export function technologyResearchCostV7(
   tier: 1 | 2 | 3,
-  ownedCityCount: number,
+  ownedTechnologyCount: number,
 ): number {
   if (
     ![1, 2, 3].includes(tier) ||
-    !Number.isSafeInteger(ownedCityCount) ||
-    ownedCityCount < 1
+    !Number.isSafeInteger(ownedTechnologyCount) ||
+    ownedTechnologyCount < 0
   )
-    throw new RangeError("INVALID_CITY_COUNT");
+    throw new RangeError("INVALID_TECHNOLOGY_COUNT");
   const { base, step } = TECHNOLOGY_RESEARCH_COST_V7[tier];
-  const value = BigInt(base) + BigInt(step) * BigInt(ownedCityCount - 1);
+  const value =
+    BigInt(base) + BigInt(step) * BigInt(Math.max(0, ownedTechnologyCount - 1));
   if (value > BigInt(Number.MAX_SAFE_INTEGER))
     throw new RangeError("INTEGER_OVERFLOW");
   return Number(value);
@@ -3126,10 +3233,9 @@ export function technologyResearchCostV7(
  */
 export function playerTechnologyResearchCostV7(
   tier: 1 | 2 | 3,
-  ownedCityCount: number,
   researchedTechCount: number,
 ): number {
-  const ordinary = technologyResearchCostV7(tier, ownedCityCount);
+  const ordinary = technologyResearchCostV7(tier, researchedTechCount);
   return tier === 1 && researchedTechCount === 0 ? 0 : ordinary;
 }
 
@@ -3158,7 +3264,7 @@ export function effectiveRoleRuleV7(
 }
 
 /**
- * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r46`): the role of the unit a
+ * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r47`): the role of the unit a
  * treasure chest gives a seat of `faction` in `round`. It is the faction's
  * `treasureUnitRole`, except that before round
  * `TREASURE_TIER_3_UNIT_FIRST_ROUND_V7` a role unlocked by a tier 3
@@ -3807,11 +3913,41 @@ export function coverBonusV7(
       : NO_COVER_V7;
 }
 
-/** Whether the terrain gives the Forest and Mountain cover. */
+/**
+ * Tuning 3 (`pulp_wars-w49.3`): whether `ownerId`'s ground units have the
+ * Forest cover (the `forestCover` capability of its technologies under its
+ * own tree: a seat-level rule, like its Roads or its Commerce). The neutral
+ * owner has no technology and keeps the cover.
+ */
+export function ownerHasForestCoverV7(
+  roster: {
+    readonly players: readonly {
+      readonly id: PlayerId;
+      readonly faction: FactionIdV7;
+      readonly researchedTechs: readonly TechnologyIdV7[];
+    }[];
+  },
+  ownerId: PlayerId,
+): boolean {
+  if (ownerId === NEUTRAL_OWNER_ID_V7) return true;
+  const player = roster.players.find((candidate) => candidate.id === ownerId);
+  if (player === undefined) throw new RangeError("INVALID_STATE");
+  return technologyCapabilitiesV7(player.researchedTechs, player.faction)
+    .forestCover;
+}
+
+/**
+ * Whether the terrain gives the Forest and Mountain cover to a ground unit
+ * whose owner has (`forestCover` true) or lacks the Forest cover technology.
+ * Tuning 3 (`pulp_wars-w49.3`): a Mountain always does; a Forest does only
+ * with the owner's `FOREST_COVER` capability (Forestry). The neutral owner
+ * has no technology and keeps the Forest cover.
+ */
 export function terrainGivesCoverV7(
   terrain: string | null | undefined,
+  forestCover: boolean,
 ): boolean {
-  return terrain === "FOREST" || terrain === "MOUNTAIN";
+  return terrain === "MOUNTAIN" || (terrain === "FOREST" && forestCover);
 }
 
 /** The Ice Folk revision (section 5.5): the Shatter threshold. */
@@ -4359,7 +4495,7 @@ export interface TechnologyCapabilitiesV7 {
   readonly landRoadPopulationAmount: 0 | 1;
   readonly marketIncomeMultiplier: 1 | 2;
   readonly armsIndustryDiscountCoins: 0 | 1;
-  readonly landTradeIncomeCoins: 0 | 2;
+  readonly landTradeIncomeCoins: 0 | 1;
   /**
    * Tuning 1 Breach (`pulp_wars-w49.3`, the `MELEE_FIELD_DEMOLITION` unlock
    * of Explosives in every tree): the player's land-form attacks from
@@ -4368,6 +4504,17 @@ export interface TechnologyCapabilitiesV7 {
    * target tile.
    */
   readonly breach: boolean;
+  /**
+   * Tuning 3 (`pulp_wars-w49.3`, the `FOREST_COVER` unlock of Forestry in
+   * every tree): the player's ground units standing in a Forest have the
+   * terrain cover. Mountain cover needs no technology.
+   */
+  readonly forestCover: boolean;
+  /**
+   * Tuning 4 (the `FOREST_MARCH` unlock of Fieldcraft in every tree): no
+   * Forest ends the Move of the player's ground units.
+   */
+  readonly forestMarch: boolean;
   readonly seaTradeIncomeCoins: 0 | 1;
   readonly hostileCaptureSpoilsCoins: 0 | 2;
   /** Revision 17 Goblin Plunder: Coins per credited hostile kill. */
@@ -4498,8 +4645,10 @@ export function technologyCapabilitiesV7(
   let landRoadPopulationAmount: 0 | 1 = 0;
   let marketIncomeMultiplier: 1 | 2 = 1;
   let armsIndustryDiscountCoins: 0 | 1 = 0;
-  let landTradeIncomeCoins: 0 | 2 = 0;
+  let landTradeIncomeCoins: 0 | 1 = 0;
   let breach = false;
+  let forestCover = false;
+  let forestMarch = false;
   let seaTradeIncomeCoins: 0 | 1 = 0;
   let hostileCaptureSpoilsCoins: 0 | 2 = 0;
   let plunderCoins: 0 | 1 = 0;
@@ -4661,6 +4810,12 @@ export function technologyCapabilitiesV7(
       case "MELEE_FIELD_DEMOLITION":
         breach = true;
         break;
+      case "FOREST_COVER":
+        forestCover = true;
+        break;
+      case "FOREST_MARCH":
+        forestMarch = true;
+        break;
     }
   const result: TechnologyCapabilitiesV7 = deepFreeze({
     treeId: tree.id,
@@ -4690,6 +4845,8 @@ export function technologyCapabilitiesV7(
     armsIndustryDiscountCoins,
     landTradeIncomeCoins,
     breach,
+    forestCover,
+    forestMarch,
     seaTradeIncomeCoins,
     hostileCaptureSpoilsCoins,
     plunderCoins,

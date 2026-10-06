@@ -3,6 +3,7 @@ import {
   EGG_DEFENSE2_V7,
   NO_COVER_V7,
   coverBonusV7,
+  ownerHasForestCoverV7,
   terrainGivesCoverV7,
   RAM_BONUS2_V7,
   armouredDamageV7,
@@ -27,10 +28,12 @@ import {
   unitIsSluggishV7,
   unitMovementModeV7,
   unitRoleMechanicsV7,
+  isRangedRoleRuleV7,
   unitRoleRuleV7,
   unitTakesCoverV7,
   type EffectiveRoleRuleV7,
   type FactionRosterV7,
+  FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
 } from "../rules/ruleset-v7";
 import {
   afflictionCombatEffectsV7,
@@ -99,7 +102,10 @@ export function defenseBonusForUnitV7(
   // The frozen sea (naval branch section 8.10): Glacier gives the Snow
   // cover on ice (never added to anything else).
   return coverBonusV7(
-    terrainGivesCoverV7(tileAtV7(state.board, unit.at)?.terrain),
+    terrainGivesCoverV7(
+      tileAtV7(state.board, unit.at)?.terrain,
+      ownerHasForestCoverV7(state, unit.ownerId),
+    ),
     snowCoverAppliesV7(state, unit, snowAt) || iceCoverAppliesV7(state, unit),
   );
 }
@@ -142,7 +148,10 @@ export function snowCoverAppliesV7(
     unitTakesCoverV7(state, unit) &&
     unitOwnerIsIceFolkV7(state, unit) &&
     snowAt(unit.at) &&
-    !terrainGivesCoverV7(tileAtV7(state.board, unit.at)?.terrain) &&
+    !terrainGivesCoverV7(
+      tileAtV7(state.board, unit.at)?.terrain,
+      ownerHasForestCoverV7(state, unit.ownerId),
+    ) &&
     fortificationLevelForUnitV7(state, unit) === 0
   );
 }
@@ -195,7 +204,13 @@ export function fortificationPartsForUnitV7(
       )
         ? CITY_WALLS_FORTIFICATION_LEVELS_V7
         : 0,
-    fieldDefense: tile.fieldDefense || dugIn ? 1 : 0,
+    // Tuning 4 (`pulp_wars-w49.3`): a Field Defense is two levels (one
+    // before); Dig In is still one, and the two are never added.
+    fieldDefense: tile.fieldDefense
+      ? FIELD_DEFENSE_FORTIFICATION_LEVELS_V7
+      : dugIn
+        ? 1
+        : 0,
     dugIn,
     tileFieldDefense: tile.fieldDefense,
   };
@@ -409,7 +424,9 @@ export function calculateCombatPreviewV7(
     options.ignoreDigIn === true && fullParts.dugIn
       ? {
           ...fullParts,
-          fieldDefense: fullParts.tileFieldDefense ? 1 : 0,
+          fieldDefense: fullParts.tileFieldDefense
+            ? FIELD_DEFENSE_FORTIFICATION_LEVELS_V7
+            : 0,
           dugIn: false,
         }
       : fullParts;
@@ -672,6 +689,8 @@ export function calculateCombatPreviewV7(
     !attackerDies &&
     distance === 1 &&
     attackerMechanics.advancesAfterKill &&
+    // Tuning 2 (7r47): a ranged unit never advances, also from distance 1.
+    !isRangedRoleRuleV7(attackerRule) &&
     attacker.form === "LAND" &&
     (defender.form === "LAND" || defender.form === "EGG") &&
     // The Rift (RULESET_7_RIFT.md section 4): no attacker advances onto a
@@ -806,7 +825,7 @@ export function calculateCombatPreviewV7(
 }
 
 /**
- * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r46`; current rules section
+ * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r47`; current rules section
  * 13.2): the raw retaliation of a defender, before Armoured, Plated, and the
  * attacker's Shield. Fortification and cover make the defender take less;
  * they never make it hit harder, so the retaliation is the ordinary formula

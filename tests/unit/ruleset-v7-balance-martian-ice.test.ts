@@ -1475,8 +1475,9 @@ describe("I2: Snow cover x 1.25 (section 6.2)", () => {
     expect(defenseBonusForUnitV7(state, unitAtV7(state, at(7, 7)))).toEqual(
       SNOW_COVER_V7,
     );
-    // A Knight's charge leaves the Yeti alive on Snow (8 of 9).
-    expect(exchange("FIGHTER", "KNIGHT").combat.damageToDefender).toBe(8);
+    // Tuning 3 (`pulp_wars-w49.3`): a Knight (Attack 4, 3 before) kills the
+    // 9-HP Yeti on Snow (it dealt 8 of 9).
+    expect(exchange("FIGHTER", "KNIGHT").combat.damageToDefender).toBe(9);
   });
 
   it("a snowy Forest gives the terrain's x 1.5, never both", () => {

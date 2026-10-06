@@ -646,7 +646,7 @@ describe("ruleset-7 achievements and Monuments", () => {
     expect(result.events[0]).toMatchObject({
       kind: "IMPROVEMENT_PILLAGED",
       improvement: "MONUMENT",
-      coinDelta: 1,
+      coinDelta: 3,
     });
     expect(tile(result.state, staged.monumentAt).improvement).toBeNull();
     expect(populationAt(result.state, staged.monumentAt)).toBeUndefined();

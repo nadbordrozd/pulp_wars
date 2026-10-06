@@ -198,7 +198,9 @@ describe("Revision 13 Undead presentation", () => {
           same(candidate.at, UNDEAD_SHOWCASE_V7.zombieTarget),
       ),
     );
-    expect(zombieAttack.previewNote).toBe("Rises as Zombie");
+    // Tuning 2 (7r47): the attacker does not take the tile of a unit that
+    // rises.
+    expect(zombieAttack.previewNote).toBe("Rises as Zombie · Stays");
     expect(zombieAttack.semanticLabel).toContain("rises as a Zombie");
   });
 

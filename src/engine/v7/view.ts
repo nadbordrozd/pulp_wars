@@ -19,6 +19,7 @@ import {
   MONUMENT_POPULATION_V7,
   isResourceRevealedV7,
   unitRoleRuleV7,
+  FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
 } from "../rules/ruleset-v7";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
@@ -1207,7 +1208,8 @@ function tileFortificationLevel(
   territory: GameStateV7["cities"][number],
 ): number {
   const tile = state.board.tiles[at.y * state.board.width + at.x];
-  let level = tile?.fieldDefense ? 1 : 0;
+  // Tuning 4: a Field Defense is two levels.
+  let level = tile?.fieldDefense ? FIELD_DEFENSE_FORTIFICATION_LEVELS_V7 : 0;
   if (same(territory.at, at)) {
     if (territory.rewards.some((reward) => reward.reward === "WALLS"))
       level += 2;

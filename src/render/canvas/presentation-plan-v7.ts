@@ -1190,7 +1190,8 @@ export function corePresentationPlanV7(
       // chain order); blasts of one wave burst together.
       const blast: ExplosionBlastV7 = {
         at: event.at,
-        kind: event.cause,
+        // Tuning 3: a Blast Mountain bursts like a Kaboom.
+        kind: event.cause === "BLAST" ? "KABOOM" : event.cause,
         hits: event.results.map((result) => result.at),
       };
       const last = steps.at(-1);

@@ -66,22 +66,25 @@ const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
 // The frozen sea took `7r44`. `pulp_wars-5ti.11` took `7r45` for one rule
 // fix (no Dig In on ice; tests/unit/ruleset-v7-frozen-sea-interactions.test.ts),
 // with no shape change, and `pulp_wars-w49.3` took `7r46` for tuning 1
-// (tests/unit/ruleset-v7-tuning-1.test.ts), so `7r44` and `7r45` are the
+// (tests/unit/ruleset-v7-tuning-1.test.ts) and `7r47` for tuning 2
+// (tests/unit/ruleset-v7-tuning-2.test.ts), so `7r44` to `7r46` are the
 // last prior identities here.
-describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix, then 7r46 for tuning 1)", () => {
-  it("is 7r46 with 7r44 and 7r45 last in the gap-free prior list and their save keys obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
-    expect(PRIOR_RULESET_7_IDS.slice(-3)).toEqual([
+describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix, then 7r46 and 7r47 for tunings 1 and 2)", () => {
+  it("is 7r47 with 7r44 to 7r46 last in the gap-free prior list and their save keys obsolete", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
+    expect(PRIOR_RULESET_7_IDS.slice(-4)).toEqual([
       "pulp-wars-poc-7r43",
       "pulp-wars-poc-7r44",
       "pulp-wars-poc-7r45",
+      "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(45);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(46);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r46.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r47.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3)).toEqual([
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
+      "pulpWars.save.v7r46.current",
     ]);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
   });
@@ -91,7 +94,7 @@ describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r46");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r47");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r44" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(

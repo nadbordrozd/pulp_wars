@@ -410,9 +410,10 @@ function validateMovementPathWithOptionsV7(
         },
       };
     }
-    const ignoresForest = capabilities.forestMovementFreedomRoles.includes(
-      unit.role,
-    );
+    // Tuning 4: Fieldcraft's Forest march frees every role in Forest.
+    const ignoresForest =
+      capabilities.forestMarch ||
+      capabilities.forestMovementFreedomRoles.includes(unit.role);
     const sightRadius = unitSightRadiusAtV7(state, unit, tile);
     const sight = revealRadius(state, explored, step, sightRadius);
     explored = sight.explored;
@@ -975,9 +976,9 @@ function validatePlayerMovementPathWithContextV7(
       !publicFlyerMayStandV7(view, unit, tile)
     )
       return { legal: false, reason: "SETTLEMENT_FORBIDDEN" };
-    const ignoresForest = capabilities.forestMovementFreedomRoles.includes(
-      unit.role,
-    );
+    const ignoresForest =
+      capabilities.forestMarch ||
+      capabilities.forestMovementFreedomRoles.includes(unit.role);
     const entersZoc =
       !flies && !prowls && publicHostileZoc(view, unit, step, context);
     const stepRoadNode = isUsablePublicRoadNodeV7(view, tile, context);

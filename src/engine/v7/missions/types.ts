@@ -31,6 +31,12 @@ export interface MissionDefinitionV7 {
   readonly revision: number;
   /** Test fixtures: registered for headless and tests, in no chapter. */
   readonly hidden?: true;
+  /**
+   * Hidden fixtures only (`pulp_wars-w49.3`, the Human tuning labs): the
+   * AI seats may play a faction another seat plays (a mirror), so the
+   * `MISSION` setup of such a mission repeats a faction.
+   */
+  readonly mirror?: true;
   readonly size: 11 | 14 | 16;
   /** Fixed; it only seeds the treasure-chest draws. */
   readonly seed: number;

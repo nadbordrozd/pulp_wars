@@ -4054,6 +4054,8 @@ export const STARTING_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
 /**
  * Revision 17 section 8.9: the `FIGHTER` units of a level-3 Militia reward.
  * A Goblin Militia is two Goblins; every other faction's is one unit.
+ * (Tuning 3 tried two Fighters for the Humans; tuning 4 took it back after
+ * play: two units in one level overran the unit limit.)
  */
 export const MILITIA_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
   deepFreeze({
@@ -4065,6 +4067,24 @@ export const MILITIA_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
     ICE_FOLK: 1,
     DWARF: 1,
     CANDY: 1,
+  });
+
+/**
+ * Tuning 4 (`pulp_wars-w49.3`): the `RAIDER`-role units the level-2 Survey
+ * reward also grants ("Scouts": the survey and a free Raider, with no
+ * technology needed). Human only; the other factions' Survey is the survey
+ * alone until their passes.
+ */
+export const SURVEY_RAIDERS_V7: Readonly<Record<FactionIdV7, 0 | 1>> =
+  deepFreeze({
+    ORIGINAL: 1,
+    UNDEAD: 0,
+    GOBLIN: 0,
+    DINOSAUR: 0,
+    MARTIAN: 0,
+    ICE_FOLK: 0,
+    DWARF: 0,
+    CANDY: 0,
   });
 
 /**

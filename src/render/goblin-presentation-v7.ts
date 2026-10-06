@@ -718,11 +718,14 @@ export function goblinBoundaryNoticeV7(
     if (event.kind === "EXPLOSION_RESOLVED") {
       toast = true;
       const kills = event.results.filter((result) => result.dies).length;
+      // Tuning 3 (`pulp_wars-w49.3`): a Blast Mountain names no unit.
       const name = capitalized(
-        `${possessive(after, event.playerId)} ${roleLabel(after, event.playerId, event.role)}`,
+        event.cause === "BLAST"
+          ? `${possessive(after, event.playerId)} Mountain blast`
+          : `${possessive(after, event.playerId)} ${roleLabel(after, event.playerId, event.role)}`,
       );
       parts.push(
-        `${name} ${event.cause === "KABOOM" ? "blew up" : "exploded"}: ${event.results.length} hit, ${kills} killed`,
+        `${name}${event.cause === "KABOOM" ? " blew up" : event.cause === "DEATH" ? " exploded" : ""}: ${event.results.length} hit, ${kills} killed`,
       );
     } else if (event.kind === "PLUNDER_AWARDED") {
       if (event.playerId !== viewerId) continue;

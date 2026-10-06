@@ -39,6 +39,7 @@ import {
   kindsV7,
   movedV7,
   patchTileV7,
+  withoutTechsV7,
 } from "../fixtures/v7-revision20";
 
 // The Candy revision (`pulp_wars-jdb.3`): Sugar Rush and the Crash
@@ -272,12 +273,13 @@ describe("Rushed (section 5.2)", () => {
     expect([moves("FIGHTER", false), moves("FIGHTER", true)]).toEqual([1, 2]);
     expect([moves("RAIDER", false), moves("RAIDER", true)]).toEqual([2, 3]);
     expect([moves("KNIGHT", false), moves("KNIGHT", true)]).toEqual([2, 3]);
-    // A Forest stops a Rushed Toffee Trooper on entering it.
+    // A Forest stops a Rushed Toffee Trooper on entering it (without
+    // Fieldcraft, whose Forest march lifts that stop since tuning 4).
     const forest = forestV7(
-      candyFieldV7([
-        { seat: 0, role: "FIGHTER", at: at(5, 3), rush: "RUSHED" },
-        FAR,
-      ]),
+      candyFieldV7(
+        [{ seat: 0, role: "FIGHTER", at: at(5, 3), rush: "RUSHED" }, FAR],
+        { techs: { 0: withoutTechsV7("CANDY", "FIELDCRAFT") } },
+      ),
       at(5, 4),
     );
     expect(reach(forest, at(5, 3))).toContainEqual(at(5, 4));

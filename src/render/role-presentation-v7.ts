@@ -2,8 +2,10 @@ import {
   effectiveRoleRuleV7,
   type FactionIdV7,
   isNavalRoleV7,
+  roleMechanicsV7,
   type UnitRoleIdV7,
 } from "../engine/index";
+import { RAIDER_SLIPS_TEXT_V7 } from "./technology-unlock-text-v7";
 import {
   undeadAbilityDescriptionV7,
   undeadAbilityNameV7,
@@ -76,6 +78,12 @@ export function recruitmentRolePresentationV7(
     restrictions.push("Can't attack after moving.");
   if (!role.abilities.includes("CAPTURE") && !ship)
     restrictions.push("Can't capture.");
+  // Tuning 4 (`pulp_wars-w49.3`): the Human Raider slips past a screen.
+  if (
+    faction === "ORIGINAL" &&
+    roleMechanicsV7(roleId, faction).ignoresZocStops
+  )
+    restrictions.push(`${RAIDER_SLIPS_TEXT_V7}.`);
   if (ship) restrictions.push("Built at ports. Heals only near your ports.");
   if (roleId === "BATTLESHIP")
     restrictions.push(

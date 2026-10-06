@@ -549,7 +549,7 @@ describe("Revision 20 Charge! attack preview text (section 7.2)", () => {
     const broken = charge(fortified, { x: 4, y: 7 }, { x: 3, y: 7 });
     expect(broken.preview).toMatchObject({
       fortificationLevel: 0,
-      fortificationIgnored: 1,
+      fortificationIgnored: 2,
     });
     expect(broken.lines).toEqual([
       "Ignores fortification",

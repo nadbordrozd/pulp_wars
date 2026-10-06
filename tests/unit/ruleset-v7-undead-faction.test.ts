@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r46.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r47.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r45 and preserves the r46 save", () => {
+  it("cleans obsolete keys through v7r46 and preserves the r47 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r45.current",
+      "pulpWars.save.v7r46.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(45);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(46);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -183,7 +183,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r43.current", "r43"],
       ["pulpWars.save.v7r44.current", "r44"],
       ["pulpWars.save.v7r45.current", "r45"],
-      [SAVE_STORAGE_KEY_V7, "r46"],
+      ["pulpWars.save.v7r46.current", "r46"],
+      [SAVE_STORAGE_KEY_V7, "r47"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -223,8 +224,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r43.current",
         "pulpWars.save.v7r44.current",
         "pulpWars.save.v7r45.current",
+        "pulpWars.save.v7r46.current",
       ],
-      removedCount: 34,
+      removedCount: 35,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -747,7 +749,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       ["Guard", 3, 17, 3, 6, 1, 1, 1, "ATTACK+CAPTURE"],
       ["Captain", 5, 10, 2, 2, 1, 1, 1, "ATTACK+RALLY+TEND_WOUNDED"],
       ["Catapult", 8, 10, 6, 1, 1, 3, 2, "ATTACK"],
-      ["Knight", 9, 13, 6, 2, 3, 1, 1, "ATTACK+OVERRUN"],
+      ["Knight", 9, 13, 8, 2, 3, 1, 1, "ATTACK+CAPTURE+OVERRUN"],
       ["Juggernaut", null, 40, 8, 8, 1, 1, 1, "ATTACK+CAPTURE+PUSH"],
       ["Patrol Boat", 5, 10, 4, 4, 2, 1, 1, "ATTACK+RAM"],
       ["Battleship", 16, 25, 12, 8, 2, 3, 1, "ATTACK"],
@@ -1484,7 +1486,15 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
       UNIT_ROLE_IDS_V7.filter((role) =>
         effectiveRoleRuleV7(role, faction).abilities.includes("CAPTURE"),
       );
-    expect(captures("UNDEAD")).toEqual(captures("ORIGINAL"));
+    // Tuning 2 (7r47): the Human Knight captures; the Vampire does not.
+    expect(captures("ORIGINAL")).toEqual([
+      "FIGHTER",
+      "RAIDER",
+      "MARKSMAN",
+      "GUARD",
+      "KNIGHT",
+      "JUGGERNAUT",
+    ]);
     expect(captures("UNDEAD")).toEqual([
       "FIGHTER",
       "RAIDER",
@@ -1673,23 +1683,29 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "RIVAL",
       mapType: "CONTINENTS",
       maxRounds: 30,
-      acceptedCommands: 387,
-      rounds: 31,
-      termination: "ROUND_CAP",
+      // Tuning 3 (`pulp_wars-w49.3`: the Knight's Attack 4, Forest cover
+      // from Forestry, land trade): the match now ends in round 25 (it ran
+      // to the cap, 387 commands), and every digest below was recomputed.
+      // Tuning 4 (`pulp_wars-w49.3`: research priced by the technologies
+      // owned, the reward ladder, land trade 1): the match ends in round 19
+      // (206 commands), and every digest below was recomputed.
+      acceptedCommands: 206,
+      rounds: 19,
+      termination: "OUTCOME",
       mapHash:
         "251ae814b9c22679f8ed6b288c0a9ae2a06574b84b5b719521970f6f24a3e51c",
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "c31c82d300d3e45e7c89e807e66a9e26f4322af00e60ee8345eacfbc1925990c",
+        "2657d427724d3b923b719c79b52e572e09c2cbec549eaa76c8278e57ab834842",
       eventHash:
-        "e83d7acb4231c86a75df103fb3954bd2e2dd1894ee2399cf07f7f71c36102b3f",
+        "092800f0afbad446689ced5d2dc1cc5c276eb713a3fb4af32a602ada921bb826",
       normalizedFinalStateHash:
-        "257b57d74aae254f6488b7a9c907473b47f93f05db302cf7e94ca07ecf836e0d",
+        "8b2457c3b7b5ba76c5561f8e342485ff16ec9f2297f3a7e5829572e9927962a3",
       normalizedHumanViewHash:
-        "e2f9a1ad22b222bcc592db9ff50338f97a0faba0350c8a357a5d0ed8e121eaa5",
+        "d5b61bbb72ed5cf16074e7a76b5312c19825eb4c88ef78f2cdc3726dd1f676dc",
       normalizedHumanCommandsHash:
-        "663402033ac1524fab8b924150ba2374e67c44b1f7715e16e63b14247e9b8134",
+        "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     },
     {
       seed: 1234,
@@ -1698,7 +1714,8 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "COOPERATIVE",
       mapType: "ARCHIPELAGO",
       maxRounds: 18,
-      acceptedCommands: 337,
+      // Tuning 4: 309 commands (337 before), recomputed.
+      acceptedCommands: 309,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1706,15 +1723,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "b11910d95aeab8c56bbf6f72f63d4e6f6b30f7e43f842d8354e7badf23e1050c",
       commandHash:
-        "1192d91355e362cce0c91978dcba938defa9f5870a7b90689922004f817bac0b",
+        "d98a02cad32ded35a400e11e0d4c80833b28011d9bc3726ec98ba3701766afe3",
       eventHash:
-        "2b0601867683855075ba6109ea1e6a81dc37acaadcb7c0b3f3c6c69ccf3843c8",
+        "adf2d4c3a9e4c422f2b8dc4b4feac2d42db545cb59bfd869f4203c419052f6d0",
       normalizedFinalStateHash:
-        "72aeeb8ca56fc8f46f293f218f3dcb6a384c10f05807714b138820c605f010bb",
+        "c015222c2399bc0fb1260e38ae98e2651ac9087d405c1e26dce29324a78c68cd",
       normalizedHumanViewHash:
-        "d98ac336c5c5d8f3b879e9b4620693f706673f1d842dfaed983a85266972fce1",
+        "6fd97a031a37387a75ccd127d71c4b654e2628ba9acc5f1d0570404c2b99e24d",
       normalizedHumanCommandsHash:
-        "f6f0f49d5dc31fd30b31e4db67e917565959e8dc670748808b4e8e4ff151acc4",
+        "c5df31bef454f0337fc51d9df1098e06ebdf7b37f05985621753351e7730f3f7",
     },
   ] as const;
 
@@ -2311,7 +2328,7 @@ function rewardState(
         candidates:
           reward === "MILITIA"
             ? (["WALLS", "MILITIA"] as const)
-            : (["JUGGERNAUT", "TREASURY"] as const),
+            : (["JUGGERNAUT", "TREASURY", "BARRACKS"] as const),
       },
     ],
   });

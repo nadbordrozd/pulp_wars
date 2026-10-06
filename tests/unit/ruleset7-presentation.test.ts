@@ -171,16 +171,18 @@ describe("Ruleset 7 public presentation", () => {
     expect(knightOverrun.label).toBe("Knight");
     expect(knightOverrun.stats).toEqual([
       { label: "HP", value: "13" },
-      { label: "Attack", value: "3" },
+      { label: "Attack", value: "4" },
       { label: "Defense", value: "1" },
       { label: "Move", value: "3" },
       { label: "Range", value: "1" },
       { label: "Sight", value: "1" },
     ]);
+    // Tuning 2 (7r47): the Human Knight captures.
     expect(knightOverrun.abilities).toEqual([
+      "Capture: Can take villages and enemy cities.",
       "Overrun: After a kill, advances and can attack another adjacent enemy.",
     ]);
-    expect(knightOverrun.restrictions).toEqual(["Can't capture."]);
+    expect(knightOverrun.restrictions).toEqual([]);
 
     const catapult = recruitmentRolePresentationV7("CATAPULT", "ORIGINAL");
     expect(catapult.abilities.join(" ")).toContain("range 2–3");
@@ -663,7 +665,7 @@ describe("Ruleset 7 public presentation", () => {
       "Forge: +1 per adjacent mine",
       "Workshop: grows with varied neighbors",
       // Revision 16 (economy deflation): the Market pays 1-3 Coins.
-      "Market: 1–3 Coins (1 + adjacent families, max 3)",
+      "Market: 1–3 Coins (1 + adjacent families, max 3); needs one of your Farms, Lumber Camps, Mines or their mills next to it",
     ]);
   });
 

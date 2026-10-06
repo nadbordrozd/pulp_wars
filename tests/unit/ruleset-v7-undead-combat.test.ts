@@ -853,8 +853,12 @@ describe("ruleset-7 revision-13 Infect and Lifesteal: events, fog, and persisten
     // Tuning 1 (`pulp_wars-w49.3`, 7r46): a chest gives no Vampire before
     // round 15, so Lifesteal now waits for a trained Vampire: none of seeds
     // 0-10 shows it within 20 rounds, and seeds 6 and 7 do within 40 (seed
-    // 6: two Vampires, the match over in round 34).
-    const setup = setupWith(["UNDEAD", "UNDEAD"], 6);
+    // 6: two Vampires, the match over in round 34). With tuning 3
+    // (`pulp_wars-w49.3`) seed 6 shows no Lifesteal; seeds 3, 9, 11, and 15
+    // of 0-15 do within 40 rounds (seed 3: three Vampires). With tuning 4
+    // (research priced by the technologies owned: the Normal AI reaches
+    // Chivalry later) only seed 15 of 0-15 shows a heal within 40 rounds.
+    const setup = setupWith(["UNDEAD", "UNDEAD"], 15);
     const match = runAiMatchV7(setup, { maxRounds: 40 });
     expect(match.errors).toEqual([]);
     expect(match.metrics.eventsByKind.UNIT_INFECTED).toBeGreaterThan(0);
@@ -947,7 +951,7 @@ describe("ruleset-7 public combat preview against fortified defenders", () => {
       attackerAt: { x: 3, y: 8 },
       walls: true,
       fieldDefense: true,
-      fortificationLevel: 3,
+      fortificationLevel: 4,
     },
     {
       name: "a Human Guard on a Field Defense tile of its territory",
@@ -957,7 +961,7 @@ describe("ruleset-7 public combat preview against fortified defenders", () => {
       attackerAt: { x: 4, y: 7 },
       walls: false,
       fieldDefense: true,
-      fortificationLevel: 1,
+      fortificationLevel: 2,
     },
     {
       name: "a Zombie in its walled capital on Field Defense",
@@ -967,7 +971,7 @@ describe("ruleset-7 public combat preview against fortified defenders", () => {
       attackerAt: { x: 3, y: 8 },
       walls: true,
       fieldDefense: true,
-      fortificationLevel: 3,
+      fortificationLevel: 4,
     },
     {
       name: "a Vampire in its walled capital",

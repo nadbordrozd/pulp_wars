@@ -30,6 +30,7 @@ import {
   type PublicUnitStatsV7,
   isNavalRoleV7,
   type UnitRoleIdV7,
+  cityBarracksV7,
 } from "../engine/index";
 
 /**
@@ -402,6 +403,7 @@ export function rebakeUnavailableTextV7(
     home.level,
     view.viewer.researchedTechs,
     view.viewer.faction,
+    cityBarracksV7(home),
   );
   const used = allOwnedUnitsV7(view, view.viewer.id)
     .filter((candidate) => candidate.homeCityId === home.id)

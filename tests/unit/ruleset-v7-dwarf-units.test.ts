@@ -322,7 +322,8 @@ describe("Dig In (section 8)", () => {
       damageToDefender: 5,
       damageToAttacker: 5,
     });
-    // Field Defense and Dig In: max, not sum.
+    // Field Defense and Dig In: max, not sum (a Field Defense is two
+    // levels since tuning 4, so it is the Field Defense that counts).
     const both = attackV7(
       fieldDefenseV7(duel({}), at(8, 7)),
       at(8, 6),
@@ -331,7 +332,7 @@ describe("Dig In (section 8)", () => {
     expect([
       both.combat.damageToDefender,
       both.combat.damageToAttacker,
-    ]).toEqual([4, 5]);
+    ]).toEqual([3, 5]);
     // Without the Dwarf Fortification nobody digs in.
     const untrained = attackV7(
       duel({}, { techs: { 0: WITHOUT("FORTIFICATION", "EXPLOSIVES") } }),

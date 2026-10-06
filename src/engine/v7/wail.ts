@@ -4,10 +4,12 @@ import {
   armouredDamageV7,
   coverBonusV7,
   gravesEnabledV7,
+  ownerHasForestCoverV7,
   terrainGivesCoverV7,
   unitRoleRuleV7,
   unitTakesCoverV7,
   type FactionRosterV7,
+  FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
 } from "../rules/ruleset-v7";
 import { isLivingUnitV7 } from "./afflictions";
 import { fortificationPartsForUnitV7 } from "./combat";
@@ -23,6 +25,7 @@ import { absorbHitV7, shieldOfV7 } from "./martian";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { tileAtV7 } from "./spatial-economy";
 import type { CoordV7, GameStateV7, TerrainIdV7, UnitStateV7 } from "./types";
+import { publicUnitHasTerrainCoverV7 } from "./units";
 import type { PlayerViewV7, PublicUnitV7 } from "./view";
 
 /** Revision 13 section 6.6: Wail reaches every tile within Chebyshev 2. */
@@ -84,6 +87,12 @@ type WailUnitV7 = Pick<
  */
 export interface WailTargetFactsV7 {
   readonly terrain: TerrainIdV7 | null | undefined;
+  /**
+   * Tuning 3 (`pulp_wars-w49.3`): whether the target's owner has the Forest
+   * cover (Forestry). The public caller reads it from the target's public
+   * stats, since another seat's technologies are private.
+   */
+  readonly forestCover: boolean;
   readonly snow: boolean;
   readonly walls: number;
   readonly fieldDefense: number;
@@ -115,6 +124,7 @@ export function wailTargetsV7(
         const parts = fortificationPartsForUnitV7(state, unit);
         return wailTargetV7(state, banshee, unit, {
           terrain: tileAtV7(state.board, unit.at)?.terrain,
+          forestCover: ownerHasForestCoverV7(state, unit.ownerId),
           snow: isSnowV7(state, unit.at),
           walls: parts.walls,
           fieldDefense: parts.fieldDefense,
@@ -157,10 +167,14 @@ export function publicWailTargetsV7(
       tile.territoryOwnerId === unit.ownerId
         ? (tile.fortificationLevel ?? 0)
         : 0;
-    const tileFieldDefense = Math.min(tileLevel, tile.fieldDefense ? 1 : 0);
+    const tileFieldDefense = Math.min(
+      tileLevel,
+      tile.fieldDefense ? FIELD_DEFENSE_FORTIFICATION_LEVELS_V7 : 0,
+    );
     const dugIn = publicUnitIsDugInV7(view, unit.id);
     const facts: WailTargetFactsV7 = {
       terrain: tile.terrain,
+      forestCover: publicUnitHasTerrainCoverV7(view, unit.id),
       snow: isSnowV7(view, unit.at),
       walls: tileLevel - tileFieldDefense,
       fieldDefense: Math.max(tileFieldDefense, dugIn ? 1 : 0),
@@ -281,7 +295,8 @@ export function wailTargetV7(
   const fortificationLevel = takesCover ? facts.walls + facts.fieldDefense : 0;
   // `pulp_wars-1wy.3`: Snow cover is x 1.25 and yields to the x 1.5 of a
   // Forest or Mountain (the shared `coverBonusV7`).
-  const terrainCover = takesCover && terrainGivesCoverV7(facts.terrain);
+  const terrainCover =
+    takesCover && terrainGivesCoverV7(facts.terrain, facts.forestCover);
   const snowCover =
     takesCover &&
     !terrainCover &&

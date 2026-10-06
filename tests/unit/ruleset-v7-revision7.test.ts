@@ -66,7 +66,7 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
     expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V4");
     expect(TECHNOLOGY_IDS_V7).toContain("ENGINEERING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
@@ -225,7 +225,9 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
         player.id === defender.ownerId
           ? {
               ...player,
-              researchedTechs: ["ENGINEERING"],
+              // Tuning 3 (`pulp_wars-w49.3`): Forest cover is the
+              // defender's Forestry.
+              researchedTechs: ["HUNTING", "FORESTRY", "ENGINEERING"],
               explored: base.board.tiles.map((tile) => tile.at),
             }
           : { ...player, explored: base.board.tiles.map((tile) => tile.at) },
@@ -266,8 +268,9 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     };
     const preview = calculateCombatPreviewV7(state, attacker.id, defender.id);
     expect(preview).toMatchObject({
-      fortificationLevel: 3,
-      defense2: effectiveRoleRuleV7("FIGHTER", "ORIGINAL").defense2 + 6,
+      fortificationLevel: 4,
+      // City Walls 2 and a Field Defense 2 (1 before tuning 4).
+      defense2: effectiveRoleRuleV7("FIGHTER", "ORIGINAL").defense2 + 8,
       defenseBonusNumerator: 3,
       defenseBonusDenominator: 2,
     });
@@ -287,7 +290,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(
       queryCombatPreviewV7(friendlyView, attacker.id, defender.id)
         ?.fortificationLevel,
-    ).toBe(3);
+    ).toBe(4);
     const capturedView = viewForV7(captured, attacker.ownerId);
     expect(
       queryCombatPreviewV7(capturedView, attacker.id, defender.id)
@@ -1508,7 +1511,11 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     });
     if (!first.accepted) throw new Error(first.error.code);
     expect(first.state.pendingChoices).toEqual([
-      expect.objectContaining({ reachedLevel: 6, candidates: ["TREASURY"] }),
+      // Tuning 4: Barracks or the Treasury (the Treasury alone before).
+      expect.objectContaining({
+        reachedLevel: 6,
+        candidates: ["TREASURY", "BARRACKS"],
+      }),
     ]);
     const again = applyCommandV7(first.state, first.state.humanPlayerId, {
       kind: "CHOOSE_CITY_REWARD",
@@ -1535,7 +1542,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(second.events[0]).toMatchObject({
       kind: "CITY_REWARD_CHOSEN",
       reward: "TREASURY",
-      coinDelta: 12,
+      coinDelta: 6,
     });
   });
 

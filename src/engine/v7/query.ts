@@ -53,6 +53,7 @@ import {
   sluggishUnitMovedV7,
   unitMovementModeV7,
   unitRoleMechanicsV7,
+  isRangedRoleRuleV7,
   unitRoleRuleV7,
   unitTakesCoverV7,
   cityUnitCapacityForV7,
@@ -72,6 +73,12 @@ import {
   type TechnologyBranchIdV7,
   type TechnologyCapabilitiesV7,
   type TechnologyUnlockV7,
+  hireCostV7,
+  HIRE_EXTRA_CAPACITY_V7,
+  BLAST_MOUNTAIN_COST_V7,
+  cityBarracksV7,
+  FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
+  DRILL_COST_V7,
 } from "../rules/ruleset-v7";
 import {
   attackGrantsEscapeV7,
@@ -232,7 +239,11 @@ import {
   type UnitStateV7,
 } from "./types";
 import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
-import { allOwnedUnitsV7, tileOccupiedV7 } from "./units";
+import {
+  allOwnedUnitsV7,
+  publicUnitHasTerrainCoverV7,
+  tileOccupiedV7,
+} from "./units";
 import { MONSTER_HOME_RADIUS_V7, monsterAreaV7 } from "./curiosities";
 import {
   viewForV7,
@@ -308,10 +319,9 @@ export function queryTechnologyTreeV7(
       // (Dry Land Naval or mission) node keeps its ordinary cost.
       const cost =
         nodeState === "DISABLED"
-          ? technologyResearchCostV7(node.tier, ownedCityCount)
+          ? technologyResearchCostV7(node.tier, player.researchedTechs.length)
           : playerTechnologyResearchCostV7(
               node.tier,
-              ownedCityCount,
               player.researchedTechs.length,
             );
       return {
@@ -529,6 +539,87 @@ function appendPublicTileCommandsV7(
         });
 }
 
+/**
+ * Tuning 3 (`pulp_wars-w49.3`): the `HIRE` offers of an own, unbesieged
+ * city: with Commerce, each empty Market tile of the city, each land role
+ * the viewer can train and pay at `hireCostV7`, while the city holds at
+ * most `HIRE_EXTRA_CAPACITY_V7` units above its capacity afterwards. The
+ * city action is not needed.
+ */
+function appendPublicHireCommandsV7(
+  view: PlayerViewV7,
+  city: PlayerViewV7["cities"][number],
+  candidates: CommandV7[],
+): void {
+  const player = view.viewer;
+  if (
+    !technologyCapabilitiesV7(
+      player.researchedTechs,
+      player.faction,
+    ).commands.includes("HIRE") ||
+    view.pendingChoices.some((choice) => choice.cityId === city.id)
+  )
+    return;
+  const markets = view.board.tiles.filter(
+    (tile) =>
+      tile.explored &&
+      tile.improvement === "MARKET" &&
+      tile.territoryCityId === city.id &&
+      !view.units.some((unit) => same(unit.at, tile.at)),
+  );
+  if (markets.length === 0) return;
+  const capacity =
+    cityUnitCapacityForV7(
+      city.level,
+      player.researchedTechs,
+      player.faction,
+      cityBarracksV7(city),
+    ) + HIRE_EXTRA_CAPACITY_V7;
+  const assigned = allOwnedUnitsV7(view, player.id)
+    .filter((unit) => unit.homeCityId === city.id)
+    .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0);
+  for (const role of UNIT_ROLE_IDS_V7) {
+    const cost = publicHireCostV7(view, city.id, role);
+    if (
+      cost !== null &&
+      cost <= player.coins &&
+      assigned + seatRoleMechanicsV7(view, player.id, role).capacitySlots <=
+        capacity
+    )
+      for (const market of markets)
+        candidates.push({ kind: "HIRE", cityId: city.id, at: market.at, role });
+  }
+}
+
+/**
+ * Tuning 3: what hiring `role` costs the viewer in its city `cityId`
+ * (`hireCostV7` of the training price there, the Forge discount first), or
+ * null for a role it cannot hire (a ship, an egg-laid or reward-only role,
+ * or one whose technology it lacks). Public information of the viewer.
+ */
+export function publicHireCostV7(
+  view: PlayerViewV7,
+  cityId: CityId,
+  role: UnitRoleIdV7,
+): number | null {
+  const player = view.viewer;
+  const rule = effectiveRoleRuleV7(role, player.faction);
+  if (
+    isNavalRoleV7(role) ||
+    rule.cost === null ||
+    isEggLaidRoleV7(role, player.faction) ||
+    (rule.technology !== null &&
+      !player.researchedTechs.includes(rule.technology))
+  )
+    return null;
+  const forgeDiscount = view.improvementValues.some((value) => {
+    if (value.improvement !== "FORGE" || value.level <= 0) return false;
+    const tile = tileAtView(view, value.at);
+    return tile?.explored === true && tile.territoryCityId === cityId;
+  });
+  return hireCostV7(Math.max(1, rule.cost - (forgeDiscount ? 1 : 0)));
+}
+
 function appendPublicCityCommandsV7(
   view: PlayerViewV7,
   city: PlayerViewV7["cities"][number],
@@ -536,12 +627,14 @@ function appendPublicCityCommandsV7(
 ): void {
   const player = view.viewer;
   if (city.ownerId !== player.id || publicCityBesieged(view, city.at)) return;
+  appendPublicHireCommandsV7(view, city, candidates);
   if (city.cityActionAvailable !== true) return;
   const centerBlocked = view.units.some((unit) => same(unit.at, city.at));
   const capacity = cityUnitCapacityForV7(
     city.level,
     player.researchedTechs,
     player.faction,
+    cityBarracksV7(city),
   );
   // Revision 19 section 5.1: used slots are a sum (own units are always
   // visible to their owner, with their home city). The Dwarf revision: own
@@ -1041,6 +1134,23 @@ function appendPublicUnitCommandsV7(
     !unitGrowsV7(view, unit)
   )
     candidates.push({ kind: "PROMOTE", unitId: unit.id });
+  // Tuning 4 (`pulp_wars-w49.3`): Drill, the paid Promotion on the center
+  // of an own city with a Barracks.
+  if (
+    !crashed &&
+    unit.form === "LAND" &&
+    !unit.veteran &&
+    !primaryUsedForQuery(unit) &&
+    !unitGrowsV7(view, unit) &&
+    player.coins >= DRILL_COST_V7 &&
+    view.cities.some(
+      (city) =>
+        city.ownerId === player.id &&
+        same(city.at, unit.at) &&
+        cityBarracksV7(city) > 0,
+    )
+  )
+    candidates.push({ kind: "DRILL_UNIT", unitId: unit.id });
   const tile = tileAtView(view, unit.at);
   if (
     player.researchedTechs.includes("RAIDING") &&
@@ -1494,6 +1604,7 @@ function publicAssembleFactsV7(
           home.level,
           player.researchedTechs,
           player.faction,
+          cityBarracksV7(home),
         );
   const usedSlots =
     home === undefined
@@ -1836,6 +1947,7 @@ function publicRebakeFactsV7(
     home.level,
     player.researchedTechs,
     player.faction,
+    cityBarracksV7(home),
   );
   const usedSlots = allOwnedUnitsV7(view, player.id)
     .filter((unit) => unit.homeCityId === home.id)
@@ -2793,6 +2905,33 @@ export function queryLandGrantPreviewV7(
   return { cityId, cost: landGrantCostV7(tiles.length), tiles };
 }
 
+/**
+ * Tuning 4 (`pulp_wars-w49.3`): the price and tiles of the Land Grant
+ * `cityId` could take, whether or not the viewer can pay for it now (so the
+ * offer stays visible while it is too dear), or null when the city has none
+ * (no Planning, below level 3, already used, or no explored neutral tile).
+ */
+export function publicLandGrantPriceV7(
+  view: PlayerViewV7,
+  cityId: CityId,
+): LandGrantPreviewV7 | null {
+  const city = view.cities.find((candidate) => candidate.id === cityId);
+  if (
+    city === undefined ||
+    city.ownerId !== view.viewer.id ||
+    !view.viewer.researchedTechs.includes("PLANNING") ||
+    city.level < 3 ||
+    city.landGrantUsed
+  )
+    return null;
+  const tiles = [...publicLandGrantTilesV7(view, city)].sort(
+    (left, right) => left.y - right.y || left.x - right.x,
+  );
+  return tiles.length === 0
+    ? null
+    : { cityId, cost: landGrantCostV7(tiles.length), tiles };
+}
+
 export interface MonumentPreviewV7 {
   readonly achievement: AchievementIdV7;
   readonly entitlement: AchievementEntitlementV7;
@@ -2867,7 +3006,12 @@ export function previewMonumentV7(
       kind: "CITY_REWARD_QUEUED",
       cityId: city.id,
       reachedLevel,
-      candidates: rewardCandidatesForLevelV7(reachedLevel, city.rewards),
+      candidates: rewardCandidatesForLevelV7(
+        reachedLevel,
+        city.rewards,
+        city.id === view.viewer.originalCapitalCityId &&
+          city.ownerId === view.viewer.id,
+      ),
     });
     break;
   }
@@ -3269,6 +3413,48 @@ export function previewKaboomV7(
   };
 }
 
+/** Tuning 3: the previewed explosion of an offered Blast Mountain. */
+export interface BlastMountainPreviewV7 extends ExplosionChainPreviewV7 {
+  readonly at: CoordV7;
+}
+
+/**
+ * Tuning 3 (`pulp_wars-w49.3`): the explosion an offered `BLAST_MOUNTAIN` on
+ * `at` would set off, computed from the viewer's visible units like a
+ * Kaboom preview: every unit on the tile and around it takes
+ * `BLAST_MOUNTAIN_DAMAGE_V7`, and exploding units it kills chain on. Null
+ * when the command is not offered. The explosion's `unitId` is the charge's
+ * provisional ID (0); the resolution allocates a fresh one.
+ */
+export function previewBlastMountainV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+): BlastMountainPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) => command.kind === "BLAST_MOUNTAIN" && same(command.at, at),
+    )
+  )
+    return null;
+  const simulation = createPublicChainSimulationV7(view);
+  return {
+    at,
+    ...simulation.run(view.units.map(simulation.blastUnit), [
+      {
+        unit: {
+          id: 0 as UnitId,
+          ownerId: view.viewer.id,
+          role: "FIGHTER",
+          form: "LAND",
+          at,
+          hp: 0,
+        },
+        cause: "BLAST",
+      },
+    ]),
+  };
+}
+
 /**
  * Revision 17 section 9: the death blasts an offered attack would set off
  * (the exploding units among the defender, the splash victims, and the
@@ -3457,6 +3643,7 @@ export function previewLayEggV7(
     city.level,
     player.researchedTechs,
     player.faction,
+    cityBarracksV7(city),
   );
   const nestTiles = publicNestTilesV7(view, city);
   return {
@@ -3663,7 +3850,9 @@ export function queryAiReadyCommandsV7(
     const content =
       command.kind === "RESEARCH"
         ? TECHNOLOGY_IDS_V7.indexOf(command.tech)
-        : command.kind === "TRAIN" || command.kind === "LAY_EGG"
+        : command.kind === "TRAIN" ||
+            command.kind === "LAY_EGG" ||
+            command.kind === "HIRE"
           ? UNIT_ROLE_IDS_V7.indexOf(command.role)
           : command.kind === "CHOOSE_CITY_REWARD"
             ? REWARD_IDS_V7.indexOf(command.reward)
@@ -3992,15 +4181,21 @@ function calculatePublicEconomicPreviewV7(
     tile?.explored === true &&
     tile.territoryCityId === null &&
     tile.territoryOwnerId === null;
+  // Tuning 4 (`pulp_wars-w49.3`): a Blast Mountain outside the viewer's
+  // territory has an exact preview too: its price and no city change.
+  const foreignBlast =
+    command.kind === "BLAST_MOUNTAIN" &&
+    tile?.explored === true &&
+    tile.territoryOwnerId !== view.viewer.id;
   if (
     tile?.explored !== true ||
-    (tile.territoryCityId === null && !neutralRoad)
+    (tile.territoryCityId === null && !neutralRoad && !foreignBlast)
   )
     return { ok: false, error: "NOT_OFFERED" };
-  const city = view.cities.find(
-    (candidate) => candidate.id === tile.territoryCityId,
-  );
-  if (city === undefined && !neutralRoad)
+  const city = foreignBlast
+    ? undefined
+    : view.cities.find((candidate) => candidate.id === tile.territoryCityId);
+  if (city === undefined && !neutralRoad && !foreignBlast)
     return { ok: false, error: "NOT_OFFERED" };
   const beforeGraph = publicEconomyGraph(view);
   const basic =
@@ -4118,7 +4313,7 @@ function calculatePublicEconomicPreviewV7(
       preview: {
         at: command.at,
         cost,
-        ownerCityId: tile.territoryCityId,
+        ownerCityId: foreignBlast ? null : tile.territoryCityId,
         populationDeltaByCity,
         coinIncomeDeltaByCity,
         resultingContribution:
@@ -4127,7 +4322,7 @@ function calculatePublicEconomicPreviewV7(
               publicDockPopulationV7(afterGraph, "PORT")
             : (evaluation?.population ??
               basic?.population ??
-              (command.kind === "BLAST_MOUNTAIN"
+              (command.kind === "BLAST_MOUNTAIN" && !foreignBlast
                 ? BLAST_MOUNTAIN_POPULATION_V7
                 : 0)),
         outputTransitions: economicOutputTransitionsV7(
@@ -4174,6 +4369,14 @@ function publicEconomicPreviewExact(
     tile?.explored === true &&
     tile.territoryCityId === null &&
     tile.territoryOwnerId === null;
+  // Tuning 4: a Blast Mountain outside the viewer's territory changes none
+  // of its cities, so its preview (the price) is always exact.
+  if (
+    tile?.explored === true &&
+    command.kind === "BLAST_MOUNTAIN" &&
+    tile.territoryOwnerId !== view.viewer.id
+  )
+    return true;
   if (
     tile?.explored !== true ||
     (tile.territoryCityId === null && !neutralRoad)
@@ -4817,7 +5020,13 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
   const landTrade =
     technologyCapabilitiesV7(graph.researchedTechs, graph.faction)
       .landTradeIncomeCoins > 0
-      ? new Set([...network].filter((cityId) => !roots.includes(cityId)))
+      ? // Tuning 3 (`pulp_wars-w49.3`): every own city of a Road component
+        // that holds two or more of them, the first capital included.
+        new Set(
+          roadComponents.flatMap((component) =>
+            new Set(component.cityIds).size >= 2 ? component.cityIds : [],
+          ),
+        )
       : new Set<CityId>();
   const seaTrade = new Set(
     ownedCities
@@ -6926,6 +7135,20 @@ function publicTileCommandLegal(
     kind === "BUILD_ROAD" &&
     tile.territoryCityId === null &&
     tile.territoryOwnerId === null;
+  // Tuning 3 (`pulp_wars-w49.3`): a Mountain outside the viewer's territory
+  // (and outside an ally's) may be blasted next to one of its land units.
+  if (kind === "BLAST_MOUNTAIN" && tile.territoryOwnerId !== view.viewer.id)
+    return (
+      (tile.territoryOwnerId === null ||
+        !publicAllied(view, view.viewer.id, tile.territoryOwnerId)) &&
+      view.units.some(
+        (unit) =>
+          unit.ownerId === view.viewer.id &&
+          unit.form === "LAND" &&
+          chebyshev(unit.at, tile.at) === 1,
+      ) &&
+      publicBlastTileLegalV7(view, tile)
+    );
   if (
     (!neutralRoad && city?.ownerId !== view.viewer.id) ||
     (city !== undefined && publicCityBesieged(view, city.at)) ||
@@ -7079,16 +7302,7 @@ function publicTileCommandLegal(
       tile.resource === null &&
       tile.improvement === null
     );
-  if (kind === "BLAST_MOUNTAIN")
-    return (
-      view.viewer.coins >= 3 &&
-      tile.site === null &&
-      tile.terrain === "MOUNTAIN" &&
-      // Tuning 1 (7r46): an Ore Mountain may be blasted.
-      (tile.resource === null || tile.resource === "ORE") &&
-      tile.improvement === null &&
-      !tile.fieldDefense
-    );
+  if (kind === "BLAST_MOUNTAIN") return publicBlastTileLegalV7(view, tile);
   if (kind === "BUILD_ROAD")
     return (
       view.viewer.coins >= 2 &&
@@ -7103,6 +7317,22 @@ function publicTileCommandLegal(
     tile.improvement !== null &&
     ((tile.improvement !== "PORT" && tile.improvement !== "SHIPYARD") ||
       !view.units.some((unit) => same(unit.at, tile.at)))
+  );
+}
+
+/** The tile and Coin conditions of a Blast Mountain, wherever it lies. */
+function publicBlastTileLegalV7(
+  view: PlayerViewV7,
+  tile: Extract<PlayerTileViewV7, { explored: true }>,
+): boolean {
+  return (
+    view.viewer.coins >= BLAST_MOUNTAIN_COST_V7 &&
+    tile.site === null &&
+    tile.terrain === "MOUNTAIN" &&
+    // Tuning 1 (7r46): an Ore Mountain may be blasted.
+    (tile.resource === null || tile.resource === "ORE") &&
+    tile.improvement === null &&
+    !tile.fieldDefense
   );
 }
 
@@ -7273,7 +7503,7 @@ function publicCombatPreviewCore(
       : 0;
   const tileFieldDefense = Math.min(
     tileFortification,
-    targetTile.fieldDefense ? 1 : 0,
+    targetTile.fieldDefense ? FIELD_DEFENSE_FORTIFICATION_LEVELS_V7 : 0,
   );
   // The Dwarf revision section 8: Dig In is one level in the Field Defense
   // part (never added to Field Defense), read from the target's public
@@ -7326,8 +7556,16 @@ function publicCombatPreviewCore(
   // (a hidden Witch's Blizzard is not known; `hiddenBlizzardPossible`).
   // `pulp_wars-1wy.3`: Snow cover is x 1.25 and yields to the x 1.5 of a
   // Forest or Mountain (the shared `coverBonusV7`).
+  // Tuning 3 (`pulp_wars-w49.3`): Forest cover needs the target owner's
+  // Forestry, which is private; the target's public Defense breakdown says
+  // whether the terrain cover applies.
   const terrainCover =
-    !acid && targetTakesCover && terrainGivesCoverV7(targetTile.terrain);
+    !acid &&
+    targetTakesCover &&
+    terrainGivesCoverV7(
+      targetTile.terrain,
+      publicUnitHasTerrainCoverV7(view, target.id),
+    );
   const snowCover =
     !acid &&
     targetTakesCover &&
@@ -7549,6 +7787,8 @@ function publicCombatPreviewCore(
     !attackerDies &&
     distance === 1 &&
     attackerMechanics.advancesAfterKill &&
+    // Tuning 2 (7r47): a ranged unit never advances, also from distance 1.
+    !isRangedRoleRuleV7(attackerRule) &&
     attacker.form === "LAND" &&
     (target.form === "LAND" || target.form === "EGG") &&
     // The Rift (RULESET_7_RIFT.md section 4): never onto a Rift.

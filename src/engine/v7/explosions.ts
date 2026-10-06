@@ -3,6 +3,7 @@ import {
   armouredDamageV7,
   unitRoleMechanicsV7,
   type FactionRosterV7,
+  BLAST_MOUNTAIN_DAMAGE_V7,
 } from "../rules/ruleset-v7";
 import { biteOfV7, recordBittenRisingV7 } from "./afflictions";
 import type { CombatSplashEntryV7, DomainEventV7 } from "./events";
@@ -29,8 +30,13 @@ import type {
  * computed from fully visible units equals the resolution exactly.
  */
 
-/** `KABOOM` for a Kaboom, `DEATH` for a death blast. */
-export type ExplosionCauseV7 = "KABOOM" | "DEATH";
+/**
+ * `KABOOM` for a Kaboom, `DEATH` for a death blast. Tuning 3
+ * (`pulp_wars-w49.3`): `BLAST` for a Blast Mountain, whose "exploding unit"
+ * is the charge on the blasted tile (a fresh ID that names no unit, owned
+ * by the blasting player), so every unit on the tile and around it is hit.
+ */
+export type ExplosionCauseV7 = "KABOOM" | "DEATH" | "BLAST";
 
 /** The unit facts a chain reads (canonical state units and public units). */
 export interface BlastUnitV7 {
@@ -83,6 +89,8 @@ export function blastDamageV7(
   },
   cause: ExplosionCauseV7,
 ): number | null {
+  // Tuning 3: a Blast Mountain's damage is fixed, whatever the charge.
+  if (cause === "BLAST") return BLAST_MOUNTAIN_DAMAGE_V7;
   const mechanics = unitRoleMechanicsV7(roster, unit);
   return cause === "KABOOM"
     ? mechanics.kaboomDamage

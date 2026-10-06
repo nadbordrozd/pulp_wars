@@ -861,9 +861,10 @@ describe("Revision 20 Charge!", () => {
     expect(preview).toMatchObject({ runUp: 1, defenderDies: true });
     await waitUntil(() => statusChips().length > 0);
     expect(statusChips()).toEqual(["Charge! +1 Attack"]);
-    // A kill has no Push line.
+    // A kill has no Push line; since tuning 2 (7r47) it says that the
+    // attacker takes the tile.
     expect(boardTarget(host, "ATTACK", AT.killTarget)?.previewNote).toBe(
-      "Charge +1",
+      "Charge +1 · Advances",
     );
     app.destroy();
   });
@@ -1096,7 +1097,7 @@ describe("Revision 19 growth, abilities and labels", () => {
     // It keeps both Explosives unlocks and adds its own.
     expect(unlocks("explosives")).toEqual(
       expect.arrayContaining([
-        "Blast Mountain: removes a Mountain in your territory (and its Ore); its city gains +1 population",
+        "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too; in your territory its city gains +1 population",
         WALLBREAKER_UNLOCK_TEXT_V7,
       ]),
     );

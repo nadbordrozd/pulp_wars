@@ -271,8 +271,10 @@ export function commandSubjectV7(
       return null;
     case "RESEARCH":
       return technologySubjectV7(command.tech, faction);
+    // Tuning 3 (`pulp_wars-w49.3`): a hired unit is shown as the unit.
     case "TRAIN":
     case "TRAIN_NAVAL":
+    case "HIRE":
       return portraitSubjectV7(command.role, faction);
     // The faction's own transport (bead pulp_wars-w5j.3).
     case "DISEMBARK":
@@ -316,6 +318,8 @@ export function rewardSubjectV7(
     case "SURVEY":
       return "ICON:REWARD:SURVEY";
     case "WALLS":
+    case "BARRACKS":
+      // Tuning 4: Barracks has no art of its own yet (the Walls icon).
       return "ICON:REWARD:WALLS";
     case "STOCKPILE":
     case "TREASURY":

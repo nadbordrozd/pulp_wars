@@ -46,7 +46,8 @@ describe("ruleset-7 Knight Overrun activation", () => {
       cost: 9,
       // Tuning 1 (`pulp_wars-w49.3`, 7r46): 13 HP (10 before).
       maxHp: 13,
-      attack2: 6,
+      // Tuning 3 (`pulp_wars-w49.3`): Attack 4 (3 before).
+      attack2: 8,
       defense2: 2,
       move: 3,
       range: 1,
@@ -54,7 +55,7 @@ describe("ruleset-7 Knight Overrun activation", () => {
       sightRadius: 1,
       technology: "CHIVALRY",
       mayUsePrimaryActionAfterMove: true,
-      abilities: ["ATTACK", "OVERRUN"],
+      abilities: ["ATTACK", "CAPTURE", "OVERRUN"],
     });
   });
 

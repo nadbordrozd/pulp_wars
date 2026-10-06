@@ -770,14 +770,15 @@ describe("ruleset-7 pure public economy", () => {
           kind: "CITY_REWARD",
           cityId: staged.cityId,
           reachedLevel: 5,
-          candidates: ["JUGGERNAUT", "TREASURY"],
+          candidates: ["JUGGERNAUT", "TREASURY", "BARRACKS"],
         },
       ],
     };
     const rewardContent = queryAiReadyCommandsV7(rewardView).map(
       (candidate) => candidate.tuple[10],
     );
-    expect(rewardContent).toEqual([-6, -7]);
+    // Barracks (tuning 4) is the last reward ID, so the older ordinals stay.
+    expect(rewardContent).toEqual([-6, -7, -8]);
 
     const monumentView: PlayerViewV7 = {
       ...base,

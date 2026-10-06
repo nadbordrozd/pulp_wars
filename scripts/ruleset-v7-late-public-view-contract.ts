@@ -70,13 +70,20 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // every later command kind forward by one (was 7622b4…e548).
     // The frozen sea (`pulp_wars-5ti.3`) inserts FREEZE after COLD_SNAP,
     // moving every later command kind forward by one (was a30271…8cc3).
-    "0618e524f00bcc6b5f6ee2fcd80229a1c3a7f219603c3129491b6c3de72eb49c",
+    // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL, moving every later command kind forward by one
+    // (was 0618e5…b49c).
+    // Tuning 4 (`pulp_wars-w49.3`) inserts DRILL_UNIT after PROMOTE and
+    // prices research by the technologies owned, so the view's one RESEARCH
+    // candidate is gone (was 28c2e6…c05b).
+    "0cd4ad50b12681243918cca7dd119b4ff76a6ab3cd6a1915af43bda3f6f05ea7",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
     role: "GUARD",
   }),
-  candidateCount: 28,
+  // Tuning 4 (`pulp_wars-w49.3`): 27 (28 before): the view's 12 Coins no
+  // longer buy a technology (a tier 1 as the sixth costs 13).
+  candidateCount: 27,
 });
 
 /**
@@ -148,10 +155,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r46",
+    rulesetId: "pulp-wars-poc-7r47",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r46",
+      rulesetId: "pulp-wars-poc-7r47",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

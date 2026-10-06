@@ -12,7 +12,9 @@ import {
   queryPlayerCommandsV7,
   runReplayV7,
   isAcceptedStateCertificateV7,
-  technologyResearchCostV7,
+  factionTreeV7,
+  playerTechnologyResearchCostV7,
+  type TechnologyIdV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -45,12 +47,30 @@ const setup: MatchSetupV7 = {
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
   curiosities: false,
 };
-/** A one-city tier-3 technology (9 Coins since `pulp_wars-if6`; 12 in revision 16). */
-const TIER_3_COST = technologyResearchCostV7(3, 1);
+/**
+ * What `tech` costs the player now (tuning 4, `pulp_wars-w49.3`: the price
+ * grows with the technologies already owned, so a script asks for it).
+ */
+function researchPriceV7(
+  state: GameStateV7,
+  playerId: GameStateV7["humanPlayerId"],
+  tech: TechnologyIdV7,
+): number {
+  const player = state.players.find((candidate) => candidate.id === playerId);
+  const node = factionTreeV7(player?.faction ?? "ORIGINAL").nodes.find(
+    (candidate) => candidate.id === tech,
+  );
+  if (player === undefined || node === undefined)
+    throw new Error("research price");
+  return playerTechnologyResearchCostV7(
+    node.tier,
+    player.researchedTechs.length,
+  );
+}
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r46.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r47.current");
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
@@ -135,11 +155,11 @@ describe("ruleset-7 save and replay foundation", () => {
       }
       throw new Error("Knight Overrun funding guard exhausted");
     };
-    fundHuman(5);
+    fundHuman(researchPriceV7(state, humanId, "SCOUTING"));
     accept({ kind: "RESEARCH", tech: "SCOUTING" });
-    fundHuman(7);
+    fundHuman(researchPriceV7(state, humanId, "RAIDING"));
     accept({ kind: "RESEARCH", tech: "RAIDING" });
-    fundHuman(TIER_3_COST);
+    fundHuman(researchPriceV7(state, humanId, "CHIVALRY"));
     accept({ kind: "RESEARCH", tech: "CHIVALRY" });
     fundHuman(9);
     const city = required(
@@ -516,21 +536,21 @@ describe("ruleset-7 save and replay foundation", () => {
       }
       throw new Error("funding guard exhausted");
     };
-    fundHuman(5);
+    fundHuman(researchPriceV7(state, humanId, "SCOUTING"));
     apply({ kind: "RESEARCH", tech: "SCOUTING" });
-    fundHuman(7);
+    fundHuman(researchPriceV7(state, humanId, "RAIDING"));
     apply({ kind: "RESEARCH", tech: "RAIDING" });
-    fundHuman(5);
+    fundHuman(researchPriceV7(state, humanId, "DRILL"));
     apply({ kind: "RESEARCH", tech: "DRILL" });
-    fundHuman(7);
+    fundHuman(researchPriceV7(state, humanId, "ENGINEERING"));
     apply({ kind: "RESEARCH", tech: "ENGINEERING" });
-    fundHuman(5);
+    fundHuman(researchPriceV7(state, humanId, "GATHERING"));
     apply({ kind: "RESEARCH", tech: "GATHERING" });
-    fundHuman(7);
+    fundHuman(researchPriceV7(state, humanId, "FARMING"));
     apply({ kind: "RESEARCH", tech: "FARMING" });
-    fundHuman(7);
+    fundHuman(researchPriceV7(state, humanId, "ADMINISTRATION"));
     apply({ kind: "RESEARCH", tech: "ADMINISTRATION" });
-    fundHuman(TIER_3_COST);
+    fundHuman(researchPriceV7(state, humanId, "PLANNING"));
     apply({ kind: "RESEARCH", tech: "PLANNING" });
     const farmAt = required(
       state.board.tiles.find(
@@ -674,9 +694,9 @@ describe("ruleset-7 save and replay foundation", () => {
       throw new Error("funding guard exhausted");
     };
 
-    fundHuman(0);
+    fundHuman(researchPriceV7(state, humanId, "GATHERING"));
     apply({ kind: "RESEARCH", tech: "GATHERING" });
-    fundHuman(7);
+    fundHuman(researchPriceV7(state, humanId, "FARMING"));
     apply({ kind: "RESEARCH", tech: "FARMING" });
     fundHuman(5);
     apply({ kind: "BUILD_FARM", at: farmTile.at });
@@ -686,13 +706,13 @@ describe("ruleset-7 save and replay foundation", () => {
       reachedLevel: 2,
       reward: "STOCKPILE",
     });
-    fundHuman(TIER_3_COST);
+    fundHuman(researchPriceV7(state, humanId, "MILLING"));
     apply({ kind: "RESEARCH", tech: "MILLING" });
     fundHuman(5);
     apply({ kind: "BUILD_WINDMILL", at: windmillTile.at });
-    fundHuman(5);
+    fundHuman(researchPriceV7(state, humanId, "DRILL"));
     apply({ kind: "RESEARCH", tech: "DRILL" });
-    fundHuman(7);
+    fundHuman(researchPriceV7(state, humanId, "ENGINEERING"));
     apply({ kind: "RESEARCH", tech: "ENGINEERING" });
     const removedEvents = apply({ kind: "REDEVELOP", at: farmTile.at });
     expect(removedEvents).toContainEqual(

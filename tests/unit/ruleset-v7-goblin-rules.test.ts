@@ -469,14 +469,19 @@ describe("ruleset-7 Goblin Commerce without land trade", () => {
     });
     const [human, goblin] = results;
     if (human === undefined || goblin === undefined) throw new Error("missing");
-    expect(human.landTrade).toEqual([human.cityId]);
-    expect(human.view).toEqual([human.cityId]);
+    // Tuning 3 (`pulp_wars-w49.3`): both ends of the Road earn land trade,
+    // the capital (city 1) included.
+    expect([...human.landTrade].sort()).toEqual([1, human.cityId]);
+    expect([...human.view].sort()).toEqual([1, human.cityId]);
     // Tuning 1 (`pulp_wars-w49.3`, 7r46): land trade pays 2 Coins.
-    expect(human.previewCoins).toEqual([{ cityId: human.cityId, delta: 2 }]);
+    expect(human.previewCoins).toEqual([
+      { cityId: 1, delta: 1 },
+      { cityId: human.cityId, delta: 1 },
+    ]);
     expect(goblin.landTrade).toEqual([]);
     expect(goblin.view).toEqual([]);
     expect(goblin.previewCoins).toEqual([]);
-    expect((human.income ?? 0) - (goblin.income ?? 0)).toBe(2);
+    expect((human.income ?? 0) - (goblin.income ?? 0)).toBe(1);
   });
 });
 

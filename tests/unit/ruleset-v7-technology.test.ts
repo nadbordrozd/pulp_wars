@@ -67,15 +67,16 @@ describe("ruleset-7 technology", () => {
     expect(Object.isFrozen(ORIGINAL_BASELINE_V5_NODES)).toBe(true);
   });
 
-  it("uses the exact city-scaled formula without unsafe arithmetic", () => {
-    // Tuning 1 (`pulp_wars-w49.3`, 7r46): tier 2 = 7 + 2(C - 1) and tier 3 =
-    // 9 + 2(C - 1) (7 + 3(C - 1) and 9 + 5(C - 1) before).
+  it("uses the exact formula by owned technologies without unsafe arithmetic", () => {
+    // Tuning 4 (`pulp_wars-w49.3`): 5 / 7 / 9 plus 2 for each technology
+    // owned beyond the first, N (tuning 1: 1 / 2 / 2 per city beyond the
+    // first).
     expect(
       [1, 2, 3].map((tier) => technologyResearchCostV7(tier as 1 | 2 | 3, 1)),
     ).toEqual([5, 7, 9]);
     expect(
       [1, 2, 3].map((tier) => technologyResearchCostV7(tier as 1 | 2 | 3, 4)),
-    ).toEqual([8, 13, 15]);
+    ).toEqual([11, 13, 15]);
     expect(() => technologyResearchCostV7(3, Number.MAX_SAFE_INTEGER)).toThrow(
       "INTEGER_OVERFLOW",
     );
@@ -106,7 +107,8 @@ describe("ruleset-7 technology", () => {
       ["GUARD", 3, 17, 3, 6, 1, 1, 1, "DRILL", false],
       ["CAPTAIN", 5, 10, 2, 2, 1, 1, 1, "ADMINISTRATION", true],
       ["CATAPULT", 8, 10, 6, 1, 1, 3, 2, "SAWMILLING", false],
-      ["KNIGHT", 9, 13, 6, 2, 3, 1, 1, "CHIVALRY", true],
+      // Tuning 3 (`pulp_wars-w49.3`): Knight Attack 4.
+      ["KNIGHT", 9, 13, 8, 2, 3, 1, 1, "CHIVALRY", true],
       ["JUGGERNAUT", null, 40, 8, 8, 1, 1, 1, null, true],
       ["PATROL_BOAT", 5, 10, 4, 4, 2, 1, 1, "SHORECRAFT", true],
       ["BATTLESHIP", 16, 25, 12, 8, 2, 3, 1, "NAVAL_ENGINEERING", false],
@@ -116,7 +118,9 @@ describe("ruleset-7 technology", () => {
     expect(Object.isFrozen(ORIGINAL_ROLE_RULES_V7)).toBe(true);
   });
 
-  it("researches the entire graph for 180 coins without PRNG use", () => {
+  // 732 Coins in the frozen technology order (180 before tuning 4, when
+  // one city paid the base price for every technology).
+  it("researches the entire graph for 732 coins without PRNG use", () => {
     let state = richV7(
       checkedV7({
         ...initialV7(),
@@ -146,7 +150,7 @@ describe("ruleset-7 technology", () => {
       state = result.state;
     }
     expect(state.players[0]).toMatchObject({
-      coins: 820,
+      coins: 268,
       researchedTechs: TECHNOLOGY_IDS_V7,
     });
   });
@@ -210,7 +214,7 @@ describe("ruleset-7 technology", () => {
       marketIncomeMultiplier: 1,
       armsIndustryDiscountCoins: 1,
       // Tuning 1 (7r46): Commerce pays 2 Coins per connected city.
-      landTradeIncomeCoins: 2,
+      landTradeIncomeCoins: 1,
       seaTradeIncomeCoins: 1,
       mountainMovement: true,
       ownedCityCapacityBonus: 1,

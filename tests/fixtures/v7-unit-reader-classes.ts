@@ -227,6 +227,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // `pulp_wars-68k.2`: the mission builder reads a definition's starting
     // units, which all stand on the board (nothing starts burrowed).
     "src/engine/v7/missions/build.ts::buildMissionStateV7": "BOARD",
+    // Tuning 4 (`pulp_wars-w49.3`): the authored unit lists of the two sides
+    // of `LAB_LATE`, on a board where nothing is burrowed.
+    "src/engine/v7/missions/lab-human.ts::<module>": "BOARD",
     "src/engine/v7/missions/build.ts::validateMissionDefinitionV7": "BOARD",
     "src/engine/v7/martian.ts::coolingStepV7": "BOARD",
     "src/engine/v7/martian.ts::mindControlCooldownStepV7": "BOARD",
@@ -250,6 +253,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::IncrementalPublicRedevelopmentPossibilityWorkV7.constructor":
       "BOARD",
     "src/engine/v7/query.ts::appendPublicCityCommandsV7": "ALL",
+    // Tuning 3 (`pulp_wars-w49.3`): the Market tile's occupant is a board
+    // read; the city's used slots count every own unit.
+    "src/engine/v7/query.ts::appendPublicHireCommandsV7": "ALL",
+    // Tuning 3: a blast hits what stands on the board.
+    "src/engine/v7/query.ts::previewBlastMountainV7": "BOARD",
     "src/engine/v7/query.ts::appendPublicUnitCommandsV7": "BOARD",
     "src/engine/v7/query.ts::createPublicChainSimulationV7": "BOARD",
     "src/engine/v7/query.ts::createPublicPlanningFactKeyWorkV7": "BOARD",
@@ -314,6 +322,14 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::applyEndTurn": "BOARD",
     "src/engine/v7/reducer.ts::applyHatch": "BOARD",
     "src/engine/v7/reducer.ts::applyInfrastructure": "BOARD",
+    // Tuning 3: the unit next to the charge, the units the blast hits, and
+    // the occupant of a Market tile stand on the board (the used slots of a
+    // hire go through `assignedUnitCountV7`).
+    "src/engine/v7/reducer.ts::blastPlaceV7": "BOARD",
+    "src/engine/v7/reducer.ts::applyBlastMountain": "BOARD",
+    "src/engine/v7/reducer.ts::applyHire": "BOARD",
+    // Tuning 4: the drilled unit stands on a city center.
+    "src/engine/v7/reducer.ts::applyDrillUnit": "BOARD",
     "src/engine/v7/reducer.ts::applyKaboom": "BOARD",
     "src/engine/v7/reducer.ts::applyLayEgg": "BOARD",
     "src/engine/v7/reducer.ts::applyMindControl": "BOARD",

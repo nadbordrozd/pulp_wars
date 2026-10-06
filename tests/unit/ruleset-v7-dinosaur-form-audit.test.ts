@@ -414,7 +414,7 @@ describe("ruleset-7 revision-19 form audit: an Egg is on land and not afloat", (
     expect(fortificationLevelForUnitV7(fortified, fortifiedEgg)).toBe(0);
     expect(
       fortificationLevelForUnitV7(fortified, { ...fortifiedEgg, form: "LAND" }),
-    ).toBe(1);
+    ).toBe(2);
     expect(isRallyTargetV7(state, shaman, egg)).toBe(false);
     expect(isRallyTargetV7(state, shaman, { ...egg, form: "LAND" })).toBe(true);
     expect(unitGrowsV7(state, egg)).toBe(false);
@@ -542,7 +542,7 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // the reducer. An Egg, an embarked unit, and a boat must still fail it.
     // `pulp_wars-5ti.3`: Freeze is used by a land-form unit only (an Egg, an
     // embarked unit, and a boat must fail it).
-    "src/engine/v7/reducer.ts": 17,
+    "src/engine/v7/reducer.ts": 18,
     "src/engine/v7/martian.ts": 1,
     // `pulp_wars-9s0.5`: only a land-form flyer stands on a Rift (an Egg,
     // an embarked unit, and a boat must fail the state check).

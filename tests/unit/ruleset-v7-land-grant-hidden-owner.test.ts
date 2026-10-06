@@ -141,7 +141,7 @@ describe("ruleset-7 Land Grant offers near hidden-city territory", () => {
     ).toMatchObject({ tiles: [{ x: 10, y: 1 }] });
   });
 
-  it("keeps the canonical rule for an unexplored neutral cell without offering it", () => {
+  it("neither offers nor accepts a grant whose only neutral cell is unexplored", () => {
     const { state, actor, command } = loaded();
     const fogged = neutralized(state, { x: 10, y: 3 });
     expect(
@@ -151,11 +151,11 @@ describe("ruleset-7 Land Grant offers near hidden-city territory", () => {
     ).toBe(false);
     // Offers are fog-safe: the viewer cannot see that the cell is neutral.
     expect(landGrants(fogged, actor)).not.toContainEqual(command);
-    // The reducer applies the canonical "at least one claimable cell" rule.
-    const result = applyCommandV7(fogged, actor, command);
-    if (!result.accepted) throw new Error(result.error.code);
-    expect(
-      result.events.find((event) => event.kind === "LAND_GRANTED"),
-    ).toMatchObject({ tiles: [{ x: 10, y: 3 }] });
+    // Tuning 4 (`pulp_wars-w49.3`): the reducer claims explored cells only,
+    // so it refuses too (it claimed the hidden cell before).
+    expect(applyCommandV7(fogged, actor, command)).toMatchObject({
+      accepted: false,
+      error: { code: "INVALID_TILE" },
+    });
   });
 });

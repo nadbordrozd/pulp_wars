@@ -58,10 +58,11 @@ describe("ruleset-7 exact public-planning performance", () => {
       id: "retained-command-1100",
       view: () => retained,
       commandHash:
-        "0b13410860e1df0d398369ce7fb307a2689edfa9dbf5305ab6fe1dfee8abd93b",
+        "3d4141c353e8efe1e70a7884ec1e8304e3be76b6e79c3743267ff865aab4d50f",
       resultHash:
-        "f18e578cba84a5fe93980ae6c0fdc9e4a531ec4354dcc44987c170476464bca3",
-      operations: 4_098,
+        "6461cad4ba33a3092fda17a0a47a57e95259c2046724318b60f9f4b908304c86",
+      // 4 097 since tuning 4 (one RESEARCH fewer in the retained view).
+      operations: 4_097,
     },
     {
       id: "captured-command-300",

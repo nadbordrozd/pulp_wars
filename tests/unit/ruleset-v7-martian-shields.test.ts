@@ -277,19 +277,20 @@ describe("Martian Shields: other factions' damage (sections 5.3 and 10)", () => 
       (event) => event.kind === "EXPLOSION_RESOLVED",
     );
     if (blast?.kind !== "EXPLOSION_RESOLVED") throw new Error("no blast");
-    // The attacker advanced onto the tile and is in the blast area, with
-    // its full Shield (the kill drew no retaliation).
+    // The attacker stays (a Grunt is a ranged unit and never advances
+    // since tuning 2, 7r47) and is in the blast area next to the tile,
+    // with its full Shield (the kill drew no retaliation).
     expect(blast.results).toEqual([
       {
-        unitId: unitAtV7(state, at(6, 2)).id,
-        at: at(6, 2),
+        unitId: unitAtV7(state, at(5, 2)).id,
+        at: at(5, 2),
         damage: 0,
         dies: false,
         shieldDamage: 2,
       },
       {
-        unitId: unitAtV7(state, at(5, 2)).id,
-        at: at(5, 3),
+        unitId: unitAtV7(state, at(6, 2)).id,
+        at: at(6, 2),
         damage: 0,
         dies: false,
         shieldDamage: 2,

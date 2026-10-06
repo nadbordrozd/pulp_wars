@@ -551,3 +551,175 @@ fixture, the cost tables, the reward choices, the Land Grant preview, the
 contributor rule on a three-city strip, Breach, Blast Mountain, Field
 Defense, and chests by round), and `tests/scripts/play-text-v7.test.ts`
 covers `do --end` and the refused `end`.
+
+## 10. Round 2 (tuning 2, `pulp-wars-poc-7r47`)
+
+Three more hand-played games on tuning 1 (a natural game, an
+Explosives-and-Commerce game against the Goblins, and a Catapult rush
+against the Dinosaurs) led to five decisions of the user on 2026-10-05.
+Two change a rule, so the identity is `pulp-wars-poc-7r47` (autosave
+`pulpWars.save.v7r47.current`; `7r46` is a prior identity, refused without
+migration). No state or event shape changed.
+
+### 10.1 The facts about "being pulled out of position"
+
+The playtest reports said "a garrison that kills is pulled off its city
+center" and "the forced advance cost nine units". What the code does:
+
+- **A defender never moves because of a fight it did not start**, and never
+  did. In `resolveAttackExchangeV7` (`src/engine/v7/reducer.ts`) the defender after the
+  exchange stands at `pushDestination ?? defender.at`: only a Push, a
+  Charge! push, a Knockback, or a ram's shove of the _attack_ moves it. A
+  retaliation that kills the attacker credits the kill (`defenderKills`) and
+  moves nothing. `advances` of `calculateCombatPreviewV7`
+  (`src/engine/v7/combat.ts`) is about the attacker only and needs
+  `!attackerDies`.
+- **So what the players saw was their own attack.** A unit that attacked
+  from its city center (or its Field Defense) on its own turn and killed
+  moved onto the dead unit's tile, as the rule says, and stood in the open
+  for the enemy's turn. That is situation (ii) of the three the reports
+  could have meant; (i), a defender moved by a retaliation kill, does not
+  exist.
+
+`tests/unit/ruleset-v7-tuning-2.test.ts` pins both: a Guard that kills a
+1-HP attacker by retaliation stays (in the open and on its own capital;
+nothing moves in the exchange), and a Fighter that kills from its own
+capital advances off it.
+
+### 10.2 The decisions
+
+| #   | Decision of the user                                                                                                        | Before (`7r46`)                                                                                                                  | After (`7r47`)                                                                                                        |
+| --- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| 1   | A unit that is attacked and kills its attacker is never moved; an attacker that kills takes the tile, except ranged attacks | the defender never moved; a melee attacker advanced; a ranged unit other than the Marksman advanced after a kill from distance 1 | the same for the defender and the melee attacker; **no ranged unit advances**; the preview says "Advances" or "Stays" |
+| 2   | A city still cannot train while a unit stands on its center                                                                 | no train cards and no reason in the browser (the harness printed "center occupied")                                              | no rule change; the city panel says "Training blocked: a unit is on the city center"                                  |
+| 3   | Knights capture cities                                                                                                      | no Knight-role unit of any faction could capture                                                                                 | the **Human Knight** has `CAPTURE`; the other seven are unchanged                                                     |
+| 4   | The level-2 Stockpile stays 4 Coins                                                                                         | 4                                                                                                                                | 4                                                                                                                     |
+| 5   | The capital rule of Commerce is shown                                                                                       | the card read "Road-linked cities: +2 Coins each turn"; a city that earned nothing said nothing                                  | no rule change; the card, the city panel, and the harness state the rule and the reason (below)                       |
+
+### 10.3 Who advances
+
+An attacker advances onto the tile of the unit it killed when all of these
+hold (the conditions existed before; only the ranged one is new):
+
+- it survives, the target was adjacent, and the target does not rise in
+  place (Infect, Bitten);
+- **it is not a ranged unit**: its kind's role has range 1
+  (`isRangedRoleRuleV7`; new);
+- its role advances (`advancesAfterKill`: not a Zombie, Saucer, or
+  Mothership);
+- it is in land form and the target was in land form or an Egg (a ship, an
+  embarked unit, a Gyrocopter never advance; nothing advances onto a ship's
+  or an embarked unit's water tile);
+- the tile is explored by its owner, is not a Rift, and is enterable (a
+  Mountain needs Engineering unless the unit strides or is Mountain-born);
+- a Sabretooth, and a rider on its surfacing turn, never advance onto a
+  settlement center their owner does not own;
+- the neutral Monster never advances.
+
+A Charge! still follows a pushed target under the same conditions, an
+Overrun still continues only after an advance, and a Bounce still throws
+the attacker back after the advance is decided. None of these was changed.
+A melee attacker's advance is **not optional**, also off its own city
+center or Field Defense: the user did not ask for that exception.
+
+Every land unit that can attack an adjacent unit, after a kill from
+distance 1:
+
+| Unit (faction)                                   | Range | Before `7r47`           | Now      |
+| ------------------------------------------------ | ----- | ----------------------- | -------- |
+| Marksman (Human)                                 | 1–2   | stayed (since tuning 1) | stays    |
+| Spitter (Dinosaur)                               | 1–2   | advanced                | stays    |
+| **Grunt** (Martian, the `FIGHTER` role)          | 1–2   | advanced                | stays    |
+| Ray Gunner (Martian)                             | 1–2   | advanced                | stays    |
+| **Colossus** (Martian, the reward unit)          | 1–2   | advanced                | stays    |
+| Snow Hunter (Ice Folk)                           | 1–2   | advanced                | stays    |
+| Boulder Yeti (Ice Folk)                          | 1–2   | stayed (role mechanic)  | stays    |
+| Clockwork Gunner (Dwarf)                         | 1–2   | stayed (role mechanic)  | stays    |
+| Gumball Gunner (Candy)                           | 1–2   | advanced                | stays    |
+| Zombie (Undead), Saucer and Mothership (Martian) | 1     | stayed (role mechanic)  | stays    |
+| every other range-1 land unit                    | 1     | advanced                | advances |
+
+The units that never attack an adjacent unit never advanced and do not
+now: Catapult, Lich, Rocket Cart, Bomb Chucker (range 2 only), Tripod,
+Steam Cannon, Pie Launcher (minimum range 2). A Banshee's Wail, a Gyrocopter's
+bombing run, and Kaboom are not attacks. A Patrol Boat, Battleship, or
+Submarine never advances (ram, shots, and torpedo alike). A Yeti's
+Rockfall reaches distance 2 from a range-1 role: that attack never
+advanced, and the Yeti's adjacent attack still does.
+
+**To look at in the Martian pass:** the rule follows the role's range, so
+the Martian line infantry (the Grunt, a ray pistol with range 2) and the
+Colossus no longer take a tile by killing. That is the rule as the user
+gave it ("excepting ranged attacks"), applied by the unit's range property;
+it was not judged for the Martians.
+
+### 10.4 The Knight-role units and Capture
+
+| Faction  | `KNIGHT`-role unit | Captures before | Captures now |
+| -------- | ------------------ | --------------- | ------------ |
+| Human    | Knight             | no              | **yes**      |
+| Undead   | Vampire            | no              | no           |
+| Goblin   | Scrap Buggy        | no              | no           |
+| Dinosaur | T-Rex              | no              | no           |
+| Martian  | Mothership         | no              | no           |
+| Ice Folk | Sabretooth         | no              | no           |
+| Dwarf    | Steam Tank         | no              | no           |
+| Candy    | Chocolate Bunny    | no              | no           |
+
+What blocked it was the role's `abilities` list (no `CAPTURE`); the Human
+Knight's is now `ATTACK`, `CAPTURE`, `OVERRUN`. Capture is the ordinary
+`CAPTURE` command with its timing (`captureEligible`: the unit has stood
+on the center since its turn began). What reads the ability: the command
+query and the reducer, the state check of `captureEligible`, the unit card
+("Can't capture." is gone from the Knight's), and the Normal AI, which
+treats any unit with the ability as a capturer through the offered
+commands; nothing in the AI was changed. A mind-controlled Human Knight
+captures for its controller, like any controlled capturing unit.
+
+### 10.5 Commerce as it is coded
+
+**Superseded.** [Round 3](RULESET_7_TUNING_HUMAN.md#64-commerce) replaced
+the capital rule described here before it was published: every city a Road
+links to another of the player's cities earns, the first capital included.
+What follows is the rule as it stood when round 2 was written.
+
+- A player's **first capital** (`originalCapitalCityId`) is the root. Every
+  other city the player owns that a Road links to it earns +2 Coins at
+  Start Turn. City centers count as Road tiles and Roads join in eight
+  directions.
+- The first capital earns no land trade itself.
+- While the player does not own its first capital, nothing is paid. **No
+  other city is promoted**; the root never changes, and a captured foreign
+  capital is an ordinary city.
+- Goblin Commerce is Plunder and has no land trade.
+
+Shown now: the Commerce card ("Each city linked by Road to your first
+capital: +2 Coins each turn"); in the city panel the Land trade +2 stat of
+a city that earns, and otherwise one line: "No land trade: no Road link to
+your first capital", "No land trade: your first capital is lost", and on
+the capital "No land trade: no city is linked by Road to this capital" or
+"Land trade: N linked cities earn +2 each". The text harness prints the
+same line under each city of `view`. The rule did not change.
+
+### 10.6 Leftovers of tuning 1 settled here
+
+- `scripts/browser-ui-polish-review-v7.ts` expected "Build field defense";
+  it expects "Build Field Defense" (the script was not run).
+- The `7r46` open item "only the Human Marksman stopped advancing" is
+  closed by 10.3.
+
+### 10.7 Tests
+
+`tests/unit/ruleset-v7-tuning-2.test.ts` (the identity; the facts of 10.1;
+every faction's adjacent attackers, ranged and melee, with the public
+preview equal to the resolution; the Knight's Capture, its timing, and the
+other seven; the land trade lines against the engine; the preview note),
+`tests/integration/ruleset7-dock-layout-dom.test.ts` (the two city panel
+lines), and `tests/scripts/play-text-v7.test.ts` (`advances to x,y`,
+`stays`, the land trade line).
+
+## 11. Round 3
+
+Round 3 is its own document:
+[the Human tech tree, round 3](RULESET_7_TUNING_HUMAN.md). It ships under
+the same identity as round 2 (`pulp-wars-poc-7r47`).

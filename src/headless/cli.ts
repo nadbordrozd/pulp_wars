@@ -58,12 +58,12 @@ if (mode === "replay") {
         : await headless.run(replay as ReplayFile);
   process.stdout.write(`${canonicalJson(result)}\n`);
 } else if (mode === "match") {
-  if (ruleset === "pulp-wars-poc-7r46") await runV7Match();
+  if (ruleset === "pulp-wars-poc-7r47") await runV7Match();
   else if (ruleset === "pulp-wars-poc-6") await runV6Match();
   else if (ruleset === "pulp-wars-poc-5") await runV5Match();
   else invalidRuleset();
 } else if (mode === "batch") {
-  if (ruleset === "pulp-wars-poc-7r46") await runV7Batch();
+  if (ruleset === "pulp-wars-poc-7r47") await runV7Batch();
   else if (ruleset === "pulp-wars-poc-6") await runV6Batch();
   else if (ruleset === "pulp-wars-poc-5") await runV5Batch();
   else invalidRuleset();
@@ -84,7 +84,7 @@ async function runV7Match(): Promise<void> {
   const aiCount = aiCountArgV7();
   const size = boardSizeArgV7(aiCount, mapType);
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r46",
+    rulesetId: "pulp-wars-poc-7r47",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     seed: numberArg("--seed", 0),
     width: size,
@@ -579,6 +579,6 @@ function parseFactionValues(
 
 function invalidRuleset(): never {
   throw new Error(
-    "--ruleset must be pulp-wars-poc-7r46, pulp-wars-poc-6, or pulp-wars-poc-5",
+    "--ruleset must be pulp-wars-poc-7r47, pulp-wars-poc-6, or pulp-wars-poc-5",
   );
 }

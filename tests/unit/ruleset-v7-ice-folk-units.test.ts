@@ -412,7 +412,7 @@ describe("Sweep and Trample (section 7.5)", () => {
     );
     const state = fieldDefenseV7(fieldDefenseV7(base, at(3, 7)), at(3, 6));
     const run = attackV7(state, at(4, 7), at(3, 7));
-    expect(run.combat.fortificationLevel).toBe(1);
+    expect(run.combat.fortificationLevel).toBe(2);
     expect(
       run.events.find((event) => event.kind === "FIELD_DEFENSE_DESTROYED"),
     ).toEqual({

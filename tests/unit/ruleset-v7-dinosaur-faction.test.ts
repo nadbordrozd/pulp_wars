@@ -123,23 +123,23 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 ];
 
 describe("ruleset-7 revision-19 identity", () => {
-  it("keeps r18 among the gap-free prior identities after the r46 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r46");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r46.current");
+  it("keeps r18 among the gap-free prior identities after the r47 identity, and the save key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r47");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r47.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 44 },
+        { length: 45 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-28)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-29)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 44 },
+        { length: 45 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -177,7 +177,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r46");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r47");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -916,8 +916,8 @@ describe("ruleset-7 Dinosaur technology", () => {
     expect(dinosaur.trainableRoles).toEqual(human.trainableRoles);
     expect(dinosaur.roleSightRadius).toEqual({ RAIDER: 2, MARKSMAN: 2 });
     expect(dinosaur.forestMovementFreedomRoles).toEqual(["RAIDER", "MARKSMAN"]);
-    // Tuning 1 (7r46): Commerce pays 2 Coins per connected city.
-    expect(dinosaur.landTradeIncomeCoins).toBe(2);
+    // Tuning 4: Commerce pays 1 Coin per linked city (2 since tuning 1).
+    expect(dinosaur.landTradeIncomeCoins).toBe(1);
     expect(dinosaur.plunderCoins).toBe(0);
     expect(dinosaur.commands).toEqual(
       human.commands.filter((command) => command !== "BUILD_FIELD_DEFENSE"),
@@ -979,17 +979,17 @@ describe("ruleset-7 Dinosaur technology", () => {
       "Eggs have +4 HP and hatch one turn sooner; +1 unit slot in every city",
     ]);
     expect(text(0, "EXPLOSIVES")).toEqual([
-      "Blast Mountain: removes a Mountain in your territory (and its Ore); its city gains +1 population",
+      "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too; in your territory its city gains +1 population",
       "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
       "Dinosaurs ignore City Walls",
     ]);
     expect(text(1, "EXPLOSIVES")).toEqual([
-      "Blast Mountain: removes a Mountain in your territory (and its Ore); its city gains +1 population",
+      "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too; in your territory its city gains +1 population",
       "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
     ]);
     expect(text(0, "SAWMILLING")).toContain("Triceratops Egg (Charge!)");
     expect(text(1, "FORTIFICATION")).toEqual([
-      "Build Field Defense: the builder keeps its move and attack",
+      "Build Field Defense: +2 Defense for the unit on it; the builder keeps its move and attack",
     ]);
     expect(text(0, "ADMINISTRATION")).toEqual([
       "Train Shaman",
@@ -1506,8 +1506,10 @@ describe("ruleset-7 Dinosaur Showcase", () => {
     ).toEqual([5, 3, 3]);
     // The first income is the Human one (19 since land trade pays 2 Coins;
     // tuning 1, 7r46).
-    expect(playerIncomeV7(state, dinosaurId).totalCoins).toBe(19);
-    expect(playerIncomeV7(reference, dinosaurId).totalCoins).toBe(19);
+    // Tuning 3: 21, since the linked capital earns land trade too.
+    // Tuning 4: 18, since land trade pays 1 Coin.
+    expect(playerIncomeV7(state, dinosaurId).totalCoins).toBe(18);
+    expect(playerIncomeV7(reference, dinosaurId).totalCoins).toBe(18);
   });
 
   it("cannot train or lay in the over-capacity capital but can in North and at the Coast docks", () => {
@@ -1604,9 +1606,10 @@ describe("ruleset-7 revision-19 declared shapes", () => {
     expect(
       COMMAND_KIND_ORDER_V7.slice(
         COMMAND_KIND_ORDER_V7.indexOf("TRAIN_NAVAL"),
-        COMMAND_KIND_ORDER_V7.indexOf("TRAIN_NAVAL") + 3,
+        COMMAND_KIND_ORDER_V7.indexOf("TRAIN_NAVAL") + 4,
       ),
-    ).toEqual(["TRAIN_NAVAL", "LAY_EGG", "BUILD_FIELD_DEFENSE"]);
+      // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL.
+    ).toEqual(["TRAIN_NAVAL", "HIRE", "LAY_EGG", "BUILD_FIELD_DEFENSE"]);
     const state = goblinArenaV7(
       ["DINOSAUR", "ORIGINAL"],
       [
@@ -1812,7 +1815,8 @@ describe("ruleset-7 revision-19 declared shapes", () => {
     expect(parseEventV7(combat).ok).toBe(true);
     for (const patch of [
       { runUp: 3 },
-      { fortificationIgnored: 4 },
+      // 4 is valid since tuning 4 (Walls 2 and a Field Defense 2).
+      { fortificationIgnored: 5 },
       { stampede: 0 },
       { acid: true, fortificationIgnored: 1 },
       { noRetaliationReason: "STAMPEDE" },

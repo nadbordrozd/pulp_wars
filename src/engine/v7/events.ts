@@ -506,15 +506,33 @@ export type DomainEventV7 =
       readonly coinDelta: number;
     }
   | {
-      readonly kind: "FOREST_CULTIVATED" | "MOUNTAIN_BLASTED";
+      readonly kind: "FOREST_CULTIVATED";
       readonly playerId: PlayerId;
       readonly cityId: CityId;
       readonly at: CoordV7;
       readonly cost: number;
-      readonly terrainBefore: "FOREST" | "MOUNTAIN";
+      readonly terrainBefore: "FOREST";
       readonly terrainAfter: "GRASS";
       readonly resourceBefore: null;
+      /** Null for a viewer who cannot see Fertile Ground. */
       readonly resourceAfter: "FERTILE_GROUND" | null;
+    }
+  | {
+      /**
+       * Tuning 3 (`pulp_wars-w49.3`): `cityId` is the blasting player's
+       * city whose territory holds `at` (it gains the population), or null
+       * for a Mountain outside its territory, blasted next to one of its
+       * units. The blast's `EXPLOSION_RESOLVED` (cause `BLAST`) follows.
+       */
+      readonly kind: "MOUNTAIN_BLASTED";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId | null;
+      readonly at: CoordV7;
+      readonly cost: number;
+      readonly terrainBefore: "MOUNTAIN";
+      readonly terrainAfter: "GRASS";
+      readonly resourceBefore: null;
+      readonly resourceAfter: null;
     }
   | {
       readonly kind: "ROAD_BUILT";
@@ -963,7 +981,12 @@ export type DomainEventV7 =
       readonly unitId: UnitId;
       readonly role: UnitRoleIdV7;
       readonly at: CoordV7;
-      readonly cause: "KABOOM" | "DEATH";
+      /**
+       * Tuning 3 (`pulp_wars-w49.3`): `BLAST` is a Blast Mountain of
+       * `playerId` on `at`; `unitId` is then the charge's fresh ID (no unit
+       * has it) and `role` is `FIGHTER`.
+       */
+      readonly cause: "KABOOM" | "DEATH" | "BLAST";
       readonly wave: number;
       readonly damage: number;
       readonly results: readonly CombatSplashEntryV7[];
@@ -976,7 +999,8 @@ export type DomainEventV7 =
       readonly at: CoordV7;
       readonly improvement: ImprovementIdV7;
       readonly resourceRestored: "FERTILE_GROUND" | "ORE" | null;
-      readonly coinDelta: 1;
+      /** `PILLAGE_COINS_V7` (3 since tuning 4; 1 before). */
+      readonly coinDelta: 3;
     }
   | {
       readonly kind: "UNIT_DISBANDED";

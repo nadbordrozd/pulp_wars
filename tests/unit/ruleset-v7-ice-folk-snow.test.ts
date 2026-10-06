@@ -317,7 +317,7 @@ describe("Snow cover (section 6.2, 2)", () => {
       { fieldDefense: true },
     );
     expect(attackV7(fortified, at(6, 6), at(7, 7)).combat).toMatchObject({
-      fortificationLevel: 1,
+      fortificationLevel: 2,
       defenseBonusNumerator: 1,
       snowCover: false,
     });

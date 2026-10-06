@@ -376,9 +376,10 @@ describe("Stride (section 7.1)", () => {
 
   it("Walls and Field Defense fortify a Martian foot unit and never a machine", () => {
     for (const [role, level] of [
-      ["MARKSMAN", 3],
-      ["FIGHTER", 3],
-      ["GUARD", 3],
+      // Walls 2 and Field Defense 2 (1 before tuning 4).
+      ["MARKSMAN", 4],
+      ["FIGHTER", 4],
+      ["GUARD", 4],
       ["CATAPULT", 0],
       ["JUGGERNAUT", 0],
       ["RAIDER", 0],
@@ -441,11 +442,13 @@ describe("Flying (section 7.2)", () => {
       martianFieldV7(
         [
           { seat: 0, role, at: at(4, 3) },
-          { seat: 1, role: "RAIDER", at: at(5, 2) },
+          // A Human Knight: the Human Raider ignores every zone of
+          // control since tuning 4.
+          { seat: 1, role: "KNIGHT", at: at(5, 2) },
         ],
         { activeSeat: 1 },
       );
-    // A Human Raider passes next to a Saucer or a Mothership freely.
+    // A Human Knight passes next to a Saucer or a Mothership freely.
     for (const role of ["RAIDER", "KNIGHT"] as const) {
       const state = build(role);
       go(state, at(5, 2), at(4, 2), at(3, 2));
@@ -804,9 +807,12 @@ describe("interrupted Moves (section 7.2, hidden units)", () => {
 });
 
 describe("advance and Push through the shared rule", () => {
-  it("a Colossus advances onto a Mountain without Engineering; a Ray Gunner does not", () => {
+  // Tuning 2 (`pulp_wars-w49.3`, 7r47): the Colossus is a ranged unit and
+  // no longer advances at all (it strode onto the Mountain before), so no
+  // Martian unit advances onto a Mountain.
+  it("neither a Colossus nor a Ray Gunner advances onto a Mountain without Engineering", () => {
     for (const [role, advances] of [
-      ["JUGGERNAUT", true],
+      ["JUGGERNAUT", false],
       ["MARKSMAN", false],
     ] as const) {
       const state = mountainV7(

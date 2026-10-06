@@ -507,13 +507,16 @@ describe("ruleset-7 naval economy", () => {
         base.cities.find((city) => city.id === cityBId) ?? cityB,
       ),
       // Level 1 + land trade 2 (tuning 1, 7r46; 1 before) + sea trade 1.
-    ).toBe(4);
+    ).toBe(3);
     expect(
       cityIncomeV7(
         base,
         base.cities.find((city) => city.id === cityCId) ?? cityC,
       ),
-    ).toBe(2);
+      // Tuning 3 (`pulp_wars-w49.3`): a Road links this city to another of
+      // its owner's, so it earns land trade without the capital (2 before).
+      // Tuning 4: land trade pays 1 (the total was 4).
+    ).toBe(3);
     // Revision 14 (E2): a lone Market pays 1 even with Commerce.
     expect(marketIncomeForCityV7(base, cityD)).toBe(1);
     expect(
@@ -557,7 +560,8 @@ describe("ruleset-7 naval economy", () => {
           frozenRoute.cities.find((city) => city.id === id) ?? cityB,
         ),
       ),
-    ).toEqual([4, 2]);
+      // Tuning 3: both earn land trade (the second had 2). Tuning 4: 1 Coin.
+    ).toEqual([3, 3]);
     const blockaded = {
       ...base,
       units: [

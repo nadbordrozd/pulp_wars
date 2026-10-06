@@ -369,7 +369,19 @@ export function projectEventsV7(
       const owned = (entry: { readonly unitId: UnitId }) =>
         beforeState.units.find((unit) => unit.id === entry.unitId)?.ownerId ===
         viewerId;
-      if (beforeVisible.has(event.unitId) || afterVisible.has(event.unitId))
+      // Tuning 4 (`pulp_wars-w49.3`): a Blast Mountain has no exploding unit
+      // (its `unitId` is the charge's fresh ID); it is seen by its player
+      // and by every viewer that has explored its tile.
+      const blastSeen =
+        event.kind === "EXPLOSION_RESOLVED" &&
+        event.cause === "BLAST" &&
+        (event.playerId === viewerId ||
+          coordVisible(beforeState, afterState, viewerId, event.at));
+      if (
+        blastSeen ||
+        beforeVisible.has(event.unitId) ||
+        afterVisible.has(event.unitId)
+      )
         projected.push({
           ...event,
           results: event.results.filter(

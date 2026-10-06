@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 46;
+const REVISION = 47;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -263,7 +263,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
   });
 
   it("has the new kinds at the stated positions (48 command and 76 event kinds; the Ice Folk revision adds two and one, the Dwarf revision three and four)", () => {
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(58);
+    // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL (59), and
+    // tuning 4 DRILL_UNIT after PROMOTE (60).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(60);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",
@@ -1488,8 +1490,9 @@ describe("Martian Showcase (section 2.4)", () => {
       [3, 6],
       [3, 6],
     ]);
-    // 19 since land trade pays 2 Coins (tuning 1, 7r46; 17 before).
-    expect(playerIncomeV7(state, martianId).totalCoins).toBe(19);
+    // 21: land trade pays 2 Coins (tuning 1, 7r46; 17 before) and since
+    // tuning 3 the linked capital earns it too (19 before).
+    expect(playerIncomeV7(state, martianId).totalCoins).toBe(18);
   });
 
   it("the first Start Turn recharges under the Force Field, and every ability can be tried on the first turn", () => {

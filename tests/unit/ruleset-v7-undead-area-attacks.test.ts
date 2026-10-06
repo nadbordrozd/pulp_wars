@@ -194,8 +194,8 @@ describe("ruleset-7 revision-13 Wail: targets and damage", () => {
       damage: 2,
     });
     expect(byAt(ENEMY_CAPITAL_TERRITORY)).toMatchObject({
-      defense2: 6,
-      fortificationLevel: 1,
+      defense2: 8,
+      fortificationLevel: 2,
       damage: 1,
     });
     // The exact formula agrees with an ordinary attack at attack2 = 2 by a
@@ -801,8 +801,9 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // with no Wail; seed 2 had two (of seeds 0-23, so did 1, 3, 4, 5, 13, 17,
     // 20, 22, and 23). On the many-seats boards (`pulp_wars-ykw.3`) the
     // seed-2 match has no Wail; seed 5 has two. With tuning 1
-    // (`pulp_wars-w49.3`, 7r46) the seed-5 match has none; seed 12 has two.
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 12);
+    // (`pulp_wars-w49.3`, 7r46) the seed-5 match has none; seed 12 had two.
+    // With tuning 3 seed 12 has one; seed 3 has two.
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 3);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
@@ -853,8 +854,9 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // fielded four, and they splashed. On the many-seats boards
     // (`pulp_wars-ykw.3`) seed 5 fields two, which splash seven times. With
     // tuning 1 (`pulp_wars-w49.3`, 7r46) seed 5 fields none; seed 12 fields
-    // four, which splash 14 times.
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 12), {
+    // four, which splash 14 times. With tuning 3 seed 12 fields none; seed
+    // 3 fields three, which splash 19 times.
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 3), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);

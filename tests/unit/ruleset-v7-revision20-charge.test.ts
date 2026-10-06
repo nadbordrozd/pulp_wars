@@ -466,7 +466,8 @@ describe("ruleset-7 revision-20 Charge! ignores fortification", () => {
     // Guard on the Walled center (8, 8); the Triceratops attacks from (7, 8).
     for (const [fieldDefense, ignored] of [
       [false, 2],
-      [true, 3],
+      // Tuning 4: a Field Defense is two levels (3 before).
+      [true, 4],
     ] as const) {
       const state = walledV7({
         attackers: [{ role: "CATAPULT", at: at(7, 8) }],
@@ -498,11 +499,11 @@ describe("ruleset-7 revision-20 Charge! ignores fortification", () => {
     const fortified = fieldDefenseV7(base, at(3, 7));
     expect(
       fortificationLevelForUnitV7(fortified, unitAtV7(fortified, at(3, 7))),
-    ).toBe(1);
+    ).toBe(2);
     const run = attackV7(fortified, at(4, 7), at(3, 7));
     expect(run.combat).toMatchObject({
       fortificationLevel: 0,
-      fortificationIgnored: 1,
+      fortificationIgnored: 2,
       defense2: 6,
     });
     expect(run.combat.damageToDefender).toBe(
@@ -538,7 +539,7 @@ describe("ruleset-7 revision-20 Charge! ignores fortification", () => {
         defenseBonusNumerator: 3,
         defenseBonusDenominator: 2,
         fortificationLevel: 0,
-        fortificationIgnored: 1,
+        fortificationIgnored: 2,
         damageToDefender: 12,
         // Tuning 1 (7r46): the Guard's open-ground retaliation (6 with the
         // cover in it before).
@@ -728,7 +729,7 @@ describe("ruleset-7 revision-20 Charge! worked examples (section 2.5)", () => {
       expect(run.combat).toMatchObject({
         defense2: 6,
         fortificationLevel: 0,
-        fortificationIgnored: 3,
+        fortificationIgnored: 4,
         damageToDefender: damage,
         damageToAttacker: retaliation,
       });
@@ -763,7 +764,7 @@ describe("ruleset-7 revision-20 Charge! worked examples (section 2.5)", () => {
     expect(run.combat).toMatchObject({
       attack2: 10,
       defense2: 4,
-      fortificationIgnored: 1,
+      fortificationIgnored: 2,
       damageToDefender: 16,
       damageToAttacker: 3,
       attackerBitten: true,

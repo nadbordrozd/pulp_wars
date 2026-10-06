@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r47");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -114,7 +114,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // COLD_SNAP (50) and UNITS_CHILLED (77); the Dwarf revision TUNNEL,
     // BOMB_RUN, and ASSEMBLE (53) and four event kinds (81); the Candy
     // revision three more commands (56); the naval branch BOARD (57).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(58);
+    // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL (59), and
+    // tuning 4 DRILL_UNIT after PROMOTE (60).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(60);
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
     // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
@@ -147,9 +149,10 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     expect(
       COMMAND_KIND_ORDER_V7.slice(
         COMMAND_KIND_ORDER_V7.indexOf("TRAIN_NAVAL"),
-        COMMAND_KIND_ORDER_V7.indexOf("TRAIN_NAVAL") + 3,
+        COMMAND_KIND_ORDER_V7.indexOf("TRAIN_NAVAL") + 4,
       ),
-    ).toEqual(["TRAIN_NAVAL", "LAY_EGG", "BUILD_FIELD_DEFENSE"]);
+      // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL.
+    ).toEqual(["TRAIN_NAVAL", "HIRE", "LAY_EGG", "BUILD_FIELD_DEFENSE"]);
     expect(
       DOMAIN_EVENT_KIND_ORDER_V7.slice(
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf("NAVAL_UNIT_TRAINED"),

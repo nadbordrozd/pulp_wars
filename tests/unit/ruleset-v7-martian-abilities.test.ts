@@ -801,7 +801,7 @@ describe("Tractor Beam (section 8.4)", () => {
     });
     const guard = unitAtV7(state, at(8, 8));
     const city = cityOfV7(state, 0);
-    expect(fortificationLevelForUnitV7(state, guard)).toBe(3);
+    expect(fortificationLevelForUnitV7(state, guard)).toBe(4);
     expect(
       previewTractorBeamV7(
         activeViewV7(state),
@@ -811,7 +811,7 @@ describe("Tractor Beam (section 8.4)", () => {
     ).toMatchObject({
       from: at(8, 8),
       to: at(7, 8),
-      fortificationLost: 3,
+      fortificationLost: 4,
       emptiesCenterOfCityId: city.id,
       liftsSiegeOfCityId: null,
     });

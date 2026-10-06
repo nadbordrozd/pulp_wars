@@ -1112,14 +1112,15 @@ describe("ruleset-7 revision-19 Egg unit", () => {
   });
 
   it("projects no zone of control, while the hatched unit does", () => {
-    // A Human Raider (Move 2) walks past the nest tile over open Grass.
+    // A Human Knight walks past the nest tile over open Grass (a Human
+    // Raider ignores zones of control since tuning 4).
     const path = [
       { x: 6, y: 6 },
       { x: 5, y: 6 },
     ];
     const withEgg = grass(
       dino(
-        [{ seat: 1, role: "RAIDER", at: { x: 7, y: 6 } }],
+        [{ seat: 1, role: "KNIGHT", at: { x: 7, y: 6 } }],
         [{ seat: 0, role: "GUARD", at: NEST }],
         { activeSeat: 1 },
       ),
@@ -1136,7 +1137,7 @@ describe("ruleset-7 revision-19 Egg unit", () => {
     const hatched = grass(
       dino(
         [
-          { seat: 1, role: "RAIDER", at: { x: 7, y: 6 } },
+          { seat: 1, role: "KNIGHT", at: { x: 7, y: 6 } },
           { seat: 0, role: "GUARD", at: NEST },
         ],
         [],

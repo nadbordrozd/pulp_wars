@@ -987,7 +987,9 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // The frozen sea (`pulp_wars-5ti.3`) inserts FREEZE after
           // COLD_SNAP, moving every later kind forward by one (was
           // 32a2e1…15c0).
-          "b495e0feb3bf9d57e71e239a82c30346cf27d80e25753da4793344f085835c8e",
+          // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL, moving every later command kind forward by one
+          // (was b495e0…5c8e).
+          "7f52e59a46ee2c30ada9f9ea3ee34414c88a2ad276c8475f2ba9d417560183ff",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1069,7 +1071,9 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // one (was d9e8ed…968a).
           // Tuning 1 (`pulp_wars-w49.3`, 7r46): the candidate scores read the new
           // numbers (was 7e8bcc…dce8).
-          "813c7fe9026dcb10bf03b484a2569439a750164762a0caed00a574519ca607f9",
+          // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL, moving
+          // every later command kind forward by one (was 813c7f…07f9).
+          "c82e65732afd65a9cd75acb41c8dce20a29184bedb858ff56a69a336b2894944",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).
@@ -1300,7 +1304,8 @@ function zocThreatViews(
     ...source,
     units: [
       roleUnit(own, "GUARD", projectorAt, 17, own.activation),
-      roleUnit(enemy, "RAIDER", hostileAt, 12, enemy.activation),
+      // A Knight: a Human Raider ignores zones of control (tuning 4).
+      roleUnit(enemy, "KNIGHT", hostileAt, 13, enemy.activation),
     ],
     treasureChests: [],
     board: grassAt(source, [hostileAt, projectorAt, target]),
@@ -1536,7 +1541,15 @@ function citySaveState(
     nextEntityId: source.nextEntityId + 1,
     players: source.players.map((player) =>
       player.id === source.humanPlayerId
-        ? { ...player, coins: 0 }
+        ? {
+            ...player,
+            coins: 0,
+            // Without Fieldcraft: its Forest march (tuning 4) would give
+            // the wounded Knight a way out through the Forest next to it.
+            researchedTechs: player.researchedTechs.filter(
+              (tech) => tech !== "FIELDCRAFT",
+            ),
+          }
         : { ...player, explored: source.board.tiles.map((tile) => tile.at) },
     ),
     treasureChests: source.treasureChests.filter(

@@ -457,12 +457,14 @@ describe("ruleset-7 observation safety and Concealment", () => {
     const initiallyKnown = new Set(initialExplored.map(coordKey));
     const expectedRevealed = state.board.tiles
       .map((tile) => tile.at)
+      // The mover is a Knight (sight 1) since tuning 4; it was a Raider
+      // (sight 2), which no longer stops at a zone of control.
       .filter(
-        (at) => distance(at, line[1]) <= 2 && !initiallyKnown.has(coordKey(at)),
+        (at) => distance(at, line[1]) <= 1 && !initiallyKnown.has(coordKey(at)),
       )
       .sort(compareCoords);
     expect(validation.revealed).toEqual(expectedRevealed);
-    expect(validation.revealed.every((at) => distance(at, line[1]) <= 2)).toBe(
+    expect(validation.revealed.every((at) => distance(at, line[1]) <= 1)).toBe(
       true,
     );
   });
@@ -889,7 +891,15 @@ function hiddenScoutScenario(): {
     ),
     units: state.units.map((unit) =>
       unit.ownerId === human.id
-        ? { ...unit, role: "RAIDER", at: line[0], activation: READY }
+        ? // A Knight: a Human Raider ignores zones of control (tuning 4).
+          {
+            ...unit,
+            role: "KNIGHT",
+            at: line[0],
+            hp: 13,
+            maxHp: 13,
+            activation: READY,
+          }
         : {
             ...unit,
             role: "RAIDER",
@@ -995,11 +1005,12 @@ function hiddenZocAfterRevealScenario(): {
       unit.id === mover.id
         ? {
             ...unit,
-            role: "RAIDER" as const,
+            // A Knight: a Human Raider ignores zones of control (tuning 4).
+            role: "KNIGHT" as const,
             form: "LAND" as const,
             at: geometry.start,
-            hp: 12,
-            maxHp: 12,
+            hp: 13,
+            maxHp: 13,
             activation: READY,
           }
         : unit.id === hostile.id

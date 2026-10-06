@@ -78,6 +78,8 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "../engine/rules/ruleset-v7",
       "../engine/v7/commands",
       "../engine/v7/dwarf",
+      // Tuning 3: `publicUnitHasTerrainCoverV7` (a pure public-view read).
+      "../engine/v7/units",
       "../engine/v7/economy",
       // pulp_wars-68k.3: the match's forbidden technologies (from the setup).
       "../engine/v7/forbidden-technologies",
@@ -321,13 +323,15 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // moving every later kind forward by one (was 32d19a…19d3).
       // Tuning 1 (`pulp_wars-w49.3`, 7r46): the candidate scores read the new
       // numbers (was 0a83be…b889).
-      "65a17d34dcda7a6238b5947a90303b87d98f2264d7a66e513bd6f03655e6443f",
+      // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL, moving every later command kind forward by one
+      // (was 65a17d…443f).
+      "bbf1abc3294f19706551de5c1880c793a99fed7a2cb32396ff984c5cd0dab503",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
     // (pulp_wars-9s0.1: was 2355bb…3e7a, for the same two Moves).
     expect(canonicalHash(withRevision12DecisionOrdinalsV7(basicChoice))).toBe(
-      "05c0e72bb7a401663b46ae84d7e58471b189f6345e97a8786024f7b8fded6273",
+      "b446111b4f8e597b810534e980510233d210f103a4d0070e2ce52cb936904ff5",
     );
     const basicCommands = queryPlayerCommandsV7(basicView);
     const basicWork = new NormalPolicyWorkV7(structuredClone(basicView));
@@ -1012,7 +1016,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // cause), and de28fd…a6e4 before the pulp_wars-0hi.3 Human HP (same
     // comment: two Train Guard candidates and Research Scouting).
     expect(canonicalHash(withRevision12DecisionOrdinalsV7(sliced))).toBe(
-      "84942ef94b94de86762f71e2fad3323d9cd710107fd485f640d84e7e801ca6a1",
+      "40c684dd355f0a96f2be20ad56fedeec73ddc493ea6788b72b1abf40071dc00c",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -1063,11 +1067,13 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // The frozen sea (`pulp_wars-5ti.3`) inserts FREEZE after COLD_SNAP,
       // moving every later command-kind ordinal forward by one (was
       // 6b5002…9b1e).
-      "fb95f7862cea5d9d0bc7986dfac8c9d0c74d4c0ed019acc2f63c0ffde0ca9f14",
+      // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL, moving
+      // every later command kind forward by one (was fb95f7…9f14).
+      "d5d6b7b018dc345a9f1d20c68d2352342df66ad5205f379eb8aa3f2103ad9a57",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
-    ).toBe("363b9af57ddbc715635b17d8a280203e80a44c0f6529d7e50f397c417d17f2cd");
+    ).toBe("b8ab4b5022177b7713636746f64e3a309f2451cb3d8dd0dfc582e96e29e215d7");
     expect(canonicalHash(sync)).toBe(canonicalHash(sliced));
     expect(sync).toEqual(sliced);
   }, 15_000);
@@ -1080,7 +1086,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r46");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r47");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(
@@ -1267,7 +1273,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     );
   });
 
-  it("prices a visible Raider corridor and recognizes a durable screen", () => {
+  // Tuning 4 (`pulp_wars-w49.3`): a Human Raider ignores zones of control,
+  // so a Guard between it and the Marksman is no screen any more (the
+  // screened Move scored safer before).
+  it("prices a visible Raider corridor, which a screen no longer closes", () => {
     const exposed = fixtureState([
       ["RAIDER", { x: 3, y: 5 }, false, 10],
       ["MARKSMAN", { x: 7, y: 5 }, true, 10],
@@ -1293,7 +1302,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       { ...move, unitId: screenedMarksman.id },
     ).safetyValue;
     expect(danger).toBeLessThan(0);
-    expect(protectedScore).toBeGreaterThan(danger);
+    expect(protectedScore).toBe(danger);
   });
 
   it("keeps DISBAND eligibility on direct damage rather than cached next-turn reach", () => {

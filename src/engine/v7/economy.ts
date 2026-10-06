@@ -7,6 +7,7 @@ import {
   unitCapacitySlotsV7,
   technologyCapabilitiesV7,
   unitRoleMechanicsV7,
+  cityBarracksV7,
 } from "../rules/ruleset-v7";
 import { hasAcceptedStateCertificateV7 } from "./accepted-state-certificate";
 import { resolveFountainHealingV7 } from "./curiosities";
@@ -100,14 +101,20 @@ export function growthSpentV7(level: number): number {
 
 export function cityUnitCapacityV7(
   state: Pick<GameStateV7, "board" | "players">,
-  city: Pick<CityStateV7, "id" | "level" | "ownerId">,
+  city: Pick<CityStateV7, "id" | "level" | "ownerId"> &
+    Partial<Pick<CityStateV7, "rewards">>,
 ): number {
   const owner = state.players.find((player) => player.id === city.ownerId);
   // Revision 17 Warrens: the current owner's faction bonus (Goblins +1).
   const result =
     owner === undefined
-      ? city.level + 1
-      : cityUnitCapacityForV7(city.level, owner.researchedTechs, owner.faction);
+      ? city.level + 1 + cityBarracksV7(city)
+      : cityUnitCapacityForV7(
+          city.level,
+          owner.researchedTechs,
+          owner.faction,
+          cityBarracksV7(city),
+        );
   if (!Number.isSafeInteger(result)) throw new RangeError("INTEGER_OVERFLOW");
   return result;
 }
@@ -141,15 +148,36 @@ export function assignedUnitCountV7(
 export function rewardCandidatesForLevelV7(
   level: number,
   rewards: readonly { readonly reward: RewardIdV7 }[] = [],
+  // Tuning 4 (`pulp_wars-w49.3`): the city is its owner's first capital
+  // (`originalCapitalCityId`), the only city that grants the reward unit.
+  firstCapital = false,
 ): readonly RewardIdV7[] {
   if (level === 2) return ["SURVEY", "STOCKPILE"];
   if (level === 3) return ["WALLS", "MILITIA"];
-  if (level === 4) return ["BOOM", "TREASURY_6"];
+  // Tuning 4: Barracks (+1 unit capacity) joins Boom and the Treasury.
+  if (level === 4) return ["BOOM", "TREASURY_6", "BARRACKS"];
   if (level >= 5)
-    return rewards.some((record) => record.reward === "JUGGERNAUT")
-      ? ["TREASURY"]
-      : ["JUGGERNAUT", "TREASURY"];
+    // Tuning 4: the reward unit is the first capital's, once (so once per
+    // player); every other level-5+ choice is Barracks or the Treasury.
+    return firstCapital &&
+      !rewards.some((record) => record.reward === "JUGGERNAUT")
+      ? ["JUGGERNAUT", "TREASURY", "BARRACKS"]
+      : ["TREASURY", "BARRACKS"];
   throw new RangeError("INVALID_REWARD_LEVEL");
+}
+
+/** Tuning 4: whether `city` is its current owner's first capital. */
+export function isOwnersFirstCapitalV7(
+  players: readonly {
+    readonly id: PlayerId;
+    readonly originalCapitalCityId: CityId;
+  }[],
+  city: { readonly id: CityId; readonly ownerId: PlayerId },
+): boolean {
+  return players.some(
+    (player) =>
+      player.id === city.ownerId && player.originalCapitalCityId === city.id,
+  );
 }
 
 export function resolveCityGrowthV7(
@@ -424,6 +452,15 @@ const COMBINED_NETWORK_CACHE = new WeakMap<
   object,
   Map<PlayerId, ReadonlySet<CityId>>
 >();
+/**
+ * Tuning 3 (`pulp_wars-w49.3`): the owner's cities that a Road links to at
+ * least one other city of the same owner (every city of a Road component
+ * that holds two or more of them).
+ */
+const LAND_LINKED_CACHE = new WeakMap<
+  object,
+  Map<PlayerId, ReadonlySet<CityId>>
+>();
 const COMBINED_ROAD_CACHE = new WeakMap<
   object,
   Map<PlayerId, ReadonlySet<string>>
@@ -508,7 +545,14 @@ export function roadPopulationForCityV7(
     : Number(connectedOtherCities.includes(city.id));
 }
 
-/** Commerce-only income recipients from the Roads land graph. */
+/**
+ * Commerce-only income recipients from the Roads land graph. Tuning 3
+ * (`pulp_wars-w49.3`): every city of the player that a Road links to at
+ * least one other city of the player, the first capital included. (Before,
+ * only the cities linked to the first capital, never the capital itself,
+ * and none while it was lost.) Road population keeps its capital root
+ * ({@link roadPopulationForCityV7}).
+ */
 export function landTradeCityIdsV7(
   state: NetworkStateV7,
   playerId: PlayerId,
@@ -523,10 +567,7 @@ export function landTradeCityIdsV7(
       .landTradeIncomeCoins === 0
   )
     return new Set();
-  const connected = landConnectedCityIdsV7(state, playerId);
-  return new Set(
-    [...connected].filter((cityId) => cityId !== player.originalCapitalCityId),
-  );
+  return LAND_LINKED_CACHE.get(state)?.get(playerId) ?? new Set<CityId>();
 }
 
 export function combinedNetworkRoadKeysV7(
@@ -572,6 +613,7 @@ export function seaTradeCityIdsV7(
       COMBINED_ROAD_CACHE.set(state, roadsByOwner);
     }
     roadsByOwner.set(playerId, new Set());
+    setLandLinkedV7(state, playerId, empty);
     setNetworkCacheSignatureV7(state, playerId, signature);
     return empty;
   }
@@ -671,6 +713,11 @@ export function seaTradeCityIdsV7(
     }
     roadComponents.push({ keys: componentKeys, cityIds });
   }
+  const linked = new Set<CityId>();
+  for (const component of roadComponents)
+    if (component.cityIds.size >= 2)
+      for (const cityId of component.cityIds) linked.add(cityId);
+  setLandLinkedV7(state, playerId, linked);
   const originalCapital = state.cities.find(
     (city) =>
       city.id === player.originalCapitalCityId && city.ownerId === playerId,
@@ -707,6 +754,19 @@ export function seaTradeCityIdsV7(
   byOwner.set(playerId, eligible);
   setNetworkCacheSignatureV7(state, playerId, signature);
   return eligible;
+}
+
+function setLandLinkedV7(
+  state: NetworkStateV7,
+  playerId: PlayerId,
+  linked: ReadonlySet<CityId>,
+): void {
+  let byOwner = LAND_LINKED_CACHE.get(state);
+  if (byOwner === undefined) {
+    byOwner = new Map();
+    LAND_LINKED_CACHE.set(state, byOwner);
+  }
+  byOwner.set(playerId, linked);
 }
 
 function setNetworkCacheSignatureV7(

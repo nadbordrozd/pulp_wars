@@ -12,7 +12,11 @@ import {
   viewForV7,
   type GameStateV7,
 } from "../../src/engine/index";
-import { runTextPlayV7, textPlayCommandIdV7 } from "../../scripts/play-text-v7";
+import {
+  TEXT_PLAY_LABS_V7,
+  runTextPlayV7,
+  textPlayCommandIdV7,
+} from "../../scripts/play-text-v7";
 
 /**
  * The text-mode play harness (`pulp_wars-w49.1`,
@@ -321,9 +325,11 @@ describe("text-mode play harness", () => {
       "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
     );
     expect(tech).toContain("its city gains +1 population");
-    expect(tech).toContain("Road-linked cities: +2 Coins each turn");
     expect(tech).toContain(
-      "Build Field Defense: the builder keeps its move and attack",
+      "Each city linked by Road to another of your cities: +1 Coin each turn",
+    );
+    expect(tech).toContain(
+      "Build Field Defense: +2 Defense for the unit on it; the builder keeps its move and attack",
     );
     expect(tech).not.toMatch(/unlocks: [^\n]*(^|; )MELEE_FIELD_DEMOLITION/m);
     expect(ok("view", "--session", session, "--full")).toContain(
@@ -407,6 +413,323 @@ describe("text-mode play harness", () => {
     );
     expect(offeredIds(marksman)).not.toContain(`${unit}.fortify`);
   });
+
+  // Tuning 2 (`pulp_wars-w49.3`, 7r47).
+  it("says whether an attack advances, and how land trade stands", () => {
+    const duel = (name: string, role: "FIGHTER" | "MARKSMAN"): string => {
+      const session = newSession(name);
+      patchState(session, (state) => {
+        const mine = state.units.find(
+          (unit) => unit.ownerId === state.humanPlayerId,
+        );
+        if (mine === undefined) throw new Error("no unit");
+        return {
+          ...state,
+          players: state.players.map((player) =>
+            player.id === state.humanPlayerId
+              ? { ...player, researchedTechs: [...TECHNOLOGY_IDS_V7] }
+              : player,
+          ),
+          // The other seat's unit, at 1 HP, right above the seat's unit.
+          units: state.units.map((unit) =>
+            unit.id === mine.id
+              ? { ...unit, role }
+              : { ...unit, hp: 1, at: { x: mine.at.x, y: mine.at.y - 1 } },
+          ),
+        };
+      });
+      return session;
+    };
+    const melee = duel("advance-melee", "FIGHTER");
+    const state = sessionState(melee);
+    const mine = state.units.find(
+      (unit) => unit.ownerId === state.humanPlayerId,
+    );
+    if (mine === undefined) throw new Error("no unit");
+    const attack = (session: string): string => {
+      const line = ok("options", "--session", session, "--unit", `u${mine.id}`)
+        .split("\n")
+        .find((row) => row.startsWith(`u${mine.id}.a.`));
+      if (line === undefined) throw new Error("no attack is offered");
+      return line;
+    };
+    expect(attack(melee)).toContain("KILLS");
+    expect(attack(melee)).toContain(
+      `| advances to ${mine.at.x},${mine.at.y - 1}`,
+    );
+    const ranged = attack(duel("advance-ranged", "MARKSMAN"));
+    expect(ranged).toContain("KILLS");
+    expect(ranged).toContain("| stays");
+    expect(ranged).not.toContain("advances");
+
+    // Commerce researched, no second city: the capital's line says so.
+    expect(ok("view", "--session", melee)).toContain(
+      "   No land trade: no Road link to another of your cities",
+    );
+    expect(ok("view", "--session", newSession("no-commerce"))).not.toContain(
+      "land trade",
+    );
+  });
+
+  // Tuning 3 (`pulp_wars-w49.3`).
+  it("plays a Human mirror, hires at a Market, and previews a blast", () => {
+    // A mirror: Human against the Human Normal AI.
+    const mirror = path.join(root, "mirror.json");
+    const started = ok(
+      "new",
+      "--session",
+      mirror,
+      "--map",
+      "dry-land",
+      "--size",
+      "11",
+      "--seed",
+      SEED,
+      "--factions",
+      "original,original",
+    );
+    expect(started).toContain("S0 Human (you)");
+    expect(started).toContain("S1 Human (AI)");
+    expect(sessionState(mirror).setup.factions).toEqual([
+      "ORIGINAL",
+      "ORIGINAL",
+    ]);
+    ok("end", "--session", mirror);
+    expect(sessionState(mirror).round).toBe(2);
+    expect(ok("verify", "--session", mirror)).toContain("VERIFIED");
+
+    // Every technology, 30 Coins, a Market and a Mountain in the capital's
+    // territory.
+    const session = newSession("hire-blast");
+    let market = { x: -1, y: -1 };
+    let mountain = { x: -1, y: -1 };
+    patchState(session, (state) => {
+      const capital = state.cities.find(
+        (city) => city.ownerId === state.humanPlayerId,
+      );
+      if (capital === undefined) throw new Error("no capital");
+      const free = state.board.tiles.filter(
+        (tile) =>
+          tile.territoryCityId === capital.id &&
+          tile.site === null &&
+          tile.biome !== null &&
+          tile.improvement === null &&
+          !state.units.some(
+            (unit) => unit.at.x === tile.at.x && unit.at.y === tile.at.y,
+          ),
+      );
+      const [first, second] = free;
+      if (first === undefined || second === undefined)
+        throw new Error("no two free tiles");
+      market = first.at;
+      mountain = second.at;
+      return {
+        ...state,
+        players: state.players.map((player) =>
+          player.id === state.humanPlayerId
+            ? { ...player, coins: 30, researchedTechs: [...TECHNOLOGY_IDS_V7] }
+            : player,
+        ),
+        board: {
+          ...state.board,
+          tiles: state.board.tiles.map((tile) =>
+            tile.at.x === market.x && tile.at.y === market.y
+              ? {
+                  ...tile,
+                  terrain: "GRASS" as const,
+                  biome: "PLAINS" as const,
+                  resource: null,
+                  improvement: "MARKET" as const,
+                }
+              : tile.at.x === mountain.x && tile.at.y === mountain.y
+                ? {
+                    ...tile,
+                    terrain: "MOUNTAIN" as const,
+                    biome: "HIGHLANDS" as const,
+                    resource: null,
+                  }
+                : tile,
+          ),
+        },
+      };
+    });
+    const capitalId = sessionState(session).cities.find(
+      (city) => city.ownerId === sessionState(session).humanPlayerId,
+    )?.id;
+    const hire = `c${capitalId}.hire.KNIGHT.${market.x},${market.y}`;
+    const blast = `t.${mountain.x},${mountain.y}.blast_mountain`;
+    const options = ok("options", "--session", session, "--all");
+    const row = (id: string): string => {
+      const found = options
+        .split("\n")
+        .find((line) => line.includes(`${id}  `));
+      if (found === undefined) throw new Error(`${id} is not offered`);
+      return found;
+    };
+    expect(row(hire)).toContain(
+      `hire Knight on the Market at ${market.x},${market.y} for 14c, 1.5x its price (coins 30->16)`,
+    );
+    expect(row(hire)).toContain("does not use the city action");
+    expect(row(blast)).toContain(
+      "BLAST 5 damage on and around the tile, to your units too:",
+    );
+    const hired = ok("do", "--session", session, hire);
+    expect(hired).toContain(`OK ${hire}`);
+    const state = sessionState(session);
+    expect(
+      state.units.find(
+        (unit) => unit.at.x === market.x && unit.at.y === market.y,
+      ),
+    ).toMatchObject({ role: "KNIGHT", ownerId: state.humanPlayerId });
+    // The Market is taken for this turn, and the city action is unused.
+    expect(offeredIds(session).filter((id) => id.includes(".hire."))).toEqual(
+      [],
+    );
+    expect(ok("view", "--session", session)).toContain("action ready");
+    expect(ok("do", "--session", session, blast)).toContain(`OK ${blast}`);
+    const tech = ok("tech", "--session", session);
+    expect(tech).toContain("Forest cover: your units in Forest defend at ×1.5");
+    expect(tech).toContain("Hire: each Market hires one extra unit a turn");
+  });
+
+  // Tuning 4 (`pulp_wars-w49.3`): the staged positions and the rules the
+  // harness states for them.
+  it("starts every lab, offers commands in it, and replays it", () => {
+    const listing = ok("lab");
+    for (const lab of Object.keys(TEXT_PLAY_LABS_V7))
+      expect(listing).toContain(`  ${lab}  `);
+    expect(Object.keys(TEXT_PLAY_LABS_V7)).toEqual([
+      "LAB_SIEGE",
+      "LAB_BACKLINE",
+      "LAB_LATE",
+    ]);
+    for (const lab of Object.keys(TEXT_PLAY_LABS_V7)) {
+      const session = path.join(root, `${lab}.json`);
+      const started = ok("lab", "--session", session, lab);
+      expect(started).toContain(`LAB ${lab}:`);
+      expect(started).toContain("S0 Human (you)");
+      expect(started).toContain("S1 Human (AI)");
+      expect(started).toContain("YOUR TURN");
+      const state = sessionState(session);
+      expect(state.setup).toMatchObject({
+        mapType: "MISSION",
+        factions: ["ORIGINAL", "ORIGINAL"],
+        mission: { id: lab },
+      });
+      const ids = offeredIds(session);
+      expect(
+        ids.some((id) => /^u\d+\.m\./.test(id)),
+        lab,
+      ).toBe(true);
+      // One turn each way, then the replay from the setup.
+      ok("end", "--session", session);
+      expect(sessionState(session).round).toBe(2);
+      expect(ok("verify", "--session", session)).toContain("VERIFIED");
+    }
+    const unknown = run("lab", "--session", path.join(root, "x.json"), "NOPE");
+    expect(unknown.exitCode).toBe(1);
+    expect(unknown.output).toContain("LAB_SIEGE");
+  }, 120_000);
+
+  it("groups many offers of one kind and states the tuning-4 rules in LAB_LATE", () => {
+    const session = path.join(root, "late-options.json");
+    const started = ok("lab", "--session", session, "LAB_LATE");
+    // The view: Barracks, land trade +1, and the notes of the unit lines.
+    expect(started).toContain("barracks x1: +1 unit slot(s)");
+    expect(started).toContain(
+      "Land trade +1: linked by Road to another of your cities",
+    );
+    expect(started).toContain("| cannot move and attack in the same turn");
+    expect(started).toContain(
+      "| Overrun: one more attack after every kill, with no limit",
+    );
+    expect(started).toContain(
+      "| Slips past: enemy zones of control do not stop it",
+    );
+    const options = ok("options", "--session", session);
+    const total = Number(/OFFERED (\d+):/.exec(options)?.[1]);
+    expect(total).toBeGreaterThan(500);
+    // Hundreds of offers, tens of lines: Roads, Monuments and each Market's
+    // hires are one line each.
+    expect(options.split("\n").length).toBeLessThan(140);
+    expect(options).toMatch(/^t\.x,y\.build_road {2}x\d+ at /m);
+    expect(options).toMatch(/^t\.x,y\.monument\.EXPLORER {2}x\d+ at /m);
+    expect(options).toMatch(
+      /^c\d+\.hire\.ROLE\.\d+,\d+ {2}x7 hire on the Market at .*KNIGHT 14c/m,
+    );
+    // Every grouped offer is still an id the harness accepts.
+    const road = /^t\.x,y\.build_road {2}x\d+ at (\d+,\d+)/m.exec(options)?.[1];
+    expect(offeredIds(session)).toContain(`t.${road}.build_road`);
+    // Drill at a Barracks: the unit on the capital's center.
+    const state = sessionState(session);
+    const capital = state.cities.find(
+      (city) => city.ownerId === state.humanPlayerId && city.isCapital,
+    );
+    const garrison = state.units.find(
+      (unit) => unit.at.x === capital?.at.x && unit.at.y === capital.at.y,
+    );
+    const drill = `u${garrison?.id}.drill`;
+    const all = ok("options", "--session", session, "--all");
+    expect(all).toContain(
+      `${drill}  drill at the Barracks for 10c (coins 143->133): the unit becomes a veteran, hp and max hp +5 (no heal), and its turn ends`,
+    );
+    expect(ok("do", "--session", session, drill)).toContain(`OK ${drill}`);
+    expect(
+      sessionState(session).units.find((unit) => unit.id === garrison?.id),
+    ).toMatchObject({ veteran: true, maxHp: 17, hp: 17 });
+    // Research is priced by the technologies owned.
+    const tech = ok("tech", "--session", session);
+    expect(tech).toContain(
+      "technologies 16 (each one you own makes the next 2c dearer; cities do not matter)",
+    );
+    expect(tech).toContain("T3 PLANNING | AVAILABLE 39c");
+    expect(tech).toContain(
+      "cmd BUILD_MARKET (6c, output by neighbours; needs one of your Farms, Lumber Camps, Mines or their mills next to it)",
+    );
+    expect(tech).toContain(
+      "Pillage: destroy an enemy building under your unit for +3 Coins; a Raider may still move away afterwards",
+    );
+    expect(tech).toContain(
+      "Forest march: none of your units stops on entering Forest",
+    );
+  }, 120_000);
+
+  it("previews a blast outside the territory with its price, and warns on Ore", () => {
+    const session = path.join(root, "siege-blast.json");
+    ok("lab", "--session", session, "LAB_SIEGE");
+    ok("do", "--session", session, "r.EXPLOSIVES", "u2.m.5,5", "--end");
+    const blast = ok("options", "--session", session, "--tile", "6,5");
+    expect(blast).toContain(
+      "t.6,5.blast_mountain  blast mountain at 6,5 (mountain neutral) | cost 3c (coins 53->50; not your territory, so no population) | BLAST 5 damage on and around the tile, to your units too:",
+    );
+    expect(blast).not.toContain("no exact public preview");
+    // Three Guards and the Fighter that sets the charge.
+    expect(blast.match(/ -5/g)).toHaveLength(4);
+    const done = ok("do", "--session", session, "t.6,5.blast_mountain");
+    expect(done).toContain("EXPLOSION_RESOLVED");
+    expect(done.match(/damage=5 shieldDamage=0/g)).toHaveLength(4);
+    expect(done).toContain("FIELD_DEFENSE_DESTROYED at=7,6 reason=EXPLOSION");
+    // An Ore Mountain: the line says what the blast gives up.
+    patchState(session, (state) => ({
+      ...state,
+      board: {
+        ...state.board,
+        tiles: state.board.tiles.map((tile) =>
+          tile.at.x === 1 && tile.at.y === 9
+            ? {
+                ...tile,
+                terrain: "MOUNTAIN" as const,
+                biome: "HIGHLANDS" as const,
+                resource: "ORE" as const,
+              }
+            : tile,
+        ),
+      },
+    }));
+    expect(ok("options", "--session", session, "--tile", "1,9")).toContain(
+      "WARNING Ore here: blasting it gives up a Mine (+2 population)",
+    );
+  }, 120_000);
 
   it("rejects illegal and stale ids cleanly", () => {
     const session = newSession("reject");

@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r46`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
+## Current release contract (`pulp-wars-poc-7r47`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
 
-The current runtime is `pulp-wars-poc-7r46` (autosave
-`pulpWars.save.v7r46.current`; saves and replays of `pulp-wars-poc-7r45`
+The current runtime is `pulp-wars-poc-7r47` (autosave
+`pulpWars.save.v7r47.current`; saves and replays of `pulp-wars-poc-7r46`
 and earlier are refused, and startup removes their autosave keys). Its eight
 factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy, are
 all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
@@ -255,6 +255,11 @@ one test per interaction row of the frozen sea (a Wreck under ice, the
 Tunnel and the eruption, Eggs, Crumbs and Re-bake, Assemble, a
 mind-controlled Ice Folk unit, an icebound ship's Recover and Promote, Fish
 and Pearls, Port income, a Submarine next to ice).
+`pulp_wars-w49.3` (`7r47`) is
+[tuning 2](../product/RULESET_7_TUNING_1.md#10-round-2-tuning-2-pulp-wars-poc-7r47):
+no ranged unit of any faction advances after a kill, and the Human Knight
+captures settlements; like tuning 1 it was judged by hand play and no
+balance matrix was run.
 `pulp_wars-w49.3` (`7r46`) is
 [tuning 1](../product/RULESET_7_TUNING_1.md), the Human tech tree and
 economy changes that followed five hand-played games (the retaliation from
@@ -290,7 +295,7 @@ The naval branch has no balance evidence yet: its water-map matrix is
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r46` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r47` identity (ruleset ID, autosave key, the
   map revision `REGIONAL_BIOMES_NAVAL_V4`, the
   eight-entry
   `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`/`DWARF`/`CANDY`

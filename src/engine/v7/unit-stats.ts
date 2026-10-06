@@ -25,6 +25,7 @@ import {
   unitGrowthStageV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
+  FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
 } from "../rules/ruleset-v7";
 import {
   defenseBonusForUnitV7,
@@ -1041,10 +1042,10 @@ function fortificationTerms(
   if (tile?.fieldDefense)
     terms.push(
       modifier(
-        1,
+        FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
         "FIELD_DEFENSE",
         "Field defense",
-        "Field defense adds 1 Defense.",
+        `Field defense adds ${FIELD_DEFENSE_FORTIFICATION_LEVELS_V7} Defense.`,
       ),
     );
   return terms;

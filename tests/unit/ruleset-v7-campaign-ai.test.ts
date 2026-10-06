@@ -261,10 +261,11 @@ describe("ruleset-7 Normal AI campaign (pulp_wars-9s0.1)", () => {
 
   it("opens a front against every hostile seat in reach", () => {
     // Three seats (14 x 14): the viewer's capital (2, 2), hostile capitals
-    // (11, 2) and (11, 11). Knights cannot capture, so the villages are no
-    // errand of theirs.
+    // (11, 2) and (11, 11). Vampires (the Undead Knight role) cannot
+    // capture, so the villages are no errand of theirs. (The Human Knight
+    // captures since tuning 2, 7r47.)
     const state = goblinArenaV7(
-      ["ORIGINAL", "ORIGINAL", "ORIGINAL"],
+      ["UNDEAD", "ORIGINAL", "ORIGINAL"],
       [
         { seat: 0, role: "KNIGHT", at: { x: 3, y: 2 } },
         { seat: 0, role: "KNIGHT", at: { x: 3, y: 3 } },

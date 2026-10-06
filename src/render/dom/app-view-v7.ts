@@ -3,7 +3,21 @@ import {
   BLAST_MOUNTAIN_UNLOCK_TEXT_V7,
   BREACH_UNLOCK_TEXT_V7,
   FIELD_DEFENSE_UNLOCK_TEXT_V7,
+  TRAINING_BLOCKED_CENTER_V7,
+  landTradeStatusTextV7,
+  landTradeStatusV7,
   landTradeUnlockTextV7,
+  FOREST_COVER_UNLOCK_TEXT_V7,
+  HIRE_UNLOCK_TEXT_V7,
+  BLAST_MOUNTAIN_DAMAGE_NOTE_V7,
+  FOREST_MARCH_UNLOCK_TEXT_V7,
+  BARRACKS_REWARD_TEXT_V7,
+  SCOUTS_REWARD_TEXT_V7,
+  drillLabelV7,
+  drillTooltipV7,
+  BLAST_ORE_WARNING_V7,
+  landGrantUnaffordableTextV7,
+  pillageUnlockTextV7,
 } from "../technology-unlock-text-v7";
 import {
   RULESET7_IMPROVEMENT_ART_IDS,
@@ -88,6 +102,13 @@ import {
   type BoardSizeV7,
   BOARD_SIZES_V7,
   maxSeatCountV7,
+  previewBlastMountainV7,
+  publicHireCostV7,
+  cityBarracksV7,
+  DRILL_COST_V7,
+  PROMOTION_HP_V7,
+  publicLandGrantPriceV7,
+  FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
 } from "../../engine/index";
 import {
   CROWDED_HINT_V7,
@@ -4206,6 +4227,7 @@ export class Ruleset7DomAppView {
           city.level,
           view.viewer.researchedTechs,
           view.viewer.faction,
+          cityBarracksV7(city),
         );
         // The Martian revision: a Martian viewer also counts slots (the
         // Mothership and the Colossus take two; a controlled unit none).
@@ -4298,7 +4320,13 @@ export class Ruleset7DomAppView {
           if (active) {
             const trade = el(this.#document, "div", "v7-city-stat");
             trade.dataset.stat = `${kind}-trade`;
-            trade.title = `${title(kind)} trade income`;
+            trade.title =
+              kind === "land"
+                ? landTradeStatusTextV7({
+                    kind: "PAYS",
+                    coins: LAND_TRADE_INCOME_COINS_V7,
+                  })
+                : `${title(kind)} trade income`;
             const value = el(this.#document, "dd", "v7-city-income");
             // Tuning 1 (7r46): land trade pays 2 Coins, sea trade 1.
             value.append(
@@ -4311,6 +4339,53 @@ export class Ruleset7DomAppView {
             );
             details.append(trade);
           }
+        // Tunings 2 and 3: with Commerce, a city that earns no land trade
+        // says why (no Road link to another of the player's cities).
+        const landTrade = landTradeStatusV7(view, city.id);
+        if (landTrade !== null && landTrade.kind !== "PAYS") {
+          const status = text(
+            this.#document,
+            "p",
+            landTradeStatusTextV7(landTrade),
+            "v7-chip is-warning",
+          );
+          status.dataset.landTrade = landTrade.kind.toLowerCase();
+          status.title = landTradeUnlockTextV7(LAND_TRADE_INCOME_COINS_V7);
+          details.append(status);
+        }
+        // Tuning 2 (7r47): a unit on the center blocks training here; the
+        // train cards are absent, so the panel says why.
+        if (
+          view.units.some((unit) => same(unit.at, city.at)) &&
+          !this.#snapshot.offeredCommands.some(
+            (command) => command.kind === "TRAIN" && command.cityId === city.id,
+          )
+        ) {
+          const blocked = text(
+            this.#document,
+            "p",
+            TRAINING_BLOCKED_CENTER_V7,
+            "v7-chip is-warning",
+          );
+          blocked.dataset.disabledReason = "center-occupied";
+          details.append(blocked);
+        }
+        // Tuning 4 (`pulp_wars-w49.3`): a Land Grant the player cannot pay
+        // for yet still shows its price.
+        const grantPrice = publicLandGrantPriceV7(view, city.id);
+        if (grantPrice !== null && view.viewer.coins < grantPrice.cost) {
+          const dear = text(
+            this.#document,
+            "p",
+            landGrantUnaffordableTextV7(
+              grantPrice.cost,
+              grantPrice.tiles.length,
+            ),
+            "v7-chip is-warning",
+          );
+          dear.dataset.disabledReason = "land-grant-coins";
+          details.append(dear);
+        }
         // The naval branch interface (section 5.4): what Harbours adds
         // to this city's population through its active docks.
         const harbourDocks =
@@ -4926,6 +5001,22 @@ export class Ruleset7DomAppView {
           facts.append(fact);
           action.append(facts);
         }
+      } else if (command.kind === "HIRE") {
+        // Tuning 3 (`pulp_wars-w49.3`): the Market's hire, at its price.
+        const view = this.#snapshot.view;
+        const cost =
+          view === null
+            ? null
+            : publicHireCostV7(view, command.cityId, command.role);
+        action.dataset.role = command.role.toLowerCase();
+        action.title = HIRE_UNLOCK_TEXT_V7;
+        if (cost !== null) {
+          action.setAttribute(
+            "aria-label",
+            `${commandLabel(command, this.#viewerFaction())} for ${cost} Coins`,
+          );
+          action.append(economyChips(this.#document, { cost }));
+        }
       } else if (command.kind === "BUILD_MONUMENT") {
         action.setAttribute(
           "aria-label",
@@ -4941,7 +5032,8 @@ export class Ruleset7DomAppView {
           (item) => unit !== undefined && same(item.at, unit.at),
         );
         const resultingLevel =
-          tile?.explored === true ? (tile.fortificationLevel ?? 0) + 1 : 1;
+          (tile?.explored === true ? (tile.fortificationLevel ?? 0) : 0) +
+          FIELD_DEFENSE_FORTIFICATION_LEVELS_V7;
         action.setAttribute(
           "aria-label",
           `Build Field Defense for 3 Coins · fortification level ${resultingLevel}`,
@@ -4989,6 +5081,11 @@ export class Ruleset7DomAppView {
         // Revision 17: the blast preview is shown on hover or focus and while
         // armed; activating the button arms it and asks for confirmation.
         this.#decorateKaboomButton(action, command.unitId);
+      } else if (command.kind === "DRILL_UNIT") {
+        // Tuning 4 (`pulp_wars-w49.3`): the Barracks' paid Promotion.
+        const tooltip = drillTooltipV7(DRILL_COST_V7, PROMOTION_HP_V7);
+        action.title = tooltip;
+        action.setAttribute("aria-label", tooltip);
       } else if (command.kind === "PROMOTE") {
         // Revision 20: a Promotion adds maximum HP and fully heals.
         action.title = PROMOTE_TOOLTIP_V7;
@@ -5051,6 +5148,69 @@ export class Ruleset7DomAppView {
               ),
             }),
           );
+          // Tuning 3 (`pulp_wars-w49.3`): a Blast Mountain is an explosion;
+          // the button says what it would hit, like a Kaboom button.
+          const blast =
+            view !== null && command.kind === "BLAST_MOUNTAIN"
+              ? previewBlastMountainV7(view, command.at)
+              : null;
+          if (view !== null && blast !== null) {
+            const summary = kaboomPreviewTextV7(view, {
+              ...blast,
+              unitId: 0 as UnitId,
+            });
+            action.title = `Blast · ${BLAST_MOUNTAIN_DAMAGE_NOTE_V7}`;
+            action.setAttribute(
+              "aria-label",
+              `${action.getAttribute("aria-label") ?? ""} · ${BLAST_MOUNTAIN_DAMAGE_NOTE_V7} · ${summary.description}`,
+            );
+            action.dataset.blastHits = String(
+              blast.explosions.reduce(
+                (total, explosion) => total + explosion.results.length,
+                0,
+              ),
+            );
+            // Tuning 4: an Ore Mountain says what the blast gives up.
+            const blastAt = blast.at;
+            const blastTile = view.board.tiles.find(
+              (candidate) =>
+                candidate.at.x === blastAt.x && candidate.at.y === blastAt.y,
+            );
+            if (blastTile?.explored === true && blastTile.resource === "ORE") {
+              const forfeit = text(
+                this.#document,
+                "span",
+                BLAST_ORE_WARNING_V7,
+                "v7-undead-preview-chip v7-kaboom-chip",
+              );
+              forfeit.dataset.forfeitsMine = "true";
+              action.append(forfeit);
+              action.setAttribute(
+                "aria-label",
+                `${action.getAttribute("aria-label") ?? ""} · ${BLAST_ORE_WARNING_V7}`,
+              );
+            }
+            if (action.dataset.blastHits !== "0") {
+              action.append(
+                text(
+                  this.#document,
+                  "span",
+                  summary.chip,
+                  "v7-undead-preview-chip v7-kaboom-chip",
+                ),
+              );
+              if (summary.friendlyChip !== null) {
+                const warning = text(
+                  this.#document,
+                  "span",
+                  summary.friendlyChip,
+                  "v7-undead-preview-chip v7-kaboom-chip",
+                );
+                warning.dataset.friendlyFire = "true";
+                action.append(warning);
+              }
+            }
+          }
           // The naval branch interface (section 5.4): the preview's
           // population of a dock already includes the viewer's Harbours.
           const harbours =
@@ -9966,7 +10126,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r46",
+    rulesetId: "pulp-wars-poc-7r47",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -10078,7 +10238,17 @@ function effectDescription(
             ? BLAST_MOUNTAIN_UNLOCK_TEXT_V7
             : effect.command === "BUILD_FIELD_DEFENSE"
               ? FIELD_DEFENSE_UNLOCK_TEXT_V7
-              : title(effect.command);
+              : effect.command === "HIRE"
+                ? HIRE_UNLOCK_TEXT_V7
+                : effect.command === "PILLAGE"
+                  ? pillageUnlockTextV7(
+                      effectiveRoleRuleV7("RAIDER", faction).abilities.includes(
+                        "ESCAPE",
+                      )
+                        ? label("RAIDER")
+                        : null,
+                    )
+                  : title(effect.command);
     case "RAM":
       return NAVAL_RAM_UNLOCK_V7;
     case "HARBOURS":
@@ -10103,7 +10273,7 @@ function effectDescription(
     case "CONNECTED_FARM_VISUALS":
       return "Neighboring farms join into one field";
     case "FOREST_MOVEMENT_FREEDOM":
-      return `${effect.roles.map(label).join(" and ")} move freely through forest`;
+      return `${listV7(effect.roles.map(label))} move freely through forest`;
     case "MOUNTAIN_MOVEMENT":
       return "Units can climb mountains";
     case "HIGH_GROUND_VISION":
@@ -10190,6 +10360,10 @@ function effectDescription(
     case "MELEE_FIELD_DEMOLITION":
       // Tuning 1 (7r46): Breach.
       return BREACH_UNLOCK_TEXT_V7;
+    case "FOREST_COVER":
+      return FOREST_COVER_UNLOCK_TEXT_V7;
+    case "FOREST_MARCH":
+      return FOREST_MARCH_UNLOCK_TEXT_V7;
     case "NAVAL_TRAINING_DISCOUNT":
       return `Shipyards discount naval training by ${effect.coins} Coins`;
     case "FIRST_HOSTILE_CAPTURE_SPOILS":
@@ -10343,6 +10517,10 @@ function technologyEffectGroupIdV7(
       return "BUILDINGS";
     case "RESOURCE_REVEAL":
       return "VISIBILITY";
+    case "FOREST_COVER":
+      return "PASSIVE_EFFECTS";
+    case "FOREST_MARCH":
+      return "MOVEMENT_SIGHT";
     case "FOREST_MOVEMENT_FREEDOM":
     case "MOUNTAIN_MOVEMENT":
     case "HIGH_GROUND_VISION":
@@ -10555,7 +10733,15 @@ function rewardLabel(
   // The Dwarf revision: Militia is a Hammerer; the giant is a Brass Titan.
   const dwarf = faction === "DWARF" ? dwarfRewardLabelV7(reward) : null;
   if (dwarf !== null) return dwarf;
-  if (reward === "SURVEY") return ["Survey", "Reveal the area"];
+  // Tuning 4 (`pulp_wars-w49.3`): Barracks, in every faction.
+  if (reward === "BARRACKS") return ["Barracks", BARRACKS_REWARD_TEXT_V7];
+  if (reward === "TREASURY")
+    return ["Treasury", `+${CITY_REWARD_COINS_V7.TREASURY} Coins`];
+  // Tuning 4: a Human Survey is "Scouts", the survey and a free Raider.
+  if (reward === "SURVEY")
+    return faction === "ORIGINAL"
+      ? ["Scouts", SCOUTS_REWARD_TEXT_V7]
+      : ["Survey", "Reveal the area"];
   if (reward === "STOCKPILE") return ["Stockpile", "+4 Coins"];
   if (reward === "WALLS") return ["Walls", "Stronger city defense"];
   if (reward === "MILITIA") return ["Militia", "A free Fighter"];
@@ -10563,7 +10749,6 @@ function rewardLabel(
   if (reward === "TREASURY_6")
     return ["Treasury", `+${CITY_REWARD_COINS_V7.TREASURY_6} Coins`];
   if (reward === "JUGGERNAUT") return ["Juggernaut", "A giant unit"];
-  if (reward === "TREASURY") return ["Treasury", "+12 Coins"];
   return [title(reward), ""];
 }
 
@@ -10614,9 +10799,20 @@ function candyCommandLabelV7(
     ? null
     : candyCommandNameV7(command.kind, presentedUnitFactionV7(view, unit));
 }
+/** "A", "A and B", "A, B and C". */
+function listV7(items: readonly string[]): string {
+  return items.length <= 2
+    ? items.join(" and ")
+    : `${items.slice(0, -1).join(", ")} and ${items.at(-1) ?? ""}`;
+}
 function commandLabel(command: CommandV7, faction: FactionIdV7): string {
   if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL")
     return effectiveRoleRuleV7(command.role, faction).label;
+  // Tuning 3 (`pulp_wars-w49.3`): a Market hires.
+  if (command.kind === "HIRE")
+    return `Hire ${effectiveRoleRuleV7(command.role, faction).label}`;
+  // Tuning 4: the Barracks' paid Promotion, with its price.
+  if (command.kind === "DRILL_UNIT") return drillLabelV7(DRILL_COST_V7);
   const undead = undeadCommandLabelV7(command.kind, faction);
   if (undead !== null) return undead;
   const goblin = goblinCommandLabelV7(command.kind, faction);

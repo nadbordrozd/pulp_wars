@@ -334,7 +334,9 @@ describe("Revision 14 Plague and Bitten presentation", () => {
     );
     const skeleton = unitAt(view, UNDEAD.skeleton);
     const rising = attackAt(view, commands, skeleton.id, UNDEAD.bittenVictim);
-    expect(rising.previewNote).toBe("Rises as Zombie (bitten)");
+    // Tuning 2 (7r47): the attacker does not take the tile of a unit that
+    // rises.
+    expect(rising.previewNote).toBe("Rises as Zombie (bitten) · Stays");
     expect(rising.semanticLabel).toContain(
       "The bitten defender dies and rises as a Zombie.",
     );

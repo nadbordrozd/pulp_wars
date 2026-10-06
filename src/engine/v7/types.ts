@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r46" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r47" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -57,8 +57,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r43",
   "pulp-wars-poc-7r44",
   "pulp-wars-poc-7r45",
+  "pulp-wars-poc-7r46",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r46.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r47.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -230,6 +231,8 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "RECOVER",
   "CAPTURE",
   "PROMOTE",
+  // Tuning 4 (`pulp_wars-w49.3`): the paid Promotion at a Barracks.
+  "DRILL_UNIT",
   "PILLAGE",
   "DISBAND",
   "WAIT",
@@ -258,6 +261,8 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "LAND_GRANT",
   "TRAIN",
   "TRAIN_NAVAL",
+  // Tuning 3 (`pulp_wars-w49.3`): Commerce, hiring at a Market.
+  "HIRE",
   "LAY_EGG",
   "BUILD_FIELD_DEFENSE",
   "DISEMBARK",
@@ -273,6 +278,9 @@ export const REWARD_IDS_V7 = Object.freeze([
   "TREASURY_6",
   "JUGGERNAUT",
   "TREASURY",
+  // Tuning 4 (`pulp_wars-w49.3`): +1 unit capacity in the city. Last, so
+  // the ordinals of the older rewards (AI tie-breaks) do not move.
+  "BARRACKS",
 ] as const);
 export const CARDINAL_DIRECTION_ORDER_V7 = Object.freeze([
   "NORTH",

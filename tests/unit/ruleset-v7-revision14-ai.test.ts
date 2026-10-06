@@ -371,9 +371,13 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // rounds (seed 1: two Liches, seven Plague applications). With tuning 1
     // (`pulp_wars-w49.3`, 7r46) seed 1 trains none; seeds 4, 5, 7, and 9
     // Pangea do and plague (seed 5: three Liches, 13 Plague applications).
+    // With tuning 4 (`pulp_wars-w49.3`: research is priced by the
+    // technologies owned, so the Normal AI reaches Sawmilling later) only
+    // seeds 2, 12, and 13 of 0-15 train a Lich within 40 rounds, and only
+    // seed 2 plagues (one Lich, one Plague application, over in round 26).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 5,
+      seed: 2,
       width: 11,
       height: 11,
       aiCount: 1,

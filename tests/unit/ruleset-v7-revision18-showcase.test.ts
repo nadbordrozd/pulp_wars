@@ -669,22 +669,25 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
   });
 
   // Tuning 1 (`pulp_wars-w49.3`, 7r46): land trade pays 2 Coins, so the two
-  // connected cities pay 6 each and the total is 19 (17 before).
-  it("pays the stated first income: 19 Coins, or 15 for a Goblin seat", () => {
+  // connected cities pay 6 each and the total is 19 (17 before). Tuning 3
+  // (`pulp_wars-w49.3`): the capital of a Road-linked seat earns land trade
+  // too (9, was 7), so the total is 21.
+  // Tuning 4: land trade pays 1 Coin, so 8 + 5 + 5 = 18.
+  it("pays the stated first income: 18 Coins, or 15 for a Goblin seat", () => {
     state.players.forEach((player, seat) => {
       const income = playerIncomeV7(state, player.id);
       const goblin = player.faction === "GOBLIN";
-      expect(income.totalCoins).toBe(goblin ? 15 : 19);
+      expect(income.totalCoins).toBe(goblin ? 15 : 18);
       expect(income.cities).toEqual([
-        { cityId: 2 * seat + 1, coins: 7 },
-        { cityId: 9 + 2 * seat, coins: goblin ? 4 : 6 },
-        { cityId: 10 + 2 * seat, coins: goblin ? 4 : 6 },
+        { cityId: 2 * seat + 1, coins: goblin ? 7 : 8 },
+        { cityId: 9 + 2 * seat, coins: goblin ? 4 : 5 },
+        { cityId: 10 + 2 * seat, coins: goblin ? 4 : 5 },
       ]);
     });
     // The first seat's Start Turn runs at creation and pays that income.
     for (const [faction, coins] of [
-      ["ORIGINAL", 22],
-      ["UNDEAD", 22],
+      ["ORIGINAL", 21],
+      ["UNDEAD", 21],
       ["GOBLIN", 18],
     ] as const) {
       const created = playableShowcase([faction, "ORIGINAL"]);

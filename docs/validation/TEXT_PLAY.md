@@ -51,18 +51,19 @@ npm run --silent play:text -- debrief --session S.json --out debrief.txt
 takes about half a second (most of it starting `tsx`); `end` takes longer
 with many AI seats.
 
-| Command   | What it does                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `new`     | Creates the match and the session file. `--map` is `dry-land` (default), `pangea`, `continents`, `archipelago`, or `lakes`; `--size` defaults to the automatic size for the seat count; `--factions` lists one faction per seat, yours first (2 to 8, all different; `human` means `original`, `ice` means `ice_folk`); `--curiosities on\|off` (default on); `--overwrite` replaces an existing file. AI seats ahead of you in the turn order move first. Prints the opening view. |
-| `view`    | Header (state number, round, coins, income, players in turn order, a pending choice), the map, your cities, your units, visible other units, known other cities, technologies, achievements, and how many commands are offered. `--full` adds the whole legend, stat modifiers, abilities, building outputs, and trade.                                                                                                                                                             |
-| `tech`    | The technology tree: tier, state, cost now, prerequisites, and what each technology unlocks (units with their stats and cost, commands with cost and population, passive effects).                                                                                                                                                                                                                                                                                                  |
-| `options` | The offered commands with ids and previews. Without a filter, moves are listed as destinations only. `--unit u12`, `--city c1`, `--tile 4,5` narrow it and describe every command; `--all` describes everything.                                                                                                                                                                                                                                                                    |
-| `do`      | Applies the given ids in order. Each is checked against the offered commands and then applied by the engine. It stops at the first rejected id, prints the reason and the ids it did not execute, and exits with code 1; the commands before it stay applied. With `--end` it then ends the turn, only if every id was applied and the turn can end (otherwise it prints `TURN NOT ENDED` and exits with code 1).                                                                   |
-| `end`     | Ends your turn; the AI seats play; prints what your seat observed, then the header of your new turn, or the outcome. It is refused right after a `do` that stopped at a rejected id (see below); `--force` ends the turn anyway.                                                                                                                                                                                                                                                    |
-| `log`     | Your own timeline: one row per turn (coins, income, cities and levels, units by kind, technology count) with the milestones of that round. `--round N` adds what you observed while the other seats played.                                                                                                                                                                                                                                                                         |
-| `debrief` | After the game only. Replays the command log with full information and writes, per seat and round, the economy, cities, armies, technology, training, attacks, kills, and losses (`--out FILE`; a `.json` name writes JSON). It refuses an unfinished match unless `--reveal-hidden` is passed.                                                                                                                                                                                     |
-| `verify`  | Replays the command log from the setup and compares the state hash.                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `help`    | The command list.                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Command   | What it does                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `new`     | Creates the match and the session file. `--map` is `dry-land` (default), `pangea`, `continents`, `archipelago`, or `lakes`; `--size` defaults to the automatic size for the seat count; `--factions` lists one faction per seat, yours first (2 to 8; `human` means `original`, `ice` means `ice_folk`; a faction may repeat, so `original,original` is a mirror against the Human AI); `--curiosities on\|off` (default on); `--overwrite` replaces an existing file. AI seats ahead of you in the turn order move first. Prints the opening view. |
+| `lab`     | Starts a staged position instead of a generated match: `lab --session S.json LAB_SIEGE` (or `LAB_BACKLINE`, `LAB_LATE`; `--overwrite` as for `new`). You play the Human seat against the Human Normal AI and move first. `lab` alone lists the labs. See [Labs](#labs).                                                                                                                                                                                                                                                                             |
+| `view`    | Header (state number, round, coins, income, players in turn order, a pending choice), the map, your cities, your units, visible other units, known other cities, technologies, achievements, and how many commands are offered. `--full` adds the whole legend, stat modifiers, abilities, building outputs, and trade.                                                                                                                                                                                                                             |
+| `tech`    | The technology tree: tier, state, cost now, prerequisites, and what each technology unlocks (units with their stats and cost, commands with cost and population, passive effects).                                                                                                                                                                                                                                                                                                                                                                  |
+| `options` | The offered commands with ids and previews. Without a filter, moves are listed as destinations only, and many offers of one kind (Roads, Monuments, the hires of a Market) are one line with the count, the id pattern, and the tiles. `--unit u12`, `--city c1`, `--tile 4,5` narrow it and describe every command; `--all` describes everything.                                                                                                                                                                                                  |
+| `do`      | Applies the given ids in order. Each is checked against the offered commands and then applied by the engine. It stops at the first rejected id, prints the reason and the ids it did not execute, and exits with code 1; the commands before it stay applied. With `--end` it then ends the turn, only if every id was applied and the turn can end (otherwise it prints `TURN NOT ENDED` and exits with code 1).                                                                                                                                   |
+| `end`     | Ends your turn; the AI seats play; prints what your seat observed, then the header of your new turn, or the outcome. It is refused right after a `do` that stopped at a rejected id (see below); `--force` ends the turn anyway.                                                                                                                                                                                                                                                                                                                    |
+| `log`     | Your own timeline: one row per turn (coins, income, cities and levels, units by kind, technology count) with the milestones of that round. `--round N` adds what you observed while the other seats played.                                                                                                                                                                                                                                                                                                                                         |
+| `debrief` | After the game only. Replays the command log with full information and writes, per seat and round, the economy, cities, armies, technology, training, attacks, kills, and losses (`--out FILE`; a `.json` name writes JSON). It refuses an unfinished match unless `--reveal-hidden` is passed.                                                                                                                                                                                                                                                     |
+| `verify`  | Replays the command log from the setup and compares the state hash.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `help`    | The command list.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 `do` and `end` accept `--at N`: the command is refused unless the session is
 at state `#N`, the number in every header. Use it when you are not sure the
@@ -105,6 +106,20 @@ explored, you see every unit on it for the rest of the match. A unit on an
 unexplored tile, and a city whose center is unexplored, never appear in any
 output before `debrief`.
 
+## Labs
+
+Three staged positions for the Human tuning
+([round 4](../product/RULESET_7_TUNING_HUMAN.md#119-the-labs)). Each is a
+hidden mirror mission (`src/engine/v7/missions/lab-human.ts`), so it is an
+ordinary match from a fixed start: every command, `verify`, and `debrief`
+work as in a generated match.
+
+| Lab            | Position                                                                                                                                                                                                                                                                                                                                |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `LAB_SIEGE`    | 11 x 11. The AI's walled level-4 capital with a Guard on the center, three Guards in front (Forest cover, a Field Defense), a Marksman and two Catapults behind, and a Mountain touching the screen; the AI holds its formation. You have 6 units, 60 Coins, and the prerequisites of Sawmilling, Chivalry, Explosives, and Fieldcraft. |
+| `LAB_BACKLINE` | 14 x 14. The AI advances with four Catapults and three Marksmen behind two Guards and three Fighters. You have three Knights, two Raiders, three Fighters, two Marksmen, a Catapult, and 40 Coins.                                                                                                                                      |
+| `LAB_LATE`     | 16 x 16. Six road-linked cities a side, 16 technologies, armies at the unit limit, 100 Coins each, two of your cities with a Barracks.                                                                                                                                                                                                  |
+
 ## Ids
 
 An id names what the command does. It is valid exactly while the public
@@ -118,9 +133,11 @@ it first. Ids are case-insensitive.
 | `u12.a.u31`                               | unit 12 attacks unit 31                              |
 | `u12.capture`                             | unit 12 captures the settlement it stands on         |
 | `u12.recover`, `u12.promote`, `u12.wait`  | recover HP, take a Promotion, mark the unit as done  |
+| `u12.drill`                               | Drill on a Barracks city's center (10 Coins)         |
 | `u12.fortify`, `u12.pillage`              | build a Field Defense, pillage the improvement       |
 | `u12.rally`, `u12.tend`, `u12.disband`    | Captain's Rally and Tend Wounded, disband            |
 | `c1.t.FIGHTER`                            | city 1 trains the role                               |
+| `c1.hire.KNIGHT.9,9`                      | city 1 hires the role on its Market at `9,9`         |
 | `c1.grant`                                | Land Grant for city 1                                |
 | `c1.reward.WALLS`                         | the pending reward choice of city 1                  |
 | `r.FARMING`                               | research                                             |
@@ -176,7 +193,7 @@ END OF YOUR TURN (round 2)
 -- your turn starts: coins 8 --
   INCOME S0 +3 (c1 +3)
 
-== state #20 | pulp-wars-poc-7r46 | dry_land 11x11 seed 7 ==
+== state #20 | pulp-wars-poc-7r47 | dry_land 11x11 seed 7 ==
 ROUND 3 | you are S0 Human | YOUR TURN | coins 8 | income +3/turn | cities 1 | units 2
 PLAYERS in turn order: S0 Human (you) active cities 1 units 2 > S1 Goblin (AI) active cities 1 units 2
 OFFERED 17: research 5 | train 1 | move 9 | unit 2 | end available
@@ -199,10 +216,13 @@ deals 2 (hp 10->8) | takes 5 (hp 17->12) | atk 1.5 vs def 2 x3/2`. `KILLS`
   the reason; `x3/2` is the defender's Defense bonus and `fort N` its
   fortification level. Both describe the damage you deal: what you take
   back comes from the defender's base Defense alone, without fortification
-  or cover. Anything else that applies follows as `name=value`
-  (`chargeApplied=yes`, `advances=yes`, `breachApplied=yes`,
-  `attackerBitten=yes`, a `splash` list). `advances=yes` is not a choice:
-  the unit moves onto the tile of the unit it kills.
+  or cover. `advances to x,y` says that the unit will move onto the
+  target's tile (after a kill by a melee unit, or following a Charge!
+  push); it is not a choice. `stays` after `KILLS` says that it will not
+  (a ranged unit never advances; some units and tiles do not allow it).
+  Anything else that applies follows as `name=value`
+  (`chargeApplied=yes`, `breachApplied=yes`, `attackerBitten=yes`, a
+  `splash` list).
 - **Economy previews** give the cost, the population change of the city with
   its meter before and after, the income change, and `LEVEL UP to N` when the
   command levels the city. A level-up queues a reward choice, and nothing
@@ -241,6 +261,21 @@ action used`).
   a `no attack: …` or `no fortify: …` line that names the reason (a Guard
   cannot attack after it has moved; only some roles build Field Defense,
   and only before moving, on a tile of your territory, for 3 Coins).
+- With Commerce, the line under each of your cities says how land trade
+  stands: `Land trade +2: linked by Road to another of your cities`, or
+  `No land trade: no Road link to another of your cities`. Every linked
+  city earns, the capital too.
+- With Commerce, an empty Market offers `c1.hire.<ROLE>.x,y`: a second unit
+  a turn in that city, at 1.5 times its price, without the city action.
+  The unit arrives on the Market tile with its turn spent, and the city may
+  hold one unit above its limit this way.
+- `t.x,y.blast_mountain` (Explosives) is an explosion: its `options` line
+  lists every visible unit on the Mountain and around it that takes 5
+  damage, yours included. Outside your territory it needs one of your
+  land units next to the Mountain, and that unit is hit too.
+- Forest gives cover (× 1.5 Defense) only to a seat with Forestry. A unit
+  line shows the cover in `def` and, with `view --full`, as a modifier, for
+  enemy units too.
 - `SLAYER n/5` in the `ACHIEVEMENTS` line is the most kills held by one of
   your units that is still on the board, not your total kills; a unit line
   shows `kills n`.

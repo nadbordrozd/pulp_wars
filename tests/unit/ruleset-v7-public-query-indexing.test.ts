@@ -127,10 +127,11 @@ describe("ruleset-7 exact public query indexing", () => {
         queryPlayerCommandsV7(leftView).length,
     );
     expect(rightOperations).toBe(
-      4_098 + publicPlanningFactScanOperations(rightView),
+      // 4 097 since tuning 4 (one RESEARCH fewer in the retained view).
+      4_097 + publicPlanningFactScanOperations(rightView),
     );
     expect(canonicalHash(leftResult)).toBe(
-      "f18e578cba84a5fe93980ae6c0fdc9e4a531ec4354dcc44987c170476464bca3",
+      "6461cad4ba33a3092fda17a0a47a57e95259c2046724318b60f9f4b908304c86",
     );
     expect(rightResult).toEqual(leftResult);
   });
