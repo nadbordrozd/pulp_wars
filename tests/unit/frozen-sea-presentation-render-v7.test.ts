@@ -934,7 +934,7 @@ describe("frozen-sea words", () => {
       expect(sentence.endsWith(".")).toBe(true);
       expect(sentence).not.toMatch(COORDINATE);
     }
-    expect(ICE_SEA_DOG_GOAL_V7).toBe("Hold the ice with 3 units at once.");
+    expect(ICE_SEA_DOG_GOAL_V7).toBe("Hold the ice with 5 units at once.");
   });
 
   it("describes Freeze on every Ice Folk land role", () => {

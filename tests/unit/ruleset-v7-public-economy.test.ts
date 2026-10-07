@@ -924,8 +924,9 @@ describe("ruleset-7 pure public economy", () => {
       achievement: "ENGINEER",
       at: monumentAt,
     } as const;
-    // Tuning 1 (7r46): a Monument gives 2 population (-29 at 3).
-    expect(scorePublicSpatialPlanV7(twoCities, monumentPlan)).toBe(-21);
+    // The economy rejig (7r54): a Monument gives 3 population again (-21
+    // at 2, from tuning 1 to 7r53).
+    expect(scorePublicSpatialPlanV7(twoCities, monumentPlan)).toBe(-29);
 
     const expandCity = required(
       base.cities.find((city) => city.id === staged.cityId),

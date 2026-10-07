@@ -327,10 +327,11 @@ export function queryTechnologyTreeV7(
       // (Dry Land Naval or mission) node keeps its ordinary cost.
       const cost =
         nodeState === "DISABLED"
-          ? technologyResearchCostV7(node.tier, player.researchedTechs.length)
+          ? technologyResearchCostV7(node.tier, ownedCityCount)
           : playerTechnologyResearchCostV7(
               node.tier,
               player.researchedTechs.length,
+              ownedCityCount,
             );
       return {
         id: node.id,
@@ -2946,7 +2947,7 @@ export interface MonumentPreviewV7 {
   readonly cityId: CityId;
   readonly cityHasMonument: false;
   readonly onePerCityAvailable: true;
-  readonly populationAdded: 2;
+  readonly populationAdded: 3;
   readonly levelsReached: readonly number[];
   readonly rewardWork: readonly Extract<
     DomainEventV7,
@@ -3013,12 +3014,7 @@ export function previewMonumentV7(
       kind: "CITY_REWARD_QUEUED",
       cityId: city.id,
       reachedLevel,
-      candidates: rewardCandidatesForLevelV7(
-        reachedLevel,
-        city.rewards,
-        city.id === view.viewer.originalCapitalCityId &&
-          city.ownerId === view.viewer.id,
-      ),
+      candidates: rewardCandidatesForLevelV7(reachedLevel, city.rewards),
     });
     break;
   }
@@ -7250,21 +7246,29 @@ function publicTileCommandLegal(
       cityHasImprovement(view, city.id, spatial.improvement)
     )
       return false;
-    const adjacent = adjacentPublicTiles(view, tile.at).filter(
-      (candidate): candidate is Extract<PlayerTileViewV7, { explored: true }> =>
-        candidate.explored,
-    );
-    // Tuning 1 (7r46): a contributor counts for one building of a kind, so
-    // the placement needs a contributor that would count for this one. A
-    // contributor of this city always does; one of another city only when
-    // no building of the kind next to it comes first, which is exact only
-    // when every tile around it is explored.
+    // The economy rejig (`pulp_wars-w49.16`, 7r54): a Windmill, Sawmill,
+    // Forge, or Workshop counts every contributor of the viewer next to
+    // it, on any of its cities' land, shared or not, so the placement
+    // needs only one of them (the viewer's own tiles are always known).
     if (
       kind === "BUILD_WINDMILL" ||
       kind === "BUILD_SAWMILL" ||
       kind === "BUILD_FORGE" ||
-      kind === "BUILD_MARKET"
-    ) {
+      kind === "BUILD_WORKSHOP"
+    )
+      return (
+        spatialContributionAtV7(
+          publicEconomyGraph(view),
+          tile.at,
+          spatial.improvement,
+        ).placementCount >= spatial.placementMinimum
+      );
+    // Tuning 1 (7r46): a contributor counts for one Market, so the
+    // placement needs a contributor that would count for this one. A
+    // contributor of this city always does; one of another city only when
+    // no Market next to it comes first, which is exact only when every
+    // tile around it is explored.
+    if (kind === "BUILD_MARKET") {
       const support = spatialContributionAtV7(
         publicEconomyGraph(view),
         tile.at,
@@ -7282,18 +7286,6 @@ function publicTileCommandLegal(
         })
       );
     }
-    if (kind === "BUILD_WORKSHOP")
-      return (
-        distinct(
-          adjacent.flatMap((item) =>
-            item.territoryCityId === city.id &&
-            item.improvement !== null &&
-            ["FARM", "LUMBER_CAMP", "MINE"].includes(item.improvement)
-              ? [item.improvement]
-              : [],
-          ),
-        ).length >= 1
-      );
     return true;
   }
   if (kind === "CLEAR_FOREST")
@@ -7365,10 +7357,6 @@ function adjacentPublicTiles(
       if (tile !== undefined) result.push(tile);
     }
   return result;
-}
-
-function distinct<T>(values: readonly T[]): T[] {
-  return [...new Set(values)];
 }
 
 function publicCombatPreviewCore(

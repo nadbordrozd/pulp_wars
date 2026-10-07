@@ -203,7 +203,7 @@ describe("a Monument on the board", () => {
             id: 9001,
             cityId: city.id,
             category: "LIVE",
-            amount: 2,
+            amount: 3,
             source:
               visibility === "FULL"
                 ? { kind: "MONUMENT", visibility, achievement, at }
@@ -301,7 +301,7 @@ describe("the Gallery's Monuments", () => {
       name: "Sea Dog Monument",
       factionName: null,
       description:
-        "The Monument of the Sea Dog achievement: Own 3 warships at once. Each achievement earns a free Monument: +2 population, one per city.",
+        "The Monument of the Sea Dog achievement: Own 5 warships at once. Each achievement earns a free Monument: +3 population, one per city.",
       effects: [],
       cost: null,
       technology: null,

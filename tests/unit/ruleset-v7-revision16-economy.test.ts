@@ -48,27 +48,26 @@ import {
  * (docs/product/RULESET_7_CURRENT.md section 6.1).
  */
 // Tuning 1 (`pulp_wars-w49.3`, 7r46): the per-city steps were 1 / 2 / 2
-// (1 / 3 / 5 before). Tuning 4: the price no longer reads the city count;
-// the step is per technology the player already owns beyond its first,
-// for every tier: 2 Coins in tunings 4 and 5, 1 Coin since tuning 6
-// (`pulp_wars-w49.6`, 7r49). Rows: 1..8 owned technologies.
+// (1 / 3 / 5 before). Tunings 4 to 8 priced by the technologies owned. The
+// economy rejig (`pulp_wars-w49.16`, 7r54): per city again, with steps of
+// 1 / 2 / 3. Rows: 1..8 cities.
 const RESEARCH_COST_TABLE: readonly (readonly [number, number, number])[] = [
   [5, 7, 9],
-  [6, 8, 10],
-  [7, 9, 11],
-  [8, 10, 12],
-  [9, 11, 13],
-  [10, 12, 14],
-  [11, 13, 15],
-  [12, 14, 16],
+  [6, 9, 12],
+  [7, 11, 15],
+  [8, 13, 18],
+  [9, 15, 21],
+  [10, 17, 24],
+  [11, 19, 27],
+  [12, 21, 30],
 ];
 
 describe("ruleset-7 revision-16 research costs", () => {
-  it("prices every tier by the technologies already owned (tuning 4; 1 Coin each since tuning 6)", () => {
+  it("prices every tier by the cities owned (1 / 2 / 3 a city since the economy rejig)", () => {
     expect(TECHNOLOGY_RESEARCH_COST_V7).toEqual({
       1: { base: 5, step: 1 },
-      2: { base: 7, step: 1 },
-      3: { base: 9, step: 1 },
+      2: { base: 7, step: 2 },
+      3: { base: 9, step: 3 },
     });
     expect(
       RESEARCH_COST_TABLE.map((_, index) =>
@@ -77,40 +76,46 @@ describe("ruleset-7 revision-16 research costs", () => {
         ),
       ),
     ).toEqual(RESEARCH_COST_TABLE);
-    // No owned technology prices like one (the free opener is separate).
+    // No city prices like one (the free opener is separate).
     expect(technologyResearchCostV7(2, 0)).toBe(7);
   });
 
   it("keeps the free opener: the first tier-1 technology costs 0", () => {
-    expect(playerTechnologyResearchCostV7(1, 0)).toBe(0);
+    expect(playerTechnologyResearchCostV7(1, 0, 1)).toBe(0);
+    expect(playerTechnologyResearchCostV7(1, 0, 6)).toBe(0);
     // Only tier 1 is free, and only while nothing is researched.
-    expect(playerTechnologyResearchCostV7(2, 0)).toBe(7);
-    expect(playerTechnologyResearchCostV7(3, 0)).toBe(9);
-    for (let owned = 1; owned <= 8; owned += 1) {
-      const [tier1, tier2, tier3] = RESEARCH_COST_TABLE[owned - 1] ?? [];
-      expect(playerTechnologyResearchCostV7(1, owned)).toBe(tier1);
-      expect(playerTechnologyResearchCostV7(2, owned)).toBe(tier2);
-      expect(playerTechnologyResearchCostV7(3, owned)).toBe(tier3);
+    expect(playerTechnologyResearchCostV7(2, 0, 1)).toBe(7);
+    expect(playerTechnologyResearchCostV7(3, 0, 1)).toBe(9);
+    for (let cities = 1; cities <= 8; cities += 1) {
+      const [tier1, tier2, tier3] = RESEARCH_COST_TABLE[cities - 1] ?? [];
+      // Whatever the technologies owned.
+      for (const owned of [1, 5, 12]) {
+        expect(playerTechnologyResearchCostV7(1, owned, cities)).toBe(tier1);
+        expect(playerTechnologyResearchCostV7(2, owned, cities)).toBe(tier2);
+        expect(playerTechnologyResearchCostV7(3, owned, cities)).toBe(tier3);
+      }
     }
   });
 
   it("prices the whole tree in tier order (one tier-1 free)", () => {
-    const whole = (dryLand: boolean) =>
+    const whole = (dryLand: boolean, cities: number) =>
       factionTreeV7("ORIGINAL")
         .nodes.filter((node) => !dryLand || node.branch !== "NAVAL")
         .map((node) => node.tier)
         .sort((left, right) => left - right)
         .reduce(
           (total, tier, owned) =>
-            total + playerTechnologyResearchCostV7(tier, owned),
+            total + playerTechnologyResearchCostV7(tier, owned, cities),
           0,
         );
     expect(factionTreeV7("ORIGINAL").nodes).toHaveLength(25);
-    // Dry Land has 20 technologies (no Naval branch of five): 18 Coins of
-    // tier 1, 108 of tier 2 and 188 of tier 3 (tuning 6; 21, 160, and 304
-    // at 2 Coins a technology owned: 485, and 732 with the Naval branch).
-    expect(whole(true)).toBe(314);
-    expect(whole(false)).toBe(456);
+    // Dry Land has 20 technologies (no Naval branch of five). With one
+    // city throughout: 143 Coins; with five 315; with twelve 616 (314
+    // whatever the cities from tuning 6 to 7r53).
+    expect([1, 3, 5, 8, 12].map((cities) => whole(true, cities))).toEqual([
+      143, 229, 315, 444, 616,
+    ]);
+    expect(whole(false, 1)).toBe(180);
   });
 
   it("offers the revision-16 costs in the public tree and charges them", () => {

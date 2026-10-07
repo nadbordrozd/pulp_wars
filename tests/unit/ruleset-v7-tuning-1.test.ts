@@ -21,7 +21,6 @@ import {
   queryLandGrantPreviewV7,
   queryPlayerCommandsV7,
   queryTechnologyTreeV7,
-  resolveCityGrowthV7,
   rewardCandidatesForLevelV7,
   roleMechanicsV7,
   spatialContributionAtV7,
@@ -114,13 +113,13 @@ describe("tuning 1 identity", () => {
   // Tuning 1 took 7r46; tuning 2 (tests/unit/ruleset-v7-tuning-2.test.ts)
   // took 7r47, so 7r46 is the last prior identity.
   it("was 7r46, after 7r45 in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-8, -6)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-9, -7)).toEqual([
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(52);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(53);
   });
 });
 
@@ -276,20 +275,22 @@ describe("A: retaliation uses the base Defense, without fortification or cover",
 // Tuning 4 replaced the per-city steps of tuning 1 (1, 2, and 2) by 2 Coins
 // per technology already owned beyond the first, for every tier; tuning 6
 // (`pulp_wars-w49.6`) made that 1 Coin.
-describe("B: research cost steps of 1 per technology owned", () => {
-  it("costs 5/7/9 with one technology and 10/12/14 with six", () => {
-    const table = [1, 2, 3, 4, 5, 6].map((owned) => [
-      technologyResearchCostV7(1, owned),
-      technologyResearchCostV7(2, owned),
-      technologyResearchCostV7(3, owned),
+// The economy rejig (`pulp_wars-w49.16`, 7r54) went back to the cities, with
+// steps of 1 / 2 / 3 (tests/unit/ruleset-v7-economy-rejig.test.ts).
+describe("B: research cost steps per city (1 / 2 / 3 since the economy rejig)", () => {
+  it("costs 5/7/9 with one city and 10/17/24 with six", () => {
+    const table = [1, 2, 3, 4, 5, 6].map((cities) => [
+      technologyResearchCostV7(1, cities),
+      technologyResearchCostV7(2, cities),
+      technologyResearchCostV7(3, cities),
     ]);
     expect(table).toEqual([
       [5, 7, 9],
-      [6, 8, 10],
-      [7, 9, 11],
-      [8, 10, 12],
-      [9, 11, 13],
-      [10, 12, 14],
+      [6, 9, 12],
+      [7, 11, 15],
+      [8, 13, 18],
+      [9, 15, 21],
+      [10, 17, 24],
     ]);
   });
 });
@@ -416,173 +417,81 @@ describe("D: the Marksman", () => {
 });
 
 describe("E: the level-reward loop", () => {
-  const pendingLevelFive = () => rewardStateV7("JUGGERNAUT", "ORIGINAL");
-  /** Adds permanent population until the next +1 reaches `level + 1`. */
-  const oneShortOfNextLevel = (state: GameStateV7): GameStateV7 => {
-    const city = cityOfV7(state, 0);
-    const missing = city.level + 1 - city.population - 1;
-    const tiles = state.board.tiles
-      .filter(
-        (tile) => tile.territoryCityId === city.id && tile.improvement !== null,
-      )
-      .slice(0, missing);
-    if (tiles.length !== missing) throw new Error("not enough tiles");
-    const grown = resolveCityGrowthV7(
-      city,
-      city.permanentPopulation + missing,
-      city.economicPopulation,
-    );
-    expect(grown.reachedLevels).toEqual([]);
-    return checkedV7({
-      ...state,
-      nextEntityId: state.nextEntityId + missing,
-      cities: state.cities.map((candidate) =>
-        candidate.id === city.id ? grown.city : candidate,
-      ),
-      populationContributions: [
-        ...state.populationContributions,
-        ...tiles.map((tile, index) => ({
-          id: state.nextEntityId + index,
-          cityId: city.id,
-          category: "PERMANENT" as const,
-          amount: 1,
-          source: {
-            kind: "RESOURCE_ACTION" as const,
-            action: "HUNT_GAME" as const,
-            at: tile.at,
-          },
-        })),
-      ],
-    });
-  };
-  /** The one empty territory tile gets Fruit; harvesting it adds 1. */
-  const harvestToNextLevel = (state: GameStateV7) => {
-    const city = cityOfV7(state, 0);
-    const free = state.board.tiles.find(
-      (tile) =>
-        tile.territoryCityId === city.id &&
-        tile.site === null &&
-        tile.improvement === null &&
-        !state.units.some(
-          (unit) => unit.at.x === tile.at.x && unit.at.y === tile.at.y,
-        ),
-    );
-    if (free === undefined) throw new Error("no free tile");
-    const fruited = patchTileV7(state, free.at, {
-      terrain: "GRASS",
-      biome: "PLAINS",
-      resource: "FRUIT",
-    });
-    return applied(fruited, 0, { kind: "HARVEST_FRUIT", at: free.at });
-  };
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): the fixture's capital
+  // is choosing its level-6 reward (level 5 before).
+  const pendingLevelSix = () => rewardStateV7("JUGGERNAUT", "ORIGINAL");
 
-  // Tuning 4: the reward unit is the first capital's (so once per player),
-  // and the other choices are Barracks and the 6-Coin Treasury.
-  it("offers the reward unit once, in the first capital: later levels offer Barracks or the Treasury", () => {
-    expect(rewardCandidatesForLevelV7(5, [], true)).toEqual([
+  // Tuning 4 made the reward unit the first capital's (once per player);
+  // the economy rejig gave it back to every city, once, from level 6. The
+  // second and third city, level 5, and a city that passes at level 6 are
+  // in tests/unit/ruleset-v7-economy-rejig.test.ts.
+  it("offers the reward unit once per city, from level 6; the other choices are Barracks and the Treasury", () => {
+    expect(rewardCandidatesForLevelV7(5)).toEqual(["TREASURY", "BARRACKS"]);
+    expect(rewardCandidatesForLevelV7(6)).toEqual([
       "JUGGERNAUT",
       "TREASURY",
       "BARRACKS",
     ]);
     expect(
-      rewardCandidatesForLevelV7(
-        6,
-        [{ reward: "WALLS" }, { reward: "BOOM" }],
-        true,
-      ),
+      rewardCandidatesForLevelV7(7, [{ reward: "WALLS" }, { reward: "BOOM" }]),
     ).toEqual(["JUGGERNAUT", "TREASURY", "BARRACKS"]);
-    expect(
-      rewardCandidatesForLevelV7(6, [{ reward: "JUGGERNAUT" }], true),
-    ).toEqual(["TREASURY", "BARRACKS"]);
-    expect(rewardCandidatesForLevelV7(5)).toEqual(["TREASURY", "BARRACKS"]);
-
-    const fixture = pendingLevelFive();
-    const actor = seatIdV7(fixture.state, 0);
-    const taken = applyOkV7(fixture.state, actor, fixture.command).state;
-    const grown = harvestToNextLevel(oneShortOfNextLevel(taken));
-    const city = cityOfV7(grown.state, 0);
-    expect(city.level).toBe(6);
-    expect(grown.events).toContainEqual({
-      kind: "CITY_REWARD_QUEUED",
-      cityId: city.id,
-      reachedLevel: 6,
-      candidates: ["TREASURY", "BARRACKS"],
-    });
-    expect(grown.state.pendingChoices).toEqual([
-      {
-        kind: "CITY_REWARD",
-        cityId: city.id,
-        reachedLevel: 6,
-        candidates: ["TREASURY", "BARRACKS"],
-      },
+    expect(rewardCandidatesForLevelV7(7, [{ reward: "JUGGERNAUT" }])).toEqual([
+      "TREASURY",
+      "BARRACKS",
     ]);
+
+    const fixture = pendingLevelSix();
+    const actor = seatIdV7(fixture.state, 0);
+    const city = cityOfV7(fixture.state, 0);
+    expect(city.level).toBe(6);
     expect(
-      offered(grown.state, 0).filter(
+      offered(fixture.state, 0).filter(
         (command) => command.kind === "CHOOSE_CITY_REWARD",
       ),
-    ).toEqual([
-      {
+    ).toEqual(
+      (["JUGGERNAUT", "TREASURY", "BARRACKS"] as const).map((reward) => ({
         kind: "CHOOSE_CITY_REWARD",
         cityId: city.id,
         reachedLevel: 6,
-        reward: "TREASURY",
-      },
-      {
-        kind: "CHOOSE_CITY_REWARD",
-        cityId: city.id,
-        reachedLevel: 6,
-        reward: "BARRACKS",
-      },
-    ]);
-    const second = applyCommandV7(grown.state, actor, {
-      kind: "CHOOSE_CITY_REWARD",
-      cityId: city.id,
+        reward,
+      })),
+    );
+    const coins = (state: GameStateV7) =>
+      state.players.find((player) => player.id === actor)?.coins ?? 0;
+    const treasury = applied(fixture.state, 0, {
+      ...fixture.command,
+      reward: "TREASURY",
+    });
+    expect(coins(treasury.state) - coins(fixture.state)).toBe(6);
+    const taken = applied(fixture.state, 0, fixture.command);
+    expect(cityOfV7(taken.state, 0).rewards.at(-1)).toEqual({
       reachedLevel: 6,
       reward: "JUGGERNAUT",
     });
-    expect(second.accepted).toBe(false);
-    if (!second.accepted)
-      expect(second.error.code).toBe("CITY_REWARD_MISMATCH");
-    const coins = (state: GameStateV7) =>
-      state.players.find((player) => player.id === actor)?.coins ?? 0;
-    const treasury = applied(grown.state, 0, {
-      kind: "CHOOSE_CITY_REWARD",
-      cityId: city.id,
-      reachedLevel: 6,
-      reward: "TREASURY",
-    });
-    expect(coins(treasury.state) - coins(grown.state)).toBe(6);
-    // A stored choice that offers the unit again is not a valid state.
+    // A stored level-5 choice that offers the unit is not a valid state.
+    const five = fixture.state.pendingChoices[0];
     expect(
       parseGameStateV7(
         JSON.parse(
           JSON.stringify({
-            ...grown.state,
-            pendingChoices: [
-              {
-                ...grown.state.pendingChoices[0],
-                candidates: ["JUGGERNAUT", "TREASURY", "BARRACKS"],
-              },
-            ],
+            ...fixture.state,
+            cities: fixture.state.cities.map((candidate) =>
+              candidate.id === city.id
+                ? {
+                    ...candidate,
+                    rewards: candidate.rewards.filter(
+                      (record) => record.reachedLevel < 5,
+                    ),
+                  }
+                : candidate,
+            ),
+            pendingChoices: [{ ...five, reachedLevel: 5 }],
           }),
         ),
       ),
     ).toBeNull();
-  });
-
-  it("a city that took the Treasury at level 5 is still offered the unit at level 6", () => {
-    const fixture = pendingLevelFive();
-    const actor = seatIdV7(fixture.state, 0);
-    const taken = applyOkV7(fixture.state, actor, {
-      ...fixture.command,
-      reward: "TREASURY",
-    }).state;
-    const grown = harvestToNextLevel(oneShortOfNextLevel(taken));
-    expect(grown.state.pendingChoices[0]?.candidates).toEqual([
-      "JUGGERNAUT",
-      "TREASURY",
-      "BARRACKS",
-    ]);
+    const refused = applyCommandV7(taken.state, actor, fixture.command);
+    expect(refused.accepted).toBe(false);
   });
 
   it("the level-4 Treasury pays 6 Coins", () => {
@@ -596,7 +505,7 @@ describe("E: the level-reward loop", () => {
       "TREASURY_6",
       "BARRACKS",
     ]);
-    const fixture = pendingLevelFive();
+    const fixture = pendingLevelSix();
     const actor = seatIdV7(fixture.state, 0);
     const city = cityOfV7(fixture.state, 0);
     const state = checkedV7({
@@ -606,7 +515,7 @@ describe("E: the level-reward loop", () => {
           ? {
               ...candidate,
               rewards: candidate.rewards.filter(
-                (record) => record.reachedLevel !== 4,
+                (record) => record.reachedLevel < 4,
               ),
             }
           : candidate,
@@ -636,8 +545,10 @@ describe("E: the level-reward loop", () => {
     expect(coins(result.state) - coins(state)).toBe(6);
   });
 
-  it("a Monument adds 2 population", () => {
-    expect(MONUMENT_POPULATION_V7).toBe(2);
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): 3 again (tuning 1 made it
+  // 2).
+  it("a Monument adds 3 population", () => {
+    expect(MONUMENT_POPULATION_V7).toBe(3);
     const state = fieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(5, 2) },
@@ -651,18 +562,18 @@ describe("E: the level-reward loop", () => {
     );
     if (command?.kind !== "BUILD_MONUMENT") throw new Error("no Monument");
     const preview = previewMonumentV7(viewForV7(state, actor), command);
-    expect(preview.ok && preview.preview.populationAdded).toBe(2);
+    expect(preview.ok && preview.preview.populationAdded).toBe(3);
     const before = cityOfV7(state, 0);
     const result = applied(state, 0, command);
     expect(result.events[0]).toMatchObject({
       kind: "MONUMENT_BUILT",
-      populationAdded: 2,
+      populationAdded: 3,
     });
     const after = cityOfV7(result.state, 0);
-    expect(after.economicPopulation - before.economicPopulation).toBe(2);
+    expect(after.economicPopulation - before.economicPopulation).toBe(3);
     expect(
       spatialContributionAtV7(result.state, command.at, "MONUMENT"),
-    ).toMatchObject({ population: 2 });
+    ).toMatchObject({ population: 3 });
   });
 
   // Tuning 5 (`pulp_wars-w49.4`): 1 Coin a tile and no minimum above it
@@ -670,7 +581,7 @@ describe("E: the level-reward loop", () => {
   describe("Land Grant costs 1 Coin per explored tile it claims", () => {
     /** A level-5 capital at (8, 8): 16 neutral tiles in its 5 x 5. */
     const grantState = (coins = 100): GameStateV7 => {
-      const fixture = pendingLevelFive();
+      const fixture = pendingLevelSix();
       const actor = seatIdV7(fixture.state, 0);
       const chosen = applyOkV7(fixture.state, actor, {
         ...fixture.command,
@@ -772,7 +683,11 @@ describe("E: the level-reward loop", () => {
     });
   });
 
-  describe("one contributor counts for one building of a kind", () => {
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): the "one building of a
+  // kind" rule of tuning 1 holds for Markets only; a Windmill, Sawmill,
+  // or Forge counts every contributor of its owner next to it, shared or
+  // not (tests/unit/ruleset-v7-economy-rejig.test.ts has the layouts).
+  describe("one contributor counts for one Market, and for every mill next to it", () => {
     const OWNER = 1 as never;
     /** A 6 x 3 strip: city 1 owns x 0-1, city 2 x 2-3, city 3 x 4-5. */
     const graph = (
@@ -812,7 +727,7 @@ describe("E: the level-reward loop", () => {
       ["WINDMILL", "FARM"],
       ["FORGE", "MINE"],
     ] as const)(
-      "a %s counts a %s of its own city; the neighbouring city's does not",
+      "a %s counts a %s of its own city, and so does the neighbouring city's",
       (processor, basic) => {
         // The contributor (2, 1) belongs to city 2 and touches both.
         const value = graph({
@@ -820,7 +735,7 @@ describe("E: the level-reward loop", () => {
           "2,1": basic,
           "3,1": processor,
         });
-        expect(output(value, 1, 1, processor).population).toBe(0);
+        expect(output(value, 1, 1, processor).population).toBe(1);
         expect(output(value, 3, 1, processor).population).toBe(1);
         expect(output(value, 3, 1, processor).contributingTiles).toEqual([
           { x: 2, y: 1 },
@@ -828,18 +743,13 @@ describe("E: the level-reward loop", () => {
       },
     );
 
-    it("a contributor of a third city counts for the first building in (y, x) order", () => {
-      // The Lumber Camp (2, 1) of city 2; Sawmills of city 1 at (1, 2) and
-      // of city 3... are not both adjacent, so use (1, 0) and (3, 2).
+    it("a contributor of a third city counts for every mill next to it, whatever the reading order", () => {
       const value = graph(
         { "1,0": "SAWMILL", "2,1": "LUMBER_CAMP", "3,2": "SAWMILL" },
         [1, 1, 1],
       );
-      // (3, 2) is city 2's own Sawmill: it wins over the earlier (1, 0).
-      expect(output(value, 1, 0, "SAWMILL").population).toBe(0);
+      expect(output(value, 1, 0, "SAWMILL").population).toBe(1);
       expect(output(value, 3, 2, "SAWMILL").population).toBe(1);
-      // With the camp in city 2 and both Sawmills in other cities, the
-      // first in (y, x) order counts it.
       const split = graph({
         "1,0": "SAWMILL",
         "2,1": "LUMBER_CAMP",
@@ -855,12 +765,10 @@ describe("E: the level-reward loop", () => {
 
     it("answers a placement the same way before the building stands", () => {
       const value = graph({ "1,1": "SAWMILL", "2,1": "LUMBER_CAMP" });
-      // A Sawmill of city 2 at (3, 1) would take its own city's camp.
       expect(output(value, 3, 1, "SAWMILL").placementCount).toBe(1);
-      // One of city 3 at (3, 0)? (3, 0) is city 2's tile; city 1's second
-      // candidate (1, 2) comes after (1, 1) in (y, x) order: no camp left.
-      expect(output(value, 1, 2, "SAWMILL").placementCount).toBe(0);
-      // Another owner's building never competes.
+      // City 1's other candidate (1, 2) touches the camp too.
+      expect(output(value, 1, 2, "SAWMILL").placementCount).toBe(1);
+      // Another owner's contributor never counts.
       const foreign = graph(
         { "1,1": "SAWMILL", "2,1": "LUMBER_CAMP", "3,1": "SAWMILL" },
         [2, 1, 1],

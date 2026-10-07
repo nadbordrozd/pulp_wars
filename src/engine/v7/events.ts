@@ -628,7 +628,7 @@ export type DomainEventV7 =
       readonly cityId: CityId;
       readonly achievement: AchievementIdV7;
       readonly at: CoordV7;
-      readonly populationAdded: 2;
+      readonly populationAdded: 3;
     }
   | {
       readonly kind: "UNIT_TRAINED";
@@ -1289,14 +1289,14 @@ export type ProjectedMonumentBuiltV7 =
       readonly cityId: CityId;
       readonly achievement: AchievementIdV7;
       readonly at: CoordV7;
-      readonly populationAdded: 2;
+      readonly populationAdded: 3;
     }
   | {
       readonly kind: "MONUMENT_BUILT";
       readonly visibility: "BUILDING_ONLY";
       readonly cityId: CityId;
       readonly at: CoordV7;
-      readonly populationAdded: 2;
+      readonly populationAdded: 3;
     };
 
 /**

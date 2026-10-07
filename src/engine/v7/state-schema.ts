@@ -11,6 +11,7 @@ import {
   NEUTRAL_MONSTER_ROLE_RULE_V7,
   BOOM_POPULATION_V7,
   MONUMENT_POPULATION_V7,
+  REWARD_UNIT_LEVEL_V7,
   dockPopulationV7,
   effectiveRoleRuleV7,
   eggMaxHpOptionsV7,
@@ -93,7 +94,6 @@ import {
   harbourPopulationForV7,
   rewardCandidatesForLevelV7,
   roadPopulationForCityV7,
-  isOwnersFirstCapitalV7,
 } from "./economy";
 import {
   compareCoordsV7,
@@ -1921,7 +1921,6 @@ function validateCrossReferences(value: CrossInput): boolean {
         rewardCandidatesForLevelV7(
           firstUnrewarded.level,
           firstUnrewarded.city.rewards,
-          isOwnersFirstCapitalV7(players, firstUnrewarded.city),
         ).join()
     )
       return false;
@@ -2639,7 +2638,8 @@ function rewardMatchesLevel(reward: RewardIdV7, level: number): boolean {
       : level === 4
         ? reward === "BOOM" || reward === "TREASURY_6" || reward === "BARRACKS"
         : level >= 5 &&
-          (reward === "JUGGERNAUT" ||
+          // The economy rejig (7r54): the giant from level 6.
+          ((reward === "JUGGERNAUT" && level >= REWARD_UNIT_LEVEL_V7) ||
             reward === "TREASURY" ||
             reward === "BARRACKS");
 }
@@ -2648,9 +2648,9 @@ function candidateRewardsMatchLevel(
   rewards: readonly RewardIdV7[],
   level: number,
 ): boolean {
-  // Tuning 4 (`pulp_wars-w49.3`): the lists `rewardCandidatesForLevelV7`
-  // can return for a level (which one, by the city's history and whether
-  // it is its owner's first capital, is a state invariant).
+  // The lists `rewardCandidatesForLevelV7` can return for a level (which
+  // one, by the city's history, is a state invariant). The economy rejig
+  // (7r54): the giant from level 6, in any city.
   const lists: readonly (readonly RewardIdV7[])[] =
     level === 2
       ? [["SURVEY", "STOCKPILE"]]
@@ -2658,12 +2658,14 @@ function candidateRewardsMatchLevel(
         ? [["WALLS", "MILITIA"]]
         : level === 4
           ? [["BOOM", "TREASURY_6", "BARRACKS"]]
-          : level >= 5
+          : level >= REWARD_UNIT_LEVEL_V7
             ? [
                 ["JUGGERNAUT", "TREASURY", "BARRACKS"],
                 ["TREASURY", "BARRACKS"],
               ]
-            : [];
+            : level === 5
+              ? [["TREASURY", "BARRACKS"]]
+              : [];
   return lists.some((list) => list.join() === rewards.join());
 }
 

@@ -522,8 +522,11 @@ describe("directives in headless play", () => {
             plan,
             queryAiReadyCommandsV7(view),
           );
+          // (END_TURN is not offered while a level reward waits to be
+          // chosen: with the +3 Monument of the economy rejig the seat
+          // levels a city inside these rounds.)
           expect(ready.some((item) => item.command.kind === "END_TURN")).toBe(
-            true,
+            view.pendingChoices.length === 0,
           );
           expect(
             ready.some(

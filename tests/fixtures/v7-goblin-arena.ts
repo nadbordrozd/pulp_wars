@@ -131,13 +131,29 @@ export function goblinArenaV7(
     ...base,
     nextEntityId: base.nextEntityId + pieces.length,
     activeSeatIndex: base.turnOrder.indexOf(activeId),
-    players: base.players.map((candidate) => ({
-      ...candidate,
-      researchedTechs:
-        options.techs?.[candidate.seat] ?? PRE_NAVAL_BRANCH_TECHS_V7,
-      coins: options.coins ?? 100,
-      explored: all,
-    })),
+    players: base.players.map((candidate) => {
+      const researchedTechs =
+        options.techs?.[candidate.seat] ?? PRE_NAVAL_BRANCH_TECHS_V7;
+      return {
+        ...candidate,
+        researchedTechs,
+        coins: options.coins ?? 100,
+        explored: all,
+        // The whole board is explored. Until the economy rejig
+        // (`pulp_wars-w49.16`, 7r54) Explorer needed Scouting, so a seat
+        // without it earned nothing here; now it would unlock Explorer at
+        // its first command and be offered a Monument. For such a seat
+        // Explorer is already earned and spent, so the arena behaves as
+        // it did. (A seat with Scouting unlocks it as before.)
+        achievementEntitlements: candidate.achievementEntitlements.map(
+          (entry) =>
+            entry.achievement === "EXPLORER" &&
+            !researchedTechs.includes("SCOUTING")
+              ? { ...entry, unlocked: true, spent: true }
+              : entry,
+        ),
+      };
+    }),
     cities: base.cities.map((city) => ({ ...city, cityActionAvailable: true })),
     units,
     // The pieces replace the starting units, so a Martian seat's starting

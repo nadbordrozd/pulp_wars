@@ -33,6 +33,8 @@ import {
 } from "../src/ai/index";
 import { publicProjectedDamageForPolicyV7 } from "../src/ai/v7";
 import {
+  MONUMENT_POPULATION_V7,
+  REWARD_UNIT_LEVEL_V7,
   isEggLaidRoleV7,
   technologyCapabilitiesV7,
 } from "../src/engine/rules/ruleset-v7";
@@ -1741,7 +1743,7 @@ function describeCommandV7(
     case "CHOOSE_CITY_REWARD": {
       const special =
         command.reward === "JUGGERNAUT"
-          ? `a free ${effectiveRoleRuleV7("JUGGERNAUT", view.viewer.faction).label} (your first capital's reward, once in the game; it may stand above the unit limit)`
+          ? `a free ${effectiveRoleRuleV7("JUGGERNAUT", view.viewer.faction).label} (this city's giant, once per city from level ${REWARD_UNIT_LEVEL_V7}; it may stand above the unit limit)`
           : command.reward === "MILITIA"
             ? `${MILITIA_FIGHTERS_V7[view.viewer.faction] === 1 ? "one free" : "two free"} ${effectiveRoleRuleV7("FIGHTER", view.viewer.faction).label}${MILITIA_FIGHTERS_V7[view.viewer.faction] === 1 ? "" : "s"} at the city (a reward unit may stand above the unit limit)`
             : command.reward === "SURVEY" &&
@@ -2709,8 +2711,9 @@ function unitReasonLinesV7(
 }
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`): a Monument costs nothing and adds 2
- * population, and its offers used to be one grouped line among the tile
+ * Tuning 6 (`pulp_wars-w49.6`): a Monument costs nothing and adds
+ * population (3 since the economy rejig, 7r54), and its offers used to be
+ * one grouped line among the tile
  * actions. This says so in plain words, for every city or for one.
  */
 function freeMonumentLinesV7(
@@ -2737,7 +2740,7 @@ function freeMonumentLinesV7(
     const first = entries[0];
     if (first === undefined) continue;
     lines.push(
-      `FREE MONUMENT ${achievement}: 0c, +2 population in the city it is built in (one per achievement) | ${entries.length} tiles${cities.length === 0 ? "" : ` in ${cities.join(" ")}`} | e.g. ${first.id}`,
+      `FREE MONUMENT ${achievement}: 0c, +${MONUMENT_POPULATION_V7} population in the city it is built in (one per achievement) | ${entries.length} tiles${cities.length === 0 ? "" : ` in ${cities.join(" ")}`} | e.g. ${first.id}`,
     );
   }
   return lines;
@@ -3123,13 +3126,17 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
       `${cityTagV7(view, city.id)} ${city.isCapital ? "CAPITAL" : "city"} @${xyV7(city.at)} L${city.level} pop ${city.population}/${city.level + 1} income +${cityIncomeV7(view, city)} slots ${slots.used}/${slots.capacity} action ${city.cityActionAvailable === true ? "ready" : "used"}${cityBesiegedV7(view, city) ? " BESIEGED" : ""}${city.landGrantUsed ? " land-grant-used" : ""}${city.rewards.length === 0 ? "" : ` rewards ${city.rewards.map((entry) => rewardNameV7(view.viewer.faction, entry.reward)).join(",")}`}`,
     );
     // The Martian pass, correction: where the giant unit comes from (a
-    // tester reached level 5 in another city and never found it).
+    // tester reached level 5 in another city and never found it). The
+    // economy rejig (`pulp_wars-w49.16`, 7r54): every city offers it, once,
+    // from level 6; level 5 offers the Treasury or Barracks. (Printed from
+    // level 4, two levels before the offer, so that a wide empire's view
+    // does not grow by a line for every village.)
     if (
-      city.id === view.viewer.originalCapitalCityId &&
+      city.level >= REWARD_UNIT_LEVEL_V7 - 2 &&
       !city.rewards.some((entry) => entry.reward === "JUGGERNAUT")
     )
       lines.push(
-        `   giant unit: a free ${effectiveRoleRuleV7("JUGGERNAUT", view.viewer.faction).label} is offered once, as a reward of this city (your first capital) at level 5 or higher; no other city offers it`,
+        `   giant unit: a free ${effectiveRoleRuleV7("JUGGERNAUT", view.viewer.faction).label} is offered to this city once, as a level reward at level ${REWARD_UNIT_LEVEL_V7} or higher (every city of yours offers its own; level 5 offers Treasury or Barracks)`,
       );
     // Tuning 5 (`pulp_wars-w49.4`): two things the numbers do not say.
     // The level term of income stops at 4, so more population past level 4
@@ -3244,8 +3251,14 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
             : entry.achievement === "MUSTER"
               ? " (different unit kinds you can train that you have on the board at once; a reward-only unit does not count)"
               : entry.achievement === "ENGINEER"
-                ? " (highest output of one Windmill, Sawmill, Forge, or Workshop; Mines do not count)"
-                : "";
+                ? " (highest output of one Windmill, Sawmill, Forge, or Workshop; Mines do not count; it counts your Farms, Lumber Camps, or Mines next to it on any of your cities' land)"
+                : entry.achievement === "EXPLORER"
+                  ? " (tiles explored; half the map)"
+                  : entry.achievement === "CONQUEROR"
+                    ? " (capture an enemy capital; another enemy city does not count)"
+                    : entry.achievement === "LAND_BARON"
+                      ? " (cities owned at once)"
+                      : "";
         // Tuning 5 (`pulp_wars-w49.4`): Explorer, Engineer, and Muster
         // count before their technology is researched but unlock only
         // with it (a meter read 139/100 and nothing said why).
@@ -3293,7 +3306,7 @@ function commandTechV7(args: ArgsV7): string {
   if (tree === null)
     return "TECH: you own no city, so nothing can be researched.";
   const lines = [
-    `TECH TREE ${FACTION_DISPLAY_NAMES_V7[tree.faction]} | state #${session.state.commandIndex} | coins ${view.viewer.coins} | technologies ${view.viewer.researchedTechs.length} (each one you own makes the next ${TECHNOLOGY_RESEARCH_COST_V7[1].step}c dearer; cities do not matter) | researched ${view.viewer.researchedTechs.length}/${tree.nodes.length}`,
+    `TECH TREE ${FACTION_DISPLAY_NAMES_V7[tree.faction]} | state #${session.state.commandIndex} | coins ${view.viewer.coins} | cities ${tree.ownedCityCount} (price = ${[1, 2, 3].map((tier) => `tier ${tier}: ${TECHNOLOGY_RESEARCH_COST_V7[tier as 1 | 2 | 3].base}c +${TECHNOLOGY_RESEARCH_COST_V7[tier as 1 | 2 | 3].step}c`).join(", ")} per city you own beyond the first; technologies owned do not matter) | researched ${view.viewer.researchedTechs.length}/${tree.nodes.length}`,
   ];
   for (const branch of tree.branches) {
     const nodes = tree.nodes.filter((node) => node.branch === branch);

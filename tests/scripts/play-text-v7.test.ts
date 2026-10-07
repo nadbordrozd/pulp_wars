@@ -359,7 +359,8 @@ describe("text-mode play harness", () => {
     );
     expect(tech).not.toMatch(/unlocks: [^\n]*(^|; )MELEE_FIELD_DEMOLITION/m);
     expect(ok("view", "--session", session, "--full")).toContain(
-      "SLAYER 0/5 (most kills by one living unit)",
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): 7 kills (5).
+      "SLAYER 0/7 (most kills by one living unit)",
     );
 
     // The seat's unit beside the first chest: before round 15 the Human
@@ -760,7 +761,9 @@ describe("text-mode play harness", () => {
           "| Beam Down: sets one of your units down beside itself, lifted from on or beside ANY of your city centers or from up to 2 tiles away",
         );
         expect(started).toContain(
-          "giant unit: a free Colossus is offered once, as a reward of this city (your first capital) at level 5 or higher",
+          // The economy rejig (`pulp_wars-w49.16`, 7r54): every city, once,
+          // from level 6 (the first capital only, from level 5, before).
+          "giant unit: a free Colossus is offered to this city once, as a level reward at level 6 or higher (every city of yours offers its own; level 5 offers Treasury or Barracks)",
         );
         expect(started).toContain(
           "Martian units: Gr grunt Sa saucer RG ray gunner SP shield projector Br brain Tr tripod Mo mothership Co colossus",
@@ -805,7 +808,9 @@ describe("text-mode play harness", () => {
         );
         expect(started).toContain("| fills 2 slots");
         // The technologies under the faction's own names.
-        expect(started).toContain('FORTIFICATION "Nesting" 16c');
+        // (Tier 2 with the lab's five cities: 7 + 8 since the economy
+        // rejig, `pulp_wars-w49.16`; 16 as the tenth technology before.)
+        expect(started).toContain('FORTIFICATION "Nesting" 15c');
         expect(ok("help")).toContain("LAB_DINOSAUR_MID: the Dinosaurs");
         const tech = ok("tech", "--session", session);
         expect(tech).toContain(
@@ -935,12 +940,14 @@ describe("text-mode play harness", () => {
     expect(ok("options", "--session", session, "--all")).not.toContain(
       ".drill",
     );
-    // Research is priced by the technologies owned.
+    // Research is priced by the cities owned (the economy rejig,
+    // `pulp_wars-w49.16`; by the technologies owned from tuning 4 to 7r53).
     const tech = ok("tech", "--session", session);
     expect(tech).toContain(
-      "technologies 16 (each one you own makes the next 1c dearer; cities do not matter)",
+      "cities 6 (price = tier 1: 5c +1c, tier 2: 7c +2c, tier 3: 9c +3c per city you own beyond the first; technologies owned do not matter)",
     );
-    // Tier 3 with 16 technologies owned: 9 + 15 (tuning 6; 39 before).
+    // Tier 3 with six cities: 9 + 15 (also 24 as the seventeenth
+    // technology under tuning 6).
     expect(tech).toContain("T3 PLANNING | AVAILABLE 24c");
     expect(tech).toContain(
       "cmd BUILD_MARKET (6c; a Market pays 2 or 3 Coins every turn: 1, plus 1 for each family of buildings beside it (farms, timber, metal), 3 at most; needs one of your Farms, Lumber Camps, Mines or their mills next to it)",
@@ -957,11 +964,12 @@ describe("text-mode play harness", () => {
     const session = path.join(root, "siege-blast.json");
     ok("lab", "--session", session, "LAB_SIEGE");
     ok("do", "--session", session, "r.EXPLOSIVES", "u2.m.5,5", "--end");
-    // (Explosives is the ninth technology: 16 Coins since tuning 6, so the
-    // 60 Coins are back after one turn of income.)
+    // (Explosives costs 12 Coins with the lab's two cities since the
+    // economy rejig, `pulp_wars-w49.16`; it was 16 as the ninth technology.
+    // With one turn of income the 60 Coins are 64.)
     const blast = ok("options", "--session", session, "--tile", "6,5");
     expect(blast).toContain(
-      "t.6,5.blast_mountain  blast mountain at 6,5 (mountain neutral) | cost 3c (coins 60->57; not your territory, so no population) | BLAST 5 damage on and around the tile, to your units too except the one that sets it:",
+      "t.6,5.blast_mountain  blast mountain at 6,5 (mountain neutral) | cost 3c (coins 64->61; not your territory, so no population) | BLAST 5 damage on and around the tile, to your units too except the one that sets it:",
     );
     expect(blast).not.toContain("no exact public preview");
     // Three Guards; the Fighter that sets the charge is not hit (tuning 5).
@@ -1292,7 +1300,7 @@ describe("text-mode play harness", () => {
       /MUSTER \d+\/\d+ \(different unit kinds you can train that you have on the board at once; a reward-only unit does not count\)/,
     );
     expect(full).toMatch(
-      /ENGINEER \d+\/\d+ \(highest output of one Windmill, Sawmill, Forge, or Workshop; Mines do not count\)/,
+      /ENGINEER \d+\/7 \(highest output of one Windmill, Sawmill, Forge, or Workshop; Mines do not count; it counts your Farms, Lumber Camps, or Mines next to it on any of your cities' land\)/,
     );
 
     // The first unit stands on the capital's center: the section says why

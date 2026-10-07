@@ -209,14 +209,15 @@ function spatialPlacementSupportV7(
         : improvement === "SAWMILL"
           ? "LUMBER_CAMP"
           : "MINE";
+    // The economy rejig (`pulp_wars-w49.16`, 7r54): a mill counts every
+    // contributor of its owner next to it, whichever of the owner's cities'
+    // land it stands on, and one contributor counts for every such mill.
     const contributors = friendlyAdjacent(
       graph,
       at,
       city.ownerId,
       [type],
       cityById,
-    ).filter((tile) =>
-      contributorServesV7(graph, tile, improvement, at, city, cityById),
     );
     return {
       contributingTiles: contributors,
@@ -226,13 +227,14 @@ function spatialPlacementSupportV7(
     };
   }
   if (improvement === "WORKSHOP") {
+    // The economy rejig (7r54): a Workshop counts the kinds on any of its
+    // owner's cities' land (its own city's only before).
     const contributors = friendlyAdjacent(
       graph,
       at,
       city.ownerId,
       BASIC,
       cityById,
-      city.id,
     );
     const types = orderedTypes(contributors, BASIC);
     return {
@@ -272,11 +274,11 @@ function spatialPlacementSupportV7(
 
 /**
  * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r47`; current rules section
- * 8.3): one contributor counts for exactly one building of a kind. A Farm,
- * Lumber Camp, or Mine counts for one Windmill, Sawmill, or Forge, and each
- * Farm, Windmill, Lumber Camp, Sawmill, Mine, or Forge counts for one
- * Market (the two are independent: a Farm may count for a Windmill and for
- * a Market). Among the same-owner buildings of `consumer` kind on the eight
+ * 8.3): each Farm, Windmill, Lumber Camp, Sawmill, Mine, or Forge counts
+ * for exactly one Market. The economy rejig (`pulp_wars-w49.16`, 7r54):
+ * this rule is used for Markets only; a Windmill, Sawmill, Forge, or
+ * Workshop counts every contributor of its owner next to it, shared or
+ * not. Among the same-owner buildings of `consumer` kind on the eight
  * tiles around the contributor, it serves the one of its own city;
  * otherwise the first in (y, x) order. The tile `at` being evaluated always
  * takes part as a building of the consumer kind, placed or not, so the same
@@ -368,15 +370,12 @@ function friendlyAdjacent<T extends ImprovementIdV7>(
   ownerId: PlayerId,
   allowed: readonly T[],
   cityById: ReadonlyMap<CityId, EconomyGraphCityV7>,
-  territoryCityId?: CityId,
 ): readonly EconomyGraphTileV7[] {
   return adjacentTilesV7(graph.board, at).filter(
     (tile) =>
       tile.improvement !== null &&
       allowed.includes(tile.improvement as T) &&
-      tileOwner(tile, cityById) === ownerId &&
-      (territoryCityId === undefined ||
-        tile.territoryCityId === territoryCityId),
+      tileOwner(tile, cityById) === ownerId,
   );
 }
 function orderedTypes<T extends ImprovementIdV7>(

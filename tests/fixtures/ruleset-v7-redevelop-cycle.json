@@ -1,12 +1,12 @@
 {
-  "description": "pulp_wars-9s0.9: the start of player 1's round-28 turn in a 14 x 14 Dry Land Martian mirror (seed 9) where the Normal AI before the fix repeated REDEVELOP and BUILD_LUMBER_CAMP on (10, 5) until its Coins ran out. pulp_wars-1wy.3: state re-identified as pulp-wars-poc-7r37 and given the two empty per-turn Martian lists (`beamedThisTurn`, `tractorUsedThisTurn`); its thirteen Grunts at the balance round's maximum HP (maxHp 9, hp clamped). pulp_wars-jdb.3: state re-identified as pulp-wars-poc-7r38 and given the four empty Candy lists (`sugarRush`, `crumbs`, `splattedThisTurn`, `tossedThisTurn`). pulp_wars-1wy.6: state re-identified as pulp-wars-poc-7r39; its thirteen Grunts at the 8 HP of the fallback (maxHp 8, hp clamped). pulp_wars-ykw.2: state re-identified as pulp-wars-poc-7r40 and its setup renamed to map revision `REGIONAL_BIOMES_NAVAL_V3`; the board is unchanged. pulp_wars-if6: state re-identified as pulp-wars-poc-7r41 (3 starting Coins, tier 3 technology base cost 9); the state is otherwise unchanged.",
+  "description": "pulp_wars-9s0.9: the start of player 1's round-28 turn in a 14 x 14 Dry Land Martian mirror (seed 9) where the Normal AI before the fix repeated REDEVELOP and BUILD_LUMBER_CAMP on (10, 5) until its Coins ran out. pulp_wars-1wy.3: state re-identified as pulp-wars-poc-7r37 and given the two empty per-turn Martian lists (`beamedThisTurn`, `tractorUsedThisTurn`); its thirteen Grunts at the balance round's maximum HP (maxHp 9, hp clamped). pulp_wars-jdb.3: state re-identified as pulp-wars-poc-7r38 and given the four empty Candy lists (`sugarRush`, `crumbs`, `splattedThisTurn`, `tossedThisTurn`). pulp_wars-1wy.6: state re-identified as pulp-wars-poc-7r39; its thirteen Grunts at the 8 HP of the fallback (maxHp 8, hp clamped). pulp_wars-ykw.2: state re-identified as pulp-wars-poc-7r40 and its setup renamed to map revision `REGIONAL_BIOMES_NAVAL_V3`; the board is unchanged. pulp_wars-if6: state re-identified as pulp-wars-poc-7r41 (3 starting Coins, tier 3 technology base cost 9); the state is otherwise unchanged. pulp_wars-w49.16: state re-identified as pulp-wars-poc-7r54 (the economy rejig): every Monument gives 3 population and every mill counts all of its owner's contributors next to it, so the live population of the cities was recomputed (a level a city reaches by it has the Treasury, or the level's Coin reward, recorded); a `JUGGERNAUT` reward recorded at level 5 is recorded as `TREASURY` (the giant is a level-6 reward now; the units stay).",
   "playerId": 1,
   "target": { "x": 10, "y": 5 },
   "state": {
     "schemaVersion": 7,
-    "rulesetId": "pulp-wars-poc-7r53",
+    "rulesetId": "pulp-wars-poc-7r54",
     "setup": {
-      "rulesetId": "pulp-wars-poc-7r53",
+      "rulesetId": "pulp-wars-poc-7r54",
       "seed": 9,
       "width": 14,
       "height": 14,
@@ -2578,8 +2578,8 @@
         "at": { "x": 2, "y": 11 },
         "level": 5,
         "permanentPopulation": 2,
-        "economicPopulation": 11,
-        "population": -1,
+        "economicPopulation": 12,
+        "population": 0,
         "isCapital": true,
         "expanded": false,
         "landGrantUsed": false,
@@ -2588,7 +2588,7 @@
           { "reachedLevel": 2, "reward": "STOCKPILE" },
           { "reachedLevel": 3, "reward": "WALLS" },
           { "reachedLevel": 4, "reward": "TREASURY_6" },
-          { "reachedLevel": 5, "reward": "JUGGERNAUT" }
+          { "reachedLevel": 5, "reward": "TREASURY" }
         ]
       },
       {
@@ -2615,8 +2615,8 @@
         "at": { "x": 8, "y": 5 },
         "level": 4,
         "permanentPopulation": 1,
-        "economicPopulation": 10,
-        "population": 2,
+        "economicPopulation": 11,
+        "population": 3,
         "isCapital": false,
         "expanded": false,
         "landGrantUsed": false,
@@ -2633,8 +2633,8 @@
         "at": { "x": 5, "y": 8 },
         "level": 5,
         "permanentPopulation": 0,
-        "economicPopulation": 9,
-        "population": -5,
+        "economicPopulation": 10,
+        "population": -4,
         "isCapital": false,
         "expanded": false,
         "landGrantUsed": false,
@@ -2643,7 +2643,7 @@
           { "reachedLevel": 2, "reward": "STOCKPILE" },
           { "reachedLevel": 3, "reward": "WALLS" },
           { "reachedLevel": 4, "reward": "TREASURY_6" },
-          { "reachedLevel": 5, "reward": "JUGGERNAUT" }
+          { "reachedLevel": 5, "reward": "TREASURY" }
         ]
       },
       {
@@ -2779,7 +2779,7 @@
         "id": 24,
         "cityId": 21,
         "category": "LIVE",
-        "amount": 2,
+        "amount": 3,
         "source": {
           "kind": "MONUMENT",
           "achievement": "EXPLORER",
@@ -2911,7 +2911,7 @@
         "id": 45,
         "cityId": 31,
         "category": "LIVE",
-        "amount": 2,
+        "amount": 3,
         "source": {
           "kind": "MONUMENT",
           "achievement": "LAND_BARON",
@@ -3032,7 +3032,7 @@
         "id": 61,
         "cityId": 3,
         "category": "LIVE",
-        "amount": 2,
+        "amount": 3,
         "source": {
           "kind": "MONUMENT",
           "achievement": "EXPLORER",

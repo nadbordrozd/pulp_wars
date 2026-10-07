@@ -355,8 +355,17 @@ slot (3/3) | c9 center occupied`), and a rejected `c1.t.fighter` names the
   right place recovers by itself (the `recover` preview says how much).
 - A unit captures a settlement it stands on with `.capture`; `can-capture-now`
   in its unit line says when. Move onto the center first.
-- Research costs 1 Coin more for each technology you already own (cities
-  do not matter); the first technology is free. `tech` shows the cost now.
+- Research costs its tier's base (5 / 7 / 9 Coins) plus 1 / 2 / 3 Coins
+  for each city you own beyond your first (the technologies you own do not
+  matter); the first technology is free. `tech` shows the cost now and
+  prints your city count and the three formulas in its first line.
+- Every city of yours is offered its faction's giant once, as a level
+  reward at level 6 or higher (level 5 offers Treasury or Barracks). From
+  level 4 a city that has not taken it has a `giant unit:` line under it
+  in `view`.
+- A Windmill, Sawmill, Forge, or Workshop counts every Farm, Lumber Camp,
+  or Mine of yours next to it, on any of your cities' land, and one Farm
+  can feed two cities' Windmills. The build preview shows the output.
 - Use `options --unit u12` before a fight: it lists that unit's attacks with
   exact numbers and, under `COMMANDS TARGETING IT`, your attacks on an enemy
   unit when you pass the enemy's id.
@@ -384,7 +393,7 @@ state #20: the tile is 3 tiles away and the Fighter has Move 1` (the unit
   has moved, the tile is occupied or unexplored, too far, or the rules
   that end a Move early).
 - A Monument you have earned is one line at the top of `options` and under
-  `options --city`: `FREE MONUMENT <achievement>: 0c, +2 population in the
+  `options --city`: `FREE MONUMENT <achievement>: 0c, +3 population in the
 city it is built in`, with an id to use.
 - `HIT_UNSEEN u12(S0 Guard) @7,2 takes 6 from a source you do not see (hp
 17->11)` in what your seat observed is damage from an attacker on a tile
@@ -418,9 +427,13 @@ city it is built in`, with an id to use.
 - Forest gives cover (× 1.5 Defense) only to a seat with Forestry. A unit
   line shows the cover in `def` and, with `view --full`, as a modifier, for
   enemy units too.
-- `SLAYER n/5` in the `ACHIEVEMENTS` line is the most kills held by one of
+- `SLAYER n/7` in the `ACHIEVEMENTS` line is the most kills held by one of
   your units that is still on the board, not your total kills; a unit line
-  shows `kills n`.
+  shows `kills n`. The line says what each achievement counts: `EXPLORER
+n/N` is tiles explored against half the map, `CONQUEROR` needs an enemy
+  capital (another enemy city does not count), `LAND_BARON` cities owned
+  at once (8), `MUSTER` kinds you can train (6), and `ENGINEER` the highest
+  output of one mill (7). No achievement needs a technology.
 - `log` is your notebook of what happened; `log --round N` shows again what
   the AI did in a round you want to look at.
 - Do not read a `debrief` of a match you are still playing.

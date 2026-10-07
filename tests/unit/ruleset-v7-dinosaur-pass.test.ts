@@ -121,7 +121,7 @@ import {
   walledV7,
 } from "../fixtures/v7-revision20";
 
-// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r53`,
+// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r54`,
 // docs/product/RULESET_7_TUNING_DINOSAUR.md): Scouts for a Dinosaur city (a
 // free Raptor); a Triceratops's run-up counts one tile, two with
 // Wallbreaker; the Caveman's Pack Hunt; a Dinosaur Market hires a dinosaur
@@ -203,13 +203,19 @@ const ROSTER: readonly UnitRoleIdV7[] = [
 ];
 
 describe("the Dinosaur pass: identity", () => {
-  it("is 7r53 with 7r52 a prior identity and an obsolete save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r52");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+  // The economy rejig (tests/unit/ruleset-v7-economy-rejig.test.ts) took
+  // 7r54, so 7r53 is the last prior identity.
+  it("was 7r53 after 7r52, with both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r52",
+      "pulp-wars-poc-7r53",
+    ]);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r52.current",
-    );
+      "pulpWars.save.v7r53.current",
+    ]);
   });
 
   it("registers Pack Hunt and the gated run-up on the Dinosaur registration and moves no number", () => {
@@ -1112,9 +1118,10 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
   });
 
   it("researches at war with the Coins left over after the dearest Egg on offer", () => {
-    // A Swordsman three tiles from the capital; Forestry (10 Coins) is the
-    // next technology and not due; the dearest production on offer is an
-    // Ankylosaurus Egg (5 Coins).
+    // A Swordsman three tiles from the capital; Forestry (7 Coins with one
+    // city since the economy rejig, `pulp_wars-w49.16`; 10 as the fifth
+    // technology before) is the next technology and not due; the dearest
+    // production on offer is an Ankylosaurus Egg (5 Coins).
     // (Two more Cavemen without a home city: the Ankylosaurus is under its
     // cap and the capital has room.)
     const at_war = (coins: number) => {
@@ -1141,7 +1148,7 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
         ),
       }).map((candidate) => candidate.command);
     };
-    for (const coins of [8, 12, 14]) {
+    for (const coins of [8, 10, 11]) {
       expect(at_war(coins), String(coins)).toContainEqual(
         expect.objectContaining({ kind: "LAY_EGG", role: "GUARD" }),
       );
@@ -1149,7 +1156,7 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
         expect.objectContaining({ kind: "RESEARCH" }),
       );
     }
-    for (const coins of [15, 30])
+    for (const coins of [12, 30])
       expect(at_war(coins), String(coins)).toContainEqual({
         kind: "RESEARCH",
         tech: "FORESTRY",

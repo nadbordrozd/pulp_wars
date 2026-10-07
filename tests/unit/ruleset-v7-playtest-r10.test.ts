@@ -45,8 +45,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 10 playtest corrections", () => {
   it("uses the exact current identity while retaining numeric schema 7", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
     expect(initialV7().schemaVersion).toBe(7);
   });
 
@@ -977,7 +977,7 @@ function occupiedRewardState(
   readonly command: {
     readonly kind: "CHOOSE_CITY_REWARD";
     readonly cityId: CityId;
-    readonly reachedLevel: 3 | 5;
+    readonly reachedLevel: 3 | 6;
     readonly reward: "MILITIA" | "JUGGERNAUT";
   };
 } {
@@ -985,8 +985,13 @@ function occupiedRewardState(
     fixture.state.cities.find((candidate) => candidate.id === fixture.cityId),
     "reward city missing",
   );
-  const reachedLevel = reward === "MILITIA" ? 3 : 5;
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): the giant is a level-6
+  // reward (level 5 before). Level 6 takes 20 population and the city
+  // holds seven Farms (14), so six Farm tiles also carry a hunt (1
+  // permanent population each), as in `rewardStateV7`.
+  const reachedLevel = reward === "MILITIA" ? 3 : 6;
   const addedPopulation = reward === "MILITIA" ? 6 : 14;
+  const addedPermanent = reward === "MILITIA" ? 0 : 6;
   const farmCount = addedPopulation / 2;
   const growthTiles = fixture.state.board.tiles
     .filter(
@@ -1001,9 +1006,10 @@ function occupiedRewardState(
   if (growthTiles.length !== farmCount)
     throw new Error("reward growth tiles missing");
   const economicPopulation = city.economicPopulation + addedPopulation;
+  const huntTiles = growthTiles.slice(0, addedPermanent);
   const grown = resolveCityGrowthV7(
     city,
-    city.permanentPopulation,
+    city.permanentPopulation + addedPermanent,
     economicPopulation,
   ).city;
   const previousRewards =
@@ -1013,6 +1019,7 @@ function occupiedRewardState(
           { reachedLevel: 2, reward: "SURVEY" as const },
           { reachedLevel: 3, reward: "WALLS" as const },
           { reachedLevel: 4, reward: "TREASURY_6" as const },
+          { reachedLevel: 5, reward: "TREASURY" as const },
         ];
   const candidates =
     reward === "MILITIA"
@@ -1020,7 +1027,8 @@ function occupiedRewardState(
       : (["JUGGERNAUT", "TREASURY", "BARRACKS"] as const);
   const state = checkedV7({
     ...fixture.state,
-    nextEntityId: fixture.state.nextEntityId + growthTiles.length,
+    nextEntityId:
+      fixture.state.nextEntityId + growthTiles.length + huntTiles.length,
     cities: fixture.state.cities.map((candidate) =>
       candidate.id === city.id
         ? { ...grown, economicPopulation, rewards: previousRewards }
@@ -1050,6 +1058,17 @@ function occupiedRewardState(
         source: {
           kind: "IMPROVEMENT" as const,
           improvement: "FARM" as const,
+          at: tile.at,
+        },
+      })),
+      ...huntTiles.map((tile, index) => ({
+        id: fixture.state.nextEntityId + growthTiles.length + index,
+        cityId: city.id,
+        category: "PERMANENT" as const,
+        amount: 1,
+        source: {
+          kind: "RESOURCE_ACTION" as const,
+          action: "HUNT_GAME" as const,
           at: tile.at,
         },
       })),

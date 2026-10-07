@@ -50,7 +50,7 @@ import {
 } from "../../src/ai/v7-campaign";
 
 /**
- * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r53`;
+ * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r54`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 14, the Normal AI of a
  * Human, Undead, or Goblin seat): it commits against the enemy in front of
  * it and keeps committing after the line breaks, every faction's seat
@@ -194,7 +194,7 @@ const whereIs = (state: GameStateV7, id: UnitId): CoordV7 => {
 
 describe("tuning 7 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
   });
 });
 
@@ -952,17 +952,16 @@ describe("2. every faction's seat grows", () => {
     // growth its land can use comes right after the Zombie, before the
     // Banshee: Forestry by way of Hunting (the land is Forest), a Lumber
     // Camp on it, then Marksmanship, and Sawmilling (the Lich) by round 18.
+    // The economy rejig (`pulp_wars-w49.16`, 7r54): research is priced by
+    // the cities owned (1 / 2 / 3 Coins a city), so this seat, which
+    // takes its villages first, has Marksmanship inside the window and
+    // Sawmilling (tier 3) and Administration after it.
     expect(bought.filter((kind) => kind.startsWith("RESEARCH"))).toEqual([
       "RESEARCH GATHERING",
       "RESEARCH DRILL",
       "RESEARCH HUNTING",
       "RESEARCH FORESTRY",
       "RESEARCH MARKSMANSHIP",
-      "RESEARCH SAWMILLING",
-      // The Martian pass's correction (`pulp_wars-w49.14`): against the
-      // Human seat's new opening the Undead seat has the Coins for the
-      // Necromancer's technology inside the window too.
-      "RESEARCH ADMINISTRATION",
     ]);
     expect(bought.indexOf("BUILD_LUMBER_CAMP")).toBeGreaterThan(
       bought.indexOf("RESEARCH FORESTRY"),

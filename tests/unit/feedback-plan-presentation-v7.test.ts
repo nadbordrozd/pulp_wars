@@ -20,6 +20,7 @@ import { unitTurnStatesV7 } from "../../src/render/canvas/unit-turn-state-v7";
 import { allTechsV7, exploredAllV7, initialV7 } from "../fixtures/v7-builders";
 import { goblinArenaV7 } from "../fixtures/v7-goblin-arena";
 import { dinosaurTendFixtureV7 } from "../fixtures/v7-area-support-ui";
+import { at, fieldV7, patchTileV7 } from "../fixtures/v7-revision20";
 
 /**
  * Bead pulp_wars-2yc.29: every Coin and population gain of a boundary maps
@@ -284,6 +285,110 @@ describe("feedback plan: population", () => {
       levelled = gain.leveledUp;
     }
     expect(levelled).toBe(true);
+  });
+
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): a Farm between two
+  // cities' Windmills feeds both. Each city's gain comes from its own
+  // ledger entries, so the Farm's 2 and its own Windmill's 1 go to the
+  // Farm's city, the other Windmill's 1 to the other city, and nothing is
+  // counted twice.
+  it("splits a shared Farm's gain between the two cities whose Windmills it feeds", () => {
+    // Four seats (16 by 16): seat 0's capital on (13, 4), land x 12-14;
+    // the village on (10, 4), land x 9-11 once captured.
+    let state = fieldV7(
+      [{ seat: 0, role: "FIGHTER", at: at(10, 4), captureEligible: true }],
+      { factions: ["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"] },
+    );
+    const human = state.humanPlayerId;
+    const play = (command: CommandV7) => {
+      let result = step(state, human, command);
+      state = result.state;
+      const first = result;
+      // A level reward that places no unit, for every level reached.
+      for (;;) {
+        const choice = state.pendingChoices[0];
+        if (choice === undefined) return first;
+        result = step(state, human, {
+          kind: "CHOOSE_CITY_REWARD",
+          cityId: choice.cityId,
+          reachedLevel: choice.reachedLevel,
+          reward:
+            choice.reachedLevel === 2
+              ? "STOCKPILE"
+              : choice.reachedLevel === 3
+                ? "WALLS"
+                : choice.reachedLevel === 4
+                  ? "TREASURY_6"
+                  : "TREASURY",
+        });
+        state = result.state;
+      }
+    };
+    const capturer = state.units.find(
+      (unit) => unit.at.x === 10 && unit.at.y === 4,
+    );
+    if (capturer === undefined) throw new Error("no capturer");
+    play({ kind: "CAPTURE", unitId: capturer.id });
+    for (const where of [at(12, 3), at(11, 5)])
+      state = patchTileV7(state, where, { resource: "FERTILE_GROUND" });
+    const capital = state.cities.find(
+      (city) => city.at.x === 13 && city.at.y === 4,
+    );
+    const village = state.cities.find(
+      (city) => city.at.x === 10 && city.at.y === 4,
+    );
+    if (capital === undefined || village === undefined)
+      throw new Error("cities");
+    // A Farm on the capital's land, then a Windmill of each city beside it.
+    play({ kind: "BUILD_FARM", at: at(12, 3) });
+    play({ kind: "BUILD_WINDMILL", at: at(12, 4) });
+    const second = play({ kind: "BUILD_WINDMILL", at: at(11, 4) });
+    // The village's Windmill counts the capital's Farm: 1 to the village
+    // from the Windmill's tile, and nothing more to the capital.
+    expect(
+      feedbackPlanV7(second.before, second.events, second.after).population,
+    ).toMatchObject([
+      {
+        cityId: village.id,
+        amount: 1,
+        sources: [{ at: at(11, 4), amount: 1 }],
+      },
+    ]);
+    // A second Farm, on the village's land, next to both Windmills.
+    const shared = play({ kind: "BUILD_FARM", at: at(11, 5) });
+    const plan = feedbackPlanV7(shared.before, shared.events, shared.after);
+    const gains = [...plan.population].sort(
+      (left, right) => left.cityId - right.cityId,
+    );
+    expect(gains).toHaveLength(2);
+    expect(gains.find((gain) => gain.cityId === capital.id)).toMatchObject({
+      cityAt: at(13, 4),
+      amount: 1,
+      sources: [{ at: at(12, 4), amount: 1 }],
+    });
+    const mine = gains.find((gain) => gain.cityId === village.id);
+    expect(mine).toMatchObject({ cityAt: at(10, 4), amount: 3 });
+    expect(
+      [...(mine?.sources ?? [])].sort(
+        (left, right) => left.at.y - right.at.y || left.at.x - right.at.x,
+      ),
+    ).toEqual([
+      { at: at(11, 4), amount: 1 },
+      { at: at(11, 5), amount: 2 },
+    ]);
+    // Every city's sources add up to its gain, and the whole to the 4
+    // population the ledger gained.
+    for (const gain of gains)
+      expect(gain.sources.reduce((sum, source) => sum + source.amount, 0)).toBe(
+        gain.amount,
+      );
+    const ledger = (view: PlayerViewV7) =>
+      view.populationContributions.reduce(
+        (sum, entry) => sum + entry.amount,
+        0,
+      );
+    expect(ledger(shared.after) - ledger(shared.before)).toBe(4);
+    expect(gains.reduce((sum, gain) => sum + gain.amount, 0)).toBe(4);
   });
 
   it("gives another player's visible city its gain without a hidden source", () => {

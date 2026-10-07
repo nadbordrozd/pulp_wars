@@ -683,7 +683,7 @@ describe("Ruleset 7 public presentation", () => {
           id: 10,
           cityId: city.id,
           category: "LIVE" as const,
-          amount: 2 as const,
+          amount: 3 as const,
           source: {
             kind: "MONUMENT" as const,
             visibility: "FULL" as const,
@@ -705,7 +705,7 @@ describe("Ruleset 7 public presentation", () => {
             {
               ...fullContribution,
               category: "LIVE" as const,
-              amount: 2 as const,
+              amount: 3 as const,
               source: {
                 kind: "MONUMENT" as const,
                 visibility: "BUILDING_ONLY" as const,

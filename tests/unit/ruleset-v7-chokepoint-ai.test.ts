@@ -797,7 +797,10 @@ describe("ruleset-7 Normal AI siege of a single-file front (pulp_wars-68k.6)", (
           { seat: 0, role: "SWORDSMAN", at: { x: 2, y: 4 } },
           ...GATE,
         ],
-        6,
+        // The Coins of a Blast (3) and not of a technology (5 with one
+        // city since the economy rejig, `pulp_wars-w49.16`; with 6 Coins
+        // the seat now buys Hunting first).
+        4,
       );
       const rock = { x: 5, y: 4 };
       const state: GameStateV7 = {

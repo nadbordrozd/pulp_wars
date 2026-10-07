@@ -72,17 +72,17 @@ const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
 // identities of tunings 5 and 6).
 describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix, then 7r46 and 7r47 for tunings 1 and 2)", () => {
   it("is 7r47 with 7r44 to 7r46 last in the gap-free prior list and their save keys obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
-    expect(PRIOR_RULESET_7_IDS.slice(-10, -6)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
+    expect(PRIOR_RULESET_7_IDS.slice(-11, -7)).toEqual([
       "pulp-wars-poc-7r43",
       "pulp-wars-poc-7r44",
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(52);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(53);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-9, -6)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-10, -7)).toEqual([
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
       "pulpWars.save.v7r46.current",
@@ -95,7 +95,7 @@ describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r53");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r54");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r44" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(
@@ -162,7 +162,8 @@ describe("the frozen sea shapes", () => {
       WITCH_FREEZE_RADIUS_V7,
       ICE_CRUSH_DAMAGE_V7,
       ICE_SEA_DOG_UNITS_V7,
-    ]).toEqual([3, 5, 2, 1, 3, 3]);
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): 5 units on the ice (3).
+    ]).toEqual([3, 5, 2, 1, 3, 5]);
     expect(ICE_SEA_DOG_UNITS_V7).toBe(SEA_DOG_SHIPS_V7);
     expect(() => assertRuleset7Registry()).not.toThrow();
   });

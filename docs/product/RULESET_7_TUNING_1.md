@@ -7,6 +7,16 @@ the numbers moved, the exact rule before and after, what each change does
 to the other factions, and what is still open. It is judged by hand play,
 not by AI self-play: no balance matrix was run for it.
 
+**Superseded in part by [the economy rejig](RULESET_7_ECONOMY_REJIG.md)
+(`pulp-wars-poc-7r54`, `pulp_wars-w49.16`).** Research is priced per city again, with steps of 1 / 2 / 3 (section
+B gives 1 / 2 / 2, which round 4 of the Human tuning had already replaced);
+a Monument gives 3 population again (section E item 2 made it 2); and a
+Farm, Lumber Camp, or Mine counts for every adjacent Windmill, Sawmill,
+or Forge of its owner again, while a Market still counts a building once
+(section E item 5 made it one building of each kind). The reward unit
+stays once per city (section E item 1), now from level 6. The passages
+are kept as history.
+
 **Source.** The user's design notes of 2026-10-05 (the game is
 defence-heavy; tier 3 comes too late; Land Grant makes cities level up very
 fast; both tier 3 units should be worth having; Explosives and Commerce look
@@ -265,6 +275,7 @@ costs.
    pending choice (one click); the stored choice and the
    `CITY_REWARD_QUEUED` event then carry `["TREASURY"]`.
 2. **Monument** +3 → **+2** population (`MONUMENT_POPULATION_V7`).
+   _(Superseded at `7r54`: +3 again, with harder achievements.)_
 3. **Level-4 Treasury** 8 → **6** Coins. Its reward ID is now `TREASURY_6`
    (was `TREASURY_8`). The other values stay: Stockpile 4 (level 2),
    Treasury 12 (level 5+). The check asked for, "no Treasury above the
@@ -283,7 +294,9 @@ costs.
    G4's four grants (13, 8, 4, and 3 tiles) would have cost 26, 16, 8, and
    6 Coins instead of 6 each. `queryLandGrantPreviewV7` returns the cost and
    the tiles; the city panel button and the text harness show it.
-5. **One contributor, one building.** A Farm, Lumber Camp, or Mine counted
+5. _(Superseded at `7r54` for Windmills, Sawmills, and Forges, which count
+   every adjacent contributor of their owner again; the rule stands for
+   Markets.)_ **One contributor, one building.** A Farm, Lumber Camp, or Mine counted
    for every adjacent Windmill, Sawmill, or Forge of its owner, and every
    one of the six family buildings counted for every adjacent Market. Now
    each contributor counts for **one** building of a kind: the one of its

@@ -13,6 +13,7 @@ import {
   LAND_GRANT_COST_PER_TILE_V7,
   LAND_GRANT_MINIMUM_COST_V7,
   MONUMENT_POPULATION_V7,
+  REWARD_UNIT_LEVEL_V7,
   landGrantCostV7,
   REPAIR_MACHINE_V7,
   SHIELD_CAP_V7,
@@ -1214,7 +1215,9 @@ function validPayload(
         ((e.reachedLevel === 3 && e.role === "FIGHTER") ||
           // Tuning 4: the Raider of a Human Survey ("Scouts").
           (e.reachedLevel === 2 && e.role === "RAIDER") ||
-          ((e.reachedLevel as number) >= 5 && e.role === "JUGGERNAUT"))
+          // The economy rejig (7r54): the giant from level 6.
+          ((e.reachedLevel as number) >= REWARD_UNIT_LEVEL_V7 &&
+            e.role === "JUGGERNAUT"))
       );
     case "UNIT_SPAWN_DISPLACED":
       return (
@@ -2276,12 +2279,14 @@ function rewards(input: unknown, level: number): boolean {
         ? [["WALLS", "MILITIA"]]
         : level === 4
           ? [["BOOM", "TREASURY_6", "BARRACKS"]]
-          : level >= 5
+          : level >= REWARD_UNIT_LEVEL_V7
             ? [
                 ["JUGGERNAUT", "TREASURY", "BARRACKS"],
                 ["TREASURY", "BARRACKS"],
               ]
-            : [];
+            : level === 5
+              ? [["TREASURY", "BARRACKS"]]
+              : [];
   return (
     isDenseArrayV7(input) &&
     lists.some((list) => list.join() === (input as unknown[]).join())
@@ -2295,7 +2300,8 @@ function rewardMatches(reward: RewardIdV7, level: number): boolean {
       : level === 4
         ? reward === "BOOM" || reward === "TREASURY_6" || reward === "BARRACKS"
         : level >= 5 &&
-          (reward === "JUGGERNAUT" ||
+          // The economy rejig (7r54): the giant from level 6.
+          ((reward === "JUGGERNAUT" && level >= REWARD_UNIT_LEVEL_V7) ||
             reward === "TREASURY" ||
             reward === "BARRACKS");
 }

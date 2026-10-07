@@ -81,12 +81,12 @@ import {
 // 9, and 13).
 
 describe("ruleset-7 revision-17 identity", () => {
-  it("keeps r16 among the prior identities after the r53 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
-    expect(PRIOR_RULESET_7_IDS.at(-37)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(52);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-37)).toBe(
+  it("keeps r16 among the prior identities after the r54 identity and cleans the r16 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
+    expect(PRIOR_RULESET_7_IDS.at(-38)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(53);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-38)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -1107,7 +1107,7 @@ describe("ruleset-7 Goblin reward substitutions", () => {
     ).toHaveLength(1);
   });
 
-  it("grants a Troll for the level-5 reward", () => {
+  it("grants a Troll for the level-6 reward", () => {
     const fixture = rewardState("JUGGERNAUT", []);
     const result = applyOkV7(
       fixture.state,
@@ -1542,8 +1542,13 @@ function rewardState(
       ? ring.map((at) => ({ seat: 0, role: "FIGHTER" as const, at }))
       : []),
   ]);
-  const reachedLevel = reward === "MILITIA" ? 3 : 5;
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): the giant is a level-6
+  // reward (level 5 before). Level 6 takes 20 population and the capital
+  // holds seven Farms (14), so six Farm tiles also carry a hunt (1
+  // permanent population each), as in `rewardStateV7`.
+  const reachedLevel = reward === "MILITIA" ? 3 : 6;
   const addedPopulation = reward === "MILITIA" ? 6 : 14;
+  const addedPermanent = reward === "MILITIA" ? 0 : 6;
   const growthTiles = base.board.tiles
     .filter(
       (tile) =>
@@ -1555,14 +1560,15 @@ function rewardState(
   if (growthTiles.length !== addedPopulation / 2)
     throw new Error("reward growth tiles missing");
   const economicPopulation = city.economicPopulation + addedPopulation;
+  const huntTiles = growthTiles.slice(0, addedPermanent);
   const grown = resolveCityGrowthV7(
     city,
-    city.permanentPopulation,
+    city.permanentPopulation + addedPermanent,
     economicPopulation,
   ).city;
   const state = checkedV7({
     ...base,
-    nextEntityId: base.nextEntityId + growthTiles.length,
+    nextEntityId: base.nextEntityId + growthTiles.length + huntTiles.length,
     cities: base.cities.map((candidate) =>
       candidate.id === city.id
         ? {
@@ -1576,6 +1582,7 @@ function rewardState(
                     { reachedLevel: 2, reward: "SURVEY" as const },
                     { reachedLevel: 3, reward: "WALLS" as const },
                     { reachedLevel: 4, reward: "TREASURY_6" as const },
+                    { reachedLevel: 5, reward: "TREASURY" as const },
                   ],
           }
         : candidate,
@@ -1594,17 +1601,30 @@ function rewardState(
           : tile,
       ),
     },
-    populationContributions: growthTiles.map((tile, index) => ({
-      id: base.nextEntityId + index,
-      cityId: city.id,
-      category: "LIVE" as const,
-      amount: 2,
-      source: {
-        kind: "IMPROVEMENT" as const,
-        improvement: "FARM" as const,
-        at: tile.at,
-      },
-    })),
+    populationContributions: [
+      ...growthTiles.map((tile, index) => ({
+        id: base.nextEntityId + index,
+        cityId: city.id,
+        category: "LIVE" as const,
+        amount: 2,
+        source: {
+          kind: "IMPROVEMENT" as const,
+          improvement: "FARM" as const,
+          at: tile.at,
+        },
+      })),
+      ...huntTiles.map((tile, index) => ({
+        id: base.nextEntityId + growthTiles.length + index,
+        cityId: city.id,
+        category: "PERMANENT" as const,
+        amount: 1,
+        source: {
+          kind: "RESOURCE_ACTION" as const,
+          action: "HUNT_GAME" as const,
+          at: tile.at,
+        },
+      })),
+    ],
     pendingChoices: [
       {
         kind: "CITY_REWARD" as const,

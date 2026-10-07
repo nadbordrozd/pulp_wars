@@ -86,10 +86,14 @@ describe("ruleset-7 exact public query indexing", () => {
     const planned = drain(measured.view, commands, 113);
     expect(planned.operations).toBe(
       // Tuning 5 (`pulp_wars-w49.4`): the Swordsman offers (was 66 233).
-      66_236 + publicPlanningFactScanOperations(measured.view),
+      // The economy rejig (`pulp_wars-w49.16`): the research offers follow
+      // the price per city (was 66 236).
+      66_238 + publicPlanningFactScanOperations(measured.view),
     );
     expect(canonicalHash(planned.result)).toBe(
-      "031d3bd645842f7a24e147b058472b9581adf801ee59c9f6489160458916d3bb",
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+      // 031d3b…d3bb).
+      "2d542145285eed46f202ced276cfd5807bde95bb7d06ea0a40289cf6cf043b8e",
     );
   });
 
@@ -131,13 +135,16 @@ describe("ruleset-7 exact public query indexing", () => {
       // 4 097 since tuning 4 (one RESEARCH fewer in the retained view);
       // 4 099 since tuning 5 (two cities offer the Swordsman).
       // 4 105 since tuning 6 (six RESEARCH commands are offered again).
-      4_105 + publicPlanningFactScanOperations(rightView),
+      // 4 100 since the economy rejig (`pulp_wars-w49.16`: one is).
+      4_100 + publicPlanningFactScanOperations(rightView),
     );
     expect(canonicalHash(leftResult)).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
       // technology owned, so the retained view's 12 Coins buy a technology
       // again and six RESEARCH commands are offered (was fadb84…4dc8).
-      "2df0a7078585ff4ec1ba0a0344afbdcecac63245d4b619bf2c27f849e8166a92",
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+      // 2df0a7…6a92).
+      "6a3551501e56511dd1a6db844a98471391ecba367aa72c484b5dd3c5d5553ef5",
     );
     expect(rightResult).toEqual(leftResult);
   });

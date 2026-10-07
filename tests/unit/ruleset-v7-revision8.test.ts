@@ -29,8 +29,8 @@ import {
 
 describe("Ruleset 7 inherited Industry and shared adjacency", () => {
   it("uses the current identity and the two exact Industry branches", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
     expect(TECHNOLOGY_IDS_V7).toEqual(
       expect.arrayContaining([
         "DRILL",
@@ -174,10 +174,11 @@ describe("Ruleset 7 inherited Industry and shared adjacency", () => {
     },
   );
 
-  // Tuning 1 (`pulp_wars-w49.3`, 7r46): one contributor counts for one
-  // building of a kind (its own city's, otherwise the first in (y, x)
-  // order); before, the camp boosted every adjacent city's Sawmill.
-  it("counts one Lumber Camp for one Sawmill among two, three, and four distinct cities'", () => {
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): the camp counts for
+  // every adjacent Sawmill of its owner again. (From tuning 1, 7r46, to
+  // 7r53 it counted for one: its own city's, otherwise the first in
+  // (y, x) order.)
+  it("counts one Lumber Camp for every adjacent Sawmill among two, three, and four distinct cities'", () => {
     const camp = { x: 3, y: 3 };
     const positions = [
       { x: 3, y: 2 },
@@ -200,14 +201,14 @@ describe("Ruleset 7 inherited Industry and shared adjacency", () => {
           .map(
             (at) => spatialContributionAtV7(graph, at, "SAWMILL").population,
           ),
-      ).toEqual([1, ...Array<number>(count - 1).fill(0)]);
+      ).toEqual(Array<number>(count).fill(1));
     }
   });
 
-  // Tuning 1 (`pulp_wars-w49.3`, 7r46): the Camp of the first city counts
-  // for the first city's Sawmill only (it counted for both before), and for
-  // the second city's once the first city's Sawmill is gone.
-  it("counts a shared Camp for its own city's Sawmill when it is built, redeveloped, or captured", () => {
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): the Camp of the first
+  // city counts for both cities' Sawmills (from tuning 1 to 7r53 for the
+  // first city's only).
+  it("counts a shared Camp for both cities' Sawmills when it is built, redeveloped, or captured", () => {
     const fixture = sharedCampState();
     const build = { kind: "BUILD_LUMBER_CAMP", at: fixture.camp } as const;
     const buildPreview = previewEconomicV7(
@@ -217,7 +218,10 @@ describe("Ruleset 7 inherited Industry and shared adjacency", () => {
     expect(buildPreview).toMatchObject({
       ok: true,
       preview: {
-        populationDeltaByCity: [{ cityId: fixture.firstCityId, delta: 2 }],
+        populationDeltaByCity: [
+          { cityId: fixture.firstCityId, delta: 2 },
+          { cityId: fixture.secondCityId, delta: 1 },
+        ],
       },
     });
     const built = applyCommandV7(
@@ -228,13 +232,14 @@ describe("Ruleset 7 inherited Industry and shared adjacency", () => {
     if (!built.accepted) throw new Error(built.error.code);
     expect(amountAt(built.state.populationContributions, fixture.left)).toBe(1);
     expect(amountAt(built.state.populationContributions, fixture.right)).toBe(
-      0,
+      1,
     );
     expect(cityDelta(fixture.before, built.state, fixture.firstCityId)).toBe(2);
     expect(cityDelta(fixture.before, built.state, fixture.secondCityId)).toBe(
-      0,
+      1,
     );
-    // Without the first city's Sawmill the Camp counts for the second's.
+    // Without the first city's Sawmill the Camp still counts for the
+    // second's.
     const withoutLeft = {
       board: {
         ...built.state.board,
@@ -269,7 +274,10 @@ describe("Ruleset 7 inherited Industry and shared adjacency", () => {
     ).toMatchObject({
       ok: true,
       preview: {
-        populationDeltaByCity: [{ cityId: fixture.firstCityId, delta: -2 }],
+        populationDeltaByCity: [
+          { cityId: fixture.firstCityId, delta: -2 },
+          { cityId: fixture.secondCityId, delta: -1 },
+        ],
       },
     });
     const redeveloped = applyCommandV7(

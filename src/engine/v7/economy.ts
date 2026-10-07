@@ -2,6 +2,7 @@ import type { CityId, PlayerId } from "../model/ids";
 import {
   LAND_TRADE_INCOME_COINS_V7,
   MONUMENT_POPULATION_V7,
+  REWARD_UNIT_LEVEL_V7,
   cityUnitCapacityForV7,
   dockPopulationV7,
   unitCapacitySlotsV7,
@@ -139,45 +140,31 @@ export function assignedUnitCountV7(
 }
 
 /**
- * The rewards a city is offered for a reached level. Tuning 1
- * (`pulp_wars-w49.3`, 7r46): the level-5+ reward unit is taken at most once
- * per city, so a city whose reward history (`rewards`, which travels with
- * the city on capture) already holds a `JUGGERNAUT` is offered only the
- * Treasury at every later level.
+ * The rewards a city is offered for a reached level. The reward unit (the
+ * faction's giant) is taken at most once per city: a city whose reward
+ * history (`rewards`, which travels with the city on capture) already
+ * holds a `JUGGERNAUT` is offered only the Treasury or Barracks at every
+ * later level.
+ *
+ * The economy rejig (`pulp_wars-w49.16`, 7r54): every city offers the
+ * giant, from level `REWARD_UNIT_LEVEL_V7` (6) until it takes it; level 5
+ * offers the Treasury or Barracks. (Tuning 4 to 7r53: the owner's first
+ * capital only, from level 5, so once per player.)
  */
 export function rewardCandidatesForLevelV7(
   level: number,
   rewards: readonly { readonly reward: RewardIdV7 }[] = [],
-  // Tuning 4 (`pulp_wars-w49.3`): the city is its owner's first capital
-  // (`originalCapitalCityId`), the only city that grants the reward unit.
-  firstCapital = false,
 ): readonly RewardIdV7[] {
   if (level === 2) return ["SURVEY", "STOCKPILE"];
   if (level === 3) return ["WALLS", "MILITIA"];
   // Tuning 4: Barracks (+1 unit capacity) joins Boom and the Treasury.
   if (level === 4) return ["BOOM", "TREASURY_6", "BARRACKS"];
   if (level >= 5)
-    // Tuning 4: the reward unit is the first capital's, once (so once per
-    // player); every other level-5+ choice is Barracks or the Treasury.
-    return firstCapital &&
+    return level >= REWARD_UNIT_LEVEL_V7 &&
       !rewards.some((record) => record.reward === "JUGGERNAUT")
       ? ["JUGGERNAUT", "TREASURY", "BARRACKS"]
       : ["TREASURY", "BARRACKS"];
   throw new RangeError("INVALID_REWARD_LEVEL");
-}
-
-/** Tuning 4: whether `city` is its current owner's first capital. */
-export function isOwnersFirstCapitalV7(
-  players: readonly {
-    readonly id: PlayerId;
-    readonly originalCapitalCityId: CityId;
-  }[],
-  city: { readonly id: CityId; readonly ownerId: PlayerId },
-): boolean {
-  return players.some(
-    (player) =>
-      player.id === city.ownerId && player.originalCapitalCityId === city.id,
-  );
 }
 
 export function resolveCityGrowthV7(

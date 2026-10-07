@@ -1,3 +1,11 @@
+import { MONUMENT_POPULATION_V7 } from "../engine/rules/ruleset-v7";
+import {
+  ENGINEER_MILL_OUTPUT_V7,
+  LAND_BARON_CITIES_V7,
+  MUSTER_KINDS_V7,
+  SEA_DOG_SHIPS_V7,
+  SLAYER_KILLS_V7,
+} from "../engine/v7/achievements";
 import {
   ACHIEVEMENT_IDS_V7,
   type AchievementIdV7,
@@ -23,21 +31,22 @@ export const ACHIEVEMENT_NAMES_V7: Readonly<Record<AchievementIdV7, string>> =
 
 export const ACHIEVEMENT_GOALS_V7: Readonly<Record<AchievementIdV7, string>> =
   Object.freeze({
-    EXPLORER: "Explore 100 tiles.",
-    ENGINEER: "Get one building to 6 population.",
+    // The economy rejig (`pulp_wars-w49.16`, 7r54): the harder criteria of
+    // docs/product/RULESET_7_ECONOMY_REJIG.md. Explorer stays the easy one.
+    EXPLORER: "Explore half the map.",
+    ENGINEER: `Get one mill to ${ENGINEER_MILL_OUTPUT_V7} population.`,
     // The Undead pass, correction (`pulp_wars-w49.13`): "you can train" (a
     // reward-only unit such as the Abomination does not count; the meter
     // read 3 of 4 with four kinds on the board).
-    MUSTER: "Field 4 unit types you can train.",
-    CONQUEROR: "Capture an enemy city.",
-    LAND_BARON: "Own 5 cities at once.",
-    SEA_DOG: "Own 3 warships at once.",
-    SLAYER: "Get 5 kills with one unit.",
+    MUSTER: `Field ${MUSTER_KINDS_V7} unit types you can train.`,
+    CONQUEROR: "Capture an enemy capital.",
+    LAND_BARON: `Own ${LAND_BARON_CITIES_V7} cities at once.`,
+    SEA_DOG: `Own ${SEA_DOG_SHIPS_V7} warships at once.`,
+    SLAYER: `Get ${SLAYER_KILLS_V7} kills with one unit.`,
   });
 
 /** The Help tip that explains what achievements are for. */
-export const ACHIEVEMENT_HELP_TIP_V7 =
-  "Achievements (see the menu) each earn a free Monument: +2 population, one per city. Conquer, expand, sail, and keep your killers alive.";
+export const ACHIEVEMENT_HELP_TIP_V7 = `Achievements (see the menu) each earn a free Monument: +${MONUMENT_POPULATION_V7} population, one per city. Conquer, expand, sail, and keep your killers alive.`;
 
 export function achievementNameV7(achievement: AchievementIdV7): string {
   return ACHIEVEMENT_NAMES_V7[achievement];

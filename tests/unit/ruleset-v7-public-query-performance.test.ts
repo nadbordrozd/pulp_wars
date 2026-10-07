@@ -39,12 +39,18 @@ describe("ruleset-7 late public query performance", () => {
     // view's two cities that can train (it owns Engineering).
     // Tuning 6 (`pulp_wars-w49.6`): 71, with the six technologies its 12
     // Coins buy again (research costs 1 Coin for each technology owned).
-    expect(commands).toHaveLength(71);
+    // The economy rejig (`pulp_wars-w49.16`, 7r54): 66. Research is priced
+    // by the cities owned, and the view has four: a tier 1 costs 8 and a
+    // tier 2 costs 13, so its 12 Coins buy Scouting alone (one RESEARCH
+    // command instead of six).
+    expect(commands).toHaveLength(66);
     expect(canonicalHash(commands)).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
       // technology owned, so the retained view's 12 Coins buy a technology
       // again and six RESEARCH commands are offered (was 83c9a2…466e).
-      "9fd9949165d34f7fc6354364bee3ce65b287908a50d6654a1311ac2b25e21b96",
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+      // 9fd994…1b96).
+      "4b8b7c439104a86d56aa7ee8f66a3c227df5f1ab4ffb195fe8a28e126478d029",
     );
     expect(
       commands.flatMap((command) =>
@@ -78,7 +84,9 @@ describe("ruleset-7 late public query performance", () => {
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
       // technology owned, so the retained view's 12 Coins buy a technology
       // again and six RESEARCH commands are offered (was 83c9a2…466e).
-      "9fd9949165d34f7fc6354364bee3ce65b287908a50d6654a1311ac2b25e21b96",
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+      // 9fd994…1b96).
+      "4b8b7c439104a86d56aa7ee8f66a3c227df5f1ab4ffb195fe8a28e126478d029",
     );
     const ready = queryAiReadyCommandsV7(view);
     // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
@@ -107,14 +115,18 @@ describe("ruleset-7 late public query performance", () => {
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
       // technology owned, so the retained view's 12 Coins buy a technology
       // again and six RESEARCH commands are offered (was 8926e8…9159).
-      "9ed334323546137e4753155a6f58b45e42496a3ebe44820bd412ed7f0feb056e",
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+      // 9ed334…056e).
+      "849b0411507f957f4a91e7074cc975023adaae7d8f38389f49302d6a0ac0a5b9",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.
     expect(canonicalHash(withRevision12AiReadyOrdinalsV7(ready))).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): the six RESEARCH commands, as above
       // (was b9b0a8…40cb).
-      "999e506c925301593a7acfcc1ab156fbbb991fca2ba4d69a4657e1164cb0a79f",
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+      // 999e50…a79f).
+      "15be872621121df6f04bf6b946c61132f72ae7342ca0e1c89f24f220f4cab4f2",
     );
     expect(
       canonicalHash(
@@ -123,7 +135,9 @@ describe("ruleset-7 late public query performance", () => {
           result: previewEconomicV7(view, command),
         })),
       ),
-    ).toBe("fe39b7f1bf5a7852a03f45ab651126d3e6d0fbd425a024a209f97d069af968d3");
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+      // fe39b7…68d3).
+    ).toBe("fc808c923499582c96c462863cabcb1e7d974fa8d16893d5cc254c192f96cbc1");
     expect(
       canonicalHash(
         commands.filter(isRetainedLandCommand).map((command) => ({
@@ -131,7 +145,9 @@ describe("ruleset-7 late public query performance", () => {
           result: previewEconomicV7(view, command),
         })),
       ),
-    ).toBe("fe39b7f1bf5a7852a03f45ab651126d3e6d0fbd425a024a209f97d069af968d3");
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+      // fe39b7…68d3).
+    ).toBe("fc808c923499582c96c462863cabcb1e7d974fa8d16893d5cc254c192f96cbc1");
     expect(elapsed).toBeLessThan(250);
 
     const incrementalView = structuredClone(RETAINED_VIEW);
@@ -232,7 +248,9 @@ describe("ruleset-7 late public query performance", () => {
         // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
         // technology owned, so the retained view's 12 Coins buy a technology
         // again and six RESEARCH commands are offered (was ed2aad…46f9).
-        "447868b6ea483a206cad9c1d38f2679ac13407874804c1569f003309ec9a9983",
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+        // 447868…9983).
+        "be2fb4863ed3fb0eed545ef569f6a4bd862c042196f83b9c13a95b8a3adf6066",
       );
       const revision8Scores = leftResult.scores.filter(({ command }) =>
         isRevision8MergedUnlockCommand(command),
@@ -249,7 +267,9 @@ describe("ruleset-7 late public query performance", () => {
         // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
         // technology owned, so the retained view's 12 Coins buy a technology
         // again and six RESEARCH commands are offered (was ed2aad…46f9).
-        "447868b6ea483a206cad9c1d38f2679ac13407874804c1569f003309ec9a9983",
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+        // 447868…9983).
+        "be2fb4863ed3fb0eed545ef569f6a4bd862c042196f83b9c13a95b8a3adf6066",
       );
       expect(queryPublicEconomicPotentialsV7(leftView)).toBe(
         leftResult.potentials,
@@ -313,7 +333,9 @@ describe("ruleset-7 late public query performance", () => {
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
       // technology owned, so the retained view's 12 Coins buy a technology
       // again and six RESEARCH commands are offered (was 83c9a2…466e).
-      "9fd9949165d34f7fc6354364bee3ce65b287908a50d6654a1311ac2b25e21b96",
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+      // 9fd994…1b96).
+      "4b8b7c439104a86d56aa7ee8f66a3c227df5f1ab4ffb195fe8a28e126478d029",
     );
     const firstMove = required(
       queryPlayerCommandsV7(original).find(
@@ -340,13 +362,17 @@ describe("ruleset-7 late public query performance", () => {
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
       // technology owned, so the retained view's 12 Coins buy a technology
       // again and six RESEARCH commands are offered (was 0bfa82…8f93).
-      "8e4aa3e25bc82bdadcca5abd96bdd8cb15a645bb814d97775f0c6b55019fe4bd",
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+      // 8e4aa3…e4bd).
+      "39a0b08ba881085834e92ca6a2a93b0b40806ba84c55e14be78442762ad1a63b",
     );
     expect(canonicalHash(changedCommands.filter(isRetainedLandCommand))).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
       // technology owned, so the retained view's 12 Coins buy a technology
       // again and six RESEARCH commands are offered (was 0bfa82…8f93).
-      "8e4aa3e25bc82bdadcca5abd96bdd8cb15a645bb814d97775f0c6b55019fe4bd",
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+      // 8e4aa3…e4bd).
+      "39a0b08ba881085834e92ca6a2a93b0b40806ba84c55e14be78442762ad1a63b",
     );
   });
 
@@ -370,9 +396,12 @@ describe("ruleset-7 late public query performance", () => {
       population: 1,
       contributingTiles: [{ x: 1, y: 3 }],
     });
+    // The economy rejig (`pulp_wars-w49.16`, 7r54): a Workshop also counts
+    // the Mine on the neighbouring city's land (its own city's Farm only
+    // before).
     expect(
       spatialContributionAtV7(graph, target, "WORKSHOP").distinctTypes,
-    ).toEqual(["FARM"]);
+    ).toEqual(["FARM", "MINE"]);
   });
 
   it("invalidates spatial graph indexes across road and ownership changes", () => {
@@ -390,7 +419,9 @@ describe("ruleset-7 late public query performance", () => {
       marketAt,
       "WORKSHOP",
     );
-    expect(workshopBefore.distinctTypes).toEqual(["FARM"]);
+    // The economy rejig (7r54): the neighbouring city's Mine counts while
+    // the same player owns that city, and no longer once it does not.
+    expect(workshopBefore.distinctTypes).toEqual(["FARM", "MINE"]);
     expect(workshopAfter.distinctTypes).toEqual(["FARM"]);
     expect(workshopAfter).toEqual(
       spatialContributionAtV7(
@@ -401,7 +432,7 @@ describe("ruleset-7 late public query performance", () => {
     );
     expect(
       spatialContributionAtV7(graph, marketAt, "WORKSHOP").distinctTypes,
-    ).toEqual(["FARM"]);
+    ).toEqual(["FARM", "MINE"]);
 
     const roadConnected = withImprovement(graph, marketAt, "MARKET");
     const disconnected = {

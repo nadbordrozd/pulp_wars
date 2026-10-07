@@ -61,16 +61,23 @@ describe("ruleset-7 exact public-planning performance", () => {
         // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
         // technology owned, so the retained view's 12 Coins buy a technology
         // again and six RESEARCH commands are offered (was 83c9a2…466e).
-        "9fd9949165d34f7fc6354364bee3ce65b287908a50d6654a1311ac2b25e21b96",
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+        // 9fd994…1b96).
+        "4b8b7c439104a86d56aa7ee8f66a3c227df5f1ab4ffb195fe8a28e126478d029",
       resultHash:
         // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
         // technology owned, so the retained view's 12 Coins buy a technology
         // again and six RESEARCH commands are offered (was fadb84…4dc8).
-        "2df0a7078585ff4ec1ba0a0344afbdcecac63245d4b619bf2c27f849e8166a92",
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+        // 2df0a7…6a92).
+        "6a3551501e56511dd1a6db844a98471391ecba367aa72c484b5dd3c5d5553ef5",
       // 4 097 since tuning 4 (one RESEARCH fewer in the retained view);
       // 4 099 since tuning 5 (`pulp_wars-w49.4`: two cities offer the
-      // Swordsman); 4 105 since tuning 6 (six RESEARCH commands again).
-      operations: 4_105,
+      // Swordsman); 4 105 since tuning 6 (six RESEARCH commands again);
+      // 4 100 since the economy rejig (`pulp_wars-w49.16`: research is
+      // priced by the cities owned, and with its four cities the view's
+      // 12 Coins buy one technology, Scouting at 8).
+      operations: 4_100,
     },
     {
       id: "captured-command-300",
@@ -81,9 +88,13 @@ describe("ruleset-7 exact public-planning performance", () => {
       // Windmill, Sawmill, Forge, and Market and a Monument gives 2, so the
       // planned values differ (was b32cb8…1f5b and 66 235 operations).
       resultHash:
-        "031d3bd645842f7a24e147b058472b9581adf801ee59c9f6489160458916d3bb",
-      // Tuning 5: the Swordsman offers (was 66 233).
-      operations: 66_236,
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+        // 031d3b…d3bb).
+        "2d542145285eed46f202ced276cfd5807bde95bb7d06ea0a40289cf6cf043b8e",
+      // Tuning 5: the Swordsman offers (was 66 233). The economy rejig
+      // (`pulp_wars-w49.16`): research offers by the price per city, and a
+      // mill counts every contributor of its owner (was 66 236).
+      operations: 66_238,
     },
     {
       id: "captured-command-425",
@@ -94,9 +105,12 @@ describe("ruleset-7 exact public-planning performance", () => {
       // revision-15 value 209b3326… returns.
       // Tuning 1 (7r46), as above (was c92698…dbc5 and 94 442 operations).
       resultHash:
-        "2e06bb76fc5e1d219909cb43fb5a9f8783b2e6380228f040311ec3cac0f8623a",
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+        // 2e06bb…623a).
+        "3b01026e6463800ca919bd9058d122b6cc2001953389122b48435fa1fa9e0a9c",
       // Tuning 5: the Swordsman offer (was 94 438).
-      operations: 94_439,
+      // The economy rejig (`pulp_wars-w49.16`), as above (was 94 439).
+      operations: 94_445,
     },
   ] as const;
 

@@ -433,9 +433,13 @@ describe("headless parity and the CLI flag", () => {
         // seat's economy-first opening, growth at war, and Knights):
         // recomputed, 15 rounds still.
         commandHash:
-          "520b30ee77c878f7ad491876a67eb5beaa18a959fcc285451027ea86ff9cafe0",
+          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+          // 520b30…afe0).
+          "1eb537ba7a982494a4807e5af740433b2603a96c199d2600fba430ffc752ca55",
         eventHash:
-          "bd581848d41b6e21e78b71f449f9fdb8b9f085a620aeac283946c244a901355f",
+          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+          // bd5818…355f).
+          "1448d49e116b67847aa541b91ad909c5085b219915d7522d97b18ba00d9647f4",
         mapHash:
           "1f6ad08d476884229d6cb8a7319ea209b8667cf4e28e24cd07352ebafc3055de",
         finalPrngHash:
@@ -458,11 +462,18 @@ describe("headless parity and the CLI flag", () => {
         // rounds (14 before; commands c23258…bcff, events d0be88…7572).
         // Its correction (Nesting takes no turn off, the Dinosaur seat's
         // Ankylosaurus cap and garrison): recomputed, 12 rounds still.
-        rounds: 12,
+        // The economy rejig (`pulp_wars-w49.16`, 7r54; research priced by
+        // the cities owned, Monuments +3, the harder achievements):
+        // recomputed for every pin of this list, 13 rounds here.
+        rounds: 13,
         commandHash:
-          "2c07c173388bb007ffe16c411792f2f02626448f2819e30e6331628264d72995",
+          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+          // 2c07c1…2995).
+          "b030da1d505f0a0089005690803b3e426a0c864933d4b58fcce1dd3212ffaf4c",
         eventHash:
-          "1cc9b0f864809bc2c7a0baee0c2d1f39f886044a8aadbfa98c6e2b58fdc93c1c",
+          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+          // 1cc9b0…3c1c).
+          "6f55cd615f6a6afec376bcb39150e094e60b6145cb55d71467425c8969796484",
         mapHash:
           "5b286bbe8cdb2f8a339cd7a74ba219bc2b57a4322370548442b3c8f26bef4ad9",
         finalPrngHash:
@@ -475,12 +486,16 @@ describe("headless parity and the CLI flag", () => {
         // was 18 rounds, commands 2c1c37…d518, events bd9d09…7c62).
         factions: ["ICE_FOLK", "DWARF"],
         seed: 5,
-        // Tuning 6: 20 rounds (22 before).
-        rounds: 20,
+        // Tuning 6: 20 rounds (22 before). The economy rejig: 19.
+        rounds: 19,
         commandHash:
-          "effa4bab89ee47c80ec5bad38fdea134ce496d6ea6d4d040bca60aa023dfd032",
+          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+          // effa4b…d032).
+          "9f171d75e120fce8f7dffe1d0ba474c3046b59b41e6d01f803a9a79664a9eba6",
         eventHash:
-          "fd26a329a705c1bfc810a76a69f03aa580bfc6249085d1a97cec6bbaa4b1a5dc",
+          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+          // fd26a3…a5dc).
+          "b0de91953e880268fe95f6d9eebd7fa8c6cd49f575d903f6b22703ad9a58c9cf",
         mapHash:
           "2cbf36a1c5d03e70dd785be13a1ed7d5dd04fecdd54925baa1b483261d71c9be",
         finalPrngHash:
@@ -496,11 +511,16 @@ describe("headless parity and the CLI flag", () => {
         // The Martian pass (`pulp_wars-w49.14`: a Martian seat plays the
         // army rules, and so do the Human and Goblin seats beside it; the
         // Force Field behind Force Fields): recomputed, 14 rounds still.
-        rounds: 14,
+        // The economy rejig: 13 rounds.
+        rounds: 13,
         commandHash:
-          "45d7b13be7d49d7611ffb1233d093ea4fb02277f9c627c92cdf3ec740fa0eb56",
+          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+          // 45d7b1…eb56).
+          "7d40e50f250c659aed4ac4c56207b906d20708618b356e5f2c69f56bf040b72f",
         eventHash:
-          "a2cb57e50757cff33fafbd3be95f7b7164ea9a60152017e3a9b3b8aca00632ab",
+          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+          // a2cb57…32ab).
+          "e15c18abf01dec86314b3b03af6dda503602217b441f8cdb9f1de494b6752a2b",
         mapHash:
           "be112bd78cfeb3f5ae72a6b67f8f91bd45b81814c5d0cdad9abe7f31f221be5d",
         finalPrngHash:
@@ -510,12 +530,16 @@ describe("headless parity and the CLI flag", () => {
         mapType: "LAKES",
         factions: ["DWARF", "UNDEAD", "ICE_FOLK", "DINOSAUR"],
         seed: 2,
-        // Tuning 6: 10 rounds (11 before).
-        rounds: 10,
+        // Tuning 6: 10 rounds (11 before). The economy rejig: 11.
+        rounds: 11,
         commandHash:
-          "aa83281500e65b1181c2eb67e301484de85c245dea72df726ab8685262089bd8",
+          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+          // aa8328…9bd8).
+          "85af21c6f2b103ab8cadf424b9ff6a9e79af2704bfdafaa2948abf9cb0937e03",
         eventHash:
-          "818aa9efc91a8535406a290fbf99e27ddb56c261a4d1be7a00d7c89e07f99f48",
+          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+          // 818aa9…9f48).
+          "263a856e6f75939ab7543a001764b37528c5e072e84513ca6da06295e732a9e5",
         mapHash:
           "70ff339440ce86f231bca6b2be56c748891436934f614f6ef66fa53933f3d5ab",
         finalPrngHash:

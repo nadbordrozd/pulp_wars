@@ -48,8 +48,9 @@ const setup: MatchSetupV7 = {
   curiosities: false,
 };
 /**
- * What `tech` costs the player now (tuning 4, `pulp_wars-w49.3`: the price
- * grows with the technologies already owned, so a script asks for it).
+ * What `tech` costs the player now (the economy rejig, `pulp_wars-w49.16`:
+ * the price grows with the cities owned, so a script asks for it; with the
+ * technologies owned from tuning 4 to 7r53).
  */
 function researchPriceV7(
   state: GameStateV7,
@@ -65,12 +66,13 @@ function researchPriceV7(
   return playerTechnologyResearchCostV7(
     node.tier,
     player.researchedTechs.length,
+    state.cities.filter((city) => city.ownerId === playerId).length,
   );
 }
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
@@ -499,7 +501,12 @@ describe("ruleset-7 save and replay foundation", () => {
 
   // This integration-style case rebuilds five replay checkpoints, so its
   // timeout is intentionally local rather than changing the global budget.
-  it("naturally replays Muster unlock and its command-bearing Monument placement", () => {
+  //
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): Muster takes six kinds
+  // (four before), more than this capital's slots hold, so the achievement
+  // earned here by ordinary play is Explorer: the trained Raider walks
+  // until half the map is explored (no technology is needed for it).
+  it("naturally replays an achievement unlock and its command-bearing Monument placement", () => {
     // pulp_wars-wwc: revision-16 maps differ (the growth floor accepts an
     // earlier candidate); seed 42 leaves no open Monument tile after the
     // scripted Muster turns, seed 46 does. On the village-density boards
@@ -606,25 +613,79 @@ describe("ruleset-7 save and replay foundation", () => {
       if (destination === undefined) throw new Error("movement tile missing");
       apply({ kind: "MOVE", unitId: occupant.id, path: [destination] });
       const events = apply({ kind: "TRAIN", cityId: city.id, role });
-      if (role === "GUARD")
-        expect(events).toContainEqual({
-          kind: "ACHIEVEMENT_UNLOCKED",
-          playerId: humanId,
-          achievement: "MUSTER",
-        });
+      // Four kinds completed Muster before the economy rejig; six now.
+      expect(
+        events.some((event) => event.kind === "ACHIEVEMENT_UNLOCKED"),
+      ).toBe(false);
     }
+    expect(viewForV7(state, humanId).achievementProgress[2]).toEqual({
+      achievement: "MUSTER",
+      currentDistinctTrainableRoles: 4,
+      requiredDistinctTrainableRoles: 6,
+    });
+
+    // The Raider explores: each turn the Move that uncovers the most
+    // tiles (its Sight is 2), or else the one nearest to an unexplored
+    // tile, until Explorer unlocks.
+    const raiderId = required(
+      state.units.find(
+        (unit) => unit.ownerId === humanId && unit.role === "RAIDER",
+      ),
+      "Raider missing",
+    ).id;
+    const human = () =>
+      required(
+        state.players.find((player) => player.id === humanId),
+        "human missing",
+      );
+    let explorer = false;
+    for (let turn = 0; turn < 80 && !explorer; turn += 1) {
+      fundHuman(0);
+      const seen = new Set(human().explored.map((at) => `${at.x},${at.y}`));
+      const hidden = state.board.tiles
+        .map((tile) => tile.at)
+        .filter((at) => !seen.has(`${at.x},${at.y}`));
+      const gain = (at: { readonly x: number; readonly y: number }) =>
+        hidden.filter((other) => chebyshev(other, at) <= 2).length;
+      const reach = (at: { readonly x: number; readonly y: number }) =>
+        Math.min(...hidden.map((other) => chebyshev(other, at)));
+      const moves = queryPlayerCommandsV7(viewForV7(state, humanId)).flatMap(
+        (command) => {
+          const end = command.kind === "MOVE" ? command.path.at(-1) : undefined;
+          return command.kind === "MOVE" &&
+            command.unitId === raiderId &&
+            end !== undefined
+            ? [{ command, gain: gain(end), reach: reach(end) }]
+            : [];
+        },
+      );
+      const best = moves.sort(
+        (left, right) => right.gain - left.gain || left.reach - right.reach,
+      )[0];
+      if (best !== undefined)
+        explorer = apply(best.command).some(
+          (event) =>
+            event.kind === "ACHIEVEMENT_UNLOCKED" &&
+            event.achievement === "EXPLORER",
+        );
+      if (!explorer) apply({ kind: "END_TURN" });
+    }
+    expect(explorer).toBe(true);
+    expect(human().explored.length).toBeGreaterThanOrEqual(
+      Math.ceil((state.board.width * state.board.height) / 2),
+    );
 
     const monumentAt = openTiles()[0]?.at;
     if (monumentAt === undefined) throw new Error("Monument tile missing");
     const monumentEvents = apply({
       kind: "BUILD_MONUMENT",
-      achievement: "MUSTER",
+      achievement: "EXPLORER",
       at: monumentAt,
     });
     expect(monumentEvents[0]).toMatchObject({
       kind: "MONUMENT_BUILT",
-      achievement: "MUSTER",
-      populationAdded: 2,
+      achievement: "EXPLORER",
+      populationAdded: 3,
     });
     const save = createSaveEnvelopeV7(
       { state, replay },

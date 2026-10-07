@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r53`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r54`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -199,6 +199,40 @@ balance on water maps, `pulp_wars-5ti.8`; and the polish items of
 a unit on ice has no fortification, so a Dwarf Hammerer or Steam Mole is
 never dug in on an ice tile ([section 22.7](#227-dig-in)). No shape changed,
 and a match without both a Dwarf and an Ice Folk seat plays as at `7r44`.
+`pulp-wars-poc-7r54` (`pulp_wars-w49.16`) is
+**[the economy rejig](RULESET_7_ECONOMY_REJIG.md)**, shared by every
+faction (designed in
+[Part C of the heavy slot and economy design](RULESET_7_DESIGN_HEAVY_SLOT_AND_ECONOMY.md#part-c-the-economy-rejig)).
+Five rules changed: a **Windmill, Sawmill, Forge, or Workshop counts every
+Farm, Lumber Camp, or Mine of its owner next to it**, on any of the
+owner's cities' land, and one contributor counts for every such mill, so
+two cities' mills share the buildings between them; a Market still counts
+a building once ([section 8.3](#83-processors-and-mixed-buildings)); a
+**Monument gives +3 population** (2 before;
+[section 5](#5-achievements-and-monuments)); **research costs its tier's
+base (5 / 7 / 9) plus 1 / 2 / 3 Coins for each city the player owns beyond
+its first**, and the technologies it owns no longer enter the price
+([section 6.1](#61-research-cost)); **the achievements are harder and none
+needs a technology**: half the map explored, 8 cities, 6 kinds of unit, a
+mill at 7, an enemy capital, 5 warships, 7 kills
+([section 5](#5-achievements-and-monuments)); and **every city offers its
+faction's giant as a level reward once, from level 6**, with level 5
+offering the Treasury or Barracks ([section 4.8](#48-city-rewards)). The
+Normal AI takes the giant when it is offered and reads the research price
+from its cities ([section 16](#16-normal-ai-summary)). No state key was
+added or removed; the literal types that state a Monument's population (3),
+the progress entries of Explorer, Engineer, and Muster (their `required`
+numbers), the candidate lists of a level-5 and a level-6 reward, and the
+level of a `JUGGERNAUT` reward (6 or higher) changed, and the Showcase
+capital's level-5 record is `TREASURY`
+([section 2.5](#25-showcase-setup)). **Where another passage of this
+document, a tuning document, or a faction's revision document still gives
+a research price by the technologies owned, a Monument of +2, an
+achievement behind Scouting, Engineering, or Drill, 100 tiles, 5 cities, 4
+kinds, a mill at 6, any enemy city, 3 warships, or 5 kills, a reward unit
+at level 5, in the first capital only, or once per player, or one
+contributor for one Windmill, Sawmill, or Forge, this paragraph and the
+sections it names are the rule.**
 `pulp-wars-poc-7r53` (`pulp_wars-w49.15`) is the
 **[Dinosaur faction pass](RULESET_7_TUNING_DINOSAUR.md)**. Four rules
 changed and no number: a **Triceratops's run-up counts one tile, two with
@@ -542,7 +576,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r53`.
+resolved ones as of `pulp-wars-poc-7r54`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -643,10 +677,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r53`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r54`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r53.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r54.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -658,7 +692,7 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r52`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r53`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
   and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
   Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
@@ -1383,13 +1417,17 @@ seat keeps the plain land and water above.
 **Cities.** Each city owns exactly its centered 3 x 3 footprint; none has
 used its Land Grant; every city has Walls; no reward choice is pending.
 Reward records are history only: setup pays no Coins, exploration, or unit
-for them.
+for them. Since the economy rejig (`7r54`) the capital's level-5 record is
+`TREASURY` (`JUGGERNAUT` before, which is now a level-6 reward); the
+capital's giant stands on the board all the same, and the capital is
+offered its own at level 6 like any city
+([section 4.8](#48-city-rewards)).
 
-| City    | Center     | Level | Rewards recorded                        | Permanent | Live | Population | First income |
-| ------- | ---------- | ----: | --------------------------------------- | --------: | ---: | ---------: | -----------: |
-| North   | `(cx, 3)`  |     4 | `SURVEY`, `WALLS`, `TREASURY_6`         |         0 |   11 |          2 |            6 |
-| Capital | `(cx, 7)`  |     5 | `SURVEY`, `WALLS`, `BOOM`, `JUGGERNAUT` |         4 |   10 |          0 |            7 |
-| Coast   | `(cx, 11)` |     4 | `SURVEY`, `WALLS`, `TREASURY_6`         |         0 |   10 |          1 |            6 |
+| City    | Center     | Level | Rewards recorded                      | Permanent | Live | Population | First income |
+| ------- | ---------- | ----: | ------------------------------------- | --------: | ---: | ---------: | -----------: |
+| North   | `(cx, 3)`  |     4 | `SURVEY`, `WALLS`, `TREASURY_6`       |         0 |   11 |          2 |            6 |
+| Capital | `(cx, 7)`  |     5 | `SURVEY`, `WALLS`, `BOOM`, `TREASURY` |         4 |   10 |          0 |            7 |
+| Coast   | `(cx, 11)` |     4 | `SURVEY`, `WALLS`, `TREASURY_6`       |         0 |   10 |          1 |            6 |
 
 | City    | Tile           | Content                               | Live population |
 | ------- | -------------- | ------------------------------------- | --------------: |
@@ -2269,7 +2307,7 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
   Engineer's home city has such a Forge.
 - **Naval training** happens on a selected active, empty Port or Shipyard
   assigned to the city ([section 14](#14-naval-rules)).
-- **Reward units** (the Militia `FIGHTER` and the level-5+ `JUGGERNAUT`, in
+- **Reward units** (the Militia `FIGHTER` and the level-6+ `JUGGERNAUT`, in
   the owner's faction: Fighter, Skeleton, Goblin, Caveman, Grunt, Yeti, or
   Hammerer; Juggernaut, Abomination, Troll, Brontosaurus, Colossus, Frost
   Giant, or Brass Titan) appear
@@ -2337,16 +2375,34 @@ Each reached level grants exactly one reward, chosen by the owner:
 |             2 | Survey: explore radius 3 around the city (Human, Goblin, Undead, and Martian, "Scouts": and a free Raider, Wolf Rider, Ghoul, or Saucer); Stockpile: +4 Coins |
 |             3 | Walls: +2 fortification at the center; Militia: one free Fighter-role unit (Goblin: two Goblins)                                                              |
 |             4 | Boom: +3 permanent population; Treasury: +6 Coins; Barracks: +1 unit capacity                                                                                 |
-|         5, 6… | Treasury: +6 Coins; Barracks: +1 unit capacity; in the owner's first capital, until taken once: the Juggernaut-role reward unit                               |
+|             5 | Treasury: +6 Coins; Barracks: +1 unit capacity                                                                                                                |
+|         6, 7… | Treasury: +6 Coins; Barracks: +1 unit capacity; until the city has taken it once: the Juggernaut-role reward unit (the faction's giant)                       |
 
-- **Round 4** (`7r47`, [the Human tuning](RULESET_7_TUNING_HUMAN.md#11-round-4)).
-  `rewardCandidatesForLevelV7(level, rewards, firstCapital)` lists, in
-  reward-ID order: level 2 `SURVEY`, `STOCKPILE`; level 3 `WALLS`,
-  `MILITIA`; level 4 `BOOM`, `TREASURY_6`, `BARRACKS`; level 5 and above
-  `JUGGERNAUT`, `TREASURY`, `BARRACKS` when the city is its owner's first
-  capital (`originalCapitalCityId`) and its history holds no `JUGGERNAUT`
-  record, otherwise `TREASURY`, `BARRACKS`. So **each player gets at most
-  one reward unit**, and a captured city never gives one. `TREASURY` pays 6
+- **The economy rejig** (`7r54`,
+  [its record](RULESET_7_ECONOMY_REJIG.md#5-the-giant-in-every-city-at-level-6)).
+  `rewardCandidatesForLevelV7(level, rewards)` lists, in reward-ID order:
+  level 2 `SURVEY`, `STOCKPILE`; level 3 `WALLS`, `MILITIA`; level 4
+  `BOOM`, `TREASURY_6`, `BARRACKS`; level 5 `TREASURY`, `BARRACKS`; level 6
+  (`REWARD_UNIT_LEVEL_V7`) and above `JUGGERNAUT`, `TREASURY`, `BARRACKS`
+  while the city's reward history holds no `JUGGERNAUT` record, otherwise
+  `TREASURY`, `BARRACKS`. So **every city gives its giant once**: the
+  capital, a village, and a captured city alike, each at its own level 6 or
+  later; a city that takes the Treasury or Barracks at level 6 is offered
+  the giant again at level 7. The history transfers on capture, so a
+  captured city that gave its giant gives none to the captor. A `JUGGERNAUT`
+  record or `UNIT_REWARD_GRANTED` event below level 6, and a level-5 choice
+  that lists `JUGGERNAUT`, are invalid. The giant is placed like any reward
+  unit (beside the center when the center is occupied,
+  [section 4.6](#46-training-and-city-center-spawning)). The city panel
+  states "At level 6 this city can take a free <giant>, once" (as the
+  level stat's tooltip and in a level-4 or level-5 reward dialog), the
+  Help has the same rule, and the text harness prints it under every own
+  city that has not taken its giant.
+- **Round 4** (`7r47`, [the Human tuning](RULESET_7_TUNING_HUMAN.md#11-round-4);
+  its reward unit rule is superseded by the economy rejig above). From
+  `7r47` to `7r53` the reward unit was offered from level 5, only in the
+  owner's first capital (`originalCapitalCityId`), so each player got at
+  most one and a captured city never gave one. `TREASURY` pays 6
   (12 before). A Human Militia is one Fighter again (two at round 3). A
   Human `SURVEY` also grants a Raider (`SURVEY_RAIDERS_V7`), placed like any
   reward unit, without Scouting. **The Goblin pass** (`7r50`): a Goblin
@@ -2382,7 +2438,8 @@ Each reached level grants exactly one reward, chosen by the owner:
   `["TREASURY"]`, which the owner still chooses. The history transfers on
   capture, so a captured city that gave its unit gives none to the captor;
   a city that took the Treasury at level 5 is offered the unit again at
-  level 6.
+  level 6. (Since `7r54` the other candidates are the Treasury and
+  Barracks, and the first offer is at level 6.)
 
 - Reward units come from the owner's registration: an Undead Militia is a
   Skeleton and an Undead Juggernaut reward is an Abomination; a Goblin Militia
@@ -2407,21 +2464,29 @@ Each reached level grants exactly one reward, chosen by the owner:
 Seven achievements, in canonical order (`ACHIEVEMENT_IDS_V7`; revision 21
 added the last four, constants in `src/engine/v7/achievements.ts`):
 
-| Achievement | ID           | Requires    | Condition                                                                                          | Goal shown to the player   |
-| ----------- | ------------ | ----------- | -------------------------------------------------------------------------------------------------- | -------------------------- |
-| Explorer    | `EXPLORER`   | Scouting    | at least 100 explored tiles                                                                        | —                          |
-| Engineer    | `ENGINEER`   | Engineering | one owned Windmill, Sawmill, Forge, or Workshop with live output of at least 6 (Workshop max is 4) | —                          |
-| Muster      | `MUSTER`     | Drill       | at least four distinct trainable roles owned on the board at once (Juggernaut excluded)            | —                          |
-| Conqueror   | `CONQUEROR`  | —           | the player captures a city owned by another player (`CONQUEROR_CAPTURES_V7` 1)                     | Capture an enemy city.     |
-| Land Baron  | `LAND_BARON` | —           | the player owns at least 5 cities at once (`LAND_BARON_CITIES_V7`)                                 | Own 5 cities at once.      |
-| Sea Dog     | `SEA_DOG`    | —           | at least 3 units in `NAVAL` form at once (`SEA_DOG_SHIPS_V7`); Ice Folk: 3 land units on ice       | Own 3 warships at once.    |
-| Slayer      | `SLAYER`     | —           | one of the player's units on the board has at least 5 kills (`SLAYER_KILLS_V7`)                    | Get 5 kills with one unit. |
+| Achievement | ID           | Requires | Condition                                                                                                                                            | Goal shown to the player          |
+| ----------- | ------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| Explorer    | `EXPLORER`   | —        | half the board's tiles explored, rounded up (`explorerTilesRequiredV7`: 61 on 11 by 11, 98 on 14 by 14, 128 on 16 by 16, 200 on 20 by 20, 313 on 25) | Explore half the map.             |
+| Engineer    | `ENGINEER`   | —        | one owned Windmill, Sawmill, Forge, or Workshop with live output of at least 7 (`ENGINEER_MILL_OUTPUT_V7`; a Forge's cap is 6 and a Workshop's 4)    | Get one mill to 7 population.     |
+| Muster      | `MUSTER`     | —        | at least six distinct trainable roles owned on the board at once (`MUSTER_KINDS_V7`; Juggernaut excluded, ships included)                            | Field 6 unit types you can train. |
+| Conqueror   | `CONQUEROR`  | —        | the player captures a city that was founded as a capital, from another player, and that is not its own first capital (`CONQUEROR_CAPTURES_V7` 1)     | Capture an enemy capital.         |
+| Land Baron  | `LAND_BARON` | —        | the player owns at least 8 cities at once (`LAND_BARON_CITIES_V7`)                                                                                   | Own 8 cities at once.             |
+| Sea Dog     | `SEA_DOG`    | —        | at least 5 units in `NAVAL` form at once (`SEA_DOG_SHIPS_V7`); Ice Folk: 5 land units on ice (`ICE_SEA_DOG_UNITS_V7`)                                | Own 5 warships at once.           |
+| Slayer      | `SLAYER`     | —        | one of the player's units on the board has at least 7 kills (`SLAYER_KILLS_V7`)                                                                      | Get 7 kills with one unit.        |
 
+- **The economy rejig** (`7r54`,
+  [its record](RULESET_7_ECONOMY_REJIG.md#4-achievements)) set these
+  criteria. Before it: Explorer needed Scouting and 100 tiles on every
+  board, Engineer Engineering and an output of 6, Muster Drill and four
+  roles, Conqueror any city of another player, Land Baron 5 cities, Sea Dog
+  3 ships (or 3 Ice Folk units on ice), and Slayer 5 kills. **Where a
+  passage below still gives one of those numbers or technologies, the table
+  is the rule.**
 - Every seat has seven entitlements (`PlayerStateV7.achievementEntitlements`)
   and seven progress entries (`PlayerViewV7.achievementProgress`, owner-only)
-  in this order. The four revision-21 achievements have no enabling
-  technology (`ACHIEVEMENT_REQUIRED_TECH_V7` is null); for the three older
-  ones, progress made before the enabling research counts. Unlocking is
+  in this order. No achievement has an enabling technology
+  (`ACHIEVEMENT_REQUIRED_TECH_V7` is null for all seven since `7r54`; the
+  technology cards show no trophy). Unlocking is
   personal and permanent: an entitlement stays unlocked when the count later
   drops (a city lost, a ship sunk, the veteran dead), and each achievement
   unlocks at most once per player per match.
@@ -2436,10 +2501,14 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
   and `MATCH_ENDED`).
 - **Conqueror** has no stored counter: it unlocks only in the accepted
   `CAPTURE` of a city whose owner was another player (`CITY_CAPTURED.from`
-  not null); a neutral village never counts, a recaptured city does, and the
-  capture that eliminates a player or ends the match does. Its progress is 1
-  once unlocked and 0 before. A hostile capture that brings the player to 5
-  cities emits Conqueror, then Land Baron.
+  not null) and that was founded as a capital (`isCapital`), other than
+  the captor's own first capital (`originalCapitalCityId`) taken back. A
+  neutral village, a village-born city of another player, and the player's
+  own capital recaptured never count; a capital that changed hands before
+  does (it need not be taken from its founder), and so does the capture
+  that eliminates a player or ends the match. Its progress is 1 once
+  unlocked and 0 before. A capture of an enemy capital that brings the
+  player to 8 cities emits Conqueror, then Land Baron.
 - **Land Baron** counts the cities the player owns, the capital included,
   however gained. **Sea Dog** counts the player's Patrol Boats,
   Battleships, and Submarines on the board, a boarded prize included (an
@@ -2449,8 +2518,8 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
   on `DRY_LAND`). **For an Ice Folk seat**, which has no ship, Sea Dog
   counts instead its land-form units standing on an ice tile, whoever owns
   the ice (the seat's faction decides the count, so a Martian seat's
-  controlled Yeti on ice counts for nobody); 3 at once unlock it, and its
-  goal reads "Hold the ice with 3 units at once."
+  controlled Yeti on ice counts for nobody); 5 at once unlock it, and its
+  goal reads "Hold the ice with 5 units at once."
   ([section 21.16](#2116-the-frozen-sea)). **Slayer** reads the largest
   `kills` of one unit on the board, with the ordinary kill credit
   ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)): explosions
@@ -2483,13 +2552,16 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
   under their kind), hatched units, and
   assembled Gunners count; an Egg does not count until it hatches, and a
   burrowed unit, which is off the board, not until it surfaces.
-- Each unlocked, unspent entitlement funds one `BUILD_MONUMENT`: 0 Coins, +2
-  live population (`MONUMENT_POPULATION_V7`; +3 before tuning 1, `7r46`), on an explored owned land tile with no site, resource,
+- Each unlocked, unspent entitlement funds one `BUILD_MONUMENT`: 0 Coins, +3
+  live population (`MONUMENT_POPULATION_V7`; 3 since the economy rejig,
+  `7r54`, 2 from tuning 1, `7r46`, to `7r53`, and 3 before), on an explored owned land tile with no site, resource,
   improvement, or treasure (Mountain needs Engineering), at most one Monument
   per city, no siege or pending reward. A player can therefore place at most
   seven Monuments in a match, never more than one per owned city.
 - Spent entitlements stay spent if the Monument is removed or captured;
-  captured Monuments keep their +2 for the captor.
+  captured Monuments keep their +3 for the captor. A level-1 city with an
+  empty meter reaches level 2 with 1 toward level 3; a level-2 city reaches
+  level 3 exactly.
 - The Normal AI does not plan for any achievement; it builds a Monument
   whenever the public command query offers one.
 
@@ -2498,37 +2570,51 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
 ### 6.1 Research cost
 
 ```text
-tier 1 = 5  + (N - 1)
-tier 2 = 7  + (N - 1)
-tier 3 = 9  + (N - 1)
+tier 1 = 5  + 1 * (C - 1)
+tier 2 = 7  + 2 * (C - 1)
+tier 3 = 9  + 3 * (C - 1)
 ```
 
-`N` is the number of technologies the researcher already owns (at least 1;
-the first technology of a match is free, below). **Round 6** of the Human
-tuning (`7r49`, [section 13.5](RULESET_7_TUNING_HUMAN.md#135-research-the-price-the-order-and-the-dear-units)):
-each technology owned beyond the first adds **1 Coin**; it added 2 in
-rounds 4 and 5 (`7r47` and `7r48`). The whole land tree of 20
-technologies costs 314 Coins in tier order (485 at a step of 2), and all 25
-with the Naval branch 456 (732). **Round 4** (`7r47`,
-[section 11](RULESET_7_TUNING_HUMAN.md#11-round-4)): the
-price no longer reads the city count. The table below is the rule that
-round replaced (`C` cities, steps 1, 2, and 2), kept for the record.
+`C` is the number of cities the researcher owns when it researches
+(`TECHNOLOGY_RESEARCH_COST_V7`, `technologyResearchCostV7(tier, C)`; the
+first technology of a match is free, below). The technologies the player
+already owns do not enter the price. **The economy rejig** (`7r54`,
+[its record](RULESET_7_ECONOMY_REJIG.md#3-research-price)): the per-city
+steps 1 / 2 / 3 replace the "+1 Coin for each technology owned beyond the
+first" of `7r49` to `7r53`. The price follows the cities the player owns
+at that moment and there is no rule against researching before a capture
+or holding fewer cities to pay less (the user: "a fine strategic choice
+and self limiting"). The technology detail states the rule under the
+price ("Tier 3: 9 Coins, +3 for each city you own beyond your first"),
+and the text harness's `tech` prints the city count and the three
+formulas.
 
 | Cities `C` | Tier 1 | Tier 2 | Tier 3 |
 | ---------: | -----: | -----: | -----: |
 |          1 |      5 |      7 |      9 |
-|          2 |      6 |      9 |     11 |
-|          3 |      7 |     11 |     13 |
-|          4 |      8 |     13 |     15 |
-|          5 |      9 |     15 |     17 |
-|          6 |     10 |     17 |     19 |
+|          2 |      6 |      9 |     12 |
+|          3 |      7 |     11 |     15 |
+|          4 |      8 |     13 |     18 |
+|          5 |      9 |     15 |     21 |
+|          6 |     10 |     17 |     24 |
+|          8 |     12 |     21 |     30 |
+|         12 |     16 |     29 |     42 |
 
-`C` is the researcher's currently owned city count
-(`TECHNOLOGY_RESEARCH_COST_V7`). The tier 3 base is 9 since
-`pulp-wars-poc-7r41` (`pulp_wars-if6`; 12 before). The per-city steps are
-1, 2, and 2 since tuning 1 (`pulp-wars-poc-7r46`,
-[tuning 1 section B](RULESET_7_TUNING_1.md#b-research-cost-per-city-steps-of-1--2--2));
-they were 1, 3, and 5, so six cities paid 22 and 34 for tiers 2 and 3.
+The whole land tree of 20 technologies in tier order (the first free)
+costs 143 Coins with one city throughout, 229 with three, 315 with five,
+444 with eight, and 616 with twelve (314 at `7r53`, whatever the cities).
+
+**History.** The tier 3 base is 9 since `pulp-wars-poc-7r41`
+(`pulp_wars-if6`; 12 before). The price was per city before: steps 1, 3,
+and 5 until tuning 1 (`pulp-wars-poc-7r46`,
+[tuning 1 section B](RULESET_7_TUNING_1.md#b-research-cost-per-city-steps-of-1--2--2)),
+then 1, 2, and 2. **Round 4** of the Human tuning (`7r47`,
+[section 11](RULESET_7_TUNING_HUMAN.md#11-round-4)) replaced the city
+count by the technologies owned, 2 Coins each beyond the first, and
+**round 6** (`7r49`,
+[section 13.5](RULESET_7_TUNING_HUMAN.md#135-research-the-price-the-order-and-the-dear-units))
+made that 1 Coin (`5 / 7 / 9 + (N - 1)`); the economy rejig went back to
+the cities, with a steeper tier 3.
 Research is permanent,
 costs Coins only, and needs the one listed prerequisite. No technology starts
 known (a mission may start a seat with some, [section 2.6](#26-mission-setup)).
@@ -2955,35 +3041,50 @@ and no tile command changes a tile into water, a Rift, or a site.
 
 "Adjacent" always means the eight surrounding cells.
 
-| Building | Tech           | Cost | Limit    | Placement needs                                                   | Live output                                                               |
-| -------- | -------------- | ---: | -------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Windmill | Milling        |    5 | one/city | at least one adjacent same-owner Farm                             | +1 per adjacent same-owner Farm, cap 8                                    |
-| Sawmill  | Sawmilling     |    5 | one/city | at least one adjacent same-owner Lumber Camp                      | +1 per adjacent same-owner Lumber Camp, cap 8                             |
-| Forge    | Metallurgy     |    6 | one/city | at least one adjacent same-owner Mine                             | +1 per adjacent same-owner Mine, cap 6                                    |
-| Workshop | Engineering    |    4 | one/city | at least one adjacent Farm, Lumber Camp, or Mine of the same city | 0 without support; else 1 + number of distinct adjacent basic types (2–4) |
-| Market   | Administration |    6 | one/city | at least one adjacent economic family                             | Coins, not population ([section 9.4](#94-market))                         |
-| Monument | achievement    |    0 | one/city | an unspent achievement entitlement                                | +2                                                                        |
+| Building | Tech           | Cost | Limit    | Placement needs                                             | Live output                                                               |
+| -------- | -------------- | ---: | -------- | ----------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Windmill | Milling        |    5 | one/city | at least one adjacent same-owner Farm                       | +1 per adjacent same-owner Farm, cap 8                                    |
+| Sawmill  | Sawmilling     |    5 | one/city | at least one adjacent same-owner Lumber Camp                | +1 per adjacent same-owner Lumber Camp, cap 8                             |
+| Forge    | Metallurgy     |    6 | one/city | at least one adjacent same-owner Mine                       | +1 per adjacent same-owner Mine, cap 6                                    |
+| Workshop | Engineering    |    4 | one/city | at least one adjacent same-owner Farm, Lumber Camp, or Mine | 0 without support; else 1 + number of distinct adjacent basic types (2–4) |
+| Market   | Administration |    6 | one/city | at least one adjacent economic family                       | Coins, not population ([section 9.4](#94-market))                         |
+| Monument | achievement    |    0 | one/city | an unspent achievement entitlement                          | +3                                                                        |
 
 - Buildings target a land tile with no site, visible resource, improvement, or
   treasure.
-- Processor contributors may belong to any city of the same owner.
-  **One contributor counts for one building of a kind** (tuning 1, `7r46`;
-  before, for every adjacent one): a Farm, Lumber Camp, or Mine counts for
-  exactly one Windmill, Sawmill, or Forge, and each Farm, Windmill, Lumber
-  Camp, Sawmill, Mine, or Forge for exactly one Market
-  ([section 9.4](#94-market)); the two choices are independent, so a Farm
-  may count for a Windmill and for a Market. Among the same-owner buildings
-  of that kind on the eight tiles around it, the contributor serves **the
-  one of its own city**; if there is none, **the first in (y, x) order**.
-  The "adjacent" counts in the table above and the placement need are
-  counts of the contributors that serve the building. The rule stores
-  nothing: a new Sawmill of a Lumber Camp's own city takes that camp from a
-  neighbouring city's Sawmill, and removing a building returns its
-  contributors to the next one. Placement, the economic preview, and the
-  live output use the same rule (`contributorServesV7`); the public offer
-  needs a serving contributor that is certain from the view (one of the
-  building's own city, or one with every tile around it explored).
-  Workshop counts only its own city's improvements.
+- **Mills count across the owner's cities and share** (the economy rejig,
+  `7r54`, [its record](RULESET_7_ECONOMY_REJIG.md#1-mills-and-their-neighbours)).
+  A Windmill counts every Farm on its eight neighbouring tiles that stands
+  on the land of a city of the Windmill's owner, a Sawmill every such
+  Lumber Camp, a Forge every such Mine, and a Workshop every kind of them.
+  It does not matter which of the owner's cities' land a contributor
+  stands on, and **one contributor counts for every mill next to it**: a
+  Farm between two cities' Windmills feeds both. A city still has one mill
+  of each kind. The contributor's own population goes to the city whose
+  land it stands on, the mill's output to the mill's city; the caps (8, 8,
+  6, and a Workshop's 4) are unchanged. Two cities three tiles apart, each
+  with a Sawmill on the shared border and four Lumber Camps, four of the
+  eight touching both Sawmills: each Sawmill gives 6 (4 at `7r53`), each
+  city 4 + 6 = 10. The same faction's names apply (a Dinosaur Chopping
+  Block, an Undead Bone Mill, and so on are the Sawmill and the Windmill).
+  Nothing is stored: when a city is captured its Farms stop counting for
+  the former owner's mills at once and count for the captor's; a mill left
+  with no contributor stays, with zero output. Placement, the economic
+  preview, the public improvement values, and the live output use the one
+  count (`spatialContributionAtV7`), and the public offer needs only one
+  contributor of the viewer next to the tile.
+- **A Market still counts a building once** (tuning 1, `7r46`): each Farm,
+  Windmill, Lumber Camp, Sawmill, Mine, or Forge counts for exactly one
+  Market ([section 9.4](#94-market)), independently of the mills it
+  feeds. Among the same-owner Markets on the eight tiles around it, the
+  building serves **the one of its own city**; if there is none, **the
+  first in (y, x) order** (`contributorServesV7`, used for Markets only
+  since `7r54`). The public offer of a Market needs a serving building
+  that is certain from the view (one of the Market's own city, or one with
+  every tile around it explored).
+- From `7r46` to `7r53` a Farm, Lumber Camp, or Mine also counted for
+  exactly one Windmill, Sawmill, or Forge by that same rule, and a Workshop
+  counted only its own city's improvements.
 - A building that loses all support stays in place with zero output and
   recovers when support returns.
 
@@ -5247,6 +5348,17 @@ Harbours from it.
 - It avoids attacks predicted to lose the unit without a city-saving or
   capture-enabling reason, keeps a sole city defender unless replaced, and
   spreads units across objectives.
+- **The economy rejig** (`pulp_wars-w49.16`, `7r54`). At a level-6 or
+  later reward the policy takes the giant whenever it is offered and the
+  seat has fewer giants than cities (before, only for a threatened city or
+  with 12 Coins); at level 5, and once the city has its giant, Barracks,
+  otherwise the Treasury. Its research target's price, the research clock
+  of a seat at war, and the Coins it keeps for a due technology are read
+  from the public technology tree, so they follow the seat's cities
+  (a seat with four cities pays 8 / 13 / 18). It builds mills from the
+  economic previews, which count the shared contributors. It does not plan
+  for the achievements, the border mills, or the price of a capture.
+  [Normal AI, the economy rejig](../architecture/NORMAL_AI.md#the-economy-rejig-pulp_wars-w4916).
 - **Campaign** (`pulp_wars-9s0.1`): every land unit has one job and walks
   the land route to it: the nearest unclaimed village, an invader next to an
   own city, the unexplored frontier (two scouts and the group behind the
@@ -9480,7 +9592,7 @@ order (all rejections atomic):
 - The **Steam Tank** otherwise has Knight parity for no capture: 9 Coins,
   16 HP, Attack 3, Defense 2, **Move 2**, the advance after a melee kill,
   and **no Overrun**.
-- The **Brass Titan** is the level-5 reward unit: 36 HP, Attack 4, Defense
+- The **Brass Titan** is the level-6 reward unit: 36 HP, Attack 4, Defense
   3, Move 1, Push on an adjacent surviving target, capture, the advance, no
   Pillage, no Disband, and the construct rules (Unflinching on attack only,
   no self-repair, no Grave, not living, Mind Control-immune). It arrives on
@@ -9715,7 +9827,7 @@ offered in every setup; the achievement that is to unlock them later
 | `CAPTAIN`       | Confectioner      | Sugar Rush; Frosting; Re-bake                          |
 | `CATAPULT`      | Pie Launcher      | Sugar Rush; Splat                                      |
 | `KNIGHT`        | Chocolate Bunny   | Sugar Rush (Rushed: Sugar Frenzy)                      |
-| `JUGGERNAUT`    | Gingerbread Giant | Sugar Rush; Push; Bounce; the level-5 reward           |
+| `JUGGERNAUT`    | Gingerbread Giant | Sugar Rush; Push; Bounce; the level-6 reward           |
 | `PATROL_BOAT`   | Patrol Boat       | the Human boat                                         |
 | `BATTLESHIP`    | Battleship        | the Human boat                                         |
 | `SUBMARINE`     | Submarine         | the Human boat                                         |
@@ -9725,7 +9837,7 @@ the land roles in land form (never a boat, and never an embarked unit except
 where a rule says so). A **Candy seat** is a player whose faction is
 `CANDY`; the seat rules (Crumbs ownership, Re-bake's Coins and slots, Home
 Sweet Home and Peppermint Surprise research) read the seat. A Candy seat
-starts with one Toffee Trooper; its Militia reward is one Toffee Trooper, its level-5
+starts with one Toffee Trooper; its Militia reward is one Toffee Trooper, its level-6
 reward a Gingerbread Giant, and its treasure unit a Donut Racer (a free slot
 is needed, otherwise the chest gives 5 Coins). Faction rules: `restless`
 false, `cityCapacityBonus` 0, `gangUpMaximum` 0, `treasureUnitRole`
@@ -10194,6 +10306,7 @@ has no Candy step.
 | Undead pass   | `pulp-wars-poc-7r51` | `pulp_wars-w49.13` [the Undead faction pass](RULESET_7_TUNING_UNDEAD.md): the Skeleton's Bones (Defense 3 against an attack from two or more tiles); the Vampire's Escape; the Abomination's Infect; Undead Scouts (a free Ghoul); the Undead Normal AI's research order, shares, and unit rules; the lab `LAB_UNDEAD_MID`; its correction after three hand-played games: a rising has no home city and fills no unit slot, Plague needs Pestilence (the Undead Explosives), Raise Dead reaches two tiles, the Ghoul's Carrion, a curing Tend shown to those who see it, and the Undead and Human Normal AI rules of section 16                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | Martian pass  | `pulp-wars-poc-7r52` | `pulp_wars-w49.14` [the Martian faction pass](RULESET_7_TUNING_MARTIAN.md): a unit pulled by a Tractor Beam explores for its owner from the tile it lands on; the Force Field needs Force Fields; Heat Sinks (the Martian Fieldcraft: Ray Gunners do not overheat); Martian Scouts (a free Saucer); a Martian seat of the Normal AI plays the army rules; the lab `LAB_MARTIAN_MID`; its correction after three hand-played games: the Force Field holds one attack on a full-HP unit, Psychic Command every second turn, Release of a mind-controlled unit, the Martian and the Human Normal AI                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Dinosaur pass | `pulp-wars-poc-7r53` | `pulp_wars-w49.15` [the Dinosaur faction pass](RULESET_7_TUNING_DINOSAUR.md): a Triceratops's run-up counts one tile, two with Wallbreaker; the Caveman's Pack Hunt (+1 Attack against a unit next to an own dinosaur); Dinosaur Scouts (a free Raptor, hatched); a Dinosaur Market hires a dinosaur, hatched; a Dinosaur seat of the Normal AI plays the army rules; the lab `LAB_DINOSAUR_MID` (mission units with `kills` and `egg`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Economy       | `pulp-wars-poc-7r54` | `pulp_wars-w49.16` [the economy rejig](RULESET_7_ECONOMY_REJIG.md), every faction: a Windmill, Sawmill, Forge, or Workshop counts every contributor of its owner next to it, on any of the owner's cities' land, shared or not (Markets unchanged); a Monument gives 3 population (2); research costs its tier base plus 1 / 2 / 3 Coins for each city owned beyond the first, and the technologies owned no longer enter the price; the achievements are harder and need no technology (half the map, 8 cities, 6 kinds, a mill at 7, an enemy capital, 5 warships, 7 kills); every city offers its faction's giant once from level 6, and level 5 offers the Treasury or Barracks; the Normal AI takes the giant when offered; no state key added or removed                                                                                                                                                                                                                                                                                                                                                                                        |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

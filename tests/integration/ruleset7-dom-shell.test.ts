@@ -1415,7 +1415,7 @@ describe("Ruleset 7 DOM shell", () => {
           id: 99,
           cityId: city.id,
           category: "LIVE",
-          amount: 2,
+          amount: 3,
           source: {
             kind: "MONUMENT",
             visibility: "FULL",
@@ -1664,7 +1664,7 @@ describe("Ruleset 7 DOM shell", () => {
               ? ({
                   ...contribution,
                   category: "LIVE",
-                  amount: 2,
+                  amount: 3,
                   source: {
                     kind: "MONUMENT",
                     visibility: "BUILDING_ONLY",

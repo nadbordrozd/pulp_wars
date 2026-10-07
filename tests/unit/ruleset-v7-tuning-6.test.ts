@@ -70,7 +70,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r53`;
+ * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r54`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 13): the Normal AI breaks
  * a line with numbers, expands and grows, researches toward its army and
  * buys its dear units, and keeps its discipline; research costs 1 Coin more
@@ -179,40 +179,43 @@ describe("tuning 6 identity and the research price", () => {
   // and the Undead pass 7r51, so 7r49 is the prior identity before the
   // last.
   it("was 7r49 after 7r48, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
-    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
+    expect(PRIOR_RULESET_7_IDS.slice(-6, -4)).toEqual([
       "pulp-wars-poc-7r48",
       "pulp-wars-poc-7r49",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-5, -3)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -4)).toEqual([
       "pulpWars.save.v7r48.current",
       "pulpWars.save.v7r49.current",
     ]);
   });
 
-  it("costs the tier base plus 1 for each technology owned beyond the first", () => {
+  // The economy rejig (`pulp_wars-w49.16`, 7r54) replaced tuning 6's
+  // "plus 1 for each technology owned beyond the first" by 1 / 2 / 3 Coins
+  // for each city owned beyond the first.
+  it("costs the tier base plus 1 / 2 / 3 for each city owned beyond the first", () => {
     expect(TECHNOLOGY_RESEARCH_COST_V7).toEqual({
       1: { base: 5, step: 1 },
-      2: { base: 7, step: 1 },
-      3: { base: 9, step: 1 },
+      2: { base: 7, step: 2 },
+      3: { base: 9, step: 3 },
     });
     expect(
-      [1, 2, 3, 6, 10].map((owned) =>
+      [1, 2, 3, 6, 10].map((cities) =>
         ([1, 2, 3] as const).map((tier) =>
-          technologyResearchCostV7(tier, owned),
+          technologyResearchCostV7(tier, cities),
         ),
       ),
     ).toEqual([
       [5, 7, 9],
-      [6, 8, 10],
-      [7, 9, 11],
-      [10, 12, 14],
-      [14, 16, 18],
+      [6, 9, 12],
+      [7, 11, 15],
+      [10, 17, 24],
+      [14, 25, 36],
     ]);
     // The opener is still free, and only a tier-1 technology.
-    expect(playerTechnologyResearchCostV7(1, 0)).toBe(0);
-    expect(playerTechnologyResearchCostV7(2, 0)).toBe(7);
+    expect(playerTechnologyResearchCostV7(1, 0, 1)).toBe(0);
+    expect(playerTechnologyResearchCostV7(2, 0, 1)).toBe(7);
   });
 
   it("is what the public technology tree and the engine charge", () => {
@@ -225,26 +228,26 @@ describe("tuning 6 identity and the research price", () => {
     const view = viewForV7(state, seatIdV7(state, 0));
     const cost = (tech: TechnologyIdV7): number | undefined =>
       queryTechnologyTreeV7(view).nodes.find((node) => node.id === tech)?.cost;
-    // Three technologies owned: 5 / 7 / 9 plus 2.
-    expect(cost("SCOUTING")).toBe(7);
-    expect(cost("MARKSMANSHIP")).toBe(9);
-    expect(cost("ENGINEERING")).toBe(9);
+    // One city: 5 / 7 / 9, whatever the three technologies owned.
+    expect(cost("SCOUTING")).toBe(5);
+    expect(cost("MARKSMANSHIP")).toBe(7);
+    expect(cost("ENGINEERING")).toBe(7);
     const result = applyOkV7(state, seatIdV7(state, 0), {
       kind: "RESEARCH",
       tech: "MARKSMANSHIP",
     });
     expect(result.events).toContainEqual(
-      expect.objectContaining({ kind: "TECH_RESEARCHED", cost: 9 }),
+      expect.objectContaining({ kind: "TECH_RESEARCHED", cost: 7 }),
     );
     expect(
       result.state.players.find((player) => player.seat === 0)?.coins,
-    ).toBe(31);
-    // The fourth technology owned makes the next one 1 Coin dearer, not 2.
+    ).toBe(33);
+    // The fourth technology owned makes the next one no dearer.
     expect(
       queryTechnologyTreeV7(
         viewForV7(result.state, seatIdV7(state, 0)),
       ).nodes.find((node) => node.id === "ENGINEERING")?.cost,
-    ).toBe(10);
+    ).toBe(7);
   });
 
   it("puts every faction's siege and breakthrough technologies within reach", () => {
@@ -265,10 +268,14 @@ describe("tuning 6 identity and the research price", () => {
         const tier = tree.nodes.find((node) => node.id === tech)?.tier ?? 1;
         return total + (5 + 2 * (tier - 1)) + step * index;
       }, 0);
-    // 49 Coins for the seven technologies' bases, plus the step.
+    // 49 Coins for the seven technologies' bases, plus the step (the
+    // per-technology step of tunings 4 to 8: 70 at 1 Coin, 91 at 2).
     expect(price(1)).toBe(70);
     expect(price(2)).toBe(91);
-    expect(technologyResearchCostV7(3, 7)).toBe(15);
+    // The economy rejig (7r54): with one city the chain costs its bases,
+    // and with the AI's usual four cities a tier-3 technology costs 18.
+    expect(price(0)).toBe(49);
+    expect(technologyResearchCostV7(3, 4)).toBe(18);
   });
 });
 
@@ -949,9 +956,10 @@ describe("research toward the army", () => {
       }).state;
     const army = inspectNormalArmyV7(viewForV7(state, own));
     expect(army.expanding).toBe(false);
+    // Three cities: a tier-1 technology costs 5 + 2 (the economy rejig).
     expect(army.research).toMatchObject({
       tech: "HUNTING",
-      cost: 5,
+      cost: 7,
       due: true,
     });
     const turn = policyTurn(state);
@@ -1742,7 +1750,10 @@ describe("LAB_BREAKTHROUGH: numbers against a prepared line", () => {
   // The Undead pass (`pulp_wars-w49.13`, 7r51): the Undead attacker takes
   // it in round 8 (7 before) and loses 10 units (its Vampires fly back
   // after their strike instead of standing in the line).
-  const HOLD_ROUNDS = [6, 6, 8] as const;
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): the Goblin attacker
+  // takes it in round 7 again (6): its six cities make its next
+  // technology dearer, and the Coins it keeps for it train fewer units.
+  const HOLD_ROUNDS = [6, 7, 8] as const;
 
   const value = (state: GameStateV7, owner: number): number =>
     state.units

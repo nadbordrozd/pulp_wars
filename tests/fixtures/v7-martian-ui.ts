@@ -69,17 +69,22 @@ export function martianUiFieldV7(
     treasureChests: [],
     players: arena.players.map((player) => ({
       ...player,
+      // (The arena's Explorer of a seat without Scouting is already earned
+      // and spent, `goblinArenaV7`: it stays so.)
       achievementEntitlements: player.achievementEntitlements.map(
-        (entitlement) => ({
-          ...entitlement,
-          unlocked: player.researchedTechs.includes(
-            entitlement.achievement === "EXPLORER"
-              ? "SCOUTING"
-              : entitlement.achievement === "ENGINEER"
-                ? "ENGINEERING"
-                : "DRILL",
-          ),
-        }),
+        (entitlement) =>
+          entitlement.spent
+            ? entitlement
+            : {
+                ...entitlement,
+                unlocked: player.researchedTechs.includes(
+                  entitlement.achievement === "EXPLORER"
+                    ? "SCOUTING"
+                    : entitlement.achievement === "ENGINEER"
+                      ? "ENGINEERING"
+                      : "DRILL",
+                ),
+              },
       ),
     })),
     units: arena.units.map((unit) =>

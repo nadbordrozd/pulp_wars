@@ -859,7 +859,7 @@ function scenarios(): string[] {
 function technology(): string[] {
   const tree = factionTreeV7("GOBLIN");
   const lines = [
-    "| Branch | Technology | Tier | After | Cost as the 2nd / 5th / 9th technology | Unlocks (as coded) |",
+    "| Branch | Technology | Tier | After | Cost with 1 / 4 / 8 cities | Unlocks (as coded) |",
     "| --- | --- | --- | --- | --- | --- |",
   ];
   for (const node of tree.nodes) {
@@ -876,7 +876,7 @@ function technology(): string[] {
       )
       .join(", ");
     lines.push(
-      `| ${node.branch} | ${node.id} | ${node.tier} | ${node.prerequisites.join(", ") || "—"} | ${[1, 4, 8].map((owned) => playerTechnologyResearchCostV7(node.tier, owned)).join(" / ")} | ${unlocks} |`,
+      `| ${node.branch} | ${node.id} | ${node.tier} | ${node.prerequisites.join(", ") || "—"} | ${[1, 4, 8].map((cities) => playerTechnologyResearchCostV7(node.tier, 1, cities)).join(" / ")} | ${unlocks} |`,
     );
   }
   return lines;

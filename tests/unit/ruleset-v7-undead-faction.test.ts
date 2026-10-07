@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r52 and preserves the r53 save", () => {
+  it("cleans obsolete keys through v7r53 and preserves the r54 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r52.current",
+      "pulpWars.save.v7r53.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(52);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(53);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -1029,7 +1029,7 @@ describe("ruleset-7 Undead training and substitutions", () => {
     expect(playerOf(result.state, state.humanPlayerId).coins).toBe(before + 1);
   });
 
-  it("grants the owner's Skeleton for Militia and Abomination for the level-5 reward", () => {
+  it("grants the owner's Skeleton for Militia and Abomination for the level-6 reward", () => {
     for (const [reward, role, label] of [
       ["MILITIA", "FIGHTER", "Skeleton"],
       ["JUGGERNAUT", "JUGGERNAUT", "Abomination"],
@@ -1748,21 +1748,31 @@ describe("ruleset-7 all-Human parity digests", () => {
       // The Martian pass's correction (`pulp_wars-w49.14`: the Human seat's
       // economy-first opening, growth at war, no Guards against shooters,
       // no Knight ahead of its line): round 23 (275 commands), recomputed.
-      acceptedCommands: 275,
-      rounds: 23,
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): 218 commands and 19
+      // rounds (275 and 23); the hashes below were recomputed with it.
+      acceptedCommands: 218,
+      rounds: 19,
       termination: "OUTCOME",
       mapHash:
         "251ae814b9c22679f8ed6b288c0a9ae2a06574b84b5b719521970f6f24a3e51c",
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "87c815e6ebc3446d772e970dd24516d8b6243285a3e8c78870bf58bb2260d153",
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+        // 87c815…d153).
+        "9ae0c1b18105562b526d6aafa4319e18157c3616ad8cb35b404f5160fd2044ae",
       eventHash:
-        "21337f4e078ff3798d859154c90326f35244aefe5a599b6e1286dd70598c0b84",
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+        // 21337f…0b84).
+        "05b2427ec56eea9978eabcf43eebd5315e6d2de8105105a3f1c7555368dff4b7",
       normalizedFinalStateHash:
-        "d8241ec8e9935fd0956145097b4019ee144befe95056143a2c2d3a2cb708d3d1",
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+        // d8241e…d3d1).
+        "e437ed39e489e3babb2a459a0bd1d2aecada1759bf77f50157becbc1b018a639",
       normalizedHumanViewHash:
-        "0c4cbb04ae150d145f35d512b07930a171290cf3c0565813a714836f41daf9c2",
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+        // 0c4cbb…f9c2).
+        "654061f7965b6325c09fca47042ae10c38bfeb4788ef0100b45b5738033cba5e",
       normalizedHumanCommandsHash:
         "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     },
@@ -1778,7 +1788,9 @@ describe("ruleset-7 all-Human parity digests", () => {
       // Tuning 6 (`pulp_wars-w49.6`): 354 commands, recomputed.
       // Tuning 7 (`pulp_wars-w49.10`): 365 commands, recomputed.
       // Tuning 8 (`pulp_wars-w49.11`): 364 commands, recomputed.
-      acceptedCommands: 364,
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): 338 commands (364);
+      // the hashes below were recomputed with it.
+      acceptedCommands: 338,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1786,15 +1798,25 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "b11910d95aeab8c56bbf6f72f63d4e6f6b30f7e43f842d8354e7badf23e1050c",
       commandHash:
-        "f0241a8a168d8dbb2a17b637ccc8860bd8a99929ed94f45c8045a7479e2ce2f2",
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+        // f0241a…e2f2).
+        "29fd885b17d80f6bed72a4165f0503d146f06588ed4d7d31c20868b14da871a3",
       eventHash:
-        "6194fb10b8d381ef5251762bc77f8decdfca71df6b736dfe77574f7f5511cc7c",
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+        // 6194fb…cc7c).
+        "a75ebdf1a0dc6c6ffc8ff37727807c492a1d5acbd32841aaae0f7729daae9f75",
       normalizedFinalStateHash:
-        "1f799a2cd1f5c9842f30ec65ecf5dc4e97eaeb04ab6332d6487fdc156b100828",
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+        // 1f799a…0828).
+        "9c21dee42e4c8ebc6c48168436ebf7c76903e5efe72ef3ff73e237f237585fb4",
       normalizedHumanViewHash:
-        "6111b84bfecfa191038e9a4a973da1d50e72f67f59947e1cfbfe92fec4ad5070",
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+        // 6111b8…5070).
+        "7825d2b1a82e833ffbe8316681d688eb416f2298ec54d6fac3af122e6fe9a1b8",
       normalizedHumanCommandsHash:
-        "75cd9968da27bbad9639f79f7f3054b1941f70bc677ab943f3822c0dfb9898bf",
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+        // 75cd99…98bf).
+        "8811217677a112f4f4a52b6552c48dbdbbfcc94459c0faecb579e70ba202ae25",
     },
   ] as const;
 
@@ -2319,8 +2341,13 @@ function rewardState(
 } {
   const base = trainingState([faction, "ORIGINAL"]);
   const city = humanCity(base);
-  const reachedLevel = reward === "MILITIA" ? 3 : 5;
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): the giant is a level-6
+  // reward (level 5 before). Level 6 takes 20 population and the capital
+  // holds seven Farms (14), so six Farm tiles also carry a hunt (1
+  // permanent population each), as in `rewardStateV7`.
+  const reachedLevel = reward === "MILITIA" ? 3 : 6;
   const addedPopulation = reward === "MILITIA" ? 6 : 14;
+  const addedPermanent = reward === "MILITIA" ? 0 : 6;
   const growthTiles = base.board.tiles
     .filter(
       (tile) =>
@@ -2333,14 +2360,15 @@ function rewardState(
   if (growthTiles.length !== addedPopulation / 2)
     throw new Error("reward growth tiles missing");
   const economicPopulation = city.economicPopulation + addedPopulation;
+  const huntTiles = growthTiles.slice(0, addedPermanent);
   const grown = resolveCityGrowthV7(
     city,
-    city.permanentPopulation,
+    city.permanentPopulation + addedPermanent,
     economicPopulation,
   ).city;
   const state = checkedV7({
     ...base,
-    nextEntityId: base.nextEntityId + growthTiles.length,
+    nextEntityId: base.nextEntityId + growthTiles.length + huntTiles.length,
     cities: base.cities.map((candidate) =>
       candidate.id === city.id
         ? {
@@ -2353,6 +2381,7 @@ function rewardState(
                     { reachedLevel: 2, reward: "SURVEY" as const },
                     { reachedLevel: 3, reward: "WALLS" as const },
                     { reachedLevel: 4, reward: "TREASURY_6" as const },
+                    { reachedLevel: 5, reward: "TREASURY" as const },
                   ],
           }
         : candidate,
@@ -2381,6 +2410,17 @@ function rewardState(
         source: {
           kind: "IMPROVEMENT" as const,
           improvement: "FARM" as const,
+          at: tile.at,
+        },
+      })),
+      ...huntTiles.map((tile, index) => ({
+        id: base.nextEntityId + growthTiles.length + index,
+        cityId: city.id,
+        category: "PERMANENT" as const,
+        amount: 1,
+        source: {
+          kind: "RESOURCE_ACTION" as const,
+          action: "HUNT_GAME" as const,
           at: tile.at,
         },
       })),

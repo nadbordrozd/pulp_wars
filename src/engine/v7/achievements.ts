@@ -9,17 +9,17 @@ import {
 
 /**
  * Revision 21 (docs/product/RULESET_7_REVISION_21_ACHIEVEMENTS.md): the
- * achievement registry. The three revision-5 achievements keep their enabling
- * technology; the four revision-21 achievements have none (`null`), because
- * their conditions cannot be met in the opening turns and must be reachable
- * by every faction whatever it researches.
+ * achievement registry. The economy rejig (`pulp_wars-w49.16`, 7r54,
+ * docs/product/RULESET_7_ECONOMY_REJIG.md): no achievement needs a
+ * technology any more (Explorer needed Scouting, Engineer Engineering, and
+ * Muster Drill before). The table stays so a later rule can name one.
  */
 export const ACHIEVEMENT_REQUIRED_TECH_V7: Readonly<
   Record<AchievementIdV7, TechnologyIdV7 | null>
 > = Object.freeze({
-  EXPLORER: "SCOUTING",
-  ENGINEER: "ENGINEERING",
-  MUSTER: "DRILL",
+  EXPLORER: null,
+  ENGINEER: null,
+  MUSTER: null,
   CONQUEROR: null,
   LAND_BARON: null,
   SEA_DOG: null,
@@ -36,14 +36,45 @@ export const REVISION_21_ACHIEVEMENT_IDS_V7 = Object.freeze([
 export type Revision21AchievementIdV7 =
   (typeof REVISION_21_ACHIEVEMENT_IDS_V7)[number];
 
-/** Conqueror: captures of a city owned by another player. */
+/**
+ * Conqueror: captures of an enemy capital. The economy rejig (7r54): the
+ * captured city was founded as a capital (`isCapital`), belonged to another
+ * player, and is not the captor's own first capital (any enemy city
+ * before).
+ */
 export const CONQUEROR_CAPTURES_V7 = 1 as const;
-/** Land Baron: cities owned at once. */
-export const LAND_BARON_CITIES_V7 = 5 as const;
-/** Sea Dog: naval units (Patrol Boats and Battleships) on the board at once. */
-export const SEA_DOG_SHIPS_V7 = 3 as const;
-/** Slayer: kills credited to one unit on the board. */
-export const SLAYER_KILLS_V7 = 5 as const;
+/** Land Baron: cities owned at once (5 before the economy rejig). */
+export const LAND_BARON_CITIES_V7 = 8 as const;
+/**
+ * Sea Dog: naval units (Patrol Boats and Battleships) on the board at once
+ * (3 before the economy rejig).
+ */
+export const SEA_DOG_SHIPS_V7 = 5 as const;
+/** Slayer: kills credited to one unit on the board (5 before). */
+export const SLAYER_KILLS_V7 = 7 as const;
+/**
+ * Muster: different kinds of unit the player can train (a role with a
+ * price, so never the reward giant; ships count) on the board at once (4,
+ * and Drill, before the economy rejig).
+ */
+export const MUSTER_KINDS_V7 = 6 as const;
+/**
+ * Engineer: the output of one Windmill, Sawmill, Forge, or Workshop (6, and
+ * Engineering, before the economy rejig). Only a Windmill or a Sawmill can
+ * reach it (a Forge's cap is 6, a Workshop's 4).
+ */
+export const ENGINEER_MILL_OUTPUT_V7 = 7 as const;
+/**
+ * Explorer: half the board's tiles, rounded up (98 on a 14 by 14 board, 61
+ * on 11 by 11, 200 on 20 by 20; a flat 100, and Scouting, before the
+ * economy rejig).
+ */
+export function explorerTilesRequiredV7(board: {
+  readonly width: number;
+  readonly height: number;
+}): number {
+  return Math.ceil((board.width * board.height) / 2);
+}
 
 export const REVISION_21_ACHIEVEMENT_REQUIRED_V7 = Object.freeze({
   CONQUEROR: CONQUEROR_CAPTURES_V7,

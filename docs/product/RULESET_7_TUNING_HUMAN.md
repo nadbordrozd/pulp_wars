@@ -27,6 +27,16 @@ below come from `scripts/human-tuning-analysis-v7.ts`, which asks the
 engine's exact public combat preview about constructed positions and plays
 no match. Water is out of scope.
 
+**Superseded in part by [the economy rejig](RULESET_7_ECONOMY_REJIG.md)
+(`pulp-wars-poc-7r54`, `pulp_wars-w49.16`).** Two decisions of round 4 were reversed, and one number of tuning 1
+was restored: research is priced by the cities owned again (5 / 7 / 9 plus
+1 / 2 / 3 Coins for each city beyond the first; sections 11.3 item 1,
+11.4, and 13.5 give the price by the technologies owned), every city
+offers its reward giant once from level 6 (sections 11.3 item 3 and 11.6
+give it to the first capital only, from level 5), and a Monument gives 3
+population. The achievements are harder and need no technology. Those
+sections are kept as the record of their rounds.
+
 **What the user asked for**, in short: every technology should be worth
 buying at some moment, and every unit should have a job. The Knight exists
 to reach and destroy fragile backline units, many in one turn, and may be
@@ -663,7 +673,10 @@ Escape Move after a Pillage as well as after an attack.
 
 ### 11.3 Decisions that are forks, for the user to overrule
 
-1. **Research is priced by what you know, not by what you own.** The
+1. _(Superseded at `7r54`: the user overruled this fork. Research is priced
+   by the cities owned again, with steps of 1 / 2 / 3; "the 'gaming' of the
+   system by delaying capturing cities is a fine strategic choice and self
+   limiting".)_ **Research is priced by what you know, not by what you own.** The
    per-city step punished the player for winning: in game 1 the right play
    was to sit on two villages. With a per-technology step a big empire pays
    what a small one pays, and a late technology costs real money (the 20th
@@ -677,7 +690,10 @@ Escape Move after a Pillage as well as after an attack.
    6-Coin Treasury, and "one reward unit per player" hold for the Troll,
    the Brontosaurus, and the others as well. A ladder for the Humans alone
    would have needed a second set of reward rules.
-3. **The reward unit belongs to the first capital.** "Once per player"
+3. _(Superseded at `7r54`: the user overruled this fork. Every city offers
+   its giant once, from level 6: "I want giant in every city not just
+   capital. But we can postpone it one level for now.")_ **The reward unit
+   belongs to the first capital.** "Once per player"
    could also have been a counter in the player's record; reading it from
    the capital needs no new state and answers the capture question: a
    captured city never gives the unit, on the turn it is taken or later. A
@@ -711,6 +727,10 @@ Escape Move after a Pillage as well as after an attack.
     now be mirrors (`mirror: true`); the browser cannot reach them.
 
 ### 11.4 Research cost
+
+_Superseded at `7r54`: the price is per city again
+([the economy rejig, section 3](RULESET_7_ECONOMY_REJIG.md#3-research-price)).
+The tables below are round 4's._
 
 The price list of section 2.0 shows each technology as the second, the
 eighth, and the sixteenth purchase. Along typical orders, with the cities
@@ -796,6 +816,10 @@ eight technologies are five to seven turns of everything the empire earns.
 Roads (the 5th technology, 15 Coins) comes first and pays for itself in population; counting it too, Commerce at four linked cities pays back in (15 + 19) / 4 = 8.5 turns, and the Road tiles (2 Coins each) are on top.
 
 ### 11.6 The reward ladder
+
+_Superseded at `7r54` for the last row: level 5 offers Barracks or the
+Treasury, and every city offers the giant once from level 6
+([the economy rejig, section 5](RULESET_7_ECONOMY_REJIG.md#5-the-giant-in-every-city-at-level-6))._
 
 | Level | Population it took | Choices                                                      | Coins of the Coin choice |
 | ----- | ------------------ | ------------------------------------------------------------ | ------------------------ |
@@ -1552,6 +1576,11 @@ other seat was boxed in on two or three cities and lost; that is not
 evidence of anything.
 
 ### 13.5 Research: the price, the order, and the dear units
+
+_Superseded at `7r54` for the price: 1 / 2 / 3 Coins for each city owned
+beyond the first, not 1 Coin for each technology owned
+([the economy rejig, section 3](RULESET_7_ECONOMY_REJIG.md#3-research-price)).
+The order and the dear units stand._
 
 **The price** (`scripts/human-tuning-analysis-v7.ts round6`). The base by
 tier is unchanged (5 / 7 / 9); each technology already owned beyond the

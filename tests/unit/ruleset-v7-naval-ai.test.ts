@@ -888,6 +888,10 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
     // never has the numbers, so nine units landed in 2,000 commands and
     // none captured. The gate does not apply to a seat with an active
     // naval plan; the first landed unit captures by accepted command 914.
+    // The economy rejig (`pulp_wars-w49.16`, 7r54): the seats research
+    // more slowly with their cities (Shorecraft and Navigation cost more),
+    // and the first landed unit that captures does so at accepted command
+    // 1,267; the bound is 1,500 commands (1,000 before).
     const result = runAiMatchV7(
       {
         ...setupV7(0, 3),
@@ -900,7 +904,7 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
         factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
         allowDuplicateFactions: true,
       },
-      { maxRounds: 60, maxCommands: 1_000 },
+      { maxRounds: 60, maxCommands: 1_500 },
     );
     expect(result.errors).toEqual([]);
     expect(result.stalls).toEqual([]);

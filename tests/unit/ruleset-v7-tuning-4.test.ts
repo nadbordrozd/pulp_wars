@@ -15,7 +15,6 @@ import {
   cityBarracksV7,
   cityUnitCapacityV7,
   createPlayableGameV7,
-  isOwnersFirstCapitalV7,
   missionMatchSetupV7,
   parseEventV7,
   parseGameStateV7,
@@ -109,7 +108,7 @@ const moveTargets = (state: GameStateV7, from: CoordV7): readonly string[] => {
 
 describe("tuning 4 keeps the unpublished identity", () => {
   it("is 7r47", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
   });
 });
 
@@ -128,7 +127,7 @@ describe("Commerce: land trade pays 1", () => {
   });
 });
 
-describe("research is priced by the technologies owned", () => {
+describe("research price (by the cities owned since the economy rejig)", () => {
   const costs = (
     techs: readonly TechnologyIdV7[],
     pieces: readonly GoblinPieceV7[] = [],
@@ -145,23 +144,25 @@ describe("research is priced by the technologies owned", () => {
     };
   };
 
-  // Tuning 6 (`pulp_wars-w49.6`): the step is 1 Coin a technology (2 in
-  // tunings 4 and 5); the numbers below are the current ones.
-  it("is the tier base plus a step for each technology owned beyond the first", () => {
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): the price is by the
+  // cities owned again, 1 / 2 / 3 Coins a city by tier; the technologies
+  // owned no longer enter it. (Tuning 4 priced by the technologies owned,
+  // 2 Coins each, and tuning 6 made that 1.)
+  it("is the tier base whatever the technologies owned, with one city", () => {
     expect(TECHNOLOGY_RESEARCH_COST_V7).toEqual({
       1: { base: 5, step: 1 },
-      2: { base: 7, step: 1 },
-      3: { base: 9, step: 1 },
+      2: { base: 7, step: 2 },
+      3: { base: 9, step: 3 },
     });
-    expect(playerTechnologyResearchCostV7(1, 0)).toBe(0);
+    expect(playerTechnologyResearchCostV7(1, 0, 1)).toBe(0);
     expect(costs([]).cost("HUNTING")).toBe(0);
     const one = costs(["HUNTING"]);
     expect(one.cost("DRILL")).toBe(5);
     expect(one.cost("FORESTRY")).toBe(7);
     const two = costs(["HUNTING", "FORESTRY"]);
-    expect(two.cost("DRILL")).toBe(6);
-    expect(two.cost("MARKSMANSHIP")).toBe(8);
-    expect(two.cost("SAWMILLING")).toBe(10);
+    expect(two.cost("DRILL")).toBe(5);
+    expect(two.cost("MARKSMANSHIP")).toBe(7);
+    expect(two.cost("SAWMILLING")).toBe(9);
     const seven = costs([
       "GATHERING",
       "HUNTING",
@@ -171,13 +172,12 @@ describe("research is priced by the technologies owned", () => {
       "RAIDING",
       "DRILL",
     ]);
-    expect(seven.cost("CHIVALRY")).toBe(15);
-    expect(seven.cost("FARMING")).toBe(13);
+    expect(seven.cost("CHIVALRY")).toBe(9);
+    expect(seven.cost("FARMING")).toBe(7);
   });
 
-  it("does not read the number of cities", () => {
+  it("reads the number of cities", () => {
     const techs: readonly TechnologyIdV7[] = ["HUNTING", "FORESTRY"];
-    const alone = costs(techs);
     const base = costs(techs, [
       { seat: 0, role: "FIGHTER", at: at(8, 5), captureEligible: true },
     ]);
@@ -191,15 +191,18 @@ describe("research is priced by the technologies owned", () => {
     const tree = queryTechnologyTreeV7(
       viewForV7(captured, seatIdV7(captured, 0)),
     );
-    for (const id of ["DRILL", "MARKSMANSHIP", "SAWMILLING"] as const)
-      expect(tree.nodes.find((node) => node.id === id)?.cost, id).toBe(
-        alone.cost(id),
-      );
+    // A second city: +1 / +2 / +3.
+    for (const [id, cost] of [
+      ["DRILL", 6],
+      ["MARKSMANSHIP", 9],
+      ["SAWMILLING", 12],
+    ] as const)
+      expect(tree.nodes.find((node) => node.id === id)?.cost, id).toBe(cost);
     // The reducer charges the offered price.
     const result = applied(captured, { kind: "RESEARCH", tech: "SAWMILLING" });
     expect(result.events[0]).toMatchObject({
       kind: "TECH_RESEARCHED",
-      cost: 10,
+      cost: 12,
     });
   });
 });
@@ -213,22 +216,20 @@ describe("the reward ladder", () => {
       "TREASURY_6",
       "BARRACKS",
     ]);
-    // Level 5 and above: the reward unit is the first capital's, once.
-    expect(rewardCandidatesForLevelV7(5, [], true)).toEqual([
+    // The economy rejig (`pulp_wars-w49.16`, 7r54): level 5 offers the
+    // Treasury or Barracks; from level 6 every city offers the reward
+    // unit, once. (Tuning 4: from level 5, the first capital's only.)
+    expect(rewardCandidatesForLevelV7(5)).toEqual(["TREASURY", "BARRACKS"]);
+    expect(rewardCandidatesForLevelV7(6)).toEqual([
       "JUGGERNAUT",
       "TREASURY",
       "BARRACKS",
     ]);
-    expect(rewardCandidatesForLevelV7(5, [], false)).toEqual([
-      "TREASURY",
-      "BARRACKS",
-    ]);
     expect(
-      rewardCandidatesForLevelV7(
-        6,
-        [{ reward: "JUGGERNAUT" }, { reward: "BARRACKS" }],
-        true,
-      ),
+      rewardCandidatesForLevelV7(7, [
+        { reward: "JUGGERNAUT" },
+        { reward: "BARRACKS" },
+      ]),
     ).toEqual(["TREASURY", "BARRACKS"]);
     expect(CITY_REWARD_COINS_V7).toEqual({
       STOCKPILE: 4,
@@ -297,7 +298,6 @@ describe("the reward ladder", () => {
   it("Barracks: +1 unit in the city, and no unit", () => {
     const fixture = rewardStateV7("JUGGERNAUT", "ORIGINAL");
     const before = cityOfV7(fixture.state, 0);
-    expect(isOwnersFirstCapitalV7(fixture.state.players, before)).toBe(true);
     expect(offered(fixture.state).map((command) => command.kind)).toEqual(
       expect.arrayContaining(["CHOOSE_CITY_REWARD"]),
     );
@@ -327,13 +327,10 @@ describe("the reward ladder", () => {
       giant.state.units.filter((unit) => unit.role === "JUGGERNAUT"),
     ).toHaveLength(1);
     const capital = cityOfV7(giant.state, 0);
-    expect(
-      rewardCandidatesForLevelV7(
-        6,
-        capital.rewards,
-        isOwnersFirstCapitalV7(giant.state.players, capital),
-      ),
-    ).toEqual(["TREASURY", "BARRACKS"]);
+    expect(rewardCandidatesForLevelV7(7, capital.rewards)).toEqual([
+      "TREASURY",
+      "BARRACKS",
+    ]);
   });
 });
 

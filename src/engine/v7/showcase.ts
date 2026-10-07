@@ -76,7 +76,12 @@ export const SHOWCASE_CITY_TEMPLATES_V7: readonly ShowcaseCityTemplateV7[] =
         { reachedLevel: 2, reward: "SURVEY" },
         { reachedLevel: 3, reward: "WALLS" },
         { reachedLevel: 4, reward: "BOOM" },
-        { reachedLevel: 5, reward: "JUGGERNAUT" },
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): the giant is a
+        // level-6 reward, so the level-5 record is the Treasury. The
+        // capital's giant stands on the board all the same (the Showcase
+        // shows every unit), and the capital is offered its own at level 6
+        // like any city.
+        { reachedLevel: 5, reward: "TREASURY" },
       ],
       tiles: [
         { dx: -1, y: 6, resource: "FERTILE_GROUND", improvement: "FARM" },

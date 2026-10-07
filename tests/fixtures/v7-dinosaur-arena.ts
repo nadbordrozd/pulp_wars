@@ -195,8 +195,14 @@ export function withTileV7(
 
 /**
  * A seat-0 capital of `faction` ready to choose `reward` (level 3 for
- * Militia, level 5 for the Juggernaut reward), grown through Farms, with
- * every technology. `own` lists extra seat-0 pieces (homed to the capital);
+ * Militia; level 6 for the Juggernaut reward since the economy rejig,
+ * `pulp_wars-w49.16`, 7r54: level 5 before), grown through Farms, with
+ * every technology. Level 6 takes 20 population and the capital's eight
+ * tiles hold seven Farms (14), so for the Juggernaut six of the Farm tiles
+ * also carry 1 permanent population each (a hunt, booked before the Farm
+ * was built). The capital's one free tile and its center carry none, so a
+ * test may still harvest there.
+ * `own` lists extra seat-0 pieces (homed to the capital);
  * `opponent` sets seat 1's faction and pieces (by default one Human Fighter).
  */
 export function rewardStateV7(
@@ -225,8 +231,9 @@ export function rewardStateV7(
     ...own.map((piece) => ({ seat: 0, ...piece })),
   ]);
   const city = cityOfV7(base, 0);
-  const reachedLevel = reward === "MILITIA" ? 3 : 5;
+  const reachedLevel = reward === "MILITIA" ? 3 : 6;
   const addedPopulation = reward === "MILITIA" ? 6 : 14;
+  const addedPermanent = reward === "MILITIA" ? 0 : 6;
   const growthTiles = base.board.tiles
     .filter(
       (tile) =>
@@ -238,15 +245,19 @@ export function rewardStateV7(
     .slice(0, addedPopulation / 2);
   if (growthTiles.length !== addedPopulation / 2)
     throw new Error("reward growth tiles missing");
+  // Six of the seven Farm tiles also carry a hunt (1 permanent each).
+  const huntTiles = growthTiles.slice(0, addedPermanent);
+  if (huntTiles.length !== addedPermanent)
+    throw new Error("reward hunt tiles missing");
   const economicPopulation = city.economicPopulation + addedPopulation;
   const grown = resolveCityGrowthV7(
     city,
-    city.permanentPopulation,
+    city.permanentPopulation + addedPermanent,
     economicPopulation,
   ).city;
   const state = checkedV7({
     ...base,
-    nextEntityId: base.nextEntityId + growthTiles.length,
+    nextEntityId: base.nextEntityId + growthTiles.length + huntTiles.length,
     cities: base.cities.map((candidate) =>
       candidate.id === city.id
         ? {
@@ -260,6 +271,7 @@ export function rewardStateV7(
                     { reachedLevel: 2, reward: "SURVEY" as const },
                     { reachedLevel: 3, reward: "WALLS" as const },
                     { reachedLevel: 4, reward: "TREASURY_6" as const },
+                    { reachedLevel: 5, reward: "TREASURY" as const },
                   ],
           }
         : candidate,
@@ -278,17 +290,30 @@ export function rewardStateV7(
           : tile,
       ),
     },
-    populationContributions: growthTiles.map((tile, index) => ({
-      id: base.nextEntityId + index,
-      cityId: city.id,
-      category: "LIVE" as const,
-      amount: 2,
-      source: {
-        kind: "IMPROVEMENT" as const,
-        improvement: "FARM" as const,
-        at: tile.at,
-      },
-    })),
+    populationContributions: [
+      ...growthTiles.map((tile, index) => ({
+        id: base.nextEntityId + index,
+        cityId: city.id,
+        category: "LIVE" as const,
+        amount: 2,
+        source: {
+          kind: "IMPROVEMENT" as const,
+          improvement: "FARM" as const,
+          at: tile.at,
+        },
+      })),
+      ...huntTiles.map((tile, index) => ({
+        id: base.nextEntityId + growthTiles.length + index,
+        cityId: city.id,
+        category: "PERMANENT" as const,
+        amount: 1,
+        source: {
+          kind: "RESOURCE_ACTION" as const,
+          action: "HUNT_GAME" as const,
+          at: tile.at,
+        },
+      })),
+    ],
     pendingChoices: [
       {
         kind: "CITY_REWARD" as const,

@@ -98,8 +98,11 @@ import {
 } from "./ice-folk";
 import {
   ACHIEVEMENT_REQUIRED_TECH_V7,
+  ENGINEER_MILL_OUTPUT_V7,
   LAND_BARON_CITIES_V7,
+  MUSTER_KINDS_V7,
   SEA_DOG_SHIPS_V7,
+  explorerTilesRequiredV7,
   SLAYER_KILLS_V7,
   revision21AchievementCountsV7,
 } from "./achievements";
@@ -127,7 +130,6 @@ import {
   seaTradeCityIdsV7,
   startTurnEconomyV7,
   type CityEconomyChangeV7,
-  isOwnersFirstCapitalV7,
 } from "./economy";
 import type { DomainEventV7 } from "./events";
 import {
@@ -892,11 +894,12 @@ function applyResearch(
       prerequisite: missing,
     });
   try {
-    // Tuning 4 (`pulp_wars-w49.3`): the price grows with the technologies
-    // the player owns, not with its cities.
+    // The economy rejig (`pulp_wars-w49.16`, 7r54): the price grows with
+    // the cities the player owns now, not with its technologies.
     const cost = playerTechnologyResearchCostV7(
       node.tier,
       player.researchedTechs.length,
+      state.cities.filter((city) => city.ownerId === actor).length,
     );
     if (player.coins < cost)
       return rejected(original, "INSUFFICIENT_COINS", { cost });
@@ -6052,7 +6055,12 @@ function applyCapture(
       },
       actor,
       // Revision 21 Conqueror: this CAPTURE took another player's city.
-      formerOwner !== null,
+      // The economy rejig (7r54): a city founded as a capital, and not the
+      // captor's own first capital taken back.
+      formerOwner !== null &&
+        captured.isCapital &&
+        state.players.find((item) => item.id === actor)
+          ?.originalCapitalCityId !== captured.id,
     );
     players = achievements.state.players;
     events.push(...achievements.events);
@@ -7219,11 +7227,7 @@ function settleCityRewardsV7(
       if (city === undefined) throw new RangeError("INVALID_STATE");
       if (city.rewards.some((reward) => reward.reachedLevel === reachedLevel))
         continue;
-      const candidates = rewardCandidatesForLevelV7(
-        reachedLevel,
-        city.rewards,
-        isOwnersFirstCapitalV7(players, city),
-      );
+      const candidates = rewardCandidatesForLevelV7(reachedLevel, city.rewards);
       const owner = players.find((player) => player.id === city.ownerId);
       if (owner?.status !== "ACTIVE") throw new RangeError("INVALID_STATE");
       const pendingChoices: readonly PendingChoiceV7[] = [
@@ -7423,7 +7427,7 @@ function evaluateAchievementsV7(
   const engineer = state.populationContributions.some(
     (contribution) =>
       contribution.category === "LIVE" &&
-      contribution.amount >= 6 &&
+      contribution.amount >= ENGINEER_MILL_OUTPUT_V7 &&
       contribution.source.kind === "IMPROVEMENT" &&
       ["WINDMILL", "SAWMILL", "FORGE", "WORKSHOP"].includes(
         contribution.source.improvement,
@@ -7449,9 +7453,9 @@ function evaluateAchievementsV7(
   // CAPTURE of a city owned by another player (`capturedHostileCity`).
   const counts = revision21AchievementCountsV7(state, playerId);
   const qualifies: Readonly<Record<AchievementIdV7, boolean>> = {
-    EXPLORER: player.explored.length >= 100,
+    EXPLORER: player.explored.length >= explorerTilesRequiredV7(state.board),
     ENGINEER: engineer,
-    MUSTER: trainableRoles.size >= 4,
+    MUSTER: trainableRoles.size >= MUSTER_KINDS_V7,
     CONQUEROR: capturedHostileCity,
     LAND_BARON: counts.LAND_BARON >= LAND_BARON_CITIES_V7,
     SEA_DOG: counts.SEA_DOG >= SEA_DOG_SHIPS_V7,

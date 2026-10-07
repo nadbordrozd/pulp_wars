@@ -6,6 +6,7 @@ import {
   FACTION_IDS_V7,
   IMPROVEMENT_IDS_V7,
   MONSTER_REGENERATION_V7,
+  MONUMENT_POPULATION_V7,
   NEUTRAL_MONSTER_ROLE_RULE_V7,
   ORIGINAL_BASELINE_V5_NODES,
   SPATIAL_ECONOMIC_ACTIONS_V7,
@@ -612,8 +613,7 @@ const BUILDING_DESCRIPTIONS: Readonly<
   FORGE: "Built next to mines.",
   WORKSHOP: "Built among varied buildings.",
   MARKET: "Built among varied buildings.",
-  MONUMENT:
-    "Each achievement earns a free Monument: +2 population, one per city.",
+  MONUMENT: `Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, one per city.`,
   PORT: "Built on Shallow Water. Puts land units to sea and trains ships.",
   SHIPYARD: "An upgraded Port. Ships cost less.",
 };

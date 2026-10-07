@@ -17,6 +17,7 @@ import {
   BLAST_MOUNTAIN_DAMAGE_V7,
   CITY_REWARD_COINS_V7,
   MONUMENT_POPULATION_V7,
+  REWARD_UNIT_LEVEL_V7,
   RULESET_7_ID,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   TECHNOLOGY_IDS_V7,
@@ -545,7 +546,7 @@ function scenarios(): string[] {
 function technology(): string[] {
   const tree = factionTreeV7("ORIGINAL");
   const lines = [
-    "| Branch | Technology | Tier | After | Cost as the 2nd / 8th / 16th technology | Unlocks (as coded) |",
+    "| Branch | Technology | Tier | After | Cost with 1 / 3 / 5 / 8 / 12 cities | Unlocks (as coded) |",
     "| --- | --- | --- | --- | --- | --- |",
   ];
   for (const node of tree.nodes) {
@@ -562,12 +563,12 @@ function technology(): string[] {
       )
       .join(", ");
     lines.push(
-      `| ${node.branch} | ${node.id} | ${node.tier} | ${node.prerequisites.join(", ") || "—"} | ${[1, 7, 15].map((owned) => technologyResearchCostV7(node.tier, owned)).join(" / ")} | ${unlocks} |`,
+      `| ${node.branch} | ${node.id} | ${node.tier} | ${node.prerequisites.join(", ") || "—"} | ${[1, 3, 5, 8, 12].map((cities) => technologyResearchCostV7(node.tier, cities)).join(" / ")} | ${unlocks} |`,
     );
   }
   lines.push(
     "",
-    "The first technology of a match is free. A technology costs its tier's base (5 / 7 / 9) plus 1 Coin for each technology the player already owns beyond the first (tuning 6; 2 Coins in tunings 4 and 5); the number of cities does not matter (tuning 4).",
+    "The first technology of a match is free. A technology costs its tier's base (5 / 7 / 9) plus 1 / 2 / 3 Coins (tier 1 / 2 / 3) for each city the player owns beyond the first (the economy rejig, 7r54); the technologies owned do not matter. (Tunings 4 to 8 and the faction passes: the base plus 1 Coin for each technology owned beyond the first, 2 Coins in tunings 4 and 5.)",
   );
   return lines;
 }
@@ -593,7 +594,7 @@ function economy(): string[] {
     "",
     "A city of level L needs L + 1 population to reach level L + 1, so levels 2, 3, 4, 5, 6 cost 2, 3, 4, 5, 6 more population (20 in all for level 6).",
     "",
-    `Level rewards (tuning 4): level 2 Scouts (the survey and a free Raider) or Stockpile (${CITY_REWARD_COINS_V7.STOCKPILE} Coins); level 3 Walls or Militia (one Fighter); level 4 Boom, Treasury (${CITY_REWARD_COINS_V7.TREASURY_6} Coins) or Barracks; level 5+ Barracks or Treasury (${CITY_REWARD_COINS_V7.TREASURY} Coins), and in the first capital, once, the Juggernaut.`,
+    `Level rewards (tuning 4): level 2 Scouts (the survey and a free Raider) or Stockpile (${CITY_REWARD_COINS_V7.STOCKPILE} Coins); level 3 Walls or Militia (one Fighter); level 4 Boom, Treasury (${CITY_REWARD_COINS_V7.TREASURY_6} Coins) or Barracks; level 5 Barracks or Treasury (${CITY_REWARD_COINS_V7.TREASURY} Coins); level ${REWARD_UNIT_LEVEL_V7}+ the same and, once per city, the Juggernaut (the economy rejig, 7r54; tuning 4 to 7r53: the first capital only, once, from level 5).`,
     "",
     `Unit capacity of a city (Human): level + 1, +1 with Planning: ${[1, 2, 3, 4, 5].map((level) => `L${level} ${cityUnitCapacityForV7(level, [], "ORIGINAL")}/${cityUnitCapacityForV7(level, ["GATHERING", "ADMINISTRATION", "PLANNING"], "ORIGINAL")}`).join(", ")} (without / with Planning). One training per city per turn; with Commerce each Market hires one more at 1.5× (a Fighter ${hireCostV7(2)}, Guard ${hireCostV7(3)}, Raider ${hireCostV7(4)}, Marksman ${hireCostV7(4)}, Captain ${hireCostV7(5)}, Catapult ${hireCostV7(8)}, Knight ${hireCostV7(9)} Coins), and the Market's city may hold 1 unit above its capacity.`,
     "",
@@ -603,6 +604,17 @@ function economy(): string[] {
 }
 
 // ------------------------------------------------------------- round 4 ---
+
+/**
+ * The research price of tunings 6 to 8 and the faction passes (to 7r53):
+ * the tier's base plus 1 Coin for each technology owned beyond the first.
+ * The round tables below record that history; the engine's price is per
+ * city since the economy rejig (`pulp_wars-w49.16`, 7r54).
+ */
+function tuning6ResearchCost(tier: 1 | 2 | 3, owned: number): number {
+  if (tier === 1 && owned === 0) return 0;
+  return 5 + 2 * (tier - 1) + Math.max(0, owned - 1);
+}
 
 /** The research price before tuning 4: by the cities owned. */
 function oldResearchCost(tier: 1 | 2 | 3, cities: number, owned: number) {
@@ -638,7 +650,7 @@ function researchCurve(
     const node = tree.nodes.find((candidate) => candidate.id === tech);
     if (node === undefined) throw new Error(tech);
     const old = oldResearchCost(node.tier, cities, owned);
-    const price = playerTechnologyResearchCostV7(node.tier, owned);
+    const price = tuning6ResearchCost(node.tier, owned);
     before += old;
     now += price;
     lines.push(
@@ -724,14 +736,15 @@ function round4(): string[] {
     `| 2 | 2 | Scouts (survey + Raider, worth 4 Coins) or Stockpile | ${CITY_REWARD_COINS_V7.STOCKPILE} |`,
     "| 3 | 3 | Walls or Militia (one Fighter, worth 2 Coins) | — |",
     `| 4 | 4 | Boom (+3 population), Treasury or Barracks (+${BARRACKS_CAPACITY_V7} unit) | ${CITY_REWARD_COINS_V7.TREASURY_6} |`,
-    `| 5+ | 5, 6, … | Barracks or Treasury; the first capital once: the Juggernaut | ${CITY_REWARD_COINS_V7.TREASURY} |`,
+    `| 5 | 5 | Barracks or Treasury | ${CITY_REWARD_COINS_V7.TREASURY} |`,
+    `| ${REWARD_UNIT_LEVEL_V7}+ | 6, 7, … | Barracks or Treasury; every city once: the Juggernaut (7r54; the first capital only, from level 5, in round 4) | ${CITY_REWARD_COINS_V7.TREASURY} |`,
     "",
     `A population point costs 2 to 3 Coins (the price list above), so level 5 costs 10 to 15 Coins of population and returns at most ${CITY_REWARD_COINS_V7.TREASURY}.`,
     "",
     "#### Sinks at 100 Coins and 40 income (LAB_LATE)",
     "",
     `- Hire: one unit a turn per Market at 1.5× (a Knight ${hireCostV7(9)}, a Catapult ${hireCostV7(8)}), one above the city's limit.`,
-    `- Research: the 17th to 20th technologies cost ${[16, 17, 18, 19].map((owned) => playerTechnologyResearchCostV7(3, owned)).join(", ")} Coins.`,
+    `- Research: the 17th to 20th technologies cost ${[16, 17, 18, 19].map((owned) => tuning6ResearchCost(3, owned)).join(", ")} Coins.`,
     "",
   );
   return lines;
@@ -963,7 +976,7 @@ function round6(): string[] {
   ];
   for (const nth of [2, 3, 4, 5, 6, 8, 10, 12, 16, 20])
     lines.push(
-      `| ${nth}${nth === 2 ? "nd" : nth === 3 ? "rd" : "th"} | ${([1, 2, 3] as const).map((tier) => `${before(tier, nth - 1)} / ${playerTechnologyResearchCostV7(tier, nth - 1)}`).join(" | ")} |`,
+      `| ${nth}${nth === 2 ? "nd" : nth === 3 ? "rd" : "th"} | ${([1, 2, 3] as const).map((tier) => `${before(tier, nth - 1)} / ${tuning6ResearchCost(tier, nth - 1)}`).join(" | ")} |`,
     );
   const land = factionTreeV7("ORIGINAL").nodes.filter(
     (node) => node.branch !== "NAVAL",
@@ -973,7 +986,7 @@ function round6(): string[] {
     ordered.reduce((total, node, owned) => total + price(node.tier, owned), 0);
   lines.push(
     "",
-    `The whole land tree of ${land.length} technologies in tier order: ${whole(before)} Coins in round 5, ${whole(playerTechnologyResearchCostV7)} in round 6.`,
+    `The whole land tree of ${land.length} technologies in tier order: ${whole(before)} Coins in round 5, ${whole(tuning6ResearchCost)} in round 6.`,
     "",
     "#### The Normal AI's research order from a Gathering opener",
     "",
@@ -1031,18 +1044,61 @@ function round6(): string[] {
       const node = tree.nodes.find((candidate) => candidate.id === tech);
       if (node === undefined) throw new Error(tech);
       const owned = index + 1;
-      totalNow += playerTechnologyResearchCostV7(node.tier, owned);
+      totalNow += tuning6ResearchCost(node.tier, owned);
       const unit = node.unlocks.flatMap((unlock) =>
         unlock.kind === "UNIT_ROLE"
           ? [effectiveRoleRuleV7(unlock.role, faction).label]
           : [],
       );
       lines.push(
-        `| ${owned + 1} | ${tech} | ${node.tier} | ${unit.length === 0 ? "—" : unit.join(", ")} | ${before(node.tier, owned)} | ${playerTechnologyResearchCostV7(node.tier, owned)} | ${totalNow} |`,
+        `| ${owned + 1} | ${tech} | ${node.tier} | ${unit.length === 0 ? "—" : unit.join(", ")} | ${before(node.tier, owned)} | ${tuning6ResearchCost(node.tier, owned)} | ${totalNow} |`,
       );
     });
     lines.push("");
   }
+  return lines;
+}
+
+/**
+ * The economy rejig (`pulp_wars-w49.16`, 7r54;
+ * docs/product/RULESET_7_ECONOMY_REJIG.md): the research price by cities
+ * against the price by technologies owned that it replaces.
+ */
+function rejig(): string[] {
+  const cityCounts = [1, 3, 5, 8, 12] as const;
+  const lines: string[] = [
+    "#### Research price (tier 1 / tier 2 / tier 3)",
+    "",
+    "| Cities | 7r54 | 7r53 with 3 / 8 / 14 technologies owned |",
+    "| --- | --- | --- |",
+  ];
+  for (const cities of cityCounts)
+    lines.push(
+      `| ${cities} | ${([1, 2, 3] as const).map((tier) => playerTechnologyResearchCostV7(tier, 1, cities)).join(" / ")} | ${[3, 8, 14].map((owned) => ([1, 2, 3] as const).map((tier) => tuning6ResearchCost(tier, owned)).join(" / ")).join("; ")} |`,
+    );
+  const land = factionTreeV7("ORIGINAL").nodes.filter(
+    (node) => node.branch !== "NAVAL",
+  );
+  const ordered = [...land].sort((left, right) => left.tier - right.tier);
+  lines.push(
+    "",
+    `#### The whole land tree (${land.length} technologies, tier order, the first free)`,
+    "",
+    "| Player | 7r53 | 7r54 |",
+    "| --- | --- | --- |",
+  );
+  const before = ordered.reduce(
+    (total, node, owned) => total + tuning6ResearchCost(node.tier, owned),
+    0,
+  );
+  for (const cities of cityCounts)
+    lines.push(
+      `| ${cities} ${cities === 1 ? "city" : "cities"} throughout | ${before} | ${ordered.reduce((total, node, owned) => total + playerTechnologyResearchCostV7(node.tier, owned, cities), 0)} |`,
+    );
+  lines.push(
+    "",
+    `A Monument gives +${MONUMENT_POPULATION_V7} population (2 in 7r53). Every city offers the Juggernaut once from level ${REWARD_UNIT_LEVEL_V7} (the first capital only, from level 5, in 7r53).`,
+  );
   return lines;
 }
 
@@ -1065,4 +1121,6 @@ if (part === "all" || part === "round5")
   out.push("### Round 5", "", ...round5(), "");
 if (part === "all" || part === "round6")
   out.push("### Round 6", "", ...round6(), "");
+if (part === "all" || part === "rejig")
+  out.push("### The economy rejig", "", ...rejig(), "");
 process.stdout.write(`${out.join("\n")}\n`);

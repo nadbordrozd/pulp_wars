@@ -9,6 +9,17 @@ in [Ruleset 7: current rules](RULESET_7_CURRENT.md); this document is the
 reasoning and the record, in the shape of
 [the Human pass](RULESET_7_TUNING_HUMAN.md).
 
+**Superseded in part by [the economy rejig](RULESET_7_ECONOMY_REJIG.md)
+(`pulp-wars-poc-7r54`, `pulp_wars-w49.16`).** Where this document gives a research price by the technologies owned (the
+tier base plus 1 Coin for each technology owned, "the nth technology
+costs …", "ten technologies and 97 Coins"), a reward giant taken at level
+5 of the first capital or once per player, a Monument of +2, or an
+achievement's old criterion, it records the rules it was written under.
+Research is now priced by the cities owned (5 / 7 / 9 plus 1 / 2 / 3 for
+each city beyond the first), every city offers its giant once from level
+6, a Monument gives 3, and the achievements are harder and need no
+technology. The passages are kept as history.
+
 **What the user asked for** (2026-10-06): carry the Human tech tree
 improvements over to the next faction and make sure it works. Fine balance
 is not the goal. The faction must not be far too strong or far too weak,

@@ -2,7 +2,10 @@ import { deepFreeze } from "../model/freeze";
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import {
   REVISION_21_ACHIEVEMENT_IDS_V7,
+  ENGINEER_MILL_OUTPUT_V7,
+  MUSTER_KINDS_V7,
   REVISION_21_ACHIEVEMENT_REQUIRED_V7,
+  explorerTilesRequiredV7,
   revision21AchievementCountsV7,
   type Revision21AchievementIdV7,
 } from "./achievements";
@@ -193,17 +196,18 @@ export type AchievementProgressV7 =
   | {
       readonly achievement: "EXPLORER";
       readonly currentExploredTiles: number;
-      readonly requiredExploredTiles: 100;
+      /** Half the board's tiles, rounded up (the economy rejig, 7r54). */
+      readonly requiredExploredTiles: number;
     }
   | {
       readonly achievement: "ENGINEER";
       readonly currentMaximumOutput: number;
-      readonly requiredOutput: 6;
+      readonly requiredOutput: typeof ENGINEER_MILL_OUTPUT_V7;
     }
   | {
       readonly achievement: "MUSTER";
       readonly currentDistinctTrainableRoles: number;
-      readonly requiredDistinctTrainableRoles: 4;
+      readonly requiredDistinctTrainableRoles: typeof MUSTER_KINDS_V7;
     }
   // Revision 21: Conqueror, Land Baron, Sea Dog, and Slayer share one shape.
   | {
@@ -221,8 +225,8 @@ export type PublicPopulationContributionV7 =
     })
   | (Omit<PopulationContributionV7, "amount" | "category" | "source"> & {
       readonly category: "LIVE";
-      /** `MONUMENT_POPULATION_V7` (2 since tuning 1, 7r46; 3 before). */
-      readonly amount: 2;
+      /** `MONUMENT_POPULATION_V7` (3 since the economy rejig, 7r54). */
+      readonly amount: 3;
       readonly source:
         | {
             readonly kind: "MONUMENT";
@@ -1156,13 +1160,17 @@ export function achievementProgressV7(
       currentExploredTiles:
         state.players.find((player) => player.id === playerId)?.explored
           .length ?? 0,
-      requiredExploredTiles: 100,
+      requiredExploredTiles: explorerTilesRequiredV7(state.board),
     },
-    { achievement: "ENGINEER", currentMaximumOutput, requiredOutput: 6 },
+    {
+      achievement: "ENGINEER",
+      currentMaximumOutput,
+      requiredOutput: ENGINEER_MILL_OUTPUT_V7,
+    },
     {
       achievement: "MUSTER",
       currentDistinctTrainableRoles: roles.size,
-      requiredDistinctTrainableRoles: 4,
+      requiredDistinctTrainableRoles: MUSTER_KINDS_V7,
     },
     ...REVISION_21_ACHIEVEMENT_IDS_V7.map((achievement) => ({
       achievement,

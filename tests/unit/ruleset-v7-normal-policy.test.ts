@@ -343,7 +343,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // is unchanged. A Human seat at war still buys the growth that leaves
       // the Coins for any unit on offer, so the harvests and the hunt are
       // candidates again (was 62b18a…9811).
-      "8e542b0f3cf525a6c55ad33ba9ea4ec5394f1dee1a56a7e94dbdd3b0a4cf840c",
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+      // 8e542b…840c).
+      "b8c7177ac499263a24f0165281ff4e65fae00ade39470cd7bd57c89267d5d3e4",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -355,7 +357,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // Tuning 7 (`pulp_wars-w49.10`): as above (was 8df833…16ad).
       // The Martian pass's correction (`pulp_wars-w49.14`): as above (was
       // 59257e…efd3).
-      "d8d542f5b7420a15349fde84e8eeee81c3528beb595e0d0f0a9f5169d00a10dc",
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+      // d8d542…10dc).
+      "c837b900ea4cb59a143befc0f2dae295cfc717a0fee8078275b97bcdde00941f",
     );
     const basicCommands = queryPlayerCommandsV7(basicView);
     const basicWork = new NormalPolicyWorkV7(structuredClone(basicView));
@@ -1068,7 +1072,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // comment (was 0802a4…cb02).
       // The Martian pass's correction (`pulp_wars-w49.14`): the command is
       // unchanged; the cause is in the pin's comment (was e8b765…17d1).
-      "f0fd0a0d03de2fc4afbc14d549c439214fe80f2b470e50ac40b09267f21263a9",
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+      // f0fd0a…63a9).
+      "ea7230b26216d17f63489fb7c0fd878399820d0067e42b0cc01c2414fc420f77",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -1149,7 +1155,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r53");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r54");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

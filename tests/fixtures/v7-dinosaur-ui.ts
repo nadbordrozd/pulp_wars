@@ -52,17 +52,22 @@ export function dinosaurUiFieldV7(
     players: arena.players.map((player) => ({
       ...player,
       // An achievement needs its technology (Scouting, Engineering, Drill).
+      // (The arena's Explorer of a seat without Scouting is already earned
+      // and spent, `goblinArenaV7`: it stays so.)
       achievementEntitlements: player.achievementEntitlements.map(
-        (entitlement) => ({
-          ...entitlement,
-          unlocked: player.researchedTechs.includes(
-            entitlement.achievement === "EXPLORER"
-              ? "SCOUTING"
-              : entitlement.achievement === "ENGINEER"
-                ? "ENGINEERING"
-                : "DRILL",
-          ),
-        }),
+        (entitlement) =>
+          entitlement.spent
+            ? entitlement
+            : {
+                ...entitlement,
+                unlocked: player.researchedTechs.includes(
+                  entitlement.achievement === "EXPLORER"
+                    ? "SCOUTING"
+                    : entitlement.achievement === "ENGINEER"
+                      ? "ENGINEERING"
+                      : "DRILL",
+                ),
+              },
       ),
     })),
     // Units are orphans unless listed, so the capital's slots stay readable

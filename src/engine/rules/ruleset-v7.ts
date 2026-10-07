@@ -766,8 +766,20 @@ export const SPATIAL_ECONOMIC_ACTIONS_V7 = deepFreeze({
  */
 /** Commerce: Coins of land trade per connected city (1 before). */
 export const LAND_TRADE_INCOME_COINS_V7 = 1 as const;
-/** A Monument's live population (3 before). */
-export const MONUMENT_POPULATION_V7 = 2 as const;
+/**
+ * A Monument's live population. 3 before tuning 1, 2 from tuning 1 to 7r53,
+ * and 3 again since the economy rejig (`pulp_wars-w49.16`, 7r54), which
+ * made the achievements that fund one harder.
+ */
+export const MONUMENT_POPULATION_V7 = 3 as const;
+/**
+ * The economy rejig (`pulp_wars-w49.16`, 7r54): the level from which a city
+ * offers its faction's reward giant (the `JUGGERNAUT` reward), once per
+ * city. Level 5 offers the Treasury or Barracks only. (From tuning 4 to
+ * 7r53 the giant was offered at level 5 and above, in the owner's first
+ * capital only, so once per player.)
+ */
+export const REWARD_UNIT_LEVEL_V7 = 6 as const;
 /** The Boom reward's permanent population (unchanged). */
 export const BOOM_POPULATION_V7 = 3 as const;
 /**
@@ -3470,6 +3482,14 @@ export const RULESET_7 = deepFreeze({
  * (`pulp_wars-w49.6`, `pulp-wars-poc-7r49`) made that step 1 a technology:
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
+ *
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r54`,
+ * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
+ * the technologies owned no longer enter it. A technology of tier `t`
+ * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the
+ * researcher owns when it researches. There is no rule against holding
+ * fewer cities to pay less (the user: "a fine strategic choice and self
+ * limiting").
  */
 export const TECHNOLOGY_RESEARCH_COST_V7: Readonly<
   Record<1 | 2 | 3, { readonly base: number; readonly step: number }>
@@ -3482,30 +3502,33 @@ export const TECHNOLOGY_RESEARCH_COST_V7: Readonly<
   // every tier (2 before). At 2 a tenth technology cost 23 to 27 Coins and
   // neither the hand player nor the Normal AI reached its tier-3 units
   // before round 28.
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): `step` is per city the
+  // player owns beyond its first, 1 / 2 / 3 by tier. It was per technology
+  // owned beyond the first (1 for every tier) from tuning 4 to 7r53.
   1: { base: 5, step: 1 },
-  2: { base: 7, step: 1 },
-  3: { base: 9, step: 1 },
+  2: { base: 7, step: 2 },
+  3: { base: 9, step: 3 },
 });
 
 /**
- * The price of a technology of `tier` for a player that already owns
- * `ownedTechnologyCount` technologies (at least 1; the free opener is
- * {@link playerTechnologyResearchCostV7}): the tier's base plus the step for
- * each owned technology beyond the first.
+ * The price of a technology of `tier` for a player that owns
+ * `ownedCityCount` cities (the free opener is
+ * {@link playerTechnologyResearchCostV7}): the tier's base plus the tier's
+ * step for each owned city beyond the first. A count below 1 prices as 1.
  */
 export function technologyResearchCostV7(
   tier: 1 | 2 | 3,
-  ownedTechnologyCount: number,
+  ownedCityCount: number,
 ): number {
   if (
     ![1, 2, 3].includes(tier) ||
-    !Number.isSafeInteger(ownedTechnologyCount) ||
-    ownedTechnologyCount < 0
+    !Number.isSafeInteger(ownedCityCount) ||
+    ownedCityCount < 0
   )
-    throw new RangeError("INVALID_TECHNOLOGY_COUNT");
+    throw new RangeError("INVALID_CITY_COUNT");
   const { base, step } = TECHNOLOGY_RESEARCH_COST_V7[tier];
   const value =
-    BigInt(base) + BigInt(step) * BigInt(Math.max(0, ownedTechnologyCount - 1));
+    BigInt(base) + BigInt(step) * BigInt(Math.max(0, ownedCityCount - 1));
   if (value > BigInt(Number.MAX_SAFE_INTEGER))
     throw new RangeError("INTEGER_OVERFLOW");
   return Number(value);
@@ -3514,13 +3537,16 @@ export function technologyResearchCostV7(
 /**
  * Revision 12 free opening research: while a player has researched no
  * technology, any offered tier-1 technology costs 0 Coins. Afterward the
- * ordinary tier formula applies.
+ * ordinary tier formula applies. The economy rejig (7r54):
+ * `researchedTechCount` decides the free opener only; the price follows
+ * `ownedCityCount`.
  */
 export function playerTechnologyResearchCostV7(
   tier: 1 | 2 | 3,
   researchedTechCount: number,
+  ownedCityCount: number,
 ): number {
-  const ordinary = technologyResearchCostV7(tier, researchedTechCount);
+  const ordinary = technologyResearchCostV7(tier, ownedCityCount);
   return tier === 1 && researchedTechCount === 0 ? 0 : ordinary;
 }
 
@@ -4416,7 +4442,7 @@ export const WITCH_FREEZE_RADIUS_V7 = 1;
 /** The frozen sea (section 8.9): the crush of an icebound unit. */
 export const ICE_CRUSH_DAMAGE_V7 = 3;
 /** The frozen sea (section 8.11): Sea Dog for an Ice Folk seat. */
-export const ICE_SEA_DOG_UNITS_V7 = 3;
+export const ICE_SEA_DOG_UNITS_V7 = 5;
 
 /**
  * The frozen sea (section 8.3): anything that lists the ice tiles (a

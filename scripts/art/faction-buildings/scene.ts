@@ -275,7 +275,7 @@ export function factionBuildingsSceneViewV7(
           id: 9700 + y * COLUMNS + x,
           cityId: cityId(cell.seat),
           category: "LIVE",
-          amount: 2,
+          amount: 3,
           source:
             playerId(cell.seat) === viewerId
               ? {

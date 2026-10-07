@@ -25,7 +25,14 @@ describe("ruleset-7 achievement presentation", () => {
       SLAYER: "Slayer",
     });
     expect(Object.keys(ACHIEVEMENT_GOALS_V7)).toEqual([...ACHIEVEMENT_IDS_V7]);
-    expect(ACHIEVEMENT_GOALS_V7.CONQUEROR).toBe("Capture an enemy city.");
+    // The economy rejig (`pulp_wars-w49.16`, 7r54): an enemy capital, half
+    // the map, a mill at 7, and six kinds.
+    expect(ACHIEVEMENT_GOALS_V7.CONQUEROR).toBe("Capture an enemy capital.");
+    expect(ACHIEVEMENT_GOALS_V7.EXPLORER).toBe("Explore half the map.");
+    expect(ACHIEVEMENT_GOALS_V7.ENGINEER).toBe("Get one mill to 7 population.");
+    expect(ACHIEVEMENT_GOALS_V7.MUSTER).toBe(
+      "Field 6 unit types you can train.",
+    );
     expect(ACHIEVEMENT_GOALS_V7.LAND_BARON).toBe(
       `Own ${REVISION_21_ACHIEVEMENT_REQUIRED_V7.LAND_BARON} cities at once.`,
     );
@@ -75,16 +82,16 @@ describe("ruleset-7 achievement presentation", () => {
       achievementProgressCountsV7({
         achievement: "ENGINEER",
         currentMaximumOutput: 3,
-        requiredOutput: 6,
+        requiredOutput: 7,
       }),
-    ).toEqual({ current: 3, required: 6 });
+    ).toEqual({ current: 3, required: 7 });
     expect(
       achievementProgressCountsV7({
         achievement: "MUSTER",
         currentDistinctTrainableRoles: 2,
-        requiredDistinctTrainableRoles: 4,
+        requiredDistinctTrainableRoles: 6,
       }),
-    ).toEqual({ current: 2, required: 4 });
+    ).toEqual({ current: 2, required: 6 });
     expect(
       achievementProgressCountsV7({
         achievement: "SLAYER",

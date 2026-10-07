@@ -482,7 +482,8 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
           { reachedLevel: 2, reward: "SURVEY" },
           { reachedLevel: 3, reward: "WALLS" },
           { reachedLevel: 4, reward: "BOOM" },
-          { reachedLevel: 5, reward: "JUGGERNAUT" },
+          // The economy rejig (7r54): the giant is a level-6 reward.
+          { reachedLevel: 5, reward: "TREASURY" },
         ],
       });
       expect(byId(northId)).toEqual({
@@ -734,23 +735,24 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
     expect(state.round).toBe(1);
   });
 
-  it("unlocks Explorer, Muster, and Sea Dog, not Engineer, at each seat's first evaluation", () => {
+  it("unlocks Explorer and Muster, not Engineer or Sea Dog, at each seat's first evaluation", () => {
     const created = playableShowcase(["UNDEAD", "GOBLIN", "ORIGINAL"]);
     // Explorer, Engineer, Muster, then the revision-21 Conqueror, Land Baron,
     // Sea Dog, and Slayer: three cities complete no Land Baron. The naval
     // branch (`pulp_wars-5ti.2`): with the Submarine every seat has three
-    // ships, which is Sea Dog.
+    // ships, which was Sea Dog until the economy rejig (7r54: five). Its
+    // seven trainable land roles and three ships are Muster (six kinds).
+    // All 256 tiles are explored, which is Explorer.
     const unlocked = (state: GameStateV7, seat: number) =>
       state.players[seat]?.achievementEntitlements.map(
         (entry) => entry.unlocked,
       );
-    const REST = [false, false, true, false];
+    const REST = [false, false, false, false];
     expect(
       created.events.filter((event) => event.kind === "ACHIEVEMENT_UNLOCKED"),
     ).toEqual([
       { kind: "ACHIEVEMENT_UNLOCKED", playerId: 1, achievement: "EXPLORER" },
       { kind: "ACHIEVEMENT_UNLOCKED", playerId: 1, achievement: "MUSTER" },
-      { kind: "ACHIEVEMENT_UNLOCKED", playerId: 1, achievement: "SEA_DOG" },
     ]);
     expect(unlocked(created.state, 0)).toEqual([true, false, true, ...REST]);
     expect(unlocked(created.state, 1)).toEqual([

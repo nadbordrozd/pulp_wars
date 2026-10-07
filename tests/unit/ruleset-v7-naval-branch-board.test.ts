@@ -547,21 +547,26 @@ describe("BOARD result", () => {
       )?.unlocked;
     expect(entitlement(fixture.state, "SEA_DOG")).toBe(false);
     expect(entitlement(fixture.state, "MUSTER")).toBe(false);
+    const counts = (state: GameStateV7) => {
+      const entries = viewForV7(state, actor.id).achievementProgress;
+      const seaDog = entries.find((entry) => entry.achievement === "SEA_DOG");
+      const muster = entries.find((entry) => entry.achievement === "MUSTER");
+      return [
+        seaDog !== undefined && "current" in seaDog ? seaDog.current : null,
+        muster !== undefined && "currentDistinctTrainableRoles" in muster
+          ? muster.currentDistinctTrainableRoles
+          : null,
+      ];
+    };
+    expect(counts(fixture.state)).toEqual([2, 3]);
     const result = acceptV7(fixture.state, 0, board(fixture));
     // Fighter, Patrol Boat, Battleship, and the prize Submarine: four
-    // trainable roles and three ships.
-    expect(result.events).toContainEqual({
-      kind: "ACHIEVEMENT_UNLOCKED",
-      playerId: actor.id,
-      achievement: "SEA_DOG",
-    });
-    expect(result.events).toContainEqual({
-      kind: "ACHIEVEMENT_UNLOCKED",
-      playerId: actor.id,
-      achievement: "MUSTER",
-    });
-    expect(entitlement(result.state, "SEA_DOG")).toBe(true);
-    expect(entitlement(result.state, "MUSTER")).toBe(true);
+    // trainable roles and three ships. (They unlocked Sea Dog and Muster
+    // until the economy rejig, 7r54, which takes five ships and six
+    // kinds.)
+    expect(counts(result.state)).toEqual([3, 4]);
+    expect(entitlement(result.state, "SEA_DOG")).toBe(false);
+    expect(entitlement(result.state, "MUSTER")).toBe(false);
   });
 
   it("blockades its former owner's dock when the prize stands on it", () => {

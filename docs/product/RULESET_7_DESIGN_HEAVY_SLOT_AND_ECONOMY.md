@@ -5,6 +5,16 @@ implemented. It is the source for two implementation beads:
 `pulp_wars-w49.16` (the economy rejig, Part C) and `pulp_wars-w49.17` (a
 ninth unit for every faction and the renames, Parts A and B).
 
+**Part C is implemented** at `pulp-wars-poc-7r54` (`pulp_wars-w49.16`):
+[the economy rejig](RULESET_7_ECONOMY_REJIG.md) records it. The user ruled
+for Reading A of the research price ("for now let's replace the research
+price"), for the achievement table as proposed, and against decision 9 as
+written: the reward giant is offered by **every city**, once, from level 6
+("I want giant in every city not just capital. But we can postpone it one
+level for now"), not by the capital alone. Where Part C below says
+"capital level 6" or "once per player", that ruling is the rule. Parts A
+and B are still a proposal.
+
 **Baseline:** [Ruleset 7: current rules](RULESET_7_CURRENT.md) at
 `pulp-wars-poc-7r52` (the Martian pass), plus the Dinosaur pass on branch
 `dinosaur-pass-w49`. Every number proposed here is a **first guess** unless

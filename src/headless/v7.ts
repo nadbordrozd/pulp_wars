@@ -49,6 +49,7 @@ import {
   previewMonumentV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
+  queryTechnologyTreeV7,
 } from "../engine/v7/query";
 import {
   applyCommandV7,
@@ -127,7 +128,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r53";
+  readonly rulesetId: "pulp-wars-poc-7r54";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -1010,7 +1011,7 @@ export async function runAiBatchV7(
           const factions = options.factions ?? distinctFactionsV7(aiCount + 1);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r53",
+              rulesetId: "pulp-wars-poc-7r54",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
               seed,
               width: size,
@@ -1125,7 +1126,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r53",
+    rulesetId: "pulp-wars-poc-7r54",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -2309,18 +2310,13 @@ function technologyBranch(tech: TechnologyIdV7): string {
 }
 
 function queryResearchCost(view: PlayerViewV7, tech: TechnologyIdV7): number {
-  const cities = view.cities.filter(
-    (city) => city.ownerId === view.viewer.id,
-  ).length;
-  const tier = ORIGINAL_BASELINE_V5_TREE.nodes.find(
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): the price the engine
+  // charges (the public tree's), free opener included.
+  const cost = queryTechnologyTreeV7(view).nodes.find(
     (node) => node.id === tech,
-  )?.tier;
-  if (tier === undefined) throw new RangeError("Unknown technology");
-  return tier === 1
-    ? 5 + cities - 1
-    : tier === 2
-      ? 7 + 2 * (cities - 1)
-      : 9 + 3 * (cities - 1);
+  )?.cost;
+  if (cost === undefined) throw new RangeError("Unknown technology");
+  return cost;
 }
 
 function activePlayerIdV7(state: GameStateV7): PlayerId {

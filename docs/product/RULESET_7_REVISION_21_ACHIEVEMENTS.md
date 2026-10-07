@@ -8,7 +8,13 @@ achievement list of the [revision-5 overlay](RULESET_7_REVISION_5_ACHIEVEMENTS.m
 the Monument rules there are unchanged. `pulp_wars-c87.9` **folded it into
 [section 5 of the current rules](RULESET_7_CURRENT.md#5-achievements-and-monuments)
 (kept as history)** at `pulp-wars-poc-7r23`; the current rules win wherever
-this document differs.
+this document differs. **Superseded in part by
+[the economy rejig](RULESET_7_ECONOMY_REJIG.md#4-achievements)
+(`pulp-wars-poc-7r54`):** Conqueror needs an enemy capital, Land Baron 8
+cities, Sea Dog 5 warships (the Ice Folk 5 units on ice), and Slayer 7
+kills; Explorer, Engineer, and Muster need no technology; a Monument
+gives 3 population. The numbers below (any enemy city, 5, 3, 5, and +2)
+are the record of revision 21.
 
 **Ruleset ID:** `pulp-wars-poc-7r21`
 

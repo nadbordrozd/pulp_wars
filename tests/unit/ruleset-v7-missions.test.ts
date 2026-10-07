@@ -924,10 +924,12 @@ describe("forbidden technologies", () => {
         state: "DISABLED",
         affordable: false,
       });
-    // The ordinary tier-1 cost is 5 (the city count does not matter since
-    // tuning 4); the free opener (cost 0) applies to Hunting but never to
-    // the disabled Shorecraft.
-    expect(tree.nodes.find((node) => node.id === "SHORECRAFT")?.cost).toBe(5);
+    // The ordinary tier-1 cost with this seat's cities (5, and 1 for each
+    // city beyond the first since the economy rejig, 7r54); the free
+    // opener (cost 0) applies to Hunting but never to the disabled
+    // Shorecraft.
+    expect(tree.ownedCityCount).toBe(2);
+    expect(tree.nodes.find((node) => node.id === "SHORECRAFT")?.cost).toBe(6);
     expect(tree.nodes.find((node) => node.id === "HUNTING")).toMatchObject({
       state: "AVAILABLE",
       cost: 0,

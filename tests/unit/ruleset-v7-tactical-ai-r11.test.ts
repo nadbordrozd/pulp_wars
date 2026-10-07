@@ -1095,7 +1095,9 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // Tuning 6 (`pulp_wars-w49.6`): the command is unchanged; the
           // candidates are scored by the assault, growth, and research rules
           // of a Human seat (was a58d37…99ed).
-          "35a6048905cde40f60174be5a4c4c41015241c76c4b68705efd76198b8678208",
+          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+          // 35a604…8208).
+          "a60ea156f7e7bbe201778c7f85c7ee7cb735338a5315a99f0c01c771385c58e2",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).
@@ -1105,7 +1107,9 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // Tuning 6 (`pulp_wars-w49.6`): the command is unchanged; the
           // candidates are scored by the assault, growth, and research rules
           // of a Human seat (was 1c61f7…7d78).
-          "828b452952251643279348d92d09ac3fd6fb31e5d719e14d3fef76cbef5c5195",
+          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+          // 828b45…5195).
+          "8f89df6b79674f6f91395488b6bdb8e63d0f2f7eea145301cbdb0d86dd8b2a1f",
         );
       }
 

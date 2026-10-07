@@ -75,6 +75,7 @@ import {
   queryLandingPreviewV7,
   unitCapacitySlotsV7,
   UNIT_ROLE_IDS_V7,
+  ACHIEVEMENT_IDS_V7,
   ACHIEVEMENT_REQUIRED_TECH_V7,
   CITY_LEVEL_INCOME_CAP_V7,
   cityLevelIncomeV7,
@@ -553,7 +554,13 @@ import {
   roleAbilityDescriptionV7,
   roleAbilityNameV7,
 } from "../role-presentation-v7";
-import { economicFormulaV7 } from "../economy-presentation-v7";
+import {
+  ECONOMY_REJIG_HELP_TIP_V7,
+  economicFormulaV7,
+  researchPriceRuleTextV7,
+  rewardGiantHelpTipV7,
+  rewardGiantOfferTextV7,
+} from "../economy-presentation-v7";
 import {
   cityBoundaryNoticeV7,
   cityNameByIdV7,
@@ -4483,6 +4490,19 @@ export class Ruleset7DomAppView {
         text(this.#document, "dt", "Level"),
         text(this.#document, "dd", String(city.level)),
       );
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): every city offers
+      // its faction's giant at level 6, once.
+      if (owned) {
+        level.title = rewardGiantOfferTextV7(
+          effectiveRoleRuleV7("JUGGERNAUT", view.viewer.faction).label,
+          city.rewards.some((entry) => entry.reward === "JUGGERNAUT"),
+        );
+        level.dataset.giant = city.rewards.some(
+          (entry) => entry.reward === "JUGGERNAUT",
+        )
+          ? "taken"
+          : "offered-at-6";
+      }
       const growth = el(this.#document, "div", "v7-city-stat");
       growth.dataset.stat = "population";
       growth.title = "Population until the next level";
@@ -5940,6 +5960,16 @@ export class Ruleset7DomAppView {
       PROMOTION_HELP_TIP_V7,
       // Revision 21: what achievements are for.
       ACHIEVEMENT_HELP_TIP_V7,
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): shared mills, the
+      // research price, and the giant.
+      ECONOMY_REJIG_HELP_TIP_V7,
+      ...(view === null
+        ? []
+        : [
+            rewardGiantHelpTipV7(
+              effectiveRoleRuleV7("JUGGERNAUT", view.viewer.faction).label,
+            ),
+          ]),
       "Capture every enemy city to win.",
       // Map scale (bead pulp_wars-ykw.5): the player limit.
       PLAYER_LIMIT_HELP_TIP_V7(),
@@ -6264,6 +6294,18 @@ export class Ruleset7DomAppView {
           "v7-tech-status is-free",
         ),
       );
+    // The economy rejig (`pulp_wars-w49.16`, 7r54): the price rule, for a
+    // technology that is still to buy.
+    else if (node.state !== "OWNED") {
+      const rule = text(
+        this.#document,
+        "p",
+        researchPriceRuleTextV7(node.tier),
+        "v7-tech-status is-price-rule",
+      );
+      rule.dataset.techPriceRule = "true";
+      detail.append(rule);
+    }
     const unlocks = this.#document.createElement("ul");
     unlocks.className = "v7-tech-unlocks";
     for (const group of technologyEffectGroupsV7(
@@ -6898,12 +6940,24 @@ export class Ruleset7DomAppView {
     modal.setAttribute("role", "alertdialog");
     modal.setAttribute("aria-modal", "true");
     if (choice === undefined) return modal;
+    const city = view.cities.find((entry) => entry.id === choice.cityId);
     modal.append(
       text(this.#document, "h2", `Level ${choice.reachedLevel}!`),
       text(
         this.#document,
         "p",
-        `${cityNameByIdV7(view, choice.cityId) ?? "A city"} grew. Pick a reward.`,
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): below the giant's
+        // level, say when this city offers it.
+        `${cityNameByIdV7(view, choice.cityId) ?? "A city"} grew. Pick a reward.${
+          choice.reachedLevel >= 4 &&
+          !choice.candidates.includes("JUGGERNAUT") &&
+          city !== undefined
+            ? ` ${rewardGiantOfferTextV7(
+                effectiveRoleRuleV7("JUGGERNAUT", view.viewer.faction).label,
+                city.rewards.some((entry) => entry.reward === "JUGGERNAUT"),
+              )}.`
+            : ""
+        }`,
         "v7-screen-lede",
       ),
     );
@@ -10592,7 +10646,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r53",
+    rulesetId: "pulp-wars-poc-7r54",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -11186,11 +11240,18 @@ function boundaryNoticeV7(
       city?.toast === true,
   };
 }
+/**
+ * The achievement a technology enables. The economy rejig
+ * (`pulp_wars-w49.16`, 7r54): none does any more
+ * (`ACHIEVEMENT_REQUIRED_TECH_V7` is all `null`), so no card shows the
+ * trophy.
+ */
 function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {
-  if (tech === "SCOUTING") return "EXPLORER";
-  if (tech === "ENGINEERING") return "ENGINEER";
-  if (tech === "DRILL") return "MUSTER";
-  return null;
+  return (
+    ACHIEVEMENT_IDS_V7.find(
+      (achievement) => ACHIEVEMENT_REQUIRED_TECH_V7[achievement] === tech,
+    ) ?? null
+  );
 }
 function rewardLabel(
   reward: string,

@@ -1584,13 +1584,16 @@ describe("ruleset-7 revision-19 hatching", () => {
 
   it("runs after Plague and before Windmill healing and income, and counts for that turn's Muster", () => {
     // Seat 0 Dinosaur: a plagued Caveman on its first plagued turn next to
-    // a Raptor Egg, a Shaman, and a Spitter: three trainable roles on the
-    // board until the Egg hatches into the fourth.
+    // a Raptor Egg, a Shaman, a Spitter, an Ankylosaurus, and a T-Rex:
+    // five trainable roles on the board until the Egg hatches into the
+    // sixth (Muster takes six since the economy rejig, 7r54; four before).
     const arena = dino(
       [
         { seat: 0, role: "FIGHTER", at: { x: 8, y: 7 }, hp: 9 },
         { seat: 0, role: "CAPTAIN", at: { x: 5, y: 2 } },
         { seat: 0, role: "MARKSMAN", at: { x: 5, y: 1 } },
+        { seat: 0, role: "GUARD", at: { x: 4, y: 1 } },
+        { seat: 0, role: "KNIGHT", at: { x: 4, y: 2 } },
         { seat: 1, role: "CATAPULT", at: { x: 1, y: 1 } },
       ],
       [{ seat: 0, role: "RAIDER", at: NEST, turnsRemaining: 1 }],
@@ -1642,7 +1645,7 @@ describe("ruleset-7 revision-19 hatching", () => {
       achievementProgressV7(state, dinosaurId).find(
         (entry) => entry.achievement === "MUSTER",
       ),
-    ).toMatchObject({ currentDistinctTrainableRoles: 3 });
+    ).toMatchObject({ currentDistinctTrainableRoles: 5 });
     const result = applyOkV7(state, seatIdV7(state, 1), { kind: "END_TURN" });
     const order = kinds(result.events);
     const at = (kind: string): number => order.indexOf(kind);
@@ -1680,6 +1683,9 @@ describe("ruleset-7 revision-19 hatching", () => {
         { seat: 0, role: "FIGHTER", at: { x: 5, y: 3 } },
         { seat: 0, role: "CAPTAIN", at: { x: 5, y: 2 } },
         { seat: 0, role: "MARKSMAN", at: { x: 5, y: 1 } },
+        // Muster takes six kinds since the economy rejig (7r54).
+        { seat: 0, role: "GUARD", at: { x: 4, y: 1 } },
+        { seat: 0, role: "KNIGHT", at: { x: 4, y: 2 } },
         { seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } },
       ],
       [{ seat: 0, role: "RAIDER", at: NEST, turnsRemaining: 1 }],
@@ -1690,7 +1696,7 @@ describe("ruleset-7 revision-19 hatching", () => {
         (entry) => entry.achievement === "MUSTER",
       );
     expect(progress(state)).toMatchObject({
-      currentDistinctTrainableRoles: 3,
+      currentDistinctTrainableRoles: 5,
     });
     // Any command re-evaluates achievements: the Egg still does not count.
     const waited = applyOkV7(state, actor, {
@@ -1700,7 +1706,7 @@ describe("ruleset-7 revision-19 hatching", () => {
     expect(kinds(waited.events)).not.toContain("ACHIEVEMENT_UNLOCKED");
     const round = endTurnUntilV7(waited.state, actor);
     expect(progress(round.state)).toMatchObject({
-      currentDistinctTrainableRoles: 4,
+      currentDistinctTrainableRoles: 6,
     });
     expect(kinds(round.events)).toContain("ACHIEVEMENT_UNLOCKED");
   });

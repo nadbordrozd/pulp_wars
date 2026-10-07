@@ -471,6 +471,9 @@ describe("no ships, Sea Dog (section 8.11)", () => {
       units: [
         { seat: 0, role: "FIGHTER", at: ICE1 },
         { seat: 0, role: "FIGHTER", at: ICE2 },
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): 5 units (3).
+        { seat: 0, role: "FIGHTER", at: { x: 1, y: 3 } },
+        { seat: 0, role: "FIGHTER", at: { x: 1, y: 4 } },
         { seat: 0, role: "RAIDER", at: SHORE },
         { seat: 1, role: "PATROL_BOAT", at: { x: 8, y: 5 } },
       ],
@@ -478,19 +481,19 @@ describe("no ships, Sea Dog (section 8.11)", () => {
     });
     expect(progress(state, 0)).toEqual({
       achievement: "SEA_DOG",
-      current: 2,
-      required: 3,
+      current: 4,
+      required: 5,
     });
     // The Human seat still counts its ships.
-    expect(progress(state, 1)).toMatchObject({ current: 1, required: 3 });
-    // A third unit steps onto the ice: the achievement unlocks.
+    expect(progress(state, 1)).toMatchObject({ current: 1, required: 5 });
+    // A fifth unit steps onto the ice: the achievement unlocks.
     const sled = navalUnitAtV7(state, SHORE);
     const result = acceptV7(state, 0, {
       kind: "MOVE",
       unitId: sled.id,
       path: [{ x: 3, y: 3 }],
     });
-    expect(progress(result.state, 0)).toMatchObject({ current: 3 });
+    expect(progress(result.state, 0)).toMatchObject({ current: 5 });
     expect(result.events).toContainEqual(
       expect.objectContaining({
         kind: "ACHIEVEMENT_UNLOCKED",

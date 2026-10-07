@@ -57,15 +57,11 @@ import { at, attackV7, fieldV7 } from "../fixtures/v7-revision20";
 //
 // Three-seat field: capitals seat 0 (2, 2), seat 1 (11, 11), seat 2 (11, 2);
 // villages (8, 2), (8, 5), (11, 5), (5, 8). Two-seat field: capitals seat 0
-// (8, 8), seat 1 (2, 8); villages (5, 5), (8, 5), (5, 8).
+// (8, 8), seat 1 (2, 8); villages (5, 5), (8, 5), (5, 8). Four-seat field
+// (16 by 16): capitals seat 0 (13, 4), seat 1 (4, 4), seat 2 (13, 13), seat
+// 3 (4, 13); villages (7, 4), (10, 4), (4, 7), (4, 10), (10, 10), (13, 10).
 
 const FACTIONS: readonly FactionIdV7[] = FACTION_IDS_V7;
-const VILLAGES_3: readonly CoordV7[] = [
-  at(8, 2),
-  at(8, 5),
-  at(11, 5),
-  at(5, 8),
-];
 
 class MemoryStorage {
   readonly values: Map<string, string>;
@@ -280,10 +276,13 @@ describe("ruleset-7 revision-21 achievement registry and schema", () => {
     expect([...REVISION_21_ACHIEVEMENT_IDS_V7]).toEqual(
       ACHIEVEMENT_IDS_V7.slice(3),
     );
+    // The economy rejig (`pulp_wars-w49.16`, 7r54): no achievement needs
+    // a technology (Explorer, Engineer, and Muster did), and the counts
+    // are 8 cities, 5 ships, and 7 kills (5, 3, and 5 before).
     expect(ACHIEVEMENT_REQUIRED_TECH_V7).toEqual({
-      EXPLORER: "SCOUTING",
-      ENGINEER: "ENGINEERING",
-      MUSTER: "DRILL",
+      EXPLORER: null,
+      ENGINEER: null,
+      MUSTER: null,
       CONQUEROR: null,
       LAND_BARON: null,
       SEA_DOG: null,
@@ -296,9 +295,9 @@ describe("ruleset-7 revision-21 achievement registry and schema", () => {
       SLAYER_KILLS_V7,
     }).toEqual({
       CONQUEROR_CAPTURES_V7: 1,
-      LAND_BARON_CITIES_V7: 5,
-      SEA_DOG_SHIPS_V7: 3,
-      SLAYER_KILLS_V7: 5,
+      LAND_BARON_CITIES_V7: 8,
+      SEA_DOG_SHIPS_V7: 5,
+      SLAYER_KILLS_V7: 7,
     });
   });
 
@@ -320,9 +319,9 @@ describe("ruleset-7 revision-21 achievement registry and schema", () => {
       const view = viewForV7(created.state, created.state.humanPlayerId);
       expect(view.achievementProgress.slice(3)).toEqual([
         { achievement: "CONQUEROR", current: 0, required: 1 },
-        { achievement: "LAND_BARON", current: 1, required: 5 },
-        { achievement: "SEA_DOG", current: 0, required: 3 },
-        { achievement: "SLAYER", current: 0, required: 5 },
+        { achievement: "LAND_BARON", current: 1, required: 8 },
+        { achievement: "SEA_DOG", current: 0, required: 5 },
+        { achievement: "SLAYER", current: 0, required: 7 },
       ]);
     },
   );
@@ -379,7 +378,9 @@ describe("ruleset-7 revision-21 achievement registry and schema", () => {
         ),
       ).toBeNull();
     }
-    // The revision-5 achievements keep their enabling technology.
+    // The economy rejig (7r54): the revision-5 achievements have no
+    // enabling technology either (an unlocked Muster without Drill was
+    // an invalid state before).
     expect(
       parseGameStateV7(
         withEntitlements((items) =>
@@ -388,7 +389,7 @@ describe("ruleset-7 revision-21 achievement registry and schema", () => {
           ),
         ),
       ),
-    ).toBeNull();
+    ).not.toBeNull();
   });
 
   it("parses the new ids in commands and events and rejects unknown ones", () => {
@@ -548,7 +549,7 @@ describe("ruleset-7 revision-21 Conqueror", () => {
       expect.objectContaining({
         kind: "MONUMENT_BUILT",
         achievement: "CONQUEROR",
-        populationAdded: 2,
+        populationAdded: 3,
       }),
     );
     expect(entitlement(built.state, 0, "CONQUEROR")).toEqual({
@@ -593,90 +594,124 @@ describe("ruleset-7 revision-21 Conqueror", () => {
 });
 
 describe("ruleset-7 revision-21 Land Baron", () => {
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): 8 cities (5 before). The
+  // four-seat field (16 by 16) has seat 0's capital, six villages, and
+  // three other capitals, so the eighth city is another seat's capital,
+  // which also completes Conqueror, in canonical order.
+  const VILLAGES_4: readonly CoordV7[] = [
+    at(7, 4),
+    at(10, 4),
+    at(4, 7),
+    at(4, 10),
+    at(10, 10),
+    at(13, 10),
+  ];
+  const CAPITAL_4 = at(4, 4);
+  const EIGHT = [...VILLAGES_4, CAPITAL_4];
+
   it.each(FACTIONS)(
-    "unlocks for %s at the exact fourth-to-fifth city crossing, once",
+    "unlocks for %s at the exact seventh-to-eighth city crossing, once",
     (faction) => {
       let state = fieldV7(
-        VILLAGES_3.map((where) => capturer(0, where)),
+        EIGHT.map((where) => capturer(0, where)),
         {
-          factions: [faction, "ORIGINAL", "UNDEAD"],
+          factions: [faction, "ORIGINAL", "UNDEAD", "GOBLIN"],
           techs: { 0: [] },
         },
       );
       const human = seatIdV7(state, 0);
-      for (const [index, where] of VILLAGES_3.entries()) {
+      for (const [index, where] of EIGHT.entries()) {
         expect(progress(state, 0, "LAND_BARON")).toEqual({
           achievement: "LAND_BARON",
           current: index + 1,
-          required: 5,
+          required: 8,
         });
         const result = capture(state, where);
         expect(unlocks(result.events)).toEqual(
-          index === 3 ? [{ playerId: human, achievement: "LAND_BARON" }] : [],
+          index === 6
+            ? [
+                { playerId: human, achievement: "CONQUEROR" },
+                { playerId: human, achievement: "LAND_BARON" },
+              ]
+            : [],
         );
         state = result.state;
       }
       expect(entitlement(state, 0, "LAND_BARON").unlocked).toBe(true);
-      expect(progress(state, 0, "LAND_BARON")).toMatchObject({ current: 5 });
+      expect(progress(state, 0, "LAND_BARON")).toMatchObject({ current: 8 });
       const cycle = endTurnUntilV7(state, human);
       expect(unlocks(cycle.events)).toEqual([]);
     },
   );
 
-  it("unlocks Conqueror then Land Baron in canonical order in one capture", () => {
+  it("does not unlock with seven cities, an enemy capital among them", () => {
     let state = fieldV7(
       [
-        ...VILLAGES_3.slice(0, 3).map((where) => capturer(0, where)),
-        capturer(0, at(11, 11)),
+        ...VILLAGES_4.slice(0, 5).map((where) => capturer(0, where)),
+        capturer(0, CAPITAL_4),
       ],
-      { factions: ["DINOSAUR", "ORIGINAL", "GOBLIN"] },
+      { factions: ["DINOSAUR", "ORIGINAL", "GOBLIN", "UNDEAD"] },
     );
     const human = seatIdV7(state, 0);
-    for (const where of VILLAGES_3.slice(0, 3))
+    for (const where of VILLAGES_4.slice(0, 5))
       state = capture(state, where).state;
-    const result = capture(state, at(11, 11));
+    const result = capture(state, CAPITAL_4);
     expect(unlocks(result.events)).toEqual([
       { playerId: human, achievement: "CONQUEROR" },
-      { playerId: human, achievement: "LAND_BARON" },
     ]);
+    expect(progress(result.state, 0, "LAND_BARON")).toMatchObject({
+      current: 7,
+    });
   });
 
   it("stays unlocked after a city is lost", () => {
     let state = fieldV7(
       [
-        ...VILLAGES_3.map((where) => capturer(0, where)),
-        { seat: 1, role: "FIGHTER", at: at(7, 5) },
+        ...EIGHT.map((where) => capturer(0, where)),
+        { seat: 2, role: "FIGHTER", at: at(8, 5) },
       ],
-      { factions: ["ORIGINAL", "ORIGINAL", "UNDEAD"] },
+      { factions: ["ORIGINAL", "DINOSAUR", "UNDEAD", "GOBLIN"] },
     );
-    for (const where of VILLAGES_3) state = capture(state, where).state;
+    for (const where of EIGHT) state = capture(state, where).state;
+    expect(entitlement(state, 0, "LAND_BARON").unlocked).toBe(true);
     const lost = checkedV7({
       ...state,
       cities: state.cities.map((city) =>
-        city.at.x === 8 && city.at.y === 5
-          ? { ...city, ownerId: seatIdV7(state, 1) }
+        city.at.x === 7 && city.at.y === 4
+          ? { ...city, ownerId: seatIdV7(state, 2) }
           : city,
       ),
       units: state.units.map((unit) =>
         unit.homeCityId ===
-        state.cities.find((city) => city.at.x === 8 && city.at.y === 5)?.id
+        state.cities.find((city) => city.at.x === 7 && city.at.y === 4)?.id
           ? { ...unit, homeCityId: null }
           : unit,
       ),
     });
-    expect(progress(lost, 0, "LAND_BARON")).toMatchObject({ current: 4 });
+    expect(progress(lost, 0, "LAND_BARON")).toMatchObject({ current: 7 });
     expect(entitlement(lost, 0, "LAND_BARON").unlocked).toBe(true);
   });
 });
 
 describe("ruleset-7 revision-21 Sea Dog", () => {
-  const water = [at(4, 1), at(5, 1), at(6, 1), at(7, 1)];
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): 5 ships (3 before).
+  const water = [
+    at(4, 1),
+    at(5, 1),
+    at(6, 1),
+    at(7, 1),
+    at(4, 0),
+    at(5, 0),
+    at(6, 0),
+  ];
   const ships = (count: number, embarked: boolean) => [
     ...(
       [
         { seat: 0, role: "PATROL_BOAT", at: at(4, 1), form: "NAVAL" },
         { seat: 0, role: "BATTLESHIP", at: at(5, 1), form: "NAVAL" },
         { seat: 0, role: "PATROL_BOAT", at: at(6, 1), form: "NAVAL" },
+        { seat: 0, role: "PATROL_BOAT", at: at(4, 0), form: "NAVAL" },
+        { seat: 0, role: "BATTLESHIP", at: at(5, 0), form: "NAVAL" },
       ] as const
     ).slice(0, count),
     ...(embarked
@@ -687,9 +722,17 @@ describe("ruleset-7 revision-21 Sea Dog", () => {
   // An Ice Folk seat has no ships: its Sea Dog counts land units on ice
   // (tests/unit/ruleset-v7-frozen-sea-ground.test.ts).
   it.each(FACTIONS.filter((faction) => faction !== "ICE_FOLK"))(
-    "unlocks for %s with three naval units at its Start Turn, once",
+    "unlocks for %s with five naval units at its Start Turn, once",
     (faction) => {
-      const state = fieldV7(ships(3, false), {
+      const four = fieldV7(ships(4, false), {
+        factions: [faction, "ORIGINAL"],
+        water,
+        techs: { 0: [] },
+      });
+      expect(unlocks(endTurnUntilV7(four, seatIdV7(four, 0)).events)).toEqual(
+        [],
+      );
+      const state = fieldV7(ships(5, false), {
         factions: [faction, "ORIGINAL"],
         water,
         techs: { 0: [] },
@@ -697,8 +740,8 @@ describe("ruleset-7 revision-21 Sea Dog", () => {
       const human = seatIdV7(state, 0);
       expect(progress(state, 0, "SEA_DOG")).toEqual({
         achievement: "SEA_DOG",
-        current: 3,
-        required: 3,
+        current: 5,
+        required: 5,
       });
       expect(entitlement(state, 0, "SEA_DOG").unlocked).toBe(false);
       const cycle = endTurnUntilV7(state, human);
@@ -735,17 +778,18 @@ describe("ruleset-7 revision-21 Slayer", () => {
     );
 
   it.each(FACTIONS)(
-    "unlocks for %s in the attack that gives one unit its fifth kill",
+    "unlocks for %s in the attack that gives one unit its seventh kill",
     (faction) => {
-      const state = duel(faction, 4);
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): 7 kills (5 before).
+      const state = duel(faction, 6);
       const human = seatIdV7(state, 0);
       expect(progress(state, 0, "SLAYER")).toEqual({
         achievement: "SLAYER",
-        current: 4,
-        required: 5,
+        current: 6,
+        required: 7,
       });
       const run = attackV7(state, at(5, 3), at(5, 2));
-      expect(run.attacker?.kills).toBe(5);
+      expect(run.attacker?.kills).toBe(7);
       expect(unlocks(run.events)).toEqual([
         { playerId: human, achievement: "SLAYER" },
       ]);
@@ -754,9 +798,9 @@ describe("ruleset-7 revision-21 Slayer", () => {
     },
   );
 
-  it("does not unlock at four kills, or for kills spread over two units", () => {
-    const four = attackV7(duel("ORIGINAL", 3), at(5, 3), at(5, 2));
-    expect(four.attacker?.kills).toBe(4);
+  it("does not unlock at six kills, or for kills spread over two units", () => {
+    const four = attackV7(duel("ORIGINAL", 5), at(5, 3), at(5, 2));
+    expect(four.attacker?.kills).toBe(6);
     expect(unlocks(four.events)).toEqual([]);
     const spread = withKillsV7(
       withKillsV7(
@@ -776,11 +820,11 @@ describe("ruleset-7 revision-21 Slayer", () => {
   });
 
   it("credits a retaliation kill at the owner's next Start Turn", () => {
-    const state = duel("ORIGINAL", 4, 1);
+    const state = duel("ORIGINAL", 6, 1);
     const human = seatIdV7(state, 0);
     const run = attackV7(state, at(5, 2), at(5, 3));
     expect(run.attacker).toBeUndefined();
-    expect(run.target?.kills).toBe(5);
+    expect(run.target?.kills).toBe(7);
     // Only the acting seat is evaluated in a command.
     expect(unlocks(run.events)).toEqual([]);
     expect(entitlement(run.state, 0, "SLAYER").unlocked).toBe(false);

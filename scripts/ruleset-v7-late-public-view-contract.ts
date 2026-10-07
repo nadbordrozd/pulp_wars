@@ -89,6 +89,12 @@ export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;
  * The candidate count is unchanged. Unit 19's step to (3, 3) is a stormer's
  * (762; the hostile center beside it is empty), and unit 20's two Moves
  * score lower.
+ *
+ * The economy rejig (`pulp_wars-w49.16`, 7r54): the command is the training
+ * of a Swordsman in city 16 again. Research is priced by the cities owned
+ * (tier 2: 7 Coins and 2 for each city beyond the first), so with the
+ * view's four cities Marksmanship costs 13 and its 12 Coins do not buy it.
+ * (Scouting, at 8, is offered and is not the army's technology.)
  */
 export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   /** `canonicalHash` of the retained fixture as read from disk. */
@@ -114,10 +120,13 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // 6d1529…f3da).
     // The Martian pass's correction (`pulp_wars-w49.14`): the growth a
     // Human seat at war still buys (was 2a38fd…aae3).
-    "3b4bad8bab7696e5ab220dfe751e2eae15c202618acad63431e72681f0b5d678",
+    // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+    // 3b4bad…d678).
+    "d572ee0a0d0f0d0c146ebab807569b3fe9f9bd725376d62df33d877fb53c1c7e",
   command: Object.freeze({
-    kind: "RESEARCH",
-    tech: "MARKSMANSHIP",
+    kind: "TRAIN",
+    cityId: 16,
+    role: "SWORDSMAN",
   }),
   // Tuning 4 (`pulp_wars-w49.3`): 27 (28 before): the view's 12 Coins no
   // longer buy a technology (a tier 1 as the sixth costs 13).
@@ -128,7 +137,9 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   // The Martian pass's correction (`pulp_wars-w49.14`): 27. The Human
   // seat at war still buys the growth that leaves the Coins for any unit
   // on offer, so seven construction candidates are back.
-  candidateCount: 27,
+  // The economy rejig (`pulp_wars-w49.16`): 26, without Research
+  // Marksmanship (13 Coins with the view's four cities; it has 12).
+  candidateCount: 26,
 });
 
 /**
@@ -200,10 +211,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r53",
+    rulesetId: "pulp-wars-poc-7r54",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r53",
+      rulesetId: "pulp-wars-poc-7r54",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

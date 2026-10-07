@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 53;
+const REVISION = 54;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -1291,17 +1291,19 @@ describe("Martian starting units and substitutions (section 10.10)", () => {
       expect(parseEventV7(event).ok).toBe(true);
   });
 
-  it("grants a two-slot Colossus for the level-5 reward, over capacity, with Shield 3", () => {
-    // Level 5 with Planning: 7 slots. Three Motherships use 6; a Grunt 1.
+  it("grants a two-slot Colossus for the level-6 reward, over capacity, with Shield 3", () => {
+    // Level 6 (the economy rejig, 7r54) with Planning: 8 slots. Three
+    // Motherships use 6; two Grunts 2.
     const fixture = rewardStateV7("JUGGERNAUT", "MARTIAN", [
       { role: "KNIGHT", at: at(4, 3) },
       { role: "KNIGHT", at: at(5, 3) },
       { role: "KNIGHT", at: at(6, 3) },
       { role: "FIGHTER", at: at(4, 2) },
+      { role: "FIGHTER", at: at(5, 2) },
     ]);
     const city = cityOfV7(fixture.state, 0);
-    expect(cityUnitCapacityV7(fixture.state, city)).toBe(7);
-    expect(assignedUnitCountV7(fixture.state, city.id)).toBe(7);
+    expect(cityUnitCapacityV7(fixture.state, city)).toBe(8);
+    expect(assignedUnitCountV7(fixture.state, city.id)).toBe(8);
     const result = applyOkV7(
       fixture.state,
       fixture.state.humanPlayerId,
@@ -1322,8 +1324,8 @@ describe("Martian starting units and substitutions (section 10.10)", () => {
     );
     expect(shieldAtV7(result.state, city.at)).toBe(3);
     expect(previewCityCapacityV7(result.state, city.id)).toMatchObject({
-      capacity: 7,
-      assigned: 9,
+      capacity: 8,
+      assigned: 10,
       available: 0,
       overCapacity: 2,
     });

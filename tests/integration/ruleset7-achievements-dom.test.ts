@@ -192,23 +192,34 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
     expect(
       document.querySelector(".v7-info-screen .v7-screen-lede")?.textContent,
     ).toBe(
-      "Each achievement earns a free Monument: +2 population, one per city.",
+      "Each achievement earns a free Monument: +3 population, one per city.",
     );
-    // The revision-5 achievements still wait for their technology.
+    // The economy rejig (`pulp_wars-w49.16`, 7r54): no achievement waits
+    // for a technology (Explorer read "Needs Scouting" and Muster "Needs
+    // Drill"), and the goals are the harder ones.
     expect(cardFacts("EXPLORER")).toMatchObject({
-      state: "locked",
+      state: "available",
       name: "Explorer",
-      status: "Needs Scouting",
+      goal: "Explore half the map.",
+      max: String(Math.ceil((pangea(2101).width * pangea(2101).height) / 2)),
+    });
+    expect(cardFacts("EXPLORER").status).toMatch(/^\d+ \/ \d+$/);
+    expect(cardFacts("ENGINEER")).toMatchObject({
+      state: "available",
+      goal: "Get one mill to 7 population.",
+      status: "0 / 7",
     });
     expect(cardFacts("MUSTER")).toMatchObject({
-      state: "locked",
-      status: "Needs Drill",
+      state: "available",
+      goal: "Field 6 unit types you can train.",
+      status: "1 / 6",
     });
-    // The revision-21 achievements need no technology.
+    for (const achievement of ["EXPLORER", "ENGINEER", "MUSTER"] as const)
+      expect(card(achievement).textContent).not.toContain("Needs ");
     expect(cardFacts("CONQUEROR")).toEqual({
       state: "available",
       name: "Conqueror",
-      goal: "Capture an enemy city.",
+      goal: "Capture an enemy capital.",
       status: "0 / 1",
       now: "0",
       max: "1",
@@ -217,28 +228,28 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
     expect(cardFacts("LAND_BARON")).toEqual({
       state: "available",
       name: "Land Baron",
-      goal: "Own 5 cities at once.",
-      status: "1 / 5",
+      goal: "Own 8 cities at once.",
+      status: "1 / 8",
       now: "1",
-      max: "5",
-      width: "20%",
+      max: "8",
+      width: "13%",
     });
     expect(cardFacts("SEA_DOG")).toEqual({
       state: "available",
       name: "Sea Dog",
-      goal: "Own 3 warships at once.",
-      status: "0 / 3",
+      goal: "Own 5 warships at once.",
+      status: "0 / 5",
       now: "0",
-      max: "3",
+      max: "5",
       width: "0%",
     });
     expect(cardFacts("SLAYER")).toEqual({
       state: "available",
       name: "Slayer",
-      goal: "Get 5 kills with one unit.",
-      status: "0 / 5",
+      goal: "Get 7 kills with one unit.",
+      status: "0 / 7",
       now: "0",
-      max: "5",
+      max: "7",
       width: "0%",
     });
     for (const achievement of ["CONQUEROR", "SLAYER"] as const)
@@ -292,7 +303,7 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
             : entry.achievement === "LAND_BARON"
               ? { ...entry, current: 3 }
               : entry.achievement === "SLAYER"
-                ? { ...entry, current: 7 }
+                ? { ...entry, current: 9 }
                 : entry,
         ),
       },
@@ -311,17 +322,17 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
     ).not.toBeNull();
     expect(cardFacts("LAND_BARON")).toMatchObject({
       state: "available",
-      status: "3 / 5",
+      status: "3 / 8",
       now: "3",
-      max: "5",
-      width: "60%",
+      max: "8",
+      width: "38%",
     });
     // A count above the requirement is clamped in the meter.
     expect(cardFacts("SLAYER")).toMatchObject({
       state: "spent",
       status: "Monument built",
-      now: "5",
-      max: "5",
+      now: "7",
+      max: "7",
       width: "100%",
     });
     expect(
@@ -445,7 +456,7 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
     );
     expect(build.textContent).toContain("Monument");
     expect(build.getAttribute("aria-label")).toBe(
-      "Monument · free · population +2",
+      "Monument · free · population +3",
     );
     expect(
       build.querySelector('[data-asset-id="building-square-monument"]'),

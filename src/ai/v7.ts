@@ -19516,9 +19516,13 @@ function preferredReward(
     (unit) =>
       unit.ownerId === context.view.viewer.id && unit.role === "JUGGERNAUT",
   ).length;
-  return offered.includes("JUGGERNAUT") &&
-    juggernauts < cityCount &&
-    (threatenedCity(context, command.cityId) || context.view.viewer.coins >= 12)
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): every city offers its
+  // giant once, from level 6, and the seat takes it when it is offered
+  // (while it has fewer giants than cities). Before, the giant was the
+  // first capital's and was taken by a threatened city or a seat with 12
+  // Coins; a seat that passed it over at level 6 is offered it again only
+  // at level 7, which few cities reach.
+  return offered.includes("JUGGERNAUT") && juggernauts < cityCount
     ? "JUGGERNAUT"
     : // Tuning 4 (`pulp_wars-w49.3`): a Barracks (+1 unit in the city) before
       // the 6-Coin Treasury.

@@ -28,62 +28,65 @@ import {
 } from "../fixtures/v7-builders";
 
 describe("ruleset-7 achievements and Monuments", () => {
-  it("counts exploration before Scouting but unlocks Explorer only when research completes", () => {
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): Explorer needs half the
+  // board's tiles and no technology (100 tiles and Scouting before).
+  it("unlocks Explorer without Scouting, once, at the first evaluation that finds half the map explored", () => {
     const state = exploredAllV7(richV7(initialV7(711)));
     const owner = required(
       state.players.find((player) => player.id === state.humanPlayerId),
       "owner missing",
     );
-    expect(owner.explored.length).toBeGreaterThanOrEqual(100);
+    expect(owner.researchedTechs).toEqual([]);
+    expect(owner.explored).toHaveLength(121);
     expect(
       viewForV7(state, state.humanPlayerId).achievementProgress[0],
     ).toEqual({
       achievement: "EXPLORER",
       currentExploredTiles: owner.explored.length,
-      requiredExploredTiles: 100,
+      requiredExploredTiles: 61,
     });
     expect(owner.achievementEntitlements[0]).toMatchObject({
       unlocked: false,
       spent: false,
     });
-    const researched = applyCommandV7(state, state.humanPlayerId, {
+    // The first command that evaluates achievements (a research here; a
+    // Wait evaluates none) finds the tiles: no Scouting is needed.
+    const waited = applyCommandV7(state, state.humanPlayerId, {
+      kind: "RESEARCH",
+      tech: "GATHERING",
+    });
+    if (!waited.accepted) throw new Error(waited.error.code);
+    expect(waited.events.map((event) => event.kind)).toEqual([
+      "TECH_RESEARCHED",
+      "ACHIEVEMENT_UNLOCKED",
+    ]);
+    expect(waited.events.at(-1)).toMatchObject({
+      kind: "ACHIEVEMENT_UNLOCKED",
+      playerId: state.humanPlayerId,
+      achievement: "EXPLORER",
+    });
+    expect(waited.state.players[0]?.achievementEntitlements[0]).toMatchObject({
+      unlocked: true,
+      spent: false,
+    });
+    // Scouting adds nothing to it.
+    const researched = applyCommandV7(waited.state, state.humanPlayerId, {
       kind: "RESEARCH",
       tech: "SCOUTING",
     });
     if (!researched.accepted) throw new Error(researched.error.code);
     expect(researched.events.map((event) => event.kind)).toEqual([
       "TECH_RESEARCHED",
-      "ACHIEVEMENT_UNLOCKED",
     ]);
-    expect(researched.events[1]).toMatchObject({
-      playerId: state.humanPlayerId,
-      achievement: "EXPLORER",
-    });
-    expect(
-      researched.state.players[0]?.achievementEntitlements[0],
-    ).toMatchObject({ unlocked: true, spent: false });
-    const later = applyCommandV7(researched.state, state.humanPlayerId, {
-      kind: "WAIT",
-      unitId: required(
-        researched.state.units.find(
-          (unit) => unit.ownerId === state.humanPlayerId,
-        ),
-        "unit missing",
-      ).id,
-    });
-    if (!later.accepted) throw new Error(later.error.code);
-    expect(
-      later.events.some((event) => event.kind === "ACHIEVEMENT_UNLOCKED"),
-    ).toBe(false);
   });
 
-  it("unlocks Explorer at the exact 99 to 100 explored-tile crossing", () => {
+  it("unlocks Explorer at the exact 60 to 61 explored-tile crossing of an 11 by 11 board", () => {
     const full = exploredAllV7(initialV7(713));
     const enabled = checkedV7({
       ...full,
       players: full.players.map((player) =>
         player.id === full.humanPlayerId
-          ? { ...player, researchedTechs: ["GATHERING", "SCOUTING"] }
+          ? { ...player, researchedTechs: ["GATHERING"] }
           : player,
       ),
     });
@@ -96,8 +99,8 @@ describe("ruleset-7 achievements and Monuments", () => {
       .filter(
         (tile) => chebyshev(tile.at, destination) > 3 && tile.site === null,
       )
-      .slice(0, 21);
-    expect(far).toHaveLength(21);
+      .slice(0, 60);
+    expect(far).toHaveLength(60);
     const absent = new Set(
       [destination, ...far.map((tile) => tile.at)].map(coordKey),
     );
@@ -114,10 +117,10 @@ describe("ruleset-7 achievements and Monuments", () => {
           : player,
       ),
     });
-    expect(state.players[0]?.explored).toHaveLength(99);
+    expect(state.players[0]?.explored).toHaveLength(60);
     const result = applyCommandV7(state, state.humanPlayerId, move);
     if (!result.accepted) throw new Error(result.error.code);
-    expect(result.state.players[0]?.explored).toHaveLength(100);
+    expect(result.state.players[0]?.explored).toHaveLength(61);
     expect(
       result.events.filter((event) => event.kind === "ACHIEVEMENT_UNLOCKED"),
     ).toEqual([
@@ -129,59 +132,34 @@ describe("ruleset-7 achievements and Monuments", () => {
     ]);
   });
 
-  it("keeps qualified Engineer and Muster locked before their techs and completes them on research", () => {
+  // The economy rejig (`pulp_wars-w49.16`, 7r54): a mill at 7 and six
+  // kinds, with no technology. A Forge at its cap of 6 and four kinds,
+  // which completed Engineer and Muster before, no longer do. (The new
+  // boundaries are in tests/unit/ruleset-v7-economy-rejig.test.ts.)
+  it("leaves Engineer locked with a Forge at 6 and Muster locked with four kinds", () => {
     const forge = engineerBuildState();
     const built = applyCommandV7(forge.state, forge.state.humanPlayerId, {
       kind: "BUILD_FORGE",
       at: forge.forgeAt,
     });
     if (!built.accepted) throw new Error(built.error.code);
-    let forgeState = built.state;
-    while (forgeState.pendingChoices[0] !== undefined) {
-      const head = forgeState.pendingChoices[0];
-      const choice = applyCommandV7(forgeState, forgeState.humanPlayerId, {
-        kind: "CHOOSE_CITY_REWARD",
-        cityId: head.cityId,
-        reachedLevel: head.reachedLevel,
-        reward: head.candidates[0] ?? "TREASURY",
-      });
-      if (!choice.accepted) throw new Error(choice.error.code);
-      forgeState = choice.state;
-    }
-    const engineerLocked = checkedV7({
-      ...forgeState,
-      players: forgeState.players.map((player) =>
-        player.id === forgeState.humanPlayerId
-          ? {
-              ...player,
-              researchedTechs: ["GATHERING", "SCOUTING", "DRILL"],
-              achievementEntitlements: player.achievementEntitlements.map(
-                (item) =>
-                  item.achievement === "ENGINEER"
-                    ? { ...item, unlocked: false }
-                    : item,
-              ),
-            }
-          : player,
-      ),
-    });
     expect(
-      engineerLocked.players[0]?.achievementEntitlements[1]?.unlocked,
-    ).toBe(false);
-    const engineerResearch = applyCommandV7(
-      engineerLocked,
-      engineerLocked.humanPlayerId,
-      { kind: "RESEARCH", tech: "ENGINEERING" },
-    );
-    if (!engineerResearch.accepted)
-      throw new Error(engineerResearch.error.code);
-    expect(
-      engineerResearch.events.some(
+      built.events.some(
         (event) =>
           event.kind === "ACHIEVEMENT_UNLOCKED" &&
           event.achievement === "ENGINEER",
       ),
-    ).toBe(true);
+    ).toBe(false);
+    expect(
+      viewForV7(built.state, built.state.humanPlayerId).achievementProgress[1],
+    ).toEqual({
+      achievement: "ENGINEER",
+      currentMaximumOutput: 6,
+      requiredOutput: 7,
+    });
+    expect(built.state.players[0]?.achievementEntitlements[1]?.unlocked).toBe(
+      false,
+    );
 
     const muster = musterTrainingState();
     const city = required(
@@ -196,39 +174,21 @@ describe("ruleset-7 achievements and Monuments", () => {
       role: "MARKSMAN",
     });
     if (!trained.accepted) throw new Error(trained.error.code);
-    const musterLocked = checkedV7({
-      ...trained.state,
-      players: trained.state.players.map((player) =>
-        player.id === trained.state.humanPlayerId
-          ? {
-              ...player,
-              researchedTechs: ["GATHERING", "SCOUTING"],
-              achievementEntitlements: player.achievementEntitlements.map(
-                (item) =>
-                  item.achievement === "MUSTER"
-                    ? { ...item, unlocked: false }
-                    : item,
-              ),
-            }
-          : player,
-      ),
-    });
-    expect(musterLocked.players[0]?.achievementEntitlements[2]?.unlocked).toBe(
-      false,
-    );
-    const musterResearch = applyCommandV7(
-      musterLocked,
-      musterLocked.humanPlayerId,
-      { kind: "RESEARCH", tech: "DRILL" },
-    );
-    if (!musterResearch.accepted) throw new Error(musterResearch.error.code);
     expect(
-      musterResearch.events.some(
+      trained.events.some(
         (event) =>
           event.kind === "ACHIEVEMENT_UNLOCKED" &&
           event.achievement === "MUSTER",
       ),
-    ).toBe(true);
+    ).toBe(false);
+    expect(
+      viewForV7(trained.state, trained.state.humanPlayerId)
+        .achievementProgress[2],
+    ).toEqual({
+      achievement: "MUSTER",
+      currentDistinctTrainableRoles: 4,
+      requiredDistinctTrainableRoles: 6,
+    });
   });
   it("starts with exact locked entitlements and strictly validates their lifetime state", () => {
     const state = initialV7(701);
@@ -270,6 +230,9 @@ describe("ruleset-7 achievements and Monuments", () => {
           ),
         }),
       ).toBeNull();
+    // The economy rejig (7r54): no achievement needs a technology, so an
+    // unlocked Explorer, Engineer, or Muster is valid with nothing
+    // researched (it was invalid without Scouting, Engineering, or Drill).
     for (const achievement of ["EXPLORER", "ENGINEER", "MUSTER"] as const)
       for (const spent of [false, true])
         expect(
@@ -289,7 +252,7 @@ describe("ruleset-7 achievements and Monuments", () => {
                 : candidate,
             ),
           }),
-        ).toBeNull();
+        ).not.toBeNull();
     const withoutField = { ...player } as Record<string, unknown>;
     Reflect.deleteProperty(withoutField, "achievementEntitlements");
     expect(
@@ -297,33 +260,54 @@ describe("ruleset-7 achievements and Monuments", () => {
     ).toBeNull();
   });
 
-  it("unlocks Engineer only from a final individual qualifying output of six", () => {
+  it("keeps an unlocked Engineer when its building is removed, and never unlocks it twice", () => {
     const { state, forgeAt } = engineerBuildState();
     const before = viewForV7(state, state.humanPlayerId);
-    // Revision 21 appends four entries after the revision-5 three.
+    // Revision 21 appends four entries after the revision-5 three. The
+    // economy rejig (7r54): half the board, a mill at 7, six kinds.
     expect(before.achievementProgress.slice(0, 3)).toEqual([
       {
         achievement: "EXPLORER",
         currentExploredTiles: state.players[0]?.explored.length,
-        requiredExploredTiles: 100,
+        requiredExploredTiles: 61,
       },
-      { achievement: "ENGINEER", currentMaximumOutput: 0, requiredOutput: 6 },
+      { achievement: "ENGINEER", currentMaximumOutput: 0, requiredOutput: 7 },
       {
         achievement: "MUSTER",
         currentDistinctTrainableRoles: 1,
-        requiredDistinctTrainableRoles: 4,
+        requiredDistinctTrainableRoles: 6,
       },
     ]);
-    const result = applyCommandV7(state, state.humanPlayerId, {
+    // An Engineer earned earlier (a mill at 7 elsewhere): the Forge here
+    // reaches its cap of 6, which is below the goal.
+    const earned = checkedV7({
+      ...state,
+      players: state.players.map((player) =>
+        player.id === state.humanPlayerId
+          ? {
+              ...player,
+              achievementEntitlements: player.achievementEntitlements.map(
+                (item) =>
+                  item.achievement === "ENGINEER"
+                    ? { ...item, unlocked: true }
+                    : item,
+              ),
+            }
+          : player,
+      ),
+    });
+    const result = applyCommandV7(earned, earned.humanPlayerId, {
       kind: "BUILD_FORGE",
       at: forgeAt,
     });
     if (!result.accepted) throw new Error(result.error.code);
-    expect(result.events.at(-1)).toEqual({
-      kind: "ACHIEVEMENT_UNLOCKED",
-      playerId: state.humanPlayerId,
-      achievement: "ENGINEER",
-    });
+    expect(
+      result.events.some(
+        (event) =>
+          event.kind === "ACHIEVEMENT_UNLOCKED" &&
+          event.achievement === "ENGINEER",
+      ),
+    ).toBe(false);
     expect(result.state.players[0]?.achievementEntitlements[1]).toEqual({
       achievement: "ENGINEER",
       unlocked: true,
@@ -334,7 +318,7 @@ describe("ruleset-7 achievements and Monuments", () => {
     ).toEqual({
       achievement: "ENGINEER",
       currentMaximumOutput: 6,
-      requiredOutput: 6,
+      requiredOutput: 7,
     });
     let settled = result.state;
     for (const reward of ["TREASURY"] as const) {
@@ -370,7 +354,7 @@ describe("ruleset-7 achievements and Monuments", () => {
     ).toBe(false);
   });
 
-  it("unlocks simultaneous qualifications in ENGINEER then MUSTER order", () => {
+  it("unlocks simultaneous qualifications in canonical order (Explorer, then Muster)", () => {
     const staged = engineerBuildState();
     const city = required(
       staged.state.cities.find(
@@ -389,8 +373,16 @@ describe("ruleset-7 achievements and Monuments", () => {
           !same(candidate.at, staged.forgeAt) &&
           !occupied.has(coordKey(candidate.at)),
       )
-      .slice(0, 3);
-    const roles = ["RAIDER", "GUARD", "MARKSMAN"] as const;
+      .slice(0, 5);
+    // Six kinds with the starting Fighter (Muster takes six since the
+    // economy rejig, 7r54; the Forge's 6 no longer completes Engineer).
+    const roles = [
+      "RAIDER",
+      "GUARD",
+      "MARKSMAN",
+      "CAPTAIN",
+      "CATAPULT",
+    ] as const;
     const additions = roles.map((role, index) =>
       makeUnit(
         staged.state.nextEntityId + index,
@@ -414,24 +406,52 @@ describe("ruleset-7 achievements and Monuments", () => {
       result.events.flatMap((event) =>
         event.kind === "ACHIEVEMENT_UNLOCKED" ? [event.achievement] : [],
       ),
-    ).toEqual(["EXPLORER", "ENGINEER", "MUSTER"]);
+    ).toEqual(["EXPLORER", "MUSTER"]);
   });
 
-  it("counts four distinct living trainable roles for Muster and excludes Juggernaut", () => {
-    const state = musterTrainingState();
-    expect(
-      viewForV7(state, state.humanPlayerId).achievementProgress[2],
-    ).toEqual({
+  it("counts six distinct living trainable roles for Muster and excludes Juggernaut", () => {
+    const base = musterTrainingState();
+    expect(viewForV7(base, base.humanPlayerId).achievementProgress[2]).toEqual({
       achievement: "MUSTER",
       currentDistinctTrainableRoles: 3,
-      requiredDistinctTrainableRoles: 4,
+      requiredDistinctTrainableRoles: 6,
     });
     const city = required(
-      state.cities.find(
-        (candidate) => candidate.ownerId === state.humanPlayerId,
-      ),
+      base.cities.find((candidate) => candidate.ownerId === base.humanPlayerId),
       "human city missing",
     );
+    // A Captain and a Catapult beside the three: five kinds; the trained
+    // Marksman is the sixth (the fourth completed Muster before the
+    // economy rejig, 7r54).
+    const taken = new Set(base.units.map((unit) => coordKey(unit.at)));
+    const free = base.board.tiles
+      .filter(
+        (candidate) =>
+          candidate.territoryCityId === city.id &&
+          candidate.site === null &&
+          !taken.has(coordKey(candidate.at)),
+      )
+      .slice(0, 2);
+    const state = checkedV7({
+      ...base,
+      nextEntityId: base.nextEntityId + 2,
+      units: [
+        ...base.units,
+        ...(["CAPTAIN", "CATAPULT"] as const).map((role, index) => ({
+          ...makeUnit(
+            base.nextEntityId + index,
+            base.humanPlayerId,
+            city.id,
+            role,
+            required(free[index], "role tile missing").at,
+          ),
+          homeCityId: null,
+        })),
+      ].sort((left, right) => left.id - right.id),
+    });
+    expect(
+      viewForV7(state, state.humanPlayerId).achievementProgress[2],
+    ).toMatchObject({ currentDistinctTrainableRoles: 5 });
     const result = applyCommandV7(state, state.humanPlayerId, {
       kind: "TRAIN",
       cityId: city.id,
@@ -463,10 +483,10 @@ describe("ruleset-7 achievements and Monuments", () => {
     expect(
       viewForV7(withJuggernaut, withJuggernaut.humanPlayerId)
         .achievementProgress[2],
-    ).toMatchObject({ currentDistinctTrainableRoles: 3 });
+    ).toMatchObject({ currentDistinctTrainableRoles: 5 });
   });
 
-  it("spends each entitlement once for a free +2 Monument and allows the other after removal", () => {
+  it("spends each entitlement once for a free +3 Monument and allows the other after removal", () => {
     let state = unlockEntitlement(
       levelTwoWithoutPopulation(
         exploredAllV7(richV7(allTechsV7(initialV7(703)))),
@@ -543,7 +563,7 @@ describe("ruleset-7 achievements and Monuments", () => {
       preview: {
         achievement: "MUSTER",
         cityId: city.id,
-        populationAdded: 2,
+        populationAdded: 3,
         cityHasMonument: false,
         onePerCityAvailable: true,
         lostEmptyTile: true,
@@ -564,13 +584,13 @@ describe("ruleset-7 achievements and Monuments", () => {
     expect(state.players[0]?.achievementEntitlements[1]?.unlocked).toBe(false);
     expect(populationAt(state, at)).toMatchObject({
       category: "LIVE",
-      amount: 2,
+      amount: 3,
       source: { kind: "MONUMENT", achievement: "MUSTER", at },
     });
     expect(built.events[0]).toMatchObject({
       kind: "MONUMENT_BUILT",
       achievement: "MUSTER",
-      populationAdded: 2,
+      populationAdded: 3,
     });
 
     const sameCity = applyCommandV7(
@@ -695,7 +715,7 @@ describe("ruleset-7 achievements and Monuments", () => {
     ).toBe(true);
     expect(populationAt(captured.state, monumentAt)).toMatchObject({
       cityId: targetCityId,
-      amount: 2,
+      amount: 3,
       source: { kind: "MONUMENT", achievement: "ENGINEER" },
     });
     const currentView = viewForV7(captured.state, captured.state.humanPlayerId);
@@ -711,14 +731,14 @@ describe("ruleset-7 achievements and Monuments", () => {
     expect(currentView.improvementValues).toContainEqual({
       at: monumentAt,
       improvement: "MONUMENT",
-      level: 2,
+      level: 3,
       measure: "POPULATION",
       contributingTiles: [],
     });
     const formerView = viewForV7(captured.state, formerOwnerId);
     expect(formerView.populationContributions).toContainEqual(
       expect.objectContaining({
-        amount: 2,
+        amount: 3,
         source: {
           kind: "MONUMENT",
           visibility: "BUILDING_ONLY",
@@ -906,11 +926,14 @@ describe("ruleset-7 achievements and Monuments", () => {
       built.events.find((event) => event.kind === "MONUMENT_BUILT"),
       "Monument event missing",
     );
+    // (All explored and no technology needed since the economy rejig: the
+    // command's evaluation also completes Explorer.)
     expect(built.events.map((event) => event.kind)).toEqual([
       "MONUMENT_BUILT",
       "CITY_ECONOMY_CHANGED",
       "CITY_LEVELED_UP",
       "CITY_REWARD_QUEUED",
+      "ACHIEVEMENT_UNLOCKED",
     ]);
     expect(
       parseEventEnvelopeV7({
@@ -949,7 +972,7 @@ describe("ruleset-7 achievements and Monuments", () => {
         visibility: "BUILDING_ONLY",
         cityId: city.id,
         at,
-        populationAdded: 2,
+        populationAdded: 3,
       },
     ]);
     expect(parsePlayerEventEnvelopeV7(opponentProjected)).toMatchObject({
@@ -1268,8 +1291,8 @@ function capturedMonumentState(): {
           ? {
               ...candidate,
               level: 2,
-              economicPopulation: 2,
-              population: 0,
+              economicPopulation: 3,
+              population: 1,
               rewards: [{ reachedLevel: 2, reward: "SURVEY" }],
             }
           : candidate,

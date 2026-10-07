@@ -36,7 +36,9 @@ describe("ruleset-7 exact public planning reuse", () => {
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
       // technology owned, so the retained view's 12 Coins buy a technology
       // again and six RESEARCH commands are offered (was fadb84…4dc8).
-      "2df0a7078585ff4ec1ba0a0344afbdcecac63245d4b619bf2c27f849e8166a92",
+      // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
+      // 2df0a7…6a92).
+      "6a3551501e56511dd1a6db844a98471391ecba367aa72c484b5dd3c5d5553ef5",
     );
   });
 

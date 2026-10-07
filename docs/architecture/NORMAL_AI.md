@@ -1,5 +1,80 @@
 # Greedy Normal AI
 
+## The economy rejig (`pulp_wars-w49.16`)
+
+**[The economy rejig](../product/RULESET_7_ECONOMY_REJIG.md)**
+(`pulp-wars-poc-7r54`) changed shared rules for every faction: mills count
+their owner's contributors across cities, a Monument gives 3 population,
+research is priced by the cities owned (5 / 7 / 9 plus 1 / 2 / 3 Coins
+for each city beyond the first), the achievements are harder and need no
+technology, and every city offers its faction's giant once from level 6.
+The policy was kept working and not improved.
+
+**What changed in the policy.** One rule, in `preferredReward`
+(`src/ai/v7.ts`): at a level-6 or later reward the seat **takes the giant
+whenever it is offered** and it has fewer giants than cities. Before, it
+took the reward unit only for a threatened city or with 12 Coins, and
+otherwise a Barracks. The giant is now offered one level later and, to a
+city that passes, again only at level 7, which few cities reach; a seat
+that passed would rarely field one. At level 5 it takes a Barracks,
+otherwise the Treasury, as it did wherever the reward unit was not
+offered.
+
+**What did not need to change.**
+
+- **The research price.** The research target's cost
+  (`armyResearchTargetV7`), a chain's cost (`totalResearchCost`), the
+  naval plan's reserve, and the opening choice all read
+  `queryTechnologyTreeV7`, so they are the price the engine charges with
+  the seat's cities. No number of the policy states a price.
+- **The clock** (`armyResearchClockDueV7`): one technology is due for
+  every `R` rounds played, `R` being 3, or 2 for a rich seat, or for a
+  poor seat the turns its income needs to pay the price plus one. The
+  price in that sum now grows with the seat's cities and so does its
+  income, so the arithmetic holds; what moves is the result. A seat with
+  one city pays the base price whatever it owns, so `R` stays 3 and it
+  researches faster than before (an engaged one-city seat with 40 Coins
+  buys four technologies in a turn where it bought two). A seat with
+  several poor cities pays more: three cities, 4 Coins a turn, and
+  Marksmanship at 11 (9 before) give `R` = 4 and the technology one turn
+  later.
+- **The floor** (`armyResearchFloorV7`): the price less one turn's
+  income, from the same tree.
+- **Mills.** Buildings are scored from `previewEconomicV7`, which counts
+  the shared contributors. The policy does not look for border tiles.
+- **Monuments.** It builds one when one is offered, as before; it does
+  not plan for an achievement.
+
+**What was seen in the pinned positions and matches** (no balance claim;
+`tests/unit` holds the pins).
+
+| Position or match                                                           | Before                                         | Now                                                                                        |
+| --------------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| The retained late view (round 16, four cities, 12 Coins, five technologies) | Research Marksmanship (9 Coins), 27 candidates | Train a Swordsman, 26 candidates: Marksmanship costs 13 with four cities                   |
+| `LAB_BREAKTHROUGH_GOBLIN`, the walled capital                               | falls in round 6                               | falls in round 7 (the attacker's next technology is dearer with its six cities)            |
+| `r8d` (Undead, three cities, the enemy at its border, 5 Coins)              | Marksmanship within three turns                | within four turns                                                                          |
+| An Undead opening on Dry Land 14, seed 4, to round 18                       | seven technologies                             | five (Sawmilling and Administration fall outside the window)                               |
+| The natural Continents match of the naval validator (four Human seats)      | a landed unit captures by command 914          | by command 1,267 (Shorecraft and Navigation cost more with the seats' cities)              |
+| A chokepoint attacker with Explosives and 6 Coins                           | blasts the Mountain beside the gate            | buys Hunting first (5 Coins with one city); with 4 Coins it blasts, as the test now stages |
+
+**What it does not do.**
+
+- It does not hold back a capture, or research before one, to pay less
+  for a technology.
+- It does not place a mill on a border tile to share contributors, and it
+  does not aim at Engineer (a mill at 7).
+- It does not work toward Land Baron, Muster, or any other achievement.
+- It does not save a level-6 choice for a moment when the giant is
+  useful: it takes it at once, also in a quiet city far from the front.
+- A wide seat researches more slowly than before. In the pinned matches
+  this showed as fewer technologies by round 18 and a later first
+  landing; the clock was not retuned.
+
+**Tests.** `tests/unit/ruleset-v7-economy-rejig.test.ts` ("the Normal AI
+under the rejig"): the giant is taken with no Coins and no threat by a
+Human, Goblin, Undead, and Martian seat; Barracks at level 5; the research
+target's cost equals the tree's price at one, three, and five cities.
+
 ## The Dinosaur pass (`pulp_wars-w49.15`)
 
 **[The Dinosaur faction pass](../product/RULESET_7_TUNING_DINOSAUR.md#8-the-normal-ai)**
@@ -592,7 +667,9 @@ before), stated in `scripts/ruleset-v7-late-public-view-contract.ts`.
 [round 4](../product/RULESET_7_TUNING_HUMAN.md#11-round-4)): the policy was
 kept legal. It never uses `DRILL_UNIT`. At a level-5+ reward it takes the
 reward unit under its old conditions when it is offered (now only in its
-first capital, once), otherwise a Barracks, otherwise the Treasury; at
+first capital, once), otherwise a Barracks, otherwise the Treasury
+(superseded by [the economy rejig](#the-economy-rejig-pulp_wars-w4916): the
+giant is every city's, from level 6, and is taken whenever offered); at
 level 4 it still takes Boom (or the Treasury with four neutral tiles
 around). Its threat estimate reads `ignoresZocStops`, so it knows a Human
 Raider passes its screens. It was not taught that research is now priced by
@@ -1180,6 +1257,8 @@ Round 7's order (units, growth, research) is replaced for a seat at war:
    technology of the faction's order is due when the round is at least
    `ARMY_WAR_RESEARCH_ROUNDS_V7` (3) times the technologies owned; for a
    poor seat the factor is the turns its income needs to pay the price
+   (since [the economy rejig](#the-economy-rejig-pulp_wars-w4916) a price
+   by the seat's cities, not by its technologies)
    plus one (`armyResearchRoundsV7`,
    `ARMY_WAR_RESEARCH_SPARE_TURNS_V7`); for a rich seat
    (income of 15 or more, or twelve units and half as many again as the

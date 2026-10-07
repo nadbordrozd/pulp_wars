@@ -123,23 +123,23 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 ];
 
 describe("ruleset-7 revision-19 identity", () => {
-  it("keeps r18 among the gap-free prior identities after the r53 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r53");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
+  it("keeps r18 among the gap-free prior identities after the r54 identity, and the save key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r54");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 51 },
+        { length: 52 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-35)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-36)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 51 },
+        { length: 52 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -177,7 +177,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r53");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r54");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -1193,18 +1193,20 @@ describe("ruleset-7 Dinosaur starting units and substitutions", () => {
       expect(parseEventV7(event).ok).toBe(true);
   });
 
-  it("grants a hatched 2-slot Brontosaurus for the level-5 reward, over capacity", () => {
-    // Three T-Rexes and a Caveman already use 7 of the capital's 8 slots
-    // (level 5, Planning, and since revision 20 Nesting).
+  it("grants a hatched 2-slot Brontosaurus for the level-6 reward, over capacity", () => {
+    // Three T-Rexes and two Cavemen already use 8 of the capital's 9 slots
+    // (level 6 since the economy rejig, 7r54; Planning, and since revision
+    // 20 Nesting).
     const fixture = rewardStateV7("JUGGERNAUT", "DINOSAUR", [
       { role: "KNIGHT", at: { x: 4, y: 3 } },
       { role: "KNIGHT", at: { x: 5, y: 3 } },
       { role: "KNIGHT", at: { x: 6, y: 3 } },
       { role: "FIGHTER", at: { x: 4, y: 2 } },
+      { role: "FIGHTER", at: { x: 5, y: 2 } },
     ]);
     const city = cityOfV7(fixture.state, 0);
-    expect(cityUnitCapacityV7(fixture.state, city)).toBe(8);
-    expect(assignedUnitCountV7(fixture.state, city.id)).toBe(7);
+    expect(cityUnitCapacityV7(fixture.state, city)).toBe(9);
+    expect(assignedUnitCountV7(fixture.state, city.id)).toBe(8);
     const result = applyOkV7(
       fixture.state,
       fixture.state.humanPlayerId,
@@ -1226,10 +1228,10 @@ describe("ruleset-7 Dinosaur starting units and substitutions", () => {
     expect(unitRoleRuleV7(result.state, brontosaurus).label).toBe(
       "Brontosaurus",
     );
-    expect(assignedUnitCountV7(result.state, city.id)).toBe(9);
+    expect(assignedUnitCountV7(result.state, city.id)).toBe(10);
     expect(previewCityCapacityV7(result.state, city.id)).toMatchObject({
-      capacity: 8,
-      assigned: 9,
+      capacity: 9,
+      assigned: 10,
       available: 0,
       overCapacity: 1,
     });
