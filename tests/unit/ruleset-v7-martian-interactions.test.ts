@@ -194,7 +194,7 @@ describe("Goblin rules (section 10.2)", () => {
     expect(run.attacker?.kills).toBe(1);
   });
 
-  it("Plunder: a Goblin seat earns 1 Coin for a Martian unit it kills", () => {
+  it("Plunder: a Goblin seat earns 2 Coins for a Martian unit it kills", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "RAIDER", at: at(4, 3), hp: 1, shield: 0 },
@@ -205,7 +205,7 @@ describe("Goblin rules (section 10.2)", () => {
     const run = attackV7(state, at(5, 3), at(4, 3));
     expect(run.combat.defenderDies).toBe(true);
     expect(kindsV7(run.events)).toContain("PLUNDER_AWARDED");
-    expect(coins(run.state, 1)).toBe(coins(state, 1) + 1);
+    expect(coins(run.state, 1)).toBe(coins(state, 1) + 2);
   });
 });
 

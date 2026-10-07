@@ -66,7 +66,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 5 (`pulp_wars-w49.4`, identity `pulp-wars-poc-7r49`;
+ * Tuning 5 (`pulp_wars-w49.4`, identity `pulp-wars-poc-7r50`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 12): the Normal AI's army
  * play, the Human Guard open to ranged attacks, the Swordsman, the removal
  * of Drill, the Blast Mountain's setter, the Land Grant's price, and the
@@ -150,15 +150,16 @@ const field = (
 
 describe("tuning 5 identity", () => {
   // Tuning 5 took 7r48; tuning 6 (tests/unit/ruleset-v7-tuning-6.test.ts)
-  // took 7r49, so 7r48 is the last prior identity.
+  // took 7r49 and the Goblin pass 7r50, so 7r48 is the prior identity
+  // before the last.
   it("was 7r48 after 7r47, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r49");
-    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
+    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
       "pulp-wars-poc-7r47",
       "pulp-wars-poc-7r48",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r49.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r50.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3, -1)).toEqual([
       "pulpWars.save.v7r47.current",
       "pulpWars.save.v7r48.current",
     ]);

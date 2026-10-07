@@ -53,6 +53,17 @@ export const GOBLIN_FIELD_DEFENSE_EXPLANATION_V7 =
 export const GANG_UP_DESCRIPTION_V7 =
   "+1 Attack per ally next to the target (max +2)";
 
+/** The Goblin pass (`pulp_wars-w49.12`): the three unit rules of 7r50. */
+export const GANG_UP_ONE_DESCRIPTION_V7 =
+  "+1 Attack with an ally next to the target (max +1)";
+export const NO_GANG_UP_NAME_V7 = "No Gang Up";
+export const NO_GANG_UP_DESCRIPTION_V7 = "Its bombs get no Gang Up.";
+export const BLAST_PROOF_NAME_V7 = "Blast-proof";
+export const BLAST_PROOF_DESCRIPTION_V7 =
+  "Blasts and bomb splash don't hurt it.";
+export const CRASH_NAME_V7 = "Crash";
+export const CRASH_DESCRIPTION_V7 = "Can Kaboom after attacking.";
+
 export function kaboomTooltipV7(damage: number): string {
   return `Blow up: ${damage} damage to every other unit in the 3×3 square, yours too. This unit dies.`;
 }
@@ -65,7 +76,7 @@ export const GOBLIN_HELP_RULES_V7: readonly (readonly [string, string])[] = [
   ],
   [
     "Gang Up",
-    "a Goblin unit gets +1 Attack for each other unit of yours next to its target, up to +2.",
+    "a Goblin unit gets +1 Attack for each other unit of yours next to its target, up to +2. A Rocket Cart gets at most +1 and a Bomb Chucker's bomb none.",
   ],
   [
     "Kaboom",
@@ -80,9 +91,11 @@ export const GOBLIN_HELP_RULES_V7: readonly (readonly [string, string])[] = [
     "Bombs",
     "a Bomb Chucker's bomb also hits every unit next to its target, yours included.",
   ],
+  ["Orc Brutes", "are Blast-proof: blasts and bomb splash don't hurt them."],
+  ["Crash", "a Scrap Buggy can Kaboom after it has attacked."],
   [
     "Plunder",
-    "with Plunder you get 1 Coin for each enemy unit your units or blasts kill.",
+    "with Plunder you get 2 Coins for each enemy unit your units or blasts kill.",
   ],
   [
     "WAAAGH!",
@@ -167,7 +180,10 @@ export interface GoblinUnitInfoLineV7 {
     | "gang-up"
     | "bombs"
     | "waaagh"
-    | "no-field-defense";
+    | "no-field-defense"
+    | "no-gang-up"
+    | "blast-proof"
+    | "crash";
   readonly name: string;
   readonly description: string;
 }
@@ -208,11 +224,40 @@ export function goblinUnitInfoLinesV7(
       name: `Regenerates ${mechanics.regeneration} HP each turn`,
       description: "It heals at the start of your turn, wherever it is.",
     });
-  lines.push({
-    id: "gang-up",
-    name: "Gang Up",
-    description: GANG_UP_DESCRIPTION_V7,
-  });
+  // The Goblin pass (7r50): the three unit rules, from the registration of
+  // the Goblin kind (this function is only called for a Goblin role).
+  const own = roleMechanicsV7(role, "GOBLIN");
+  if (own.kaboomAfterAttack)
+    lines.push({
+      id: "crash",
+      name: CRASH_NAME_V7,
+      description: CRASH_DESCRIPTION_V7,
+    });
+  if (own.blastProof)
+    lines.push({
+      id: "blast-proof",
+      name: BLAST_PROOF_NAME_V7,
+      description: BLAST_PROOF_DESCRIPTION_V7,
+    });
+  lines.push(
+    own.gangUpLimit === 2
+      ? {
+          id: "gang-up",
+          name: "Gang Up",
+          description: GANG_UP_DESCRIPTION_V7,
+        }
+      : own.gangUpLimit === 1
+        ? {
+            id: "gang-up",
+            name: "Gang Up",
+            description: GANG_UP_ONE_DESCRIPTION_V7,
+          }
+        : {
+            id: "no-gang-up",
+            name: NO_GANG_UP_NAME_V7,
+            description: NO_GANG_UP_DESCRIPTION_V7,
+          },
+  );
   if (role === "FIGHTER" && !mechanics.buildsFieldDefense)
     lines.push({
       id: "no-field-defense",

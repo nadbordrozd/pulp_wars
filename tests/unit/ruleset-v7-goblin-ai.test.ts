@@ -431,7 +431,9 @@ describe("ruleset-7 revision-17 Normal AI: careful Bomb Chuckers", () => {
     if (actor === undefined) throw new Error("active player missing");
     const first = chooseNormalCommandV7(viewForV7(state, actor));
     expect(first.command).toMatchObject({ kind: "MOVE", unitId: chucker });
-    expect(first.candidates[0]?.score.priority).toBe(1179);
+    // The Goblin pass, correction (`pulp_wars-w49.12`): the Move is to a
+    // throw the army rules accept (1187; 1179 before).
+    expect(first.candidates[0]?.score.priority).toBe(1187);
     if (first.command === null) throw new Error("no command chosen");
     const moved = applyCommandV7(state, actor, first.command);
     if (!moved.accepted) throw new Error(moved.error.code);

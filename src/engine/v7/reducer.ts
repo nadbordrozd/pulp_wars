@@ -58,6 +58,7 @@ import {
   playerTechnologyResearchCostV7,
   primaryActionBlockedAfterMoveV7,
   sluggishUnitMovedV7,
+  kaboomReadyV7,
   BLAST_MOUNTAIN_POPULATION_V7,
   BOOM_POPULATION_V7,
   CITY_REWARD_COINS_V7,
@@ -6558,7 +6559,8 @@ function applyWail(
 
 /**
  * Revision 17 section 6.2 Kaboom: a goblin-crewed land-form unit that has not
- * used a primary action (it may have moved) dies (`UNIT_DIED` cause `KABOOM`,
+ * used a primary action (it may have moved; the Goblin pass, 7r50: a Scrap
+ * Buggy may have attacked, `kaboomReadyV7`) dies (`UNIT_DIED` cause `KABOOM`,
  * then its Grave or Bitten rising) and its explosion resolves as wave 1 of a
  * chain. No target is needed. Then Plunder, rising reveals, and the ordinary
  * economy, reward-settlement, and achievement tail (section 6.7).
@@ -6578,8 +6580,10 @@ function applyKaboom(
   if (!unitRoleRuleV7(state, exploder).abilities.includes("KABOOM"))
     return rejected(original, "UNIT_ROLE_INVALID", { role: exploder.role });
   if (
-    primaryUsed(exploder) ||
-    exploder.activation.overrunActive ||
+    !kaboomReadyV7(
+      exploder.activation,
+      unitRoleMechanicsV7(state, exploder).kaboomAfterAttack,
+    ) ||
     sluggishUnitMovedV7(state, exploder)
   )
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });

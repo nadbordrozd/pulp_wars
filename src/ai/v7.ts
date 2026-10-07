@@ -37,6 +37,9 @@ import {
   unitMayActAfterMoveV7,
   unitMayEnterMountainV7,
   unitRoleMechanicsV7,
+  factionRulesV7,
+  unitFactionV7,
+  unitIsBlastProofV7,
   roleDefense2AtDistanceV7,
   unitRoleRuleV7,
   SPATIAL_ECONOMIC_ACTIONS_V7,
@@ -105,6 +108,8 @@ import {
   ARMY_APPROACH_PRIORITY_V7,
   ARMY_APPROACH_RADIUS_V7,
   ARMY_ENGAGE_PRIORITY_V7,
+  ARMY_ESCORT_MAXIMUM_V7,
+  ARMY_ESCORT_VALUE_V7,
   ARMY_FIRING_POSITION_PRIORITY_V7,
   ARMY_GARRISON_RADIUS_V7,
   ARMY_HUNT_ATTACK_PRIORITY_V7,
@@ -127,6 +132,7 @@ import {
   ARMY_DUE_RESEARCH_PRIORITY_V7,
   ARMY_EXPANSION_CITIES_V7,
   ARMY_FRAGILE_TARGET_VALUE_V7,
+  ARMY_GANG_UP_STRENGTH_V7,
   ARMY_GROWTH_PRIORITY_V7,
   ARMY_LATE_VILLAGE_PRIORITY_V7,
   ARMY_NEAR_RADIUS_V7,
@@ -2028,14 +2034,13 @@ function* tacticalPlanWorkV7(
                   ),
               ),
             slowMelee: (unit: PublicUnitV7) => armySlowMeleeV7(context, unit),
-            strength: (unit: PublicUnitV7) =>
-              armyUnitStrengthV7(unitRoleRuleV7(view, unit), unit.hp),
+            strength: (unit: PublicUnitV7) => armyFieldStrengthV7(view, unit),
             // Tuning 8 (`pulp_wars-w49.11`): a front is sized against the
             // holders with their cover, brings its shooters to a
             // fortified city, and an expanding seat spreads its scouts.
             holdStrength: (unit: PublicUnitV7) =>
               Math.floor(
-                (armyUnitStrengthV7(unitRoleRuleV7(view, unit), unit.hp) *
+                (armyFieldStrengthV7(view, unit) *
                   armyCoverPercentV7(context, unit)) /
                   100,
               ),
@@ -4088,6 +4093,42 @@ function armyRetaliationV7(
 const NO_ARMY_ENGAGEMENTS_V7: ReadonlyMap<string, ArmyEngagementV7> = new Map();
 
 /**
+ * The Goblin pass, correction (`pulp_wars-w49.12`): whether a bomb of
+ * `dealt` on `target` is worth its splash on the own and allied units
+ * beside the target, by the measure of the attack's own harm test
+ * (`goblinFriendlyFireRejectedV7`): it kills none of them, and the hit and
+ * the splash on hostile units are worth at least twice the splash on them.
+ * A Blast-proof unit is in no splash.
+ */
+function armyBombSplashAcceptedV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+  dealt: number,
+): boolean {
+  const view = context.view;
+  const splash = Math.max(1, Math.ceil(Math.min(dealt, target.hp) / 2));
+  let friendly = 0;
+  let hostile = hostileLossValueV7(context, target, dealt, dealt >= target.hp);
+  for (const unit of view.units) {
+    if (
+      unit.id === actor.id ||
+      unit.id === target.id ||
+      distance(unit.at, target.at) !== 1 ||
+      unitIsBlastProofV7(view, unit)
+    )
+      continue;
+    const hit = Math.min(splash, unit.hp);
+    if (friendlyOwnerV7(view, unit.ownerId)) {
+      if (hit >= unit.hp) return false;
+      friendly += friendlyLossValueV7(view, unit, hit, false);
+    } else if (isHostile(view, unit.ownerId))
+      hostile += hostileLossValueV7(context, unit, hit, hit >= unit.hp);
+  }
+  return hostile >= FRIENDLY_FIRE_TRADE_FACTOR_V7 * friendly;
+}
+
+/**
  * For each offered destination of a fresh own land unit, its best attack
  * from there on a visible hostile land unit, when that attack is an
  * acceptable exchange: a kill, or more dealt than taken by the measure of
@@ -4126,19 +4167,6 @@ function armyEngagementsForV7(
           const range = distance(to, target.at);
           if (range < facts.minimumRange || range > facts.maximumRange)
             continue;
-          // Tuning 7: a bomb that would splash own units is no reason to
-          // move (the Bomb Chucker walked up and then did not throw).
-          if (
-            bomber &&
-            view.units.some(
-              (unit) =>
-                unit.id !== actor.id &&
-                unit.id !== target.id &&
-                friendlyOwnerV7(view, unit.ownerId) &&
-                distance(unit.at, target.at) <= 1,
-            )
-          )
-            continue;
           const dealt = publicProjectedDamageWithLookupV7(
             view,
             moved,
@@ -4149,6 +4177,17 @@ function armyEngagementsForV7(
           );
           if (dealt <= 0) continue;
           const kills = dealt >= target.hp;
+          // Tuning 7: a bomb that would splash own units is no reason to
+          // move (the Bomb Chucker walked up and then did not throw). The
+          // Goblin pass, correction: unless the throw itself would be
+          // accepted (`armyBombSplashAcceptedV7`): eight Bomb Chuckers
+          // threw seven bombs in thirty rounds, because an own Goblin stood
+          // beside every target by the time they came up.
+          if (
+            bomber &&
+            !armyBombSplashAcceptedV7(context, actor, target, dealt)
+          )
+            continue;
           const taken = kills
             ? 0
             : armyRetaliationV7(context, moved, target, range);
@@ -4374,10 +4413,12 @@ function armyMoveValueV7(
   const facts = publicCombatFacts(view, actor, context.lookup);
   const mayAct = unitMayActAfterMoveV7(view, actor);
   // Tuning 7: also the weak links of a kill chain keep apart.
+  // The Goblin pass, correction: a defender stands beside its shooters.
   const spacing =
     armySplashSpacingV7(context, actor, to) +
     armyChainSpacingV7(context, actor, to) +
-    armyBomberCrowdV7(context, actor, to);
+    armyBomberCrowdV7(context, actor, to) -
+    armyEscortValueV7(context, actor, to);
   const meleeReach = armyMeleeReachV7(context).get(coordKey(to)) ?? 0;
   const slowMelee = armySlowMeleeV7(context, actor);
   const assignment = context.tactical.campaign?.assignmentByUnitId.get(
@@ -4928,6 +4969,24 @@ const NO_ARMY_ASSAULT_V7: ArmyAssaultV7 = {
   positionByHostile: new Map(),
 };
 
+/**
+ * What a unit weighs in an assault (`armyUnitStrengthV7`), a unit of a
+ * kind with Gang Up half as much again (the Goblin pass, correction,
+ * `pulp_wars-w49.12`): by price and HP alone fourteen Goblin units weighed
+ * 216 against 287 for eight Human units in cover and stood in front of them
+ * for five rounds, though two Goblins with Gang Up beat a Fighter and a
+ * charging Wolf Rider with two helpers kills a Swordsman. A Bomb Chucker,
+ * whose bomb gets no Gang Up, weighs what it costs.
+ */
+function armyFieldStrengthV7(view: PlayerViewV7, unit: PublicUnitV7): number {
+  const strength = armyUnitStrengthV7(unitRoleRuleV7(view, unit), unit.hp);
+  return unit.form === "LAND" &&
+    factionRulesV7(unitFactionV7(view, unit)).gangUpMaximum > 0 &&
+    unitRoleMechanicsV7(view, unit).gangUpLimit > 0
+    ? Math.floor((strength * ARMY_GANG_UP_STRENGTH_V7) / 100)
+    : strength;
+}
+
 /** A unit with an attack of its own, or a Wail. */
 function armyFightsV7(context: PolicyContextV7, unit: PublicUnitV7): boolean {
   const facts = publicCombatFacts(context.view, unit, context.lookup);
@@ -5038,7 +5097,7 @@ function armyAssaultV7(context: PolicyContextV7): ArmyAssaultV7 {
       (total, unit) =>
         total +
         Math.floor(
-          (armyUnitStrengthV7(unitRoleRuleV7(view, unit), unit.hp) *
+          (armyFieldStrengthV7(view, unit) *
             armyCoverPercentV7(context, unit)) /
             100,
         ),
@@ -5072,7 +5131,7 @@ function armyAssaultV7(context: PolicyContextV7): ArmyAssaultV7 {
     if (nearest === null || gap > ARMY_COMING_RADIUS_V7) continue;
     const total = totals[groupOf.get(nearest.id) ?? -1];
     if (total === undefined) continue;
-    const strength = armyUnitStrengthV7(unitRoleRuleV7(view, unit), unit.hp);
+    const strength = armyFieldStrengthV7(view, unit);
     total.coming += strength;
     total.comingUnits += 1;
     if (gap <= ARMY_NEAR_RADIUS_V7) {
@@ -5553,6 +5612,49 @@ function armyChainSpacingV7(
       )
         weak += 1;
   return weak * ARMY_CHAIN_SPACING_VALUE_V7;
+}
+
+/**
+ * The Goblin pass, correction (`pulp_wars-w49.12`): what a Move to `to` is
+ * worth to a Goblin seat's defender-class unit (an Orc Brute) for the
+ * ranged, siege, and support units of its own it would stand beside:
+ * `ARMY_ESCORT_VALUE_V7` each, at most `ARMY_ESCORT_MAXIMUM_V7`. Goblin
+ * seats only: for every defender-class unit the rule slowed the Undead
+ * attacker of `LAB_BREAKTHROUGH_UNDEAD` by a round. A unit
+ * with Overrun kills a Bomb Chucker, a Rocket Cart, or a Warboss in one
+ * attack and rides on; a defender in the row ends the chain (two Knights
+ * killed seventeen Goblin units in one turn, with no Orc Brute among them).
+ */
+function armyEscortValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): number {
+  const view = context.view;
+  if (
+    view.viewer.faction !== "GOBLIN" ||
+    armyClassV7(unitRoleRuleV7(view, actor)) !== "DEFENDER"
+  )
+    return 0;
+  let escorted = 0;
+  for (const at of neighbors8V7(view, to))
+    for (const unit of context.threatLookup.occupantsByKey.get(coordKey(at)) ??
+      []) {
+      if (
+        unit.id === actor.id ||
+        unit.ownerId !== view.viewer.id ||
+        unit.form !== "LAND"
+      )
+        continue;
+      const unitClass = armyClassV7(unitRoleRuleV7(view, unit));
+      if (
+        unitClass === "RANGED" ||
+        unitClass === "SIEGE" ||
+        unitClass === "SUPPORT"
+      )
+        escorted += 1;
+    }
+  return Math.min(ARMY_ESCORT_MAXIMUM_V7, escorted) * ARMY_ESCORT_VALUE_V7;
 }
 
 /** The own land units next to `to` (the mover left out). */
@@ -6260,6 +6362,8 @@ function armySplashSpacingV7(
   const reach = armySplashReachV7(context);
   if (reach.size === 0) return 0;
   const view = context.view;
+  // The Goblin pass (7r50): a Blast-proof unit is in nobody's splash.
+  if (unitIsBlastProofV7(view, actor)) return 0;
   let neighbours = 0;
   let exposed = reach.has(coordKey(to));
   for (const at of neighbors8V7(view, to))
@@ -6268,7 +6372,8 @@ function armySplashSpacingV7(
       if (
         unit.id !== actor.id &&
         unit.ownerId === view.viewer.id &&
-        unit.form === "LAND"
+        unit.form === "LAND" &&
+        !unitIsBlastProofV7(view, unit)
       ) {
         neighbours += 1;
         if (reach.has(coordKey(at))) exposed = true;
@@ -12906,6 +13011,7 @@ function kaboomScoreV7(
   // for a kill or on two or more enemies (it spent Goblins, and Scrap
   // Buggies, on 5 damage to one unit).
   let clusterHits = 0;
+  let crash = false;
   if (context.army) {
     const hit = new Set<UnitId>();
     for (const explosion of preview.explosions)
@@ -12917,12 +13023,23 @@ function kaboomScoreV7(
           isHostile(view, result.ownerId)
         )
           hit.add(result.unitId);
-    if (chain.hostileKills === 0 && hit.size < 2) return none;
+    // The Goblin pass, correction: a Crash (a unit that has attacked, the
+    // Scrap Buggy) of a unit the visible enemies kill next turn needs one
+    // enemy in the blast and no own unit killed by it: seven Buggies were
+    // trained in a game and none crashed.
+    crash =
+      actor.activation.attacked &&
+      hit.size >= 1 &&
+      chain.friendlyKills === 0 &&
+      goblinDoomedAtV7(context, actor, actor.at);
+    if (chain.hostileKills === 0 && hit.size < 2 && !crash) return none;
     clusterHits = hit.size;
   }
   const doomed = goblinDoomedAtV7(context, actor, actor.at);
   let exploder = retainedUnitValue(view, actor);
   if (doomed) exploder = Math.floor(exploder / 3);
+  // A spent, doomed unit is lost whatever it does.
+  if (crash) exploder = 0;
   const biter = context.afflictions.bitten.get(actor.id);
   if (biter !== undefined && isHostile(view, biter))
     exploder += BITTEN_RISING_VALUE_V7;
@@ -13193,9 +13310,12 @@ function exploderSpacingLossV7(
     for (const other of view.units) {
       if (other.id === unit.id || !own(other.ownerId)) continue;
       if (distance(other.at, at) !== 1) continue;
+      // The Goblin pass (7r50): a blast does not hit a Blast-proof unit.
+      if (unitIsBlastProofV7(view, other)) continue;
       const hit = Math.min(blast, other.hp);
       loss += friendlyLossValueV7(view, other, hit, hit >= other.hp);
     }
+  if (unitIsBlastProofV7(view, unit)) return loss;
   for (const other of view.units) {
     if (other.id === unit.id || other.ownerId !== view.viewer.id) continue;
     if (distance(other.at, at) !== 1) continue;
@@ -13327,6 +13447,8 @@ function ownBombExposureV7(
   at: CoordV7,
 ): { readonly loss: number; readonly dies: boolean } {
   const view = context.view;
+  // The Goblin pass (7r50): a bomb's splash does not hit a Blast-proof unit.
+  if (unitIsBlastProofV7(view, unit)) return { loss: 0, dies: false };
   let cache = goblinBombSplashV7.get(context);
   if (cache === undefined) {
     cache = new Map();

@@ -389,10 +389,13 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // six Liches, ten Plague applications, 40 rounds). With its correction
     // pass seed 0 trains two Liches that never plague; seeds 2 and 6 of
     // 0-15 train one and plague (seed 2: three Liches, 17 Plague
-    // applications, 38 rounds).
+    // applications, 38 rounds). The Goblin pass, correction
+    // (`pulp_wars-w49.12`: the Human seat researches the Swordsman third):
+    // seed 2 trains two Liches that never plague; of seeds 0-6 only seed 6
+    // trains one and plagues (three applications, 40 rounds).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 2,
+      seed: 6,
       width: 11,
       height: 11,
       aiCount: 1,

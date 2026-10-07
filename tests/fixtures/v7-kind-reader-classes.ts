@@ -160,6 +160,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7.ts::bareContext": "SEAT",
   "src/ai/v7.ts::armyResearchTargetV7": "SEAT",
   "src/ai/v7.ts::armyVacatesCenterV7": "SEAT",
+  // The Goblin pass, correction (`pulp_wars-w49.12`): the escort is a
+  // Goblin seat's policy (the viewer's faction), whatever kind the unit is.
+  "src/ai/v7.ts::armyEscortValueV7": "SEAT",
   // Tuning 7 (`pulp_wars-w49.10`): the class of the unit the seat's next
   // technology unlocks.
   "src/ai/v7.ts::armyWarHoldsResearchV7": "SEAT",
@@ -221,6 +224,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#help": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#recruitHelp": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#leaderboard": "SEAT",
+  // The Goblin pass: the Scouts reward names the seat's own Raider-role
+  // unit (a Goblin city's Wolf Rider).
+  "src/render/dom/app-view-v7.ts::rewardLabel": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#reward": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#dispatch": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#layEggCards": "SEAT",
@@ -309,6 +315,11 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/dwarf-presentation-v7.ts::dwarfFieldDefenseBlockedV7": "SEAT",
   "src/render/goblin-presentation-v7.ts::matchHasGoblinV7": "SEAT",
   "src/render/goblin-presentation-v7.ts::goblinRecruitNotesV7": "SEAT",
+  // The Goblin pass (`pulp_wars-w49.12`): the three unit rules, read from
+  // the Goblin registration for a role its callers resolved to the Goblin
+  // kind (`stats.goblin` of the unit, or a Goblin seat's recruit notes).
+  "src/render/goblin-presentation-v7.ts::goblinUnitInfoLinesV7":
+    "KIND_RESOLVED",
   "src/render/goblin-presentation-v7.ts::goblinFieldDefenseBlockedV7": "SEAT",
   "src/render/goblin-presentation-v7.ts::roleLabel": "SEAT",
   // The naval branch interface (`pulp_wars-5ti.7`): Seamanship's boarding

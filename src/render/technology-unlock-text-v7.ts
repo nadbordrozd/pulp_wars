@@ -56,6 +56,10 @@ export const FOREST_MARCH_UNLOCK_TEXT_V7 =
  */
 export const BARRACKS_REWARD_TEXT_V7 = "+1 unit in this city";
 export const SCOUTS_REWARD_TEXT_V7 = "Reveal the area and a free Raider";
+/** The Goblin pass (7r50): the same reward with the faction's own unit. */
+export function scoutsRewardTextV7(raiderLabel: string): string {
+  return `Reveal the area and a free ${raiderLabel}`;
+}
 
 /** Raiding, the `PILLAGE` command (tuning 4). */
 export function pillageUnlockTextV7(escaperLabel: string | null): string {

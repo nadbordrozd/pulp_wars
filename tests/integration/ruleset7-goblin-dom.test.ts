@@ -125,7 +125,7 @@ describe("Revision 17 Goblin DOM", () => {
     const kaboom = requiredButton("command-kaboom");
     expect(kaboom.title).toBe(kaboomText(KABOOM));
     expect(kaboom.getAttribute("aria-label")).toBe(
-      `Kaboom! · ${kaboomText(KABOOM)} · Hits 5 units: 3 enemy, 2 yours. Kills 2. ${CART_CHAIN}. Friendly fire: 2 of your units hit, 1 killed. Plunder: +1 Coins.`,
+      `Kaboom! · ${kaboomText(KABOOM)} · Hits 5 units: 3 enemy, 2 yours. Kills 2. ${CART_CHAIN}. Friendly fire: 2 of your units hit, 1 killed. Plunder: +2 Coins.`,
     );
     expect(
       [...kaboom.querySelectorAll(".v7-kaboom-chip")].map(
@@ -180,7 +180,7 @@ describe("Revision 17 Goblin DOM", () => {
     ).toEqual([
       ["friendly-fire", "Friendly fire: 2 of your units hit, 1 killed"],
       ["chain", CART_CHAIN],
-      ["plunder", "Plunder: +1 Coins"],
+      ["plunder", "Plunder: +2 Coins"],
     ]);
     expect(requiredButton("command-kaboom").getAttribute("aria-pressed")).toBe(
       "true",
@@ -210,7 +210,7 @@ describe("Revision 17 Goblin DOM", () => {
     await waitUntil(
       () =>
         document.querySelector("#v7-live")?.textContent ===
-        "Your Goblin blew up: 4 hit, 2 killed · Your Rocket Cart exploded: 1 hit, 0 killed · Plunder: +1 Coins",
+        "Your Goblin blew up: 4 hit, 2 killed · Your Rocket Cart exploded: 1 hit, 0 killed · Plunder: +2 Coins",
     );
     expect(document.querySelector(".v7-toast")?.textContent).toContain(
       "Your Goblin blew up",
@@ -244,7 +244,8 @@ describe("Revision 17 Goblin DOM", () => {
       `Kaboom ${CHUCKER_KABOOM}${kaboomText(CHUCKER_KABOOM)}`,
       `Explodes on death (${CHUCKER_BLAST})However it dies, it deals ${CHUCKER_BLAST} damage to every other unit in the 3×3 square, yours too.`,
       "BombsIts bomb also hits every unit next to the target, yours included.",
-      "Gang Up+1 Attack per ally next to the target (max +2)",
+      // The Goblin pass (7r50): a bomb gets no Gang Up.
+      "No Gang UpIts bombs get no Gang Up.",
     ]);
     requiredButton("close-unit-help").click();
 
@@ -358,7 +359,14 @@ describe("Revision 17 Goblin DOM", () => {
     requiredButton("compact-menu").click();
     requiredButton("help").click();
     const help = requiredElement<HTMLElement>(".v7-help-goblin");
-    expect(help.querySelectorAll("li")).toHaveLength(10);
+    // Ten rules of revision 17 and the two of the Goblin pass.
+    expect(help.querySelectorAll("li")).toHaveLength(12);
+    expect(help.textContent).toContain(
+      "Crash: a Scrap Buggy can Kaboom after it has attacked.",
+    );
+    expect(help.textContent).toContain(
+      "Orc Brutes: are Blast-proof: blasts and bomb splash don't hurt them.",
+    );
     expect(help.textContent).toContain(
       "Kaboom: any goblin-crewed unit can blow itself up, dealing its blast damage to every other unit in the 3×3 square around it, yours included.",
     );

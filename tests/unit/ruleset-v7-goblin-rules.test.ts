@@ -178,9 +178,11 @@ describe("ruleset-7 Goblin Gang Up", () => {
       ],
     );
     const rocket = resolvedAttack(ranged, { x: 2, y: 2 }, TARGET);
+    // The Goblin pass, correction (`pulp_wars-w49.12`): a rocket gets +1 at
+    // most (two helpers stand beside the target).
     expect([rocket.gangUp, rocket.attack2, rocket.retaliation]).toEqual([
-      2,
-      11,
+      1,
+      9,
       false,
     ]);
 
@@ -276,7 +278,7 @@ describe("ruleset-7 Goblin Plunder", () => {
     (tech) => tech !== "COMMERCE",
   );
 
-  it("pays 1 Coin per hostile kill by attack with Goblin Commerce only", () => {
+  it("pays 2 Coins per hostile kill by attack with Goblin Commerce only", () => {
     const pieces: GoblinPieceV7[] = [
       { seat: 0, role: "FIGHTER", at: ATTACKER },
       { seat: 1, role: "FIGHTER", at: TARGET, hp: 1 },
@@ -285,9 +287,9 @@ describe("ruleset-7 Goblin Plunder", () => {
     const result = attackResult(state, ATTACKER, TARGET);
     const goblinId = state.humanPlayerId;
     expect(plunderEvents(result.events)).toEqual([
-      { kind: "PLUNDER_AWARDED", playerId: goblinId, kills: 1, coins: 1 },
+      { kind: "PLUNDER_AWARDED", playerId: goblinId, kills: 1, coins: 2 },
     ]);
-    expect(coinsOf(result.state, goblinId) - coinsOf(state, goblinId)).toBe(1);
+    expect(coinsOf(result.state, goblinId) - coinsOf(state, goblinId)).toBe(2);
     for (const event of result.events)
       expect(parseEventV7(event).ok).toBe(true);
     // Event order: deaths and the advance, then Plunder, then reveals.
@@ -335,9 +337,9 @@ describe("ruleset-7 Goblin Plunder", () => {
       preview: { attackerDies: true, retaliation: true },
     });
     expect(plunderEvents(result.events)).toEqual([
-      { kind: "PLUNDER_AWARDED", playerId: goblinId, kills: 1, coins: 1 },
+      { kind: "PLUNDER_AWARDED", playerId: goblinId, kills: 1, coins: 2 },
     ]);
-    expect(coinsOf(result.state, goblinId) - coinsOf(state, goblinId)).toBe(1);
+    expect(coinsOf(result.state, goblinId) - coinsOf(state, goblinId)).toBe(2);
   });
 
   it("counts hostile Battleship splash kills", () => {
@@ -362,7 +364,7 @@ describe("ruleset-7 Goblin Plunder", () => {
         kind: "PLUNDER_AWARDED",
         playerId: state.humanPlayerId,
         kills,
-        coins: kills,
+        coins: 2 * kills,
       },
     ]);
   });

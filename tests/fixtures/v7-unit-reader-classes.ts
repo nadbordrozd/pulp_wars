@@ -154,7 +154,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // Tuning 7 (`pulp_wars-w49.10`): the own units a bomb would splash,
     // the unit that strikes on arrival beside a slow one, and the units a
     // WAAAGH! would reach are what stands on the board in the public view.
-    "src/ai/v7.ts::armyEngagementsForV7": "BOARD",
+    // The Goblin pass, correction (`pulp_wars-w49.12`): the splash is
+    // weighed in its own function.
+    "src/ai/v7.ts::armyBombSplashAcceptedV7": "BOARD",
     "src/ai/v7.ts::armyStrikerNearV7": "BOARD",
     "src/ai/v7.ts::waaaghUsefulV7": "BOARD",
     // Tuning 8 (`pulp_wars-w49.11`): the units that storm or cover a

@@ -65,7 +65,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r49`;
+ * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r50`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 15, the Normal AI of a
  * Human, Undead, or Goblin seat). Round 7 was played by hand four times
  * (`r7a` to `r7d`); every position below is one of those games, or the
@@ -380,7 +380,7 @@ function scene(options: SceneV7): GameStateV7 {
 
 describe("tuning 8 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r49");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
   });
 });
 
@@ -1151,23 +1151,23 @@ describe("2. research while at war", () => {
     expect(ARMY_RICH_INCOME_V7).toBe(15);
     // Fourteen units against three: rich. Six technologies in round 13:
     // due on the clock of a rich seat (two rounds a technology), not on
-    // the ordinary one (three or more). Toward the Knight the first step
-    // is Scouting.
+    // the ordinary one (three or more). The Goblin pass, correction
+    // (`pulp_wars-w49.12`): the Swordsman is third in the Human order, so
+    // the first step is Engineering (it was Scouting, toward the Knight).
     const cost = armyOf(rich(14, 0)).research?.cost ?? 0;
-    expect(armyOf(rich(14, 0)).research?.tech).toBe("SCOUTING");
+    expect(armyOf(rich(14, 0)).research?.tech).toBe("ENGINEERING");
     const turn = policyTurn(rich(14, 40));
-    expect(turn.commands[0]).toEqual({ kind: "RESEARCH", tech: "SCOUTING" });
+    expect(turn.commands[0]).toEqual({ kind: "RESEARCH", tech: "ENGINEERING" });
     // (Scouting unlocks the Explorer Monument, whose free Raider stands on
     // the center for the rest of this turn: the city cannot train, and
-    // the Coins go on to Raiding and Chivalry.) Next turn it trains the
-    // dearest unit of a class it has none of: a Knight, not a Fighter.
-    expect(researchOf(turn.commands)).toEqual([
-      "SCOUTING",
-      "RAIDING",
-      "CHIVALRY",
-    ]);
+    // the Coins go on to the next technology.) Next turn it trains a
+    // unit of a class it has none of, not a Fighter: a Marksman (with
+    // Chivalry bought in the first turn it was a Knight; the Knight's
+    // technologies now come after the Swordsman's, and the city, an enemy
+    // near it, gets no Catapult).
+    expect(researchOf(turn.commands)).toEqual(["ENGINEERING", "SCOUTING"]);
     const second = policyTurn(withRound(nextRound(turn.state), 14, 20));
-    expect(trainedOf(second.commands)).toEqual(["KNIGHT"]);
+    expect(trainedOf(second.commands)).toEqual(["MARKSMAN"]);
     // Six units against three, the same Coins: the Catapult first, and
     // the technology only with what is left.
     const ordinary = policyTurn(rich(6, cost + 7));

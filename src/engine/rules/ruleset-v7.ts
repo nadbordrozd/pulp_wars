@@ -102,8 +102,8 @@ export type TechnologyUnlockV7 =
   | { readonly kind: "ARMS_INDUSTRY_DISCOUNT"; readonly coins: 1 }
   | { readonly kind: "LAND_TRADE_INCOME"; readonly coins: 1 }
   | { readonly kind: "SEA_TRADE_INCOME"; readonly coins: 1 }
-  /** Revision 17 Goblins: 1 Coin for each credited hostile kill. */
-  | { readonly kind: "PLUNDER"; readonly coins: 1 }
+  /** Revision 17 Goblins: Coins for each credited hostile kill (2 since 7r50). */
+  | { readonly kind: "PLUNDER"; readonly coins: 2 }
   | { readonly kind: "CAPTAIN_SUPPORT" }
   /** Revision 13 Undead: Necromancer Frenzy (Rally) and Raise Dead. */
   | { readonly kind: "NECROMANCER_SUPPORT" }
@@ -412,6 +412,25 @@ export interface RoleMechanicsV7 {
   readonly deathBlastDamage: number | null;
   /** Revision 17: HP regenerated at its owner's Start Turn (the Troll). */
   readonly regeneration: number;
+  /**
+   * The Goblin pass (`pulp_wars-w49.12`, 7r50): the most Gang Up the role's
+   * attacks get, under its faction's maximum: 0 for the Goblin Bomb Chucker
+   * (a bomb is thrown before the mob closes in), 1 for the Rocket Cart (the
+   * correction pass: one spotter), 2 for every other role. Irrelevant for a
+   * faction without Gang Up.
+   */
+  readonly gangUpLimit: 0 | 1 | 2;
+  /**
+   * The Goblin pass: Blast-proof (the Orc Brute). In land form the unit is
+   * not hit by an explosion (Kaboom, death blast, Blast Mountain) or by the
+   * splash of an attack on a unit next to it.
+   */
+  readonly blastProof: boolean;
+  /**
+   * The Goblin pass: Crash (the Scrap Buggy). The unit may Kaboom after it
+   * has attacked, also while a Ram continuation is waiting.
+   */
+  readonly kaboomAfterAttack: boolean;
   /**
    * Revision 19: the city capacity the unit (or its Egg) uses: 2 for the
    * Triceratops, T-Rex, and Brontosaurus, 1 for every other role.
@@ -737,6 +756,12 @@ export function landGrantCostV7(exploredClaimableTiles: number): number {
     LAND_GRANT_COST_PER_TILE_V7 * exploredClaimableTiles,
   );
 }
+/**
+ * The Goblin pass, correction (`pulp_wars-w49.12`): Plunder pays 2 Coins a
+ * kill (1 before): at 1 the Roads and Plunder technologies cost a hand
+ * player 37 Coins and returned 8 in four rounds.
+ */
+export const PLUNDER_COINS_V7 = 2 as const;
 /** Blast Mountain: permanent population for the tile's city (0 before). */
 export const BLAST_MOUNTAIN_POPULATION_V7 = 1 as const;
 /** Blast Mountain: its price in Coins. */
@@ -1345,6 +1370,9 @@ const mechanics = (
           kaboomDamage: null,
           deathBlastDamage: null,
           regeneration: 0,
+          gangUpLimit: 2,
+          blastProof: false,
+          kaboomAfterAttack: false,
           capacitySlots: 1,
           hatchTurns: null,
           runUpBonus2: 0,
@@ -1632,7 +1660,7 @@ export const GOBLIN_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
         unlock.kind === "CAPTAIN_SUPPORT"
           ? { kind: "WAAAGH_SUPPORT" }
           : unlock.kind === "LAND_TRADE_INCOME"
-            ? { kind: "PLUNDER", coins: 1 }
+            ? { kind: "PLUNDER", coins: PLUNDER_COINS_V7 }
             : unlock,
       ),
     ),
@@ -1780,8 +1808,10 @@ export const GOBLIN_ROLE_RULES_V7: Readonly<
 });
 
 /**
- * Revision 17 Goblin engine mechanics: only the Orc Brute builds Field
- * Defense; the Orc Warboss's WAAAGH! reaches radius 2 including support and
+ * Revision 17 Goblin engine mechanics (as amended by the Goblin pass,
+ * `pulp_wars-w49.12`, docs/product/RULESET_7_TUNING_GOBLIN.md): only the
+ * Orc Brute builds Field Defense, and it is Blast-proof; a Bomb Chucker's
+ * bomb gets no Gang Up; a Scrap Buggy may Kaboom after attacking; the Orc Warboss's WAAAGH! reaches radius 2 including support and
  * siege roles; goblin-crewed roles carry Kaboom damage and the Bomb Chucker,
  * Rocket Cart, and Scrap Buggy death-blast damage (resolved by
  * `explosions.ts`); the Bomb Chucker's bomb splashes every other unit
@@ -1791,15 +1821,27 @@ export const GOBLIN_ROLE_RULES_V7: Readonly<
 export const GOBLIN_ROLE_MECHANICS_V7 = mechanics({
   FIGHTER: { buildsFieldDefense: false, kaboomDamage: 5 },
   RAIDER: { kaboomDamage: 4 },
+  // The Goblin pass (7r50): a bomb gets no Gang Up.
   MARKSMAN: {
     splash: true,
     splashTargets: "ALL",
     kaboomDamage: 4,
     deathBlastDamage: 2,
+    gangUpLimit: 0,
   },
+  // The Goblin pass (7r50): the Orc Brute is Blast-proof.
+  GUARD: { blastProof: true },
   CAPTAIN: { rallyRadius: 2, rallyReachesSupportAndSiege: true },
-  CATAPULT: { advancesAfterKill: false, kaboomDamage: 5, deathBlastDamage: 4 },
-  KNIGHT: { kaboomDamage: 5, deathBlastDamage: 4 },
+  // The Goblin pass, correction: a rocket's Gang Up is at most +1 (with
+  // +2 one Cart and two Goblins killed any unit but the Juggernaut).
+  CATAPULT: {
+    advancesAfterKill: false,
+    kaboomDamage: 5,
+    deathBlastDamage: 4,
+    gangUpLimit: 1,
+  },
+  // The Goblin pass (7r50): Crash, a Scrap Buggy may Kaboom after attacking.
+  KNIGHT: { kaboomDamage: 5, deathBlastDamage: 4, kaboomAfterAttack: true },
   JUGGERNAUT: { regeneration: 4 },
   BATTLESHIP: { splash: true },
 });
@@ -3923,6 +3965,48 @@ export function armouredDamageV7(
 }
 
 /**
+ * The Goblin pass (`pulp_wars-w49.12`, 7r50): whether a unit's activation
+ * allows a Kaboom. Ordinarily the unit has used no primary action and no
+ * Ram continuation is waiting; with Crash (`kaboomAfterAttack`, the Scrap
+ * Buggy) its attacks do not count, so it may Kaboom after attacking and
+ * while a Ram continuation waits. A unit that Recovered, captured, or used
+ * a special action never may.
+ */
+export function kaboomReadyV7(
+  activation: {
+    readonly attacked: boolean;
+    readonly recovered: boolean;
+    readonly captured: boolean;
+    readonly specialActed: boolean;
+    readonly overrunActive: boolean;
+  },
+  kaboomAfterAttack: boolean,
+): boolean {
+  if (activation.recovered || activation.captured || activation.specialActed)
+    return false;
+  return (
+    kaboomAfterAttack || (!activation.attacked && !activation.overrunActive)
+  );
+}
+
+/**
+ * The Goblin pass (`pulp_wars-w49.12`, 7r50): Blast-proof. A land-form unit
+ * whose kind's role mechanics say so (the Goblin Orc Brute) is not hit by
+ * an explosion or by the splash of an attack on a unit next to it.
+ */
+export function unitIsBlastProofV7(
+  roster: FactionRosterV7,
+  unit: {
+    readonly id: number;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+    readonly form: UnitFormV7;
+  },
+): boolean {
+  return unit.form === "LAND" && unitRoleMechanicsV7(roster, unit).blastProof;
+}
+
+/**
  * The Dwarf revision (section 10.2): whether Plated lowered one instance of
  * `damage` (after Armoured) to the unit.
  */
@@ -4628,7 +4712,7 @@ export interface TechnologyCapabilitiesV7 {
   readonly seaTradeIncomeCoins: 0 | 1;
   readonly hostileCaptureSpoilsCoins: 0 | 2;
   /** Revision 17 Goblin Plunder: Coins per credited hostile kill. */
-  readonly plunderCoins: 0 | 1;
+  readonly plunderCoins: 0 | 2;
   /** Revision 19 Nesting: extra HP of every Egg the player lays. */
   readonly eggHpBonus: 0 | 4;
   /** Revision 19 Nesting: turns removed from a laid Egg's hatch time. */
@@ -4761,7 +4845,7 @@ export function technologyCapabilitiesV7(
   let forestMarch = false;
   let seaTradeIncomeCoins: 0 | 1 = 0;
   let hostileCaptureSpoilsCoins: 0 | 2 = 0;
-  let plunderCoins: 0 | 1 = 0;
+  let plunderCoins: 0 | 2 = 0;
   let eggHpBonus: 0 | 4 = 0;
   let eggHatchTurnReduction: 0 | 1 = 0;
   let nestingCityCapacityBonus: 0 | 1 = 0;
@@ -4845,7 +4929,7 @@ export function technologyCapabilitiesV7(
         hostileCaptureSpoilsCoins = 2;
         break;
       case "PLUNDER":
-        plunderCoins = 1;
+        plunderCoins = unlock.coins;
         break;
       case "NESTING":
         eggHpBonus = unlock.eggHp;

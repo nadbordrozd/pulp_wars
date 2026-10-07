@@ -7,6 +7,7 @@ import {
   terrainGivesCoverV7,
   RAM_BONUS2_V7,
   armouredDamageV7,
+  unitIsBlastProofV7,
   attackIgnoresCityWallsV7,
   attackIsChargeV7,
   attackIsRamV7,
@@ -280,18 +281,22 @@ export function attackFortificationV7(
  * Mind Control revision: a body rule) has Gang Up gains +1 Attack for each
  * other unit its owner (its controller) has on
  * the eight cells around the target (any role and form; allies never count),
- * up to the faction maximum. Own units are always visible to their owner, so
+ * up to the faction maximum. The Goblin pass (`pulp_wars-w49.12`): a role
+ * has its own `gangUpLimit` (the Bomb Chucker 0, the Rocket Cart 1). Own units are always visible to their owner, so
  * the public preview passes its visible units and is exact.
  */
 export function gangUpBonusV7(
   roster: FactionRosterV7,
   units: readonly Pick<UnitStateV7, "id" | "ownerId" | "at" | "hp">[],
-  attacker: Pick<UnitStateV7, "id" | "ownerId" | "form">,
+  attacker: Pick<UnitStateV7, "id" | "ownerId" | "form" | "role">,
   target: Pick<UnitStateV7, "id" | "at">,
 ): 0 | 1 | 2 {
   if (attacker.form !== "LAND") return 0;
   const maximum = factionRulesV7(unitFactionV7(roster, attacker)).gangUpMaximum;
   if (maximum === 0) return 0;
+  // The Goblin pass (7r50): the role's own limit (a bomb 0, a rocket 1).
+  const limit = unitRoleMechanicsV7(roster, attacker).gangUpLimit;
+  if (limit === 0) return 0;
   const helpers = units.filter(
     (unit) =>
       unit.hp > 0 &&
@@ -300,7 +305,7 @@ export function gangUpBonusV7(
       unit.id !== target.id &&
       chebyshev(unit.at, target.at) === 1,
   ).length;
-  return Math.min(maximum, helpers) as 0 | 1 | 2;
+  return Math.min(maximum, limit, helpers) as 0 | 1 | 2;
 }
 
 /**
@@ -606,6 +611,8 @@ export function calculateCombatPreviewV7(
           unit.id !== defender.id &&
           unit.id !== attacker.id &&
           chebyshev(unit.at, defender.at) === 1 &&
+          // The Goblin pass (7r50): a Blast-proof unit is not splashed.
+          !unitIsBlastProofV7(state, unit) &&
           (attackerMechanics.splashTargets === "ALL" ||
             arePlayersHostileV7(state, attacker.ownerId, unit.ownerId)),
       )

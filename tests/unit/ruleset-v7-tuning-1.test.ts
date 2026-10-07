@@ -114,13 +114,13 @@ describe("tuning 1 identity", () => {
   // Tuning 1 took 7r46; tuning 2 (tests/unit/ruleset-v7-tuning-2.test.ts)
   // took 7r47, so 7r46 is the last prior identity.
   it("was 7r46, after 7r45 in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r49");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r49.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r50.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(48);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(49);
   });
 });
 
@@ -919,8 +919,9 @@ describe("F: Commerce, Explosives, and Field Defense", () => {
       expect(capabilities.landTradeIncomeCoins, faction).toBe(
         faction === "GOBLIN" ? 0 : 1,
       );
+      // The Goblin pass, correction (`pulp_wars-w49.12`): Plunder pays 2.
       expect(capabilities.plunderCoins, faction).toBe(
-        faction === "GOBLIN" ? 1 : 0,
+        faction === "GOBLIN" ? 2 : 0,
       );
     }
   });

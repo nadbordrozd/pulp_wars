@@ -575,6 +575,12 @@ describe("text-mode play harness", () => {
     );
     const hired = ok("do", "--session", session, hire);
     expect(hired).toContain(`OK ${hire}`);
+    // The correction of the Goblin pass: a hire is not printed as TRAINED.
+    expect(hired).toContain(
+      `(S0 Knight) at the Market of c${capitalId} @${market.x},${market.y} for 14c`,
+    );
+    expect(hired).toContain("  HIRED u");
+    expect(hired).not.toContain("TRAINED");
     const state = sessionState(session);
     expect(
       state.units.find(
@@ -607,22 +613,51 @@ describe("text-mode play harness", () => {
       LAB_BREAKTHROUGH: ["ORIGINAL", "Human"],
       LAB_BREAKTHROUGH_GOBLIN: ["GOBLIN", "Goblin"],
       LAB_BREAKTHROUGH_UNDEAD: ["UNDEAD", "Undead"],
+      // The Goblin pass (`pulp_wars-w49.12`): the player is the Goblins.
+      LAB_GOBLIN_MID: ["ORIGINAL", "Human"],
     };
     expect(Object.keys(TEXT_PLAY_LABS_V7)).toEqual(Object.keys(attackers));
     for (const lab of Object.keys(TEXT_PLAY_LABS_V7)) {
       const [faction, name] = attackers[lab] ?? ["", ""];
+      const [own, ownName] =
+        lab === "LAB_GOBLIN_MID" ? ["GOBLIN", "Goblin"] : ["ORIGINAL", "Human"];
       const session = path.join(root, `${lab}.json`);
       const started = ok("lab", "--session", session, lab);
       expect(started).toContain(`LAB ${lab}:`);
-      expect(started).toContain("S0 Human (you)");
+      expect(started).toContain(`S0 ${ownName} (you)`);
       expect(started).toContain(`S1 ${name} (AI)`);
       expect(started).toContain("YOUR TURN");
       const state = sessionState(session);
       expect(state.setup).toMatchObject({
         mapType: "MISSION",
-        factions: ["ORIGINAL", faction],
+        factions: [own, faction],
         mission: { id: lab },
       });
+      if (lab === "LAB_GOBLIN_MID") {
+        // The three unit rules of the Goblin pass, on the unit lines.
+        expect(started).toContain("| its bombs get no Gang Up");
+        expect(started).toContain(
+          "| Blast-proof: blasts and bomb splash don't hurt it",
+        );
+        expect(started).toContain("| Crash: can Kaboom after attacking");
+        expect(started).toContain("YOU PLAY THE GOBLINS");
+        // The correction of the Goblin pass: the Coins the first turn
+        // opens with (the text said 20c), the rocket's Gang Up, and a
+        // Kaboom preview that lists the units hit and no others (it
+        // printed every unit on the board).
+        expect(started).toContain("35c in hand on the first turn");
+        expect(started).toContain("YOUR TURN | coins 35 |");
+        expect(started).toContain("| its rockets get Gang Up +1 at most");
+        const lone = state.units.find(
+          (unit) => unit.role === "FIGHTER" && unit.at.x === 1,
+        );
+        if (lone === undefined) throw new Error("no Goblin at x 1");
+        expect(
+          ok("options", "--session", session, "--unit", `u${lone.id}`),
+        ).toContain(
+          `u${lone.id}.kaboom  kaboom | blast 5 at ${lone.at.x},${lone.at.y}: hits nobody | enemy 0 damage, 0 kills; yours 0 damage, 0 kills | this unit dies`,
+        );
+      }
       const ids = offeredIds(session);
       expect(
         ids.some((id) => /^u\d+\.m\./.test(id)),
@@ -679,7 +714,7 @@ describe("text-mode play harness", () => {
     // Tier 3 with 16 technologies owned: 9 + 15 (tuning 6; 39 before).
     expect(tech).toContain("T3 PLANNING | AVAILABLE 24c");
     expect(tech).toContain(
-      "cmd BUILD_MARKET (6c, output by neighbours; needs one of your Farms, Lumber Camps, Mines or their mills next to it)",
+      "cmd BUILD_MARKET (6c; a Market pays 2 or 3 Coins every turn: 1, plus 1 for each family of buildings beside it (farms, timber, metal), 3 at most; needs one of your Farms, Lumber Camps, Mines or their mills next to it)",
     );
     expect(tech).toContain(
       "Pillage: destroy an enemy building under your unit for +3 Coins; a Raider may still move away afterwards",

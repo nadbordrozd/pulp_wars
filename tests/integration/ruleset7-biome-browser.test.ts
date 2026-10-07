@@ -19,7 +19,7 @@ describe("ruleset-7 current browser boundary", () => {
       setItem: (key: string, value: string) => void values.set(key, value),
       removeItem: (key: string) => void values.delete(key),
     };
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r49.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r50.current");
     expect(cleanupObsoleteRuleset7Saves(storage).removedKeys).toEqual(
       OBSOLETE_SAVE_STORAGE_KEYS_V7,
     );

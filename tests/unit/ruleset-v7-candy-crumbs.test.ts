@@ -723,7 +723,7 @@ describe("eating Crumbs and the Peppermint Surprise (section 6.3)", () => {
         kind: "PLUNDER_AWARDED",
         playerId: seatIdV7(state, 1),
         kills: 1,
-        coins: 1,
+        coins: 2,
       },
     ]);
     expect(moved.state.units.every((unit) => unit.kills === 0)).toBe(true);

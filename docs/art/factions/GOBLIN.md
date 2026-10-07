@@ -684,6 +684,16 @@ bead (`pulp_wars-0ao.5`) and may reuse existing cues.
 
 ## Roster notes
 
+The Goblin pass (`pulp_wars-w49.12`, `pulp-wars-poc-7r50`,
+[the tuning record](../../product/RULESET_7_TUNING_GOBLIN.md)) changed three
+unit rules and no art: a Bomb Chucker's bomb gets no Gang Up (and, since
+its correction, a Rocket Cart's rocket +1 at most), the Orc Brute
+is Blast-proof, and a Scrap Buggy may Kaboom after attacking (Crash). The
+two new rules are text lines on the unit card; they have no icon. If an art
+bead gives them one, the vocabulary is the command icons' (below): a round
+shield over a soot burst for Blast-proof, the buggy's front ram in a burst
+for Crash.
+
 Canvas and class follow the mechanical role's subject in the
 [asset inventory](../CHIBI_ASSET_INVENTORY.md). "Human" and "Undead" name
 the same role's unit that the silhouette must read apart from.

@@ -121,7 +121,7 @@ describe("Revision 17 Goblin presentation text", () => {
     expect(text.friendlyFire).toBe(
       "Friendly fire: 2 of your units hit, 1 killed",
     );
-    expect(text.plunder).toBe("Plunder: +1 Coins");
+    expect(text.plunder).toBe("Plunder: +2 Coins");
     expect(text.fog).toBe(null);
     expect(text.bitten).toBe(null);
     expect(text.fieldDefense).toBe(null);
@@ -219,13 +219,27 @@ describe("Revision 17 Goblin presentation text", () => {
     const target = unitAt(view, AT.bombTarget);
     const preview = required(queryCombatPreviewV7(view, chucker.id, target.id));
     const chain = previewAttackExplosionsV7(view, chucker.id, target.id);
+    // The Goblin pass (7r50): a bomb gets no Gang Up from the Goblin beside
+    // its target; the splash on that Goblin is still warned of.
     expect(goblinAttackPreviewTextV7(view, preview, chain)).toEqual({
-      gangUp: "Gang Up +1",
+      gangUp: null,
       warnings: ["Bomb splash hits your Goblin"],
       summary: "Bomb hits your Goblin",
-      semantic:
-        "Gang Up adds 1 Attack from your units next to the target. Bomb splash hits your Goblin.",
+      semantic: "Bomb splash hits your Goblin.",
     });
+    // The Rocket Cart's shot at the Fighter beside the Kaboom Goblin has it.
+    const cart = unitAt(view, AT.rocketCart);
+    const fighter = unitAt(view, AT.enemyFighter);
+    const shot = required(queryCombatPreviewV7(view, cart.id, fighter.id));
+    const text = goblinAttackPreviewTextV7(
+      view,
+      shot,
+      previewAttackExplosionsV7(view, cart.id, fighter.id),
+    );
+    expect(text.gangUp).toBe("Gang Up +1");
+    expect(text.semantic).toContain(
+      "Gang Up adds 1 Attack from your units next to the target.",
+    );
   });
 
   it("warns a Human attacker about an exploding target and its chain", () => {
@@ -280,7 +294,7 @@ describe("Revision 17 Goblin presentation text", () => {
       `Kaboom ${CHUCKER_KABOOM}`,
       `Explodes on death (${CHUCKER_BLAST})`,
       "Bombs",
-      "Gang Up",
+      "No Gang Up",
     ]);
     expect(names("JUGGERNAUT", AT.troll)).toEqual([
       "Regenerates 4 HP each turn",
@@ -297,6 +311,9 @@ describe("Revision 17 Goblin presentation text", () => {
       "Death blasts",
       "Chain reactions",
       "Bombs",
+      // The Goblin pass (7r50).
+      "Orc Brutes",
+      "Crash",
       "Plunder",
       "WAAAGH!",
       "Trolls",
@@ -339,7 +356,7 @@ describe("Revision 17 Goblin presentation text", () => {
     expect(
       goblinBoundaryNoticeV7(kaboom.events.events, kaboom.before, kaboom.after),
     ).toEqual({
-      text: "Your Goblin blew up: 4 hit, 2 killed · Your Rocket Cart exploded: 1 hit, 0 killed · Plunder: +1 Coins",
+      text: "Your Goblin blew up: 4 hit, 2 killed · Your Rocket Cart exploded: 1 hit, 0 killed · Plunder: +2 Coins",
       toast: true,
     });
     const rally = boundary(state, {
@@ -570,16 +587,31 @@ describe("Revision 17 Goblin board previews", () => {
     const target = required(
       plan.targets.find((candidate) => same(candidate.at, AT.bombTarget)),
     );
-    expect(target.previewNote).toBe("Gang Up +1");
+    // The Goblin pass (7r50): no Gang Up on a bomb (the note was "Gang Up
+    // +1" and the splash 5).
+    expect(target.previewNote).toBeUndefined();
     expect(target.previewWarnings).toEqual(["Bomb splash hits your Goblin"]);
     expect(target.splash).toEqual([
-      // (4 before tuning 5: the target is a Human Guard, which a ranged
-      // attack hits harder, and the splash is half of it.)
-      { at: AT.bombHelper, damage: 5, dies: false, friendly: true },
+      // Half of the 6 a bomb deals a Human Guard from two tiles.
+      { at: AT.bombHelper, damage: 3, dies: false, friendly: true },
     ]);
     expect(target.semanticLabel).toContain(
-      "Splash affects 1 adjacent unit (1 yours) for 5.",
+      "Splash affects 1 adjacent unit (1 yours) for 3.",
     );
+    // A Rocket Cart's shot still shows it.
+    const cart = unitAt(view, AT.rocketCart);
+    const cartPlan = buildBoardRenderPlanV7(view, queryPlayerCommandsV7(view), {
+      ...NO_INTERACTION,
+      selection: { kind: "UNIT", unitId: cart.id },
+      selectedUnitId: cart.id,
+    });
+    expect(
+      required(
+        cartPlan.targets.find((candidate) =>
+          same(candidate.at, AT.enemyFighter),
+        ),
+      ).previewNote,
+    ).toBe("Gang Up +1");
   });
 
   it("carries the death-blast chain of a Human attack on an exploding unit", () => {

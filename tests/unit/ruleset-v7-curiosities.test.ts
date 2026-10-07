@@ -415,11 +415,13 @@ describe("headless parity and the CLI flag", () => {
         // Its correction pass (the research clock under pressure, the
         // battery, the weak garrison): 16 rounds, recomputed (the final
         // PRNG state too: the match ends a round later).
-        rounds: 16,
+        // The Goblin pass, correction (`pulp_wars-w49.12`: the Human
+        // seat's research order): 17 rounds, recomputed.
+        rounds: 17,
         commandHash:
-          "33eee3593b76a684533e9def11d9ced08afe5f436a9e4f7c130f3110171281b7",
+          "5a56ed9a358e4d26300ab332532472e5d3bd335485829bdf19749ebadd5e63e9",
         eventHash:
-          "5969a82c2e9b6640fd2f834cd1452bde0ca8a9de4c2335593c4358e61d601815",
+          "c4329064debca13293b038ca0a4dd577e52d5b1ab2a2b8a47bafc8fe47fd6292",
         mapHash:
           "1f6ad08d476884229d6cb8a7319ea209b8667cf4e28e24cd07352ebafc3055de",
         finalPrngHash:
@@ -432,12 +434,15 @@ describe("headless parity and the CLI flag", () => {
         // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin a technology
         // owned for every faction, so every match changes at its third
         // technology: 14 rounds (15 before), recomputed. The same holds for
-        // the three pins below.
+        // the three pins below. The Goblin pass (`pulp_wars-w49.12`, 7r50):
+        // the Goblin seat's level-2 Survey grants a Wolf Rider (Scouts), so
+        // this pin, the one with a Goblin seat, was recomputed; the map and
+        // the PRNG are unchanged.
         rounds: 14,
         commandHash:
-          "06a0c1a46349f941e0b3a1f3ccb6fefeffe1872edef0e9a888a09c1cfe0ff4d9",
+          "c23258561854c7502fe7c9721243b6457865b0f3a54b09ff46db155709f9bcff",
         eventHash:
-          "ab6337c58f0a6b5b50b31a9578f6a938245d4095ab08bbec9ef2c65dfb0a10de",
+          "d0be88f7b0b7b57168ec4521656ecb26862b416c5dc64443732274f77d147572",
         mapHash:
           "5b286bbe8cdb2f8a339cd7a74ba219bc2b57a4322370548442b3c8f26bef4ad9",
         finalPrngHash:

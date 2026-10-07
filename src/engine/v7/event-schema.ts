@@ -28,6 +28,7 @@ import {
   BLAST_MOUNTAIN_COST_V7,
   CITY_REWARD_COINS_V7,
   PILLAGE_COINS_V7,
+  PLUNDER_COINS_V7,
 } from "../rules/ruleset-v7";
 import {
   ACHIEVEMENT_IDS_V7,
@@ -1402,7 +1403,12 @@ function validPayload(
     case "SPOILS_AWARDED":
       return id(e.playerId) && id(e.cityId) && e.coins === 2;
     case "PLUNDER_AWARDED":
-      return id(e.playerId) && pos(e.kills) && e.coins === e.kills;
+      return (
+        id(e.playerId) &&
+        pos(e.kills) &&
+        typeof e.kills === "number" &&
+        e.coins === PLUNDER_COINS_V7 * e.kills
+      );
     // Map curiosities (section 8.7).
     case "MONSTER_BOUNTY_AWARDED":
       return id(e.playerId) && id(e.unitId) && e.coins === MONSTER_BOUNTY_V7;

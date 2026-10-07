@@ -13,6 +13,7 @@ import {
   FOREST_MARCH_UNLOCK_TEXT_V7,
   BARRACKS_REWARD_TEXT_V7,
   SCOUTS_REWARD_TEXT_V7,
+  scoutsRewardTextV7,
   BLAST_ORE_WARNING_V7,
   landGrantUnaffordableTextV7,
   pillageUnlockTextV7,
@@ -46,6 +47,7 @@ import {
 import {
   missionByIdV7,
   missionMatchSetupV7,
+  SURVEY_RAIDERS_V7,
   cityUnitCapacityForV7,
   distinctFactionsV7,
   effectiveRoleRuleV7,
@@ -10318,7 +10320,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r49",
+    rulesetId: "pulp-wars-poc-7r50",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -10501,7 +10503,7 @@ function effectDescription(
     case "WAAAGH_SUPPORT":
       return "Orc Warbosses WAAAGH! troops within 2 tiles";
     case "PLUNDER":
-      return `+${effect.coins} Coin for each enemy unit your units or blasts kill`;
+      return `+${effect.coins} Coins for each enemy unit your units or blasts kill`;
     case "NESTING":
       // Revision 20: Nesting also adds a unit slot to every city.
       return nestingUnlockTextV7();
@@ -10930,9 +10932,15 @@ function rewardLabel(
   if (reward === "TREASURY")
     return ["Treasury", `+${CITY_REWARD_COINS_V7.TREASURY} Coins`];
   // Tuning 4: a Human Survey is "Scouts", the survey and a free Raider.
+  // The Goblin pass (7r50): also a Goblin Survey, with a Wolf Rider.
   if (reward === "SURVEY")
-    return faction === "ORIGINAL"
-      ? ["Scouts", SCOUTS_REWARD_TEXT_V7]
+    return SURVEY_RAIDERS_V7[faction] === 1
+      ? [
+          "Scouts",
+          faction === "ORIGINAL"
+            ? SCOUTS_REWARD_TEXT_V7
+            : scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", faction).label),
+        ]
       : ["Survey", "Reveal the area"];
   if (reward === "STOCKPILE") return ["Stockpile", "+4 Coins"];
   if (reward === "WALLS") return ["Walls", "Stronger city defense"];

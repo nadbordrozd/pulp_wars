@@ -2247,9 +2247,9 @@ describe("ruleset-7 revision-19 Egg destruction", () => {
       kind: "PLUNDER_AWARDED",
       playerId: goblinId,
       kills: 1,
-      coins: 1,
+      coins: 2,
     });
-    expect(coins(splashed.state)).toBe(11);
+    expect(coins(splashed.state)).toBe(12);
     expect(unitAtV7(splashed.state, { x: 4, y: 7 }).kills).toBe(1);
     expect(splashed.state.eggs).toEqual([]);
     // Kaboom: a Goblin (5 fixed damage) next to a 5-HP Egg.
@@ -2274,7 +2274,7 @@ describe("ruleset-7 revision-19 Egg destruction", () => {
       kind: "PLUNDER_AWARDED",
       playerId: goblinId,
       kills: 1,
-      coins: 1,
+      coins: 2,
     });
     // The Nesting Egg takes the same fixed 5 and survives.
     expect(unitAtV7(blown.state, { x: 7, y: 8 })).toMatchObject({
@@ -2307,7 +2307,7 @@ describe("ruleset-7 revision-19 Egg destruction", () => {
       kind: "PLUNDER_AWARDED",
       playerId: goblinId,
       kills: 1,
-      coins: 1,
+      coins: 2,
     });
     for (const result of [splashed, blown, blasted])
       expect(result.state.graves).toEqual([]);

@@ -355,7 +355,9 @@ describe("ruleset-7 Goblin blast resolution", () => {
       ["ORIGINAL", "GOBLIN", "ORIGINAL"],
       [
         { seat: 1, role: "FIGHTER", at: at(5, 5) },
-        { seat: 1, role: "GUARD", at: at(4, 4) },
+        // The exploder's own unit: a Warboss (an Orc Brute is Blast-proof
+        // since the Goblin pass, 7r50).
+        { seat: 1, role: "CAPTAIN", at: at(4, 4) },
         { seat: 2, role: "FIGHTER", at: at(5, 4) },
         { seat: 0, role: "FIGHTER", at: at(6, 4) },
         { seat: 0, role: "GUARD", at: at(4, 5) },
@@ -511,9 +513,9 @@ describe("ruleset-7 Goblin death blasts", () => {
       { kind: "UNIT_DIED", unitId: fighter.id, cause: "EXPLOSION" },
       // Blast Plunder is credited to the exploding unit's owner, although an
       // enemy killed it (and during the enemy's turn).
-      { kind: "PLUNDER_AWARDED", playerId: goblinId, kills: 1, coins: 1 },
+      { kind: "PLUNDER_AWARDED", playerId: goblinId, kills: 1, coins: 2 },
     ]);
-    expect(coinsOf(result.state, goblinId)).toBe(coins + 1);
+    expect(coinsOf(result.state, goblinId)).toBe(coins + 2);
   });
 
   it("explodes a Scrap Buggy killed by retaliation", () => {
@@ -727,7 +729,8 @@ describe("ruleset-7 Goblin chain reactions", () => {
         { seat: 0, role: "FIGHTER", at: at(5, 3) },
         { seat: 1, role: "MARKSMAN", at: at(6, 4), hp: 4 },
         { seat: 1, role: "MARKSMAN", at: at(4, 4), hp: 4 },
-        { seat: 1, role: "GUARD", at: at(5, 4), hp: 9 },
+        // A Warboss (`brute` below; an Orc Brute is Blast-proof since 7r50).
+        { seat: 1, role: "CAPTAIN", at: at(5, 4), hp: 9 },
         { seat: 1, role: "FIGHTER", at: at(5, 5), hp: 2 },
       ],
     );
@@ -931,7 +934,8 @@ describe("ruleset-7 Goblin bomb friendly fire and blast Plunder", () => {
         { seat: 1, role: "GUARD", at: at(4, 2) },
         { seat: 0, role: "FIGHTER", at: at(5, 2), hp: 1 },
         { seat: 1, role: "FIGHTER", at: at(4, 3), hp: 1 },
-        { seat: 0, role: "GUARD", at: at(3, 1) },
+        // An own Warboss in the splash (an Orc Brute is Blast-proof).
+        { seat: 0, role: "CAPTAIN", at: at(3, 1) },
       ],
     );
     const chucker = unitAtV7(state, at(2, 2));
@@ -953,7 +957,7 @@ describe("ruleset-7 Goblin bomb friendly fire and blast Plunder", () => {
         kind: "PLUNDER_AWARDED",
         playerId: state.humanPlayerId,
         kills: 1,
-        coins: 1,
+        coins: 2,
       },
     ]);
   });
@@ -985,7 +989,7 @@ describe("ruleset-7 Goblin bomb friendly fire and blast Plunder", () => {
         kind: "PLUNDER_AWARDED",
         playerId: seatIdV7(state, 1),
         kills: 1,
-        coins: 1,
+        coins: 2,
       },
     ]);
   });
@@ -1010,14 +1014,14 @@ describe("ruleset-7 Goblin bomb friendly fire and blast Plunder", () => {
       unitId: exploder.id,
     });
     expect(plunderOf(result.events)).toEqual([
-      { kind: "PLUNDER_AWARDED", playerId: actor, kills: 2, coins: 2 },
+      { kind: "PLUNDER_AWARDED", playerId: actor, kills: 2, coins: 4 },
     ]);
     expect(preview?.totals).toEqual({
       hostileDamage: 4,
       hostileKills: 2,
       friendlyDamage: 4,
       friendlyKills: 2,
-      plunderCoins: 2,
+      plunderCoins: 4,
     });
     const withoutPlunder = checkedV7({
       ...state,
@@ -1324,12 +1328,12 @@ describe("ruleset-7 Goblin explosions and Undead rules", () => {
     if (income?.kind !== "INCOME_AWARDED") throw new Error("no income");
     // The Start Turn chain's Plunder counts this turn (read from state).
     expect(coinsOf(result.state, goblinId)).toBe(
-      before + 1 + income.totalCoins,
+      before + 2 + income.totalCoins,
     );
     expect(result.events).toContainEqual({
       kind: "TURN_STARTED",
       playerId: goblinId,
-      coins: before + 1 + income.totalCoins,
+      coins: before + 2 + income.totalCoins,
     });
   });
 });

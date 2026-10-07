@@ -15,6 +15,7 @@ import {
   LAB_BREAKTHROUGH_UNDEAD_V7,
   LAB_BREAKTHROUGH_V7,
 } from "./lab-breakthrough";
+import { LAB_GOBLIN_MID_V7 } from "./lab-goblin";
 import { LAB_BACKLINE_V7, LAB_LATE_V7, LAB_SIEGE_V7 } from "./lab-human";
 import { TEST_GROUNDS_V7 } from "./test-grounds";
 import { TEST_GUARD_V7, TEST_HOLD_V7, TEST_RUSH_V7 } from "./test-directives";
@@ -52,6 +53,9 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   LAB_BREAKTHROUGH_V7,
   LAB_BREAKTHROUGH_GOBLIN_V7,
   LAB_BREAKTHROUGH_UNDEAD_V7,
+  // The Goblin pass (`pulp_wars-w49.12`): the Goblin roster in an even
+  // middle game, the hand player as the Goblins.
+  LAB_GOBLIN_MID_V7,
 ]);
 
 /** The registered mission with this ID (any revision), or null. */

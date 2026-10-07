@@ -371,7 +371,7 @@ describe("provocation, damage, death, and the bounty (sections 8.4, 8.6, 8.7)", 
       coins: MONSTER_BOUNTY_V7,
     });
     expect(killed.state.players.find((player) => player.id === P3)?.coins).toBe(
-      coins + MONSTER_BOUNTY_V7 + 1,
+      coins + MONSTER_BOUNTY_V7 + 2,
     );
     expect(killed.state.monsters).toEqual([]);
     expect(killed.state.units.some((unit) => unit.id === spider.id)).toBe(

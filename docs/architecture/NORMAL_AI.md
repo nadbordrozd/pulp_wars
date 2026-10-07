@@ -1,5 +1,99 @@
 # Greedy Normal AI
 
+## The Goblin pass (`pulp_wars-w49.12`)
+
+**[The Goblin faction pass](../product/RULESET_7_TUNING_GOBLIN.md#8-the-normal-ai)**
+(`pulp-wars-poc-7r50`) changed three Goblin unit rules: a Bomb Chucker's
+bomb gets no Gang Up, the Orc Brute is Blast-proof, and a Scrap Buggy may
+Kaboom after attacking (Crash). What the policy does with them, all in
+`src/ai/v7-army.ts` and `src/ai/v7-goblin.ts`; nothing else of the policy
+was touched, and a seat of another faction decides as before.
+
+- **Research order** (`ARMY_RESEARCH_ROLES_V7.GOBLIN`): Bomb Chucker, Wolf
+  Rider, Rocket Cart, **Warboss**, Scrap Buggy, Orc Brute (the Warboss was
+  last and the Orc Brute fifth). From a Gathering opener: Hunting,
+  Marksmanship, Scouting, Forestry, Sawmilling, Administration, Raiding,
+  Chivalry, Drill. WAAAGH! is the only bonus a bomb still gets and adds to
+  every Gang Up kill; the Rocket Cart is the one ranged unit with Gang Up.
+- **Shares** (`ARMY_SHARES_V7.goblin`, line / defender / ranged / siege /
+  breakthrough): 25 / 10 / 25 / 20 / 20 (30 / 10 / 30 / 15 / 15 before);
+  against two or more visible ranged, siege, or support units 20 / 10 /
+  25 / 20 / 25. With the dear-unit rule below (20 per Coin of price for a
+  class the army is short of) a Goblin seat with 7 Coins and no siege unit
+  trains a Rocket Cart.
+- **Gang Up** is read from the engine: `gangUpForPolicyV7` returns 0 for a
+  role whose mechanics say `gangUpLimit: 0`, and the helper Moves of the
+  Gang Up ladders are scored from the combat preview, so no helper is sent
+  beside a bomb's target for the bomb's sake.
+- **Blast-proof**: `hypotheticalBlastV7` and `hostileKaboomExposureV7`
+  leave a Blast-proof unit out, and the engine's Kaboom, chain, and splash
+  previews already do. A Kaboom or a bomb beside an own Orc Brute carries
+  no friendly-fire cost, and an Orc Brute does not shy from a clump a
+  hostile Kaboom would hit.
+- **Crash** has no rule of its own. The engine offers `KABOOM` to a Scrap
+  Buggy that has attacked, and `kaboomScoreV7` scores it as it scores every
+  Kaboom: an army seat's unit blows up only for a kill or on two or more
+  enemies, the blast must be worth more than it costs (own losses at twice
+  their value, and the Buggy itself, a third of it when visible enemies
+  would kill it anyway), and a blast that kills two or hits three without
+  hurting an own unit goes before an ordinary kill (1181). So a Buggy
+  whose Ram has stopped among enemies crashes, and one that stands among
+  its own units does not.
+
+Tests: `tests/unit/ruleset-v7-goblin-pass.test.ts` ("the Normal AI").
+
+### The correction after hand play
+
+Three hand-played games
+([the pass, section 1.2](../product/RULESET_7_TUNING_GOBLIN.md#12-the-correction-after-hand-play))
+changed the list above and added rules. Where the two differ, this section
+is current.
+
+- **Research order:** Bomb Chucker, Wolf Rider, **Orc Brute**, Rocket Cart,
+  Warboss, Scrap Buggy (Hunting, Marksmanship, Scouting, Drill, Forestry,
+  Sawmilling, Administration, Raiding, Chivalry). The Humans': Marksman,
+  Guard, **Swordsman**, Catapult, Knight, Captain (Hunting, Marksmanship,
+  Drill, Engineering, Forestry, Sawmilling, Scouting, Raiding, Chivalry,
+  Administration).
+- **Shares** of a Goblin army: 20 / 20 / 20 / 25 / 15; against two or more
+  visible ranged, siege, or support units 15 / 20 / 20 / 25 / 20.
+- **Gang Up** is the smallest of the faction's maximum, the role's
+  `gangUpLimit` (a Bomb Chucker 0, a Rocket Cart 1), and the helpers, in
+  the engine and in `gangUpForPolicyV7`.
+- **The weight of a unit in an assault** (`armyFieldStrengthV7`): a unit
+  of a kind with Gang Up counts `ARMY_GANG_UP_STRENGTH_V7` (150) percent of
+  `armyUnitStrengthV7`. A joined battle in which the seat has one and a
+  half times the enemy's units near commits at
+  `ARMY_COMMIT_JOINED_COUNT_WEIGHT_V7` (70) percent of the enemy's weight
+  (100 without the numbers). Both hold for every army seat; only Goblin
+  kinds have Gang Up.
+- **The escort** (`armyEscortValueV7`, Goblin seats only): a
+  defender-class unit's army Move is worth `ARMY_ESCORT_VALUE_V7` (6) more
+  for each own ranged, siege, or support unit it would stand beside, at
+  most `ARMY_ESCORT_MAXIMUM_V7` (2).
+- **Scrap Buggies:** for a Goblin seat a breakthrough unit's training score
+  on a threatened or frontier center is lower by
+  `ARMY_FRONT_BREAKTHROUGH_COST_V7` (400). In `kaboomScoreV7` a unit that
+  has attacked (a Crash), would be killed by visible enemies
+  (`goblinDoomedAtV7`), hits at least one enemy, and kills no own or allied
+  unit passes the army gate (a kill or two enemies) and is scored without
+  its own price.
+- **Bombs:** `armyEngagementsForV7` counts a throw that splashes own or
+  allied units when `armyBombSplashAcceptedV7` accepts it: none of them
+  dies, and the hit and splash on hostile units are worth at least twice
+  the splash on them (`FRIENDLY_FIRE_TRADE_FACTOR_V7`). A Blast-proof unit
+  is in no splash. Before, any own unit beside the target ruled the throw
+  out as a reason to move.
+- **The war clock** (`ARMY_WAR_RESEARCH_ROUNDS_V7`) stays 3. A clock of 2
+  was tried for the Human seat that stopped researching and withdrawn (an
+  Undead seat then bought no growth building in the pinned opening of
+  tuning 7).
+
+Tests: the same file ("the Goblin pass, correction: the Normal AI"), two of
+them from recorded positions of the hand-played games
+(`tests/fixtures/ruleset-v7-goblin-standing-army.json`,
+`tests/fixtures/ruleset-v7-human-research-stall.json`).
+
 ## Army play (`pulp_wars-w49.4`)
 
 **The Human tuning, round 5**
@@ -208,11 +302,11 @@ faction's own order that the seat cannot train yet
 (`ARMY_RESEARCH_ROLES_V7`), from the first turn and not only while alert.
 Each faction's signature units come first:
 
-| Faction | Units in order                                                         | Technologies from a Gathering opener                                                                         |
-| ------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Humans  | Marksman, Guard, Catapult, Knight, Swordsman, Captain                  | Hunting, Marksmanship, Drill, Forestry, Sawmilling, Scouting, Raiding, Chivalry, Engineering, Administration |
-| Undead  | Zombie, Banshee, Necromancer, Lich, Vampire                            | Drill, Hunting, Marksmanship, Administration, Forestry, Sawmilling, Scouting, Raiding, Chivalry              |
-| Goblins | Bomb Chucker, Wolf Rider, Rocket Cart, Scrap Buggy, Orc Brute, Warboss | Hunting, Marksmanship, Scouting, Forestry, Sawmilling, Raiding, Chivalry, Drill, Administration              |
+| Faction | Units in order                                                         | Technologies from a Gathering opener                                                                                           |
+| ------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Humans  | Marksman, Guard, Swordsman, Catapult, Knight, Captain                  | Hunting, Marksmanship, Drill, Engineering, Forestry, Sawmilling, Scouting, Raiding, Chivalry, Administration (the Goblin pass) |
+| Undead  | Zombie, Banshee, Necromancer, Lich, Vampire                            | Drill, Hunting, Marksmanship, Administration, Forestry, Sawmilling, Scouting, Raiding, Chivalry                                |
+| Goblins | Bomb Chucker, Wolf Rider, Orc Brute, Rocket Cart, Warboss, Scrap Buggy | Hunting, Marksmanship, Scouting, Drill, Forestry, Sawmilling, Administration, Raiding, Chivalry (the Goblin pass)              |
 
 (The first draft of this bead used one class order for all three, ranged,
 siege, breakthrough, line, defender, support, which put the Zombie ninth.)
@@ -242,7 +336,8 @@ tuning 5); training never waits.
 `armySharesV7(faction, fragile)` gives the shares of the land army in
 percent (line / defender / ranged / siege / breakthrough): Humans 35 / 15 /
 20 / 15 / 15, **Undead 20 / 30 / 20 / 15 / 15** (the defender is the
-Zombie), **Goblins 30 / 10 / 30 / 15 / 15**; against two or more visible
+Zombie), **Goblins 20 / 20 / 20 / 25 / 15** (the Goblin pass; 30 / 10 /
+30 / 15 / 15 before); against two or more visible
 ranged, siege, or support units 5 points (Humans 10) move to the
 breakthrough unit. A Goblin army has a Wolf Rider per four units (at most
 three); the others one skirmisher from five units.

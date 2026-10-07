@@ -103,6 +103,7 @@ import {
   type CoordV7,
   type DomainEventV7,
   type EffectiveRoleRuleV7,
+  type RoleMechanicsV7,
   type FactionIdV7,
   type GameStateV7,
   type MapTypeV7,
@@ -148,7 +149,7 @@ import {
   BLAST_ORE_WARNING_V7,
   FOREST_MARCH_UNLOCK_TEXT_V7,
   BARRACKS_REWARD_TEXT_V7,
-  SCOUTS_REWARD_TEXT_V7,
+  scoutsRewardTextV7,
   pillageUnlockTextV7,
   RAIDER_SLIPS_TEXT_V7,
   CHARGE_CONDITION_TEXT_V7,
@@ -228,7 +229,7 @@ const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; st
   new     --session S [--map dry-land] [--size 11] [--seed 1] [--factions original,undead[,...]]
           [--seat 0] [--curiosities on|off] [--overwrite]
   lab     --session S <LAB> [--overwrite]
-                                        start a staged position (you play the Humans); lab alone lists them
+                                        start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins); lab alone lists them
   view    --session S [--full]          public view of your seat: header, map, cities, units
   tech    --session S                   technology tree with costs and unlocks
   options --session S [--unit ID | --city ID | --tile x,y | --all]
@@ -708,11 +709,21 @@ function trainingCostV7(
  * Tuning 4 (`pulp_wars-w49.3`): the role rules a stat line does not show,
  * for train, hire and technology lines and for the units of `view --full`.
  */
+export const NO_GANG_UP_TEXT_V7 = "its bombs get no Gang Up";
+export const GANG_UP_ONE_TEXT_V7 = "its rockets get Gang Up +1 at most";
+export const BLAST_PROOF_TEXT_V7 =
+  "Blast-proof: blasts and bomb splash don't hurt it";
+export const CRASH_TEXT_V7 = "Crash: can Kaboom after attacking";
+
 function roleNotesV7(
   rule: EffectiveRoleRuleV7,
   slipsPast = false,
-  rangedDefense2: number | null = null,
+  mechanics: Pick<
+    RoleMechanicsV7,
+    "rangedDefense2" | "gangUpLimit" | "blastProof" | "kaboomAfterAttack"
+  > | null = null,
 ): readonly string[] {
+  const rangedDefense2 = mechanics?.rangedDefense2 ?? null;
   const notes: string[] = [];
   if (!rule.mayUsePrimaryActionAfterMove && rule.range > 0)
     notes.push(NO_MOVE_AND_ATTACK_TEXT_V7);
@@ -722,6 +733,13 @@ function roleNotesV7(
   // Charge applies.
   if (rangedDefense2 !== null) notes.push(openToRangedTextV7(rangedDefense2));
   if (rule.abilities.includes("CHARGE")) notes.push(CHARGE_CONDITION_TEXT_V7);
+  // The Goblin pass (`pulp_wars-w49.12`, 7r50): the three Goblin unit rules.
+  if (mechanics !== null) {
+    if (mechanics.gangUpLimit === 0) notes.push(NO_GANG_UP_TEXT_V7);
+    if (mechanics.gangUpLimit === 1) notes.push(GANG_UP_ONE_TEXT_V7);
+    if (mechanics.blastProof) notes.push(BLAST_PROOF_TEXT_V7);
+    if (mechanics.kaboomAfterAttack) notes.push(CRASH_TEXT_V7);
+  }
   return notes;
 }
 
@@ -734,9 +752,7 @@ function roleStatsV7(rule: EffectiveRoleRuleV7, faction?: FactionIdV7): string {
   return `hp ${rule.maxHp} atk ${halfV7(rule.attack2)} def ${halfV7(rule.defense2)} mov ${rule.move} rng ${range} sight ${rule.sightRadius}${abilities.length === 0 ? "" : ` abilities ${abilities.join(",")}`}${roleNotesV7(
     rule,
     false,
-    faction === undefined
-      ? null
-      : roleMechanicsV7(rule.role, faction).rangedDefense2,
+    faction === undefined ? null : roleMechanicsV7(rule.role, faction),
   )
     .map((note) => ` | ${note}`)
     .join("")}`;
@@ -1141,6 +1157,36 @@ function combatTextV7(
   return parts.join(" | ");
 }
 
+/**
+ * The Goblin pass, correction (`pulp_wars-w49.12`): a Kaboom's preview as
+ * the units its chain hits and nothing else (it printed every unit on the
+ * board).
+ */
+function kaboomTextV7(
+  preview: ReturnType<typeof previewKaboomV7>,
+  context: TextContextV7,
+): string {
+  if (preview === null) return "no public preview";
+  const parts: string[] = [];
+  for (const explosion of preview.explosions) {
+    const hits = explosion.results.map(
+      (result) =>
+        `${result.unitId === null ? "a rising" : context.memory.tag(result.unitId)}${result.friendly ? " YOURS" : ""} -${result.damage}${result.dies ? " DIES" : ""}`,
+    );
+    parts.push(
+      `${explosion.wave === 1 ? "blast" : `wave ${explosion.wave} (${context.memory.tag(explosion.unitId)} explodes)`} ${explosion.damage} at ${xyV7(explosion.at)}: ${hits.length === 0 ? "hits nobody" : hits.join(", ")}`,
+    );
+  }
+  const totals = preview.totals;
+  parts.push(
+    `enemy ${totals.hostileDamage} damage, ${totals.hostileKills} kills; yours ${totals.friendlyDamage} damage, ${totals.friendlyKills} kills${totals.plunderCoins > 0 ? `; Plunder +${totals.plunderCoins}` : ""}`,
+  );
+  if (preview.touchesUnexplored)
+    parts.push("the blast may reach unexplored tiles");
+  parts.push("this unit dies");
+  return parts.join(" | ");
+}
+
 const EXPLOSION_SKIP_V7: ReadonlySet<string> = new Set([
   "attackerId",
   "targetUnitId",
@@ -1186,11 +1232,9 @@ function unlockTextV7(
                     ? ` (${pillageUnlockTextV7(effectiveRoleRuleV7("RAIDER", faction).abilities.includes("ESCAPE") ? effectiveRoleRuleV7("RAIDER", faction).label : null)})`
                     : ""
           }`
-        : `cmd ${unlock.command} (${spatial.cost}c, output by neighbours; ${
-            unlock.command === "BUILD_MARKET"
-              ? MARKET_PLACEMENT_TEXT_V7
-              : "it can only be built next to at least one building that feeds it"
-          })`;
+        : unlock.command === "BUILD_MARKET"
+          ? `cmd ${unlock.command} (${spatial.cost}c; a Market pays 2 or 3 Coins every turn: 1, plus 1 for each family of buildings beside it (farms, timber, metal), 3 at most; ${MARKET_PLACEMENT_TEXT_V7})`
+          : `cmd ${unlock.command} (${spatial.cost}c, output by neighbours; it can only be built next to at least one building that feeds it)`;
     }
     case "UNIT_ROLE": {
       const rule = effectiveRoleRuleV7(unlock.role, faction);
@@ -1203,6 +1247,9 @@ function unlockTextV7(
       return `${BREACH_UNLOCK_TEXT_V7} [${unlock.kind}]`;
     case "LAND_TRADE_INCOME":
       return `${landTradeUnlockTextV7(unlock.coins)} [${unlock.kind}]`;
+    // The Goblin pass: Plunder in a sentence.
+    case "PLUNDER":
+      return `Plunder: +${unlock.coins} Coins for each enemy unit your units or blasts kill [${unlock.kind}]`;
     default: {
       if (unlock.kind === "FOREST_COVER")
         return `${FOREST_COVER_UNLOCK_TEXT_V7} [${unlock.kind}]`;
@@ -1338,7 +1385,7 @@ function describeCommandV7(
     case "WAIL":
       return `wail${generic(previewWailV7(view, command.unitId))}`;
     case "KABOOM":
-      return `kaboom${generic(previewKaboomV7(view, command.unitId))}`;
+      return `kaboom | ${kaboomTextV7(previewKaboomV7(view, command.unitId), context)}`;
     case "RAISE_DEAD":
       return `raise dead${generic(previewRaiseDeadV7(view, command.unitId))}`;
     case "DEVOUR":
@@ -1436,7 +1483,7 @@ function describeCommandV7(
             ? `${MILITIA_FIGHTERS_V7[view.viewer.faction] === 1 ? "one free" : "two free"} ${effectiveRoleRuleV7("FIGHTER", view.viewer.faction).label}${MILITIA_FIGHTERS_V7[view.viewer.faction] === 1 ? "" : "s"} at the city (a reward unit may stand above the unit limit)`
             : command.reward === "SURVEY" &&
                 SURVEY_RAIDERS_V7[view.viewer.faction] === 1
-              ? `Scouts: ${SCOUTS_REWARD_TEXT_V7} (${effectiveRoleRuleV7("RAIDER", view.viewer.faction).label}; it may stand above the unit limit)`
+              ? `Scouts: ${scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", view.viewer.faction).label)} (${effectiveRoleRuleV7("RAIDER", view.viewer.faction).label}; it may stand above the unit limit)`
               : (REWARD_TEXT_V7[command.reward] ?? command.reward);
       return `reward for city c${command.cityId} reaching level ${command.reachedLevel}: ${special}`;
     }
@@ -1601,15 +1648,26 @@ function eventTextV7(
         notes.push(`LEVEL c${event.cityId} reached ${event.level}`);
       break;
     }
-    case "UNIT_TRAINED":
+    case "UNIT_TRAINED": {
+      // A hire (Commerce) is the same event on the Market's tile; a
+      // trained land unit appears on the center.
+      const home = context.view.cities.find(
+        (candidate) => candidate.id === event.cityId,
+      );
+      const verb =
+        home !== undefined &&
+        (home.at.x !== event.at.x || home.at.y !== event.at.y)
+          ? "HIRED"
+          : "TRAINED";
       lines.push(
-        `TRAINED ${context.memory.tag(event.unitId)} in c${event.cityId} @${xyV7(event.at)} for ${event.cost}c`,
+        `${verb} ${context.memory.tag(event.unitId)} ${verb === "HIRED" ? "at the Market of" : "in"} c${event.cityId} @${xyV7(event.at)} for ${event.cost}c`,
       );
       if (event.playerId === me)
         notes.push(
-          `TRAINED ${event.role} in c${event.cityId} (${event.cost}c)`,
+          `${verb} ${event.role} in c${event.cityId} (${event.cost}c)`,
         );
       break;
+    }
     case "TREASURE_CAPTURED": {
       // The serialized reward literal `KNIGHT` means "the chest unit" for
       // every faction and round, so the line names the unit that came.
@@ -1894,6 +1952,9 @@ export const TEXT_PLAY_LABS_V7: Readonly<Record<string, string>> = {
   LAB_BREAKTHROUGH: `${BREAKTHROUGH_LAB_TEXT_V7}; the attacker is the Human AI (Swordsmen, Marksmen, Catapults, Knights, Raiders)`,
   LAB_BREAKTHROUGH_GOBLIN: `${BREAKTHROUGH_LAB_TEXT_V7}; the attacker is the Goblin AI (Orc Brutes, Bomb Chuckers, Rocket Carts, Scrap Buggies, Wolf Riders)`,
   LAB_BREAKTHROUGH_UNDEAD: `${BREAKTHROUGH_LAB_TEXT_V7}; the attacker is the Undead AI (Zombies, Banshees, Liches, Vampires, Ghouls)`,
+  // The Goblin pass (`pulp_wars-w49.12`): the one lab played as the Goblins.
+  LAB_GOBLIN_MID:
+    "YOU PLAY THE GOBLINS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each); you can train every Goblin unit (ten technologies) and hold 6 Goblins, 4 Bomb Chuckers, 3 Wolf Riders, 3 Orc Brutes, a Warboss, 2 Rocket Carts and a Scrap Buggy, 35c in hand on the first turn and four free unit slots; the Humans hold 3 Swordsmen, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters, a walled capital, and Forest cover",
 };
 
 function commandLabV7(args: ArgsV7): string {
@@ -1903,7 +1964,7 @@ function commandLabV7(args: ArgsV7): string {
   );
   if (name === "")
     return [
-      "LABS (lab --session S <LAB>): staged positions, you play the Humans against the Normal AI, you move first",
+      "LABS (lab --session S <LAB>): staged positions against the Normal AI, you move first; you play the Humans unless the lab says otherwise",
       ...listing,
     ].join("\n");
   const mission =
@@ -2473,9 +2534,7 @@ function unitLineV7(
   for (const note of roleNotesV7(
     unitRule,
     unit.form === "LAND" && unitIgnoresZocStopsV7(view, unit),
-    unit.form === "LAND"
-      ? unitRoleMechanicsV7(view, unit).rangedDefense2
-      : null,
+    unit.form === "LAND" ? unitRoleMechanicsV7(view, unit) : null,
   ))
     parts.push(`| ${note}`);
   if (full && stats !== undefined) {

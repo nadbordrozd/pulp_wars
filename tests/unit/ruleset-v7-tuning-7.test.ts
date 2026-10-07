@@ -50,7 +50,7 @@ import {
 } from "../../src/ai/v7-campaign";
 
 /**
- * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r49`;
+ * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r50`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 14, the Normal AI of a
  * Human, Undead, or Goblin seat): it commits against the enemy in front of
  * it and keeps committing after the line breaks, every faction's seat
@@ -194,7 +194,7 @@ const whereIs = (state: GameStateV7, id: UnitId): CoordV7 => {
 
 describe("tuning 7 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r49");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
   });
 });
 
@@ -479,9 +479,10 @@ describe("1. commit: a position is local, and numbers are numbers", () => {
     const state = broken();
     const army = armyOf(state);
     const front = army.positions.find((position) => position.ownIds.length > 0);
-    // No unit is in contact, and the weight is 287 against 247 (116%).
-    expect(front).toMatchObject({ mode: "COMMIT", joined: true });
-    expect(front?.near).toBeLessThan((150 * (front?.hostile ?? 0)) / 100);
+    // No unit is in contact, and the weight by price and HP is 287
+    // against 247 (116%). The Goblin pass, correction (`pulp_wars-w49.12`):
+    // a unit with Gang Up weighs half as much again, 399 here.
+    expect(front).toMatchObject({ mode: "COMMIT", joined: true, near: 399 });
     const own = seatIdV7(state, 0);
     const gap = (current: GameStateV7, where: CoordV7): number =>
       Math.min(
@@ -1678,9 +1679,12 @@ describe("the defects of the round-6 hand play", () => {
 /**
  * The round the capital falls to each attacker (the `RETREAT` script).
  * Tuning 8 (`pulp_wars-w49.11`): 5, 5, and 7 (round 7: 7, 5, and 7); the
- * Human attacker's Raider now stays on the center it rides onto.
+ * Human attacker's Raider now stays on the center it rides onto. The
+ * Goblin pass (`pulp_wars-w49.12`, 7r50): the Goblin attacker in round 7 (5
+ * before): its Bomb Chuckers no longer kill a retreating unit in one throw
+ * with two helpers beside it.
  */
-const RETREAT_ROUNDS = [5, 5, 7] as const;
+const RETREAT_ROUNDS = [5, 7, 7] as const;
 
 describe("the bounded lab runs", () => {
   // The `RETREAT` script of tests/fixtures/v7-breakthrough-lab.ts: the

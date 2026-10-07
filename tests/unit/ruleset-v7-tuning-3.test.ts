@@ -83,7 +83,7 @@ const coinsOf = (state: GameStateV7, seat = 0): number =>
 
 describe("tuning 3 keeps the unpublished identity of tuning 2", () => {
   it("is 7r47", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r49");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
   });
 });
 
@@ -501,12 +501,14 @@ describe("Blast Mountain explodes", () => {
   });
 
   it("kills, leaves the kill uncredited to a unit, and sets off the death blast of an exploding unit", () => {
-    // A 5-HP Guard on the Mountain and a 1-HP Bomb Chucker next to it.
+    // A 5-HP Warboss on the Mountain and a 1-HP Bomb Chucker next to it
+    // (an Orc Brute stood there before the Goblin pass made it
+    // Blast-proof, tests/unit/ruleset-v7-goblin-pass.test.ts).
     const state = mountainV7(
       fieldV7(
         [
           { seat: 0, role: "FIGHTER", at: at(5, 2) },
-          { seat: 1, role: "GUARD", at: at(5, 3), hp: 5 },
+          { seat: 1, role: "CAPTAIN", at: at(5, 3), hp: 5 },
           { seat: 1, role: "MARKSMAN", at: at(5, 4), hp: 1 },
         ],
         { factions: ["ORIGINAL", "GOBLIN"] },

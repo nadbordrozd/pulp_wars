@@ -20,6 +20,7 @@ import {
   rebakeHpV7,
   rebakePriceV7,
   armouredDamageV7,
+  unitIsBlastProofV7,
   RAM_BONUS2_V7,
   attackIsRamV7,
   attackIsTorpedoV7,
@@ -51,6 +52,7 @@ import {
   unitMayEnterMountainV7,
   primaryActionBlockedAfterMoveV7,
   sluggishUnitMovedV7,
+  kaboomReadyV7,
   unitMovementModeV7,
   unitRoleMechanicsV7,
   isRangedRoleRuleV7,
@@ -1069,9 +1071,12 @@ function appendPublicUnitCommandsV7(
     candidates.push({ kind: "WAIL", unitId: unit.id });
   // Revision 17 Kaboom: any goblin-crewed land-form unit that has not used a
   // primary action, after a Move too, with or without a unit in the area.
+  // The Goblin pass (7r50): Crash, a Scrap Buggy also after its attacks.
   if (
-    !overrun &&
-    !primaryUsedForQuery(unit) &&
+    kaboomReadyV7(
+      unit.activation,
+      unitRoleMechanicsV7(view, unit).kaboomAfterAttack,
+    ) &&
     !sluggishUnitMovedV7(view, unit) &&
     unit.form === "LAND" &&
     rule.abilities.includes("KABOOM")
@@ -7684,6 +7689,8 @@ function publicCombatPreviewCore(
           unit.id !== target.id &&
           unit.id !== attacker.id &&
           chebyshev(unit.at, target.at) === 1 &&
+          // The Goblin pass (7r50): a Blast-proof unit is not splashed.
+          !unitIsBlastProofV7(view, unit) &&
           (attackerMechanics.splashTargets === "ALL" ||
             publicHostile(view, attacker.ownerId, unit.ownerId)),
       )

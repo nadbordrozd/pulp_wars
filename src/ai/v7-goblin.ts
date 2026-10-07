@@ -2,6 +2,7 @@ import type { PlayerId, UnitId } from "../engine/model/ids";
 import {
   factionRulesV7,
   unitFactionV7,
+  unitIsBlastProofV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
@@ -157,6 +158,9 @@ export function gangUpForPolicyV7(
   // The Mind Control revision: Gang Up is a body rule of the attacker's kind.
   const maximum = factionRulesV7(unitFactionV7(view, attacker)).gangUpMaximum;
   if (maximum === 0) return 0;
+  // The Goblin pass (7r50): the role's own limit (a bomb 0, a rocket 1).
+  const limit = unitRoleMechanicsV7(view, attacker).gangUpLimit;
+  if (limit === 0) return 0;
   let helpers = 0;
   for (const unit of view.units)
     if (
@@ -166,7 +170,7 @@ export function gangUpForPolicyV7(
       chebyshev(unit.at, targetAt) === 1
     )
       helpers += 1;
-  return Math.min(maximum, helpers);
+  return Math.min(maximum, limit, helpers);
 }
 
 export interface ExplosionChainValueV7 {
@@ -274,6 +278,8 @@ export function hypotheticalBlastV7(
         ? moved.at
         : original.at;
     if (chebyshev(at, center) > 1) continue;
+    // The Goblin pass (7r50): a Blast-proof unit is not hit.
+    if (unitIsBlastProofV7(view, original)) continue;
     const hit = Math.min(damage, original.hp);
     const dies = hit >= original.hp;
     if (isFriendly(original.ownerId)) {
@@ -367,6 +373,7 @@ export function hostileKaboomExposureV7(
           ),
         ];
         for (const unit of hits) {
+          if (unitIsBlastProofV7(view, unit)) continue;
           const hit = Math.min(damage, unit.hp);
           const dies = hit >= unit.hp;
           if (isFriendly(unit.ownerId)) {

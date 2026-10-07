@@ -246,9 +246,10 @@ describe("Mind Control AI: playing controlled units", () => {
       [
         own("CAPTAIN", 7, 2),
         foe("FIGHTER", 4, 2, { controlledBy: at(7, 2) }),
-        foe("GUARD", 3, 2, { hp: 3 }),
-        foe("GUARD", 5, 2, { hp: 3 }),
-        foe("GUARD", 4, 3, { hp: 3 }),
+        // Warbosses (Orc Brutes are Blast-proof since the Goblin pass).
+        foe("CAPTAIN", 3, 2, { hp: 3 }),
+        foe("CAPTAIN", 5, 2, { hp: 3 }),
+        foe("CAPTAIN", 4, 3, { hp: 3 }),
       ],
       "GOBLIN",
     );
@@ -265,9 +266,9 @@ describe("Mind Control AI: playing controlled units", () => {
       [
         own("CAPTAIN", 8, 2),
         foe("FIGHTER", 5, 2, { controlledBy: at(8, 2) }),
-        foe("GUARD", 3, 2, { hp: 3 }),
-        foe("GUARD", 3, 3, { hp: 3 }),
-        foe("GUARD", 3, 1, { hp: 3 }),
+        foe("CAPTAIN", 3, 2, { hp: 3 }),
+        foe("CAPTAIN", 3, 3, { hp: 3 }),
+        foe("CAPTAIN", 3, 1, { hp: 3 }),
       ],
       "GOBLIN",
     );

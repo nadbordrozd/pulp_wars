@@ -120,6 +120,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "c0f256f786b4ec308bde2d44874ea94710ba8510988ab19216061ae72307a9de",
   "LAB_BREAKTHROUGH_UNDEAD@2:ORIGINAL":
     "d3376b5a40c702a7b6fd64f955c17e7e14c73579d9dcaf1e7539e8641319e9dd",
+  // The Goblin pass (`pulp_wars-w49.12`): the Goblins for the hand player.
+  "LAB_GOBLIN_MID@1:GOBLIN":
+    "8ddcd6ec959703dfa7bed33a8d3c8c3a9e33b4edea20b1f18a70d61c240fdb11",
 };
 
 /**
@@ -219,6 +222,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "657e665330c9d34e9b9dbd15722d44bbe5c57596a6c727cbb51c9b890f9abd04",
   "LAB_BREAKTHROUGH_UNDEAD@2:ORIGINAL":
     "b60fca0d1b6571f3ae2621c400e1af71d030b5dfea5f6b846845d7c3aedc3719",
+  "LAB_GOBLIN_MID@1:GOBLIN":
+    "d13ad9dd793b273e90954ebfa00f9d58ef0f1cb41f774825041c5c1151ef6df5",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {

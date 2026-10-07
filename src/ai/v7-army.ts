@@ -232,8 +232,17 @@ export const ARMY_SPLASH_SPACING_VALUE_V7 = 6;
  * - Undead: the **Zombie** with the first technology bought (its Infect
  *   waves are what the faction is), the Banshee, the Necromancer, the
  *   Lich, the Vampire.
- * - Goblins: the Bomb Chucker and the Wolf Rider, then the Rocket Cart and
- *   the Scrap Buggy, the Orc Brute, the Warboss.
+ * - Goblins (the Goblin pass, `pulp_wars-w49.12`,
+ *   docs/product/RULESET_7_TUNING_GOBLIN.md): the Bomb Chucker and the Wolf
+ *   Rider, the Orc Brute (the correction pass: the one Goblin unit a
+ *   Knight does not kill in one attack, so it ends an Overrun chain; with
+ *   Drill last the first Brute came in round 20), then the Rocket Cart (the
+ *   one ranged unit with Gang Up), the Warboss (WAAAGH! is the only thing
+ *   that strengthens a bomb), and the Scrap Buggy.
+ * - Humans, since the same correction: the Swordsman third (one technology
+ *   after the Guard's; in a hand-played game the Human seat had seven
+ *   technologies in 25 rounds, two of them toward a Catapult it never
+ *   bought, and fielded Fighters, Guards, and Marksmen).
  */
 export const ARMY_RESEARCH_ROLES_V7: Readonly<
   Partial<Record<FactionIdV7, readonly UnitRoleIdV7[]>>
@@ -241,9 +250,9 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
   ORIGINAL: Object.freeze([
     "MARKSMAN",
     "GUARD",
+    "SWORDSMAN",
     "CATAPULT",
     "KNIGHT",
-    "SWORDSMAN",
     "CAPTAIN",
   ] as const),
   UNDEAD: Object.freeze([
@@ -256,10 +265,10 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
   GOBLIN: Object.freeze([
     "MARKSMAN",
     "RAIDER",
-    "CATAPULT",
-    "KNIGHT",
     "GUARD",
+    "CATAPULT",
     "CAPTAIN",
+    "KNIGHT",
   ] as const),
 });
 
@@ -299,6 +308,12 @@ export function armyUnitStrengthV7(
   return 4 * (rule.cost ?? ARMY_REWARD_UNIT_COST_V7) + hp;
 }
 
+/**
+ * The Goblin pass, correction (`pulp_wars-w49.12`): what a unit of a kind
+ * with Gang Up weighs in an assault, in percent of `armyUnitStrengthV7`.
+ */
+export const ARMY_GANG_UP_STRENGTH_V7 = 150;
+
 export type ArmyAssaultModeV7 = "COMMIT" | "STAGE" | "NONE";
 
 /**
@@ -322,6 +337,17 @@ export const ARMY_COMMIT_COUNT_RATIO_V7 = 150;
 export const ARMY_COMMIT_COUNT_WEIGHT_V7 = 110;
 
 /**
+ * The Goblin pass, correction (`pulp_wars-w49.12`): once the battle is
+ * joined, an army with one and a half times the position's units commits
+ * at this weight, in percent of the position's (100 without the numbers).
+ * Eighteen to twenty-three Goblin units stood two tiles from eight Human
+ * units for five rounds at 75 to 99 percent of their weight, attacked with
+ * two or three units a turn, and lost seventeen units in one turn when the
+ * Knights came.
+ */
+export const ARMY_COMMIT_JOINED_COUNT_WEIGHT_V7 = 70;
+
+/**
  * The mode of one position from the strengths around it (`contact`: the
  * battle is joined). Tuning 7: with the unit counts given, one and a half
  * times the position's units commit at 110% of its weight, and count as
@@ -342,7 +368,10 @@ export function armyAssaultModeV7(facts: {
     facts.hostileUnits !== undefined &&
     100 * own >= ARMY_COMMIT_COUNT_RATIO_V7 * facts.hostileUnits;
   const ratio = facts.contact
-    ? ARMY_COMMIT_HELD_RATIO_V7
+    ? // The Goblin pass, correction: a joined battle with the numbers.
+      outnumbers(facts.nearUnits)
+      ? ARMY_COMMIT_JOINED_COUNT_WEIGHT_V7
+      : ARMY_COMMIT_HELD_RATIO_V7
     : outnumbers(facts.nearUnits)
       ? ARMY_COMMIT_COUNT_WEIGHT_V7
       : ARMY_COMMIT_RATIO_V7;
@@ -408,8 +437,7 @@ export const ARMY_SHARES_V7 = Object.freeze({
     BREAKTHROUGH: 25,
   }),
   // The correction pass of tuning 6: the Undead army is a third Zombies
-  // (its defender-class unit, whose kills rise as Zombies), and the Goblin
-  // army has more Bomb Chuckers.
+  // (its defender-class unit, whose kills rise as Zombies).
   undead: Object.freeze({
     LINE: 20,
     DEFENDER: 30,
@@ -424,18 +452,23 @@ export const ARMY_SHARES_V7 = Object.freeze({
     SIEGE: 15,
     BREAKTHROUGH: 20,
   }),
+  // The Goblin pass (`pulp_wars-w49.12`): a bomb no longer gets Gang Up,
+  // so the Rocket Cart and the Scrap Buggy are what kills a unit in cover.
+  // The correction pass: a fifth Orc Brutes (10% before: the chain
+  // stoppers and escorts), a quarter Rocket Carts, 15% Scrap Buggies (seven
+  // Buggies and two Rocket Carts were trained in a hand-played game).
   goblin: Object.freeze({
-    LINE: 30,
-    DEFENDER: 10,
-    RANGED: 30,
-    SIEGE: 15,
+    LINE: 20,
+    DEFENDER: 20,
+    RANGED: 20,
+    SIEGE: 25,
     BREAKTHROUGH: 15,
   }),
   goblinFragile: Object.freeze({
-    LINE: 25,
-    DEFENDER: 10,
-    RANGED: 30,
-    SIEGE: 15,
+    LINE: 15,
+    DEFENDER: 20,
+    RANGED: 20,
+    SIEGE: 25,
     BREAKTHROUGH: 20,
   }),
 });
@@ -556,7 +589,13 @@ export function armyRoleScoreV7(
         ? 100
         : unitClass === "SIEGE" || unitClass === "SUPPORT"
           ? -200
-          : 0;
+          : // The Goblin pass, correction: a Goblin seat trains no
+            // breakthrough unit onto a threatened or frontier center either
+            // (five of seven Scrap Buggies died on the center they were
+            // trained on). Other factions' seats are as they were.
+            unitClass === "BREAKTHROUGH" && faction === "GOBLIN"
+            ? -ARMY_FRONT_BREAKTHROUGH_COST_V7
+            : 0;
   // Tuning 6 (`pulp_wars-w49.6`): a class the army is short of is bought
   // in its dearest unit the Coins reach (`ARMY_DEAR_UNIT_VALUE_V7` per
   // Coin of price), so the top units get a real share of the purchases:
@@ -569,6 +608,15 @@ export function armyRoleScoreV7(
   );
 }
 
+/** What a threatened or frontier center costs a Scrap Buggy's score. */
+export const ARMY_FRONT_BREAKTHROUGH_COST_V7 = 400;
+/**
+ * What standing beside an own ranged, siege, or support unit is worth to
+ * the Move of a Goblin seat's defender-class unit (the Orc Brute), and how
+ * many such neighbours count.
+ */
+export const ARMY_ESCORT_VALUE_V7 = 6;
+export const ARMY_ESCORT_MAXIMUM_V7 = 2;
 /** What a Coin of price adds to the score of a role the army is short of. */
 export const ARMY_DEAR_UNIT_VALUE_V7 = 20;
 
@@ -604,6 +652,11 @@ export const ARMY_STORM_FIRE_PRIORITY_V7 = 1344;
  * Research in a war: one technology of the army's order (or its one growth
  * technology) is due for every this many rounds played (more for a seat
  * whose income is small against the price: `ARMY_WAR_RESEARCH_SHARE_V7`).
+ * The Goblin pass, correction (`pulp_wars-w49.12`) tried 2 and kept 3: at 2
+ * an Undead seat's opening bought no growth building (the pinned seed-4
+ * opening of tuning 7). The Human seat that owned seven technologies in
+ * round 25 of a hand-played game is answered by its order instead (the
+ * Swordsman third, `ARMY_RESEARCH_ROLES_V7`).
  */
 export const ARMY_WAR_RESEARCH_ROUNDS_V7 = 3;
 /** The same for a rich seat. */

@@ -617,7 +617,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // committed unit, the exposed Guard, and the unit that regroups are
     // land-form units (an Egg neither moves nor attacks, and an embarked
     // unit keeps the naval rules).
-    "src/ai/v7.ts": 34,
+    // The Goblin pass, correction (`pulp_wars-w49.12`): the shooters an
+    // Orc Brute stands beside are land-form units (an Egg and an embarked
+    // unit are escorted by nobody).
+    "src/ai/v7.ts": 35,
     // Tuning 5: the army count takes land-form units only (an Egg and an
     // embarked unit are in no fighting class).
     "src/ai/v7-army.ts": 1,

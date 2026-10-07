@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r49`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r50`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -199,6 +199,29 @@ balance on water maps, `pulp_wars-5ti.8`; and the polish items of
 a unit on ice has no fortification, so a Dwarf Hammerer or Steam Mole is
 never dug in on an ice tile ([section 22.7](#227-dig-in)). No shape changed,
 and a match without both a Dwarf and an Ice Folk seat plays as at `7r44`.
+`pulp-wars-poc-7r50` (`pulp_wars-w49.12`) is the
+**[Goblin faction pass](RULESET_7_TUNING_GOBLIN.md)**. Three Goblin unit
+rules changed and no number: a **Bomb Chucker's bomb gets no Gang Up**
+([section 18.2](#182-gang-up)); the **Orc Brute is Blast-proof**
+([section 18.6](#186-blast-resolution)); and a **Scrap Buggy may Kaboom
+after it has attacked** (Crash, [section 18.4](#184-kaboom)). A Goblin
+city's level-2 Survey is **Scouts**, with a free Wolf Rider, as the Humans'
+is ([section 4.8](#48-city-rewards)). The Goblin Normal AI researches and
+buys for that roster ([section 16](#16-normal-ai-summary)), and the lab
+`LAB_GOBLIN_MID` stages the Goblins for a hand player
+([section 2.6](#26-mission-setup)). Its correction after three hand-played
+games, on the same identity
+([section 1.2 of the pass](RULESET_7_TUNING_GOBLIN.md#12-the-correction-after-hand-play)):
+a **Rocket Cart's rocket gets Gang Up +1 at most**
+([section 18.2](#182-gang-up)), and **Plunder pays 2 Coins a kill**
+([section 18.9](#189-kill-credit-plunder-and-friendly-fire)). No command,
+event, state, or view shape changed. A match without a Goblin seat plays
+as at `7r49`, but for the Human Normal AI's research order
+([section 16](#16-normal-ai-summary)). **Where another passage of this
+document, or the [revision-17 overlay](RULESET_7_REVISION_17_GOBLINS.md),
+still gives a bomb Gang Up, a rocket Gang Up +2, an Orc Brute damage from a
+blast or a splash, a Kaboom only before an attack, or 1 Coin of Plunder,
+this paragraph and the sections it names are the rule.**
 `pulp-wars-poc-7r49` (`pulp_wars-w49.6`) is
 **[round 6 of the Human tuning](RULESET_7_TUNING_HUMAN.md#13-round-6)**, which followed three hand-played
 games on round 5 and is mostly the Normal AI. Three rules changed for every
@@ -411,7 +434,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r49`.
+resolved ones as of `pulp-wars-poc-7r50`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -512,10 +535,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r49`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r50`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r49.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r50.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -527,7 +550,7 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r47`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r49`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
   and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
   Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
@@ -677,7 +700,7 @@ separate [Ruleset 6](RULESET_6.md) route.
   match without an Ice Folk seat is the `7r43` match apart from the empty
   list.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r47.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r49.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
@@ -1418,7 +1441,11 @@ rule of [section 3](#3-players-turns-and-victory). The registered missions
 are the four Chapter One missions `FRONTIER_1`–`FRONTIER_4`
 ([campaign design](CAMPAIGN.md) section 6, `pulp_wars-68k.4`) and the hidden
 test fixtures `TEST_GROUNDS`, `TEST_RUSH`, `TEST_HOLD`, `TEST_GUARD`, and
-`TEST_NECK`, which belong to no campaign chapter. Adding a mission is content: it
+`TEST_NECK`, which belong to no campaign chapter, and the hidden labs of
+the text harness ([text-mode play](../validation/TEXT_PLAY.md#labs)):
+`LAB_SIEGE`, `LAB_BACKLINE`, `LAB_LATE`, the three `LAB_BREAKTHROUGH`
+fixtures, and `LAB_GOBLIN_MID` (the Goblin pass: the hand player is the
+Goblins). Adding a mission is content: it
 changes no rule and no ruleset identity.
 
 | Setup field              | `MISSION` rule                                                                                                             |
@@ -1768,7 +1795,7 @@ blast), the Mole's owner (an eruption), or the Gyrocopter's owner (a bomb).
 The credited player gains `MONSTER_BOUNTY_V7` = **10** Coins: event
 `MONSTER_BOUNTY_AWARDED { playerId, unitId, coins }` right after the
 command's `PLUNDER_AWARDED` events, owner-only like Plunder; a Goblin seat
-with Plunder gains its 1 Coin too. The killing unit counts the kill
+with Plunder gains its 2 Coins too. The killing unit counts the kill
 (Promotion, growth, Slayer). A dead Spider never respawns; its `monsters`
 entry is removed. Its own kills are credited to no player (no Plunder or
 bounty for anyone); a victim leaves its Grave or rising as for any
@@ -2186,7 +2213,7 @@ Each reached level grants exactly one reward, chosen by the owner:
 
 | Reached level | Choices                                                                                                                         |
 | ------------: | ------------------------------------------------------------------------------------------------------------------------------- |
-|             2 | Survey: explore radius 3 around the city (Human, "Scouts": and a free Raider); Stockpile: +4 Coins                              |
+|             2 | Survey: explore radius 3 around the city (Human and Goblin, "Scouts": and a free Raider or Wolf Rider); Stockpile: +4 Coins     |
 |             3 | Walls: +2 fortification at the center; Militia: one free Fighter-role unit (Goblin: two Goblins)                                |
 |             4 | Boom: +3 permanent population; Treasury: +6 Coins; Barracks: +1 unit capacity                                                   |
 |         5, 6… | Treasury: +6 Coins; Barracks: +1 unit capacity; in the owner's first capital, until taken once: the Juggernaut-role reward unit |
@@ -2201,7 +2228,9 @@ Each reached level grants exactly one reward, chosen by the owner:
   one reward unit**, and a captured city never gives one. `TREASURY` pays 6
   (12 before). A Human Militia is one Fighter again (two at round 3). A
   Human `SURVEY` also grants a Raider (`SURVEY_RAIDERS_V7`), placed like any
-  reward unit, without Scouting.
+  reward unit, without Scouting. **The Goblin pass** (`7r50`): a Goblin
+  `SURVEY` grants a Wolf Rider in the same way; the other six factions'
+  Survey is still the survey alone.
 - **Barracks** (`BARRACKS`, the last reward ID). A record in the city's
   reward history; each adds 1 to the city's unit capacity
   (`cityBarracksV7`, `BARRACKS_CAPACITY_V7`), stays with the city across a
@@ -2467,7 +2496,7 @@ The Goblin tree (`GOBLIN_BASELINE_V1`) has the same graph, tiers,
 prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
 the Human one, with two unlock differences: Administration grants WAAAGH!
 support (`WAAAGH_SUPPORT`) instead of Captain support, and Commerce grants
-**Plunder** (`PLUNDER { coins: 1 }`, [section 18.9](#189-kill-credit-plunder-and-friendly-fire))
+**Plunder** (`PLUNDER { coins: 2 }`, [section 18.9](#189-kill-credit-plunder-and-friendly-fire))
 instead of land trade, so Goblins never earn land trade (Roads movement and
 Road population are unchanged). Chivalry keeps Overrun, labelled Ram.
 Commerce keeps its ID `COMMERCE` in state, commands, and events and is
@@ -2485,7 +2514,7 @@ differently from the Human table are:
 | Marksmanship   | same        | Bomb Chucker                                                                                   |
 | Fieldcraft     | same        | Replant Forest; Wolf Rider and Bomb Chucker ignore Forest movement stops; Bomb Chucker Sight 2 |
 | Scouting       | same        | Wolf Rider; Wolf Rider Sight 2                                                                 |
-| Commerce       | Plunder     | +1 Coin for each enemy unit your units or blasts kill                                          |
+| Commerce       | Plunder     | +2 Coins for each enemy unit your units or blasts kill                                         |
 | Raiding        | same        | Pillage for all trainable land roles; Wolf Rider Charge                                        |
 | Chivalry       | same        | Scrap Buggy; Ram; Cultivate Forest                                                             |
 | Drill          | same        | reveal Ore; Orc Brute; first-hostile-capture Spoils (2 Coins)                                  |
@@ -3276,19 +3305,19 @@ The Goblin (`GOBLIN`) roster, by mechanical role, with the
 `GOBLIN_ROLE_MECHANICS_V7`). "Kaboom" and "Death blast" are the fixed blast
 damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
 
-| Unit         | Role          | Tech              | Cost |  HP |  Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Kaboom | Death blast | Abilities                            |
-| ------------ | ------------- | ----------------- | ---: | --: | ------: | ------: | ---: | ----: | ----: | ----------------- | ------- | -----: | ----------: | ------------------------------------ |
-| Goblin       | `FIGHTER`     | start             |    1 |   6 | 1.5 (3) | 0.5 (1) |    1 |     1 |     1 | yes               | yes     |      5 |           — | Kaboom; no Field Defense             |
-| Wolf Rider   | `RAIDER`      | Scouting          |    3 |  10 |   2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     |      4 |           — | Charge (Raiding); Kaboom; no Escape  |
-| Bomb Chucker | `MARKSMAN`    | Marksmanship      |    3 |   8 |   2 (4) |   1 (2) |    1 |     2 |    1³ | yes               | yes     |      4 |           2 | bombs (friendly-fire splash); Kaboom |
-| Orc Brute    | `GUARD`       | Drill             |    3 |  15 |   2 (4) | 2.5 (5) |    1 |     1 |     1 | no                | yes     |      — |           — | Field Defense                        |
-| Orc Warboss  | `CAPTAIN`     | Administration    |    5 |  12 |   2 (4) |   1 (2) |    1 |     1 |     1 | yes               | no      |      — |           — | WAAAGH!; no Tend Wounded             |
-| Rocket Cart  | `CATAPULT`    | Sawmilling        |    7 |   8 | 3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | no                | no      |      5 |           4 | Kaboom; never advances               |
-| Scrap Buggy  | `KNIGHT`      | Chivalry          |    8 |  10 |   3 (6) |   1 (2) |    3 |     1 |     1 | yes               | no      |      5 |           4 | Ram; Kaboom                          |
-| Troll        | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) |   3 (6) |    1 |     1 |     1 | yes               | yes     |      — |           — | Push; Regenerate 4                   |
-| Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval; Ram (Seamanship)              |
-| Battleship   | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      |      — |           — | naval; splash                        |
-| Submarine    | `SUBMARINE`   | Submersibles      |    9 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval; Submerged; Torpedo            |
+| Unit         | Role          | Tech              | Cost |  HP |  Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Kaboom | Death blast | Abilities                                        |
+| ------------ | ------------- | ----------------- | ---: | --: | ------: | ------: | ---: | ----: | ----: | ----------------- | ------- | -----: | ----------: | ------------------------------------------------ |
+| Goblin       | `FIGHTER`     | start             |    1 |   6 | 1.5 (3) | 0.5 (1) |    1 |     1 |     1 | yes               | yes     |      5 |           — | Kaboom; no Field Defense                         |
+| Wolf Rider   | `RAIDER`      | Scouting          |    3 |  10 |   2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     |      4 |           — | Charge (Raiding); Kaboom; no Escape              |
+| Bomb Chucker | `MARKSMAN`    | Marksmanship      |    3 |   8 |   2 (4) |   1 (2) |    1 |     2 |    1³ | yes               | yes     |      4 |           2 | bombs (friendly-fire splash, no Gang Up); Kaboom |
+| Orc Brute    | `GUARD`       | Drill             |    3 |  15 |   2 (4) | 2.5 (5) |    1 |     1 |     1 | no                | yes     |      — |           — | Field Defense; Blast-proof                       |
+| Orc Warboss  | `CAPTAIN`     | Administration    |    5 |  12 |   2 (4) |   1 (2) |    1 |     1 |     1 | yes               | no      |      — |           — | WAAAGH!; no Tend Wounded                         |
+| Rocket Cart  | `CATAPULT`    | Sawmilling        |    7 |   8 | 3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | no                | no      |      5 |           4 | Kaboom; never advances; Gang Up +1 at most       |
+| Scrap Buggy  | `KNIGHT`      | Chivalry          |    8 |  10 |   3 (6) |   1 (2) |    3 |     1 |     1 | yes               | no      |      5 |           4 | Ram; Kaboom, also after attacking (Crash)        |
+| Troll        | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) |   3 (6) |    1 |     1 |     1 | yes               | yes     |      — |           — | Push; Regenerate 4                               |
+| Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval; Ram (Seamanship)                          |
+| Battleship   | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      |      — |           — | naval; splash                                    |
+| Submarine    | `SUBMARINE`   | Submersibles      |    9 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval; Submerged; Torpedo                        |
 
 ³ Bomb Chucker Sight becomes 2 with Fieldcraft.
 
@@ -3299,11 +3328,13 @@ damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
   Escape.
 - **Bomb Chucker** has range 2 and minimum range 2: it cannot target an
   adjacent unit and retaliates only against an attacker exactly 2 cells away.
-  Its attack is a bomb ([section 18.8](#188-bomb-chucker-bombs)). It keeps
+  Its attack is a bomb ([section 18.8](#188-bomb-chucker-bombs)), which
+  gets no Gang Up since `7r50` ([section 18.2](#182-gang-up)). It keeps
   capture, Pillage, Disband, and Fieldcraft Forest freedom and Sight.
 - **Orc Brute** has Guard parity (cannot attack after moving, capture, Field
   Defense with Fortification) and is the only Goblin unit that builds Field
-  Defense.
+  Defense. Since `7r50` it is **Blast-proof**: no explosion and no splash
+  hits it ([section 18.6](#186-blast-resolution)).
 - **Orc Warboss** cannot capture; its primary actions are Attack and WAAAGH!
   (no Tend Wounded).
 - **Rocket Cart** has Catapult parity: range 2–3, minimum range 2, cannot
@@ -3311,7 +3342,8 @@ damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
   never advances, Field Defense destruction on the primary target tile
   (reason `CATAPULT`), and no splash.
 - **Scrap Buggy** has Knight parity: Move 3, no capture, and Overrun,
-  labelled **Ram** for Goblins (same rule and events).
+  labelled **Ram** for Goblins (same rule and events). Since `7r50` it may
+  Kaboom after attacking (**Crash**, [section 18.4](#184-kaboom)).
 - **Troll** has Juggernaut parity (reward only, Push, capture, no Pillage or
   Disband) with Defense 3 instead of 4, and regenerates 4 HP at its owner's
   Start Turn.
@@ -4215,7 +4247,9 @@ damageToAttacker = roundHalfUp(retaliationForce / (attackForce + retaliationForc
 - **Gang Up** (Goblin attackers in land form,
   [section 18.2](#182-gang-up)): +1 Attack for each other unit the attacker's
   owner has on the eight cells around the target, at most +2. It never
-  applies to retaliation. The combat preview and `COMBAT_RESOLVED` carry
+  applies to retaliation or, since `7r50`, to a Bomb Chucker's bomb, and a
+  Rocket Cart's rocket gets at most +1. The
+  combat preview and `COMBAT_RESOLVED` carry
   `gangUp` (0 for every non-Goblin, naval, or embarked attacker), and
   `attack2` includes it.
 - **Rockfall, Planted, Cold Blood** (Ice Folk,
@@ -5071,8 +5105,9 @@ Harbours from it.
   tiles of a center, a city level or cheap population is bought before
   training, and research goes toward the faction's own units in its own
   order (Humans: Marksman, Guard, Catapult, Knight; Undead: Zombie,
-  Banshee, Necromancer, Lich, Vampire; Goblins: Bomb Chucker, Wolf Rider,
-  Rocket Cart, Scrap Buggy), Roads with three cities, two city levels to a
+  Banshee, Necromancer, Lich, Vampire; Goblins since `7r50`: Bomb Chucker,
+  Wolf Rider, Rocket Cart, Warboss, Scrap Buggy, Orc Brute, with a fifth
+  of the army Rocket Carts and a fifth Scrap Buggies), Roads with three cities, two city levels to a
   technology; a third of an Undead army is Zombies, which go for cheap
   infantry and keep out of ranged reach where they can; the dear unit of a class the
   army lacks is bought when the Coins are there. With an enemy within
@@ -5257,7 +5292,23 @@ Harbours from it.
   routine Move where an own bomb thrown now would kill them; keeps its exploding units away from own units
   while any visible enemy can damage them; trains a cheap Goblin horde into
   Warrens capacity plus Bomb Chuckers; researches Plunder when hostile units
-  are near; uses WAAAGH! like Rally; and lets Trolls keep fighting. Against
+  are near; uses WAAAGH! like Rally; and lets Trolls keep fighting. Since
+  `7r50` its Gang Up estimate gives a bomb none, its blast estimates leave
+  an Orc Brute out (a Kaboom or a bomb beside an own Brute is not friendly
+  fire), and a Scrap Buggy that has rammed is offered its Kaboom and takes
+  it by the same score (**Crash**: when the blast kills or hits two enemies
+  and costs less than it gains). Its correction
+  ([the Goblin pass, section 8](RULESET_7_TUNING_GOBLIN.md#8-the-normal-ai)):
+  a Goblin seat researches the Orc Brute third and fields a fifth Brutes
+  and a quarter Rocket Carts; a Brute's Move is worth more beside its own
+  Bomb Chuckers, Rocket Carts, and Warbosses; no Scrap Buggy is trained
+  onto a threatened or frontier center; a Buggy that has attacked and would
+  die in the enemy's turn crashes when its blast hits an enemy and kills no
+  own unit; a Bomb Chucker moves to a throw that is worth its splash; and
+  in every army seat's assault a unit with Gang Up weighs half as much
+  again and a joined battle with one and a half times the enemy's units
+  commits at 70% of its weight. The Human seat researches the Swordsman
+  third. Against
   Goblins, threat evaluation includes Gang Up, Bomb Chucker splash, and the
   Kaboom reach of visible goblin-crewed land units (an embarked one cannot
   land and Kaboom in the same turn), units avoid ending in a clump a visible
@@ -5821,13 +5872,26 @@ decisions, and the tuning record:
   never count. Own units are always visible to their owner, so the public
   preview is exact.
 - Gang Up never applies to retaliation, Kaboom, blasts, Wail, or Goblin
-  boats, and adds to Charge and Inspired/WAAAGH!. Bomb splash derives from
-  the boosted primary damage.
+  boats, and adds to Charge and Inspired/WAAAGH!.
+- **The Goblin pass** (`7r50`,
+  [the Goblin pass](RULESET_7_TUNING_GOBLIN.md#61-a-bomb-gets-no-gang-up)):
+  **a Bomb Chucker's bomb gets no Gang Up** (the role mechanic
+  `gangUpLimit: 0`; every other Goblin land role but the Rocket Cart has
+  2). Its `gangUp` is 0 whatever stands beside the target; WAAAGH! still
+  adds +1, and the splash derives from that hit. **A Rocket Cart's rocket
+  gets +1 at most** (`gangUpLimit: 1`, the correction of the pass): its
+  `gangUp` is 1 with one or more helpers. An attack's Gang Up is the
+  smallest of the faction's maximum, the role's limit, and the helpers.
+  From three tiles at a full-HP unit a rocket deals a Guard 12 alone and 17
+  (a kill) with one helper or with WAAAGH!, and on a walled center or a
+  Field Defense 8, 12, and 16 with both; a Swordsman 9, 13, and 15 (a kill)
+  in the open and 7, 10, and 14 on a fortified tile.
 
 ### 18.3 Discipline: Field Defense and no healers
 
 - Only the Orc Brute builds Field Defense; the Goblin never does
-  ([section 12.3](#123-field-defense)).
+  ([section 12.3](#123-field-defense)). The Orc Brute is Blast-proof
+  ([section 18.6](#186-blast-resolution)).
 - Goblin recovery is the Human rule (Goblins are not Restless). The Orc
   Warboss has no Tend Wounded, so a Goblin seat cannot cure Plague or Bitten;
   its only healing beyond recovery and Windmills is Troll regeneration.
@@ -5849,7 +5913,11 @@ is not an Attack and needs no technology.
   and Inspired.
 - **Legality.** The unit is the actor's own, on the board, in land form, has
   the `KABOOM` ability under its owner's registration, and has not used a
-  primary action this turn. It may have moved (a Rocket Cart too, whose
+  primary action this turn. **Crash** (`7r50`, the role mechanic
+  `kaboomAfterAttack`, the Scrap Buggy only): its attacks do not count, so
+  a Scrap Buggy may Kaboom after it has attacked and while a Ram
+  continuation is waiting; one that Recovered or used another primary
+  action may not (`kaboomReadyV7`). It may have moved (a Rocket Cart too, whose
   "cannot attack after moving" limits only Attack) or been marked handled by
   Wait. It may not Kaboom in the turn it landed: landing ends the activation
   for every faction ([section 14](#14-naval-rules)), so a landed unit can
@@ -5863,8 +5931,9 @@ is not an Attack and needs no technology.
 - **Rejections (atomic).** Unknown, dead, or foreign unit → the ordinary
   unit errors; a role without `KABOOM` (Orc Brute, Orc Warboss, Troll, boats,
   every role of another faction) → `UNIT_ROLE_INVALID { role }`; primary action
-  already used, the unit landed this turn, or a Ram continuation pending →
-  `UNIT_ALREADY_ACTED`;
+  already used (for a Scrap Buggy: one other than its attacks), the unit
+  landed this turn, or, for a unit without Crash, a Ram continuation
+  pending → `UNIT_ALREADY_ACTED`;
   embarked → `KABOOM_NOT_LEGAL { reason: "EMBARKED" }`. A pending city
   reward blocks it like every command.
 
@@ -5888,7 +5957,16 @@ does a shattered exploding unit (`SHATTER`,
 One explosion resolves in this order:
 
 1. collect every unit still on the board in the blast area other than the
-   exploder (a unit killed earlier in the same command is gone);
+   exploder (a unit killed earlier in the same command is gone) and other
+   than a **Blast-proof** unit (`7r50`, `unitIsBlastProofV7`: a land-form
+   unit whose kind's role mechanics have `blastProof`, the Goblin Orc
+   Brute). A Blast-proof unit is not hit, has no entry in `results`, and
+   is not counted as friendly fire, whoever owns the explosion: a Kaboom, a
+   death blast, or a Blast Mountain of any player. The same holds for
+   **splash**: it is never among the units an attack on its neighbour
+   splashes (a Bomb Chucker's bomb, and a Lich's or a Battleship's shot).
+   It is hit as usual by an attack aimed at it, by Pierce, Sweep, Wail, a
+   Dwarf bomb, and an eruption, and when it is embarked;
 2. each takes `min(blast damage, hp)`, all together (a Martian Shield
    absorbs first; each result carries `shieldDamage`); results are sorted by
    `(y, x, unitId)`;
@@ -5963,9 +6041,11 @@ killed a Lich.
 
 ### 18.8 Bomb Chucker bombs
 
-A Bomb Chucker `ATTACK` is an ordinary targeted attack (damage formula, Gang
-Up, Inspired, retaliation only from a defender that reaches 2 cells) plus a
-bomb splash: **every other unit on the eight cells around the primary
+A Bomb Chucker `ATTACK` is an ordinary targeted attack (damage formula,
+Inspired, retaliation only from a defender that reaches 2 cells; no Gang Up
+since `7r50`, [section 18.2](#182-gang-up)) plus a
+bomb splash (never on a Blast-proof unit,
+[section 18.6](#186-blast-resolution)): **every other unit on the eight cells around the primary
 target**, of any owner including the Bomb Chucker's own and its allies',
 hidden or visible, of any form, takes `max(1, ceil(primary damage / 2))`
 capped at its HP. There is no retaliation from splash targets and no
@@ -6004,7 +6084,8 @@ Every death is credited to at most one player:
   displayed as Plunder; Mobility, tier 3,
   requires Roads, ordinary tier-3 cost): when a death is credited to a
   player that has Plunder and the victim's owner is hostile to that player,
-  that player gains 1 Coin. This covers its attacks (primary and splash
+  that player gains **2 Coins** (`PLUNDER_COINS_V7`; 1 before the
+  correction of the Goblin pass). This covers its attacks (primary and splash
   kills), its units' retaliation, and the blasts of its exploding units,
   including blasts of its units that an enemy killed. It earns nothing for
   Plague deaths or own or allied victims.
@@ -6031,7 +6112,8 @@ Every death is credited to at most one player:
   rejects with `HEAL_TARGET_NOT_FOUND`.
 - **Ram** is Overrun under a Goblin label for the Scrap Buggy
   ([section 13.4](#134-after-combat)); its continuation is evaluated after
-  any chain its attack set off.
+  any chain its attack set off. A Scrap Buggy may end a Ram with its
+  Kaboom (Crash, [section 18.4](#184-kaboom)).
 - **Troll regeneration:** at its owner's Start Turn, after Windmill healing
   and before income, every Troll of that player on the board heals
   `min(4, maxHp − hp)`, in any form and on any tile (own, neutral, or hostile
@@ -6077,13 +6159,14 @@ Every death is credited to at most one player:
 - **Error:** `KABOOM_NOT_LEGAL` (reason `EMBARKED`); other Kaboom rejections
   reuse existing codes ([section 18.4](#184-kaboom)).
 - **Registration:** faction `GOBLIN`, tree `GOBLIN_BASELINE_V1`, display name
-  "Goblin"; unlock kinds `WAAAGH_SUPPORT` and `PLUNDER { coins: 1 }`;
+  "Goblin"; unlock kinds `WAAAGH_SUPPORT` and `PLUNDER { coins: 2 }`;
   capability `plunderCoins`; abilities `KABOOM` and `REGENERATE`; faction
   rules `cityCapacityBonus` and `gangUpMaximum`; role mechanics
   `kaboomDamage`, `deathBlastDamage`, `splashTargets`, `buildsFieldDefense`,
-  `rallyRadius`, `rallyReachesSupportAndSiege`, and `regeneration`.
+  `rallyRadius`, `rallyReachesSupportAndSiege`, and `regeneration`, and
+  since `7r50` `gangUpLimit`, `blastProof`, and `kaboomAfterAttack`.
 - **`queryPlayerCommandsV7`** offers `KABOOM` exactly when legal (also with
-  no unit in the blast area), never offers Goblin Field Defense or Warboss
+  no unit in the blast area, and to a Scrap Buggy that has attacked), never offers Goblin Field Defense or Warboss
   Tend Wounded, and offers WAAAGH! (`RALLY`) only with an eligible target.
 - **`previewKaboomV7(view, unitId)`** returns null unless `KABOOM` is
   offered; otherwise `unitId`, `at`, `explosions`, `totals`, `friendlyFire`,
@@ -9627,6 +9710,7 @@ has no Candy step.
 | Tuning      | `pulp-wars-poc-7r49` | `pulp_wars-w49.6` [round 6 of the Human tuning](RULESET_7_TUNING_HUMAN.md#13-round-6) after three hand-played games on round 5: research costs its tier base plus 1 Coin (2) for each technology owned beyond the first; a reward unit appears beside an occupied center and the occupant stays; the owner of a unit hit by an attacker it cannot see receives `COMBAT_SPLASH_DAMAGE` for it; the labs `LAB_BREAKTHROUGH`, `LAB_BREAKTHROUGH_GOBLIN`, and `LAB_BREAKTHROUGH_UNDEAD`. The Normal AI of a Human, Undead, or Goblin seat weighs positions, masses and commits (also at a single-file front), expands to three cities, and researches toward its faction's signature units (the Undead toward Zombies). A `7r48` save, replay, or command stream is incompatible.                                                                                                                                                                                                                                                                                                                                                                         |
 | Tuning      | `pulp-wars-poc-7r49` | `pulp_wars-w49.10` [round 7 of the Human tuning](RULESET_7_TUNING_HUMAN.md#14-round-7) after five hand-played games on round 6, no identity change: the Normal AI of a Human, Undead, or Goblin seat reads a local position, commits with numbers and stays committed against a line that steps back, holds fast units for the infantry, grows at its unit limit, spends on units first while an enemy army is in the field, and marches on the hostile city in its reach that is easiest to take (a surplus on a second); `UNIT_DISBANDED` also reaches every viewer that saw the unit; the three breakthrough labs at revision 2 (a mission city may state `landGrant`); not played by hand yet                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Tuning      | `pulp-wars-poc-7r49` | `pulp_wars-w49.11` [round 8 of the Human tuning](RULESET_7_TUNING_HUMAN.md#15-round-8) after four hand-played games on round 7, no identity change: the Normal AI of a Human, Undead, or Goblin seat keeps a unit on an enemy center until it captures and enters a center in the turn its garrison is shot, researches on a clock while at war, attacks a held city with a group sized to its holders, scouts and expands as a Goblin seat, and grows its capital; corrected before publication after four hand-played games (the research clock under pressure, the answer to the defender's Catapults, the weak garrison, the Bomb Chucker's throw); the text harness breaks a fortified Defense down and says why no city trains; a third bounded-run script; not played by hand yet                                                                                                                                                                                                                                                                                                                                                              |
+| Goblin pass | `pulp-wars-poc-7r50` | `pulp_wars-w49.12` [the Goblin faction pass](RULESET_7_TUNING_GOBLIN.md): a Bomb Chucker's bomb gets no Gang Up; the Orc Brute is Blast-proof; a Scrap Buggy may Kaboom after attacking (Crash); Goblin Scouts (a free Wolf Rider); the Goblin Normal AI's research order and shares; the lab `LAB_GOBLIN_MID`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -10055,7 +10139,7 @@ and autosave key (it is `7r43`). The overlay's own corrections are in its
 
 ## 25. Known discrepancies
 
-As of `pulp-wars-poc-7r49` the rules in this document match the code for
+As of `pulp-wars-poc-7r50` the rules in this document match the code for
 the eight factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
 Martian overlay with the engine of the Mind Control overlay, the Ice Folk
@@ -10070,6 +10154,7 @@ cost of `7r41`, and the many seats of `7r42`, and the naval branch of
 [tuning 1](RULESET_7_TUNING_1.md) of `7r46` and its round 2 of `7r47`,
 and [round 5 of the Human tuning](RULESET_7_TUNING_HUMAN.md#12-round-5) of `7r48`
 and [round 6](RULESET_7_TUNING_HUMAN.md#13-round-6) of `7r49`,
+and [the Goblin pass](RULESET_7_TUNING_GOBLIN.md) of `7r50`,
 with these
 open items: what is left of the naval branch after the fold, the Candy
 items left after the fold, and the pending balance steps below.

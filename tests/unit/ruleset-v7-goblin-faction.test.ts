@@ -81,12 +81,12 @@ import {
 // 9, and 13).
 
 describe("ruleset-7 revision-17 identity", () => {
-  it("keeps r16 among the prior identities after the r49 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r49");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r49.current");
-    expect(PRIOR_RULESET_7_IDS.at(-33)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(48);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-33)).toBe(
+  it("keeps r16 among the prior identities after the r50 identity and cleans the r16 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r50.current");
+    expect(PRIOR_RULESET_7_IDS.at(-34)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(49);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-34)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -728,7 +728,7 @@ describe("ruleset-7 Goblin technology", () => {
       else if (human.id === "COMMERCE")
         // Tuning 3 (`pulp_wars-w49.3`): Commerce also hires, in every tree.
         expect(goblin.unlocks).toEqual([
-          { kind: "PLUNDER", coins: 1 },
+          { kind: "PLUNDER", coins: 2 },
           { kind: "COMMAND", command: "HIRE" },
         ]);
       else expect(goblin.unlocks).toEqual(human.unlocks);
@@ -755,7 +755,7 @@ describe("ruleset-7 Goblin technology", () => {
       // tuning 1).
       ["ORIGINAL", 1, 0],
       ["UNDEAD", 1, 0],
-      ["GOBLIN", 0, 1],
+      ["GOBLIN", 0, 2],
       ["DINOSAUR", 1, 0],
       ["MARTIAN", 1, 0],
       ["ICE_FOLK", 1, 0],
@@ -819,7 +819,7 @@ describe("ruleset-7 Goblin technology", () => {
       "Hire: each Market hires one extra unit a turn on its tile, at 1.5× the price; its city may hold 1 unit above its limit";
     expect(text(0, "COMMERCE")).toEqual([
       hire,
-      "+1 Coin for each enemy unit your units or blasts kill",
+      "+2 Coins for each enemy unit your units or blasts kill",
     ]);
     expect(text(1, "COMMERCE")).toEqual([
       hire,

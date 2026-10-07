@@ -70,7 +70,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r49`;
+ * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r50`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 13): the Normal AI breaks
  * a line with numbers, expands and grows, researches toward its army and
  * buys its dear units, and keeps its discipline; research costs 1 Coin more
@@ -175,13 +175,19 @@ const move = (unitId: UnitId, to: CoordV7): CommandV7 => ({
 });
 
 describe("tuning 6 identity and the research price", () => {
-  it("is 7r49 after 7r48, with the 7r48 save key obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r49");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r48");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r49.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+  // The Goblin pass (tests/unit/ruleset-v7-goblin-pass.test.ts) took 7r50,
+  // so 7r49 is the last prior identity.
+  it("was 7r49 after 7r48, with both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r48",
+      "pulp-wars-poc-7r49",
+    ]);
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r50.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r48.current",
-    );
+      "pulpWars.save.v7r49.current",
+    ]);
   });
 
   it("costs the tier base plus 1 for each technology owned beyond the first", () => {
@@ -793,16 +799,23 @@ describe("research toward the army", () => {
 
   it("researches toward each faction's signature units first", () => {
     expect(ARMY_RESEARCH_ROLES_V7).toEqual({
+      // The Goblin pass, correction (`pulp_wars-w49.12`): the Swordsman
+      // third (it was fifth: a Human seat at war bought Forestry and
+      // Sawmilling for a Catapult it never trained and had no Swordsman
+      // in round 25).
       ORIGINAL: [
         "MARKSMAN",
         "GUARD",
+        "SWORDSMAN",
         "CATAPULT",
         "KNIGHT",
-        "SWORDSMAN",
         "CAPTAIN",
       ],
       UNDEAD: ["GUARD", "MARKSMAN", "CAPTAIN", "CATAPULT", "KNIGHT"],
-      GOBLIN: ["MARKSMAN", "RAIDER", "CATAPULT", "KNIGHT", "GUARD", "CAPTAIN"],
+      // The Goblin pass (`pulp_wars-w49.12`): the Warboss before the Scrap
+      // Buggy (it was KNIGHT, GUARD, CAPTAIN); its correction: the Orc
+      // Brute third (a Human Knight's chain ends on a Brute).
+      GOBLIN: ["MARKSMAN", "RAIDER", "GUARD", "CATAPULT", "CAPTAIN", "KNIGHT"],
     });
     expect(Object.keys(ARMY_RESEARCH_ROLES_V7)).toEqual([
       ...ARMY_PLAY_FACTIONS_V7,
@@ -813,12 +826,12 @@ describe("research toward the army", () => {
       "HUNTING",
       "MARKSMANSHIP",
       "DRILL",
+      "ENGINEERING",
       "FORESTRY",
       "SAWMILLING",
       "SCOUTING",
       "RAIDING",
       "CHIVALRY",
-      "ENGINEERING",
       "ADMINISTRATION",
     ]);
     // Undead: the Zombie with the first technology bought, the Banshee with
@@ -836,18 +849,19 @@ describe("research toward the army", () => {
       "CHIVALRY",
     ]);
     expect(undead.indexOf("DRILL")).toBeLessThan(3);
-    // Goblins: the Bomb Chucker and the Wolf Rider, then the Rocket Cart and
-    // the Scrap Buggy.
+    // Goblins: the Bomb Chucker and the Wolf Rider, the Orc Brute (the
+    // correction of the Goblin pass; it was last), then the Rocket Cart,
+    // the Warboss, and the Scrap Buggy.
     expect(researchOrder(oneCity("GOBLIN"))).toEqual([
       "HUNTING",
       "MARKSMANSHIP",
       "SCOUTING",
+      "DRILL",
       "FORESTRY",
       "SAWMILLING",
+      "ADMINISTRATION",
       "RAIDING",
       "CHIVALRY",
-      "DRILL",
-      "ADMINISTRATION",
     ]);
   });
 
@@ -878,7 +892,7 @@ describe("research toward the army", () => {
       // Roads (by Scouting) once the Marksman and the Guard can be trained.
       "SCOUTING",
       "ROADS",
-      "FORESTRY",
+      "ENGINEERING",
     ]);
     expect(order.at(-1)).toBe("COMMERCE");
     // A seat with one city does not research Roads at all.
@@ -1167,9 +1181,17 @@ describe("the dear units get bought", () => {
         },
       ),
     );
-    const trained = policyTurn(state).commands.flatMap((command) =>
-      command.kind === "TRAIN" ? [command.role] : [],
+    // The Goblin pass (7r50): the free Monument takes the capital to level
+    // 2, and its Scouts reward puts a Wolf Rider on the empty center, so
+    // the city trains from the next turn on.
+    const first = policyTurn(state);
+    expect(first.commands).toContainEqual(
+      expect.objectContaining({ kind: "CHOOSE_CITY_REWARD", reward: "SURVEY" }),
     );
+    const trained = [
+      ...first.commands,
+      ...policyTurn(nextRound(first.state)).commands,
+    ].flatMap((command) => (command.kind === "TRAIN" ? [command.role] : []));
     expect(trained).toHaveLength(1);
     expect(["CATAPULT", "KNIGHT"]).toContain(trained[0]);
   });
@@ -1668,7 +1690,10 @@ describe("LAB_BREAKTHROUGH: numbers against a prepared line", () => {
 
   const lab = breakthroughLabV7;
   /** The round the capital falls to each attacker (the `HOLD` script). */
-  const HOLD_ROUNDS = [6, 7, 7] as const;
+  // The Goblin pass (`pulp_wars-w49.12`, 7r50): the Goblin attacker takes
+  // it in round 6 (7 before; a bomb gets no Gang Up, the Brutes are
+  // Blast-proof, and a spent Buggy crashes).
+  const HOLD_ROUNDS = [6, 6, 7] as const;
 
   const value = (state: GameStateV7, owner: number): number =>
     state.units

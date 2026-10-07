@@ -1,6 +1,7 @@
 import { allocateUnitId, type PlayerId, type UnitId } from "../model/ids";
 import {
   armouredDamageV7,
+  unitIsBlastProofV7,
   unitRoleMechanicsV7,
   type FactionRosterV7,
   BLAST_MOUNTAIN_DAMAGE_V7,
@@ -274,6 +275,8 @@ export function resolveExplosionChainV7<U extends BlastUnitV7>(
             unit.hp > 0 &&
             unit.id !== exploder.id &&
             unit.id !== spared &&
+            // The Goblin pass (7r50): a Blast-proof unit is not hit.
+            !unitIsBlastProofV7(input.roster, unit) &&
             chebyshev(unit.at, exploder.at) <= 1,
         )
         .sort(compareUnitsByTile);
