@@ -96,7 +96,9 @@ describe("the terrain skeleton", () => {
     expect(skeleton.height).toBe(16);
     expect(skeleton.cells).toEqual(
       state.board.tiles.map((tile) =>
-        tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN"
+        tile.terrain === "FOREST" ||
+        tile.terrain === "MOUNTAIN" ||
+        tile.terrain === "RIFT"
           ? tile.terrain
           : "OTHER",
       ),
@@ -137,10 +139,10 @@ describe("the terrain skeleton", () => {
   });
 
   it("reads rows of marks for the reviews and the tests", () => {
-    expect(terrainSkeletonOfRowsV7(["f^.", "~~f"])).toEqual({
+    expect(terrainSkeletonOfRowsV7(["f^.", "~xf"])).toEqual({
       width: 3,
       height: 2,
-      cells: ["FOREST", "MOUNTAIN", "OTHER", "OTHER", "OTHER", "FOREST"],
+      cells: ["FOREST", "MOUNTAIN", "OTHER", "OTHER", "RIFT", "FOREST"],
     });
   });
 });

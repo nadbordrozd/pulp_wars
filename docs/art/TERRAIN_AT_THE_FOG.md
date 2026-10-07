@@ -72,6 +72,58 @@ within 24 px of the old fog's edge, where the cloud was.
   cells must have the skeleton's ground) and is drawn without ghosts. The
   reviews of this bead give the host their own skeleton.
 
+### The Rift
+
+Bead `pulp_wars-2yc.37`. The designer: "there is a problem with terrain
+sprites that take up more than on tile but are partially hidden. like the
+rift 3x1. If when only 1 tile is explored out of the 3, the wrong part of
+the sprite is displayed."
+
+A Rift is one crack per orientation cut into three 80 x 80 pieces (west,
+middle, east; north, middle, south). The piece of a cell was chosen from
+the explored cells alone (`riftPieceV7`), with an unexplored neighbour
+taken as "the crack runs on". So a lone end was drawn as a middle, a lone
+cell of a vertical Rift as a horizontal middle, and the piece changed when
+the next cell was explored.
+
+Now the skeleton also holds the map's Rift cells, and the board plan reads
+an unexplored neighbour from it (`buildBoardRenderPlanV7`'s
+`terrainSkeleton` option, given by the board host in both art sets). A
+Rift never changes (RULESET_7_RIFT.md section 2), so each explored cell
+shows the third it shows when all three are explored, in every one of the
+seven ways one, two or three cells can be explored, and exploring another
+cell changes nothing. The pieces are single cells, so nothing is clipped
+and nothing is painted on an unexplored cell.
+
+What it tells: an end piece, or a middle, says in which direction the
+other two cells lie. That is the same kind of knowledge as half a ridge:
+the ground of the map as it was made, one or two cells behind the cloud's
+edge; and a Rift is always three cells long, so its being there was known
+already.
+
+Without a skeleton (`?fog-terrain=0`, a state built by hand) the piece is
+still guessed from the explored cells. The guess now ends the crack on a
+side where other ground is seen, where it used to draw a middle.
+
+### Every kind of art that spans or overhangs cells
+
+Audited for bead `pulp_wars-2yc.37`: is each explored cell's share the one
+it has when everything is explored?
+
+| Kind                                                                                             | How it is drawn at the fog                                                               | Right in every mask?                                                                                                                                                |
+| ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Rift, both orientations                                                                          | Six single-cell pieces; the piece from the skeleton                                      | Yes, since this bead                                                                                                                                                |
+| Mountain massifs: 2-cell ridges, single mountains, tall pieces 48 px over the row behind         | Packed over the explored cells and the ghosts; `blitShareV7` clips to the explored cells | Yes, but for a hidden cell with a feature (below)                                                                                                                   |
+| Mined mountain (80 x 104)                                                                        | A single cell; its band through `blitShareV7`                                            | Yes                                                                                                                                                                 |
+| Composed forests: 1 x 2 up to 2 x 2 pieces, seam clumps, bands of tree tops                      | The same as massifs                                                                      | Yes, but for a hidden clearing (below)                                                                                                                              |
+| The six faction forests                                                                          | The same; a ghost takes its faction from the explored ground beside it                   | Yes, but for a wood more than two cells into the fog or behind a border the view does not show                                                                      |
+| Snow caps on trees and peaks (Ice Folk)                                                          | Cell by cell through `blitShareV7`                                                       | Yes                                                                                                                                                                 |
+| Single clump or mountain (fallback art, a clearing): 24 px above its cell                        | Its overflow is left out over fog                                                        | Yes                                                                                                                                                                 |
+| Snow, sea ice, coast sand and surf, the water blend, faction grass spill, mountain fringe        | Art inside one cell whose edges depend on the neighbours, read from explored cells only  | Not a share of a larger sprite. An edge toward the fog is redrawn when the neighbour is explored, within 20 px of where the cloud's edge was                        |
+| Roads                                                                                            | Strokes clipped to their own cell, toward explored Road cells                            | The same: a stub appears when the next Road cell is explored                                                                                                        |
+| LEGACY Farm pairs (two cells, one raster cropped in halves)                                      | Paired from the explored Farms                                                           | No, and left so: a Farm is built in play, so a hidden partner cannot be read. A Farm beside the fog is a whole single Farm until then. CHIBI Farms are single cells |
+| Cities, villages, buildings, curiosities (Lair, Fountain, Shrine, Wreck...), units, Dwarf mounds | One cell each; up to 24 px above the cell, drawn whole over the cloud                    | Yes: they stand on an explored cell and are not cut. No curiosity or building spans two cells                                                                       |
+
 ### What a ghost can tell
 
 Where a piece runs on into the fog, the cell behind the cloud's edge is
@@ -93,7 +145,13 @@ and 3 above stay.
   cleared or a Mine dug under the fog), or that holds a feature the packing
   gives a clearing or a single mountain (Ore that the viewer can see, a
   Treasure, a curiosity, a Grave, a building): its neighbours are re-packed
-  when it is explored, as before.
+  when it is explored, as before. Measured on three generated maps under
+  random sights (bead `pulp_wars-2yc.37`): none of 1294 explored Mountain
+  cells before the viewer can see Ore; once it can (Drill), 37 of the 317
+  that have a hidden Mountain beside them. No Forest cell of 1425 either
+  way. Reading the hidden Ore would end it and would tell, by a single
+  mountain where half a ridge would be, where Ore lies under the fog; that
+  is a decision for the designer.
 - A faction's wood whose hidden part lies more than two cells into the fog,
   or behind a border the view does not show.
 - The edge decorations between two cells (the coast's sand and surf, the
@@ -111,6 +169,10 @@ CHROME_PATH=... TERRAIN_FOG_URL=http://localhost:6823/ \
 CHROME_PATH=... npx tsx scripts/art/terrain-fog/review.ts stable <out-dir>
 npx tsx scripts/art/terrain-fog/diff.ts <cut>.png <cut>-explored.png <diff.png>
 ```
+
+`review.ts rift <out-dir>` writes a Rift in each orientation with each of
+the seven explored subsets of its cells, with the skeleton and (`-before`)
+without, and a ridge and a wood cut the same way, with labelled sheets.
 
 `stable` writes, for each cut, the board half in the fog and the same board
 with the same camera after the rest is explored. `diff.ts` with

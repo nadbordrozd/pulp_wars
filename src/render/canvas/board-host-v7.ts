@@ -1583,7 +1583,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         item.interactionKey === interactionKey,
     );
     if (cached !== undefined) return cached.plan;
-    const built = buildBoardRenderPlanV7(view, commands, interaction);
+    // The Rift's pieces read the map's skeleton too (pulp_wars-2yc.37), in
+    // every art set: the plan asks for it only when the view has a Rift.
+    const built = buildBoardRenderPlanV7(view, commands, interaction, {
+      terrainSkeleton: this.#terrainSkeleton,
+    });
     // Multi-cell terrain at the fog (pulp_wars-2yc.28): the CHIBI art set
     // packs its forests and massifs over the explored cells and the ghosts.
     const ghosts =

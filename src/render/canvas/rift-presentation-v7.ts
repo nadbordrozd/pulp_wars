@@ -2,12 +2,18 @@ import type { RiftPieceV7 } from "../../assets/chibi-art-v7";
 
 /**
  * The Rift (bead pulp_wars-9s0.5, docs/product/RULESET_7_RIFT.md section 8):
- * which of the six pieces a Rift cell shows, read from the viewer's board
- * only. `riftAt` answers true for an explored Rift, false for any other
- * explored cell or a cell off the board, and null for a cell the viewer has
- * not explored, so the piece never reveals terrain under fog: a Rift is
- * three cells in a straight line, and a neighbour hidden in fog is drawn as
- * the crack running on into the fog.
+ * which of the six pieces a Rift cell shows. `riftAt` answers true for a
+ * Rift, false for any other cell or a cell off the board, and null for a
+ * cell of which nothing is known.
+ *
+ * The six pieces are one crack per orientation cut in three, so a cell
+ * must show its own third whichever of the three cells are explored (bead
+ * pulp_wars-2yc.37, docs/art/TERRAIN_AT_THE_FOG.md). The board plan
+ * therefore answers for an unexplored cell from the map's skeleton (a Rift
+ * never changes), and no answer is null. Only a board without a skeleton
+ * (a state built by hand, `?fog-terrain=0`) asks with nulls; the piece is
+ * then guessed from the explored cells, with an unknown neighbour taken as
+ * the crack running on, and it can change when that neighbour is explored.
  */
 export function riftPieceV7(
   at: { readonly x: number; readonly y: number },
@@ -61,7 +67,9 @@ export function riftPieceV7(
   // known not to be a Rift is ruled out.
   if (west === false && east === false) return vertical;
   if (north === false && south === false) return horizontal;
-  return "H_MIDDLE";
+  // Neither is ruled out: horizontal, ending where a side is known not to
+  // be a Rift (never a crack drawn up to the edge of ground seen beside it).
+  return horizontal;
 }
 
 /**

@@ -184,6 +184,13 @@ const ASSETS: readonly ChibiArtAssetV7[] = [
   tall("TERRAIN:FOREST", "forest"),
   flat("TERRAIN:GRASS", "grass"),
   flat("TERRAIN:SHALLOW_WATER", "shallow"),
+  // The Rift's six pieces (pulp_wars-2yc.37).
+  flat("TERRAIN:RIFT_H_WEST", "rift-h-west"),
+  flat("TERRAIN:RIFT_H_MIDDLE", "rift-h-middle"),
+  flat("TERRAIN:RIFT_H_EAST", "rift-h-east"),
+  flat("TERRAIN:RIFT_V_NORTH", "rift-v-north"),
+  flat("TERRAIN:RIFT_V_MIDDLE", "rift-v-middle"),
+  flat("TERRAIN:RIFT_V_SOUTH", "rift-v-south"),
 ];
 
 function fakeChibi(): ChibiBoardArtV7 {

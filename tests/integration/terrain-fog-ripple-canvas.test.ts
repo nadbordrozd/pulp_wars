@@ -210,6 +210,111 @@ describe("the board host and the ghosts", () => {
   });
 });
 
+/** A generated match with one Rift: horizontal (Pangea) or vertical. */
+function riftGame(mapType: "PANGEA" | "DRY_LAND") {
+  const created = createPlayableGameV7({
+    rulesetId: RULESET_7_ID,
+    seed: 5,
+    width: 16,
+    height: 16,
+    aiCount: 2,
+    aiDifficulty: "NORMAL",
+    aiMode: "RIVAL",
+    humanColor: "CORAL",
+    factions: ["GOBLIN", "ORIGINAL", "UNDEAD"],
+    mapType,
+    mapGenerationRevision: MAP_GENERATION_REVISION_V7,
+    curiosities: false,
+  });
+  if (!created.ok) throw new Error(created.error.code);
+  const state = created.state;
+  const rift = state.board.tiles
+    .filter((tile) => tile.terrain === "RIFT")
+    .map((tile) => tile.at);
+  const start =
+    state.players.find((player) => player.id === state.humanPlayerId)
+      ?.explored ?? [];
+  /** The view with the start's cells and these cells of the Rift explored. */
+  const seeing = (mask: readonly boolean[]): PlayerViewV7 => {
+    const cells = new Map(
+      [...start, ...rift.filter((_, index) => mask[index] === true)].map(
+        (at) => [`${at.x},${at.y}`, at] as const,
+      ),
+    );
+    for (const [index, at] of rift.entries())
+      if (mask[index] !== true) cells.delete(`${at.x},${at.y}`);
+    return viewForV7(
+      {
+        ...state,
+        players: state.players.map((player) =>
+          player.id === state.humanPlayerId
+            ? { ...player, explored: [...cells.values()] }
+            : player,
+        ),
+      },
+      state.humanPlayerId,
+    );
+  };
+  return { rift, seeing };
+}
+
+const riftPieces = (
+  input: DrawInput,
+  rift: readonly { readonly x: number; readonly y: number }[],
+): (string | null)[] =>
+  rift.map(
+    (at) =>
+      input.plan.entries.find(
+        (entry) =>
+          entry.kind === "TERRAIN" &&
+          entry.at.x === at.x &&
+          entry.at.y === at.y,
+      )?.riftPiece ?? null,
+  );
+
+const RIFT_MASKS = [
+  [true, false, false],
+  [false, true, false],
+  [false, false, true],
+  [true, true, false],
+  [false, true, true],
+  [true, false, true],
+] as const;
+
+describe("the board host and a Rift half in the fog (pulp_wars-2yc.37)", () => {
+  for (const [mapType, whole] of [
+    ["PANGEA", ["H_WEST", "H_MIDDLE", "H_EAST"]],
+    ["DRY_LAND", ["V_NORTH", "V_MIDDLE", "V_SOUTH"]],
+  ] as const)
+    for (const artSet of ["CHIBI", "LEGACY"] as const)
+      it(`plans each explored cell of a real match's Rift its own third: ${mapType}, ${artSet}`, () => {
+        const { rift, seeing } = riftGame(mapType);
+        expect(rift).toHaveLength(3);
+        const { host, model, last } = rig();
+        host.update(model(seeing([true, true, true]), { artSet }));
+        expect(riftPieces(last(), rift)).toEqual(whole);
+        for (const mask of RIFT_MASKS) {
+          host.update(model(seeing(mask), { artSet }));
+          expect(riftPieces(last(), rift), mask.join()).toEqual(
+            whole.map((piece, index) => (mask[index] ? piece : null)),
+          );
+        }
+      });
+
+  it("guesses from the explored cells without a skeleton or with the switch off", () => {
+    const { rift, seeing } = riftGame("DRY_LAND");
+    const lone = seeing([false, true, false]);
+    const none = rig({ terrainSkeleton: () => null });
+    none.host.update(none.model(lone));
+    // The middle of a vertical Rift, alone in the fog: drawn lying down.
+    expect(riftPieces(none.last(), rift)).toEqual([null, "H_MIDDLE", null]);
+    window.history.replaceState(null, "", "/?fog-terrain=0");
+    const off = rig();
+    off.host.update(off.model(lone));
+    expect(riftPieces(off.last(), rift)).toEqual([null, "H_MIDDLE", null]);
+  });
+});
+
 describe("the board host and the territory ripple", () => {
   it("asks for no frame while nothing changes", () => {
     const view = game();

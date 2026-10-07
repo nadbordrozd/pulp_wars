@@ -351,6 +351,7 @@ import {
   compositionEntriesV7,
   fogAtOfV7,
   type TerrainGhostV7,
+  type TerrainSkeletonV7,
 } from "./terrain-at-fog-v7";
 import {
   TILE_HOP_KINDS_V7,
@@ -921,10 +922,21 @@ export interface BoardRenderPlanV7 {
 
 const TILE_EDGES: readonly TileEdge[] = ["NORTH", "EAST", "SOUTH", "WEST"];
 
+export interface BoardRenderPlanOptionsV7 {
+  /**
+   * Multi-cell terrain at the fog (beads pulp_wars-2yc.28 and 2yc.37,
+   * terrain-at-fog-v7.ts): the skeleton of the view's map, or null. With
+   * it a Rift cell shows its own third of the crack whichever of the three
+   * cells are explored. Asked for once, and only for a view with a Rift.
+   */
+  readonly terrainSkeleton?: (view: PlayerViewV7) => TerrainSkeletonV7 | null;
+}
+
 export function buildBoardRenderPlanV7(
   view: PlayerViewV7,
   commands: readonly CommandV7[],
   interaction: BoardRenderInteractionV7,
+  options: BoardRenderPlanOptionsV7 = {},
 ): BoardRenderPlanV7 {
   const entries: BoardRenderPlanEntryV7[] = [];
   const farmPresentation = farmPresentationV7(view);
@@ -950,7 +962,12 @@ export function buildBoardRenderPlanV7(
   const winter = iceFolkMatch ? iceFolkTerrainCellsV7(view) : null;
   // The frozen sea: the ice over each water cell, from the view's ice list.
   const seaIce = seaIceCellsV7(view);
-  // The Rift (bead pulp_wars-9s0.5): a piece read from explored cells only.
+  // The Rift (bead pulp_wars-9s0.5): the piece of the crack a cell shows.
+  // An unexplored neighbour is read from the map's skeleton (pulp_wars-
+  // 2yc.37): a Rift never changes, so the piece is the one the cell has
+  // when all three cells are explored. Without a skeleton the neighbour is
+  // unknown and the piece is guessed from the explored cells alone.
+  let skeleton: TerrainSkeletonV7 | null | undefined;
   const riftAt = (at: CoordV7): boolean | null => {
     if (
       at.x < 0 ||
@@ -959,8 +976,19 @@ export function buildBoardRenderPlanV7(
       at.y >= view.board.height
     )
       return false;
-    const near = view.board.tiles[at.y * view.board.width + at.x];
-    return near?.explored === true ? near.terrain === "RIFT" : null;
+    const index = at.y * view.board.width + at.x;
+    const near = view.board.tiles[index];
+    if (near?.explored === true) return near.terrain === "RIFT";
+    if (skeleton === undefined) {
+      const given = options.terrainSkeleton?.(view) ?? null;
+      skeleton =
+        given !== null &&
+        given.width === view.board.width &&
+        given.height === view.board.height
+          ? given
+          : null;
+    }
+    return skeleton === null ? null : skeleton.cells[index] === "RIFT";
   };
   // Faction building looks (epic pulp_wars-xdh): the faction that owns a
   // tile's territory decides the look of its improvement and its ground.

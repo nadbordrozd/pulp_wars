@@ -80,8 +80,12 @@ export function terrainAtFogEnabledV7(search?: string): boolean {
 
 // ---------------------------------------------------------------- skeleton
 
-/** A cell of the skeleton: the two kinds of ground that are composed. */
-export type SkeletonTerrainV7 = "FOREST" | "MOUNTAIN" | "OTHER";
+/**
+ * A cell of the skeleton: the kinds of ground whose art spans several
+ * cells. Forest and Mountain are composed into pieces; the Rift (bead
+ * pulp_wars-2yc.37) is one crack over three cells.
+ */
+export type SkeletonTerrainV7 = "FOREST" | "MOUNTAIN" | "RIFT" | "OTHER";
 
 /** The map as it was made: one kind of ground a cell, row by row. */
 export interface TerrainSkeletonV7 {
@@ -91,7 +95,22 @@ export interface TerrainSkeletonV7 {
 }
 
 const skeletonKind = (terrain: string): SkeletonTerrainV7 =>
-  terrain === "FOREST" || terrain === "MOUNTAIN" ? terrain : "OTHER";
+  terrain === "FOREST" || terrain === "MOUNTAIN" || terrain === "RIFT"
+    ? terrain
+    : "OTHER";
+
+/** The skeleton of a board as it stands: one kind of ground a tile. */
+export function terrainSkeletonOfBoardV7(board: {
+  readonly width: number;
+  readonly height: number;
+  readonly tiles: readonly { readonly terrain: string }[];
+}): TerrainSkeletonV7 {
+  return {
+    width: board.width,
+    height: board.height,
+    cells: board.tiles.map((tile) => skeletonKind(tile.terrain)),
+  };
+}
 
 /**
  * The skeleton of a match: its map as the setup makes it. Null when the
@@ -103,12 +122,7 @@ export function terrainSkeletonOfSetupV7(
   try {
     const made = createInitialMapStateV7(setup);
     if (!made.ok) return null;
-    const { width, height, tiles } = made.state.board;
-    return {
-      width,
-      height,
-      cells: tiles.map((tile) => skeletonKind(tile.terrain)),
-    };
+    return terrainSkeletonOfBoardV7(made.state.board);
   } catch {
     return null;
   }
@@ -116,8 +130,9 @@ export function terrainSkeletonOfSetupV7(
 
 /**
  * A skeleton from rows of characters, north first: `^` Mountain, `f`
- * Forest, anything else other ground. For the art reviews and the tests,
- * whose states are built by hand.
+ * Forest, `x` Rift (the marks of a mission's map), anything else other
+ * ground. For the art reviews and the tests, whose states are built by
+ * hand.
  */
 export function terrainSkeletonOfRowsV7(
   rows: readonly string[],
@@ -128,7 +143,13 @@ export function terrainSkeletonOfRowsV7(
     height: rows.length,
     cells: rows.flatMap((row) =>
       Array.from({ length: width }, (_, x): SkeletonTerrainV7 =>
-        row[x] === "^" ? "MOUNTAIN" : row[x] === "f" ? "FOREST" : "OTHER",
+        row[x] === "^"
+          ? "MOUNTAIN"
+          : row[x] === "f"
+            ? "FOREST"
+            : row[x] === "x"
+              ? "RIFT"
+              : "OTHER",
       ),
     ),
   };

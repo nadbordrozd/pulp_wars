@@ -10,12 +10,15 @@
  *
  * `<set>` is one of the shot lists below: `partial` (multi-cell terrain
  * half inside the fog), `skins` (a wood changing hands under each kind of
- * occupant), `palettes` (the fog's palettes) or `ripple` (a capture's
- * ripple, frame by frame). Each shot writes `<name>.png`; `palettes` and
- * `ripple` also write a labelled sheet. No PixelLab call.
+ * occupant), `palettes` (the fog's palettes), `ripple` (a capture's
+ * ripple, frame by frame) or `rift` (bead pulp_wars-2yc.37: a Rift in each
+ * orientation with one, two or all three of its cells explored, drawn with
+ * and without the map's skeleton, and a ridge and a wood cut the same
+ * way). Each shot writes `<name>.png`; `palettes`, `ripple` and `rift`
+ * also write labelled sheets. No PixelLab call.
  */
 import { spawn } from "node:child_process";
-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -55,7 +58,8 @@ function mountExpression(scene: TerrainFogSceneOptions): string {
       const { Ruleset7DomAppView } = await import('/src/render/dom/app-view-v7.ts');
       const { CanvasBoardHostV7 } = await import('/src/render/canvas/board-host-v7.ts');
       globalThis.__PULP_WARS_APP__?.destroy();
-      const build = (options) => options.large === true ? scenes.terrainFogLargeScene(options) : scenes.terrainFogScene(options);
+      const riftFog = await import('/tests/fixtures/v7-rift-fog.ts');
+      const build = (options) => options.rift !== undefined ? riftFog.riftFogSceneV7(options.rift) : options.large === true ? scenes.terrainFogLargeScene(options) : scenes.terrainFogScene(options);
       const first = ${JSON.stringify(scene)};
       let state = build(first);
       const ai = { active: false, fastForward: false, policySlices: 0, acceptedCommands: 0, lastSliceMilliseconds: 0, maximumSliceMilliseconds: 0 };
@@ -81,7 +85,7 @@ function mountExpression(scene: TerrainFogSceneOptions): string {
       };
       const { terrainSkeletonOfRowsV7, terrainAtFogEnabledV7 } = await import('/src/render/canvas/terrain-at-fog-v7.ts');
       // The review's map is built by hand: its skeleton is its own rows.
-      const skeleton = terrainSkeletonOfRowsV7(scenes.TERRAIN_FOG_TERRAIN);
+      const skeleton = terrainSkeletonOfRowsV7(first.rift !== undefined ? riftFog.RIFT_FOG_TERRAIN_V7 : scenes.TERRAIN_FOG_TERRAIN);
       // (A generated map has the skeleton of its own setup.)
       const boardHost = new CanvasBoardHostV7(document, first.large === true ? {} : { terrainSkeleton: () => (terrainAtFogEnabledV7() ? skeleton : null) });
       const view = new Ruleset7DomAppView(document, document.querySelector('#app'), controller, { boardHost, settingsStorage: null, artSet: 'CHIBI' });
@@ -605,7 +609,117 @@ const RIPPLE: readonly Shot[] = [
   },
 ];
 
+/**
+ * Bead pulp_wars-2yc.37: a Rift in each orientation with every explored
+ * subset of its three cells and nothing else near it seen, drawn with the
+ * map's skeleton and (`-before`, `?fog-terrain=0`) from the explored cells
+ * alone, as it was drawn before the bead; and a ridge and a wood with one
+ * and two cells explored. The cells are those of
+ * tests/fixtures/v7-rift-fog.ts.
+ */
+const RIFT_MASKS = ["100", "010", "001", "110", "011", "101", "111"] as const;
+const RIFT_CELLS = {
+  h: [
+    { x: 3, y: 2 },
+    { x: 4, y: 2 },
+    { x: 5, y: 2 },
+  ],
+  v: [
+    { x: 10, y: 2 },
+    { x: 10, y: 3 },
+    { x: 10, y: 4 },
+  ],
+} as const;
+/**
+ * What the sheets crop, in cells: x, y, columns, rows (a half is half a
+ * cell: 2.5 starts in the middle of cell 2).
+ */
+const RIFT_BOXES = {
+  h: [2.5, 1.5, 4, 2],
+  v: [9.5, 1.5, 2, 4],
+  ridge: [2.5, 5, 3, 2.5],
+  wood: [7.5, 5, 3, 3.5],
+} as const;
+/** Zoomed in twice (a cell is 120 px), dragged to the part in question. */
+const RIFT_CAMERAS = {
+  h: { zoomIn: 2 as const, drag: [0, 330] as const },
+  v: { zoomIn: 2 as const, drag: [-640, 330] as const },
+  ridge: { zoomIn: 2 as const, drag: [-240, 100] as const },
+  wood: { zoomIn: 2 as const, drag: [-240, 100] as const },
+};
+const OTHER_KINDS: readonly {
+  readonly name: string;
+  readonly box: keyof typeof RIFT_BOXES;
+  readonly explored: readonly { readonly x: number; readonly y: number }[];
+}[] = [
+  { name: "ridge-west", box: "ridge", explored: [{ x: 3, y: 6 }] },
+  { name: "ridge-east", box: "ridge", explored: [{ x: 4, y: 6 }] },
+  {
+    name: "ridge-both",
+    box: "ridge",
+    explored: [
+      { x: 3, y: 6 },
+      { x: 4, y: 6 },
+    ],
+  },
+  { name: "wood-nw", box: "wood", explored: [{ x: 8, y: 6 }] },
+  { name: "wood-se", box: "wood", explored: [{ x: 9, y: 7 }] },
+  {
+    name: "wood-west",
+    box: "wood",
+    explored: [
+      { x: 8, y: 6 },
+      { x: 8, y: 7 },
+    ],
+  },
+  {
+    name: "wood-south",
+    box: "wood",
+    explored: [
+      { x: 8, y: 7 },
+      { x: 9, y: 7 },
+    ],
+  },
+  {
+    name: "wood-all",
+    box: "wood",
+    explored: [
+      { x: 8, y: 6 },
+      { x: 9, y: 6 },
+      { x: 8, y: 7 },
+      { x: 9, y: 7 },
+    ],
+  },
+];
+const RIFT: readonly Shot[] = [
+  ...(["h", "v"] as const).flatMap((axis) =>
+    RIFT_MASKS.flatMap((mask): Shot[] => {
+      const scene = {
+        rift: {
+          explored: RIFT_CELLS[axis].filter((_, index) => mask[index] === "1"),
+        },
+      };
+      return [
+        { name: `rift-${axis}-${mask}`, scene, ...RIFT_CAMERAS[axis] },
+        {
+          name: `rift-${axis}-${mask}-before`,
+          scene,
+          query: "fog-terrain=0",
+          ...RIFT_CAMERAS[axis],
+        },
+      ];
+    }),
+  ),
+  ...OTHER_KINDS.map((kind): Shot => ({
+    name: kind.name,
+    // The ground round them is seen, so the cut is the piece's alone.
+    scene: { rift: { explored: kind.explored, halo: true } },
+    ...RIFT_CAMERAS[kind.box],
+  })),
+];
+
 const SETS: Readonly<Record<string, readonly Shot[]>> = {
+  rift: RIFT,
   ripple: RIPPLE,
   partial: PARTIAL,
   skins: SKINS,
@@ -613,8 +727,68 @@ const SETS: Readonly<Record<string, readonly Shot[]>> = {
   stable: STABLE,
 };
 
+/** The page box of a block of cells in a written shot, from its geometry. */
+async function cellBox(
+  out: string,
+  name: string,
+  cells: readonly [number, number, number, number],
+): Promise<readonly [number, number, number, number]> {
+  const geometry = JSON.parse(
+    await readFile(path.join(out, `${name}.json`), "utf8"),
+  ) as { x: number; y: number; cell: number };
+  const left = Math.round(geometry.x + (cells[0] - 0.5) * geometry.cell);
+  const top = Math.round(geometry.y + (cells[1] - 0.5) * geometry.cell);
+  const box = [
+    left,
+    top,
+    Math.round(cells[2] * geometry.cell),
+    Math.round(cells[3] * geometry.cell),
+  ] as const;
+  if (
+    box[0] < 0 ||
+    box[1] < 0 ||
+    box[0] + box[2] > PAGE[0] ||
+    box[1] + box[3] > PAGE[1]
+  )
+    throw new Error(`${name}: cells ${cells.join()} are off the page`);
+  return box;
+}
+
 /** The labelled sheets of a set, made of its written shots. */
 async function sheets(set: string, out: string): Promise<void> {
+  if (set === "rift") {
+    // The mask names the explored cells, west to east or north to south.
+    const cell = async (axis: "h" | "v", mask: string, suffix: string) => {
+      const from = `rift-${axis}-${mask}${suffix}`;
+      return {
+        title: `${mask} ${suffix === "" ? "now" : "before"}`,
+        from,
+        box: await cellBox(out, from, RIFT_BOXES[axis]),
+        scale: 2,
+      };
+    };
+    // Horizontal: a row a mask, before and now side by side.
+    const horizontal = [];
+    for (const mask of RIFT_MASKS)
+      for (const suffix of ["-before", ""])
+        horizontal.push(await cell("h", mask, suffix));
+    await sheet(out, "rift-h-sheet.png", 2, horizontal);
+    // Vertical: a column a mask, before over now.
+    const vertical = [];
+    for (const suffix of ["-before", ""])
+      for (const mask of RIFT_MASKS)
+        vertical.push(await cell("v", mask, suffix));
+    await sheet(out, "rift-v-sheet.png", RIFT_MASKS.length, vertical);
+    const others = [];
+    for (const kind of OTHER_KINDS)
+      others.push({
+        title: kind.name,
+        from: kind.name,
+        box: await cellBox(out, kind.name, RIFT_BOXES[kind.box]),
+        scale: 2,
+      });
+    await sheet(out, "others-sheet.png", 4, others);
+  }
   if (set === "ripple") {
     await sheet(
       out,

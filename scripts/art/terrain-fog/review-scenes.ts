@@ -238,6 +238,16 @@ export interface TerrainFogSceneOptions {
   /** The review runner: `terrainFogLargeScene` instead, and its option. */
   readonly large?: boolean;
   readonly captured?: boolean;
+  /**
+   * The review runner (bead pulp_wars-2yc.37): the Rifts, the ridge and the
+   * wood of tests/fixtures/v7-rift-fog.ts instead, with these cells
+   * explored.
+   */
+  readonly rift?: {
+    readonly explored?: readonly CoordV7[];
+    readonly all?: boolean;
+    readonly halo?: boolean;
+  };
 }
 
 export function terrainFogScene(
