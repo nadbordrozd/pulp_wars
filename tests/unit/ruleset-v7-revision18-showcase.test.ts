@@ -237,9 +237,12 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         crumbs,
         splattedThisTurn,
         tossedThisTurn,
+        // `pulp_wars-w49.15`: and the empty hunted list (Pack Hunt).
+        huntedThisTurn,
         ice,
         ...withoutMonsters
       } = revision19State;
+      expect(huntedThisTurn).toEqual([]);
       expect(monsters).toEqual([]);
       // `pulp_wars-5ti.3`: and the empty ice list.
       expect(ice).toEqual([]);

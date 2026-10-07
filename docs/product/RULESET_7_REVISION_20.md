@@ -1,5 +1,15 @@
 # Ruleset 7 revision 20: Triceratops Charge, T-Rex cost, Nesting and Wallbreaker, full-heal promotion, sturdier Humans
 
+**The Dinosaur pass** (`pulp_wars-w49.15`, `pulp-wars-poc-7r53`,
+[its record](RULESET_7_TUNING_DINOSAUR.md)) changed two rules of this
+document; the current rules win where this text differs. **A
+Triceratops's run-up counts one tile, and two only with Wallbreaker**
+(this document gives every Triceratops two). **Wallbreaker** has that
+second tile as its own unlock, beside the City Walls rule that Breach
+covers since `7r46`. **Its correction: Nesting takes no turn off the
+hatch** (this document gives one; the Egg's +4 HP and the city slot
+stay).
+
 **Status:** contract (`pulp_wars-0hi.1`), implemented in the engine, the
 Normal AI, and the UI by `pulp_wars-0hi.2`
 ([section 11](#11-implementation-notes-pulp_wars-0hi2) lists where the

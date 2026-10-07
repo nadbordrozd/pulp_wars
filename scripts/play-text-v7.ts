@@ -33,6 +33,13 @@ import {
 } from "../src/ai/index";
 import { publicProjectedDamageForPolicyV7 } from "../src/ai/v7";
 import {
+  isEggLaidRoleV7,
+  technologyCapabilitiesV7,
+} from "../src/engine/rules/ruleset-v7";
+import { packHuntAttack2V7 } from "../src/engine/v7/combat";
+import { validatePlayerMovementPathV7 } from "../src/engine/v7/movement";
+import { factionBuildCommandV7 } from "../src/render/faction-buildings-v7";
+import {
   absorbHitV7,
   forceFieldHoldsV7,
   shieldOfV7,
@@ -156,7 +163,7 @@ import {
   landTradeUnlockTextV7,
   BLAST_MOUNTAIN_DAMAGE_NOTE_V7,
   FOREST_COVER_UNLOCK_TEXT_V7,
-  HIRE_UNLOCK_TEXT_V7,
+  hireUnlockTextV7,
   BLAST_ORE_WARNING_V7,
   FOREST_MARCH_UNLOCK_TEXT_V7,
   BARRACKS_REWARD_TEXT_V7,
@@ -174,6 +181,18 @@ import {
   OVERRUN_BUDGET_TEXT_V7,
 } from "../src/render/technology-unlock-text-v7";
 import { MARKET_PLACEMENT_TEXT_V7 } from "../src/render/economy-presentation-v7";
+import {
+  CHARGE_DESCRIPTION_V7,
+  DINOSAUR_HIRE_NOTE_V7,
+  HATCH_TOOLTIP_V7,
+  WALLBREAKER_UNLOCK_TEXT_V7,
+  dinosaurAbilityDescriptionV7,
+  nestingUnlockTextV7,
+  packHuntPreviewLineV7,
+  packHuntTextV7,
+  slotsTextV7,
+  turnsTextV7,
+} from "../src/render/dinosaur-presentation-v7";
 import {
   BRAIN_SUPPORT_UNLOCK_TEXT_V7,
   DISINTEGRATOR_UNLOCK_TEXT_V7,
@@ -252,7 +271,7 @@ const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; st
   new     --session S [--map dry-land] [--size 11] [--seed 1] [--factions original,undead[,...]]
           [--seat 0] [--curiosities on|off] [--overwrite]
   lab     --session S <LAB> [--overwrite]
-                                        start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead; LAB_MARTIAN_MID: the Martians); lab alone lists them
+                                        start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead; LAB_MARTIAN_MID: the Martians; LAB_DINOSAUR_MID: the Dinosaurs); lab alone lists them
   view    --session S [--full]          public view of your seat: header, map, cities, units
   tech    --session S                   technology tree with costs and unlocks
   options --session S [--unit ID | --city ID | --tile x,y | --all]
@@ -762,6 +781,10 @@ function roleNotesV7(
     | "carrionBonus2"
     | "heatSink"
     | "rallyCools"
+    | "packHuntBonus2"
+    | "armourReduction"
+    | "capacitySlots"
+    | "hatchTurns"
   > | null = null,
 ): readonly string[] {
   const rangedDefense2 = mechanics?.rangedDefense2 ?? null;
@@ -800,6 +823,32 @@ function roleNotesV7(
     notes.push(PSYCHIC_COOLDOWN_TEXT_V7);
   if ((rule.abilities as readonly string[]).includes("BEAM_DOWN"))
     notes.push(BEAM_DOWN_TEXT_V7);
+  // The Dinosaur pass (`pulp_wars-w49.15`, 7r53): the Dinosaur unit rules
+  // in the sentences of the unit card (only a Dinosaur role has them).
+  if (rule.abilities.includes("LINEBREAKER"))
+    notes.push(`Charge!: ${CHARGE_DESCRIPTION_V7}`);
+  if (rule.abilities.includes("ACID"))
+    notes.push(
+      `Acid: ${dinosaurAbilityDescriptionV7("ACID", "DINOSAUR") ?? ""}`,
+    );
+  if (mechanics !== null && mechanics.armourReduction > 0)
+    notes.push(
+      `Armoured: ${dinosaurAbilityDescriptionV7("ARMOURED", "DINOSAUR") ?? ""}`,
+    );
+  if (rule.abilities.includes("HATCH"))
+    notes.push(`Hatch: ${HATCH_TOOLTIP_V7}`);
+  if (mechanics !== null && mechanics.packHuntBonus2 > 0)
+    notes.push(packHuntTextV7(mechanics.packHuntBonus2));
+  if (rule.abilities.includes("GROW"))
+    notes.push(
+      `Grows with kills: ${dinosaurAbilityDescriptionV7("GROW", "DINOSAUR") ?? ""}`,
+    );
+  if (mechanics !== null && mechanics.hatchTurns !== null)
+    notes.push(
+      `laid as an Egg next to the city, hatches in ${turnsTextV7(mechanics.hatchTurns)} (a Shaman can hatch it sooner)`,
+    );
+  if (mechanics !== null && mechanics.capacitySlots > 1)
+    notes.push(`fills ${slotsTextV7(mechanics.capacitySlots)}`);
   return notes;
 }
 
@@ -956,7 +1005,7 @@ function rewardChoicesTextV7(
 }
 
 /** The offered commands with their ids, in the public query's order. */
-function offeredV7(view: PlayerViewV7): readonly OfferedV7[] {
+function queriedV7(view: PlayerViewV7): readonly OfferedV7[] {
   const used = new Map<string, number>();
   return queryPlayerCommandsV7(view).map((command) => {
     // Tuning 5 (`pulp_wars-w49.4`): a seat whose Survey gives a Raider
@@ -970,6 +1019,68 @@ function offeredV7(view: PlayerViewV7): readonly OfferedV7[] {
     // Two offers with one meaning (two paths to one tile) stay distinct.
     return { id: count === 1 ? base : `${base}~${count}`, command };
   });
+}
+
+/**
+ * The Dinosaur pass, correction (`pulp_wars-w49.15`): the offered commands
+ * plus, for an own Triceratops whose run-up counts two tiles (Wallbreaker),
+ * a two-tile Move to every tile it can also reach in one step
+ * (`u7.run.4,5`). The public query offers one path a tile, the shortest,
+ * so the second tile of the run-up could not be chosen for a target next
+ * to that tile. The engine accepts any legal path; these are legal by the
+ * public path check.
+ */
+function offeredV7(view: PlayerViewV7): readonly OfferedV7[] {
+  const offered = queriedV7(view);
+  const tiles = technologyCapabilitiesV7(
+    view.viewer.researchedTechs,
+    view.viewer.faction,
+  ).runUpTiles;
+  if (tiles < 2) return offered;
+  const extra: OfferedV7[] = [];
+  for (const unit of view.units) {
+    if (
+      unit.ownerId !== view.viewer.id ||
+      unit.form !== "LAND" ||
+      unit.activation.moved ||
+      !unitRoleRuleV7(view, unit).abilities.includes("LINEBREAKER")
+    )
+      continue;
+    for (const entry of offered) {
+      const command = entry.command;
+      if (
+        command.kind !== "MOVE" ||
+        command.unitId !== unit.id ||
+        command.path.length !== 1
+      )
+        continue;
+      const to = command.path[0] as CoordV7;
+      let found: readonly CoordV7[] | null = null;
+      for (let dy = -1; dy <= 1 && found === null; dy += 1)
+        for (let dx = -1; dx <= 1 && found === null; dx += 1) {
+          const via = { x: unit.at.x + dx, y: unit.at.y + dy };
+          if (
+            (dx === 0 && dy === 0) ||
+            sameV7(via, to) ||
+            chebyshevV7(via, to) !== 1
+          )
+            continue;
+          const result = validatePlayerMovementPathV7(view, unit, [via, to]);
+          if (
+            result.legal &&
+            sameV7(result.destination, to) &&
+            result.traversedPath.length === 2
+          )
+            found = [via, to];
+        }
+      if (found !== null)
+        extra.push({
+          id: `u${unit.id}.run.${xyV7(to)}`,
+          command: { kind: "MOVE", unitId: unit.id, path: found },
+        });
+    }
+  }
+  return extra.length === 0 ? offered : [...offered, ...extra];
 }
 
 function commandUnitIdV7(command: CommandV7): number | null {
@@ -1295,14 +1406,16 @@ function unlockTextV7(
               : unlock.command === "BUILD_FIELD_DEFENSE"
                 ? ` (${FIELD_DEFENSE_UNLOCK_TEXT_V7}; 3c, built before moving on a tile of your territory)`
                 : unlock.command === "HIRE"
-                  ? ` (${HIRE_UNLOCK_TEXT_V7})`
+                  ? // The Dinosaur pass: a Dinosaur Market hires a dinosaur
+                    // hatched.
+                    ` (${hireUnlockTextV7(faction === "DINOSAUR" ? DINOSAUR_HIRE_NOTE_V7 : null)})`
                   : unlock.command === "PILLAGE"
                     ? ` (${pillageUnlockTextV7(effectiveRoleRuleV7("RAIDER", faction).abilities.includes("ESCAPE") ? effectiveRoleRuleV7("RAIDER", faction).label : null)})`
                     : ""
           }`
         : unlock.command === "BUILD_MARKET"
           ? `cmd ${unlock.command} (${spatial.cost}c; a Market pays 2 or 3 Coins every turn: 1, plus 1 for each family of buildings beside it (farms, timber, metal), 3 at most; ${MARKET_PLACEMENT_TEXT_V7})`
-          : `cmd ${unlock.command} (${spatial.cost}c, output by neighbours; it can only be built next to at least one building that feeds it)`;
+          : `cmd ${unlock.command}${factionBuildCommandV7(unlock.command, faction) === null ? "" : ` "${factionBuildCommandV7(unlock.command, faction)?.name ?? ""}"`} (${spatial.cost}c, output by neighbours; it can only be built next to at least one building that feeds it)`;
     }
     case "UNIT_ROLE": {
       const rule = effectiveRoleRuleV7(unlock.role, faction);
@@ -1328,6 +1441,12 @@ function unlockTextV7(
       return `${HEAT_SINKS_UNLOCK_TEXT_V7} [${unlock.kind}]`;
     case "DISINTEGRATOR":
       return `${DISINTEGRATOR_UNLOCK_TEXT_V7} [${unlock.kind}]`;
+    // The Dinosaur pass (`pulp_wars-w49.15`): the Dinosaur unlocks in the
+    // sentences of the technology card.
+    case "NESTING":
+      return `${nestingUnlockTextV7()} [${unlock.kind}]`;
+    case "WALLBREAKER":
+      return `${WALLBREAKER_UNLOCK_TEXT_V7} [${unlock.kind}]`;
     default: {
       if (unlock.kind === "FOREST_COVER")
         return `${FOREST_COVER_UNLOCK_TEXT_V7} [${unlock.kind}]`;
@@ -1396,7 +1515,42 @@ function describeCommandV7(
         command.kind === "MOVE" && command.path.length > 1
           ? ` via ${command.path.slice(0, -1).map(xyV7).join(">")}`
           : "";
-      return `${command.kind === "MOVE" ? "move" : "disembark"} to ${xyV7(to)} (${tileBriefV7(view, to)})${via}${near.length === 0 ? "" : ` | next to hostile ${near.map((other) => context.memory.tag(other.id)).join(" ")}`}`;
+      // The Dinosaur pass, correction: what a Charge! after this Move
+      // would have (the run-up is decided by the Move, before the attack).
+      const mover = view.units.find(
+        (candidate) => candidate.id === command.unitId,
+      );
+      let charge = "";
+      if (
+        command.kind === "MOVE" &&
+        mover !== undefined &&
+        mover.ownerId === view.viewer.id &&
+        mover.form === "LAND" &&
+        !mover.activation.moved &&
+        unitRoleRuleV7(view, mover).abilities.includes("LINEBREAKER")
+      ) {
+        const runUp = Math.min(
+          technologyCapabilitiesV7(
+            view.viewer.researchedTechs,
+            view.viewer.faction,
+          ).runUpTiles,
+          command.path.length,
+        );
+        const bonus2 = unitRoleMechanicsV7(view, mover).runUpBonus2 * runUp;
+        charge = ` | run-up ${runUp} ${runUp === 1 ? "tile" : "tiles"}: Charge! +${bonus2 / 2} Attack${near
+          .map((other) => {
+            const damage = publicProjectedDamageForPolicyV7(
+              view,
+              mover,
+              other,
+              other.at,
+              { bonusAttack2: bonus2 },
+            );
+            return `; on ${context.memory.tag(other.id)} about ${damage} (hp ${other.hp}->${Math.max(0, other.hp - damage)})${damage >= other.hp ? " KILLS" : ""}`;
+          })
+          .join("")}`;
+      }
+      return `${command.kind === "MOVE" ? "move" : "disembark"} to ${xyV7(to)} (${tileBriefV7(view, to)})${via}${near.length === 0 ? "" : ` | next to hostile ${near.map((other) => context.memory.tag(other.id)).join(" ")}`}${charge}`;
     }
     case "ATTACK": {
       const target = view.units.find(
@@ -1430,7 +1584,14 @@ function describeCommandV7(
       return `${head}: ${combatTextV7(preview as never, context, {
         attacker: unit?.hp ?? null,
         defender: target?.hp ?? null,
-      })}${holds ? ` | ${FORCE_FIELD_HOLDS_V7}` : ""}${blast === "" ? "" : ` | explosions ${blast}`}`;
+      })}${holds ? ` | ${FORCE_FIELD_HOLDS_V7}` : ""}${
+        unit !== undefined &&
+        target !== undefined &&
+        packHuntAttack2V7(view, view.units, unit, target, view.huntedThisTurn) >
+          0
+          ? ` | ${packHuntPreviewLineV7()} (in the numbers)`
+          : ""
+      }${blast === "" ? "" : ` | explosions ${blast}`}`;
     }
     case "CAPTURE": {
       const city =
@@ -1719,7 +1880,9 @@ function eventTextV7(
         `RESEARCHED ${seatLabelV7(context.view, event.playerId)} ${event.tech} for ${event.cost}c`,
       );
       if (event.playerId === me)
-        notes.push(`RESEARCHED ${event.tech} (${event.cost}c)`);
+        notes.push(
+          `RESEARCHED ${techNameV7(context.view.viewer.faction, event.tech)} (${event.cost}c)`,
+        );
       break;
     case "CITY_CAPTURED": {
       const city = context.view.cities.find(
@@ -1759,7 +1922,7 @@ function eventTextV7(
       );
       if (event.playerId === me)
         notes.push(
-          `${verb} ${event.role} in c${event.cityId} (${event.cost}c)`,
+          `${verb} ${effectiveRoleRuleV7(event.role, context.view.viewer.faction).label} in c${event.cityId} (${event.cost}c)`,
         );
       break;
     }
@@ -2087,6 +2250,10 @@ export const TEXT_PLAY_LABS_V7: Readonly<Record<string, string>> = {
   // Martians, on land with Forest, Fertile Ground, and Ore.
   LAB_MARTIAN_MID:
     "YOU PLAY THE MARTIANS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Martian unit (ten technologies) and hold 5 Grunts, 2 Shield Projectors, 2 Saucers, 2 Ray Gunners, a Brain, 2 Tripods and a Mothership (15 units), 35c in hand on the first turn and three free unit slots (the capital is full; a Mothership fills two); the Humans hold 3 Swordsmen, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; your Shield Projectors raise no Shield but their own until you research Force Fields, and your Ray Gunners overheat until you research Heat Sinks",
+  // The Dinosaur pass (`pulp_wars-w49.15`): the one lab played as the
+  // Dinosaurs, on the same land.
+  LAB_DINOSAUR_MID:
+    "YOU PLAY THE DINOSAURS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can produce every Dinosaur unit (ten technologies) and hold 3 Cavemen, 2 Raptors (one Big), 2 Spitters (one Big), 2 Ankylosauruses, a Shaman, 2 Triceratops (one Big) and a T-Rex Egg beside your capital, two turns from hatching, with the Shaman next to it (12 units and the Egg), 35c in hand on the first turn and three free unit slots (two in the capital, one in the northern level-3 city; a Triceratops and a T-Rex fill two); the Humans hold 3 Swordsmen, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you own neither Nesting (one more unit slot in every city, Eggs with 10 HP) nor Wallbreaker (a Triceratops's run-up of two tiles)",
 };
 
 function commandLabV7(args: ArgsV7): string {
@@ -2283,11 +2450,31 @@ const MARTIAN_ROLE_CODE_V7: Readonly<Partial<Record<UnitRoleIdV7, string>>> = {
 };
 const MARTIAN_LEGEND_V7 =
   "  Martian units: Gr grunt Sa saucer RG ray gunner SP shield projector Br brain Tr tripod Mo mothership Co colossus";
+/**
+ * The Dinosaur pass, correction (`pulp_wars-w49.15`): a Dinosaur unit's own
+ * map code (a Triceratops read as a Human Catapult, `Ct`, an Ankylosaurus
+ * as a Guard, a Spitter as a Marksman).
+ */
+const DINOSAUR_ROLE_CODE_V7: Readonly<Partial<Record<UnitRoleIdV7, string>>> = {
+  FIGHTER: "Cv",
+  RAIDER: "Rp",
+  MARKSMAN: "Sp",
+  GUARD: "Ak",
+  CAPTAIN: "Sh",
+  CATAPULT: "Tc",
+  KNIGHT: "Tx",
+  JUGGERNAUT: "Bo",
+};
+const DINOSAUR_LEGEND_V7 =
+  "  Dinosaur units: Cv caveman Rp raptor Sp spitter Ak ankylosaurus Sh shaman Tc triceratops Tx t-rex Bo brontosaurus";
 function roleCodeV7(view: PlayerViewV7, unit: PublicUnitV7): string {
+  const faction = unitFactionV7(view, unit);
   return (
-    (unitFactionV7(view, unit) === "MARTIAN"
+    (faction === "MARTIAN"
       ? MARTIAN_ROLE_CODE_V7[unit.role]
-      : undefined) ?? ROLE_CODE_V7[unit.role]
+      : faction === "DINOSAUR"
+        ? DINOSAUR_ROLE_CODE_V7[unit.role]
+        : undefined) ?? ROLE_CODE_V7[unit.role]
   );
 }
 
@@ -2752,12 +2939,18 @@ function unitLineV7(
   if (status !== "") parts.push(`| ${status}`);
   // Tuning 4: role rules the numbers do not show.
   const unitRule = unitRoleRuleV7(view, unit);
-  for (const note of roleNotesV7(
-    unitRule,
-    unit.form === "LAND" && unitIgnoresZocStopsV7(view, unit),
-    unit.form === "LAND" ? unitRoleMechanicsV7(view, unit) : null,
-  ))
-    parts.push(`| ${note}`);
+  // The Dinosaur pass: an Egg has none of the rules of the unit inside.
+  if (unit.form === "EGG")
+    parts.push(
+      "| an Egg: cannot move or fight, Defense 1 on any tile, lost with its city",
+    );
+  else
+    for (const note of roleNotesV7(
+      unitRule,
+      unit.form === "LAND" && unitIgnoresZocStopsV7(view, unit),
+      unit.form === "LAND" ? unitRoleMechanicsV7(view, unit) : null,
+    ))
+      parts.push(`| ${note}`);
   if (full && stats !== undefined) {
     const modifiers = stats.stats.flatMap((entry) =>
       entry.modifiers.map(
@@ -2825,6 +3018,8 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
   );
   if (view.players.some((player) => player.faction === "MARTIAN"))
     lines.push(MARTIAN_LEGEND_V7);
+  if (view.players.some((player) => player.faction === "DINOSAUR"))
+    lines.push(DINOSAUR_LEGEND_V7);
   if (!full) lines.push("  (view --full prints the whole legend)");
 
   const specials: string[] = [];
@@ -2884,6 +3079,13 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
           entry.command.role === role,
       )?.id;
       const cost = trainingCostV7(view, city.id, role);
+      // The Dinosaur pass, correction: a unit of two slots says how many
+      // it needs (it read "center occupied" at a city with one free slot),
+      // and an Egg is laid beside the center, so an occupied center is not
+      // its reason.
+      const need = roleMechanicsV7(role, view.viewer.faction).capacitySlots;
+      const free = slots.capacity - slots.used;
+      const laid = isEggLaidRoleV7(role, view.viewer.faction);
       const why =
         city.cityActionAvailable !== true
           ? "city action used"
@@ -2891,11 +3093,15 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
             ? "besieged"
             : cost > view.viewer.coins
               ? "too dear"
-              : slots.used >= slots.capacity
-                ? "no free slot"
-                : view.units.some((unit) => sameV7(unit.at, city.at))
-                  ? "center occupied"
-                  : "not offered";
+              : free < need
+                ? need === 1
+                  ? "no free slot"
+                  : `needs ${need} free slots, the city has ${free}`
+                : laid
+                  ? "no free tile next to the city"
+                  : view.units.some((unit) => sameV7(unit.at, city.at))
+                    ? "center occupied"
+                    : "not offered";
       return `${rule.label} ${cost}c${id === undefined ? ` (${why})` : ` [${id.startsWith(`c${city.id}.egg`) ? `c${city.id}.egg.${role}.x,y` : id}]`}`;
     });
     lines.push(
@@ -2979,7 +3185,11 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
 
   lines.push(
     "",
-    `TECH researched ${view.viewer.researchedTechs.length}: ${view.viewer.researchedTechs.join(", ") || "-"}`,
+    `TECH researched ${view.viewer.researchedTechs.length}: ${
+      view.viewer.researchedTechs
+        .map((tech) => techNameV7(view.viewer.faction, tech))
+        .join(", ") || "-"
+    }`,
   );
   if (tree !== null)
     lines.push(
@@ -2988,7 +3198,8 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
           .filter((node) => node.state === "AVAILABLE")
           .map(
             (node) =>
-              `${node.id} ${node.cost}c${node.affordable ? "" : " (too dear)"}`,
+              // The faction's own name beside the id (Nesting, Heat Sinks).
+              `${techNameV7(view.viewer.faction, node.id)} ${node.cost}c${node.affordable ? "" : " (too dear)"}`,
           )
           .join(" | ") || "-"
       }`,
@@ -3250,13 +3461,30 @@ function commandOptionsV7(args: ArgsV7): string {
       const slots = city === undefined ? null : citySlotsV7(view, city);
       grouped = true;
       lines.push(
-        `${pattern}  x${hires.length} hire on the Market at ${xyV7(first.at)} (1.5x the price${slots === null ? "" : `; city slots ${slots.used}/${slots.capacity}, a hire may go 1 above`}; the unit arrives spent on the Market tile, which must be empty): ${hires
-          .map((entry) =>
+        `${pattern}  x${hires.length} hire on the Market at ${xyV7(first.at)} (1.5x the price${slots === null ? "" : `; city slots ${slots.used}/${slots.capacity}, a hire may go 1 above`}; the unit arrives spent on the Market tile, which must be empty): ${[
+          ...hires.map((entry) =>
             entry.command.kind === "HIRE"
-              ? `${entry.command.role} ${publicHireCostV7(view, entry.command.cityId, entry.command.role) ?? "?"}c`
+              ? `${effectiveRoleRuleV7(entry.command.role, view.viewer.faction).label} [${entry.command.role}] ${publicHireCostV7(view, entry.command.cityId, entry.command.role) ?? "?"}c`
               : "",
-          )
-          .join(" | ")}`,
+          ),
+          // The Dinosaur pass, correction: the roles the Market would hire
+          // with more Coins (a hidden role read as "cannot be hired").
+          ...UNIT_ROLE_IDS_V7.flatMap((role) => {
+            if (
+              hires.some(
+                (entry) =>
+                  entry.command.kind === "HIRE" && entry.command.role === role,
+              )
+            )
+              return [];
+            const cost = publicHireCostV7(view, first.cityId, role);
+            return cost === null || cost <= view.viewer.coins
+              ? []
+              : [
+                  `${effectiveRoleRuleV7(role, view.viewer.faction).label} [${role}] ${cost}c (too dear, you have ${view.viewer.coins}c)`,
+                ];
+          }),
+        ].join(" | ")}`,
       );
     }
     const buckets = new Map<string, OfferedV7[]>();
@@ -3875,13 +4103,25 @@ function commandDebriefV7(args: ArgsV7): string {
     );
     lines.push(
       "",
-      `SEAT ${seatName(seat)} | final status ${final?.status ?? "?"} | techs ${final?.researchedTechs.join(",") || "-"}`,
+      `SEAT ${seatName(seat)} | final status ${final?.status ?? "?"} | techs ${final?.researchedTechs.map((tech) => techNameV7(seat.faction, tech)).join(",") || "-"}`,
       "round | coins at end of turn | income | cities (levels) | units | techs | actions this turn",
     );
+    // The Dinosaur pass, correction: the faction's own names (Nesting
+    // read as FORTIFICATION and a Triceratops as CATAPULT).
+    const techName = (tech: string): string => techNameV7(seat.faction, tech);
+    const roleName = (role: string): string => {
+      const [id, suffix] = role.split("(") as [string, string | undefined];
+      const known = (UNIT_ROLE_IDS_V7 as readonly string[]).includes(id);
+      return `${known ? effectiveRoleRuleV7(id as UnitRoleIdV7, seat.faction).label : id}${suffix === undefined ? "" : `(${suffix}`}`;
+    };
     for (const row of seat.rows) {
       const actions = [
-        row.researched.length > 0 ? `research ${row.researched.join(",")}` : "",
-        row.trained.length > 0 ? `train ${row.trained.join(",")}` : "",
+        row.researched.length > 0
+          ? `research ${row.researched.map(techName).join(",")}`
+          : "",
+        row.trained.length > 0
+          ? `train ${row.trained.map(roleName).join(",")}`
+          : "",
         row.attacks > 0 ? `attacks ${row.attacks}` : "",
         row.kills > 0 ? `kills ${row.kills}` : "",
         row.losses > 0 ? `losses ${row.losses}` : "",
@@ -3896,7 +4136,7 @@ function commandDebriefV7(args: ArgsV7): string {
       );
     }
     const techOrder = seat.rows.flatMap((row) =>
-      row.researched.map((tech) => `R${row.round} ${tech}`),
+      row.researched.map((tech) => `R${row.round} ${techName(tech)}`),
     );
     const trained = new Map<string, number>();
     for (const row of seat.rows)
@@ -3904,7 +4144,7 @@ function commandDebriefV7(args: ArgsV7): string {
         trained.set(role, (trained.get(role) ?? 0) + 1);
     lines.push(
       `TECH ORDER ${techOrder.join(" | ") || "-"}`,
-      `TRAINED ${[...trained.entries()].map(([role, count]) => `${role} ${count}`).join(", ") || "-"} (mechanical roles)`,
+      `TRAINED ${[...trained.entries()].map(([role, count]) => `${roleName(role)} ${count}`).join(", ") || "-"}`,
       `COMBAT attacks made ${seat.totals.attacks} | kills on own turns ${seat.totals.kills} | units lost ${seat.totals.losses} (a row lists a loss in the seat's next own turn when it fell during another seat's turn)`,
     );
   }

@@ -15,7 +15,6 @@ import {
   MIND_CONTROL_LIMIT_V7,
   armouredDamageV7,
   isMindControlledV7,
-  chargeRunUpAttack2V7,
   effectiveRoleRuleV7,
   cityUnitCapacityForV7,
   HUMAN_ONLY_ROLES_V7,
@@ -206,6 +205,18 @@ import {
   ARMY_PESTILENCE_LICHES_V7,
   ARMY_FORCE_FIELDS_PROJECTORS_V7,
   ARMY_MARTIAN_STURDY_V7,
+  ARMY_DINOSAUR_ALONE_RADIUS_V7,
+  ARMY_DINOSAUR_CENTER_FAST_RADIUS_V7,
+  ARMY_DINOSAUR_CHARGER_REACH_V7,
+  ARMY_DINOSAUR_CROWDED_FREE_SLOTS_V7,
+  ARMY_DINOSAUR_CROWDED_UNITS_V7,
+  ARMY_DINOSAUR_DEFENCE_RADIUS_V7,
+  ARMY_DINOSAUR_DEFENDER_MAXIMUM_V7,
+  ARMY_DINOSAUR_PACK_CAVEMEN_V7,
+  ARMY_DINOSAUR_PACK_REACH_V7,
+  ARMY_DINOSAUR_STURDY_V7,
+  ARMY_NESTING_DEFENDERS_V7,
+  ARMY_WALLBREAKER_CHARGERS_V7,
   ARMY_CARRIER_KEEP_OUT_PRIORITY_V7,
   ARMY_STEP_BACK_PRIORITY_V7,
   ARMY_HEAT_SINKS_RAY_GUNNERS_V7,
@@ -215,7 +226,9 @@ import {
   ARMY_VILLAGES_FIRST_ROUNDS_V7,
   armyAssaultModeV7,
   armyClassV7,
+  armyShareClassV7,
   armyCountsV7,
+  armyDinosaurDefenderCappedV7,
   armyPlayFactionV7,
   armyResearchDueV7,
   armyRoleScoreV7,
@@ -316,6 +329,7 @@ import {
   NESTING_EGG_VALUE_V7,
   NESTING_RESEARCH_PRIORITY_V7,
   NESTING_SLOT_VALUE_V7,
+  WALLBREAKER_CHARGER_VALUE_V7,
   WALLBREAKER_RESEARCH_PRIORITY_V7,
   WALLBREAKER_WALLED_CITY_VALUE_V7,
   WOUNDED_DINOSAUR_KILL_DIVISOR_V7,
@@ -335,7 +349,9 @@ import {
   grownUnitPremiumV7,
   hatchScoreV7,
   layEggAdjustmentV7,
+  layEggTurnsV7,
   chargeRunUpForPolicyV7,
+  packHuntForPolicyV7,
   ignoresWallsForPolicyV7,
   linebreakerV7,
   policySiegeRuleV7,
@@ -3589,6 +3605,22 @@ function armyResearchTargetV7(
       !armyWarV7(context) &&
       view.cities.filter((city) => city.ownerId === view.viewer.id).length >=
         ARMY_ROADS_CITIES_V7;
+    // The Dinosaur pass (`pulp_wars-w49.15`): a crowded Dinosaur seat
+    // researches its slot technologies (`armyDinosaurCrowdedV7`), after the
+    // growth its land can use: Nesting, and Planning (through
+    // Administration, 24 Coins) once it can lay the Triceratops, the first
+    // unit of two slots. (In the second run of the first diagnostic match
+    // Planning before it put the Triceratops's technology back from round
+    // 17 to round 22.)
+    if (chosen === null && armyDinosaurCrowdedV7(context)) {
+      const charger = effectiveRoleRuleV7("CATAPULT", faction).technology;
+      const slots =
+        toward("FORTIFICATION") ??
+        (charger !== null && view.viewer.researchedTechs.includes(charger)
+          ? toward("PLANNING")
+          : null);
+      if (slots !== null) chosen = { ...slots, growth: true };
+    }
     // The Undead pass, correction: the cure first (`armyCureDueV7`).
     if (armyCureDueV7(context)) {
       const cure = effectiveRoleRuleV7("CAPTAIN", faction);
@@ -3641,6 +3673,43 @@ function armyResearchTargetV7(
           fielded("HEAT_RAY") >= ARMY_HEAT_SINKS_RAY_GUNNERS_V7
         )
           chosen = toward("FIELDCRAFT");
+      }
+      if (chosen !== null) break;
+      // The Dinosaur pass (`pulp_wars-w49.15`): Nesting (a unit slot in
+      // every city, sturdier Eggs) before the Triceratops
+      // once the seat fields an Ankylosaurus, and Wallbreaker (the second
+      // tile of the run-up) before the T-Rex once it fields two
+      // Triceratops.
+      if (faction === "DINOSAUR") {
+        const fielded = (wanted: UnitRoleIdV7): number =>
+          view.units.filter(
+            (unit) =>
+              unit.ownerId === view.viewer.id &&
+              unit.form === "LAND" &&
+              unit.role === wanted,
+          ).length;
+        if (
+          role === "CATAPULT" &&
+          fielded("GUARD") >= ARMY_NESTING_DEFENDERS_V7
+        )
+          chosen = toward("FORTIFICATION");
+        // The correction: at the first unit of the order after the
+        // Triceratops, not at the T-Rex (the last): a seat that fielded
+        // Triceratops for fifteen rounds never came to it.
+        else if (
+          role !== "GUARD" &&
+          role !== "CATAPULT" &&
+          fielded("CATAPULT") >= ARMY_WALLBREAKER_CHARGERS_V7
+        )
+          chosen = toward("EXPLOSIVES");
+        // Planning (a unit slot in every city) before the T-Rex, which
+        // fills two, once the Shaman's Administration is owned.
+        if (
+          chosen === null &&
+          role === "KNIGHT" &&
+          view.viewer.researchedTechs.includes("ADMINISTRATION")
+        )
+          chosen = toward("PLANNING");
       }
       if (chosen !== null) break;
       if (
@@ -3704,6 +3773,221 @@ function armyCheapGrowthV7(preview: {
     preview.levelsReached.length > 0 ||
     (population > 0 && preview.cost <= ARMY_CHEAP_GROWTH_COINS_V7 * population)
   );
+}
+
+/**
+ * The Dinosaur pass (`pulp_wars-w49.15`): a Dinosaur army seat with
+ * `ARMY_DINOSAUR_CROWDED_UNITS_V7` units or Eggs and no city with
+ * `ARMY_DINOSAUR_CROWDED_FREE_SLOTS_V7` free unit slots (the room of a
+ * Triceratops or a T-Rex).
+ */
+function armyDinosaurCrowdedV7(context: PolicyContextV7): boolean {
+  const view = context.view;
+  if (!context.army || view.viewer.faction !== "DINOSAUR") return false;
+  const cities = view.cities.filter((city) => city.ownerId === view.viewer.id);
+  return (
+    cities.length > 0 &&
+    view.units.filter((unit) => unit.ownerId === view.viewer.id).length >=
+      ARMY_DINOSAUR_CROWDED_UNITS_V7 &&
+    cities.every(
+      (city) =>
+        freeCapacity(view, city.id) < ARMY_DINOSAUR_CROWDED_FREE_SLOTS_V7,
+    )
+  );
+}
+
+/**
+ * The Dinosaur pass, correction: a Dinosaur army seat lays no Ankylosaurus
+ * beyond its cap (`armyDinosaurDefenderCappedV7`: a third of the army, and
+ * the units it screens), nor beyond `ARMY_DINOSAUR_DEFENDER_MAXIMUM_V7`
+ * while growth is on offer or its next technology is a growth technology.
+ * The cap is a filter and not only a score: a city with its center held
+ * can lay Eggs and train nothing, so the capped Ankylosaurus was its only
+ * production and was laid all the same (the third diagnostic match: nine
+ * Ankylosauruses of sixteen units). Without it the garrison steps aside
+ * and the city trains a Caveman, or the Coins go to a technology.
+ */
+function armyDinosaurDefenderHeldV7(
+  context: PolicyContextV7,
+  command: { readonly role: UnitRoleIdV7 },
+): boolean {
+  const view = context.view;
+  if (!context.army || view.viewer.faction !== "DINOSAUR") return false;
+  if (
+    armyShareClassV7(effectiveRoleRuleV7(command.role, "DINOSAUR")) !==
+    "DEFENDER"
+  )
+    return false;
+  const counts = armyCountsForContextV7(context);
+  if (armyDinosaurDefenderCappedV7(counts)) return true;
+  return (
+    counts.byClass.DEFENDER >= ARMY_DINOSAUR_DEFENDER_MAXIMUM_V7 &&
+    (armyGrowthOfferedV7(context) ||
+      armyResearchTargetV7(context)?.growth === true)
+  );
+}
+
+/**
+ * The Dinosaur pass, correction: Wallbreaker (the second tile of the
+ * run-up) is the army's own technology once the seat fields
+ * `ARMY_WALLBREAKER_CHARGERS_V7` Triceratops: a war does not hold it and
+ * the Coins are kept for it. (A seat with five Triceratops had it as its
+ * target for six rounds of a war and bought units.)
+ */
+function armyWallbreakerDueV7(
+  context: PolicyContextV7,
+  tech: TechnologyIdV7,
+): boolean {
+  const view = context.view;
+  if (!context.army || view.viewer.faction !== "DINOSAUR") return false;
+  const target = armyResearchTargetV7(context);
+  if (target === null || target.tech !== tech) return false;
+  const chain = researchChain(view, "EXPLOSIVES");
+  if (chain[0] !== tech) return false;
+  return (
+    view.units.filter(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.form === "LAND" &&
+        linebreakerV7(view, unit),
+    ).length >= ARMY_WALLBREAKER_CHARGERS_V7
+  );
+}
+
+/**
+ * The Dinosaur pass, correction: while a visible hostile land unit that
+ * moves two tiles or more or has Overrun is within
+ * `ARMY_DINOSAUR_CENTER_FAST_RADIUS_V7` of an own center, a Dinosaur army
+ * seat's unit on that center makes no Move off it but the step aside that
+ * lets the city train (`armyVacatesCenterV7`: to the next tile) and no
+ * attack that advances off it; and its Ankylosaurus on or beside that
+ * center makes no Move to a tile that is not on or beside it.
+ */
+function armyDinosaurKeepsCenterV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" | "ATTACK" }>,
+): boolean {
+  const view = context.view;
+  if (!context.army || view.viewer.faction !== "DINOSAUR") return false;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  if (
+    actor === undefined ||
+    actor.ownerId !== view.viewer.id ||
+    actor.form !== "LAND"
+  )
+    return false;
+  const screen = armouredForPolicyV7(view, actor);
+  const city = view.cities.find(
+    (candidate) =>
+      candidate.ownerId === view.viewer.id &&
+      distance(candidate.at, actor.at) <= (screen ? 1 : 0),
+  );
+  if (city === undefined) return false;
+  const fast = armyHostilesV7(context).some((unit) => {
+    if (distance(unit.at, city.at) > ARMY_DINOSAUR_CENTER_FAST_RADIUS_V7)
+      return false;
+    const rule = unitRoleRuleV7(view, unit);
+    return rule.move >= 2 || rule.abilities.includes("OVERRUN");
+  });
+  if (!fast) return false;
+  const onCenter = same(actor.at, city.at);
+  if (command.kind === "MOVE") {
+    const to = command.path.at(-1);
+    if (to === undefined) return false;
+    if (onCenter) return !armyVacatesCenterV7(context, actor, to);
+    return distance(to, city.at) > 1;
+  }
+  if (!onCenter) return false;
+  const preview = queryCombatPreviewV7(
+    view,
+    command.unitId,
+    command.targetUnitId,
+  );
+  return preview !== null && preview.advances;
+}
+
+/**
+ * The Dinosaur pass, correction: whether an own Triceratops has the
+ * support to commit against `target` (`ARMY_DINOSAUR_CHARGER_REACH_V7`).
+ */
+function armyChargeSupportedV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+): boolean {
+  const view = context.view;
+  let chargers = 0;
+  let cavemen = 0;
+  for (const unit of view.units) {
+    if (
+      unit.id === actor.id ||
+      unit.ownerId !== view.viewer.id ||
+      unit.form !== "LAND" ||
+      unit.hp <= 0
+    )
+      continue;
+    const gap = distance(unit.at, target.at);
+    const rule = unitRoleRuleV7(view, unit);
+    if (
+      (rule.abilities.includes("LINEBREAKER") ||
+        (rule.abilities.includes("OVERRUN") &&
+          rule.abilities.includes("GROW"))) &&
+      (unit.activation.attacked
+        ? gap <= 2
+        : gap <= ARMY_DINOSAUR_CHARGER_REACH_V7)
+    )
+      chargers += 1;
+    else if (
+      unitRoleMechanicsV7(view, unit).packHuntBonus2 > 0 &&
+      gap <= ARMY_DINOSAUR_PACK_REACH_V7
+    )
+      cavemen += 1;
+  }
+  if (chargers >= 1 || cavemen >= ARMY_DINOSAUR_PACK_CAVEMEN_V7) return true;
+  if (
+    view.cities.some(
+      (city) =>
+        city.ownerId === view.viewer.id &&
+        distance(city.at, target.at) <= ARMY_DINOSAUR_DEFENCE_RADIUS_V7,
+    )
+  )
+    return true;
+  return !armyHostilesV7(context).some(
+    (unit) =>
+      unit.id !== target.id &&
+      distance(unit.at, target.at) <= ARMY_DINOSAUR_ALONE_RADIUS_V7,
+  );
+}
+
+/**
+ * The Dinosaur pass, correction: a Dinosaur army seat's Triceratops that
+ * has not attacked makes no Move into contact with hostile land units none
+ * of which it has the support to charge (`armyChargeSupportedV7`).
+ */
+function armyChargeHeldV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  const view = context.view;
+  if (!context.army || view.viewer.faction !== "DINOSAUR") return false;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const to = command.path.at(-1);
+  if (
+    actor === undefined ||
+    to === undefined ||
+    actor.ownerId !== view.viewer.id ||
+    actor.form !== "LAND" ||
+    !linebreakerV7(view, actor)
+  )
+    return false;
+  const contacts = armyHostilesV7(context).filter(
+    (unit) => distance(unit.at, to) === 1,
+  );
+  if (contacts.length === 0) return false;
+  // Already in contact where it stands: it is in the fight.
+  if (armyHostilesV7(context).some((unit) => distance(unit.at, actor.at) === 1))
+    return false;
+  return !contacts.some((unit) => armyChargeSupportedV7(context, actor, unit));
 }
 
 /** Tuning 6: no hostile land unit is near an own center. */
@@ -3795,7 +4079,11 @@ function armyUndeadSeatV7(context: PolicyContextV7): boolean {
  */
 function armyOpeningSeatV7(context: PolicyContextV7): boolean {
   const faction = context.view.viewer.faction;
-  return context.army && (faction === "UNDEAD" || faction === "MARTIAN");
+  // The Dinosaur pass (`pulp_wars-w49.15`): and a Dinosaur seat.
+  return (
+    context.army &&
+    (faction === "UNDEAD" || faction === "MARTIAN" || faction === "DINOSAUR")
+  );
 }
 
 /**
@@ -3822,7 +4110,23 @@ function armyEconomySeatV7(context: PolicyContextV7): boolean {
  */
 function armyCorrectionSeatV7(context: PolicyContextV7): boolean {
   const faction = context.view.viewer.faction;
-  return context.army && (faction === "ORIGINAL" || faction === "MARTIAN");
+  // The Dinosaur pass (`pulp_wars-w49.15`): a Dinosaur seat takes the
+  // latest rules too.
+  return (
+    context.army &&
+    (faction === "ORIGINAL" || faction === "MARTIAN" || faction === "DINOSAUR")
+  );
+}
+
+/**
+ * The Dinosaur pass (`pulp_wars-w49.15`): a city's land production. A
+ * Dinosaur city lays an Egg where another faction's trains (`LAY_EGG` is
+ * offered to no other seat), and every army rule about training reads both.
+ */
+function armyProductionV7(
+  command: CommandV7,
+): command is Extract<CommandV7, { kind: "TRAIN" | "LAY_EGG" }> {
+  return command.kind === "TRAIN" || command.kind === "LAY_EGG";
 }
 
 const ARMY_VILLAGES_FIRST_CACHE_V7 = new WeakMap<PolicyContextV7, boolean>();
@@ -4163,6 +4467,19 @@ function armyVacatesCenterV7(
     return false;
   const view = context.view;
   const city = context.lookup.citiesByKey.get(coordKey(actor.at));
+  // The Dinosaur pass (`pulp_wars-w49.15`): a city that lays an Egg this
+  // turn produces with its center held, so its garrison stays. (A city
+  // whose Eggs the policy refuses, because the visible enemies would smash
+  // them, lays none: its garrison steps aside like any army seat's and the
+  // city trains a Caveman. In the first diagnostic lab match a front city
+  // with four free slots produced nothing for ten rounds.)
+  if (
+    city !== undefined &&
+    city.ownerId === view.viewer.id &&
+    view.viewer.faction === "DINOSAUR" &&
+    preferredSharedCityActionV7(context, city.id)?.kind === "LAY_EGG"
+  )
+    return false;
   return (
     city !== undefined &&
     city.ownerId === view.viewer.id &&
@@ -6101,7 +6418,15 @@ function armyWeakLinkV7(context: PolicyContextV7, unit: PublicUnitV7): boolean {
   const shield = context.martian
     ? unitRoleMechanicsV7(context.view, unit).shield
     : 0;
-  return shield > 0 && unit.maxHp + shield < ARMY_MARTIAN_STURDY_V7;
+  if (shield > 0 && unit.maxHp + shield < ARMY_MARTIAN_STURDY_V7) return true;
+  // The Dinosaur pass (`pulp_wars-w49.15`): a Dinosaur unit a Knight's hit
+  // kills at full HP (`ARMY_DINOSAUR_STURDY_V7`): a Caveman, a Shaman, a
+  // Raptor that has not grown.
+  return (
+    context.dinosaur &&
+    policyUnitFactionV7(context.view, unit) === "DINOSAUR" &&
+    unit.maxHp < ARMY_DINOSAUR_STURDY_V7
+  );
 }
 
 /** The visible hostile land units that attack again after a kill (Overrun). */
@@ -6192,8 +6517,12 @@ function armyEscortValueV7(
           covered += 1;
     return Math.min(ARMY_ESCORT_MAXIMUM_V7, covered) * ARMY_ESCORT_VALUE_V7;
   }
+  // The Dinosaur pass (`pulp_wars-w49.15`): a Dinosaur seat's Ankylosaurus
+  // stands beside the units a Knight kills in one attack (Cavemen, Raptors
+  // that have not grown, Spitters, the Shaman) and ends the ride.
+  const dinosaur = view.viewer.faction === "DINOSAUR";
   if (
-    view.viewer.faction !== "GOBLIN" ||
+    (view.viewer.faction !== "GOBLIN" && !dinosaur) ||
     armyClassV7(unitRoleRuleV7(view, actor)) !== "DEFENDER"
   )
     return 0;
@@ -6211,7 +6540,8 @@ function armyEscortValueV7(
       if (
         unitClass === "RANGED" ||
         unitClass === "SIEGE" ||
-        unitClass === "SUPPORT"
+        unitClass === "SUPPORT" ||
+        (dinosaur && unit.maxHp < ARMY_DINOSAUR_STURDY_V7)
       )
         escorted += 1;
     }
@@ -6365,7 +6695,7 @@ function armyCanTrainV7(context: PolicyContextV7): boolean {
   const view = context.view;
   const offered = new Set<CityId>();
   for (const command of context.commands)
-    if (command.kind === "TRAIN") offered.add(command.cityId);
+    if (armyProductionV7(command)) offered.add(command.cityId);
   context.armyCanTrain = view.cities.some((city) => {
     if (
       city.ownerId !== view.viewer.id ||
@@ -6632,10 +6962,26 @@ function armyWarHoldsResearchV7(
   // is the cure.
   if (armyEconomyResearchV7(context, tech) || armyCureResearchV7(context, tech))
     return false;
+  // The Dinosaur pass: nor is the slot technology of a crowded Dinosaur
+  // seat (`armyDinosaurCrowdedV7`): it is what lets its Coins become units.
+  if (target.growth && armyDinosaurCrowdedV7(context)) return false;
+  // The correction: nor Wallbreaker for a seat with two Triceratops.
+  if (armyWallbreakerDueV7(context, tech)) return false;
+  // The Dinosaur pass: a Dinosaur seat lays one Egg a city a turn and its
+  // big units fill its slots, so its Coins outrun its production; a
+  // technology it can pay for and still lay the dearest Egg on offer is
+  // bought (after the production of the turn, `ARMY_UNDUE_RESEARCH_PRIORITY_V7`).
+  if (context.view.viewer.faction === "DINOSAUR") {
+    let dearest = 0;
+    for (const command of context.commands)
+      if (armyProductionV7(command))
+        dearest = Math.max(dearest, trainingCostV7(context.view, command));
+    if (context.view.viewer.coins - target.cost >= dearest) return false;
+  }
   if (armyResearchClockDueV7(context)) return false;
   if (!armyCanTrainV7(context) && !armyGrowthOfferedV7(context)) return false;
   if (target.unlocks === null) return true;
-  const unitClass = armyClassV7(
+  const unitClass = armyShareClassV7(
     effectiveRoleRuleV7(target.unlocks, context.view.viewer.faction),
   );
   return (
@@ -6730,7 +7076,9 @@ function armyResearchFloorV7(context: PolicyContextV7): number {
     (armyWarV7(context) && armyResearchClockDueV7(context)) ||
     (target !== null &&
       armyCorrectionSeatV7(context) &&
-      armyEconomyResearchV7(context, target.tech))
+      armyEconomyResearchV7(context, target.tech)) ||
+    // The Dinosaur pass, correction: and for Wallbreaker.
+    (target !== null && armyWallbreakerDueV7(context, target.tech))
   ) {
     if (target !== null && context.view.viewer.coins < target.cost)
       floor = Math.max(0, target.cost - armyIncomeV7(context));
@@ -6759,8 +7107,13 @@ function armyDearUnitFloorV7(context: PolicyContextV7, cityId: CityId): number {
   const view = context.view;
   // The Martian pass (`pulp_wars-w49.14`): also a Martian seat, for the
   // Tripod and then the Mothership (its Grunts cost 3 Coins too).
+  // The Dinosaur pass (`pulp_wars-w49.15`): and a Dinosaur seat, for the
+  // Triceratops and then the T-Rex, in a city with the slots for it.
   const faction = view.viewer.faction;
-  if ((faction !== "UNDEAD" && faction !== "MARTIAN") || !armyAlertV7(context))
+  if (
+    (faction !== "UNDEAD" && faction !== "MARTIAN" && faction !== "DINOSAUR") ||
+    !armyAlertV7(context)
+  )
     return 0;
   if (armyThreatDistanceV7(context) <= ARMY_PRESSED_RADIUS_V7) return 0;
   const city = context.lookup.citiesById.get(cityId);
@@ -6779,7 +7132,7 @@ function armyDearUnitFloorV7(context: PolicyContextV7, cityId: CityId): number {
   const income = armyIncomeV7(context);
   for (const role of ["CATAPULT", "KNIGHT"] as const) {
     const rule = effectiveRoleRuleV7(role, faction);
-    const unitClass = armyClassV7(rule);
+    const unitClass = armyShareClassV7(rule);
     if (
       rule.cost === null ||
       rule.technology === null ||
@@ -6787,7 +7140,9 @@ function armyDearUnitFloorV7(context: PolicyContextV7, cityId: CityId): number {
       (unitClass !== "SIEGE" && unitClass !== "BREAKTHROUGH") ||
       shares[unitClass] * (counts.total + 1) -
         100 * counts.byClass[unitClass] <=
-        0
+        0 ||
+      // A unit of two slots is waited for only where it fits.
+      freeCapacity(view, cityId) < roleMechanicsV7(role, faction).capacitySlots
     )
       continue;
     // Affordable now: it is offered, and the composition takes it.
@@ -6864,7 +7219,7 @@ function armyWarGrowthBuysV7(
   // the seat can still train, so the order of the two does not matter.
   let dearest = 0;
   for (const command of context.commands)
-    if (command.kind === "TRAIN")
+    if (armyProductionV7(command))
       dearest = Math.max(dearest, trainingCostV7(context.view, command));
   return context.view.viewer.coins - preview.cost >= dearest;
 }
@@ -7034,7 +7389,7 @@ function armyTrainsElsewhereV7(
     (reach.get(coordKey(at)) ?? 0) >= ARMY_COVERED_CENTER_SHOOTERS_V7;
   if (!covered(city.at)) return false;
   return context.commands.some((command) => {
-    if (command.kind !== "TRAIN" || command.cityId === cityId) return false;
+    if (!armyProductionV7(command) || command.cityId === cityId) return false;
     const other = context.lookup.citiesById.get(command.cityId);
     return (
       other !== undefined &&
@@ -8413,6 +8768,15 @@ function isPolicyCandidate(
     armyHoldsCenterV7(context, command)
   )
     return false;
+  // The Dinosaur pass, correction: a Dinosaur seat's garrison under a fast
+  // unit's eye, and its Triceratops without support.
+  if (
+    (command.kind === "MOVE" || command.kind === "ATTACK") &&
+    armyDinosaurKeepsCenterV7(context, command)
+  )
+    return false;
+  if (command.kind === "MOVE" && armyChargeHeldV7(context, command))
+    return false;
   if (armyStormWaitsV7(context, command)) return false;
   // Correction pass: nor does a unit step onto a hostile center under a
   // battery that kills it there before it can capture.
@@ -8580,7 +8944,7 @@ function isPolicyCandidate(
   // Tuning 6: no training onto a center under two or more hostile ranged
   // units while another city can train.
   if (
-    command.kind === "TRAIN" &&
+    armyProductionV7(command) &&
     armyTrainsElsewhereV7(context, command.cityId)
   )
     return false;
@@ -8593,17 +8957,20 @@ function isPolicyCandidate(
     return false;
   // Tuning 8 (`pulp_wars-w49.11`): the Coins kept for the due technology.
   if (
-    command.kind === "TRAIN" &&
+    armyProductionV7(command) &&
     context.army &&
     !armyAtTheGatesV7(context, command.cityId) &&
     context.view.viewer.coins - trainingCostV7(context.view, command) <
       armyResearchFloorV7(context)
   )
     return false;
+  // The Dinosaur pass, correction: no eighth Ankylosaurus before growth.
+  if (armyProductionV7(command) && armyDinosaurDefenderHeldV7(context, command))
+    return false;
   // The Undead pass (`pulp_wars-w49.13`): the Coins kept for the dear unit
   // the army is short of (`armyDearUnitFloorV7`).
   if (
-    command.kind === "TRAIN" &&
+    armyProductionV7(command) &&
     context.view.viewer.coins - trainingCostV7(context.view, command) <
       armyDearUnitFloorV7(context, command.cityId)
   )
@@ -9672,10 +10039,45 @@ function* sharedCityContextWorkV7(
     // enemies destroy it before it hatches, nor in a threatened city whose
     // empty center a trained unit could defend at once.
     const offersTrain = shared.some((command) => command.kind === "TRAIN");
+    // The Dinosaur pass, correction: an army seat lays an Egg of two or
+    // more turns only on a nest tile that no visible hostile attacker
+    // reaches in those turns (its Moves and its range), or that an own
+    // hatched unit stands next to (the garrison on the center, a unit
+    // beside the nest). An unguarded city in reach lays one-turn Eggs and
+    // trains Cavemen. (With no turn off for Nesting, an Egg is at risk
+    // again; in a small map every nest is in a Knight's reach in four
+    // turns, so reach alone would stop the laying.)
+    const eggReached = (command: SharedCityCommandV7): boolean => {
+      if (command.kind !== "LAY_EGG" || !context.army) return false;
+      const turns = layEggTurnsV7(view, command.role);
+      if (turns < 2) return false;
+      if (
+        view.units.some(
+          (unit) =>
+            unit.ownerId === view.viewer.id &&
+            unit.form === "LAND" &&
+            unit.hp > 0 &&
+            distance(unit.at, command.at) <= 1,
+        )
+      )
+        return false;
+      return context.lookup.visibleHostiles.some((hostile) => {
+        const facts = publicCombatFacts(view, hostile, context.lookup);
+        return (
+          facts.abilities.includes("ATTACK") &&
+          facts.attack2 > 0 &&
+          distance(hostile.at, command.at) <=
+            facts.move * turns + facts.maximumRange
+        );
+      });
+    };
     const eggBlocked = (command: SharedCityCommandV7): boolean =>
       command.kind === "LAY_EGG" &&
       ((needsCenterDefender && offersTrain) ||
-        nestDangerV7(context, command.at) >= laidEggHpForPolicyV7(view));
+        nestDangerV7(context, command.at) >= laidEggHpForPolicyV7(view) ||
+        eggReached(command) ||
+        // The correction: the capped Ankylosaurus is no production.
+        armyDinosaurDefenderHeldV7(context, command));
     for (const command of landByCity.get(cityId) ?? []) {
       if (eggBlocked(command)) {
         yield;
@@ -9839,8 +10241,13 @@ function* sharedCityContextWorkV7(
           )
             ? ARMY_GARRISON_TRAINING_VALUE_V7
             : 0;
+        // The Dinosaur pass (`pulp_wars-w49.15`): an Egg is the same
+        // choice (a Dinosaur city lays where another trains), with what
+        // its hatch time and its slots cost on top
+        // (`layEggAdjustmentV7`, `dinosaurProductionAdjustmentV7`).
         const armyScore =
-          armyCounts !== null && command.kind === "TRAIN"
+          armyCounts !== null &&
+          (command.kind === "TRAIN" || command.kind === "LAY_EGG")
             ? garrisonWorth +
               armyRoleScoreV7(
                 view.viewer.faction,
@@ -9853,7 +10260,13 @@ function* sharedCityContextWorkV7(
                   (city !== undefined && armyFrontCenterV7(context, city.at)),
               ) +
               trainingAdjustment(command.role) +
-              10 * cityAdjustment(command.role)
+              10 * cityAdjustment(command.role) +
+              // (A hatch turn in a threatened city weighs as much as a
+              // tenth of the army's share; the older policy's biases, the
+              // first Triceratops and the first Shaman among them, break
+              // ties between classes equally short.)
+              10 * layEggAdjustmentV7(view, command, threatened) +
+              2 * dinosaurProductionAdjustmentV7(view, command, productionCity)
             : null;
         const utility =
           armyScore !== null
@@ -9905,7 +10318,10 @@ function* sharedCityContextWorkV7(
       yield;
     }
     context.preferredSharedCityActionByCity.set(cityId, best);
-    if (armyCounts !== null && best?.kind === "TRAIN")
+    if (
+      armyCounts !== null &&
+      (best?.kind === "TRAIN" || best?.kind === "LAY_EGG")
+    )
       context.armyTrainingScoreByCity.set(
         cityId,
         bestUtility - ARMY_TRAINING_UTILITY_V7,
@@ -10444,8 +10860,11 @@ function scoreCommandWithContext(
         strategicValue = plan.strategic;
       }
     }
+    // The Dinosaur pass (`pulp_wars-w49.15`): an army seat follows the
+    // army's order (`ARMY_RESEARCH_ROLES_V7.DINOSAUR`).
     if (
       view.viewer.faction === "DINOSAUR" &&
+      !context.army &&
       priority < SIGNATURE_RESEARCH_PRIORITY_V7
     ) {
       // Revision 19 (`pulp_wars-c87.8`): the Triceratops and the T-Rex.
@@ -10552,7 +10971,12 @@ function scoreCommandWithContext(
     strategicValue = trainingStrategicValue(context, command);
     // Tuning 5 (`pulp_wars-w49.4`): an alert army seat trains before any
     // research and construction, the role it lacks most first.
-    if (command.kind === "TRAIN" && armyTrainsFirstV7(context)) {
+    // (The Dinosaur pass: an Egg is a Dinosaur seat's training.)
+    if (
+      (command.kind === "TRAIN" ||
+        (command.kind === "LAY_EGG" && context.army)) &&
+      armyTrainsFirstV7(context)
+    ) {
       // Tuning 6 (`pulp_wars-w49.6`): with no enemy near and two thirds
       // of the unit slots filled (`warTrainingFirstV7`), the growth that
       // adds population goes first and training tops the army up after.
@@ -15241,6 +15665,18 @@ function dinosaurAttackRejectedV7(
     chargeAttackScoreV7(context, command, actor, preview).diesForNoGain
   )
     return !excused();
+  // The Dinosaur pass, correction: an army seat's Ankylosaurus screens; it
+  // makes no attack that takes back more than it deals (it dealt 2 or 3
+  // and took 5 or 6 from a walled center, a Swordsman, a Juggernaut).
+  if (
+    context.army &&
+    actor.ownerId === view.viewer.id &&
+    view.viewer.faction === "DINOSAUR" &&
+    armouredForPolicyV7(view, actor) &&
+    !preview.defenderDies &&
+    preview.damageToAttacker > preview.damageToDefender
+  )
+    return !excused();
   return false;
 }
 
@@ -18882,11 +19318,16 @@ function dinosaurBranchResearchV7(
       (unit) =>
         unit.ownerId === view.viewer.id && ignoresWallsBenefitsV7(view, unit),
     );
-    if (walled === 0 || !dinosaurs) return null;
-    return {
-      priority: WALLBREAKER_RESEARCH_PRIORITY_V7,
-      strategic: WALLBREAKER_WALLED_CITY_VALUE_V7 * walled,
-    };
+    // The Dinosaur pass (`pulp_wars-w49.15`): and the second tile of the
+    // run-up of every own Triceratops, Walls or no Walls.
+    const chargers = view.units.filter(
+      (unit) => unit.ownerId === view.viewer.id && linebreakerV7(view, unit),
+    ).length;
+    const strategic =
+      (dinosaurs ? WALLBREAKER_WALLED_CITY_VALUE_V7 * walled : 0) +
+      WALLBREAKER_CHARGER_VALUE_V7 * chargers;
+    if (strategic === 0) return null;
+    return { priority: WALLBREAKER_RESEARCH_PRIORITY_V7, strategic };
   }
   return null;
 }
@@ -19019,6 +19460,18 @@ function preferredReward(
         item.reachedLevel === command.reachedLevel,
     )
     .map((item) => item.reward);
+  // The Dinosaur pass (`pulp_wars-w49.15`): a Dinosaur army seat takes
+  // Scouts, whatever its Coins: the free Raptor is a 4-Coin unit that
+  // moves two tiles and takes villages, and needs no technology. (With
+  // Stockpile in round 1 the seat of the first diagnostic match took three
+  // villages with Cavemen by round 11 and no more.)
+  if (
+    command.reachedLevel === 2 &&
+    context.army &&
+    context.view.viewer.faction === "DINOSAUR" &&
+    offered.includes("SURVEY")
+  )
+    return "SURVEY";
   if (command.reachedLevel === 2)
     return offered.includes(
       context.view.viewer.coins < 4 ? "STOCKPILE" : "SURVEY",
@@ -19593,6 +20046,8 @@ export function publicProjectedDamageForPolicyV7(
   defenderAt: CoordV7,
   options: {
     readonly maximumCharge?: boolean;
+    /** Extra `attack2` (the text harness: a Charge! run-up after a Move). */
+    readonly bonusAttack2?: number;
   } = {},
 ): number {
   return publicProjectedDamageWithLookupV7(
@@ -19637,7 +20092,11 @@ function publicProjectedDamageWithLookupV7(
           publishedAttack2,
           attackRule.attack2 + 2 + unitAlphaAttack2V7(view, attacker),
         )
-      : publishedAttack2) + (options.bonusAttack2 ?? 0);
+      : publishedAttack2) +
+    (options.bonusAttack2 ?? 0) +
+    // The Dinosaur pass, correction (`pulp_wars-w49.15`): a Caveman's Pack
+    // Hunt (0 for every other unit).
+    packHuntForPolicyV7(view, attacker, defender, defenderAt);
   if (!Number.isInteger(attack2)) return 0;
   // Revision 19 Acid: a Spitter's attack ignores the defender's cover and
   // fortification (only a Dinosaur unit has Acid).
@@ -20240,7 +20699,15 @@ function projectPublicUnits(
           : 0;
       // Revision 20: the Charge! run-up of a projected Triceratops (0 for
       // every unit without `LINEBREAKER`).
-      const runUp2 = chargeRunUpAttack2V7(view, unit);
+      // The Dinosaur pass: a hostile unit's research is not public; its
+      // run-up is taken at its two tiles (`runUpTilesForPolicyV7`).
+      const runUp2 = chargeRunUpForPolicyV7(
+        view,
+        unit,
+        unit.activation.moved && unit.activation.attacksUsed === 0
+          ? unit.activation.movedPathLength
+          : 0,
+      );
       const sight = embarked
         ? 1
         : Math.max(

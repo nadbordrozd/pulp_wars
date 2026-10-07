@@ -25,6 +25,7 @@ import {
   platedCapAppliesV7,
   unitCapabilitiesV7,
   unitFactionV7,
+  unitGrowsV7,
   unitAlphaAttack2V7,
   unitCapacitySlotsV7,
   unitIsMountainBornV7,
@@ -317,6 +318,44 @@ export function gangUpBonusV7(
 }
 
 /**
+ * The Dinosaur pass (`pulp_wars-w49.15`, 7r53): Pack Hunt. The `attack2` a
+ * land-form attacker whose role has `packHuntBonus2` (the Caveman) gains
+ * against a target that stands next to a dinosaur (a land-form growing
+ * unit) of the attacker's owner, or (the correction) that a dinosaur of
+ * the active seat attacked this turn (`hunted`, the state's or the view's
+ * `huntedThisTurn`; only the active seat attacks, so the list is always
+ * its own). Own units are always visible to their owner and a hunted
+ * target one can attack is visible, so the public preview is exact.
+ */
+export function packHuntAttack2V7(
+  roster: FactionRosterV7,
+  units: readonly Pick<
+    UnitStateV7,
+    "id" | "ownerId" | "at" | "hp" | "role" | "form"
+  >[],
+  attacker: Pick<UnitStateV7, "id" | "ownerId" | "form" | "role">,
+  target: Pick<UnitStateV7, "id" | "at">,
+  hunted: readonly UnitId[],
+): number {
+  if (attacker.form !== "LAND") return 0;
+  const bonus2 = unitRoleMechanicsV7(roster, attacker).packHuntBonus2;
+  if (bonus2 === 0) return 0;
+  if (hunted.includes(target.id)) return bonus2;
+  return units.some(
+    (unit) =>
+      unit.hp > 0 &&
+      unit.ownerId === attacker.ownerId &&
+      unit.id !== attacker.id &&
+      unit.id !== target.id &&
+      unit.form === "LAND" &&
+      chebyshev(unit.at, target.at) === 1 &&
+      unitGrowsV7(roster, unit),
+  )
+    ? bonus2
+    : 0;
+}
+
+/**
  * Exact BigInt-backed v7 combat calculation used by resolution and queries.
  * Revision 20 Charge! (a land-form `LINEBREAKER` attacker): the run-up is
  * added to the Attack, the defender's fortification is ignored for the whole
@@ -385,7 +424,21 @@ export function calculateCombatPreviewV7(
   });
   // Revision 20 Charge!: +1 Attack per tile moved this turn (up to 2).
   const charge = attackIsChargeV7(state, attacker);
-  const runUpAttack2 = chargeRunUpAttack2V7(state, attacker, plannedPathLength);
+  const runUpAttack2 = chargeRunUpAttack2V7(
+    state,
+    attacker,
+    ownerResearchedTechsV7(state, attacker.ownerId),
+    plannedPathLength,
+  );
+  // The Dinosaur pass (7r53): Pack Hunt, a Caveman's attack on a unit next
+  // to an own dinosaur.
+  const packHunt2 = packHuntAttack2V7(
+    state,
+    state.units,
+    attacker,
+    defender,
+    state.huntedThisTurn,
+  );
   // The Martian revision section 6.1: a heat ray fires at full power only
   // from a unit that has not moved this turn and is not Cooling; otherwise
   // the role's Attack is halved (rounded down) before every bonus. An
@@ -428,7 +481,8 @@ export function calculateCombatPreviewV7(
         runUpAttack2 +
         (plantedApplied ? attackerMechanics.plantedBonus2 : 0) +
         (coldBloodApplied ? attackerMechanics.coldBloodBonus2 : 0) +
-        (carrionApplied ? attackerMechanics.carrionBonus2 : 0);
+        (carrionApplied ? attackerMechanics.carrionBonus2 : 0) +
+        packHunt2;
   // Revision 19 Acid (section 8.1): a land-form Spitter's attack removes the
   // defender's cover and fortification from the whole exchange.
   const acid = attackHasAcidV7(attackerRule, attacker);

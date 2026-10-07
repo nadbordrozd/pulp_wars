@@ -97,7 +97,7 @@ import {
   withoutTechsV7,
 } from "../fixtures/v7-revision20";
 
-// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r52`,
+// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r53`,
 // docs/product/RULESET_7_TUNING_MARTIAN.md): a unit pulled by the Tractor
 // Beam explores for its owner from the tile it lands on; Scouts for a
 // Martian city (a free Saucer); the Shield Projector's Force Field needs
@@ -202,13 +202,19 @@ const FACTIONS: readonly FactionIdV7[] = [
 ];
 
 describe("the Martian pass: identity", () => {
-  it("is 7r52 with 7r51 a prior identity and an obsolete save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r52");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r52.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r51");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+  // The Dinosaur pass (tests/unit/ruleset-v7-dinosaur-pass.test.ts) took
+  // 7r53, so 7r52 is the last prior identity.
+  it("was 7r52 after 7r51, with both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r51",
+      "pulp-wars-poc-7r52",
+    ]);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r51.current",
-    );
+      "pulpWars.save.v7r52.current",
+    ]);
   });
 
   it("registers Heat Sinks and the Force Field gate on the Martian tree and moves no number", () => {
@@ -414,7 +420,8 @@ describe("the Martian pass: Scouts", () => {
       ORIGINAL: 1,
       UNDEAD: 1,
       GOBLIN: 1,
-      DINOSAUR: 0,
+      // The Dinosaur pass, 7r53: a Dinosaur Survey grants a Raptor.
+      DINOSAUR: 1,
       MARTIAN: 1,
       ICE_FOLK: 0,
       DWARF: 0,
@@ -953,14 +960,16 @@ const trained = (state: GameStateV7): readonly CommandV7[] =>
 
 describe("the Martian pass: Martian seats play the army rules", () => {
   it("counts a Martian seat among the army factions, with its own order and shares", () => {
+    // The Dinosaur pass (`pulp_wars-w49.15`) added the Dinosaur seats.
     expect(ARMY_PLAY_FACTIONS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
       "GOBLIN",
       "MARTIAN",
+      "DINOSAUR",
     ]);
     expect(armyPlayFactionV7("MARTIAN")).toBe(true);
-    expect(armyPlayFactionV7("DINOSAUR")).toBe(false);
+    expect(armyPlayFactionV7("ICE_FOLK")).toBe(false);
     // Shield Projector, Ray Gunner, Tripod, Brain, Saucer, Mothership.
     expect(ARMY_RESEARCH_ROLES_V7.MARTIAN).toEqual([
       "GUARD",
@@ -1029,7 +1038,11 @@ describe("the Martian pass: Martian seats play the army rules", () => {
         opponent,
       ).toBe(true);
     }
-    for (const opponent of ["DINOSAUR", "ICE_FOLK", "DWARF", "CANDY"] as const)
+    // (Against a Dinosaur seat too since the Dinosaur pass.)
+    expect(
+      inspectNormalArmyV7(viewOf(asMartian(pieces, {}, "DINOSAUR"))).army,
+    ).toBe(true);
+    for (const opponent of ["ICE_FOLK", "DWARF", "CANDY"] as const)
       expect(
         inspectNormalArmyV7(viewOf(asMartian(pieces, {}, opponent))).army,
         opponent,

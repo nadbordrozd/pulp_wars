@@ -6,7 +6,7 @@ import {
   GROWTH_KILLS_V7,
   MIND_CONTROL_LIMIT_V7,
   PROMOTION_HP_V7,
-  RUN_UP_MAXIMUM_TILES_V7,
+  chargeRunUpMaximumTilesV7,
   attackIsChargeV7,
   attackIsRayV7,
   boardableAtV7,
@@ -442,9 +442,12 @@ export function publicUnitStatsV7(
     !unit.activation.recovered &&
     !unit.activation.captured &&
     !unit.activation.specialActed
-      ? chargeRunUpAttack2V7(state, unit)
+      ? chargeRunUpAttack2V7(state, unit, research)
       : 0;
   const linebreaker = attackIsChargeV7(state, unit);
+  // The Dinosaur pass (`pulp_wars-w49.15`, 7r53): the run-up tiles that
+  // count for this unit (1, or 2 when its controller has Wallbreaker).
+  const runUpTiles = chargeRunUpMaximumTilesV7(state, unit, research);
   const defense = defenseBonusForUnitV7(state, unit, snowAt);
   // The Ice Folk revision section 6.2: the cover comes from Snow (the
   // Forest and Mountain cover are the same multiplier, never added).
@@ -585,7 +588,9 @@ export function publicUnitStatsV7(
                   runUp,
                   "RUN_UP",
                   "Charge!",
-                  `Charge! adds ${formatHalf(mechanics.runUpBonus2)} Attack per tile moved this turn (up to ${RUN_UP_MAXIMUM_TILES_V7} tiles).`,
+                  // The Dinosaur pass (7r53): one tile, or two with
+                  // Wallbreaker.
+                  `Charge! adds ${formatHalf(mechanics.runUpBonus2)} Attack per tile moved this turn (up to ${runUpTiles} ${runUpTiles === 1 ? "tile" : "tiles"}; 2 with Wallbreaker).`,
                   2,
                 ),
               ]
@@ -761,7 +766,7 @@ export function publicUnitStatsV7(
             armourReduction: mechanics.armourReduction,
             acid: role.abilities.includes("ACID"),
             runUpBonus: linebreaker ? mechanics.runUpBonus2 / 2 : 0,
-            runUpMaximum: linebreaker ? RUN_UP_MAXIMUM_TILES_V7 : 0,
+            runUpMaximum: linebreaker ? runUpTiles : 0,
             egg: eggStatus(state, unit),
           },
         }

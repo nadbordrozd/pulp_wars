@@ -3938,6 +3938,7 @@ function initialMapStateFromV7(
     crumbs: [],
     splattedThisTurn: [],
     tossedThisTurn: [],
+    huntedThisTurn: [],
     pendingChoices: [],
     outcome: null,
   });
@@ -4003,6 +4004,7 @@ function showcaseInitialStateV7(
     crumbs: [],
     splattedThisTurn: [],
     tossedThisTurn: [],
+    huntedThisTurn: [],
     pendingChoices: [],
     outcome: null,
   });
@@ -4083,7 +4085,7 @@ export const SURVEY_RAIDERS_V7: Readonly<Record<FactionIdV7, 0 | 1>> =
     ORIGINAL: 1,
     UNDEAD: 1,
     GOBLIN: 1,
-    DINOSAUR: 0,
+    DINOSAUR: 1,
     MARTIAN: 1,
     ICE_FOLK: 0,
     DWARF: 0,

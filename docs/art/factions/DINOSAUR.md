@@ -313,6 +313,38 @@ Review evidence: `npm run art:chibi-dinosaur-direction-review` writes
 [`art/pixellab/reviews/chibi-batch-direction-dinosaur/`](../../../art/pixellab/reviews/chibi-batch-direction-dinosaur/)
 (see the [pipeline](../CHIBI_PIPELINE.md#review-evidence)).
 
+### Open for the art queue since the Dinosaur pass
+
+The Dinosaur pass (`pulp_wars-w49.15`, `7r53`,
+[its record](../../product/RULESET_7_TUNING_DINOSAUR.md)) generated no
+asset and added no stand-in raster. What it leaves for an art bead:
+
+- **Pack Hunt** (the Caveman's +1 Attack against a unit next to one of
+  its owner's dinosaurs) has no icon and no board marker. It is stated in
+  words on the Caveman's card and the Help page, and it is in the attack
+  preview's number. A small status icon in the family of the other
+  ability icons (two Cavemen's clubs around a claw mark, say) would let
+  the preview name it. Since the pass's correction a unit one of the
+  player's dinosaurs attacked this turn is **hunted** until End Turn (a
+  Caveman has Pack Hunt against it wherever it stands): the attack
+  preview says "Pack Hunt +1", and the board has no marker for a hunted
+  unit. A small mark on the unit (the same icon) is the art and UI work
+  it would need.
+- **Wallbreaker** now also unlocks the second tile of the Triceratops's
+  run-up. Its technology icon is unchanged.
+- **The Chopping Block** (the Dinosaur look of the Sawmill): the pass's
+  [finding](../../product/RULESET_7_TUNING_DINOSAUR.md#43-the-chopping-block)
+  is that the raster (`chopping-block-b`) reads as a Lumber Camp (its
+  technology is displayed as "Timber" and the tree says "Build Chopping
+  Block" since the correction; the raster is unchanged) (an axe
+  in a stump, split logs), next to which it must stand; that its axe head
+  is smooth grey and reads as metal; and that it is busier and more
+  saturated than the redrawn shared buildings
+  ([the buildings record](../FACTION_BUILDINGS.md)). A new raster should
+  show the work a mill does and a Lumber Camp does not (stacked, squared
+  timber; a chopping frame; a pile of planks), with a knapped stone
+  blade.
+
 ### The Classic look
 
 The developer option "Classic look (previous art)" and the LEGACY art set

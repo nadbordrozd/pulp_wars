@@ -109,7 +109,7 @@ const moveTargets = (state: GameStateV7, from: CoordV7): readonly string[] => {
 
 describe("tuning 4 keeps the unpublished identity", () => {
   it("is 7r47", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r52");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
   });
 });
 
@@ -239,11 +239,14 @@ describe("the reward ladder", () => {
 
   it("Scouts: a Human Survey also grants a free Raider", () => {
     // The Undead pass (`pulp_wars-w49.13`, 7r51): an Undead Survey grants
-    // a Ghoul, as a Goblin one a Wolf Rider (7r50); the other five none.
+    // a Ghoul, as a Goblin one a Wolf Rider (7r50); since the Dinosaur pass
+    // (`pulp_wars-w49.15`, 7r53) a Dinosaur one a Raptor; the Ice Folk, the
+    // Dwarves, and the Candy none.
     expect(SURVEY_RAIDERS_V7).toMatchObject({
       ORIGINAL: 1,
       UNDEAD: 1,
-      DINOSAUR: 0,
+      DINOSAUR: 1,
+      CANDY: 0,
     });
     for (const faction of ["ORIGINAL", "UNDEAD"] as const) {
       let state = fieldV7([{ seat: 1, role: "FIGHTER", at: at(1, 1) }], {
@@ -654,6 +657,8 @@ describe("the Human labs", () => {
       "LAB_UNDEAD_MID",
       // The Martian pass: the hand player as the Martians, no mirror.
       "LAB_MARTIAN_MID",
+      // The Dinosaur pass: the hand player as the Dinosaurs, no mirror.
+      "LAB_DINOSAUR_MID",
     ]);
     for (const mission of labs) {
       expect(mission, mission.id).toMatchObject({ hidden: true, mirror: true });

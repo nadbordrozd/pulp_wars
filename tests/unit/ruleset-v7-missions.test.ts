@@ -129,6 +129,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The Martian pass (`pulp_wars-w49.14`): the Martians for the hand player.
   "LAB_MARTIAN_MID@1:MARTIAN":
     "04a23a91e93b00ec2f7dfb815d5643abe8e2c38b4ca4a26080d8031659f368e3",
+  // The Dinosaur pass (`pulp_wars-w49.15`): the Dinosaurs for the hand
+  // player.
+  "LAB_DINOSAUR_MID@1:DINOSAUR":
+    "687863d94d235da92c1d9c6bc8b96148cb031bb9b3312696cafad98647318fe4",
 };
 
 /**
@@ -157,9 +161,13 @@ function missionStateHash(state: GameStateV7): string {
     crumbs,
     splattedThisTurn,
     tossedThisTurn,
+    // The Dinosaur pass, correction (`pulp_wars-w49.15`) added the
+    // `huntedThisTurn` list, empty in every initial state and left out too.
+    huntedThisTurn,
     ice,
     ...rest
   } = state;
+  expect(huntedThisTurn).toEqual([]);
   expect([monsters, beamedThisTurn, tractorUsedThisTurn]).toEqual([[], [], []]);
   // The frozen sea (`pulp_wars-5ti.3`) added the `ice` list, empty in every
   // initial mission state and left out too.
@@ -234,6 +242,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "1ba498c4ccc6d783141c1bed27083016627db6c434f8d91b2eeffe60f2137296",
   "LAB_MARTIAN_MID@1:MARTIAN":
     "04b32b4cb1d9abac2d2c4711042cf9b272ea81e82d3b4628a58e010364baab06",
+  "LAB_DINOSAUR_MID@1:DINOSAUR":
+    "434875dfb87a94d47d7f6831962be5d9d922e7ead78a5c5d768900c91a45a0e2",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {
@@ -246,9 +256,11 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
     crumbs,
     splattedThisTurn,
     tossedThisTurn,
+    huntedThisTurn,
     ice,
     ...rest
   } = state;
+  expect(huntedThisTurn).toEqual([]);
   const { curiosities: option, ...setup } = state.setup;
   expect([curiosities, monsters, option]).toEqual([[], [], false]);
   expect([beamedThisTurn, tractorUsedThisTurn]).toEqual([[], []]);

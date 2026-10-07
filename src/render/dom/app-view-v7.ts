@@ -8,7 +8,7 @@ import {
   landTradeStatusV7,
   landTradeUnlockTextV7,
   FOREST_COVER_UNLOCK_TEXT_V7,
-  HIRE_UNLOCK_TEXT_V7,
+  hireUnlockTextV7,
   BLAST_MOUNTAIN_DAMAGE_NOTE_V7,
   FOREST_MARCH_UNLOCK_TEXT_V7,
   BARRACKS_REWARD_TEXT_V7,
@@ -278,6 +278,7 @@ import {
   CHARGE_LABEL_V7,
   DINOSAUR_FIELD_DEFENSE_EXPLANATION_V7,
   DINOSAUR_HELP_RULES_V7,
+  DINOSAUR_HIRE_NOTE_V7,
   HATCH_LABEL_V7,
   HATCH_NEW_EGG_V7,
   HATCH_PICK_V7,
@@ -5170,7 +5171,9 @@ export class Ruleset7DomAppView {
             ? null
             : publicHireCostV7(view, command.cityId, command.role);
         action.dataset.role = command.role.toLowerCase();
-        action.title = HIRE_UNLOCK_TEXT_V7;
+        action.title = hireUnlockTextV7(
+          this.#viewerFaction() === "DINOSAUR" ? DINOSAUR_HIRE_NOTE_V7 : null,
+        );
         if (cost !== null) {
           action.setAttribute(
             "aria-label",
@@ -10340,7 +10343,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r52",
+    rulesetId: "pulp-wars-poc-7r53",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -10453,7 +10456,9 @@ function effectDescription(
             : effect.command === "BUILD_FIELD_DEFENSE"
               ? FIELD_DEFENSE_UNLOCK_TEXT_V7
               : effect.command === "HIRE"
-                ? HIRE_UNLOCK_TEXT_V7
+                ? hireUnlockTextV7(
+                    faction === "DINOSAUR" ? DINOSAUR_HIRE_NOTE_V7 : null,
+                  )
                 : effect.command === "PILLAGE"
                   ? pillageUnlockTextV7(
                       effectiveRoleRuleV7("RAIDER", faction).abilities.includes(
@@ -10462,7 +10467,11 @@ function effectDescription(
                         ? label("RAIDER")
                         : null,
                     )
-                  : title(effect.command);
+                  : // The Dinosaur pass, correction: a faction's own
+                    // building under its own name ("Build Chopping Block").
+                    factionBuildCommandV7(effect.command, faction) === null
+                    ? title(effect.command)
+                    : `Build ${factionBuildCommandV7(effect.command, faction)?.name ?? ""}`;
     case "RAM":
       return NAVAL_RAM_UNLOCK_V7;
     case "HARBOURS":
@@ -10482,8 +10491,11 @@ function effectDescription(
       return label(effect.role);
     case "RESOURCE_REVEAL":
       return `Reveals ${effect.resources.map(title).join(" and ")}`;
-    case "ECONOMIC_FORMULA":
-      return economicFormulaV7(effect.improvement, effect.formula);
+    case "ECONOMIC_FORMULA": {
+      const text = economicFormulaV7(effect.improvement, effect.formula);
+      const own = factionBuildingV7(effect.improvement, faction);
+      return own === null ? text : text.replace(/^[^:]+:/, `${own.name}:`);
+    }
     case "CONNECTED_FARM_VISUALS":
       return "Neighboring farms join into one field";
     case "FOREST_MOVEMENT_FREEDOM":
@@ -10967,7 +10979,8 @@ function rewardLabel(
             ? SCOUTS_REWARD_TEXT_V7
             : // The Martian pass, correction: a tester's free Saucer
               // filled the capital's third slot unannounced.
-              `${scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", faction).label)}${faction === "MARTIAN" ? " (uses a unit slot)" : ""}`,
+              // The Dinosaur pass (`pulp_wars-w49.15`): the Raptor too.
+              `${scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", faction).label)}${faction === "MARTIAN" || faction === "DINOSAUR" ? " (uses a unit slot)" : ""}`,
         ]
       : ["Survey", "Reveal the area"];
   if (reward === "STOCKPILE") return ["Stockpile", "+4 Coins"];

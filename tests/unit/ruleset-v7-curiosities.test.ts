@@ -232,6 +232,9 @@ function normalizedInitialState(state: GameStateV7): string {
     crumbs: _crumbs,
     splattedThisTurn: _splatted,
     tossedThisTurn: _tossed,
+    // The Dinosaur pass, correction (`pulp_wars-w49.15`) adds the
+    // `huntedThisTurn` list, empty in every initial state.
+    huntedThisTurn: _hunted,
     // The frozen sea (`pulp_wars-5ti.3`) adds the `ice` list, empty in every
     // generated initial state.
     ice: _ice,
@@ -241,6 +244,8 @@ function normalizedInitialState(state: GameStateV7): string {
   } = state;
   if (_rush.length + _crumbs.length + _splatted.length + _tossed.length !== 0)
     throw new Error("a Candy fact in an initial state");
+  if (_hunted.length !== 0)
+    throw new Error("a hunted unit in an initial state");
   if (_monsters.length !== 0) throw new Error("a Monster with the option off");
   if (_ice.length !== 0) throw new Error("ice in an initial state");
   if (_beamed.length !== 0 || _tractor.length !== 0)
@@ -446,12 +451,18 @@ describe("headless parity and the CLI flag", () => {
         // the three pins below. The Goblin pass (`pulp_wars-w49.12`, 7r50):
         // the Goblin seat's level-2 Survey grants a Wolf Rider (Scouts), so
         // this pin, the one with a Goblin seat, was recomputed; the map and
-        // the PRNG are unchanged.
-        rounds: 14,
+        // the PRNG are unchanged. The Dinosaur pass (`pulp_wars-w49.15`,
+        // 7r53): a Dinosaur seat plays the army rules, and so do the
+        // Goblin and Martian seats beside it (a Dinosaur seat switched
+        // them off before); its Survey grants a Raptor: recomputed, 12
+        // rounds (14 before; commands c23258…bcff, events d0be88…7572).
+        // Its correction (Nesting takes no turn off, the Dinosaur seat's
+        // Ankylosaurus cap and garrison): recomputed, 12 rounds still.
+        rounds: 12,
         commandHash:
-          "c23258561854c7502fe7c9721243b6457865b0f3a54b09ff46db155709f9bcff",
+          "2c07c173388bb007ffe16c411792f2f02626448f2819e30e6331628264d72995",
         eventHash:
-          "d0be88f7b0b7b57168ec4521656ecb26862b416c5dc64443732274f77d147572",
+          "1cc9b0f864809bc2c7a0baee0c2d1f39f886044a8aadbfa98c6e2b58fdc93c1c",
         mapHash:
           "5b286bbe8cdb2f8a339cd7a74ba219bc2b57a4322370548442b3c8f26bef4ad9",
         finalPrngHash:

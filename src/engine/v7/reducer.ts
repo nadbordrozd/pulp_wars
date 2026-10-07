@@ -722,7 +722,11 @@ function applyCommandCoreV7(
   if (command.kind === "MOVE")
     return applyMove(stateInput, state, actor, command);
   if (command.kind === "ATTACK")
-    return applyAttack(stateInput, state, actor, command);
+    return huntedAfterAttackV7(
+      state,
+      command,
+      applyAttack(stateInput, state, actor, command),
+    );
   if (command.kind === "BOARD")
     return applyBoard(stateInput, state, actor, command);
   if (command.kind === "RALLY")
@@ -2082,11 +2086,9 @@ function applyHire(
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING", { cityId: city.id });
   const rule = effectiveRoleRuleV7(command.role, player.faction);
-  if (
-    isNavalRoleV7(command.role) ||
-    rule.cost === null ||
-    isEggLaidRoleV7(command.role, player.faction)
-  )
+  // The Dinosaur pass (`pulp_wars-w49.15`, 7r53): an egg-laid role is hired
+  // too; the dinosaur arrives hatched, as a reward or a treasure unit does.
+  if (isNavalRoleV7(command.role) || rule.cost === null)
     return rejected(original, "UNIT_ROLE_INVALID", { role: command.role });
   if (
     rule.technology !== null &&
@@ -4128,6 +4130,47 @@ function treasureKnightPlacement(
   return null;
 }
 
+/**
+ * The Dinosaur pass, correction (`pulp_wars-w49.15`, 7r53): after an
+ * accepted `ATTACK` by a hatched dinosaur (a land-form unit that grows),
+ * its target, when it is still on the board and not the attacker's
+ * owner's, is hunted for the rest of the turn: a Caveman's Pack Hunt
+ * applies against it wherever it stands (`huntedThisTurn`).
+ */
+function huntedAfterAttackV7(
+  before: GameStateV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+  result: ApplyCommandResultV7,
+): ApplyCommandResultV7 {
+  if (!result.accepted) return result;
+  const attacker = before.units.find((unit) => unit.id === command.unitId);
+  const hunter =
+    attacker !== undefined &&
+    attacker.form === "LAND" &&
+    unitGrowsV7(before, attacker);
+  if (!hunter) return result;
+  const target = result.state.units.find(
+    (unit) => unit.id === command.targetUnitId,
+  );
+  if (
+    target === undefined ||
+    target.hp <= 0 ||
+    target.ownerId === attacker.ownerId ||
+    result.state.huntedThisTurn.includes(target.id) ||
+    result.state.turnOrder[result.state.activeSeatIndex] !== attacker.ownerId
+  )
+    return result;
+  return {
+    ...result,
+    state: checked({
+      ...result.state,
+      huntedThisTurn: [...result.state.huntedThisTurn, target.id].sort(
+        (left, right) => left - right,
+      ),
+    }),
+  };
+}
+
 function applyAttack(
   original: GameStateV7,
   state: GameStateV7,
@@ -5046,6 +5089,11 @@ function applyTendWounded(
     state,
     result.captain,
   ).repairMachineHeal;
+  // The Dinosaur pass, correction: a Shaman heals a hatched dinosaur 4.
+  const growingHeal = unitRoleMechanicsV7(
+    state,
+    result.captain,
+  ).tendGrowingHeal;
   const amounts = new Map(
     targets.map(
       (unit) =>
@@ -5054,7 +5102,9 @@ function applyTendWounded(
           Math.min(
             machineHeal !== null && unitIsMachineV7(state, unit)
               ? machineHeal
-              : 2,
+              : growingHeal !== null && unitGrowsV7(state, unit)
+                ? growingHeal
+                : 2,
             unit.maxHp - unit.hp,
           ),
         ] as const,
@@ -6104,7 +6154,8 @@ function applyEndTurn(
       counted.surfacedThisTurn.length === 0 &&
       counted.bombedThisTurn.length === 0 &&
       counted.beamedThisTurn.length === 0 &&
-      counted.tractorUsedThisTurn.length === 0
+      counted.tractorUsedThisTurn.length === 0 &&
+      counted.huntedThisTurn.length === 0
         ? counted
         : {
             ...counted,
@@ -6112,6 +6163,8 @@ function applyEndTurn(
             bombedThisTurn: [],
             beamedThisTurn: [],
             tractorUsedThisTurn: [],
+            // The Dinosaur pass, correction: the hunted units (Pack Hunt).
+            huntedThisTurn: [],
           };
     // The Candy revision section 10: the Crash, the Crumbs countdown, and
     // the emptied Splat and Toss lists, after the Dwarf per-turn lists and

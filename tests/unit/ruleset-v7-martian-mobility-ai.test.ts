@@ -399,11 +399,12 @@ describe("Martian mobility play: carriers and shooters", () => {
   });
 
   it("a Grunt's routine Move next to a melee unit costs 8", () => {
-    // (The Martian pass, `pulp_wars-w49.14`: against a Dinosaur seat.
+    // (The Martian pass, `pulp_wars-w49.14`: against a seat that plays no
+    // army rules, a Candy one since the Dinosaur pass, `pulp_wars-w49.15`.
     // Against a Human one the army rules offer a Grunt with a shot no
     // routine Move toward the enemy at all.)
     const state = martianFieldV7([own("FIGHTER", 6, 3), foe("FIGHTER", 4, 3)], {
-      factions: ["MARTIAN", "DINOSAUR"],
+      factions: ["MARTIAN", "CANDY"],
     });
     const contact = moveCandidateV7(state, at(6, 3), at(5, 4));
     const apart = moveCandidateV7(state, at(6, 3), at(6, 4));
@@ -471,7 +472,7 @@ describe("Martian mobility play: map curiosities", () => {
       {
         grass: [at(8, 5), at(8, 6), at(8, 7), at(10, 5), at(10, 6), at(10, 7)],
       },
-      ["MARTIAN", "UNDEAD", "GOBLIN", "DINOSAUR"],
+      ["MARTIAN", "UNDEAD", "GOBLIN", "CANDY"],
     );
     const view = viewerViewV7(state);
     const offered = queryPlayerCommandsV7(view).flatMap((command) =>

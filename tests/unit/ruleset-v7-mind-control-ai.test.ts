@@ -56,7 +56,7 @@ const foe = (
 /** Seat 0 Martian (the viewer) against seat 1 of `opponent`. */
 const asMartian = (
   pieces: readonly MartianPieceV7[],
-  opponent: "ORIGINAL" | "GOBLIN" | "UNDEAD" | "DINOSAUR" = "ORIGINAL",
+  opponent: "ORIGINAL" | "GOBLIN" | "UNDEAD" | "CANDY" = "ORIGINAL",
 ): GameStateV7 => martianFieldV7(pieces, { factions: ["MARTIAN", opponent] });
 /** Seat 0 of `viewer` (the viewer) against seat 1 Martian. */
 const againstMartian = (
@@ -327,8 +327,9 @@ describe("Mind Control AI: playing controlled units", () => {
   });
 
   it("drops the Thrall's front-row chip priority", () => {
-    // (The Martian pass, `pulp_wars-w49.14`: against a Dinosaur seat, a
-    // controlled Caveman. Against a Human seat the army rules give a
+    // (The Martian pass, `pulp_wars-w49.14`: against a seat that plays no
+    // army rules (a Candy one since the Dinosaur pass, `pulp_wars-w49.15`), a
+    // controlled Toffee Trooper. Against a Human seat the army rules give a
     // committed unit's hit its own priority, with or without the switch.)
     const state = asMartian(
       [
@@ -336,7 +337,7 @@ describe("Mind Control AI: playing controlled units", () => {
         foe("FIGHTER", 4, 4, { controlledBy: at(8, 2) }),
         foe("FIGHTER", 3, 4, { hp: 9 }),
       ],
-      "DINOSAUR",
+      "CANDY",
     );
     const chip = unitCandidatesV7(state, at(4, 4), "ATTACK")[0];
     expect(chip).toBeDefined();

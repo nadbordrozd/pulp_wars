@@ -146,6 +146,16 @@ export function landGrantUnaffordableTextV7(
 /** Commerce, the `HIRE` command (tuning 3). */
 export const HIRE_UNLOCK_TEXT_V7 =
   "Hire: each Market hires one extra unit a turn on its tile, at 1.5× the price; its city may hold 1 unit above its limit";
+/**
+ * The Dinosaur pass (`pulp_wars-w49.15`, 7r53): the Hire line of a faction;
+ * `note` is what its Markets do differently (a Dinosaur Market hires a
+ * dinosaur hatched), or null.
+ */
+export function hireUnlockTextV7(note: string | null): string {
+  return note === null
+    ? HIRE_UNLOCK_TEXT_V7
+    : `${HIRE_UNLOCK_TEXT_V7}; ${note}`;
+}
 
 /** Fortification, the `BUILD_FIELD_DEFENSE` command. */
 export const FIELD_DEFENSE_UNLOCK_TEXT_V7 = `Build Field Defense: +${FIELD_DEFENSE_FORTIFICATION_LEVELS_V7} Defense for the unit on it; the builder keeps its move and attack`;

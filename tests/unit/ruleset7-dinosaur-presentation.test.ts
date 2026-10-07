@@ -37,6 +37,7 @@ import {
   bigBodyRolesV7,
   chargePreviewLinesV7,
   chargeRunUpBonusV7,
+  chargeRunUpBaseV7,
   chargeRunUpMaximumV7,
   cityCapacityTextV7,
   dinosaurAbilityDescriptionV7,
@@ -221,11 +222,13 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
     // values (revision 20 section 7.2 "Unit info (Triceratops)").
     expect(chargeRunUpBonusV7()).toBe(mechanics("CATAPULT").runUpBonus2 / 2);
     expect(chargeRunUpMaximumV7()).toBe(mechanics("CATAPULT").runUpBonus2);
+    // The Dinosaur pass (`pulp_wars-w49.15`, 7r53): one tile counts, two
+    // with Wallbreaker.
     expect(CHARGE_DESCRIPTION_V7).toBe(
-      `+${chargeRunUpBonusV7()} Attack per tile moved this turn (up to +${chargeRunUpMaximumV7()}). Ignores Walls and Field Defense, destroys Field Defense, and pushes back.`,
+      `+${chargeRunUpBaseV7()} Attack after moving this turn (with Wallbreaker +${chargeRunUpBonusV7()} per tile, up to +${chargeRunUpMaximumV7()}). Ignores Walls and Field Defense, destroys Field Defense, and pushes back.`,
     );
     expect(CHARGE_DESCRIPTION_V7).toBe(
-      "+1 Attack per tile moved this turn (up to +2). Ignores Walls and Field Defense, destroys Field Defense, and pushes back.",
+      "+1 Attack after moving this turn (with Wallbreaker +1 per tile, up to +2). Ignores Walls and Field Defense, destroys Field Defense, and pushes back.",
     );
     expect(dinosaurAbilityDescriptionV7("LINEBREAKER", "DINOSAUR")).toBe(
       CHARGE_DESCRIPTION_V7,
@@ -250,7 +253,7 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
     expect(technologyNameV7("EXPLOSIVES", "DINOSAUR")).toBe("Wallbreaker");
     expect(technologyNameV7("EXPLOSIVES", "ORIGINAL")).toBe("Explosives");
     expect(nestingUnlockTextV7()).toBe(
-      `Eggs have +${nestingEggHpBonusV7()} HP and hatch one turn sooner; +${nestingCitySlotsV7()} unit slot in every city`,
+      `Eggs have +${nestingEggHpBonusV7()} HP; +${nestingCitySlotsV7()} unit slot in every city`,
     );
     expect(ABANDON_EGG_LABEL_V7).toBe("Abandon Egg");
     expect(abandonEggTooltipV7(5)).toBe("Remove this Egg for 5 Coins");
@@ -348,7 +351,7 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
     expect(lines(AT.shaman)).toEqual([]);
     expect(lines(AT.tRexEgg)).toEqual([]);
     expect(dinosaurRecruitNotesV7("KNIGHT", "DINOSAUR")).toEqual([
-      `Laid as an Egg next to the city; hatches after ${turnsTextV7(hatchTurns("KNIGHT"))} (one sooner with Nesting, at least 1).`,
+      `Laid as an Egg next to the city; hatches after ${turnsTextV7(hatchTurns("KNIGHT"))} (a Shaman can hatch it sooner).`,
       ...(mechanics("KNIGHT").capacitySlots > 1
         ? [
             `Takes ${slotsTextV7(mechanics("KNIGHT").capacitySlots)} in its city.`,
@@ -388,6 +391,10 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
       "Hatch",
       "Nesting",
       "Wallbreaker",
+      // The Dinosaur pass (`pulp_wars-w49.15`, 7r53).
+      "Pack Hunt",
+      // The correction: a Shaman heals a dinosaur 4.
+      "Tend Wounded",
       "Wild",
       "Rampage, Pounce, War Drums",
     ]);
@@ -403,14 +410,20 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
       `a Dinosaur grows when it kills: ${GROWTH_RULE} and ${ALPHA_RULE}, for good; each growth fully heals it.`,
     );
     expect(rule("Charge!")).toBe(
-      `a Triceratops hits harder the farther it moved this turn (+${chargeRunUpBonusV7()} Attack per tile, up to +${chargeRunUpMaximumV7()}); its attack ignores Walls and Field Defense, destroys Field Defense, and pushes a surviving defender back, taking its place.`,
+      `a Triceratops hits harder after it moved this turn (+${chargeRunUpBaseV7()} Attack; with Wallbreaker +${chargeRunUpBonusV7()} per tile, up to +${chargeRunUpMaximumV7()}); its attack ignores Walls and Field Defense, destroys Field Defense, and pushes a surviving defender back, taking its place.`,
     );
     expect(rule("Nesting")).toBe(
-      `with Nesting, Eggs have +${nestingEggHpBonusV7()} HP and hatch one turn sooner, and every city has one more unit slot.`,
+      `with Nesting, Eggs have +${nestingEggHpBonusV7()} HP, and every city has one more unit slot.`,
     );
     expect(nestingCitySlotsV7()).toBe(1);
     expect(rule("Wallbreaker")).toBe(
-      "with Wallbreaker, dinosaurs ignore City Walls when they attack.",
+      "with Wallbreaker, a Triceratops's run-up counts two tiles, and dinosaurs ignore City Walls when they attack.",
+    );
+    expect(rule("Pack Hunt")).toBe(
+      "a Caveman has +1 Attack against a unit that stands next to one of your dinosaurs, or that a dinosaur of yours attacked this turn.",
+    );
+    expect(rule("Tend Wounded")).toBe(
+      "a Shaman heals a dinosaur next to it by 4 and a Caveman or a Shaman by 2.",
     );
     expect(rule("Stampede")).toBe("");
     expect(nestingEggHpBonusV7()).toBeGreaterThan(0);

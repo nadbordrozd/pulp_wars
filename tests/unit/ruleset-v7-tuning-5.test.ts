@@ -66,7 +66,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 5 (`pulp_wars-w49.4`, identity `pulp-wars-poc-7r52`;
+ * Tuning 5 (`pulp_wars-w49.4`, identity `pulp-wars-poc-7r53`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 12): the Normal AI's army
  * play, the Human Guard open to ranged attacks, the Swordsman, the removal
  * of Drill, the Blast Mountain's setter, the Land Grant's price, and the
@@ -163,13 +163,13 @@ describe("tuning 5 identity", () => {
   // took 7r49 and the Goblin pass 7r50, so 7r48 is the prior identity
   // before the last.
   it("was 7r48 after 7r47, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r52");
-    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
+    expect(PRIOR_RULESET_7_IDS.slice(-6, -4)).toEqual([
       "pulp-wars-poc-7r47",
       "pulp-wars-poc-7r48",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r52.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-5, -3)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -4)).toEqual([
       "pulpWars.save.v7r47.current",
       "pulpWars.save.v7r48.current",
     ]);
@@ -586,12 +586,14 @@ describe("the labs under 7r48", () => {
 
 describe("Normal AI army play: who plays it", () => {
   // The Martian pass (`pulp_wars-w49.14`, 7r52): and the Martian seats.
-  it("is the Human, Undead, Goblin, and Martian seats", () => {
+  // The Dinosaur pass (`pulp_wars-w49.15`, 7r53): and the Dinosaur seats.
+  it("is the Human, Undead, Goblin, Martian, and Dinosaur seats", () => {
     expect(ARMY_PLAY_FACTIONS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
       "GOBLIN",
       "MARTIAN",
+      "DINOSAUR",
     ]);
   });
 });
@@ -615,10 +617,12 @@ describe("Normal AI army play: the composition", () => {
     )[0] as UnitRoleIdV7;
 
   it("shares add up to the whole army", () => {
+    // (`reduce<number>`: the Dinosaur shares hold a 0, the Triceratops
+    // being a line unit, which would otherwise narrow the sum's type.)
     for (const shares of Object.values(ARMY_SHARES_V7))
-      expect(Object.values(shares).reduce((sum, value) => sum + value, 0)).toBe(
-        100,
-      );
+      expect(
+        Object.values(shares).reduce<number>((sum, value) => sum + value, 0),
+      ).toBe(100);
   });
 
   it("never trains only defenders, and prefers the dearer line unit", () => {
@@ -699,13 +703,28 @@ describe("Normal AI army play: units before research and buildings", () => {
       );
       const turn = policyTurn(state);
       const kinds = kindsOf(turn.commands);
-      const firstTrain = kinds.indexOf("TRAIN");
+      // The Dinosaur pass (`pulp_wars-w49.15`): a Dinosaur city lays an
+      // Egg beside its center, so its Caveman stays on it.
+      const dinosaur = faction === "DINOSAUR";
+      const firstTrain = kinds.indexOf(dinosaur ? "LAY_EGG" : "TRAIN");
       expect(firstTrain, faction).toBeGreaterThanOrEqual(0);
+      if (dinosaur)
+        expect(
+          turn.commands
+            .slice(0, firstTrain)
+            .some(
+              (command) =>
+                command.kind === "MOVE" &&
+                command.unitId === unitAtV7(state, at(8, 8)).id,
+            ),
+          faction,
+        ).toBe(false);
       // The Fighter leaves the center first: a city trains onto an empty one.
-      expect(turn.commands[firstTrain - 1], faction).toMatchObject({
-        kind: "MOVE",
-        unitId: unitAtV7(state, at(8, 8)).id,
-      });
+      else
+        expect(turn.commands[firstTrain - 1], faction).toMatchObject({
+          kind: "MOVE",
+          unitId: unitAtV7(state, at(8, 8)).id,
+        });
       for (const [index, kind] of kinds.entries())
         if (kind === "RESEARCH" || kind.startsWith("BUILD_"))
           expect(index, `${faction} ${kind}`).toBeGreaterThan(firstTrain);
@@ -716,9 +735,16 @@ describe("Normal AI army play: units before research and buildings", () => {
         faction,
         // The Martian pass's correction (`pulp_wars-w49.14`): a Martian
         // seat that fields its Projector researches Force Fields next.
+        // The Dinosaur pass: a Dinosaur seat with the Ankylosaurus's
+        // technology goes on toward the Triceratops (Forestry).
       ).toEqual({
         kind: "RESEARCH",
-        tech: faction === "MARTIAN" ? "FORTIFICATION" : "MARKSMANSHIP",
+        tech:
+          faction === "MARTIAN"
+            ? "FORTIFICATION"
+            : faction === "DINOSAUR"
+              ? "FORESTRY"
+              : "MARKSMANSHIP",
       });
     }
   });

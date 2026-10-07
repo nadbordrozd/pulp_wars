@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r52" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r53" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -63,8 +63,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r49",
   "pulp-wars-poc-7r50",
   "pulp-wars-poc-7r51",
+  "pulp-wars-poc-7r52",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r52.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r53.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -891,6 +892,14 @@ export interface GameStateV7 {
    * a match whose setup has no CANDY seat.
    */
   readonly tossedThisTurn: readonly UnitId[];
+  /**
+   * The Dinosaur pass, correction (`pulp_wars-w49.15`, 7r53): the units on
+   * the board that a hatched dinosaur of the active seat attacked during
+   * its turn and that survived, sorted. A Caveman's Pack Hunt applies
+   * against them. Emptied at its End Turn. Always empty in a match whose
+   * setup has no DINOSAUR seat.
+   */
+  readonly huntedThisTurn: readonly UnitId[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }

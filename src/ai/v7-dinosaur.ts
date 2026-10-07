@@ -117,7 +117,7 @@ export const WOUNDED_DINOSAUR_KILL_DIVISOR_V7 = 2;
  * two-slot Egg.
  */
 export const NESTING_SLOT_VALUE_V7 = 4;
-/** Nesting's Egg effects (+4 HP, one turn sooner), valued once. */
+/** Nesting's Egg effect (+4 HP), valued once. */
 export const NESTING_EGG_VALUE_V7 = 4;
 export const NESTING_RESEARCH_PRIORITY_V7 = 1062;
 /**
@@ -126,6 +126,11 @@ export const NESTING_RESEARCH_PRIORITY_V7 = 1062;
  * seat owns a dinosaur to use it.
  */
 export const WALLBREAKER_WALLED_CITY_VALUE_V7 = 8;
+/**
+ * The Dinosaur pass (`pulp_wars-w49.15`): Wallbreaker is also the second
+ * tile of a Charge! run-up, worth this much per own Triceratops.
+ */
+export const WALLBREAKER_CHARGER_VALUE_V7 = 6;
 export const WALLBREAKER_RESEARCH_PRIORITY_V7 = 1061;
 /** A grown unit's extra value per stage (its kills are not for sale). */
 export const GROWN_UNIT_PREMIUM_V7 = 10;
@@ -273,8 +278,73 @@ export function chargeRunUpForPolicyV7(
   if (!linebreakerV7(view, unit)) return 0;
   return (
     unitRoleMechanicsV7(view, unit).runUpBonus2 *
-    Math.max(0, Math.min(RUN_UP_MAXIMUM_TILES_V7, pathLength))
+    Math.max(0, Math.min(runUpTilesForPolicyV7(view, unit), pathLength))
   );
+}
+
+/**
+ * The Dinosaur pass (`pulp_wars-w49.15`): the tiles of a Move that count as
+ * the run-up of `unit`: an own unit's by the viewer's research (1, or 2
+ * with Wallbreaker). Another seat's research is not public, so a hostile
+ * Triceratops is assumed to have Wallbreaker, as for its Walls
+ * (`ignoresWallsForPolicyV7`).
+ */
+export function runUpTilesForPolicyV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): number {
+  return unit.ownerId === view.viewer.id
+    ? technologyCapabilitiesV7(view.viewer.researchedTechs, view.viewer.faction)
+        .runUpTiles
+    : RUN_UP_MAXIMUM_TILES_V7;
+}
+
+/**
+ * The Dinosaur pass, correction (`pulp_wars-w49.15`): how far from a unit
+ * a visible hostile dinosaur may stand for the policy to count a hostile
+ * Caveman's Pack Hunt against that unit next turn: a dinosaur moves up to
+ * two tiles and then stands beside it, and a Spitter shoots from two.
+ */
+export const PACK_HUNT_ASSUMED_RADIUS_V7 = 3;
+
+/**
+ * The Pack Hunt `attack2` the policy counts for an attack by `attacker` on
+ * `defender` standing at `defenderAt` (0 for a unit without Pack Hunt). An
+ * own Caveman's is exact for the board as it is (a dinosaur beside the
+ * target, or the target hunted this turn). A hostile Caveman attacks in
+ * its owner's turn, after its dinosaurs: the bonus is counted when a
+ * visible dinosaur of that owner stands within
+ * `PACK_HUNT_ASSUMED_RADIUS_V7` of the target.
+ */
+export function packHuntForPolicyV7(
+  view: PlayerViewV7,
+  attacker: PublicUnitV7,
+  defender: PublicUnitV7,
+  defenderAt: CoordV7,
+): number {
+  const bonus2 =
+    attacker.form === "LAND"
+      ? unitRoleMechanicsV7(view, attacker).packHuntBonus2
+      : 0;
+  if (bonus2 === 0) return 0;
+  const own = attacker.ownerId === view.viewer.id;
+  if (own && view.huntedThisTurn.includes(defender.id)) return bonus2;
+  const radius = own ? 1 : PACK_HUNT_ASSUMED_RADIUS_V7;
+  return view.units.some(
+    (unit) =>
+      unit.hp > 0 &&
+      unit.ownerId === attacker.ownerId &&
+      unit.id !== attacker.id &&
+      unit.id !== defender.id &&
+      unit.form === "LAND" &&
+      unitGrowsV7(view, unit) &&
+      Math.max(
+        Math.abs(unit.at.x - defenderAt.x),
+        Math.abs(unit.at.y - defenderAt.y),
+      ) <= radius,
+  )
+    ? bonus2
+    : 0;
 }
 
 /**

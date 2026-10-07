@@ -186,16 +186,16 @@ const ROSTER: readonly UnitRoleIdV7[] = [
 ];
 
 describe("the Undead pass: identity", () => {
-  // The Martian pass (tests/unit/ruleset-v7-martian-pass.test.ts) took 7r52,
-  // so 7r51 is the last prior identity.
+  // The Martian pass (tests/unit/ruleset-v7-martian-pass.test.ts) took 7r52
+  // and the Dinosaur pass 7r53, so 7r51 is a prior identity.
   it("was 7r51 after 7r50, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r52");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r52.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
       "pulp-wars-poc-7r50",
       "pulp-wars-poc-7r51",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3, -1)).toEqual([
       "pulpWars.save.v7r50.current",
       "pulpWars.save.v7r51.current",
     ]);
@@ -586,7 +586,8 @@ describe("the Undead pass: Scouts", () => {
       ORIGINAL: 1,
       UNDEAD: 1,
       GOBLIN: 1,
-      DINOSAUR: 0,
+      // The Dinosaur pass, 7r53: a Dinosaur Survey grants a Raptor.
+      DINOSAUR: 1,
       // The Martian pass, 7r52: a Martian Survey grants a Saucer.
       MARTIAN: 1,
       ICE_FOLK: 0,

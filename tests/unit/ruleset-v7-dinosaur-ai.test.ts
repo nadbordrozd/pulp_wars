@@ -52,6 +52,19 @@ const dino = (
   pieces: readonly GoblinPieceV7[],
   options: Parameters<typeof dinosaurFieldV7>[2] = {},
 ): GameStateV7 => dinosaurFieldV7(DH, pieces, options);
+/**
+ * The Dinosaur pass (`pulp_wars-w49.15`): a Dinosaur seat against Humans
+ * plays the army rules now (tests/unit/ruleset-v7-dinosaur-pass.test.ts),
+ * whose Moves and research have their own priorities. The priorities of
+ * `pulp_wars-c87.5` are still those of a Dinosaur seat in a match with a
+ * faction that plays no army rules: a Dwarf seat here, whose Hammerer has
+ * the Fighter's numbers (12 HP, Attack 2, Defense 2).
+ */
+const DW = ["DINOSAUR", "DWARF"] as const;
+const older = (
+  pieces: readonly GoblinPieceV7[],
+  options: Parameters<typeof dinosaurFieldV7>[2] = {},
+): GameStateV7 => dinosaurFieldV7(DW, pieces, options);
 
 const own = (role: GoblinPieceV7["role"], x: number, y: number, hp?: number) =>
   ({
@@ -171,10 +184,11 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: production", () => {
       dino([own("CATAPULT", 5, 1), foe("FIGHTER", 1, 1)], NO_NESTING),
     );
     expect(adjust(lay("CATAPULT"), city, withTriceratops)).toBe(-1);
-    // Nesting shortens the delay.
+    // Nesting no longer shortens the delay (the Dinosaur pass's
+    // correction, 7r53).
     const nesting = viewerViewV7(dino([foe("FIGHTER", 1, 1)]));
-    expect(adjust(lay("KNIGHT"), city, nesting)).toBe(-2);
-    expect(layEggAdjustmentV7(nesting, lay("KNIGHT"), true)).toBe(-36);
+    expect(adjust(lay("KNIGHT"), city, nesting)).toBe(-3);
+    expect(layEggAdjustmentV7(nesting, lay("KNIGHT"), true)).toBe(-48);
     expect(layEggAdjustmentV7(view, lay("KNIGHT"), true)).toBe(-48);
     expect(layEggAdjustmentV7(view, lay("KNIGHT"), false)).toBe(0);
     // Shaman: by need, never as the defender of a threatened city.
@@ -274,9 +288,10 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Egg protection", () => {
   ] as const;
 
   it("moves a guard next to an Egg that a visible enemy reaches before it hatches", () => {
+    // (The older policy, against a Dwarf seat: see `older`.)
     // The Fighter on (10, 4) is three tiles from the Egg, which needs three
     // turns; no own unit stands next to the Egg.
-    const state = dino(
+    const state = older(
       [...camp, own("FIGHTER", 10, 9), foe("FIGHTER", 10, 4)],
       { eggs: egg },
     );
@@ -288,7 +303,7 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Egg protection", () => {
       moveCandidateV7(state, { x: 10, y: 9 }, { x: 9, y: 9 })?.score.priority,
     ).toBe(700);
     // With a guard already there, or no enemy in sight, it is a routine Move.
-    const guarded = dino(
+    const guarded = older(
       [
         ...camp,
         own("FIGHTER", 10, 9),
@@ -300,7 +315,7 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Egg protection", () => {
     expect(
       moveCandidateV7(guarded, { x: 10, y: 9 }, { x: 10, y: 8 }),
     ).toBeUndefined();
-    const calm = dino([...camp, own("FIGHTER", 10, 9), foe("FIGHTER", 1, 1)], {
+    const calm = older([...camp, own("FIGHTER", 10, 9), foe("FIGHTER", 1, 1)], {
       eggs: egg,
     });
     expect(
@@ -309,8 +324,9 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Egg protection", () => {
   });
 
   it("keeps the sole guard beside an Egg until it hatches", () => {
+    // (The older policy, against a Dwarf seat: see `older`.)
     // The Fighter on (10, 5) reaches the Egg on (9, 7) next turn.
-    const state = dino(
+    const state = older(
       [...camp, own("FIGHTER", 10, 8), foe("FIGHTER", 10, 5)],
       { eggs: egg },
     );
@@ -328,7 +344,7 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Egg protection", () => {
       ),
     ).toBe(true);
     // Without the threat the guard is free to leave.
-    const calm = dino([...camp, own("FIGHTER", 10, 8), foe("FIGHTER", 1, 1)], {
+    const calm = older([...camp, own("FIGHTER", 10, 8), foe("FIGHTER", 1, 1)], {
       eggs: egg,
     });
     expect(
@@ -339,13 +355,16 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Egg protection", () => {
     ).toBeUndefined();
     // It also stays while the enemy is two turns away (the Fighter on
     // (10, 4) is three tiles from the Egg), but not for one farther off.
-    const near = dino([...camp, own("FIGHTER", 10, 8), foe("FIGHTER", 10, 4)], {
-      eggs: egg,
-    });
+    const near = older(
+      [...camp, own("FIGHTER", 10, 8), foe("FIGHTER", 10, 4)],
+      {
+        eggs: egg,
+      },
+    );
     expect(
       moveCandidateV7(near, { x: 10, y: 8 }, { x: 9, y: 9 }),
     ).toBeUndefined();
-    const distant = dino(
+    const distant = older(
       [...camp, own("FIGHTER", 10, 8), foe("FIGHTER", 10, 3)],
       { eggs: egg },
     );
@@ -415,13 +434,17 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Grow", () => {
   });
 
   it("moves a grown unit out of visible lethal reach and never routinely into it", () => {
+    // (The older policy, against a Dwarf seat: see `older`.)
     const hurt = (
       kills: number,
       at: { x: number; y: number },
       fighter = { x: 5, y: 3 },
     ) =>
       withKillsV7(
-        dino([own("RAIDER", at.x, at.y), foe("FIGHTER", fighter.x, fighter.y)]),
+        older([
+          own("RAIDER", at.x, at.y),
+          foe("FIGHTER", fighter.x, fighter.y),
+        ]),
         at,
         kills,
         5,
@@ -504,7 +527,10 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: signature research", () 
     ).priority;
   };
   const without = (
-    factions: readonly ["DINOSAUR" | "ORIGINAL", "DINOSAUR" | "ORIGINAL"],
+    factions: readonly [
+      "DINOSAUR" | "ORIGINAL",
+      "DINOSAUR" | "ORIGINAL" | "DWARF",
+    ],
     ...techs: Parameters<typeof dinosaurTechsWithoutV7>
   ): GameStateV7 =>
     dinosaurFieldV7(factions, [own("FIGHTER", 8, 8), foe("FIGHTER", 1, 1)], {
@@ -512,7 +538,9 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: signature research", () 
     });
 
   it("researches toward the Triceratops first, then the T-Rex, once it owns two cities", () => {
-    const both = without(DH, "SAWMILLING", "CHIVALRY");
+    // (The signature research of `pulp_wars-c87.8`, against a Dwarf
+    // seat: an army seat follows the army's order instead.)
+    const both = without(DW, "SAWMILLING", "CHIVALRY");
     // Both chains are one technology long: the Triceratops goes first.
     expect(priority(both, 2, research("SAWMILLING"))).toBe(
       SIGNATURE_RESEARCH_PRIORITY_V7,
@@ -525,15 +553,17 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: signature research", () 
       SIGNATURE_RESEARCH_PRIORITY_V7,
     );
     // With Sawmilling known, the T-Rex is next.
-    const tRex = without(DH, "CHIVALRY");
+    const tRex = without(DW, "CHIVALRY");
     expect(priority(tRex, 2, research("CHIVALRY"))).toBe(
       SIGNATURE_RESEARCH_PRIORITY_V7,
     );
   });
 
   it("takes the shorter chain first and raises its next technology", () => {
+    // (The signature research of `pulp_wars-c87.8`, against a Dwarf
+    // seat: an army seat follows the army's order instead.)
     // The T-Rex needs Raiding and Chivalry, the Triceratops only Sawmilling.
-    const short = without(DH, "SAWMILLING", "RAIDING");
+    const short = without(DW, "SAWMILLING", "RAIDING");
     expect(priority(short, 2, research("SAWMILLING"))).toBe(
       SIGNATURE_RESEARCH_PRIORITY_V7,
     );
@@ -541,12 +571,12 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: signature research", () 
       SIGNATURE_RESEARCH_PRIORITY_V7,
     );
     // The Triceratops needs Forestry and Sawmilling, the T-Rex only Chivalry.
-    const long = without(DH, "FORESTRY", "CHIVALRY");
+    const long = without(DW, "FORESTRY", "CHIVALRY");
     expect(priority(long, 2, research("CHIVALRY"))).toBe(
       SIGNATURE_RESEARCH_PRIORITY_V7,
     );
     // Sawmilling known, Raiding missing: Raiding is the next step to the T-Rex.
-    const raiding = without(DH, "RAIDING");
+    const raiding = without(DW, "RAIDING");
     expect(priority(raiding, 2, research("RAIDING"))).toBe(
       SIGNATURE_RESEARCH_PRIORITY_V7,
     );

@@ -1,5 +1,19 @@
 # Ruleset 7 revision 19: Dinosaur faction
 
+**The Dinosaur pass** (`pulp_wars-w49.15`, `pulp-wars-poc-7r53`,
+[its record](RULESET_7_TUNING_DINOSAUR.md)) changed rules of this
+document; the current rules win where this text differs. **The Caveman
+has Pack Hunt**: +1 Attack on its own attack against a unit next to one
+of its owner's hatched dinosaurs (this document gives it Fighter parity
+in attack). **A Dinosaur city's Survey is Scouts**, with a free Raptor,
+hatched. **A Dinosaur Market hires a dinosaur, hatched**, with Commerce.
+A Dinosaur seat of the Normal AI plays the army rules in a match of
+Humans, Goblins, Undead, Martians, and Dinosaurs. **Its correction:**
+Nesting takes no turn off the hatch; a Shaman's Tend Wounded heals a
+hatched dinosaur 4; Pack Hunt also applies against a unit one of the
+player's dinosaurs attacked this turn (the state list `huntedThisTurn`);
+Sawmilling is displayed as Timber.
+
 **Status:** implemented (`pulp_wars-c87.2`–`c87.8`), amended by
 [revision 20](RULESET_7_REVISION_20.md), and **folded into
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) (kept as history)** by

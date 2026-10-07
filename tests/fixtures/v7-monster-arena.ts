@@ -41,11 +41,17 @@ export interface MonsterArenaOptionsV7 extends GoblinArenaOptionsV7 {
   readonly grass?: readonly CoordV7[];
 }
 
+/**
+ * The fourth seat is one that plays no army rules, so the arena keeps the
+ * policy the curiosity rules were written against: a Candy seat since the
+ * Dinosaur pass (`pulp_wars-w49.15`) made the Dinosaur seats army seats
+ * (it was a Dinosaur seat).
+ */
 export const MONSTER_FACTIONS_V7: readonly FactionIdV7[] = [
   "ORIGINAL",
   "UNDEAD",
   "GOBLIN",
-  "DINOSAUR",
+  "CANDY",
 ];
 
 /** The arena state; the Spider's ID follows the pieces' IDs. */

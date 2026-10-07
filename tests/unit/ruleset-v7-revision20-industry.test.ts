@@ -62,7 +62,7 @@ describe("ruleset-7 revision-20 Nesting city slot", () => {
     expect(
       DINOSAUR_BASELINE_V1_NODES.find((node) => node.id === "FORTIFICATION")
         ?.unlocks,
-    ).toEqual([{ kind: "NESTING", eggHp: 4, hatchTurns: 1, citySlots: 1 }]);
+    ).toEqual([{ kind: "NESTING", eggHp: 4, hatchTurns: 0, citySlots: 1 }]);
     expect(
       FACTION_IDS_V7.map((faction) => [
         faction,
@@ -82,12 +82,13 @@ describe("ruleset-7 revision-20 Nesting city slot", () => {
     expect(
       technologyCapabilitiesV7(["DRILL"], "DINOSAUR").nestingCityCapacityBonus,
     ).toBe(0);
-    // The Egg effects are unchanged.
+    // The Egg's HP is unchanged; the Dinosaur pass's correction (7r53)
+    // took the turn off the hatch away.
     expect(
       technologyCapabilitiesV7(["DRILL", "FORTIFICATION"], "DINOSAUR"),
     ).toMatchObject({
       eggHpBonus: 4,
-      eggHatchTurnReduction: 1,
+      eggHatchTurnReduction: 0,
       nestingCityCapacityBonus: 1,
     });
   });
@@ -366,14 +367,15 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
     expect(text(0, "EXPLOSIVES")).toEqual([
       "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too except the one that sets it; in your territory its city gains +1 population",
       "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
-      "Dinosaurs ignore City Walls",
+      // The Dinosaur pass (`pulp_wars-w49.15`, 7r53): and the run-up.
+      "A Triceratops's run-up counts 2 tiles (up to +2 Attack); dinosaurs ignore City Walls",
     ]);
     expect(text(1, "EXPLOSIVES")).toEqual([
       "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too except the one that sets it; in your territory its city gains +1 population",
       "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
     ]);
     expect(text(0, "FORTIFICATION")).toEqual([
-      "Eggs have +4 HP and hatch one turn sooner; +1 unit slot in every city",
+      "Eggs have +4 HP; +1 unit slot in every city",
     ]);
     expect(text(0, "SAWMILLING")).toContain("Triceratops Egg (Charge!)");
   });

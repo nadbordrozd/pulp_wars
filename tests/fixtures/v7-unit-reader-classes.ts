@@ -226,6 +226,15 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::armyResearchTargetV7": "BOARD",
     "src/ai/v7.ts::armySwapsOutV7": "BOARD",
     "src/ai/v7.ts::armyCureDueV7": "BOARD",
+    // The Dinosaur pass (`pulp_wars-w49.15`): the own units and Eggs on
+    // the board of a Dinosaur seat, which has no burrowed unit.
+    "src/ai/v7.ts::armyDinosaurCrowdedV7": "BOARD",
+    // The correction of the Dinosaur pass: the dinosaurs and Cavemen near
+    // a target, and the target of an attack, stand on the board.
+    "src/ai/v7.ts::armyChargeSupportedV7": "BOARD",
+    "src/ai/v7.ts::armyWallbreakerDueV7": "BOARD",
+    "src/ai/v7-dinosaur.ts::packHuntForPolicyV7": "BOARD",
+    "src/engine/v7/reducer.ts::huntedAfterAttackV7": "BOARD",
     "src/ai/v7.ts::armyZombieAloneV7": "BOARD",
     "src/ai/v7.ts::vampireAttackAcceptableV7": "BOARD",
     // The Undead pass (`pulp_wars-w49.13`): the free tiles a Vampire flies to.

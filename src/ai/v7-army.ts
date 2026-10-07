@@ -54,10 +54,11 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
  *   is visible within `ARMY_GARRISON_RADIUS_V7`, except for that step
  *   beside the center; without the Coins for a unit it does not move.
  *
- * It applies to a Human, Undead, Goblin, or (the Martian pass,
- * `pulp_wars-w49.14`) Martian seat in a match whose every seat is one of
- * those four (the pairings the tuning rounds play): a match with any other
- * faction keeps the policy of that faction's own pass, on both sides. It is off while the seat's naval plan is active (it
+ * It applies to a Human, Undead, Goblin, (the Martian pass,
+ * `pulp_wars-w49.14`) Martian, or (the Dinosaur pass, `pulp_wars-w49.15`)
+ * Dinosaur seat in a match whose every seat is one of those five (the
+ * pairings the tuning rounds play): a match with any other faction keeps
+ * the policy of that faction's own pass, on both sides. It is off while the seat's naval plan is active (it
  * must cross water to reach anyone) and while the opening growth harvest
  * is due. Everything is read from the public view and the public previews;
  * nothing draws from the PRNG or depends on elapsed time.
@@ -67,6 +68,7 @@ export const ARMY_PLAY_FACTIONS_V7: readonly FactionIdV7[] = Object.freeze([
   "UNDEAD",
   "GOBLIN",
   "MARTIAN",
+  "DINOSAUR",
 ]);
 
 export function armyPlayFactionV7(faction: FactionIdV7): boolean {
@@ -295,7 +297,104 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
     "RAIDER",
     "KNIGHT",
   ] as const),
+  // The Dinosaur pass (`pulp_wars-w49.15`,
+  // docs/product/RULESET_7_TUNING_DINOSAUR.md section 8): the Ankylosaurus
+  // (Drill, one technology: the garrison, and the unit a Knight's hit does
+  // not kill, so it ends an Overrun chain), then one growth technology
+  // (economy first), the Triceratops (Hunting, Forestry, Sawmilling: the
+  // line; Forestry is also a growth technology), the Raptor (one comes free
+  // with Scouts), the Spitter, the Shaman, the T-Rex. Nesting is researched
+  // once an Ankylosaurus is fielded and Wallbreaker once two Triceratops
+  // are (`armyResearchTargetV7`).
+  DINOSAUR: Object.freeze([
+    "GUARD",
+    "CATAPULT",
+    "RAIDER",
+    "MARKSMAN",
+    "CAPTAIN",
+    "KNIGHT",
+  ] as const),
 });
+
+/**
+ * The Dinosaur pass (`pulp_wars-w49.15`). A Dinosaur seat with this many
+ * Ankylosauruses researches Nesting (a unit slot in every city, and Eggs
+ * with 10 HP) before the Triceratops's technologies; one
+ * with this many Triceratops researches Wallbreaker (the second tile of
+ * the run-up) before the T-Rex's.
+ */
+export const ARMY_NESTING_DEFENDERS_V7 = 1;
+export const ARMY_WALLBREAKER_CHARGERS_V7 = 2;
+/**
+ * The Dinosaur pass: a Dinosaur seat is crowded when it fields this many
+ * units and no city of it has room for a unit of two slots. It then
+ * researches its slot technologies, Nesting and, once it can lay the
+ * Triceratops, Planning (through Administration), like the growth
+ * technology of a seat at its unit limit:
+ * unit slots are what a Dinosaur army runs out of. (In the first diagnostic
+ * lab match the seat stood at its limit from round 6 with 20 to 48 Coins
+ * in hand, researched Nesting in round 7, and never Planning.)
+ */
+export const ARMY_DINOSAUR_CROWDED_UNITS_V7 = 4;
+export const ARMY_DINOSAUR_CROWDED_FREE_SLOTS_V7 = 2;
+/**
+ * The Dinosaur pass, correction (after three hand-played games; a Human
+ * player met thirteen Ankylosauruses that made three kills between them,
+ * laid by a seat with 0 to 2 Coins left on 24 of 30 turns). A Dinosaur
+ * seat's Ankylosauruses are capped: no more than a third of the army
+ * (`armyDinosaurDefenderCappedV7`), never more than the other units they
+ * screen, and no more than `ARMY_DINOSAUR_DEFENDER_MAXIMUM_V7` while the
+ * seat can still buy growth or has a growth technology to research. A
+ * capped Ankylosaurus costs `ARMY_DINOSAUR_DEFENDER_CAP_COST_V7` of
+ * training score, more than the garrison bonus of a threatened center.
+ */
+export const ARMY_DINOSAUR_DEFENDER_CAP_COST_V7 = 600;
+export const ARMY_DINOSAUR_DEFENDER_MAXIMUM_V7 = 7;
+export function armyDinosaurDefenderCappedV7(counts: ArmyCountsV7): boolean {
+  const have = counts.byClass.DEFENDER;
+  const screened = counts.total - have;
+  return (
+    have >= 1 && (have >= Math.ceil((counts.total + 1) / 3) || have >= screened)
+  );
+}
+/**
+ * The correction: a Dinosaur seat's unit on an own center stays there
+ * while a visible hostile unit that moves two tiles or more, or rides on
+ * after a kill, is within this many tiles of the center (the seat walked
+ * its Ankylosauruses off a city and off its walled capital, and one Knight
+ * took six units in a turn).
+ */
+export const ARMY_DINOSAUR_CENTER_FAST_RADIUS_V7 = 4;
+/**
+ * The correction: a Triceratops commits (a Move into contact, an attack)
+ * with support only: another own Triceratops or T-Rex that has charged
+ * this turn or can still reach the target (within
+ * `ARMY_DINOSAUR_CHARGER_REACH_V7` tiles of it), or
+ * `ARMY_DINOSAUR_PACK_CAVEMEN_V7` own Cavemen within
+ * `ARMY_DINOSAUR_PACK_REACH_V7` tiles of the target (Pack Hunt). Without
+ * it, it still attacks a target within `ARMY_DINOSAUR_DEFENCE_RADIUS_V7`
+ * tiles of an own center, or one with no other hostile unit within
+ * `ARMY_DINOSAUR_ALONE_RADIUS_V7` tiles. (Each Triceratops of the seat
+ * charged alone and was killed the turn after: 8 Coins for a 2-Coin
+ * Fighter.)
+ */
+export const ARMY_DINOSAUR_CHARGER_REACH_V7 = 3;
+export const ARMY_DINOSAUR_PACK_CAVEMEN_V7 = 2;
+export const ARMY_DINOSAUR_PACK_REACH_V7 = 2;
+export const ARMY_DINOSAUR_DEFENCE_RADIUS_V7 = 2;
+export const ARMY_DINOSAUR_ALONE_RADIUS_V7 = 2;
+/**
+ * The Dinosaur pass: a Dinosaur unit whose maximum HP is below this is a
+ * weak link of a kill chain at any HP: a Human Knight's hit (12 on a
+ * Caveman, 14 on a Raptor, a Spitter, or a Shaman) kills a Caveman, a
+ * Shaman, a Raptor that has not grown, and a Spitter below Alpha, and rides
+ * on. An Ankylosaurus, a Triceratops, a T-Rex, a Brontosaurus, and a grown
+ * Raptor are not.
+ */
+export const ARMY_DINOSAUR_STURDY_V7 = 15;
+/** A Dinosaur army has one Raptor per this many units (at most three). */
+export const ARMY_DINOSAUR_SKIRMISHER_PER_UNITS_V7 = 4;
+export const ARMY_DINOSAUR_SKIRMISHER_MAXIMUM_V7 = 3;
 
 /**
  * The Martian pass: an army seat's Martian shooter next to a hostile melee
@@ -495,6 +594,23 @@ export const ARMY_CLASSES_V7: readonly ArmyClassV7[] = Object.freeze([
 ]);
 
 export function armyClassV7(rule: EffectiveRoleRuleV7): ArmyClassV7 | null {
+  // The Dinosaur pass (`pulp_wars-w49.15`): a unit with Charge! (the
+  // Triceratops, registered as `SIEGE`) fights in the line: it walks up and
+  // strikes the unit beside it, needs no screen, and is no fragile target.
+  if (rule.abilities.includes("LINEBREAKER")) return "LINE";
+  return armyShareClassV7(rule);
+}
+
+/**
+ * The class a role is counted in for the composition (`armyCountsV7`,
+ * `armyRoleScoreV7`, `ARMY_SHARES_V7`): its registered tactical role. It
+ * differs from `armyClassV7`, the class a unit fights as, for the
+ * Triceratops alone: it has the siege share of a Dinosaur army (its own,
+ * apart from the Cavemen's) and fights in the line.
+ */
+export function armyShareClassV7(
+  rule: EffectiveRoleRuleV7,
+): ArmyClassV7 | null {
   return (ARMY_CLASSES_V7 as readonly string[]).includes(rule.tacticalRole)
     ? (rule.tacticalRole as ArmyClassV7)
     : null;
@@ -582,6 +698,27 @@ export const ARMY_SHARES_V7 = Object.freeze({
     SIEGE: 25,
     BREAKTHROUGH: 10,
   }),
+  // The Dinosaur pass (`pulp_wars-w49.15`): three tenths Triceratops (the
+  // siege share: the grown units that are the line), a quarter
+  // Ankylosauruses (the units a Knight does not kill, and the garrisons),
+  // a fifth Cavemen (the capturers, and Pack Hunt beside the dinosaurs),
+  // 15% Spitters (Acid against cover and Walls), a tenth T-Rexes (14 Coins
+  // and two slots each). Against two or more hostile ranged, siege, or
+  // support units a quarter T-Rexes, which Rampage through them.
+  dinosaur: Object.freeze({
+    LINE: 20,
+    DEFENDER: 25,
+    RANGED: 15,
+    SIEGE: 30,
+    BREAKTHROUGH: 10,
+  }),
+  dinosaurFragile: Object.freeze({
+    LINE: 15,
+    DEFENDER: 20,
+    RANGED: 15,
+    SIEGE: 25,
+    BREAKTHROUGH: 25,
+  }),
 });
 
 /** The shares of a faction's land army (`fragile`: see above). */
@@ -597,6 +734,8 @@ export function armySharesV7(
     return fragile ? ARMY_SHARES_V7.goblinFragile : ARMY_SHARES_V7.goblin;
   if (faction === "MARTIAN")
     return fragile ? ARMY_SHARES_V7.martianFragile : ARMY_SHARES_V7.martian;
+  if (faction === "DINOSAUR")
+    return fragile ? ARMY_SHARES_V7.dinosaurFragile : ARMY_SHARES_V7.dinosaur;
   return fragile ? ARMY_SHARES_V7.fragile : ARMY_SHARES_V7.standard;
 }
 /**
@@ -719,8 +858,20 @@ export function armyCountsV7(
   let total = 0;
   let hostileFragile = 0;
   for (const unit of view.units) {
-    if (unit.form !== "LAND") continue;
-    const unitClass = armyClassV7(unitRoleRuleV7(view, unit));
+    // The Dinosaur pass (`pulp_wars-w49.15`): an own Egg counts as the unit
+    // inside (it fills that unit's slots and hatches into it), so a seat
+    // does not lay the same class again while its Eggs wait.
+    if (
+      unit.form !== "LAND" &&
+      !(unit.form === "EGG" && unit.ownerId === view.viewer.id)
+    )
+      continue;
+    const rule = unitRoleRuleV7(view, unit);
+    // An own unit by its share of the army; a hostile one by how it fights.
+    const unitClass =
+      unit.ownerId === view.viewer.id
+        ? armyShareClassV7(rule)
+        : armyClassV7(rule);
     if (unitClass === null) continue;
     if (unit.ownerId === view.viewer.id) {
       byClass[unitClass] += 1;
@@ -749,7 +900,7 @@ export function armyRoleScoreV7(
   threatened: boolean,
 ): number {
   const rule = effectiveRoleRuleV7(role, faction);
-  const unitClass = armyClassV7(rule);
+  const unitClass = armyShareClassV7(rule);
   if (unitClass === null || rule.cost === null) return Number.NEGATIVE_INFINITY;
   const after = counts.total + 1;
   const have = counts.byClass[unitClass];
@@ -774,7 +925,15 @@ export function armyRoleScoreV7(
                 ARMY_MARTIAN_SKIRMISHER_MAXIMUM_V7,
                 Math.floor(counts.total / ARMY_MARTIAN_SKIRMISHER_PER_UNITS_V7),
               )
-            : Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7)) -
+            : // The Dinosaur pass: one Raptor per four units, at most three.
+              faction === "DINOSAUR"
+              ? Math.min(
+                  ARMY_DINOSAUR_SKIRMISHER_MAXIMUM_V7,
+                  Math.floor(
+                    counts.total / ARMY_DINOSAUR_SKIRMISHER_PER_UNITS_V7,
+                  ),
+                )
+              : Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7)) -
         have);
   else if (unitClass === "SUPPORT")
     deficit =
@@ -802,7 +961,11 @@ export function armyRoleScoreV7(
           ? 200
           : unitClass === "LINE"
             ? 100
-            : unitClass === "SIEGE" || unitClass === "SUPPORT"
+            : // (The Dinosaur pass: not the Triceratops, which fights in
+              // the line; its Egg's two turns already count against it in
+              // a threatened city.)
+              (unitClass === "SIEGE" && armyClassV7(rule) === "SIEGE") ||
+                unitClass === "SUPPORT"
               ? -200
               : // The Goblin pass, correction: a Goblin seat trains no
                 // breakthrough unit onto a threatened or frontier center either
@@ -810,19 +973,31 @@ export function armyRoleScoreV7(
                 // trained on). Other factions' seats are as they were.
                 // The Martian pass: nor a Martian seat a Mothership (8
                 // Coins and two unit slots of a city that needs bodies).
+                // The Dinosaur pass: nor a Dinosaur seat a T-Rex Egg (14
+                // Coins, two slots, and four turns as an Egg).
                 unitClass === "BREAKTHROUGH" &&
-                  (faction === "GOBLIN" || faction === "MARTIAN")
+                  (faction === "GOBLIN" ||
+                    faction === "MARTIAN" ||
+                    faction === "DINOSAUR")
                 ? -ARMY_FRONT_BREAKTHROUGH_COST_V7
                 : 0;
   // Tuning 6 (`pulp_wars-w49.6`): a class the army is short of is bought
   // in its dearest unit the Coins reach (`ARMY_DEAR_UNIT_VALUE_V7` per
   // Coin of price), so the top units get a real share of the purchases:
   // the Goblin seat trained nothing dearer than 3 Coins in thirty rounds.
+  // The Dinosaur pass, correction: the capped Ankylosaurus.
+  const capped =
+    faction === "DINOSAUR" &&
+    unitClass === "DEFENDER" &&
+    armyDinosaurDefenderCappedV7(counts)
+      ? ARMY_DINOSAUR_DEFENDER_CAP_COST_V7
+      : 0;
   return (
     deficit +
     defence +
     rule.cost +
-    (deficit > 0 ? ARMY_DEAR_UNIT_VALUE_V7 * rule.cost : 0)
+    (deficit > 0 ? ARMY_DEAR_UNIT_VALUE_V7 * rule.cost : 0) -
+    capped
   );
 }
 

@@ -1,5 +1,146 @@
 # Greedy Normal AI
 
+## The Dinosaur pass (`pulp_wars-w49.15`)
+
+**[The Dinosaur faction pass](../product/RULESET_7_TUNING_DINOSAUR.md#8-the-normal-ai)**
+(`pulp-wars-poc-7r53`) put the second tile of a Triceratops's run-up
+behind Wallbreaker, gave the Caveman Pack Hunt, a Dinosaur Survey a
+Raptor, and a Dinosaur Market its dinosaurs. It also made `DINOSAUR` an
+army faction (`ARMY_PLAY_FACTIONS_V7` in `src/ai/v7-army.ts`): in a match
+whose every seat is Human, Goblin, Undead, Martian, or Dinosaur, every
+seat plays the army rules. Before, a Dinosaur seat at the table switched
+them off for everyone. In a match with an Ice Folk, Dwarf, or Candy seat
+a Dinosaur seat plays the policy of
+[revision 19](#revision-19-dinosaur-play-pulp_wars-c875) as before.
+Every rule below is a Dinosaur army seat's; no rule of another faction's
+seat changed.
+
+- **Research order** (`ARMY_RESEARCH_ROLES_V7.DINOSAUR`): Ankylosaurus,
+  Triceratops, Raptor, Spitter, Shaman, T-Rex: Drill, Hunting, Forestry,
+  Sawmilling, Scouting, Marksmanship, Administration, Planning, Raiding,
+  Chivalry from a Gathering opener. One economy technology its land can
+  use comes after Drill (`armyOpeningSeatV7`). Nesting (Fortification) is
+  inserted before the Triceratops's technologies once the seat fields
+  `ARMY_NESTING_DEFENDERS_V7` (1) Ankylosaurus, Wallbreaker (Explosives)
+  before the T-Rex's once it fields `ARMY_WALLBREAKER_CHARGERS_V7` (2)
+  Triceratops, and Planning before the T-Rex's once Administration is
+  owned. The signature research of the older policy (toward the
+  Triceratops or the T-Rex with two cities) is not consulted by an army seat.
+- **A crowded seat** (`armyDinosaurCrowdedV7`:
+  `ARMY_DINOSAUR_CROWDED_UNITS_V7` (4) or more units and Eggs, and no
+  city with `ARMY_DINOSAUR_CROWDED_FREE_SLOTS_V7` (2) free slots)
+  researches Nesting as a growth target, and Planning (through
+  Administration) once it owns the Triceratops's technology. A war does
+  not hold a crowded seat's slot technology (`armyWarHoldsResearchV7`).
+- **Research with the Coins left over.** A war does not hold a Dinosaur
+  seat's research target when the seat's Coins less its price still pay
+  for the dearest `TRAIN` or `LAY_EGG` on offer. The research then has
+  `ARMY_UNDUE_RESEARCH_PRIORITY_V7` (1130), after the turn's production
+  (1215).
+- **Production** (`armyProductionV7`: `TRAIN` or `LAY_EGG`). An Egg has
+  the army training priority, the army role score
+  (`armyRoleScoreV7`) plus the older `layEggAdjustmentV7` and
+  `dinosaurProductionAdjustmentV7`, the research floor, the dear-unit
+  floor, and the rule against production onto a center under two
+  shooters. `armyCountsV7` counts an own Egg as the unit inside.
+- **Shares** (`ARMY_SHARES_V7.dinosaur`, line / defender / ranged / siege
+  / breakthrough): 20 / 25 / 15 / 30 / 10; against two or more visible
+  ranged, siege, or support units 15 / 20 / 15 / 25 / 25. One Raptor for
+  every `ARMY_DINOSAUR_SKIRMISHER_PER_UNITS_V7` (4) units, at most
+  `ARMY_DINOSAUR_SKIRMISHER_MAXIMUM_V7` (3).
+- **The Triceratops's two classes.** `armyShareClassV7` is the class a
+  unit's share is counted in (its registered tactical role: `SIEGE` for
+  the Triceratops); `armyClassV7` is the class it fights as (`LINE` for a
+  `LINEBREAKER`). They are equal for every other unit of the five army
+  factions. The cost a siege unit has at a threatened center
+  (`-200`) applies only to a unit that also fights as siege, so not to
+  the Triceratops; the T-Rex has `ARMY_FRONT_BREAKTHROUGH_COST_V7` there.
+- **The Coins for a dear unit** (`armyDearUnitFloorV7`): for the
+  Triceratops, then the T-Rex, when a city has the slots for one.
+- **The opening.** Villages first; at level 2 the seat takes `SURVEY`
+  (Scouts, a free Raptor) whatever its Coins (`preferredReward`).
+- **The garrison** (`armyVacatesCenterV7`) stays on a center whose city's
+  preferred action this turn is `LAY_EGG` (the Egg is laid beside it);
+  otherwise it steps aside like any army seat's so that the city trains.
+- **Weak links** (`armyWeakLinkV7`): a Dinosaur unit whose maximum HP is
+  below `ARMY_DINOSAUR_STURDY_V7` (15) at any HP: the Caveman, the
+  Raptor, the Spitter, the Shaman (a Big Raptor is not). An
+  Ankylosaurus's Move beside such units has `ARMY_ESCORT_VALUE_V7` a
+  unit (`armyEscortValueV7`).
+- **The run-up** (`runUpTilesForPolicyV7` in `src/ai/v7-dinosaur.ts`):
+  the viewer's research for its own Triceratops, two tiles for a hostile
+  one (research is private). Wallbreaker's research value adds
+  `WALLBREAKER_CHARGER_VALUE_V7` (6) for each own Triceratops.
+- **Kept from revision 19:** the nest tile, guarding and hatching Eggs,
+  abandoning an Egg, growth values, the grown unit's retreat, the
+  Triceratops's run-up Move, and every rule of the other seats against
+  Dinosaurs.
+
+Two diagnostic matches, each read twice
+([the pass, section 8.1](../product/RULESET_7_TUNING_DINOSAUR.md#81-two-diagnostic-matches)):
+the seat researches toward its units, takes villages, lays every unit,
+and loses no Egg; it still holds fewer cities than the Human seat, lays
+more Ankylosauruses than its share in small cities, and banks Coins at
+its unit limit.
+
+### The correction after three hand-played games
+
+[Section 13 of the pass](../product/RULESET_7_TUNING_DINOSAUR.md#13-the-correction-after-three-hand-played-games)
+has the evidence (a Human player met thirteen Ankylosauruses that made
+three kills, laid by a seat with 0 to 2 Coins on 24 of 30 turns). The
+rules changed with it (Nesting takes no turn off the hatch, a Shaman
+heals a dinosaur 4, Pack Hunt against a hunted unit), and so did the
+policy. A Dinosaur army seat:
+
+- **caps its Ankylosauruses** (`armyDinosaurDefenderCappedV7`): at least
+  one, then no more than `ceil((units + 1) / 3)` and never as many as the
+  other units of the army. A capped Ankylosaurus has
+  `ARMY_DINOSAUR_DEFENDER_CAP_COST_V7` (600) off its training score and is
+  filtered out of the city's production (`armyDinosaurDefenderHeldV7`, in
+  `preferredSharedCityActionV7` and the candidate filter), so a garrison
+  steps aside and the city trains a Caveman; beyond
+  `ARMY_DINOSAUR_DEFENDER_MAXIMUM_V7` (7) it is also held while growth is
+  on offer or the research target is a growth technology;
+- **makes no attack with an Ankylosaurus** that takes back more than it
+  deals and does not kill (`dinosaurAttackRejectedV7`; the usual excuses:
+  saving a city, opening a kill);
+- **keeps its garrison** (`armyDinosaurKeepsCenterV7`): with a hostile
+  land unit of Move 2 or more, or with Overrun, within
+  `ARMY_DINOSAUR_CENTER_FAST_RADIUS_V7` (4) of an own center, the unit on
+  it makes no Move but the step aside of `armyVacatesCenterV7` and no
+  attack that advances, and an Ankylosaurus on or beside it makes no Move
+  to a tile farther than one from it;
+- **holds a Triceratops** (`armyChargeHeldV7`): no Move into contact
+  unless a target there is supported (`armyChargeSupportedV7`: another
+  own Triceratops or T-Rex within `ARMY_DINOSAUR_CHARGER_REACH_V7` (3) of
+  it, or two tiles when it has attacked; `ARMY_DINOSAUR_PACK_CAVEMEN_V7`
+  (2) Cavemen within `ARMY_DINOSAUR_PACK_REACH_V7` (2); the target within
+  `ARMY_DINOSAUR_DEFENCE_RADIUS_V7` (2) of an own center; or no other
+  hostile land unit within `ARMY_DINOSAUR_ALONE_RADIUS_V7` (2) of it). A
+  Triceratops already in contact is not held, and its attacks are not
+  filtered;
+- **researches Wallbreaker** at the first role of its order after the
+  Triceratops (it was at the T-Rex, the last) once it fields
+  `ARMY_WALLBREAKER_CHARGERS_V7` (2); `armyWallbreakerDueV7` then keeps a
+  war from holding it and makes `armyResearchFloorV7` keep its price;
+- **lays an Egg of two or more turns** only on a nest tile no visible
+  hostile attacker reaches in those turns (`move × turns + range`), or
+  one with an own land unit on a neighbouring tile (`eggReached` in
+  `preferredSharedCityActionV7`);
+- **counts Pack Hunt** in its projected damage (`packHuntForPolicyV7`): an
+  own Caveman's as the board is (a dinosaur beside the target, or the
+  target in `huntedThisTurn`), a hostile Caveman's when a visible
+  dinosaur of its owner stands within `PACK_HUNT_ASSUMED_RADIUS_V7` (3)
+  of the target.
+
+Two diagnostic matches, each run once before the cap became a filter and
+before Wallbreaker's exemption from the hold
+([the pass, section 13.10](../product/RULESET_7_TUNING_DINOSAUR.md#1310-two-diagnostic-matches)):
+in the generated game the seat still fielded about half Ankylosauruses
+(its held cities could lay nothing else), and in the lab it kept
+Wallbreaker as its target for six rounds of war with five Triceratops.
+Both are fixed with constructed tests; no match was run after them.
+
 ## The Martian pass (`pulp_wars-w49.14`)
 
 **[The Martian faction pass](../product/RULESET_7_TUNING_MARTIAN.md#8-the-normal-ai)**
@@ -596,12 +737,13 @@ faction's own order that the seat cannot train yet
 (`ARMY_RESEARCH_ROLES_V7`), from the first turn and not only while alert.
 Each faction's signature units come first:
 
-| Faction  | Units in order                                                         | Technologies from a Gathering opener                                                                                           |
-| -------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| Humans   | Marksman, Guard, Swordsman, Catapult, Knight, Captain                  | Hunting, Marksmanship, Drill, Engineering, Forestry, Sawmilling, Scouting, Raiding, Chivalry, Administration (the Goblin pass) |
-| Undead   | Zombie, Banshee, Lich, Necromancer, Vampire                            | Drill, Hunting, Marksmanship, Forestry, Sawmilling, Administration, Scouting, Raiding, Chivalry (the Undead pass)              |
-| Goblins  | Bomb Chucker, Wolf Rider, Orc Brute, Rocket Cart, Warboss, Scrap Buggy | Hunting, Marksmanship, Scouting, Drill, Forestry, Sawmilling, Administration, Raiding, Chivalry (the Goblin pass)              |
-| Martians | Shield Projector, Ray Gunner, Tripod, Brain, Saucer, Mothership        | Drill, Hunting, Marksmanship, Forestry, Sawmilling, Administration, Scouting, Raiding, Chivalry (the Martian pass)             |
+| Faction   | Units in order                                                         | Technologies from a Gathering opener                                                                                           |
+| --------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Humans    | Marksman, Guard, Swordsman, Catapult, Knight, Captain                  | Hunting, Marksmanship, Drill, Engineering, Forestry, Sawmilling, Scouting, Raiding, Chivalry, Administration (the Goblin pass) |
+| Undead    | Zombie, Banshee, Lich, Necromancer, Vampire                            | Drill, Hunting, Marksmanship, Forestry, Sawmilling, Administration, Scouting, Raiding, Chivalry (the Undead pass)              |
+| Goblins   | Bomb Chucker, Wolf Rider, Orc Brute, Rocket Cart, Warboss, Scrap Buggy | Hunting, Marksmanship, Scouting, Drill, Forestry, Sawmilling, Administration, Raiding, Chivalry (the Goblin pass)              |
+| Martians  | Shield Projector, Ray Gunner, Tripod, Brain, Saucer, Mothership        | Drill, Hunting, Marksmanship, Forestry, Sawmilling, Administration, Scouting, Raiding, Chivalry (the Martian pass)             |
+| Dinosaurs | Ankylosaurus, Triceratops, Raptor, Spitter, Shaman, T-Rex              | Drill, Hunting, Forestry, Sawmilling, Scouting, Marksmanship, Administration, Planning, Raiding, Chivalry (the Dinosaur pass)  |
 
 (The first draft of this bead used one class order for all three, ranged,
 siege, breakthrough, line, defender, support, which put the Zombie ninth.)

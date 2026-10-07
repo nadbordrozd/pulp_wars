@@ -15,6 +15,7 @@ import {
   LAB_BREAKTHROUGH_UNDEAD_V7,
   LAB_BREAKTHROUGH_V7,
 } from "./lab-breakthrough";
+import { LAB_DINOSAUR_MID_V7 } from "./lab-dinosaur";
 import { LAB_GOBLIN_MID_V7 } from "./lab-goblin";
 import { LAB_BACKLINE_V7, LAB_LATE_V7, LAB_SIEGE_V7 } from "./lab-human";
 import { LAB_MARTIAN_MID_V7 } from "./lab-martian";
@@ -65,6 +66,10 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   // middle game on land with Forest, Fertile Ground, and Ore, the hand
   // player as the Martians.
   LAB_MARTIAN_MID_V7,
+  // The Dinosaur pass (`pulp_wars-w49.15`): the Dinosaur roster in the
+  // same middle game on the same land, with grown units and an Egg, the
+  // hand player as the Dinosaurs.
+  LAB_DINOSAUR_MID_V7,
 ]);
 
 /** The registered mission with this ID (any revision), or null. */

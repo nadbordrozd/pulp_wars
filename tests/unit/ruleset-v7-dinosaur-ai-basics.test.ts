@@ -6,6 +6,7 @@ import {
   layEggAdjustmentV7,
 } from "../../src/ai/v7-dinosaur";
 import { chooseNormalCommandV7, scoreCommandV7 } from "../../src/ai/v7";
+import { ARMY_COMMIT_MELEE_MOVE_PRIORITY_V7 } from "../../src/ai/v7-army";
 import {
   applyCommandV7,
   queryPlayerCommandsV7,
@@ -124,9 +125,9 @@ describe("ruleset-7 revision-19 Normal AI: Eggs", () => {
       at: { x: 7, y: 7 },
     };
     expect(layEggAdjustmentV7(view, lay, false)).toBe(0);
-    // With Nesting (the arena has every technology) a T-Rex Egg hatches in
-    // three turns (revision 20: 4, one sooner with Nesting).
-    expect(layEggAdjustmentV7(view, lay, true)).toBe(-36);
+    // A T-Rex Egg hatches in four turns, with Nesting too (the Dinosaur
+    // pass's correction, 7r53; three with Nesting before).
+    expect(layEggAdjustmentV7(view, lay, true)).toBe(-48);
     expect(
       layEggAdjustmentV7(
         view,
@@ -189,8 +190,11 @@ describe("ruleset-7 revision-20 Normal AI: Charge! benchmark", () => {
           command.kind === "ATTACK" && command.unitId === triceratops.id,
       ),
     ).toBe(false);
+    // (The Dinosaur pass, `pulp_wars-w49.15`: against Humans a Dinosaur
+    // seat plays the army rules, so the Move into contact is a committed
+    // unit's, 1173; it was the Charge! approach, 860.)
     const move = ofUnit(state)[0];
-    expect(move?.score.priority).toBe(860);
+    expect(move?.score.priority).toBe(ARMY_COMMIT_MELEE_MOVE_PRIORITY_V7);
     if (move?.command.kind !== "MOVE") throw new Error("no approach Move");
     const end = move.command.path.at(-1);
     expect(

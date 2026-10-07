@@ -667,6 +667,7 @@ const move = (unit: string, ...path: CoordV7[]): StepV7 => ({
 });
 
 const SIDE: Readonly<Partial<Record<FactionIdV7, string>>> = {
+  DINOSAUR: "Dinosaurs",
   MARTIAN: "Martians",
   UNDEAD: "Undead",
   ORIGINAL: "Humans",
@@ -928,9 +929,16 @@ function battle(
   sides: readonly [BattleSideV7, BattleSideV7],
   turns: number,
   ground: GroundV7 = {},
+  // The Dinosaur pass (`pulp_wars-w49.15`): another pass's arena (growth
+  // stages, Eggs) and side names; the Martian scenarios pass neither.
+  build: (
+    factions: readonly [FactionIdV7, FactionIdV7],
+    pieces: readonly MartianPieceV7[],
+    ground: GroundV7,
+  ) => GameStateV7 = arena,
 ): string[] {
   const lines = [`- **${title}**`];
-  let state = arena(factions, pieces, ground);
+  let state = build(factions, pieces, ground);
   const seatOf = (ownerId: number): number =>
     state.players.find((player) => player.id === ownerId)?.seat ?? -1;
   const kindOf = new Map<number, FactionIdV7>();

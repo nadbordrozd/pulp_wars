@@ -102,10 +102,11 @@ describe("Martian Normal AI: heat rays", () => {
     const best = unitCandidatesV7(state, at(5, 3))[0];
     expect(best?.command.kind).toBe("MOVE");
     expect(best?.score.priority).toBe(ARMY_STEP_BACK_PRIORITY_V7);
-    // Against a seat that does not play the army rules: the kite priority.
+    // Against a seat that does not play the army rules (a Candy one since
+    // the Dinosaur pass, `pulp_wars-w49.15`): the kite priority.
     const other = martianFieldV7(
       [own("MARKSMAN", 5, 3, { cooling: "COOLING" }), foe("FIGHTER", 4, 3)],
-      { factions: ["MARTIAN", "DINOSAUR"] },
+      { factions: ["MARTIAN", "CANDY"] },
     );
     expect(unitCandidatesV7(other, at(5, 3))[0]?.score.priority).toBe(
       RAY_KITE_PRIORITY_V7,
@@ -163,9 +164,10 @@ describe("Martian Normal AI: ranged play (`pulp_wars-b5f.2`)", () => {
         ? 0
         : Math.max(Math.abs(end.x - 4), Math.abs(end.y - 3)),
     ).toBe(2);
-    // Against a seat that does not play the army rules: the old priority.
+    // Against a seat that does not play the army rules (a Candy one since
+    // the Dinosaur pass, `pulp_wars-w49.15`): the old priority.
     const other = martianFieldV7([own("FIGHTER", 5, 3), foe("FIGHTER", 4, 3)], {
-      factions: ["MARTIAN", "DINOSAUR"],
+      factions: ["MARTIAN", "CANDY"],
     });
     expect(unitCandidatesV7(other, at(5, 3))[0]?.score.priority).toBe(
       RANGED_STEP_BACK_PRIORITY_V7,
@@ -363,16 +365,18 @@ describe("Martian Normal AI: production and research", () => {
 
   it("trains a Grunt, not a Projector, in a threatened city", () => {
     // Projector, Saucer, and Brain researched; no Tripod or Mothership.
-    // (Against a Dinosaur seat: the production rule of `pulp_wars-t6s.3`.
+    // (Against a Candy seat, which plays no army rules (the test used a
+    // Dinosaur one until the Dinosaur pass, `pulp_wars-w49.15`): the rule of
+    // `pulp_wars-t6s.3`.
     // Against a Human, Goblin, or Undead seat the army rules train the
     // best garrison, tests/unit/ruleset-v7-martian-pass.test.ts.)
     const state = martianFieldV7(
       [own("FIGHTER", 9, 6), foe("FIGHTER", 6, 8), foe("FIGHTER", 6, 7)],
       {
-        factions: ["MARTIAN", "DINOSAUR"],
+        factions: ["MARTIAN", "CANDY"],
         techs: {
           0: withoutTechsV7("MARTIAN", "SAWMILLING", "CHIVALRY"),
-          1: withoutTechsV7("DINOSAUR"),
+          1: withoutTechsV7("CANDY"),
         },
       },
     );

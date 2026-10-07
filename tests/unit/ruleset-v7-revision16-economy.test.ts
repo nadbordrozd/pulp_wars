@@ -231,13 +231,19 @@ describe("ruleset-7 revision-16 income previews", () => {
     // round 28), so the match is Humans against Dinosaurs, which plays the
     // older policy: seed 7 runs to the round cap with a city above the
     // income cap from round 28 and a Market at its cap from round 26 (of
-    // seeds 0-9, seed 9 also does).
+    // seeds 0-9, seed 9 also does). With the Dinosaur pass
+    // (`pulp_wars-w49.15`) a Dinosaur seat plays the army rules too, and
+    // that match ends before the round cap; the match is Humans against
+    // Candy, which plays the older policy: of seeds 0-12, seeds 1 and 11
+    // run to the round cap with a city above the income cap and a Market
+    // at its cap (so do seed 5 against Dwarves and seeds 0, 1, and 5
+    // against Ice Folk). The scan read only those three facts.
     const setup: MatchSetupV7 = {
-      ...setupV7(7, 1),
+      ...setupV7(1, 1),
       width: 11,
       height: 11,
       mapType: "PANGEA",
-      factions: ["ORIGINAL", "DINOSAUR"],
+      factions: ["ORIGINAL", "CANDY"],
     };
     const match = runAiMatchV7(setup, { maxRounds: 30, maxCommands: 30_000 });
     expect(match.errors).toEqual([]);

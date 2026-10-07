@@ -343,6 +343,11 @@ export interface PlayerViewV7 {
   readonly splattedThisTurn: readonly UnitId[];
   /** The Candy revision: `tossedThisTurn` of visible units. */
   readonly tossedThisTurn: readonly UnitId[];
+  /**
+   * The Dinosaur pass, correction: `huntedThisTurn` of visible units (the
+   * targets a Caveman of the active seat has Pack Hunt against).
+   */
+  readonly huntedThisTurn: readonly UnitId[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }
@@ -925,6 +930,9 @@ export function viewForV7(
       visibleUnitIds.has(unitId),
     ),
     tossedThisTurn: state.tossedThisTurn.filter((unitId) =>
+      visibleUnitIds.has(unitId),
+    ),
+    huntedThisTurn: state.huntedThisTurn.filter((unitId) =>
       visibleUnitIds.has(unitId),
     ),
     pendingChoices: state.pendingChoices.filter((choice) =>

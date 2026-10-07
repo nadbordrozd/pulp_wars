@@ -520,7 +520,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
   const AUDITED: Readonly<Record<string, number>> = {
     "src/engine/v7/candy.ts": 6,
     "src/engine/v7/candy-reducer.ts": 1,
-    "src/engine/v7/combat.ts": 1,
+    // The Dinosaur pass (`pulp_wars-w49.15`): Pack Hunt counts a dinosaur
+    // beside the target in land form only (`packHuntAttack2V7`: never an
+    // Egg or an embarked unit).
+    "src/engine/v7/combat.ts": 2,
     // Tuning 5 (`pulp_wars-w49.4`): the unit that sets a Blast Mountain and
     // is not hit is a land-form unit (an Egg, an embarked unit, and a boat
     // set no charge).
@@ -622,7 +625,11 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // unit are escorted by nobody).
     // The Martian pass's correction (`pulp_wars-w49.14`): the Knight-shy
     // rule is a land-form unit's (`armyKnightShyV7`).
-    "src/ai/v7.ts": 36,
+    // The Dinosaur pass's correction (`pulp_wars-w49.15`): the garrison
+    // that stays under a fast unit's eye, the Triceratops's support, and
+    // its held Move are rules of land-form units (an Egg and an embarked
+    // unit make no Move).
+    "src/ai/v7.ts": 39,
     // Tuning 5: the army count takes land-form units only (an Egg and an
     // embarked unit are in no fighting class).
     "src/ai/v7-army.ts": 1,

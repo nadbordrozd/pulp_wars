@@ -79,9 +79,11 @@ const ARMY = [own("FIGHTER", 9, 9), own("FIGHTER", 7, 9), own("FIGHTER", 9, 7)];
  * Tuning 5 (`pulp_wars-w49.4`): in a match of Human, Undead, and Goblin
  * seats only, a seat plays the army rules and saves for no unit (it trains
  * every turn). The savings plan is the policy of every other match, so
- * these positions face a Dinosaur seat.
+ * these positions face a seat that plays no army rules: a Dwarf one since
+ * the Dinosaur pass (`pulp_wars-w49.15`), which made the Dinosaur seats
+ * army seats too.
  */
-const SAVERS: readonly FactionIdV7[] = ["ORIGINAL", "DINOSAUR"];
+const SAVERS: readonly FactionIdV7[] = ["ORIGINAL", "DWARF"];
 
 describe("Normal AI second pass: the savings plan", () => {
   it("buys the Chivalry-tier unit first once it can afford one", () => {
@@ -136,8 +138,11 @@ describe("Normal AI second pass: the savings plan", () => {
 
 describe("Normal AI second pass: Spitters", () => {
   it("lays a Spitter Egg while a Dinosaur seat at war has none", () => {
+    // (Against a Dwarf seat: the bias of `pulp_wars-9s0.8`. Against a
+    // Human seat a Dinosaur seat plays the army rules and lays by its
+    // shares, tests/unit/ruleset-v7-dinosaur-pass.test.ts.)
     const state = field([own("FIGHTER", 9, 9), own("FIGHTER", 7, 9)], {
-      factions: ["DINOSAUR", "ORIGINAL"],
+      factions: ["DINOSAUR", "DWARF"],
       coins: 5,
     });
     const laid = trainCandidates(state).find(

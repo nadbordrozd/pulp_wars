@@ -1,8 +1,8 @@
 {
   "schemaVersion": 7,
-  "rulesetId": "pulp-wars-poc-7r52",
+  "rulesetId": "pulp-wars-poc-7r53",
   "setup": {
-    "rulesetId": "pulp-wars-poc-7r52",
+    "rulesetId": "pulp-wars-poc-7r53",
     "seed": 11,
     "width": 14,
     "height": 14,
@@ -3671,6 +3671,7 @@
   "crumbs": [],
   "splattedThisTurn": [],
   "tossedThisTurn": [],
+  "huntedThisTurn": [],
   "pendingChoices": [],
   "outcome": null
 }

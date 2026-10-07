@@ -113,6 +113,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/view.ts::viewForV7": "SEAT",
   "src/ai/v7-dinosaur.ts::dinosaurMatchForPolicyV7": "SEAT",
   "src/ai/v7-dinosaur.ts::ignoresWallsForPolicyV7": "SEAT",
+  // The Dinosaur pass (`pulp_wars-w49.15`): the viewer's own research for
+  // its own Triceratops (a two-slot unit is never mind-controlled).
+  "src/ai/v7-dinosaur.ts::runUpTilesForPolicyV7": "SEAT",
   "src/ai/v7-dinosaur.ts::technologyWithUnlockV7": "SEAT",
   "src/ai/v7-dinosaur.ts::layEggTurnsV7": "SEAT",
   "src/ai/v7-dinosaur.ts::dinosaurProductionAdjustmentV7": "SEAT",
@@ -180,6 +183,20 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7.ts::armyCureDueV7": "SEAT",
   "src/ai/v7.ts::armyCureResearchV7": "SEAT",
   "src/ai/v7.ts::armyVacatesCenterV7": "SEAT",
+  // The Dinosaur pass (`pulp_wars-w49.15`): a Dinosaur army seat's slot
+  // research and its Scouts choice are the viewer's faction's policy.
+  "src/ai/v7.ts::armyDinosaurCrowdedV7": "SEAT",
+  // The correction of the Dinosaur pass: the Ankylosaurus cap, the garrison
+  // under a fast unit's eye, the Triceratops's hold, and the Ankylosaurus
+  // that makes no losing attack are a Dinosaur seat's policy (the viewer's
+  // faction); the Shaman's heal is read from the Dinosaur registration.
+  "src/ai/v7.ts::armyDinosaurDefenderHeldV7": "SEAT",
+  "src/ai/v7.ts::armyDinosaurKeepsCenterV7": "SEAT",
+  "src/ai/v7.ts::armyChargeHeldV7": "SEAT",
+  "src/ai/v7.ts::armyWallbreakerDueV7": "SEAT",
+  "src/ai/v7.ts::dinosaurAttackRejectedV7": "SEAT",
+  "src/render/dinosaur-presentation-v7.ts::shamanTendDinosaurV7": "SEAT",
+  "src/ai/v7.ts::preferredReward": "SEAT",
   // The Goblin pass, correction (`pulp_wars-w49.12`): the escort is a
   // Goblin seat's policy (the viewer's faction), whatever kind the unit is.
   "src/ai/v7.ts::armyEscortValueV7": "SEAT",
@@ -226,6 +243,8 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/dinosaur-presentation-v7.ts::bigBodyRolesV7": "SEAT",
   "src/render/dinosaur-presentation-v7.ts::bigBodySlots": "SEAT",
   "src/render/dinosaur-presentation-v7.ts::chargeRunUpBonusV7": "SEAT",
+  // The Dinosaur pass: the Dinosaur registration's Pack Hunt, by name.
+  "src/render/dinosaur-presentation-v7.ts::packHuntBonusV7": "SEAT",
   "src/render/dinosaur-presentation-v7.ts::<module>": "SEAT",
   "src/render/dinosaur-presentation-v7.ts::dinosaurRewardLabelV7": "SEAT",
   "src/render/dinosaur-presentation-v7.ts::dinosaurHelpRulesV7": "SEAT",

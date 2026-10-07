@@ -691,7 +691,7 @@ describe("Revision 19 Egg dock and Shaman Hatch", () => {
     expect(actionLabels()).toEqual(["Hatch", "Disband", "Wait", "Hatch"]);
     const hatch = requiredButton("command-hatch");
     expect(hatch.title).toBe(
-      "Hatch an adjacent Egg laid on an earlier turn. The new unit cannot act this turn.",
+      "Uses the Shaman's action: an Egg next to it hatches now, whatever turns it had left (not on the turn it was laid). The new unit acts from your next turn.",
     );
     expect(hatch.getAttribute("aria-label")).toBe(
       `Hatch T-Rex Egg: a T-Rex with ${preview.hp} HP appears now, ${turnsTextV7(preview.turnsSaved)} early. The new unit cannot act this turn.`,
@@ -1082,7 +1082,7 @@ describe("Revision 19 growth, abilities and labels", () => {
     expect(unlocks("fortification")).toEqual([nestingUnlockTextV7()]);
     // Revision 20: Nesting also gives every city a slot.
     expect(nestingUnlockTextV7()).toBe(
-      `Eggs have +${nestingEggHpBonusV7()} HP and hatch one turn sooner; +1 unit slot in every city`,
+      `Eggs have +${nestingEggHpBonusV7()} HP; +1 unit slot in every city`,
     );
     expect(requiredElement(".v7-tech-detail").getAttribute("aria-label")).toBe(
       "Nesting details",

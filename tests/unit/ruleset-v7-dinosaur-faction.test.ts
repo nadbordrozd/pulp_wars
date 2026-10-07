@@ -123,23 +123,23 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 ];
 
 describe("ruleset-7 revision-19 identity", () => {
-  it("keeps r18 among the gap-free prior identities after the r52 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r52");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r52");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r52.current");
+  it("keeps r18 among the gap-free prior identities after the r53 identity, and the save key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r53");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 50 },
+        { length: 51 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-34)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-35)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 50 },
+        { length: 51 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -177,7 +177,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r52");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r53");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -882,7 +882,8 @@ describe("ruleset-7 Dinosaur technology", () => {
       // (Wallbreaker) keeps both Human unlocks and adds `WALLBREAKER`.
       if (human.id === "FORTIFICATION")
         expect(dinosaur.unlocks).toEqual([
-          { kind: "NESTING", eggHp: 4, hatchTurns: 1, citySlots: 1 },
+          // The Dinosaur pass, correction (7r53): no turn off the hatch.
+          { kind: "NESTING", eggHp: 4, hatchTurns: 0, citySlots: 1 },
         ]);
       else if (human.id === "EXPLOSIVES")
         expect(dinosaur.unlocks).toEqual([
@@ -920,7 +921,7 @@ describe("ruleset-7 Dinosaur technology", () => {
       ["ORIGINAL", 0, 0, true],
       ["UNDEAD", 0, 0, true],
       ["GOBLIN", 0, 0, true],
-      ["DINOSAUR", 4, 1, false],
+      ["DINOSAUR", 4, 0, false],
       // The Martian Fortification is Force Fields: no Field Defense either.
       ["MARTIAN", 0, 0, false],
       // The Ice Folk Fortification is Deep Winter: no Field Defense.
@@ -952,6 +953,8 @@ describe("ruleset-7 Dinosaur technology", () => {
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.DINOSAUR).toEqual({
       FORTIFICATION: "Nesting",
       EXPLOSIVES: "Wallbreaker",
+      // The Dinosaur pass, correction: the technology of the Chopping Block.
+      SAWMILLING: "Timber",
     });
     expect(
       FACTION_IDS_V7.map((faction) => technologyNameV7("EXPLOSIVES", faction)),
@@ -981,7 +984,11 @@ describe("ruleset-7 Dinosaur technology", () => {
       "Home Sweet Home",
     ]);
     for (const tech of TECHNOLOGY_IDS_V7)
-      if (tech !== "FORTIFICATION" && tech !== "EXPLOSIVES")
+      if (
+        tech !== "FORTIFICATION" &&
+        tech !== "EXPLOSIVES" &&
+        tech !== "SAWMILLING"
+      )
         expect(technologyNameV7(tech, "DINOSAUR")).toBe(
           technologyNameV7(tech, "ORIGINAL"),
         );
@@ -1001,12 +1008,13 @@ describe("ruleset-7 Dinosaur technology", () => {
       );
     };
     expect(text(0, "FORTIFICATION")).toEqual([
-      "Eggs have +4 HP and hatch one turn sooner; +1 unit slot in every city",
+      "Eggs have +4 HP; +1 unit slot in every city",
     ]);
     expect(text(0, "EXPLOSIVES")).toEqual([
       "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too except the one that sets it; in your territory its city gains +1 population",
       "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
-      "Dinosaurs ignore City Walls",
+      // The Dinosaur pass (`pulp_wars-w49.15`, 7r53): and the run-up.
+      "A Triceratops's run-up counts 2 tiles (up to +2 Attack); dinosaurs ignore City Walls",
     ]);
     expect(text(1, "EXPLOSIVES")).toEqual([
       "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too except the one that sets it; in your territory its city gains +1 population",

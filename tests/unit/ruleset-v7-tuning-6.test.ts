@@ -70,7 +70,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r52`;
+ * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r53`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 13): the Normal AI breaks
  * a line with numbers, expands and grows, researches toward its army and
  * buys its dear units, and keeps its discipline; research costs 1 Coin more
@@ -179,13 +179,13 @@ describe("tuning 6 identity and the research price", () => {
   // and the Undead pass 7r51, so 7r49 is the prior identity before the
   // last.
   it("was 7r49 after 7r48, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r52");
-    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
+    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
       "pulp-wars-poc-7r48",
       "pulp-wars-poc-7r49",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r52.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -2)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-5, -3)).toEqual([
       "pulpWars.save.v7r48.current",
       "pulpWars.save.v7r49.current",
     ]);
@@ -833,6 +833,16 @@ describe("research toward the army", () => {
       // The Martian pass (`pulp_wars-w49.14`): the Shield Projector, the
       // Ray Gunner, the Tripod, the Brain, the Saucer, the Mothership.
       MARTIAN: ["GUARD", "MARKSMAN", "CATAPULT", "CAPTAIN", "RAIDER", "KNIGHT"],
+      // The Dinosaur pass (`pulp_wars-w49.15`): the Ankylosaurus, the
+      // Triceratops, the Raptor, the Spitter, the Shaman, the T-Rex.
+      DINOSAUR: [
+        "GUARD",
+        "CATAPULT",
+        "RAIDER",
+        "MARKSMAN",
+        "CAPTAIN",
+        "KNIGHT",
+      ],
     });
     expect(Object.keys(ARMY_RESEARCH_ROLES_V7)).toEqual([
       ...ARMY_PLAY_FACTIONS_V7,
@@ -1170,6 +1180,8 @@ describe("the dear units get bought", () => {
       const first = best(faction, roles, army);
       expect(["CATAPULT", "KNIGHT"], faction).toContain(first);
       // With that one on the board the other dear unit is next.
+      // (The Dinosaur pass, `pulp_wars-w49.15`: the first dear unit of a
+      // Dinosaur seat is the T-Rex; its Triceratops is a line unit.)
       const second = best(faction, roles, {
         ...army,
         total: army.total + 1,

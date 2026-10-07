@@ -22,6 +22,7 @@ import {
 import {
   dinosaurAbilityDescriptionV7,
   dinosaurAbilityNameV7,
+  packHuntTextV7,
   dinosaurRecruitNotesV7,
 } from "./dinosaur-presentation-v7";
 import {
@@ -96,6 +97,10 @@ export function recruitmentRolePresentationV7(
   // The Undead pass, correction: the Ghoul's Carrion.
   const carrionBonus2 = roleMechanicsV7(roleId, faction).carrionBonus2;
   if (carrionBonus2 > 0) restrictions.push(`${carrionTextV7(carrionBonus2)}.`);
+  // The Dinosaur pass (`pulp_wars-w49.15`, 7r53): the Caveman's Pack Hunt.
+  const packHuntBonus2 = roleMechanicsV7(roleId, faction).packHuntBonus2;
+  if (packHuntBonus2 > 0)
+    restrictions.push(`${packHuntTextV7(packHuntBonus2)}.`);
   if (ship) restrictions.push("Built at ports. Heals only near your ports.");
   if (roleId === "BATTLESHIP")
     restrictions.push(

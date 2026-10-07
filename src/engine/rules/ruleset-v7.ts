@@ -113,11 +113,16 @@ export type TechnologyUnlockV7 =
    * Revision 19 Dinosaurs: Nesting (the Dinosaur `FORTIFICATION`): Eggs laid
    * by the owner have `eggHp` more HP and hatch `hatchTurns` sooner.
    * Revision 20: every city the owner owns has `citySlots` more unit slots.
+   * The Dinosaur pass, correction (`pulp_wars-w49.15`, 7r53): `hatchTurns`
+   * is 0. With one turn off, every Egg but the T-Rex's hatched at the start
+   * of the next turn and the faction's Eggs were never at risk (32 laid and
+   * none lost in a hand-played game); the Shaman's Hatch is the way to
+   * speed an Egg.
    */
   | {
       readonly kind: "NESTING";
       readonly eggHp: 4;
-      readonly hatchTurns: 1;
+      readonly hatchTurns: 0;
       readonly citySlots: 1;
     }
   /**
@@ -516,6 +521,13 @@ export interface RoleMechanicsV7 {
    */
   readonly carrionBonus2: number;
   /**
+   * The Dinosaur pass (`pulp_wars-w49.15`, 7r53): Pack Hunt, the `attack2`
+   * bonus of the unit's own attack on a unit that stands next to a
+   * dinosaur (a land-form growing unit) of the attacker's owner (the
+   * Caveman 2), or 0.
+   */
+  readonly packHuntBonus2: number;
+  /**
    * The Martian pass (`pulp_wars-w49.14`, 7r52): the role's heat ray does
    * not overheat once its owner has Heat Sinks (the Martian Ray Gunner):
    * a full-power ray leaves it not Cooling.
@@ -548,6 +560,12 @@ export interface RoleMechanicsV7 {
    * this much (null for every other healer, which heals 2).
    */
   readonly repairMachineHeal: number | null;
+  /**
+   * The Dinosaur pass, correction (`pulp_wars-w49.15`, 7r53): the Shaman's
+   * Tend Wounded heals a hatched dinosaur (a land-form unit that grows)
+   * this much (null for every other healer, which heals 2).
+   */
+  readonly tendGrowingHeal: number | null;
   /** The Dwarf revision (section 8): the role digs in (Hammerer, Mole). */
   readonly digsIn: boolean;
   /** The Dwarf revision (section 5.1): the Tunnel range, or 0 without. */
@@ -1424,12 +1442,14 @@ const mechanics = (
           rockfallAttack2: 0,
           coldBloodBonus2: 0,
           carrionBonus2: 0,
+          packHuntBonus2: 0,
           heatSink: false,
           rallyCools: false,
           construct: false,
           unflinchingAttack: false,
           repairsAsMachine: false,
           repairMachineHeal: null,
+          tendGrowingHeal: null,
           digsIn: false,
           tunnelRange: 0,
           ridesTunnel: false,
@@ -1948,7 +1968,7 @@ export const DINOSAUR_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
           ...original.unlocks.map((unlock): TechnologyUnlockV7 =>
             unlock.kind === "COMMAND" &&
             unlock.command === "BUILD_FIELD_DEFENSE"
-              ? { kind: "NESTING", eggHp: 4, hatchTurns: 1, citySlots: 1 }
+              ? { kind: "NESTING", eggHp: 4, hatchTurns: 0, citySlots: 1 }
               : unlock,
           ),
           ...(original.id === "EXPLOSIVES"
@@ -1958,6 +1978,20 @@ export const DINOSAUR_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
       ),
     ),
   );
+
+/**
+ * The Dinosaur pass (`pulp_wars-w49.15`, 7r53): Pack Hunt. A Caveman's own
+ * attack on a unit that stands next to one of its owner's dinosaurs has +1
+ * Attack (`attack2` 2). Never on its retaliation.
+ */
+export const CAVEMAN_PACK_HUNT_BONUS2_V7 = 2 as const;
+/**
+ * The Dinosaur pass, correction: the HP a Shaman's Tend Wounded restores
+ * to a hatched dinosaur (2 to a Caveman or a Shaman, as every healer). A
+ * dinosaur has 20 to 36 HP where a Human unit has 10 to 17, and resting
+ * in its own land restores 4.
+ */
+export const SHAMAN_TEND_DINOSAUR_V7 = 4 as const;
 
 /** Revision 19 section 3: the Dinosaur roster. */
 export const DINOSAUR_ROLE_RULES_V7: Readonly<
@@ -2114,10 +2148,15 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
  * Ankylosaurus is Armoured. Boats are Human boats.
  */
 export const DINOSAUR_ROLE_MECHANICS_V7 = mechanics({
-  FIGHTER: { buildsFieldDefense: false },
+  // The Dinosaur pass (`pulp_wars-w49.15`, 7r53): Pack Hunt.
+  FIGHTER: {
+    buildsFieldDefense: false,
+    packHuntBonus2: CAVEMAN_PACK_HUNT_BONUS2_V7,
+  },
   RAIDER: { hatchTurns: 1 },
   MARKSMAN: { hatchTurns: 1 },
   GUARD: { buildsFieldDefense: false, hatchTurns: 2, armourReduction: 1 },
+  CAPTAIN: { tendGrowingHeal: SHAMAN_TEND_DINOSAUR_V7 },
   // Revision 20 section 2.1 names the Triceratops's 2 slots and hatch time 2
   // (replacing the `pulp_wars-c87.8` interim 1 and 1) and its run-up bonus;
   // section 3 names the T-Rex's hatch time 4 (was 3).
@@ -3143,7 +3182,14 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
   // The Undead pass, correction: Explosives is Pestilence.
   UNDEAD: { EXPLOSIVES: "Pestilence" },
   GOBLIN: { COMMERCE: "Plunder" },
-  DINOSAUR: { FORTIFICATION: "Nesting", EXPLOSIVES: "Wallbreaker" },
+  // The Dinosaur pass, correction (`pulp_wars-w49.15`, 7r53): Sawmilling is
+  // Timber for a Dinosaur player, whose mill is the Chopping Block (the
+  // board, the build button, and the technology tree all name it so).
+  DINOSAUR: {
+    FORTIFICATION: "Nesting",
+    EXPLOSIVES: "Wallbreaker",
+    SAWMILLING: "Timber",
+  },
   // The Martian revision: Fortification and Explosives are renamed. The
   // Martian pass (`pulp_wars-w49.14`, 7r52): Fieldcraft is Heat Sinks.
   MARTIAN: {
@@ -3863,8 +3909,14 @@ export const GROWTH_KILLS_V7: readonly [number, number] = deepFreeze([1, 3]);
 export const GROWTH_HP_V7 = 4;
 /** Revision 19 section 5.2: an Alpha's extra Attack in half-units. */
 export const ALPHA_ATTACK2_V7 = 2;
-/** Revision 20 Charge!: the most tiles of a Move that count as run-up. */
+/**
+ * Revision 20 Charge!: the most tiles of a Move that count as run-up. The
+ * Dinosaur pass (`pulp_wars-w49.15`, 7r53): with Wallbreaker; without it
+ * one tile counts (`RUN_UP_BASE_TILES_V7`).
+ */
 export const RUN_UP_MAXIMUM_TILES_V7 = 2;
+/** The Dinosaur pass (7r53): the run-up tiles without Wallbreaker. */
+export const RUN_UP_BASE_TILES_V7 = 1;
 
 /** The unit facts the revision-20 Charge! helpers read. */
 export interface LinebreakerUnitFactsV7 {
@@ -3894,14 +3946,30 @@ export function attackIsChargeV7(
 }
 
 /**
+ * The Dinosaur pass (`pulp_wars-w49.15`, 7r53): the most tiles of a Move
+ * that count as this unit's run-up: 1, or 2 when its controller's research
+ * grants Wallbreaker in the unit's own tree.
+ */
+export function chargeRunUpMaximumTilesV7(
+  roster: FactionRosterV7,
+  unit: UnitKindRefV7,
+  ownerResearchedTechs: readonly TechnologyIdV7[],
+): number {
+  return unitCapabilitiesV7(roster, unit, ownerResearchedTechs).runUpTiles;
+}
+
+/**
  * Revision 20 Charge! run-up: the tiles that count for the unit's next
- * attack this turn: `min(RUN_UP_MAXIMUM_TILES_V7, movedPathLength)` when it
- * moved and has not attacked, otherwise 0. `plannedPathLength` replaces the
+ * attack this turn: `min(maximum, movedPathLength)` when it moved and has
+ * not attacked, otherwise 0, `maximum` being
+ * `chargeRunUpMaximumTilesV7` of its controller's research (the Dinosaur
+ * pass, 7r53: 1, or 2 with Wallbreaker). `plannedPathLength` replaces the
  * activation's own path length (an attack after a planned Move).
  */
 export function chargeRunUpTilesV7(
   roster: FactionRosterV7,
   unit: LinebreakerUnitFactsV7,
+  ownerResearchedTechs: readonly TechnologyIdV7[],
   plannedPathLength?: number,
 ): number {
   if (!attackIsChargeV7(roster, unit)) return 0;
@@ -3910,17 +3978,24 @@ export function chargeRunUpTilesV7(
     (unit.activation.moved && unit.activation.attacksUsed === 0
       ? unit.activation.movedPathLength
       : 0);
-  return Math.max(0, Math.min(RUN_UP_MAXIMUM_TILES_V7, length));
+  return Math.max(
+    0,
+    Math.min(
+      chargeRunUpMaximumTilesV7(roster, unit, ownerResearchedTechs),
+      length,
+    ),
+  );
 }
 
 /** The `attack2` a Charge! gains from its run-up (0 for any other attack). */
 export function chargeRunUpAttack2V7(
   roster: FactionRosterV7,
   unit: LinebreakerUnitFactsV7,
+  ownerResearchedTechs: readonly TechnologyIdV7[],
   plannedPathLength?: number,
 ): number {
   return (
-    chargeRunUpTilesV7(roster, unit, plannedPathLength) *
+    chargeRunUpTilesV7(roster, unit, ownerResearchedTechs, plannedPathLength) *
     unitRoleMechanicsV7(roster, unit).runUpBonus2
   );
 }
@@ -4844,6 +4919,13 @@ export interface TechnologyCapabilitiesV7 {
   readonly nestingCityCapacityBonus: 0 | 1;
   /** Revision 20 Wallbreaker: the player's dinosaurs ignore City Walls. */
   readonly ignoresCityWalls: boolean;
+  /**
+   * The Dinosaur pass (`pulp_wars-w49.15`, 7r53): the most tiles of a Move
+   * that count as the run-up of the player's Charge! units:
+   * `RUN_UP_BASE_TILES_V7` (1), or `RUN_UP_MAXIMUM_TILES_V7` (2) with
+   * Wallbreaker.
+   */
+  readonly runUpTiles: number;
   /** The Undead pass, correction: Pestilence, the player's Liches plague. */
   readonly plague: boolean;
   /**
@@ -4986,6 +5068,7 @@ export function technologyCapabilitiesV7(
   let eggHatchTurnReduction: 0 | 1 = 0;
   let nestingCityCapacityBonus: 0 | 1 = 0;
   let ignoresCityWalls = false;
+  let runUpTiles: number = RUN_UP_BASE_TILES_V7;
   let plague = false;
   let shieldsRechargeAtEndTurn = false;
   let projectsForceField = false;
@@ -5077,6 +5160,8 @@ export function technologyCapabilitiesV7(
         break;
       case "WALLBREAKER":
         ignoresCityWalls = true;
+        // The Dinosaur pass (7r53): the second tile of a Charge! run-up.
+        runUpTiles = RUN_UP_MAXIMUM_TILES_V7;
         break;
       case "PESTILENCE":
         plague = true;
@@ -5194,6 +5279,7 @@ export function technologyCapabilitiesV7(
     eggHatchTurnReduction,
     nestingCityCapacityBonus,
     ignoresCityWalls,
+    runUpTiles,
     plague,
     shieldsRechargeAtEndTurn,
     projectsForceField,

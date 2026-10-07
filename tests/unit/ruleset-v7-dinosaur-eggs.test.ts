@@ -772,10 +772,11 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
       preview(patchCity(besieged, 0, { cityActionAvailable: false }))
         ?.unavailableReason,
     ).toBe("CITY_ACTION_SPENT");
-    // Nesting: 10 HP, one turn sooner, and (revision 20) one more slot.
+    // Nesting: 10 HP and (revision 20) one more slot; since the Dinosaur
+    // pass's correction (7r53) no turn off the hatch.
     expect(preview(dino())).toMatchObject({
       hp: 10,
-      turnsToHatch: 3,
+      turnsToHatch: 4,
       capacity: 4,
     });
   });
@@ -1982,14 +1983,17 @@ describe("ruleset-7 revision-19 Shaman Hatch", () => {
 });
 
 describe("ruleset-7 revision-19 Nesting", () => {
-  it("gives laid Eggs +4 HP and one turn less, with a minimum of 1, read at lay time", () => {
+  it("gives laid Eggs +4 HP and no turn off the hatch, read at lay time", () => {
+    // The Dinosaur pass, correction (`pulp_wars-w49.15`, 7r53): Nesting no
+    // longer takes a turn off (it did: Ankylosaurus and Triceratops 1, the
+    // T-Rex 3). The base turns are Raptor 1, Spitter 1, Ankylosaurus 2,
+    // Triceratops 2, T-Rex 4.
     for (const [role, plain, nested] of [
       ["RAIDER", 1, 1],
       ["MARKSMAN", 1, 1],
-      ["GUARD", 2, 1],
-      // Revision 20: Triceratops 2 (1 with Nesting), T-Rex 4 (3 with it).
-      ["CATAPULT", 2, 1],
-      ["KNIGHT", 4, 3],
+      ["GUARD", 2, 2],
+      ["CATAPULT", 2, 2],
+      ["KNIGHT", 4, 4],
     ] as const) {
       for (const [techs, hp, turns] of [
         [without("FORTIFICATION"), EGG_HP_V7, plain],

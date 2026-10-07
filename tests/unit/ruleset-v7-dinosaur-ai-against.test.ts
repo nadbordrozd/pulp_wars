@@ -49,6 +49,18 @@ const human = (
   pieces: readonly GoblinPieceV7[],
   eggs: readonly EggPieceV7[] = [],
 ): GameStateV7 => dinosaurFieldV7(HD, pieces, { eggs });
+/**
+ * The Dinosaur pass (`pulp_wars-w49.15`): a Human seat against Dinosaurs
+ * plays the army rules now, whose committed attacks and Moves have their
+ * own scores. The scores of `pulp_wars-c87.5` are still those of a seat
+ * that plays no army rules: a Dwarf one here, whose Hammerer has the
+ * Fighter's numbers (12 HP, Attack 2, Defense 2).
+ */
+const DWARF_VIEWER = ["DWARF", "DINOSAUR"] as const;
+const older = (
+  pieces: readonly GoblinPieceV7[],
+  eggs: readonly EggPieceV7[] = [],
+): GameStateV7 => dinosaurFieldV7(DWARF_VIEWER, pieces, { eggs });
 
 describe("ruleset-7 revision-19 Normal AI against Dinosaurs: Eggs", () => {
   const fighter = { x: 4, y: 7 };
@@ -169,7 +181,7 @@ describe("ruleset-7 revision-19 Normal AI against Dinosaurs: growth", () => {
     // The 3-HP Fighter dies to the Raptor's retaliation.
     const strategic = (kills: number): number => {
       const state = withKillsV7(
-        human([own("FIGHTER", 4, 3, 3), foe("RAIDER", 5, 3)]),
+        older([own("FIGHTER", 4, 3, 3), foe("RAIDER", 5, 3)]),
         to,
         kills,
       );
@@ -193,7 +205,7 @@ describe("ruleset-7 revision-19 Normal AI against Dinosaurs: growth", () => {
   it("discounts a Move into the lethal reach of a nearly grown unit", () => {
     // A full-HP Fighter three tiles down a Triceratops's row dies to the
     // Stampede, which would make that Triceratops Big.
-    const state = human([own("FIGHTER", 6, 2), foe("CATAPULT", 2, 3)]);
+    const state = older([own("FIGHTER", 6, 2), foe("CATAPULT", 2, 3)]);
     expect(
       moveCandidateV7(state, { x: 6, y: 2 }, { x: 5, y: 3 })?.score
         .strategicValue,

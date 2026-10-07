@@ -158,6 +158,7 @@ import {
   retaliationDamageV7,
   collateralEntryV7,
   gangUpBonusV7,
+  packHuntAttack2V7,
   ramShoveTileOpenV7,
   sweepEntryV7,
   tractorBeamTargetTechnologyV7,
@@ -611,10 +612,11 @@ export function publicHireCostV7(
 ): number | null {
   const player = view.viewer;
   const rule = effectiveRoleRuleV7(role, player.faction);
+  // The Dinosaur pass (`pulp_wars-w49.15`, 7r53): an egg-laid role is
+  // hired too (the dinosaur arrives hatched).
   if (
     isNavalRoleV7(role) ||
     rule.cost === null ||
-    isEggLaidRoleV7(role, player.faction) ||
     (rule.technology !== null &&
       !player.researchedTechs.includes(rule.technology))
   )
@@ -2713,13 +2715,17 @@ export function previewTendWoundedV7(
   // The Dwarf revision section 9.1: an Engineer's Repair heals a machine
   // by its `repairMachineHeal` (4), as the reducer does; every other unit 2.
   const machineHeal = unitRoleMechanicsV7(view, captain).repairMachineHeal;
+  // The Dinosaur pass, correction: a Shaman heals a hatched dinosaur 4.
+  const growingHeal = unitRoleMechanicsV7(view, captain).tendGrowingHeal;
   return {
     results: publicTendTargetsV7(view, captain).map((target) => {
       const amount = Math.min(
         machineHeal !== null &&
           unitRoleMechanicsV7(view, target).repairsAsMachine
           ? machineHeal
-          : 2,
+          : growingHeal !== null && unitGrowsV7(view, target)
+            ? growingHeal
+            : 2,
         target.maxHp - target.hp,
       );
       return {
@@ -7443,7 +7449,11 @@ function publicCombatPreviewCore(
   // Revision 20 Charge!: the run-up is already in the public Attack total
   // (the `RUN_UP` modifier); it is reported separately as `runUp`.
   const charge = attackIsChargeV7(view, attacker);
-  const runUpAttack2 = chargeRunUpAttack2V7(view, attacker);
+  const runUpAttack2 = chargeRunUpAttack2V7(
+    view,
+    attacker,
+    view.viewer.researchedTechs,
+  );
   // The Ice Folk revision (section 8, step 1): Planted is already in the
   // public Attack total (the `PLANTED` modifier); a Rockfall replaces the
   // role Attack, and Cold Blood is added against a Chilled target.
@@ -7497,7 +7507,9 @@ function publicCombatPreviewCore(
       ? attackerMechanics0.rockfallAttack2 - attackerRule.attack2
       : 0) +
     (coldBloodApplied ? attackerMechanics0.coldBloodBonus2 : 0) +
-    (carrionApplied ? attackerMechanics0.carrionBonus2 : 0);
+    (carrionApplied ? attackerMechanics0.carrionBonus2 : 0) +
+    // The Dinosaur pass (7r53): Pack Hunt (own units are always visible).
+    packHuntAttack2V7(view, view.units, attacker, target, view.huntedThisTurn);
   // The Martian revision section 6.1: the halving of a half-power ray is
   // already in the public Attack total (the `HALF_POWER` modifier).
   const rayPower = rayPowerV7(

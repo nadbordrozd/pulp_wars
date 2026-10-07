@@ -234,7 +234,22 @@ export function hatchedUnitV7(
  * was abandoned, or was removed with its city or its owner). Every reducer
  * output runs through this before validation.
  */
-export function prunedEggsV7(state: GameStateV7): GameStateV7 {
+export function prunedEggsV7(input: GameStateV7): GameStateV7 {
+  // The Dinosaur pass, correction: the hunted units that left the board.
+  const state =
+    input.huntedThisTurn.length === 0
+      ? input
+      : ((): GameStateV7 => {
+          const onBoard = new Set(
+            input.units.filter((unit) => unit.hp > 0).map((unit) => unit.id),
+          );
+          const huntedThisTurn = input.huntedThisTurn.filter((unitId) =>
+            onBoard.has(unitId),
+          );
+          return huntedThisTurn.length === input.huntedThisTurn.length
+            ? input
+            : { ...input, huntedThisTurn };
+        })();
   if (state.eggs.length === 0) return state;
   const eggIds = new Set(
     state.units

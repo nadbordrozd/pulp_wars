@@ -104,6 +104,19 @@ export interface MissionUnitV7 {
   readonly at: CoordV7;
   /** Index into the seat's `cities`; default 0 (the capital). */
   readonly home?: number;
+  /**
+   * The Dinosaur pass (`pulp_wars-w49.15`): the kills credited to a unit of
+   * a role that grows (a dinosaur), which sets its growth stage and with it
+   * its maximum HP: 1 for Big, 3 for Alpha. Absent: 0.
+   */
+  readonly kills?: number;
+  /**
+   * The Dinosaur pass: the unit is an Egg of `role` with this many of its
+   * owner's Start Turns still to come before it hatches (its countdown).
+   * An egg-laid role of a Dinosaur seat, on a nest tile of its home city;
+   * never a seat's first unit.
+   */
+  readonly egg?: number;
 }
 
 /** The teaser objective; later kinds are additive (section 3). */

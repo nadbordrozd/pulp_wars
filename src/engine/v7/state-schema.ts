@@ -128,6 +128,7 @@ const STATE_KEYS = [
   "eggs",
   "graves",
   "humanPlayerId",
+  "huntedThisTurn",
   "ice",
   "mindControlCooldowns",
   "monsters",
@@ -252,6 +253,8 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const crumbs = parseCrumbs(input.crumbs);
   const splattedThisTurn = parseSortedUnitIds(input.splattedThisTurn);
   const tossedThisTurn = parseSortedUnitIds(input.tossedThisTurn);
+  // The Dinosaur pass, correction: the units hunted this turn (Pack Hunt).
+  const huntedThisTurn = parseSortedUnitIds(input.huntedThisTurn);
   const choices = parseChoices(input.pendingChoices);
   const outcome = parseOutcome(input.outcome);
   const turnOrder = parsePlayerIdSequence(input.turnOrder);
@@ -286,6 +289,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     crumbs === null ||
     splattedThisTurn === null ||
     tossedThisTurn === null ||
+    huntedThisTurn === null ||
     choices === null ||
     outcome === undefined ||
     turnOrder === null ||
@@ -332,6 +336,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       crumbs,
       splattedThisTurn,
       tossedThisTurn,
+      huntedThisTurn,
       curiosities,
       ice,
       choices,
@@ -382,6 +387,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     crumbs,
     splattedThisTurn,
     tossedThisTurn,
+    huntedThisTurn,
     pendingChoices: choices,
     outcome,
   };
@@ -1722,6 +1728,7 @@ interface CrossInput {
   crumbs: readonly CrumbsV7[];
   splattedThisTurn: readonly UnitId[];
   tossedThisTurn: readonly UnitId[];
+  huntedThisTurn: readonly UnitId[];
   curiosities: readonly CuriosityV7[];
   ice: readonly IceTileV7[];
   choices: readonly PendingChoiceV7[];
@@ -2023,7 +2030,20 @@ function validateCrossReferences(value: CrossInput): boolean {
       value.setup,
     ) ||
     !candyListsValid(value, playerById, kindOf) ||
-    !iceValid(value, playerById, kindOf)
+    !iceValid(value, playerById, kindOf) ||
+    // The Dinosaur pass, correction: `huntedThisTurn` is empty in a match
+    // without a Dinosaur seat, and names units on the board that do not
+    // belong to the active seat.
+    (value.huntedThisTurn.length > 0 &&
+      (!value.setup.factions.includes("DINOSAUR") ||
+        value.huntedThisTurn.some((unitId) => {
+          const unit = units.find((item) => item.id === unitId);
+          return (
+            unit === undefined ||
+            unit.hp <= 0 ||
+            unit.ownerId === value.activePlayerId
+          );
+        })))
   )
     return false;
   // Revision 19: an Egg takes no status, so it is never plagued or bitten.

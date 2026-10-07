@@ -10,16 +10,20 @@ import {
 } from "../../model/ids";
 import { randomState } from "../../random/random";
 import {
+  GROWTH_HP_V7,
   ORIGINAL_BASELINE_V5_TREE,
   canEnterTerrainV7,
   dockPopulationV7,
   effectiveRoleRuleV7,
   factionTreeV7,
   gravesEnabledV7,
+  growthStageForKillsV7,
+  isEggLaidRoleV7,
   roleMechanicsV7,
   technologyCapabilitiesV7,
 } from "../../rules/ruleset-v7";
 import { initialAchievementEntitlementsV7 } from "../achievements";
+import { eggActivationV7, laidEggHpV7 } from "../eggs";
 import {
   growthSpentV7,
   harbourPopulationForV7,
@@ -295,8 +299,12 @@ export function buildMissionStateV7(
   // the ledger (below), so they are placed with provisional IDs first.
   const chests = missionTreasureChestsV7(mission);
   const occupied = new Set<string>();
-  const draftUnits: { readonly seat: number; readonly unit: UnitStateV7 }[] =
-    [];
+  const draftUnits: {
+    readonly seat: number;
+    readonly unit: UnitStateV7;
+    /** The Dinosaur pass: an Egg's countdown (null for any other unit). */
+    readonly egg: number | null;
+  }[] = [];
   mission.seats.forEach((seat, seatIndex) => {
     const player = players[seatIndex] as PlayerStateV7;
     seat.units.forEach((written, unitIndex) => {
@@ -354,8 +362,31 @@ export function buildMissionStateV7(
       if (!standable)
         fail(`the ${written.role} at ${coordText(at)} cannot stand there`);
       const rule = effectiveRoleRuleV7(written.role, player.faction);
+      // The Dinosaur pass (`pulp_wars-w49.15`): a grown dinosaur and an Egg.
+      const kills = written.kills ?? 0;
+      const egg = written.egg ?? null;
+      if (
+        !Number.isSafeInteger(kills) ||
+        kills < 0 ||
+        (kills > 0 && !rule.abilities.includes("GROW"))
+      )
+        fail(`the ${written.role} at ${coordText(at)} cannot have kills`);
+      if (
+        egg !== null &&
+        (unitIndex === 0 ||
+          kills > 0 ||
+          !Number.isSafeInteger(egg) ||
+          egg < 1 ||
+          !isEggLaidRoleV7(written.role, player.faction))
+      )
+        fail(`the ${written.role} at ${coordText(at)} cannot be an Egg`);
+      const maxHp =
+        egg !== null
+          ? laidEggHpV7(player.researchedTechs, player.faction)
+          : rule.maxHp + GROWTH_HP_V7 * growthStageForKillsV7(kills);
       draftUnits.push({
         seat: seatIndex,
+        egg,
         unit: {
           id:
             unitIndex === 0
@@ -364,14 +395,14 @@ export function buildMissionStateV7(
           ownerId: player.id,
           homeCityId: homeId as CityId,
           role: written.role,
-          form: naval ? "NAVAL" : "LAND",
+          form: egg !== null ? "EGG" : naval ? "NAVAL" : "LAND",
           at,
-          hp: rule.maxHp,
-          maxHp: rule.maxHp,
-          kills: 0,
+          hp: maxHp,
+          maxHp,
+          kills,
           veteran: false,
           captureEligible: false,
-          activation: freshActivationV7(),
+          activation: egg !== null ? eggActivationV7() : freshActivationV7(),
         },
       });
     });
@@ -507,12 +538,19 @@ export function buildMissionStateV7(
   const units: UnitStateV7[] = draftUnits
     .filter((entry) => firstUnitIds.includes(entry.unit.id))
     .map((entry) => entry.unit);
+  const eggs: GameStateV7["eggs"][number][] = [];
   for (let seat = 0; seat < mission.seats.length; seat += 1)
     for (const entry of draftUnits)
       if (entry.seat === seat && !firstUnitIds.includes(entry.unit.id)) {
         const allocated = allocateUnitId(nextEntityId);
         nextEntityId = allocated.nextEntityId;
         units.push({ ...entry.unit, id: allocated.id });
+        if (entry.egg !== null)
+          eggs.push({
+            unitId: allocated.id,
+            turnsRemaining: entry.egg,
+            laidThisTurn: false,
+          });
       }
 
   const state = deepFreeze<GameStateV7>({
@@ -540,7 +578,7 @@ export function buildMissionStateV7(
     graves: sortedCoords(mission.graves ?? []),
     plagued: [],
     bitten: [],
-    eggs: [],
+    eggs,
     // A Martian seat's units start at their full Shield.
     shields: withFullShieldsV7({ players, mindControlled: [] }, [], units),
     cooling: [],
@@ -557,6 +595,7 @@ export function buildMissionStateV7(
     crumbs: [],
     splattedThisTurn: [],
     tossedThisTurn: [],
+    huntedThisTurn: [],
     pendingChoices: [],
     outcome: null,
   });

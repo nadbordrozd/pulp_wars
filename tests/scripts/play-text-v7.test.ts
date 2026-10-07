@@ -619,6 +619,8 @@ describe("text-mode play harness", () => {
       LAB_UNDEAD_MID: ["ORIGINAL", "Human"],
       // The Martian pass (`pulp_wars-w49.14`): the player is the Martians.
       LAB_MARTIAN_MID: ["ORIGINAL", "Human"],
+      // The Dinosaur pass (`pulp_wars-w49.15`): the player is the Dinosaurs.
+      LAB_DINOSAUR_MID: ["ORIGINAL", "Human"],
     };
     expect(Object.keys(TEXT_PLAY_LABS_V7)).toEqual(Object.keys(attackers));
     for (const lab of Object.keys(TEXT_PLAY_LABS_V7)) {
@@ -630,7 +632,9 @@ describe("text-mode play harness", () => {
             ? ["UNDEAD", "Undead"]
             : lab === "LAB_MARTIAN_MID"
               ? ["MARTIAN", "Martian"]
-              : ["ORIGINAL", "Human"];
+              : lab === "LAB_DINOSAUR_MID"
+                ? ["DINOSAUR", "Dinosaur"]
+                : ["ORIGINAL", "Human"];
       const session = path.join(root, `${lab}.json`);
       const started = ok("lab", "--session", session, lab);
       expect(started).toContain(`LAB ${lab}:`);
@@ -742,6 +746,121 @@ describe("text-mode play harness", () => {
         expect(tech).toMatch(/Force Fields/);
         expect(tech).toMatch(/Heat Sinks/);
       }
+      if (lab === "LAB_DINOSAUR_MID") {
+        // The Dinosaur pass: the Coins and the counts of the first turn
+        // (12 units and the Egg), the Egg's own line, and the Dinosaur
+        // unit rules on the unit lines in the faction's own words.
+        expect(started).toContain("YOU PLAY THE DINOSAURS");
+        expect(started).toContain("35c in hand on the first turn");
+        expect(started).toContain("YOUR TURN | coins 35 |");
+        expect(started).toContain("cities 5 | units 13");
+        expect(started).toContain("12 units and the Egg");
+        expect(started).toMatch(
+          /Egg\(T-Rex\) \[KNIGHT\] @3,7 hp 6\/6 .* hatches in 2 \| an Egg: cannot move or fight/,
+        );
+        expect(started).not.toMatch(/Egg\(T-Rex\).*Overrun/);
+        expect(started).toContain(
+          "| Pack Hunt: +1 Attack against a unit next to one of your dinosaurs",
+        );
+        expect(started).toContain(
+          "| Charge!: +1 Attack after moving this turn (with Wallbreaker +1 per tile, up to +2).",
+        );
+        expect(started).toContain(
+          "| Acid: Its attacks ignore Forest and Mountain cover, Walls, and Field Defense.",
+        );
+        expect(started).toContain(
+          "| Armoured: Takes 1 less damage from every hit, to a minimum of 1.",
+        );
+        expect(started).toContain(
+          "| Hatch: Uses the Shaman's action: an Egg next to it hatches now",
+        );
+        expect(started).toContain(
+          "| Grows with kills: Big after 1 kill (+4 HP)",
+        );
+        expect(started).toContain("| fills 2 slots");
+        // The technologies under the faction's own names.
+        expect(started).toContain('FORTIFICATION "Nesting" 16c');
+        expect(ok("help")).toContain("LAB_DINOSAUR_MID: the Dinosaurs");
+        const tech = ok("tech", "--session", session);
+        expect(tech).toContain(
+          "Eggs have +4 HP; +1 unit slot in every city [NESTING]",
+        );
+        expect(tech).toContain(
+          "A Triceratops's run-up counts 2 tiles (up to +2 Attack); dinosaurs ignore City Walls [WALLBREAKER]",
+        );
+        expect(tech).toContain("a hired dinosaur arrives hatched");
+        expect(tech).toMatch(
+          /unit Triceratops \[CATAPULT\] 8c .*laid as an Egg next to the city, hatches in 2 turns/,
+        );
+        // The Shaman can hatch the Egg on the first turn.
+        expect(
+          offeredIds(session).some((id) => /\.hatch\.u\d+$/.test(id)),
+        ).toBe(true);
+        // The correction of the Dinosaur pass: the faction's own map
+        // codes (a Triceratops read `Ct`, as the enemy's Catapult), the
+        // reason a unit of two slots is not offered, the Chopping Block
+        // and its technology by name, and the run-up of a Triceratops's
+        // Move before it is made.
+        expect(started).toContain(
+          "Dinosaur units: Cv caveman Rp raptor Sp spitter Ak ankylosaurus Sh shaman Tc triceratops Tx t-rex Bo brontosaurus",
+        );
+        expect(started).toMatch(/00Tc\|/);
+        expect(started).toMatch(/0Ak\|/);
+        expect(started).toMatch(/00Sp\|/);
+        expect(started).not.toMatch(/00Ct\|/);
+        expect(started).toContain(
+          "Triceratops 8c (needs 2 free slots, the city has 1)",
+        );
+        expect(started).not.toContain("Triceratops 8c (not offered)");
+        expect(tech).toContain('SAWMILLING "Timber"');
+        expect(tech).toContain('cmd BUILD_SAWMILL "Chopping Block"');
+        const charger = state.units.find(
+          (unit) =>
+            unit.role === "CATAPULT" && unit.ownerId === state.humanPlayerId,
+        );
+        if (charger === undefined) throw new Error("no Triceratops");
+        expect(
+          ok("options", "--session", session, "--unit", `u${charger.id}`),
+        ).toMatch(/run-up 1 tile: Charge! \+1 Attack/);
+        // With Wallbreaker (a second session: Nesting, a turn, then
+        // Wallbreaker) a tile one step away is also offered by two tiles.
+        const second = path.join(root, "dinosaur-run.json");
+        ok("lab", "--session", second, lab);
+        ok("do", "--session", second, "r.FORTIFICATION");
+        ok("end", "--session", second);
+        ok("do", "--session", second, "r.EXPLOSIVES");
+        const later = sessionState(second);
+        const runner = later.units.find(
+          (unit) =>
+            unit.role === "CATAPULT" &&
+            unit.ownerId === later.humanPlayerId &&
+            unit.form === "LAND",
+        );
+        if (runner === undefined) throw new Error("no Triceratops left");
+        const all = ok(
+          "options",
+          "--session",
+          second,
+          "--unit",
+          `u${runner.id}`,
+        );
+        const runUp =
+          /^(u\d+\.run\.\d+,\d+) {2}move to \d+,\d+ .* via \d+,\d+.*run-up 2 tiles: Charge! \+2 Attack/m.exec(
+            all,
+          );
+        expect(runUp, all).not.toBeNull();
+        expect(all).toMatch(/run-up 1 tile: Charge! \+1 Attack/);
+        const moved = ok("do", "--session", second, runUp?.[1] ?? "");
+        expect(moved).not.toContain("REJECTED");
+        expect(ok("verify", "--session", second)).toContain("VERIFIED");
+        // The debrief names technologies and units as the faction does.
+        const debrief = path.join(root, "dinosaur-debrief.md");
+        ok("debrief", "--session", second, "--out", debrief, "--reveal-hidden");
+        const written = readFileSync(debrief, "utf8");
+        expect(written).toContain('FORTIFICATION "Nesting"');
+        expect(written).toContain('EXPLOSIVES "Wallbreaker"');
+        expect(written).not.toMatch(/^TRAINED .*CATAPULT/m);
+      }
       const ids = offeredIds(session);
       expect(
         ids.some((id) => /^u\d+\.m\./.test(id)),
@@ -781,7 +900,7 @@ describe("text-mode play harness", () => {
     expect(options).toMatch(/^t\.x,y\.build_road {2}x\d+ at /m);
     expect(options).toMatch(/^t\.x,y\.monument\.EXPLORER {2}x\d+ at /m);
     expect(options).toMatch(
-      /^c\d+\.hire\.ROLE\.\d+,\d+ {2}x8 hire on the Market at .*KNIGHT 14c \| SWORDSMAN 8c/m,
+      /^c\d+\.hire\.ROLE\.\d+,\d+ {2}x8 hire on the Market at .*Knight \[KNIGHT\] 14c \| Swordsman \[SWORDSMAN\] 8c/m,
     );
     // Every grouped offer is still an id the harness accepts.
     const road = /^t\.x,y\.build_road {2}x\d+ at (\d+,\d+)/m.exec(options)?.[1];

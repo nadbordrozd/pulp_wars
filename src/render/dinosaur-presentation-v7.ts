@@ -6,6 +6,7 @@ import {
   MILITIA_FIGHTERS_V7,
   PROMOTION_HP_V7,
   PROMOTION_KILLS_V7,
+  RUN_UP_BASE_TILES_V7,
   RUN_UP_MAXIMUM_TILES_V7,
   UNIT_ROLE_IDS_V7,
   attackIsChargeV7,
@@ -25,6 +26,7 @@ import {
   isNavalRoleV7,
   type UnitRoleIdV7,
 } from "../engine/index";
+import { packHuntAttack2V7 } from "../engine/v7/combat";
 import { technologyNameV7 } from "./goblin-presentation-v7";
 
 /**
@@ -59,7 +61,7 @@ export const LAY_EGG_PROMPT_V7 = "Choose a tile next to the city for the Egg";
 export const LAY_EGG_NO_TILE_V7 = "No free tile next to the city";
 export const HATCH_LABEL_V7 = "Hatch";
 export const HATCH_TOOLTIP_V7 =
-  "Hatch an adjacent Egg laid on an earlier turn. The new unit cannot act this turn.";
+  "Uses the Shaman's action: an Egg next to it hatches now, whatever turns it had left (not on the turn it was laid). The new unit acts from your next turn.";
 /** Bead pulp_wars-9im: several Eggs in reach are picked on the board. */
 export const HATCH_PICK_V7 = "Choose a highlighted Egg";
 export const HATCH_NEW_EGG_V7 =
@@ -145,10 +147,54 @@ export function chargeRunUpBonusV7(): number {
   );
 }
 
-/** The most whole Attack a Charge! run-up can add ("up to +2"). */
+/**
+ * The most whole Attack a Charge! run-up can add ("up to +2"): with
+ * Wallbreaker since the Dinosaur pass (`pulp_wars-w49.15`, 7r53).
+ */
 export function chargeRunUpMaximumV7(): number {
   return chargeRunUpBonusV7() * RUN_UP_MAXIMUM_TILES_V7;
 }
+
+/** The Dinosaur pass: the whole Attack of a run-up without Wallbreaker. */
+export function chargeRunUpBaseV7(): number {
+  return chargeRunUpBonusV7() * RUN_UP_BASE_TILES_V7;
+}
+
+/** The Dinosaur pass: whole Attack of the Caveman's Pack Hunt. */
+export function packHuntBonusV7(): number {
+  return (
+    Math.max(
+      ...UNIT_ROLE_IDS_V7.map(
+        (role) => roleMechanicsV7(role, "DINOSAUR").packHuntBonus2,
+      ),
+    ) / 2
+  );
+}
+
+/**
+ * The Dinosaur pass (`pulp_wars-w49.15`, 7r53): Pack Hunt, the Caveman's
+ * rule, in one line for a unit card, a train line, and the text harness.
+ */
+export function packHuntTextV7(packHuntBonus2: number): string {
+  return `Pack Hunt: +${packHuntBonus2 / 2} Attack against a unit next to one of your dinosaurs, or one a dinosaur of yours attacked this turn`;
+}
+
+/** The correction: the attack preview's line for a Pack Hunt attack. */
+export function packHuntPreviewLineV7(): string {
+  return `Pack Hunt +${packHuntBonusV7()}`;
+}
+
+/** The correction: HP a Shaman's Tend Wounded restores to a dinosaur. */
+export function shamanTendDinosaurV7(): number {
+  return roleMechanicsV7("CAPTAIN", "DINOSAUR").tendGrowingHeal ?? 2;
+}
+/** The Shaman's Tend Wounded in one sentence (card, harness, Help). */
+export function shamanTendTextV7(): string {
+  return `Heals nearby wounded troops: a dinosaur by ${shamanTendDinosaurV7()}, a Caveman or a Shaman by 2.`;
+}
+
+/** The Dinosaur pass: what a Dinosaur Market's hire adds to the Hire line. */
+export const DINOSAUR_HIRE_NOTE_V7 = "a hired dinosaur arrives hatched";
 
 /** The Dinosaur tree's Nesting unlock (Egg HP, hatch turns, city slots). */
 function nestingUnlock(): {
@@ -175,11 +221,15 @@ export function nestingCitySlotsV7(): number {
 /** Section 4.3 unlock text of Nesting, from the registry. */
 export function nestingUnlockTextV7(): string {
   const unlock = nestingUnlock();
-  return `Eggs have +${unlock.eggHp} HP and hatch ${numberWord(unlock.hatchTurns)} turn sooner; +${unlock.citySlots} unit slot in every city`;
+  // The Dinosaur pass, correction (7r53): Nesting takes no turn off.
+  return `Eggs have +${unlock.eggHp} HP; +${unlock.citySlots} unit slot in every city`;
 }
 
-/** Section 4.3 unlock text of Wallbreaker. */
-export const WALLBREAKER_UNLOCK_TEXT_V7 = "Dinosaurs ignore City Walls";
+/**
+ * Section 4.3 unlock text of Wallbreaker. The Dinosaur pass
+ * (`pulp_wars-w49.15`, 7r53): the second tile of a Charge! run-up.
+ */
+export const WALLBREAKER_UNLOCK_TEXT_V7 = `A ${effectiveRoleRuleV7("CATAPULT", "DINOSAUR").label}'s run-up counts ${RUN_UP_MAXIMUM_TILES_V7} tiles (up to +${chargeRunUpMaximumV7()} Attack); dinosaurs ignore City Walls`;
 
 /**
  * Section 7.2 "Promote command": the Promotion's maximum HP and full heal
@@ -209,7 +259,7 @@ function alphaRuleText(): string {
  * Section 7.2 "Unit info (Triceratops)": the Charge! rule in one line, with
  * the run-up numbers from the registry.
  */
-export const CHARGE_DESCRIPTION_V7 = `+${chargeRunUpBonusV7()} Attack per tile moved this turn (up to +${chargeRunUpMaximumV7()}). Ignores Walls and Field Defense, destroys Field Defense, and pushes back.`;
+export const CHARGE_DESCRIPTION_V7 = `+${chargeRunUpBaseV7()} Attack after moving this turn (with Wallbreaker +${chargeRunUpBonusV7()} per tile, up to +${chargeRunUpMaximumV7()}). Ignores Walls and Field Defense, destroys Field Defense, and pushes back.`;
 
 /** The Armoured reduction of the Dinosaur registration (1). */
 const ARMOUR_REDUCTION = Math.max(
@@ -304,7 +354,7 @@ export function dinosaurHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       CHARGE_LABEL_V7,
-      `a ${dinosaurLabel("CATAPULT")} hits harder the farther it moved this turn (+${chargeRunUpBonusV7()} Attack per tile, up to +${chargeRunUpMaximumV7()}); its attack ignores Walls and Field Defense, destroys Field Defense, and pushes a surviving defender back, taking its place.`,
+      `a ${dinosaurLabel("CATAPULT")} hits harder after it moved this turn (+${chargeRunUpBaseV7()} Attack; with Wallbreaker +${chargeRunUpBonusV7()} per tile, up to +${chargeRunUpMaximumV7()}); its attack ignores Walls and Field Defense, destroys Field Defense, and pushes a surviving defender back, taking its place.`,
     ],
     [
       "Acid",
@@ -320,15 +370,23 @@ export function dinosaurHelpRulesV7(): readonly (readonly [string, string])[] {
         ] as const)),
     [
       "Hatch",
-      `a ${dinosaurLabel("CAPTAIN")} can hatch an adjacent Egg at once, but not on the turn the Egg was laid; the new unit cannot act that turn.`,
+      `a ${dinosaurLabel("CAPTAIN")} can hatch an adjacent Egg at once with its action, but not on the turn the Egg was laid; the new unit acts from your next turn. Nothing else shortens an Egg's turns.`,
     ],
     [
       "Nesting",
-      `with Nesting, Eggs have +${nestingEggHpBonusV7()} HP and hatch one turn sooner, and every city has ${numberWord(nestingCitySlotsV7())} more unit slot.`,
+      `with Nesting, Eggs have +${nestingEggHpBonusV7()} HP, and every city has ${numberWord(nestingCitySlotsV7())} more unit slot.`,
     ],
     [
       "Wallbreaker",
-      "with Wallbreaker, dinosaurs ignore City Walls when they attack.",
+      `with Wallbreaker, a ${dinosaurLabel("CATAPULT")}'s run-up counts ${numberWord(RUN_UP_MAXIMUM_TILES_V7)} tiles, and dinosaurs ignore City Walls when they attack.`,
+    ],
+    [
+      "Pack Hunt",
+      `a ${dinosaurLabel("FIGHTER")} has +${packHuntBonusV7()} Attack against a unit that stands next to one of your dinosaurs, or that a dinosaur of yours attacked this turn.`,
+    ],
+    [
+      "Tend Wounded",
+      `a ${dinosaurLabel("CAPTAIN")} heals a dinosaur next to it by ${shamanTendDinosaurV7()} and a ${dinosaurLabel("FIGHTER")} or a ${dinosaurLabel("CAPTAIN")} by 2.`,
     ],
     ["Wild", "Dinosaurs cannot build Field Defense."],
     [
@@ -487,6 +545,8 @@ export function dinosaurAbilityDescriptionV7(
       return CHARGE_DESCRIPTION_V7;
     case "HATCH":
       return HATCH_TOOLTIP_V7;
+    case "TEND_WOUNDED":
+      return shamanTendTextV7();
     case "ACID":
       return "Its attacks ignore Forest and Mountain cover, Walls, and Field Defense.";
     case "ARMOURED":
@@ -585,7 +645,7 @@ export function dinosaurRecruitNotesV7(
     ...(mechanics.hatchTurns === null
       ? []
       : [
-          `Laid as an Egg next to the city; hatches after ${turnsTextV7(mechanics.hatchTurns)} (one sooner with Nesting, at least 1).`,
+          `Laid as an Egg next to the city; hatches after ${turnsTextV7(mechanics.hatchTurns)} (a Shaman can hatch it sooner).`,
         ]),
     ...(mechanics.capacitySlots > 1
       ? [`Takes ${slotsTextV7(mechanics.capacitySlots)} in its city.`]
@@ -710,6 +770,13 @@ export function chargePreviewLinesV7(
   if (attacker === undefined) return [];
   const charge = attackIsChargeV7(view, attacker);
   const lines: string[] = [];
+  // The Dinosaur pass, correction (7r53): the Caveman's Pack Hunt.
+  if (
+    target !== undefined &&
+    packHuntAttack2V7(view, view.units, attacker, target, view.huntedThisTurn) >
+      0
+  )
+    lines.push(packHuntPreviewLineV7());
   if (preview.runUp > 0) lines.push(`Charge +${preview.runUp}`);
   // A heat ray's ignored fortification is the Martian Disintegrator, which
   // the Martian preview lines name (bead pulp_wars-t6s.4).

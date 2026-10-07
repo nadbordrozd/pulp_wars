@@ -889,7 +889,8 @@ describe("ruleset-7 Dinosaur Grow", () => {
       kind: "TEND_WOUNDED",
       unitId: unitAtV7(wounded, { x: 7, y: 8 }).id,
     });
-    expect(unitAtV7(tended.state, { x: 7, y: 7 }).hp).toBe(11);
+    // The Dinosaur pass, correction (7r53): a Shaman heals a dinosaur 4.
+    expect(unitAtV7(tended.state, { x: 7, y: 7 }).hp).toBe(13);
     const high = withKillsV7(base, { x: 7, y: 7 }, 1, 13);
     expect(
       unitAtV7(
@@ -899,7 +900,7 @@ describe("ruleset-7 Dinosaur Grow", () => {
         }).state,
         { x: 7, y: 7 },
       ).hp,
-    ).toBe(15);
+    ).toBe(16);
   });
 
   it("raises an infected Alpha as an ordinary Zombie with no growth", () => {

@@ -10,6 +10,7 @@ import {
   CHARGE_RUN_UP_CHIP_PRIORITY_V7,
   CHARGE_RUN_UP_KILL_PRIORITY_V7,
   NESTING_RESEARCH_PRIORITY_V7,
+  WALLBREAKER_CHARGER_VALUE_V7,
   WALLBREAKER_RESEARCH_PRIORITY_V7,
   growthKillValueV7,
   policySiegeRuleV7,
@@ -59,6 +60,21 @@ import {
 // front-line attacker with Charge!; every Stampede lane heuristic is gone.
 
 const view = (state: GameStateV7) => viewForV7(state, activeIdV7(state));
+
+/**
+ * The Dinosaur pass (`pulp_wars-w49.15`): a Dinosaur seat against Humans
+ * plays the army rules now (tests/unit/ruleset-v7-dinosaur-pass.test.ts),
+ * whose committed Moves, attacks, and research have priorities of their
+ * own. The priorities of `pulp_wars-0hi.2` are still those of a Dinosaur
+ * seat in a match with a faction that plays no army rules: a Dwarf seat
+ * here (its Hammerer has the Fighter's numbers; its Steam Mole stands in
+ * for the Guard).
+ */
+const olderFieldV7: typeof fieldV7 = (pieces, options = {}) =>
+  fieldV7(pieces, {
+    ...options,
+    factions: options.factions ?? ["DINOSAUR", "DWARF"],
+  });
 
 /** The scored candidates of the active seat's unit on `where`, best first. */
 function candidates(
@@ -127,9 +143,10 @@ describe("ruleset-7 revision-20 Normal AI: no lane heuristics", () => {
   });
 
   it("never waits for a lane: with a target two tiles away in a straight line it moves next to it", () => {
+    // (The older policy, against a Dwarf seat: see `olderFieldV7`.)
     // The revision-19 Stampede position. Now the best command of the
     // Triceratops is a Move that ends next to the Guard.
-    const state = fieldV7([
+    const state = olderFieldV7([
       { seat: 0, role: "CATAPULT", at: at(3, 3) },
       { seat: 1, role: "GUARD", at: at(5, 3) },
     ]);
@@ -146,10 +163,11 @@ describe("ruleset-7 revision-20 Normal AI: no lane heuristics", () => {
 
 describe("ruleset-7 revision-20 Normal AI: Charge! run-up", () => {
   it("prefers the Move with the higher previewed run-up when exposure is equal", () => {
+    // (The older policy, against a Dwarf seat: see `olderFieldV7`.)
     // A lone Guard two tiles away: some tiles next to it are one step away
     // (run-up 1) and some two (run-up 2). The exposure next to an
     // unsupported Guard is the same on every one of them.
-    const state = fieldV7([
+    const state = olderFieldV7([
       { seat: 0, role: "CATAPULT", at: at(3, 3) },
       { seat: 1, role: "GUARD", at: at(5, 2) },
     ]);
@@ -206,8 +224,9 @@ describe("ruleset-7 revision-20 Normal AI: Charge! run-up", () => {
   });
 
   it("steps around an adjacent target when the run-up makes the Charge better", () => {
+    // (The older policy, against a Dwarf seat: see `olderFieldV7`.)
     // Unmoved, the Charge deals 8 to the Fighter; after one tile it kills.
-    const kill = fieldV7([
+    const kill = olderFieldV7([
       { seat: 0, role: "CATAPULT", at: at(3, 3) },
       { seat: 1, role: "FIGHTER", at: at(4, 3) },
     ]);
@@ -215,7 +234,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! run-up", () => {
     expect(stepToKill?.command.kind).toBe("MOVE");
     expect(stepToKill?.score.priority).toBe(CHARGE_RUN_UP_KILL_PRIORITY_V7);
     // Against a Guard the run-up only adds damage: just above a chip attack.
-    const chip = fieldV7([
+    const chip = olderFieldV7([
       { seat: 0, role: "CATAPULT", at: at(3, 3) },
       { seat: 1, role: "GUARD", at: at(4, 3) },
     ]);
@@ -297,8 +316,9 @@ describe("ruleset-7 revision-20 Normal AI: Charge! attacks", () => {
   });
 
   it("pushes a defender off a hostile center, at once when an own capturer is near", () => {
+    // (The older policy, against a Dwarf seat: see `olderFieldV7`.)
     const center = at(2, 8);
-    const with_ = fieldV7([
+    const with_ = olderFieldV7([
       { seat: 0, role: "CATAPULT", at: at(3, 8) },
       { seat: 0, role: "FIGHTER", at: at(4, 8) },
       { seat: 1, role: "GUARD", at: center },
@@ -319,7 +339,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! attacks", () => {
     ).toMatchObject({ push: "WILL_PUSH", advances: true, defenderDies: false });
     // The whole turn's decision is that Charge.
     expect(chooseNormalCommandV7(view(with_)).command).toEqual(push?.command);
-    const without = fieldV7([
+    const without = olderFieldV7([
       { seat: 0, role: "CATAPULT", at: at(3, 8) },
       { seat: 1, role: "GUARD", at: center },
     ]);
@@ -330,7 +350,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! attacks", () => {
     ).toBe(CHARGE_CAPTURER_NEAR_VALUE_V7);
     // The push itself is worth CHARGE_PUSH_CENTER_VALUE_V7 over the same
     // attack on open ground.
-    const open = fieldV7([
+    const open = olderFieldV7([
       { seat: 0, role: "CATAPULT", at: at(3, 3) },
       { seat: 1, role: "GUARD", at: at(4, 3) },
     ]);
@@ -455,8 +475,9 @@ describe("ruleset-7 revision-20 Normal AI: research and production", () => {
     );
 
   it("values Nesting for its slot, ahead of the next role technology in a crowded city", () => {
+    // (The older policy, against a Dwarf seat: see `olderFieldV7`.)
     const techs = withoutTechsV7("DINOSAUR", "FORTIFICATION");
-    const crowded = fieldV7(
+    const crowded = olderFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(6, 6) },
         { seat: 0, role: "FIGHTER", at: at(6, 7) },
@@ -468,12 +489,12 @@ describe("ruleset-7 revision-20 Normal AI: research and production", () => {
     expect(nesting?.score.priority).toBe(NESTING_RESEARCH_PRIORITY_V7);
     // One slot per owned city, plus the Egg effects.
     expect(nesting?.score.strategicValue).toBe(4 * 1 + 4);
-    const roomy = fieldV7([{ seat: 1, role: "FIGHTER", at: at(1, 1) }], {
+    const roomy = olderFieldV7([{ seat: 1, role: "FIGHTER", at: at(1, 1) }], {
       techs: { 0: techs },
     });
     expect(research(roomy, "FORTIFICATION")?.score.priority).toBe(1040);
     // A Human seat values its Fortification as before.
-    const human = fieldV7(
+    const human = olderFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(6, 6) },
         { seat: 0, role: "FIGHTER", at: at(6, 7) },
@@ -492,21 +513,29 @@ describe("ruleset-7 revision-20 Normal AI: research and production", () => {
   it("values Wallbreaker when a visible hostile city has Walls and it owns a dinosaur to use it", () => {
     const walled = (attacker: "KNIGHT" | "CATAPULT" | "FIGHTER") =>
       walledV7({
+        // (The older policy, against a Dwarf seat: see `olderFieldV7`.)
+        defenderFaction: "DWARF",
         attackers: [{ role: attacker, at: at(4, 4) }],
         attackerTechs: withoutTechsV7("DINOSAUR", "EXPLOSIVES"),
       });
     const withTRex = research(walled("KNIGHT"), "EXPLOSIVES");
     expect(withTRex?.score.priority).toBe(WALLBREAKER_RESEARCH_PRIORITY_V7);
     expect(withTRex?.score.strategicValue).toBe(8);
-    // A Triceratops already ignores Walls and a Caveman never does.
-    expect(research(walled("CATAPULT"), "EXPLOSIVES")?.score.priority).toBe(
-      1040,
+    // A Triceratops already ignores Walls, and since the Dinosaur pass
+    // (`pulp_wars-w49.15`) Wallbreaker is the second tile of its run-up; a
+    // Caveman uses neither.
+    const withTriceratops = research(walled("CATAPULT"), "EXPLOSIVES");
+    expect(withTriceratops?.score.priority).toBe(
+      WALLBREAKER_RESEARCH_PRIORITY_V7,
+    );
+    expect(withTriceratops?.score.strategicValue).toBe(
+      WALLBREAKER_CHARGER_VALUE_V7,
     );
     expect(research(walled("FIGHTER"), "EXPLOSIVES")?.score.priority).toBe(
       1040,
     );
     // No visible Walls: the ordinary value.
-    const plain = fieldV7(
+    const plain = olderFieldV7(
       [
         { seat: 0, role: "KNIGHT", at: at(4, 4) },
         { seat: 1, role: "GUARD", at: at(2, 8) },

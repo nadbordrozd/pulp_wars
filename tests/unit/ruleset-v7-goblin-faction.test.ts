@@ -81,12 +81,12 @@ import {
 // 9, and 13).
 
 describe("ruleset-7 revision-17 identity", () => {
-  it("keeps r16 among the prior identities after the r52 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r52");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r52.current");
-    expect(PRIOR_RULESET_7_IDS.at(-36)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(51);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-36)).toBe(
+  it("keeps r16 among the prior identities after the r53 identity and cleans the r16 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r53");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r53.current");
+    expect(PRIOR_RULESET_7_IDS.at(-37)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(52);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-37)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -783,7 +783,12 @@ describe("ruleset-7 Goblin technology", () => {
       // The Undead pass, correction (`pulp_wars-w49.13`): Pestilence.
       UNDEAD: { EXPLOSIVES: "Pestilence" },
       GOBLIN: { COMMERCE: "Plunder" },
-      DINOSAUR: { FORTIFICATION: "Nesting", EXPLOSIVES: "Wallbreaker" },
+      // The Dinosaur pass, correction (`pulp_wars-w49.15`): Timber.
+      DINOSAUR: {
+        FORTIFICATION: "Nesting",
+        EXPLOSIVES: "Wallbreaker",
+        SAWMILLING: "Timber",
+      },
       // The Martian pass (`pulp_wars-w49.14`, 7r52): Heat Sinks.
       MARTIAN: {
         FORTIFICATION: "Force Fields",
