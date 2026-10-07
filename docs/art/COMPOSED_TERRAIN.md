@@ -120,7 +120,7 @@ the style exploration and the faction forests use it.)
 | Kind     | Variants | Made of                                                                             |
 | -------- | -------- | ----------------------------------------------------------------------------------- |
 | 1x1 low  | 8        | `s26`: whole single mountains 76 px wide.                                           |
-| 2x1 low  | 7        | `s20`, `s24`, `s25`, `s33`, `s35`: massifs 150 to 156 px wide and 71 to 92 px tall. |
+| 2x1 low  | 7        | `s24`, `s25`, `s31`, `s33`, `s35`: massifs 137 to 156 px wide and 71 to 92 px tall. |
 | 1x1 tall | 6        | `s29`, `s30`: single mountains 94 to 107 px tall.                                   |
 | 2x1 tall | 6        | `s08`, `s31`, `s32`: massifs 95 to 116 px tall.                                     |
 | Mine     | 1        | `s28`: the Mine edit of an `s26` mountain.                                          |
@@ -139,7 +139,7 @@ measured exactly those eight as lit from the right (faces -13.8 to -36.2).
 - **The bake refuses a mirrored part** (`flip`), and measures the rock of
   every derived piece with `scripts/art/lighting-qa.ts`; a piece lit from
   the right fails the bake. The record keeps each piece's numbers
-  (`light`): the 28 pieces measure +15.5 to +67.9.
+  (`light`): the 28 pieces measure +9.0 to +67.9.
 - **The eight were replaced by new left-lit pieces**, not by recomposition:
   six calls in the set's own style (`s30` to `s35`, each with the fragment
   `light-south-west`), of which two tall singles, three tall ridges and
@@ -175,6 +175,18 @@ Nothing is resampled. The bake fails if paint lies outside the footprint,
 more than 13 px above it (low) or more than 48 px above it (tall), if a
 part is mirrored, or if a piece is lit from the right.
 
+**No cut-off peaks** (the user, 2026-10-07). A candidate that fills its
+image is cut by the image's top edge, and after the trim that cut is a peak
+with a flat top: the low ridges `a` and `e` were baked from two such `s20`
+candidates (19 and 17 px of flat top where every whole peak ends 1 to 7 px
+wide). They are now the whole silhouettes `s31-1` and `s31-2`, the lower
+copies of the rounded tall ridges, and `cutPeakProblem` fails the bake and
+the check when a used raw candidate has paint on the top row of its image,
+or when a derived or checked-in piece has paint on its top row or a topmost
+row of paint wider than 10 px (`PEAK_FLAT_MAX`).
+`tests/unit/chibi-mountain-peaks-assets.test.ts` holds the same for every
+baked piece, and that none is sliced by its left or right edge.
+
 The record and runtime manifest is `src/assets/chibi-mountain-ranges.json`.
 `art:validate` checks that every recorded candidate is unchanged and
 re-derives every master (`mountainRangeProblems`).
@@ -190,9 +202,9 @@ over the rocky ground, the pieces over Grass.
 | Massifs on darkened rock (bead `2o7.1`)  | 53.5% | 20.9%      | 17.1%       | 3.7%          | 50% to 69%   |
 | 1x1 low                                  | 61.8% | 32.7%      | 13.9%       | 0.0%          | 41%          |
 | 1x1 tall                                 | 58.4% | 25.6%      | 14.6%       | 0.0%          | 58%          |
-| 2x1 low                                  | 58.8% | 28.9%      | 15.0%       | 0.1%          | 52%          |
+| 2x1 low                                  | 60.1% | 29.9%      | 14.2%       | 0.0%          | 49%          |
 | 2x1 tall                                 | 58.2% | 28.8%      | 14.7%       | 0.0%          | 52%          |
-| **All pieces**                           | 59.1% | 29.2%      | 14.7%       | 0.0%          |              |
+| **All pieces**                           | 59.6% | 29.5%      | 14.4%       | 0.0%          |              |
 
 A mountain cell is six points lighter than under the massif bead and has
 less contrast inside it; its saturation is the Grass's, which now shows
@@ -226,7 +238,7 @@ are in `art/explorations/mountain-styles-2026-10/`.
 - **Mountains on Snow** stand on the Snow overlay; their rock is not
   snowier than elsewhere beyond the caps.
 - **Two ridge families.** The rounded `s24` and `s31` massifs are softer in
-  shape than the pointed `s08`, `s20` and `s32` ones.
+  shape than the pointed `s08` and `s32` ones.
 - The interface (tile dock, Help) still shows the old single mountain for a
   plain Mountain; the Gallery's Terrain tab shows a piece of the set on
   Grass.

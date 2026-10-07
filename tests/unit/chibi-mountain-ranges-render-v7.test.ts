@@ -423,6 +423,8 @@ function draw(
     readonly artSet?: "LEGACY" | "CHIBI";
     readonly mountainArt?: ReturnType<typeof art> | null;
     readonly iceFolkArt?: IceFolkBoardArtV7;
+    /** Every context method call in order, by name (drawImage with args). */
+    readonly calls?: { name: string; args: unknown[] }[];
   } = {},
 ): unknown[][] {
   const log: unknown[][] = [];
@@ -436,6 +438,7 @@ function draw(
             ? Reflect.get(target, key)
             : (...args: unknown[]) => {
                 if (key === "drawImage") log.push(args);
+                options.calls?.push({ name: String(key), args });
               },
       set: (target, key, value) => Reflect.set(target, key, value),
     },
@@ -592,6 +595,36 @@ describe("massif drawing", () => {
       ["caps", 0, 0, 80, 128, X, Y + 32, 80, 128],
       ["caps", X, Y - 24, 80, 24],
     ]);
+  });
+
+  it("draws a piece in the map's top row whole: no clip is in force and no source crop cuts its peak", () => {
+    // Mountains in row 0 (low pieces, their 24 px band above the map's top
+    // edge) and a tall row under them, whose peaks rise 48 px.
+    const calls: { name: string; args: unknown[] }[] = [];
+    draw(board(["MMM", "MMM"]), { calls });
+    const clips: boolean[] = [false];
+    let pieces = 0;
+    for (const { name, args } of calls) {
+      if (name === "save") clips.push(clips.at(-1) ?? false);
+      else if (name === "restore") clips.pop();
+      else if (name === "clip") clips[clips.length - 1] = true;
+      else if (name === "drawImage") {
+        const image = args[0] as FakeImage;
+        if (image.surface === undefined) continue;
+        pieces += 1;
+        expect(clips.at(-1)).toBe(false);
+        // The whole surface, at its own size: the band 24 px, a tall
+        // piece 128 px, never a part of either.
+        expect(args.length).toBe(5);
+        expect(args.slice(3)).toEqual([image.width, image.height]);
+      }
+    }
+    expect(pieces).toBeGreaterThanOrEqual(7);
+    const tops = named(draw(board(["MMM", "MMM"])))
+      .filter((call) => String(call[0]).startsWith("surface"))
+      .map((call) => rect(call)[1]);
+    // The bands of the top row start 24 px above the map's first row.
+    expect(Math.min(...(tops as number[]))).toBe(Y - 24);
   });
 
   it("stays within three image draws per Mountain cell on a full board", () => {

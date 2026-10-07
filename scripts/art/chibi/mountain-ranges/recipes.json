@@ -340,7 +340,7 @@
       "klass": "@klass",
       "negative": "@negative",
       "notes": "As s19, styled from another s08 massif.",
-      "review": "Four near-copies of the s08-2 massif at 155 x 92. 0, 1 (mirrored) and 3 are low 2x1 ridges; 2 has boulders at its foot, unused. Since bead pulp_wars-2yc.1 nothing is mirrored: 0 and 3 are low ridges, 1 (used mirrored before) is not."
+      "review": "Four near-copies of the s08-2 massif at 155 x 92. 0, 1 (mirrored) and 3 are low 2x1 ridges; 2 has boulders at its foot, unused. Since bead pulp_wars-2yc.1 nothing is mirrored: 0 and 3 are low ridges, 1 (used mirrored before) is not. Since the cut-peak fix of 2026-10-07 none is used: all four fill the 92 px image and their highest peak is cut flat by its top edge (19 to 25 px wide on row 0), which showed on the board as a peak with its tip sliced off. s31-1 and s31-2 took the place of 0 and 3."
     },
     {
       "id": "s21-low-single",
@@ -545,7 +545,7 @@
         "file": "public/assets/chibi/terrain/chibi-mountain-1.body.png"
       },
       "notes": "Bead pulp_wars-2yc.1: a left-lit piece in place of a mirrored one (the sun is at the bottom left, so nothing is mirrored). Tall ridges: the s08 recipe with another seed.",
-      "review": "Four clusters of rounded snowy cones 136 to 138 px wide, softer in shape than the s08 massifs, lit from the left (faces +7.6 to +37.8). 0 (104 px tall) and 3 (95 px) are tall ridges; 1 and 2 are lower copies."
+      "review": "Four clusters of rounded snowy cones 136 to 138 px wide, softer in shape than the s08 massifs, lit from the left (faces +7.6 to +37.8). 0 (104 px tall) and 3 (95 px) are tall ridges; 1 (85 px tall) and 2 (92 px) are lower copies, whole silhouettes that fit the 13 px band of a low piece: since the cut-peak fix of 2026-10-07 they are the low 2x1 ridges a and e, in place of the two s20 candidates cut by the top of their image."
     },
     {
       "id": "s32-tall-ridge-c",
@@ -703,9 +703,8 @@
       "variant": 0,
       "parts": [
         {
-          "recipe": "s20-low-ridge-b",
-          "candidate": 0,
-          "dy": 2
+          "recipe": "s31-tall-ridge-b",
+          "candidate": 1
         }
       ]
     },
@@ -744,8 +743,8 @@
       "variant": 4,
       "parts": [
         {
-          "recipe": "s20-low-ridge-b",
-          "candidate": 3,
+          "recipe": "s31-tall-ridge-b",
+          "candidate": 2,
           "dy": 2
         }
       ]

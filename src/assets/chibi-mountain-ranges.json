@@ -39,14 +39,6 @@
       "sha256": "87394a0991d050a51e1fe4bfac6932703cdc5f0e75fb469ebc8d08550c8a3678"
     },
     {
-      "path": "art/pixellab/chibi-raw/mountain-ranges/s20-low-ridge-b-0.png",
-      "sha256": "e15b6214eed2df06f126385d2caa944534a080ac46faf22af05bfcab9d0ff48d"
-    },
-    {
-      "path": "art/pixellab/chibi-raw/mountain-ranges/s20-low-ridge-b-3.png",
-      "sha256": "517f71d1bbe35a930f3f2a7fa7c6cb8c6a15b7b5c687007cc61dda0ad271f345"
-    },
-    {
       "path": "art/pixellab/chibi-raw/mountain-ranges/s24-low-ridge-c-3.png",
       "sha256": "c8d1310d362b58813ca2f07195022f2069c1f2ff99a9bbb6fa540952c1b950cb"
     },
@@ -121,6 +113,14 @@
     {
       "path": "art/pixellab/chibi-raw/mountain-ranges/s31-tall-ridge-b-0.png",
       "sha256": "50f0e6513d0e12c4fb28b31fad5731ea22457e51e2baed64233f8a085d0dfb63"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s31-tall-ridge-b-1.png",
+      "sha256": "8d5c28b1df9f5f7eb2d4a1acb9cc029a09b65bb5d05a26e566b7dec2085ca6ea"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s31-tall-ridge-b-2.png",
+      "sha256": "78f35d12e24bd80485d74499d9989ae261d83c3bf11c1b3858c9c784c13d07dd"
     },
     {
       "path": "art/pixellab/chibi-raw/mountain-ranges/s31-tall-ridge-b-3.png",
@@ -323,17 +323,16 @@
       "height": 104,
       "parts": [
         {
-          "recipe": "s20-low-ridge-b",
-          "candidate": 0,
-          "dy": 2
+          "recipe": "s31-tall-ridge-b",
+          "candidate": 1
         }
       ],
       "light": {
-        "thirds": 9.1,
-        "faces": 23.2
+        "thirds": 15.9,
+        "faces": 9
       },
-      "sha256": "3934fa7a257368885e1d1a8726979e0cbc227bdfc09bf3bd4cc0d917f462f459",
-      "pixelSha256": "d0dd06add040c2cc9c341fc403de088ee335b87a26f6aa646105ed3e12c66e5d"
+      "sha256": "7dfcd6b369df1818a8af557e0f7acec1170d485670002e2a4c8e05a2b4305e79",
+      "pixelSha256": "5ea5b0019b1990fa0de66253804ce90044f298fd43d618ef096d49770db5d7ce"
     },
     {
       "id": "chibi-mountain-range-2x1-b",
@@ -408,17 +407,17 @@
       "height": 104,
       "parts": [
         {
-          "recipe": "s20-low-ridge-b",
-          "candidate": 3,
+          "recipe": "s31-tall-ridge-b",
+          "candidate": 2,
           "dy": 2
         }
       ],
       "light": {
-        "thirds": 11.9,
-        "faces": 31.2
+        "thirds": 9.7,
+        "faces": 16.9
       },
-      "sha256": "efb185255cd7d754674decc821a7fada98fafcc888f7ca4c862cc2523c19eb77",
-      "pixelSha256": "59cf2f7286c2adc420357b637143c1aa4e28d263ae046269a71868ef137adcf3"
+      "sha256": "5e33a128ac9a15162b40c0f52b51d50f855cef903e1ee986a008ea6f3b540c67",
+      "pixelSha256": "972d8dc9ebd07b95e06d31b1eb161f238a702449bca56eea7c35fe442874183d"
     },
     {
       "id": "chibi-mountain-range-2x1-f",

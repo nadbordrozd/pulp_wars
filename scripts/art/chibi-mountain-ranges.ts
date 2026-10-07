@@ -961,6 +961,36 @@ export function mountainPieceAllows(
   return py >= up && rows[Math.floor((py - up) / CELL)]?.[cx] === "#";
 }
 
+/**
+ * The widest a piece's topmost row of paint may be. A whole peak comes to a
+ * point 1 to 7 px wide; a peak the generator cut with the top edge of its
+ * image is a flat line 17 to 36 px wide (the two `s20` ridges, 2026-10-07).
+ */
+export const PEAK_FLAT_MAX = 10;
+
+/**
+ * Why a raster has a cut-off peak, or null: paint on the image's top row
+ * (the generator, or a canvas, clipped it there), or a topmost row of paint
+ * with a run wider than `PEAK_FLAT_MAX` (a peak sliced flat).
+ */
+export function cutPeakProblem(raster: Raster): string | null {
+  const { width, height, data } = raster;
+  for (let y = 0; y < height; y += 1) {
+    let widest = 0;
+    let run = 0;
+    for (let x = 0; x < width; x += 1) {
+      run = (data[(y * width + x) * 4 + 3] ?? 0) >= 128 ? run + 1 : 0;
+      widest = Math.max(widest, run);
+    }
+    if (widest === 0) continue;
+    if (y === 0) return "paint on the top row of the image: a peak is cut off";
+    return widest > PEAK_FLAT_MAX
+      ? `its top row of paint (y ${y}) is ${widest} px wide: a peak is cut flat`
+      : null;
+  }
+  return null;
+}
+
 interface DerivedRecord {
   readonly schemaVersion: 1;
   readonly bead: string;
@@ -1039,7 +1069,12 @@ export async function deriveMountainRanges(root: string): Promise<{
       relative = candidate.file;
     }
     sources.set(relative, sha256(await readFile(path.join(root, relative))));
-    return trimmed(await load(root, relative));
+    const whole = await load(root, relative);
+    // A candidate that fills its image is cut by its top edge: after the
+    // trim that cut is a peak with a flat top, so it is refused here.
+    const cut = part.single === undefined ? cutPeakProblem(whole) : null;
+    if (cut !== null) throw new Error(`${relative}: ${cut}`);
+    return trimmed(whole);
   };
   const pieces: DerivedRecord["pieces"][number][] = [];
   const mines: DerivedRecord["pieces"][number][] = [];
@@ -1100,6 +1135,8 @@ export async function deriveMountainRanges(root: string): Promise<{
           );
     // A Mine is a building: its dark tunnel and beams are not softened.
     const raster = restyled(mine ? canvas : softened(canvas), mine);
+    const cutPeak = cutPeakProblem(raster);
+    if (cutPeak !== null) throw new Error(`${id}: ${cutPeak}`);
     // Lighting QA (scripts/art/lighting-qa.ts): the rock of every piece is
     // lit from the left.
     const light = lightingOf(raster, true);
@@ -1228,11 +1265,18 @@ export async function mountainRangeProblems(root: string): Promise<string[]> {
       problems.push(`mountain ranges: ${file} is missing`);
       continue;
     }
-    if (
-      pixelSha256(await readRaster(checkedIn)) !==
-      pixelSha256(await readRaster(bytes))
-    )
+    const raster = await readRaster(checkedIn);
+    if (pixelSha256(raster) !== pixelSha256(await readRaster(bytes)))
       problems.push(`mountain ranges: ${file} is not what its parts derive`);
+    // The checked-in sprite itself (a `.master.png` is a full ground tile).
+    const cutPeak = file.endsWith(".master.png")
+      ? null
+      : cutPeakProblem({
+          width: raster.width,
+          height: raster.height,
+          data: new Uint8Array(raster.data),
+        });
+    if (cutPeak !== null) problems.push(`mountain ranges: ${file}: ${cutPeak}`);
   }
   return problems;
 }
