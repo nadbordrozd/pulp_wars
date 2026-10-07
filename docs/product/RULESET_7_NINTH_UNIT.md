@@ -440,7 +440,9 @@ this pass could not know without playing.
 **Human (Champion).** Is 6 Coins at tier 3 a fair price for the unit that
 was "the workhorse" at 5 Coins and tier 2? Does the Human middle game
 before round 15 hold without it (Fighters and Guards against Wolf Riders
-and Raptors)? Does the Guard keep its two jobs?
+and Raptors)? Does the Guard keep its two jobs? **Played** (bead
+`pulp_wars-w49.18`, five hand games, nothing changed): the answers are in
+[the Human tuning, round 9](RULESET_7_TUNING_HUMAN.md#16-round-9).
 
 **Goblin (Ogre).** Is one Ogre per mob the pattern, or do players field
 Ogres only (five weak heavies)? Does Heavyweight make a Rocket Cart with

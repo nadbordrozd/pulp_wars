@@ -1,4 +1,4 @@
-# Ruleset 7: the Human tech tree, rounds 3 to 8
+# Ruleset 7: the Human tech tree, rounds 3 to 9
 
 **Status:** rounds 3 and 4 were implemented on `pulp-wars-poc-7r47` (bead
 `pulp_wars-w49.3`); [round 5](#12-round-5) (section 12, bead
@@ -11,7 +11,10 @@ times; [round 8](#15-round-8) (section 15, bead `pulp_wars-w49.11`, the
 Normal AI a third time) is implemented on the same identity; it was
 played four times before it was published and corrected for what those
 games showed (section 15.11), and the corrected source has not been played
-yet. Round 3 (sections 1 to 10) was played by hand three times;
+yet; [round 9](#16-round-9) (section 16, bead `pulp_wars-w49.18`) is the
+first hand play of `pulp-wars-poc-7r55` (the Champion at Armoury and the
+economy rejig): five games, and no rule, number, or policy changed.
+Round 3 (sections 1 to 10) was played by hand three times;
 [round 4](#11-round-4) (section 11) is what those games changed, and was
 played four times. Where they differ, the later section is the rule. [Tuning 1 and its round 2](RULESET_7_TUNING_1.md)
 changed numbers and two rules after eight hand-played games. This round
@@ -2595,3 +2598,125 @@ source offers it and this one does not).
 `tests/unit/ruleset-v7-naval-ai.test.ts`: the natural Continents match to
 1,000 commands lands a unit and captures with it (it fails on the earlier
 source).
+
+## 16. Round 9
+
+The first hand play of `pulp-wars-poc-7r55`
+([the ninth unit](RULESET_7_NINTH_UNIT.md) and
+[the economy rejig](RULESET_7_ECONOMY_REJIG.md), both built without
+playing), bead `pulp_wars-w49.18`. Humans were played by hand in text mode
+against the Normal AI five times, each on a different technology route.
+**Nothing was changed:** no rule, number, technology placement, or policy,
+and the identity stays `7r55`. The bar was the user's: "the faction is not
+crazy op or crazy weak and that all the tech branches are useful and that
+units are differentiated from other factions by more than stats".
+
+### 16.1 The games
+
+| Game | Against                   | Map                  | Route                                                                                                       | Result                                                                                         |
+| ---- | ------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `a`  | Goblin                    | dry land 14, seed 11 | Industry first: Garrison 3, Engineering 7, Armoury 14                                                       | lost by round 16 (2 units against 17)                                                          |
+| `a2` | Goblin                    | the same             | Wilds: Hunting 3, Marksmanship 8                                                                            | stopped in round 15, a losing grind (4 cities and 5 units against 3 and 9; three technologies) |
+| `a3` | Goblin                    | dry land 14, seed 4  | Mobility: Scouting 3, Raiding 8, Chivalry 13, Roads 16                                                      | the Goblin capital fell in round 16; 10 cities against 2                                       |
+| `b`  | Undead                    | dry land 14, seed 7  | Wilds, then Industry: Marksmanship 4, Forestry 8, Sawmilling 13, Garrison 19, Engineering 21, Armoury 24    | stopped in round 27, ahead (5 cities, income 18, against 3 cities behind Mountains)            |
+| `c`  | Goblin, Martian, Dinosaur | lakes 16, seed 5     | Settlement, then Industry: Farming 6, Leadership 9, Garrison 12, Engineering 13, Armoury 15, Land Grants 18 | stopped in round 22, ahead (6 cities, income 23; two Dinosaur cities taken)                    |
+
+The numbers after a technology are the rounds it was bought in. Seed 11
+is the map on which the Goblin AI eliminated the Human AI in round 24 at
+`7r49` (section 15.11). Both hand games on it went the Goblins' way, and
+in one diagnostic match of this round the Human AI held one city against
+seven in round 25.
+
+### 16.2 The questions of the ninth unit
+
+- **Is the Champion wanted at 6 Coins and tier 3?** Yes, where the economy
+  came first. In `c` Armoury was bought in round 15 with five cities (8,
+  13, and 21 Coins for the three technologies), six Champions were trained
+  in rounds 16 to 21, and no Fighter was trained after round 13. It deals
+  a full Caveman 8, and one took the city of Ruggu alone. It is not the
+  one best unit: a Caveman with Pack Hunt deals it 7 and two kill it in a
+  turn; an Ankylosaurus takes 7 from it and deals 6 or 7 back, and beat
+  one in a duel; a Lich's shot deals it 7 and 3 or 4 to every unit beside
+  it; at 5 HP it deals a Zombie on a Mountain 4. In `b` the two Champions
+  of round 25 achieved nothing and the Catapults did the work.
+- **Rushing it does not work.** In `a` the first two Industry technologies
+  bought nothing that fights Goblins, and Armoury cost 18 Coins with four
+  cities on an income of 6: it was bought in round 14, after two cities
+  were lost and it cost 12.
+- **Does the middle game hold before it?** Against the Undead and the
+  Dinosaurs, yes, with Fighters, Marksmen, and Catapults. Against Goblins
+  it depends on the map: easily on seed 4 with Raiders, not on seed 11. A
+  Wolf Rider with two helpers deals a full Fighter on a center 12; a Bomb
+  Chucker deals a Fighter 5 and a Guard 6 or 7 and 3 to every unit beside
+  it; a Goblin's Kaboom deals 5 to every unit around it at any HP. Twice a
+  fresh Guard on a center died in the Goblin turn after it was trained
+  (two bombs, then a Goblin), which is the standing ruling on the Guard.
+  This is a question for the Goblin pass, not a Human number.
+- **Does anyone want Engineering without a unit?** Yes. A Mine is 5 Coins
+  for +2 population, and a Workshop is 4 Coins for +2 beside one Farm,
+  Lumber Camp, or Mine of any of the player's cities, in every city. In
+  `b` seven Mines and a Workshop (39 Coins) raised four cities by six
+  levels between them in rounds 22 to 26; in `c`, with no Ore in reach,
+  three Workshops paid for it.
+- **Does the Guard keep its two jobs?** Against the Undead, yes: on a
+  center it took 3 + 3 + 6 in one turn and dealt 9 + 8 + 5 back. Before it
+  every Fighter garrison died bitten and rose as a Zombie on the center.
+  Against Bomb Chuckers it has no job.
+- **Arms Industry** was not tested: no Forge could be built (the Mines of
+  `b` had no free flat tile beside them; `c` had no Ore).
+
+### 16.3 The branches and the units
+
+| Branch     | Bought                                            | Verdict                                                                                                                                                                                                                                                  |
+| ---------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Settlement | Gathering, Farming, Leadership, Land Grants (`c`) | strong. A Market beside a Farm costs 6 and pays 2 a turn; two took the income from 10 to 14 in round 12. Land Grants was bought for the unit slot. Milling was not wanted: beside one Farm a Windmill gives 1 for 5 Coins where a Workshop gives 2 for 4 |
+| Wilds      | Hunting, Forestry, Marksmanship, Sawmilling (`b`) | useful. Catapults decided `b` (8 to 10 to a Zombie, 7 to a Skeleton through Bones); two Marksmen kill a Wolf Rider or a risen Zombie a turn. Pathfinding was never bought                                                                                |
+| Mobility   | Scouting, Raiding, Chivalry, Roads (`a3`)         | useful against Goblins: a Raider with Charge kills a Goblin and escapes; a Knight killed two Goblins and took an Orc Brute from 15 to 4 in one turn, and died the next. Roads and Commerce were not tested                                               |
+| Industry   | Garrison, Engineering, Armoury (`a`, `b`, `c`)    | useful as a second branch, not as an opening. Fortification and Explosives were never bought                                                                                                                                                             |
+| Naval      | Sailing (`c`, to read the offers)                 | not wanted on Lakes: two Fish and a Port in reach                                                                                                                                                                                                        |
+
+No unit was the best in every game: Raiders and Knights in `a3`, Catapults
+and a Guard in `b`, Champions in `c`. No Captain was trained in any game.
+
+### 16.4 The economy rejig
+
+- **Coins.** Short in every game while the war was open (never above 13
+  in `a` and `a2`, 12 to 24 in `b`, spent to 5 or less every turn of `a3`
+  to round 12), except in `c`. There 33 and then 50 Coins piled up from
+  round 20 on an income of 23: only the two cities at the front could
+  train, one unit a turn each.
+- **Unit slots** bound earlier than Coins in `a2` (round 7), `b` (round
+  17), and `c`.
+- **Research.** Six technologies in round 17 with ten cities (`a3`: 86
+  of about 180 Coins earned went to five technologies, Chivalry cost 33);
+  eight in round 27 with five cities (`b`); nine in round 19 with four to
+  six (`c`).
+- **Monuments.** Explorer in rounds 8 to 10 on 14 x 14 and round 20 on 16
+  x 16; Land Baron in round 10 of `a3` (nine free villages); Conqueror in
+  round 16; Muster in round 25 of `b`. Engineer (a mill at 7) and Slayer
+  (7 kills) were never close: the best mill gave 3 and the best unit had
+  3 kills. Each Monument took a city of level 1 or 2 up a level.
+- **Shared mills** mattered twice: the capital's Workshop of `b` counted a
+  Mine on the next city's land, which was the last population for level
+  6; the capital's Workshop of `c` counted the next city's Farm.
+- **Level 6.** One city in five games: the capital of `b`, level 5 in
+  round 14 (a Monument, a Sawmill, a Boom) and level 6 in round 23 with
+  all eight tiles built. No other city passed level 4.
+
+### 16.5 For the passes that follow
+
+Seen and not changed, because none of it is a Human rule:
+
+- The Goblin opening against a Human player (section 16.2), and a Bomb
+  Chucker that used Kaboom on one Fighter with 3 HP.
+- The Undead AI walked a Zombie onto an emptied center covered by a
+  Catapult and two Marksmen, and the next turn by two Catapults, and
+  fired no Lich before round 24.
+- The Dinosaur AI sent two Raptors and a Caveman one at a time beside
+  three of the player's units and did not counterattack for either of
+  the two cities it lost.
+- Two diagnostic matches between Normal AIs (25 rounds, the Human seat
+  read): after Gathering and Hunting the Human seat researches
+  Marksmanship, Leadership or Forestry, Garrison, Engineering, and
+  Armoury in that order and trains Champions from the round it has
+  Armoury (round 21 in the match it won); nothing breaks.
