@@ -4,7 +4,9 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { bootstrapRuleset7App } from "../../src/app/index";
 import {
   AUDIO_SETTINGS_STORAGE_KEY_V1,
+  MUSIC_SETTINGS_STORAGE_KEY_V1,
   SOUND_IDS_V1,
+  playableSoundIdsV1,
   type PresentationStepCueV7,
 } from "../../src/audio/index";
 import {
@@ -120,13 +122,17 @@ describe("sound settings", () => {
     const controls = requiredElement<HTMLElement>("[data-v7-sound-controls]");
     const toggle = requiredButton("sound-toggle");
     const slider = requiredElement<HTMLInputElement>("#v7-sound-volume");
-    // Icon and control, minimal text: only the percentage is written out.
-    expect(controls.textContent).toBe("70%");
+    // Icon and control, minimal text: the two names and the percentages.
+    expect(controls.textContent).toBe("Music70%Sound70%");
+    expect(controls.getAttribute("role")).toBe("group");
+    expect(controls.getAttribute("aria-label")).toBe("Music and sound");
     expect(toggle.querySelector("svg")?.dataset.icon).toBe("sound");
     expect(toggle.getAttribute("aria-pressed")).toBe("true");
     expect(toggle.getAttribute("aria-label")).toBe("Sound on");
-    expect(slider.getAttribute("aria-label")).toBe("Volume");
+    expect(slider.getAttribute("aria-label")).toBe("Sound volume");
     expect(slider.value).toBe("70");
+    const soundRow = requiredElement<HTMLElement>('[data-sound-level="sound"]');
+    expect(soundRow.textContent).toBe("Sound70%");
 
     toggle.click();
     // The toggle changes in place: the dialog is not rebuilt around it.
@@ -140,7 +146,15 @@ describe("sound settings", () => {
     slider.value = "35";
     slider.dispatchEvent(new Event("input", { bubbles: true }));
     expect(slider.getAttribute("aria-valuetext")).toBe("35%");
-    expect(controls.textContent).toBe("35%");
+    expect(soundRow.textContent).toBe("Sound35%");
+    // Music was not touched by either.
+    expect(controls.textContent).toBe("Music70%Sound35%");
+    expect(app.audio.settings).toEqual({
+      enabled: false,
+      volume: 35,
+      musicEnabled: true,
+      musicVolume: 70,
+    });
     expect(window.localStorage.getItem(AUDIO_SETTINGS_STORAGE_KEY_V1)).toBe(
       '{"enabled":false,"volume":35}',
     );
@@ -149,13 +163,115 @@ describe("sound settings", () => {
     // A new session starts from the stored preference.
     document.body.innerHTML = '<div id="app"></div>';
     const next = mountMatch().app;
-    expect(next.audio.settings).toEqual({ enabled: false, volume: 35 });
+    expect(next.audio.settings).toEqual({
+      enabled: false,
+      volume: 35,
+      musicEnabled: true,
+      musicVolume: 70,
+    });
     openSettings();
     expect(requiredButton("sound-toggle").getAttribute("aria-pressed")).toBe(
       "false",
     );
     expect(requiredElement<HTMLInputElement>("#v7-sound-volume").value).toBe(
       "35",
+    );
+  });
+
+  it("offers Music its own toggle and slider, stored apart from Sound", () => {
+    const { app } = mountMatch();
+    openSettings();
+    const controls = requiredElement<HTMLElement>("[data-v7-sound-controls]");
+    // Music first, then Sound: two rows, each a toggle, a name, a slider.
+    expect(
+      [...controls.querySelectorAll<HTMLElement>("[data-sound-level]")].map(
+        (row) => row.dataset.soundLevel,
+      ),
+    ).toEqual(["music", "sound"]);
+    const toggle = requiredButton("music-toggle");
+    const slider = requiredElement<HTMLInputElement>("#v7-music-volume");
+    expect(toggle.querySelector("svg")?.dataset.icon).toBe("music");
+    expect(toggle.getAttribute("aria-pressed")).toBe("true");
+    expect(toggle.getAttribute("aria-label")).toBe("Music on");
+    expect(slider.type).toBe("range");
+    expect([slider.min, slider.max, slider.step]).toEqual(["0", "100", "5"]);
+    expect(slider.getAttribute("aria-label")).toBe("Music volume");
+    expect(slider.value).toBe("70");
+    // The name is the slider's label, so a press on it reaches the slider.
+    const name = requiredElement<HTMLLabelElement>(
+      '[data-sound-level="music"] label',
+    );
+    expect(name.textContent).toBe("Music");
+    expect(name.htmlFor).toBe(slider.id);
+    // Both are ordinary focusable controls.
+    expect(toggle.tabIndex).toBe(0);
+    expect(slider.tabIndex).toBe(0);
+
+    slider.value = "25";
+    slider.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(slider.getAttribute("aria-valuetext")).toBe("25%");
+    expect(app.audio.settings.musicVolume).toBe(25);
+    expect(app.audio.settings.volume).toBe(70);
+    toggle.click();
+    expect(toggle.isConnected).toBe(true);
+    expect(toggle.getAttribute("aria-pressed")).toBe("false");
+    expect(toggle.getAttribute("aria-label")).toBe("Music off");
+    expect(toggle.querySelector("svg")?.dataset.icon).toBe("music-off");
+    expect(app.audio.settings.musicEnabled).toBe(false);
+    expect(app.audio.settings.enabled).toBe(true);
+    expect(window.localStorage.getItem(MUSIC_SETTINGS_STORAGE_KEY_V1)).toBe(
+      '{"enabled":false,"volume":25}',
+    );
+    expect(window.localStorage.getItem(AUDIO_SETTINGS_STORAGE_KEY_V1)).toBe(
+      '{"enabled":true,"volume":70}',
+    );
+    // Sound's toggle is the other one.
+    expect(requiredButton("sound-toggle").getAttribute("aria-pressed")).toBe(
+      "true",
+    );
+    app.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    const next = mountMatch().app;
+    expect(next.audio.settings).toEqual({
+      enabled: true,
+      volume: 70,
+      musicEnabled: false,
+      musicVolume: 25,
+    });
+    openSettings();
+    expect(requiredButton("music-toggle").getAttribute("aria-pressed")).toBe(
+      "false",
+    );
+    expect(requiredElement<HTMLInputElement>("#v7-music-volume").value).toBe(
+      "25",
+    );
+    expect(requiredElement<HTMLInputElement>("#v7-sound-volume").value).toBe(
+      "70",
+    );
+  });
+
+  it("gives the music the single volume and mute stored before it had its own", () => {
+    window.localStorage.setItem(
+      AUDIO_SETTINGS_STORAGE_KEY_V1,
+      '{"enabled":false,"volume":45}',
+    );
+    const { app } = mountMatch();
+    expect(app.audio.settings).toEqual({
+      enabled: false,
+      volume: 45,
+      musicEnabled: false,
+      musicVolume: 45,
+    });
+    openSettings();
+    expect(requiredElement<HTMLInputElement>("#v7-music-volume").value).toBe(
+      "45",
+    );
+    expect(requiredButton("music-toggle").getAttribute("aria-pressed")).toBe(
+      "false",
+    );
+    expect(requiredButton("sound-toggle").getAttribute("aria-pressed")).toBe(
+      "false",
     );
   });
 
@@ -192,6 +308,34 @@ describe("sound settings", () => {
     expect(app.audio.log).toEqual([{ id: "impact.hit", outcome: "MUTED" }]);
     mute.click();
     expect(app.audio.settings.enabled).toBe(true);
+  });
+
+  it("mutes the music from the match menu, apart from the sound", () => {
+    const { app } = mountMatch();
+    requiredButton("compact-menu").click();
+    const music = requiredButton("mute-music");
+    expect(music.textContent).toBe("Music");
+    expect(music.getAttribute("aria-pressed")).toBe("true");
+    expect(music.querySelector("svg")?.dataset.icon).toBe("music");
+    // The two are next to each other at the top of the menu.
+    expect(requiredButton("mute").nextElementSibling).toBe(music);
+    music.click();
+    expect(app.audio.settings.musicEnabled).toBe(false);
+    expect(app.audio.settings.enabled).toBe(true);
+    expect(music.isConnected).toBe(true);
+    expect(music.getAttribute("aria-pressed")).toBe("false");
+    expect(music.title).toBe("Music off");
+    expect(music.querySelector("svg")?.dataset.icon).toBe("music-off");
+    expect(requiredButton("mute").getAttribute("aria-pressed")).toBe("true");
+    expect(requiredButton("compact-menu").getAttribute("aria-expanded")).toBe(
+      "true",
+    );
+    // An effect is still played; a theme is not.
+    app.audio.clearLog();
+    app.audio.play("theme.goblin");
+    expect(app.audio.log).toEqual([{ id: "theme.goblin", outcome: "MUTED" }]);
+    music.click();
+    expect(app.audio.settings.musicEnabled).toBe(true);
   });
 });
 
@@ -246,8 +390,14 @@ describe("sound test", () => {
         .map((card) => card.dataset.soundId)
         .filter((id) => id !== undefined)
         .sort(),
-    ).toEqual([...SOUND_IDS_V1].sort());
+    ).toEqual([...playableSoundIdsV1()].sort());
     expect(panel.querySelector("[data-v7-sound-controls]")).not.toBeNull();
+    // The two levels are above the cards here too, with ids of their own.
+    expect(
+      panel.querySelector("#v7-music-volume-gallery, #v7-sound-volume-gallery"),
+    ).not.toBeNull();
+    expect(panel.querySelector("#v7-music-volume-gallery")).not.toBeNull();
+    expect(panel.querySelector("#v7-sound-volume-gallery")).not.toBeNull();
     app.view.audio.clearLog();
     requiredElement<HTMLButtonElement>(
       '[data-sound-play="impact.hit"]',

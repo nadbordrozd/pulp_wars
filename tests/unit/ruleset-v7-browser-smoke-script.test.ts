@@ -644,14 +644,16 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     // The cards are compared with the manifest, not with a number.
     expect(probe).toContain(
-      'import { SOUND_IDS_V1 } from "../src/audio/index"',
+      'import { playableSoundIdsV1 } from "../src/audio/index"',
     );
-    expect(probe).toContain(
-      "[...listed.ids].sort().join() !== [...SOUND_IDS_V1].sort().join()",
-    );
-    // One pending theme row per faction column.
-    expect(probe).toContain("listed.themes !== factions");
-    expect(probe).toContain("listed.pending !== factions");
+    expect(probe).toContain("[...playableSoundIdsV1()].sort().join()");
+    // Bead pulp_wars-2yc.27: one playable theme row per faction column
+    // and the title theme's, under the Music and Sound sliders.
+    expect(probe).toContain("listed.themes !== factions + 1");
+    expect(probe).toContain("listed.pending !== 0");
+    expect(probe).toContain("#v7-music-volume-gallery");
+    expect(probe).toContain("#v7-sound-volume-gallery");
+    expect(probe).toContain("listed.levels !== 2");
     // A trusted pointer click plays the victory tune: the audio's log, the
     // card's playing state and its stop control.
     expect(probe).toContain('const SOUNDS_PLAYED = "match.victory"');
@@ -666,6 +668,37 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     expect(probe).toContain(".remainingMs('${SOUNDS_PLAYED}') === 0");
     expect(probe).toContain('await driver.capture("gallery-sounds.png")');
+  });
+  it("checks the Music and Sound sliders and that a theme is asked for after the first gesture", () => {
+    const probe = readFileSync("scripts/browser-smoke-v7-sound.ts", "utf8");
+
+    // Bead pulp_wars-2yc.27: before the gesture the match knows its theme
+    // and has fetched nothing for it.
+    const quiet = probe.indexOf(
+      'quiet.scene !== "theme.undead" || quiet.requests !== 0',
+    );
+    expect(quiet).toBeGreaterThan(-1);
+    expect(quiet).toBeLessThan(
+      probe.indexOf('await driver.openCompactMenuItem("settings")'),
+    );
+    // Two levels in Settings, each a toggle and a slider.
+    expect(probe).toContain(`const TOGGLE = '[data-action="sound-toggle"]'`);
+    expect(probe).toContain(
+      `const MUSIC_TOGGLE = '[data-action="music-toggle"]'`,
+    );
+    expect(probe).toContain("document.querySelector('#v7-sound-volume')");
+    expect(probe).toContain(
+      "document.querySelector('#v7-music-volume')?.type === 'range'",
+    );
+    // After it, the viewer's faction theme is requested (or there is no
+    // sound device at all).
+    expect(probe).toContain(
+      'const THEME_FILE = "assets/audio/themes/theme-undead.m4a"',
+    );
+    expect(probe).toContain(
+      ".music.requests.some((url) => url.includes('${THEME_FILE}'))",
+    );
+    expect(probe).toContain("${AUDIO}.unlocked !== true ||");
   });
   it("launches the most players on the smallest Dry Land board and plays one End Turn", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");

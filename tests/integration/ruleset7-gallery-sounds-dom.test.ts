@@ -5,11 +5,14 @@ import { bootstrapRuleset7App } from "../../src/app/index";
 import {
   AUDIO_SETTINGS_STORAGE_KEY_V1,
   DEFAULT_CATEGORY_GAINS_V1,
+  MUSIC_SETTINGS_STORAGE_KEY_V1,
   OTHER_PLAYER_BUILD_GAIN_V7,
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
+  SOUND_THEMES_V1,
   STOCK_SOUND_CLIPS_V1,
   audioVolumeGainV1,
+  playableSoundIdsV1,
   type SoundIdV1,
 } from "../../src/audio/index";
 import { FACTION_IDS_V7 } from "../../src/engine/index";
@@ -163,7 +166,7 @@ describe("Gallery Sounds tab", () => {
         .map((node) => node.dataset.soundId)
         .filter((id) => id !== undefined)
         .sort(),
-    ).toEqual([...SOUND_IDS_V1].sort());
+    ).toEqual([...playableSoundIdsV1()].sort());
     expect(
       [...panel.querySelectorAll(".v7-gallery-sound-group")].map((group) => [
         group.querySelector("h2")?.textContent,
@@ -341,7 +344,13 @@ describe("Gallery Sounds tab", () => {
     expect(playing()).toEqual([]);
     expect(notice.dataset.nudged).toBe("true");
     button("gallery-sounds-unmute").click();
-    expect(mounted.view.audio.settings).toEqual({ enabled: true, volume: 70 });
+    // Sound is turned on; Music, off with it since before, is left alone.
+    expect(mounted.view.audio.settings).toEqual({
+      enabled: true,
+      volume: 70,
+      musicEnabled: false,
+      musicVolume: 70,
+    });
     expect(notice.hidden).toBe(true);
     expect(notice.dataset.nudged).toBeUndefined();
     expect(panel.dataset.muted).toBe("false");
@@ -373,7 +382,12 @@ describe("Gallery Sounds tab", () => {
     card("impact.hit").click();
     expect(device.sources.length).toBe(before);
     button("gallery-sounds-unmute").click();
-    expect(mounted.view.audio.settings).toEqual({ enabled: true, volume: 70 });
+    expect(mounted.view.audio.settings).toEqual({
+      enabled: true,
+      volume: 70,
+      musicEnabled: true,
+      musicVolume: 0,
+    });
     expect(required<HTMLInputElement>("#v7-sound-volume-gallery").value).toBe(
       "70",
     );
@@ -403,46 +417,173 @@ describe("Gallery Sounds tab", () => {
     expect(playing()).toEqual([]);
   });
 
-  it("shows a pending theme row for every faction", () => {
-    const mounted = mount();
+  it("shows a playable theme row for every faction, and the title theme", () => {
+    mount();
     openSounds();
     const group = required('.v7-gallery-sound-group[data-group="themes"]');
     expect(group.querySelector("h2")?.textContent).toBe("Themes");
     const rows = [...group.querySelectorAll<HTMLElement>(".v7-gallery-sound")];
+    // One row per faction, each with its theme, then the title theme.
     expect(rows.map((node) => node.dataset.faction)).toEqual([
       ...FACTION_IDS_V7,
+      undefined,
     ]);
-    mounted.view.audio.clearLog();
-    const before = device.sources.length;
+    expect(rows.map((node) => node.dataset.soundRow)).toEqual([
+      ...FACTION_IDS_V7.map((faction) => `theme:${faction}`),
+      "theme:TITLE",
+    ]);
     for (const node of rows) {
-      expect(node.dataset.pending).toBe("true");
+      expect(node.dataset.pending).toBeUndefined();
       const play = node.querySelector<HTMLButtonElement>("[data-sound-play]");
-      // Focusable and named, but not playable: aria-disabled, not disabled.
-      expect(play?.getAttribute("aria-disabled")).toBe("true");
-      expect(play?.disabled).toBe(false);
-      expect(play?.dataset.soundId).toBeUndefined();
+      expect(play?.getAttribute("aria-disabled")).toBeNull();
+      const theme = SOUND_THEMES_V1.find(
+        (entry) => entry.id === play?.dataset.soundId,
+      );
+      expect(theme, node.dataset.soundRow).toBeDefined();
+      expect(theme?.faction ?? undefined).toBe(node.dataset.faction);
+      const file = `${theme?.id.replace(".", "-")}.m4a`;
       expect(play?.getAttribute("aria-label")).toMatch(
-        /^Play: .+ theme, coming soon$/,
+        new RegExp(`^Play: .+ theme\\. File: ${file}$`),
       );
       expect(play?.querySelector(".v7-gallery-sound-when")?.textContent).toBe(
-        "Coming soon",
+        "Theme",
       );
-      // The faction's portrait in its colour, no play mark, no extras.
-      expect(
-        play
-          ?.querySelector<HTMLElement>(".v7-gallery-sound-picture")
-          ?.style.getPropertyValue("--faction"),
-      ).not.toBe("");
-      expect(play?.querySelector(".v7-gallery-sound-mark svg")).toBeNull();
-      expect(node.querySelector(".v7-gallery-sound-extras")).toBeNull();
-      play?.click();
+      expect(play?.querySelector(".v7-gallery-sound-origin")?.textContent).toBe(
+        file,
+      );
+      // A play mark and a stop, like any long sound.
+      expect(play?.querySelector(".v7-gallery-sound-mark svg")).not.toBeNull();
+      expect(node.querySelector(".v7-gallery-sound-stop")).not.toBeNull();
     }
-    expect(mounted.view.audio.log).toEqual([]);
-    expect(device.sources.length).toBe(before);
-    expect(playing()).toEqual([]);
     expect(
       required('[data-sound-play="theme:UNDEAD"]').getAttribute("aria-label"),
-    ).toBe("Play: Undead theme, coming soon");
+    ).toBe("Play: Undead theme. File: theme-undead.m4a");
+    const title = required<HTMLButtonElement>(
+      '[data-sound-play="theme:TITLE"]',
+    );
+    expect(title.getAttribute("aria-label")).toBe(
+      "Play: Title theme. File: theme-title.m4a",
+    );
+    expect(title.dataset.soundId).toBe("theme.title");
+    expect(title.querySelector("svg")?.dataset.icon).toBe("music");
+  });
+
+  it("plays a theme row through the music, with a stop", () => {
+    const mounted = mount();
+    openSounds();
+    // The Sounds tab is silent of itself, so that its sounds can be heard.
+    expect(mounted.view.audio.music).toMatchObject({
+      scene: null,
+      audition: null,
+    });
+    mounted.view.audio.clearLog();
+    const before = device.sources.length;
+    const goblin = card("theme:GOBLIN");
+    goblin.click();
+    expect(mounted.view.audio.log).toEqual([
+      { id: "theme.goblin", outcome: "PLAYED" },
+    ]);
+    // It is the music's, not a voice of the effects' mixer.
+    expect(device.sources.length).toBe(before);
+    expect(mounted.view.audio.music).toMatchObject({
+      audition: "theme.goblin",
+      wanted: "theme.goblin",
+    });
+    expect(playing()).toEqual(["theme:GOBLIN"]);
+    const stop = required<HTMLButtonElement>(
+      '[data-sound-row="theme:GOBLIN"] .v7-gallery-sound-stop',
+    );
+    expect(stop.hidden).toBe(false);
+    expect(stop.getAttribute("aria-label")).toBe("Stop: Goblin theme");
+    // An effect plays over it; another theme takes its place.
+    card("impact.hit").click();
+    expect(playing()).toEqual(["impact.hit", "theme:GOBLIN"]);
+    card("theme:TITLE").click();
+    expect(mounted.view.audio.music.audition).toBe("theme.title");
+    expect(playing()).toEqual(["impact.hit", "theme:TITLE"]);
+    required<HTMLButtonElement>(
+      '[data-sound-row="theme:TITLE"] .v7-gallery-sound-stop',
+    ).click();
+    expect(mounted.view.audio.music).toMatchObject({
+      audition: null,
+      wanted: null,
+    });
+    expect(playing()).toEqual(["impact.hit"]);
+    // Leaving the tab ends a theme it was playing; the menus' own returns.
+    goblin.click();
+    button("gallery-tab-units").click();
+    expect(mounted.view.audio.music).toMatchObject({
+      scene: "theme.title",
+      audition: null,
+      wanted: "theme.title",
+    });
+  });
+
+  it("follows Music for a theme row and Sound for an effect card", () => {
+    window.localStorage.setItem(
+      MUSIC_SETTINGS_STORAGE_KEY_V1,
+      '{"enabled":false,"volume":70}',
+    );
+    const mounted = mount();
+    const panel = openSounds();
+    const sound = required(".v7-gallery-sounds-notice:not([data-level])");
+    const music = required('.v7-gallery-sounds-notice[data-level="music"]');
+    // Sound is on: no notice. Music's shows once a theme row is pressed.
+    expect(sound.hidden).toBe(true);
+    expect(music.hidden).toBe(true);
+    expect(panel.dataset.muted).toBe("false");
+    expect(panel.dataset.musicMuted).toBe("true");
+    card("impact.hit").click();
+    expect(playing()).toEqual(["impact.hit"]);
+    expect(music.hidden).toBe(true);
+    mounted.view.audio.clearLog();
+    card("theme:GOBLIN").click();
+    expect(mounted.view.audio.log).toEqual([]);
+    expect(playing()).toEqual(["impact.hit"]);
+    expect(music.hidden).toBe(false);
+    expect(music.getAttribute("role")).toBe("status");
+    expect(music.textContent).toBe("Music is offTurn on");
+    expect(music.dataset.nudged).toBe("true");
+    expect(sound.hidden).toBe(true);
+    // Turning it on from the notice: the theme row plays, Sound untouched.
+    button("gallery-music-unmute").click();
+    expect(mounted.view.audio.settings).toEqual({
+      enabled: true,
+      volume: 70,
+      musicEnabled: true,
+      musicVolume: 70,
+    });
+    expect(music.hidden).toBe(true);
+    expect(document.activeElement).toBe(button("music-toggle-gallery"));
+    card("theme:GOBLIN").click();
+    expect(playing()).toContain("theme:GOBLIN");
+
+    // Music at zero says so, and turns up to the default.
+    const slider = required<HTMLInputElement>("#v7-music-volume-gallery");
+    slider.value = "0";
+    slider.dispatchEvent(new Event("input", { bubbles: true }));
+    // The theme it was playing has ended with the music.
+    expect(playing()).not.toContain("theme:GOBLIN");
+    expect(music.hidden).toBe(true);
+    card("theme:UNDEAD").click();
+    expect(music.hidden).toBe(false);
+    expect(music.textContent).toBe("Music is at 0Turn up");
+    button("gallery-music-unmute").click();
+    expect(mounted.view.audio.settings.musicVolume).toBe(70);
+    expect(required<HTMLInputElement>("#v7-music-volume-gallery").value).toBe(
+      "70",
+    );
+
+    // The other way round: Sound off stops an effect card, not a theme row.
+    button("sound-toggle-gallery").click();
+    expect(sound.hidden).toBe(false);
+    expect(sound.textContent).toBe("Sound is offTurn on");
+    card("impact.hit").click();
+    expect(sound.dataset.nudged).toBe("true");
+    expect(music.hidden).toBe(true);
+    card("theme:UNDEAD").click();
+    expect(playing()).toEqual(["theme:UNDEAD"]);
+    expect(music.hidden).toBe(true);
   });
 
   it("moves between cards and their controls with the arrow keys", () => {
@@ -498,8 +639,8 @@ describe("Gallery Sounds tab", () => {
     expect(document.activeElement).not.toBe(first);
     key(second, "End");
     expect(document.activeElement).toBe(cards.at(-1));
-    // The last card is a pending theme: it can still be reached and read.
-    expect(cards.at(-1)?.getAttribute("aria-disabled")).toBe("true");
+    // The last card is the title theme's row.
+    expect(cards.at(-1)?.dataset.soundPlay).toBe("theme:TITLE");
     key(cards.at(-1) as HTMLElement, "Home");
     expect(document.activeElement).toBe(first);
     // A hidden stop control is skipped; a shown one is a stop on the way.
@@ -618,12 +759,12 @@ describe("Gallery Sounds tab: origins", () => {
       document.querySelectorAll('.v7-gallery-sound[data-origin="recorded"]')
         .length,
     ).toBe(STOCK_SOUND_CLIPS_V1.length);
-    // A theme that is not there yet has no origin to show.
+    // A theme's row names its file.
     expect(
-      document.querySelector(
+      document.querySelector<HTMLElement>(
         '[data-sound-row="theme:UNDEAD"] .v7-gallery-sound-origin',
-      ),
-    ).toBeNull();
+      )?.dataset.soundOrigin,
+    ).toBe("file");
   });
 
   it("plays the generated sound of a recorded card from its own control", () => {

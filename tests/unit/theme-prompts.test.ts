@@ -397,9 +397,13 @@ describe("faction theme prompts", () => {
   });
 
   it("names a registered theme as the manifest does", () => {
-    // No theme is registered yet; one that is must use the data's theme id.
+    // A registered theme uses the data's theme id: a faction's its
+    // faction's, a theme of no faction (the title theme) an extra's.
+    expect(SOUND_THEMES_V1.length).toBeGreaterThan(0);
     for (const theme of SOUND_THEMES_V1) {
-      expect(data.factions[theme.faction]?.themeId).toBe(theme.id);
+      if (theme.faction === null)
+        expect(data.extras.map((extra) => extra.id)).toContain(theme.id);
+      else expect(data.factions[theme.faction]?.themeId).toBe(theme.id);
     }
   });
 });

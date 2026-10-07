@@ -1,5 +1,6 @@
 import type { FactionIdV7 } from "../engine/index";
 import { STOCK_SOUND_CLIPS_V1, stockSoundUrlV1 } from "./stock-sounds";
+import { THEME_MUSIC_TRACKS_V1, themeMusicUrlV1 } from "./theme-music";
 import type { SynthLayerV1, SynthRecipeV1, SynthWaveV1 } from "./synth";
 
 /**
@@ -82,8 +83,8 @@ export type SoundIdV1 = (typeof SOUND_IDS_V1)[number];
 
 /**
  * The mixer's groups; each has its own level. Ambience has no sound yet.
- * Music is the faction themes' group (`SOUND_THEMES_V1`): one music voice
- * plays at a time.
+ * Music is the themes' group (`SOUND_THEMES_V1`): one theme plays at a
+ * time, under the player's Music level; the others are under Sound.
  */
 export const SOUND_CATEGORIES_V1 = [
   "combat",
@@ -97,12 +98,18 @@ export type SoundCategoryV1 = (typeof SOUND_CATEGORIES_V1)[number];
 export type SoundSourceV1 =
   | { readonly kind: "SYNTH"; readonly recipe: SynthRecipeV1 }
   | {
-      /** A recording (stock sound). `url` is fetched after the first gesture. */
+      /**
+       * A recording. An effect's is fetched at the game's start and decoded
+       * after the first gesture; a theme's is fetched when it first plays.
+       */
       readonly kind: "FILE";
       readonly url: string;
       /** Played until the file has loaded, and if it cannot be loaded. */
       readonly fallback?: SynthRecipeV1;
-      /** The level the recording is played at, 0 to 1 (1 when absent). */
+      /**
+       * The level the recording is played at (1 when absent): 0 to 1 for an
+       * effect; a theme's may be a little above 1, to match the others.
+       */
       readonly gain?: number;
     };
 
@@ -117,30 +124,64 @@ export interface SoundEntryV1 {
   readonly jitterCents: number;
 }
 
-/** A faction theme's id: "theme." and a name of its own. */
+/** A theme's id: "theme." and a name of its own. */
 export type SoundThemeIdV1 = `theme.${string}`;
 
 /**
- * A faction's theme music (bead pulp_wars-2yc.19, docs/ui/SOUND.md "Faction
- * themes"). It plays in the "music" category, never detuned. The Gallery's
- * Sounds tab shows one row per faction; a faction with an entry here has a
- * playable row, the others read "Coming soon".
+ * A piece of theme music (beads pulp_wars-2yc.19 and pulp_wars-2yc.27,
+ * docs/ui/SOUND.md "Theme music"): a faction's theme, or a theme of no
+ * faction (the title theme). It plays in the "music" category, never
+ * detuned, one at a time, and its file is loaded when it is first played.
+ * The Gallery's Sounds tab shows one row per faction and one per theme of
+ * no faction; a faction without an entry here reads "Coming soon".
  */
 export interface SoundThemeEntryV1 {
   readonly id: SoundThemeIdV1;
-  /** The faction it belongs to; at most one theme per faction. */
-  readonly faction: FactionIdV7;
+  /** The faction it belongs to (at most one theme each); null for none. */
+  readonly faction: FactionIdV7 | null;
+  /** The name of a theme of no faction: "Title". */
+  readonly label?: string;
   /** Whether it repeats until it is stopped. */
   readonly loop: boolean;
   /** A recording, or a synth recipe, exactly like an effect's source. */
   readonly source: SoundSourceV1;
+  /**
+   * For a loop whose recording ends on a dying note: how many seconds
+   * before its end the next pass starts, under that note. Absent or 0 when
+   * the end joins the start as it is.
+   */
+  readonly loopOverlapSeconds?: number;
 }
 
+/** The theme of the title screen and the menus. */
+export const SOUND_TITLE_THEME_ID_V1: SoundThemeIdV1 = "theme.title";
+
 /**
- * The registered faction themes. None has been written yet: adding an entry
- * here is all it takes for the audio to play it and the Gallery to offer it.
+ * The registered themes: every encoded theme of `theme-music.json`. Adding
+ * one there (`scripts/audio/encode-themes.ts`) is all it takes for the
+ * audio to play it and the Gallery to offer it.
  */
-export const SOUND_THEMES_V1: readonly SoundThemeEntryV1[] = [];
+export const SOUND_THEMES_V1: readonly SoundThemeEntryV1[] =
+  THEME_MUSIC_TRACKS_V1.map((track) => ({
+    id: track.id as SoundThemeIdV1,
+    faction: track.faction as FactionIdV7 | null,
+    ...(track.faction === null ? { label: "Title" } : {}),
+    loop: true,
+    source: {
+      kind: "FILE" as const,
+      url: themeMusicUrlV1(track),
+      gain: track.gain,
+    },
+    loopOverlapSeconds: track.loopOverlapSeconds,
+  }));
+
+/** A faction's theme, when it has one. */
+export function soundThemeOfFactionV1(
+  faction: FactionIdV7,
+  themes: readonly SoundThemeEntryV1[] = SOUND_THEMES_V1,
+): SoundThemeEntryV1 | null {
+  return themes.find((theme) => theme.faction === faction) ?? null;
+}
 
 /** Anything the audio can play: an effect or a theme. */
 export type SoundKeyV1 = SoundIdV1 | SoundThemeIdV1;

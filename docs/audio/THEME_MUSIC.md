@@ -6,9 +6,13 @@ document holds the direction, the prompts and the process, so that eight
 themes made on different days sound like one soundtrack and a ninth can
 join them later.
 
-**Status.** The prompts are written. No music exists yet, and no prompt
-here has been run through a service: expect to adjust wording after the
-first takes, and record the change ([Changing a prompt](#changing-a-prompt)).
+**Status.** The music exists (bead `pulp_wars-2yc.27`): on 2026-10-07 the
+user generated the eight faction themes and the title theme with Suno from
+these prompts, and the game plays them
+([Where themes play](#where-themes-play), [Records](#records)). Nobody on
+the development side has listened to them: the levels and the loop points
+were set by measurement
+([What has not been checked](../ui/SOUND.md#what-has-not-been-checked)).
 The service descriptions below are written from general knowledge of the
 two products as of October 2026 and were not checked against their live
 interfaces ([What to check first](#what-to-check-in-the-service-first)),
@@ -30,7 +34,7 @@ The prompts live in [`theme-prompts.json`](theme-prompts.json). The section
    [acceptance checklist](#acceptance-checklist).
 5. Trim the chosen take into a loop ([Making a seamless loop](#making-a-seamless-loop)).
 6. Fill in a [record](#reproducibility-and-records).
-7. Register the file ([Registering an accepted theme](#registering-an-accepted-theme)).
+7. Encode and register the file ([Registering an accepted theme](#registering-an-accepted-theme)).
 
 Do the first two factions one after the other and compare them before
 generating the rest: the first accepted theme sets the level, the room and
@@ -104,9 +108,15 @@ theme as a whole number of eight-bar phrases.
   below a brightness bound ([the bounds](../ui/SOUND.md#bounds-the-test-enforces)),
   and the hits and explosions are low thumps. A theme with a clear melody,
   a light bass and no constant bright wash leaves them room.
-- **File.** Ogg Vorbis, 44.1 kHz, stereo, around 128 to 160 kbit/s: about
-  2 MB for 100 seconds. Ogg adds no silence at the ends; MP3 encoders pad
-  both ends, which is heard as a gap in a loop.
+- **File.** The masters are delivered as WAV and stay outside the
+  repository. `scripts/audio/encode-themes.ts` encodes them as AAC-LC in an
+  MP4 file (`.m4a`), 44.1 kHz, stereo, 112 kbit/s: about 1.4 MB for 100
+  seconds. AAC is what the effects' clips use and what macOS encodes
+  without another tool; the encoder writes how many samples it padded, and
+  the browser's decoder takes them off again (checked in Chrome: the
+  decoded length is the trimmed master's). The first plan here was Ogg
+  Vorbis at 128 to 160 kbit/s; MP3 was ruled out because its padding is
+  heard as a gap in a loop.
 
 ### What all themes share
 
@@ -338,7 +348,7 @@ A tidy storybook-kingdom march: the town band of a practical realm of settlers, 
 | -------------- | -------------------------------------------- |
 | Prompt version | `ORIGINAL@2+s1`                              |
 | Theme id       | `theme.human`                                |
-| Output file    | `public/audio/theme-human.ogg`               |
+| Output file    | `public/assets/audio/themes/theme-human.m4a` |
 | Tempo          | 116 BPM, accept 112–120                      |
 | Metre          | 4/4, crisp march                             |
 | Mode           | major, with a Mixolydian lift at the cadence |
@@ -392,7 +402,7 @@ A spooky-fun graveyard waltz from a Halloween picture book: creaky, mock-solemn 
 | -------------- | ------------------------------------------------- |
 | Prompt version | `UNDEAD@2+s1`                                     |
 | Theme id       | `theme.undead`                                    |
-| Output file    | `public/audio/theme-undead.ogg`                   |
+| Output file    | `public/assets/audio/themes/theme-undead.m4a`     |
 | Tempo          | 96 BPM, accept 90–100                             |
 | Metre          | 3/4, creaky waltz                                 |
 | Mode           | harmonic minor, played with a wink                |
@@ -446,7 +456,7 @@ A rowdy, ramshackle horde shuffle on junk percussion that always sounds about to
 | -------------- | ----------------------------------------------------------- |
 | Prompt version | `GOBLIN@2+s1`                                               |
 | Theme id       | `theme.goblin`                                              |
-| Output file    | `public/audio/theme-goblin.ogg`                             |
+| Output file    | `public/assets/audio/themes/theme-goblin.m4a`               |
 | Tempo          | 138 BPM, accept 132–144                                     |
 | Metre          | 4/4, swung shuffle, lurching offbeat                        |
 | Mode           | minor with cheeky chromatic slips                           |
@@ -497,19 +507,19 @@ A rowdy, ramshackle goblin-horde tune for a turn-based strategy game: cheeky, lo
 
 A cheerful lost-world stomp: a sunny ocarina tune over the footsteps of something huge and friendly.
 
-| Field          | Value                                    |
-| -------------- | ---------------------------------------- |
-| Prompt version | `DINOSAUR@2+s1`                          |
-| Theme id       | `theme.dinosaur`                         |
-| Output file    | `public/audio/theme-dinosaur.ogg`        |
-| Tempo          | 104 BPM, accept 100–108                  |
-| Metre          | 4/4, half-time stomp on one and three    |
-| Mode           | major pentatonic                         |
-| Lead           | ocarina, tuba and trombone riff          |
-| Rhythm section | big toms, log drums, shakers             |
-| Colour         | kalimba, stone clicks and egg-shell taps |
-| Mood           | primal, sunny, goofy, lumbering          |
-| Duration       | 100 seconds                              |
+| Field          | Value                                           |
+| -------------- | ----------------------------------------------- |
+| Prompt version | `DINOSAUR@2+s1`                                 |
+| Theme id       | `theme.dinosaur`                                |
+| Output file    | `public/assets/audio/themes/theme-dinosaur.m4a` |
+| Tempo          | 104 BPM, accept 100–108                         |
+| Metre          | 4/4, half-time stomp on one and three           |
+| Mode           | major pentatonic                                |
+| Lead           | ocarina, tuba and trombone riff                 |
+| Rhythm section | big toms, log drums, shakers                    |
+| Colour         | kalimba, stone clicks and egg-shell taps        |
+| Mood           | primal, sunny, goofy, lumbering                 |
+| Duration       | 100 seconds                                     |
 
 **Suno — Styles field (up to 1000 characters)** (961 characters):
 
@@ -556,7 +566,7 @@ A campy 1950s pulp sci-fi invasion: a wobbling theremin over a strict machine pu
 | -------------- | ----------------------------------------------------------------- |
 | Prompt version | `MARTIAN@2+s1`                                                    |
 | Theme id       | `theme.martian`                                                   |
-| Output file    | `public/audio/theme-martian.ogg`                                  |
+| Output file    | `public/assets/audio/themes/theme-martian.m4a`                    |
 | Tempo          | 126 BPM, accept 122–130                                           |
 | Metre          | 4/4, straight mechanical pulse                                    |
 | Mode           | whole-tone and chromatic, eerie                                   |
@@ -606,19 +616,19 @@ A campy 1950s pulp sci-fi invasion theme for a turn-based strategy game: smug li
 
 A calm, crystalline winter picture book from the high peaks: glassy bells and a far-off mountain horn.
 
-| Field          | Value                                      |
-| -------------- | ------------------------------------------ |
-| Prompt version | `ICE_FOLK@2+s1`                            |
-| Theme id       | `theme.ice-folk`                           |
-| Output file    | `public/audio/theme-ice-folk.ogg`          |
-| Tempo          | 66 BPM (dotted quarter beat), accept 60–72 |
-| Metre          | 6/8, gentle rocking lilt in two            |
-| Mode           | Dorian, bright and cold                    |
-| Lead           | celesta, glass harmonica                   |
-| Rhythm section | soft frame drum, sleigh bells, cello drone |
-| Colour         | long wooden mountain horn, harp, icy bells |
-| Mood           | calm, crystalline, spacious, friendly      |
-| Duration       | 100 seconds                                |
+| Field          | Value                                           |
+| -------------- | ----------------------------------------------- |
+| Prompt version | `ICE_FOLK@2+s1`                                 |
+| Theme id       | `theme.ice-folk`                                |
+| Output file    | `public/assets/audio/themes/theme-ice-folk.m4a` |
+| Tempo          | 66 BPM (dotted quarter beat), accept 60–72      |
+| Metre          | 6/8, gentle rocking lilt in two                 |
+| Mode           | Dorian, bright and cold                         |
+| Lead           | celesta, glass harmonica                        |
+| Rhythm section | soft frame drum, sleigh bells, cello drone      |
+| Colour         | long wooden mountain horn, harp, icy bells      |
+| Mood           | calm, crystalline, spacious, friendly           |
+| Duration       | 100 seconds                                     |
 
 **Suno — Styles field (up to 1000 characters)** (968 characters):
 
@@ -664,7 +674,7 @@ A sturdy steam-and-forge work tune: low brass in unison, an anvil on the backbea
 | -------------- | ----------------------------------------------------------------- |
 | Prompt version | `DWARF@2+s1`                                                      |
 | Theme id       | `theme.dwarf`                                                     |
-| Output file    | `public/audio/theme-dwarf.ogg`                                    |
+| Output file    | `public/assets/audio/themes/theme-dwarf.m4a`                      |
 | Tempo          | 84 BPM, accept 80–88                                              |
 | Metre          | 4/4, heavy hammer-and-anvil tread                                 |
 | Mode           | major, sturdy, with a flat seventh                                |
@@ -719,7 +729,7 @@ A sugary, bouncy polka on toy instruments with a warm chocolate-rich bass, a gid
 | -------------- | ------------------------------------------------------ |
 | Prompt version | `CANDY@2+s1`                                           |
 | Theme id       | `theme.candy`                                          |
-| Output file    | `public/audio/theme-candy.ogg`                         |
+| Output file    | `public/assets/audio/themes/theme-candy.m4a`           |
 | Tempo          | 156 BPM, accept 150–162                                |
 | Metre          | 2/4, bouncy polka                                      |
 | Mode           | bright major                                           |
@@ -772,16 +782,16 @@ These are proposals, not part of the faction set: see [Optional extras](#optiona
 
 #### Title theme (`theme.title`)
 
-Title screen and menus. Not a faction theme: the manifest's theme entry is per faction, so playing it needs a small manifest change.
+Title screen and menus. Not a faction theme: its manifest entry names no faction.
 
-| Field          | Value                          |
-| -------------- | ------------------------------ |
-| Prompt version | `theme.title@2+s1`             |
-| Output file    | `public/audio/theme-title.ogg` |
-| Tempo          | 132 BPM, accept 128–136        |
-| Metre          | 4/4, galloping triplets        |
-| Loops          | yes                            |
-| Duration       | 100 seconds                    |
+| Field          | Value                                        |
+| -------------- | -------------------------------------------- |
+| Prompt version | `theme.title@2+s1`                           |
+| Output file    | `public/assets/audio/themes/theme-title.m4a` |
+| Tempo          | 132 BPM, accept 128–136                      |
+| Metre          | 4/4, galloping triplets                      |
+| Loops          | yes                                          |
+| Duration       | 100 seconds                                  |
 
 **Suno — Styles field (up to 1000 characters)** (940 characters):
 
@@ -968,11 +978,21 @@ from one downbeat to a later one.
    second of the loop. Skip this if the take is dry enough.
 6. **Listen to the join.** Loop the last four bars into the first four,
    three times, on headphones. Then listen to the whole loop three times.
-7. **Set the level** to the target and export as Ogg Vorbis.
-8. **Check it in the game.** Register the file, open the Gallery's Sounds
-   tab and let the theme play through its join in each browser that
-   matters. The audio loops the decoded file from end to start, so any
-   silence the export left at either end is heard there.
+7. **Set the level** to the target and export as WAV.
+8. **Check it in the game.** Encode it
+   ([Registering an accepted theme](#registering-an-accepted-theme)), open
+   the Gallery's Sounds tab and let the theme play through its join in each
+   browser that matters.
+
+A master that was not made into a loop by hand still loops in the game:
+the encoder cuts the silence from both ends and measures how long the last
+note takes to die away, and the player starts the next pass that long
+before the end, under the dying note
+([Theme music](../ui/SOUND.md#theme-music)). That is how the nine themes
+of 2026-10-07 loop; none of them was edited. It avoids a gap and a click.
+It does not put the join on a bar line: whether a join sounds musical is
+for a listener to say, and `THEME_MASTERS_V1` in the encoder takes an
+`overlapSeconds` per theme to set it by ear.
 
 Any audio editor that shows a waveform and can snap to zero crossings will
 do. Write every step you took into the record: the loop points in seconds,
@@ -1164,11 +1184,12 @@ The faction's own paragraph, to which the shared ending is added:
 A <mood> <kind of piece> for a turn-based strategy game: <who the faction is, in the words of its art direction>, <what it is not>. A <lead instrument> opens at once with a short rising three-note call and <how the melody goes, in which mode>, <answered or doubled by the second lead>. <The rhythm section, instrument by instrument, with the beats they play>, and a <plucked or struck instrument> keeps a steady pattern, like <footsteps or the faction's own image> across a map. The middle section <the faction's story: what drops out and what is left>, and then <the comic sound or event> and <the theme returns>. <Metre and feel>, steady <tempo> BPM. <Two mood words>, never <the wrong mood>.
 ```
 
-## Where themes play (proposal)
+## Where themes play
 
-**This is a proposal for the user, not a decision.** Nothing in a match
-plays a theme today; only the Gallery's Sounds tab can
-([Faction themes](../ui/SOUND.md#faction-themes)).
+**Decided and built** (the user, 2026-10-07: "wire them up"; bead
+`pulp_wars-2yc.27`). The recommendation below is what the game does; the
+table is kept as the reasoning. The exact behaviour is in
+[Where the themes play](../ui/SOUND.md#where-the-themes-play).
 
 | Option                                | For                                                         | Against                                                                                             |
 | ------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
@@ -1178,29 +1199,28 @@ plays a theme today; only the Gallery's Sounds tab can
 | Whoever's turn it is                  | Each faction is heard                                       | AI turns last seconds, so the music would chop; one voice plays at a time, so every switch restarts |
 | Title screen                          | First impression                                            | No faction is chosen yet; needs a ninth piece (see the extras)                                      |
 
-**Recommendation.**
+**What was built.**
 
-1. **Faction select:** the highlighted faction's theme plays from its
-   start. This is where "recognisable in five seconds" pays off.
+1. **Faction select:** on New game, the theme of the faction the player
+   chooses as their own plays from its start and loops while the screen
+   is open. This is where "recognisable in five seconds" pays off. Until
+   the player chooses, the title theme plays on.
 2. **In a match:** the viewer's own faction theme loops for the whole
    match, including other players' turns. In a hot-seat game it changes at
    the hand-over between human players, never for an AI turn.
-3. **Title and menus:** the title theme, if the extra is made; silence
-   otherwise.
-4. **Gallery:** as today.
+3. **Title and menus:** the title theme.
+4. **Gallery:** the title theme, like the other menus; its Sounds tab is
+   silent of itself, and a theme row there plays that theme.
 
-Three things to settle with that decision, none of them part of this
-bead:
+The three things that had to be settled with it:
 
-- **A music control.** Music on repeat needs its own switch or level
-  apart from the effects. Today one toggle and one slider govern both.
-- **Loading.** The audio fetches and decodes every file in the manifest
-  after the player's first gesture. A decoded 100-second stereo theme is
-  about 35 MB of memory, so eight themes loaded that way are about 280 MB.
-  Themes should be loaded when first played, or streamed, before more than
-  one or two are registered.
-- **The end of a match.** The victory or defeat tune should stop the
-  theme.
+- **A music control.** Settings, the match menu and the Gallery's Sounds
+  tab have two levels, **Music** and **Sound**, each with its own on/off.
+- **Loading.** A theme is fetched and decoded when it is first played, and
+  only the one that plays is held: about 38 MB, and twice that for the
+  second a crossfade lasts, instead of 340 MB for nine.
+- **The end of a match.** The theme plays on through the match-end screen
+  (the user, 2026-10-07); the victory or defeat tune plays over it.
 
 ## Optional extras (a proposal)
 
@@ -1210,9 +1230,9 @@ that they can be made in the same session and in the same family:
 [Extras: title theme and stingers](#extras-title-theme-and-stingers).
 
 - **Title theme** (`theme.title`). A pulp-adventure overture for a small
-  pit orchestra that opens with the same rising call. It belongs to no
-  faction, and the manifest's theme entry is per faction, so playing it
-  needs a small manifest change.
+  pit orchestra that opens with the same rising call. **Made and in the
+  game** (2026-10-07): it belongs to no faction, so its manifest entry has
+  no faction and the name "Title".
 - **Victory stinger** and **defeat stinger** (`match.victory`,
   `match.defeat`). Seven seconds each, not loops, ending on a full stop.
   The victory states the call and lifts it; the defeat starts the same
@@ -1227,12 +1247,237 @@ stinger starts at once, ends cleanly and has no silence at its start.
 
 ## Registering an accepted theme
 
-Put the loop at its output file under `public/audio/` and add one entry to
-`SOUND_THEMES_V1` in `src/audio/sound-manifest.ts`, with the theme id and
-file name from the faction's table and `loop: true`:
-[Faction themes](../ui/SOUND.md#faction-themes) has the exact shape. The
-Gallery's row for the faction then plays it. No theme is registered yet.
+1. Keep the master (WAV) in a folder outside the repository. Git refuses a
+   WAV, and a test fails on one.
+2. In `scripts/audio/encode-themes.ts`, give the theme a line in
+   `THEME_MASTERS_V1`: its id, its faction (null for a theme of none), the
+   master's file name and the prompt version it was made from.
+3. Run `npx tsx scripts/audio/encode-themes.ts <folder of the masters>`.
+   It needs macOS. It writes the theme's `.m4a` under
+   `public/assets/audio/themes/` and its measurements to
+   `src/audio/theme-music.json`.
+4. Run `npx tsx scripts/audio/theme-records.ts render` and fill in the cells of
+   the new record that only you know.
+5. Nothing else changes: `SOUND_THEMES_V1` is read from that file, the
+   game plays the theme for its faction and the Gallery's row plays it
+   ([Theme music](../ui/SOUND.md#theme-music)).
+
+The build needs neither the masters nor the script: the encoded files and
+the manifest are checked in. A tenth theme needs the size budget of
+`tests/unit/stock-sounds-assets.test.ts` raised on purpose.
 
 ## Records
 
-No theme has been accepted yet.
+The table and the records between the markers are generated
+(`npx tsx scripts/audio/theme-records.ts render`); what the author writes into a
+cell marked "To be filled by the author" is kept when they are generated
+again.
+
+<!-- theme-records:begin (generated by scripts/audio/theme-records.ts from src/audio/theme-music.json; the cells marked for the author are kept) -->
+
+9 themes, Suno, 2026-10-07; 12.6 MB together. The masters were measured and encoded by `scripts/audio/encode-themes.ts`; every number below is from `src/audio/theme-music.json`, which that script writes.
+
+**Still to be filled in by the author**, in every record: the model or version exactly as Suno showed it, which blocks went into which fields, any change to the prompt, the number of takes, and the plan with its terms. The plan's terms on the day a track was generated decide whether it may be used commercially; until that cell is filled in, that is not established.
+
+| Theme            | Master                  | Length   | Cut from start / end | Loudness    | Peak       | Gain  | Ends at    | Loop overlap | Size    |
+| ---------------- | ----------------------- | -------- | -------------------- | ----------- | ---------- | ----- | ---------- | ------------ | ------- |
+| `theme.human`    | `humans.wav`            | 97.625 s | 0.115 s / 1.58 s     | −16.74 LUFS | −4.91 dBFS | 1.089 | −61.1 dBFS | 2.13 s       | 1.39 MB |
+| `theme.undead`   | `undead.wav`            | 99.085 s | 0.155 s / 0.72 s     | −16.64 LUFS | −4.86 dBFS | 1.077 | −59.3 dBFS | 2.09 s       | 1.41 MB |
+| `theme.goblin`   | `goblins 4.wav`         | 98.76 s  | 0 s / 0 s            | −14.91 LUFS | −2.45 dBFS | 0.882 | −47.0 dBFS | 2.01 s       | 1.40 MB |
+| `theme.dinosaur` | `dino cavemen.wav`      | 99.6 s   | 0 s / 0 s            | −15.37 LUFS | −3.55 dBFS | 0.93  | −32.8 dBFS | 1.35 s       | 1.42 MB |
+| `theme.martian`  | `martians.wav`          | 99.145 s | 0.135 s / 0 s        | −14.85 LUFS | −3.97 dBFS | 0.876 | −54.1 dBFS | 1.65 s       | 1.41 MB |
+| `theme.ice-folk` | `ice folk.wav`          | 99.175 s | 0.385 s / 0 s        | −14.96 LUFS | −3.86 dBFS | 0.887 | −62.6 dBFS | 2.17 s       | 1.41 MB |
+| `theme.dwarf`    | `steampunk dwarfs.wav`  | 98.495 s | 0.145 s / 0 s        | −16.61 LUFS | −5.46 dBFS | 1.073 | −40.5 dBFS | 1.5 s        | 1.40 MB |
+| `theme.candy`    | `candy christmassy.wav` | 98.8 s   | 0 s / 0 s            | −15.61 LUFS | −2.57 dBFS | 0.957 | −58.9 dBFS | 1.55 s       | 1.40 MB |
+| `theme.title`    | `pulp wars title 2.wav` | 98.8 s   | 0 s / 0 s            | −15.81 LUFS | −2.52 dBFS | 0.978 | −63.8 dBFS | 2.8 s        | 1.40 MB |
+
+### theme.human, 2026-10-07
+
+| Field                 | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme id              | `theme.human`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Output file           | `public/assets/audio/themes/theme-human.m4a`                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Date                  | 2026-10-07                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Service               | Suno                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Model or version      | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Prompt version        | `ORIGINAL@2+s1`, `theme-prompts.json` at commit `5dae5a51`                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Fields used           | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Changes to the prompt | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Takes generated       | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Take chosen           | The author's file `humans.wav`: the author's own choice among the takes                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Edits                 | None in the service that is known. By `scripts/audio/encode-themes.ts`: 0.115 s cut from the start, 1.58 s of silence cut from the end; no fade, no level change and no loop edit in the file; encoded AAC-LC stereo 44.1 kHz at 112 kbit/s (1,388,447 bytes). In the game: played at gain 1.089 (+0.74 dB). Loop: the master ends on a note that dies away (−61.1 dBFS in its last 50 ms), so the next pass starts 2.13 s before the end and the ending pass is faded out under it, in the player |
+| Final loudness        | −16.74 LUFS integrated and a sample peak of −4.91 dBFS in the file; −16.0 LUFS as played, before the mixer's music level. True peak not measured                                                                                                                                                                                                                                                                                                                                                   |
+| Length                | 97.625 s (the master: 99.32 s). Bars not counted                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Plan and licence      | To be filled by the author: the plan the account was on that day, and what its terms said about commercial use and ownership                                                                                                                                                                                                                                                                                                                                                                       |
+| Checklist             | Not recorded by the author. The loop join was set by measurement and has not been listened to                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Raw take kept at      | The author's `suno_score` folder, outside the repository, as `humans.wav`                                                                                                                                                                                                                                                                                                                                                                                                                          |
+
+### theme.undead, 2026-10-07
+
+| Field                 | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme id              | `theme.undead`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Output file           | `public/assets/audio/themes/theme-undead.m4a`                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Date                  | 2026-10-07                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Service               | Suno                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Model or version      | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Prompt version        | `UNDEAD@2+s1`, `theme-prompts.json` at commit `5dae5a51`                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Fields used           | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Changes to the prompt | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Takes generated       | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Take chosen           | The author's file `undead.wav`: the author's own choice among the takes                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Edits                 | None in the service that is known. By `scripts/audio/encode-themes.ts`: 0.155 s cut from the start, 0.72 s of silence cut from the end; no fade, no level change and no loop edit in the file; encoded AAC-LC stereo 44.1 kHz at 112 kbit/s (1,408,448 bytes). In the game: played at gain 1.077 (+0.64 dB). Loop: the master ends on a note that dies away (−59.3 dBFS in its last 50 ms), so the next pass starts 2.09 s before the end and the ending pass is faded out under it, in the player |
+| Final loudness        | −16.64 LUFS integrated and a sample peak of −4.86 dBFS in the file; −16.0 LUFS as played, before the mixer's music level. True peak not measured                                                                                                                                                                                                                                                                                                                                                   |
+| Length                | 99.085 s (the master: 99.96 s). Bars not counted                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Plan and licence      | To be filled by the author: the plan the account was on that day, and what its terms said about commercial use and ownership                                                                                                                                                                                                                                                                                                                                                                       |
+| Checklist             | Not recorded by the author. The loop join was set by measurement and has not been listened to                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Raw take kept at      | The author's `suno_score` folder, outside the repository, as `undead.wav`                                                                                                                                                                                                                                                                                                                                                                                                                          |
+
+### theme.goblin, 2026-10-07
+
+| Field                 | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme id              | `theme.goblin`                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Output file           | `public/assets/audio/themes/theme-goblin.m4a`                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Date                  | 2026-10-07                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Service               | Suno                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Model or version      | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Prompt version        | `GOBLIN@2+s1`, `theme-prompts.json` at commit `5dae5a51`                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Fields used           | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Changes to the prompt | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Takes generated       | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Take chosen           | The author's file `goblins 4.wav`: the author's own choice among the takes                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Edits                 | None in the service that is known. By `scripts/audio/encode-themes.ts`: nothing cut from the start, nothing cut from the end; no fade, no level change and no loop edit in the file; encoded AAC-LC stereo 44.1 kHz at 112 kbit/s (1,403,896 bytes). In the game: played at gain 0.882 (−1.09 dB). Loop: the master ends on a note that dies away (−47.0 dBFS in its last 50 ms), so the next pass starts 2.01 s before the end and the ending pass is faded out under it, in the player |
+| Final loudness        | −14.91 LUFS integrated and a sample peak of −2.45 dBFS in the file; −16.0 LUFS as played, before the mixer's music level. True peak not measured                                                                                                                                                                                                                                                                                                                                         |
+| Length                | 98.76 s (the master: 98.76 s). Bars not counted                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Plan and licence      | To be filled by the author: the plan the account was on that day, and what its terms said about commercial use and ownership                                                                                                                                                                                                                                                                                                                                                             |
+| Checklist             | Not recorded by the author. The loop join was set by measurement and has not been listened to                                                                                                                                                                                                                                                                                                                                                                                            |
+| Raw take kept at      | The author's `suno_score` folder, outside the repository, as `goblins 4.wav`                                                                                                                                                                                                                                                                                                                                                                                                             |
+
+### theme.dinosaur, 2026-10-07
+
+| Field                 | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme id              | `theme.dinosaur`                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Output file           | `public/assets/audio/themes/theme-dinosaur.m4a`                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Date                  | 2026-10-07                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Service               | Suno                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Model or version      | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Prompt version        | `DINOSAUR@2+s1`, `theme-prompts.json` at commit `5dae5a51`                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Fields used           | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Changes to the prompt | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Takes generated       | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Take chosen           | The author's file `dino cavemen.wav`: the author's own choice among the takes                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Edits                 | None in the service that is known. By `scripts/audio/encode-themes.ts`: nothing cut from the start, nothing cut from the end; no fade, no level change and no loop edit in the file; encoded AAC-LC stereo 44.1 kHz at 112 kbit/s (1,415,611 bytes). In the game: played at gain 0.93 (−0.63 dB). Loop: the master ends on a note that dies away (−32.8 dBFS in its last 50 ms), so the next pass starts 1.35 s before the end and the ending pass is faded out under it, in the player |
+| Final loudness        | −15.37 LUFS integrated and a sample peak of −3.55 dBFS in the file; −16.0 LUFS as played, before the mixer's music level. True peak not measured                                                                                                                                                                                                                                                                                                                                        |
+| Length                | 99.6 s (the master: 99.6 s). Bars not counted                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Plan and licence      | To be filled by the author: the plan the account was on that day, and what its terms said about commercial use and ownership                                                                                                                                                                                                                                                                                                                                                            |
+| Checklist             | Not recorded by the author. The loop join was set by measurement and has not been listened to                                                                                                                                                                                                                                                                                                                                                                                           |
+| Raw take kept at      | The author's `suno_score` folder, outside the repository, as `dino cavemen.wav`                                                                                                                                                                                                                                                                                                                                                                                                         |
+
+### theme.martian, 2026-10-07
+
+| Field                 | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme id              | `theme.martian`                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Output file           | `public/assets/audio/themes/theme-martian.m4a`                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Date                  | 2026-10-07                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Service               | Suno                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Model or version      | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Prompt version        | `MARTIAN@2+s1`, `theme-prompts.json` at commit `5dae5a51`                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Fields used           | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Changes to the prompt | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Takes generated       | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Take chosen           | The author's file `martians.wav`: the author's own choice among the takes                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Edits                 | None in the service that is known. By `scripts/audio/encode-themes.ts`: 0.135 s cut from the start, nothing cut from the end; no fade, no level change and no loop edit in the file; encoded AAC-LC stereo 44.1 kHz at 112 kbit/s (1,409,843 bytes). In the game: played at gain 0.876 (−1.15 dB). Loop: the master ends on a note that dies away (−54.1 dBFS in its last 50 ms), so the next pass starts 1.65 s before the end and the ending pass is faded out under it, in the player |
+| Final loudness        | −14.85 LUFS integrated and a sample peak of −3.97 dBFS in the file; −16.0 LUFS as played, before the mixer's music level. True peak not measured                                                                                                                                                                                                                                                                                                                                         |
+| Length                | 99.145 s (the master: 99.28 s). Bars not counted                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Plan and licence      | To be filled by the author: the plan the account was on that day, and what its terms said about commercial use and ownership                                                                                                                                                                                                                                                                                                                                                             |
+| Checklist             | Not recorded by the author. The loop join was set by measurement and has not been listened to                                                                                                                                                                                                                                                                                                                                                                                            |
+| Raw take kept at      | The author's `suno_score` folder, outside the repository, as `martians.wav`                                                                                                                                                                                                                                                                                                                                                                                                              |
+
+### theme.ice-folk, 2026-10-07
+
+| Field                 | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme id              | `theme.ice-folk`                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Output file           | `public/assets/audio/themes/theme-ice-folk.m4a`                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Date                  | 2026-10-07                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Service               | Suno                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Model or version      | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Prompt version        | `ICE_FOLK@2+s1`, `theme-prompts.json` at commit `5dae5a51`                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Fields used           | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Changes to the prompt | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Takes generated       | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Take chosen           | The author's file `ice folk.wav`: the author's own choice among the takes                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Edits                 | None in the service that is known. By `scripts/audio/encode-themes.ts`: 0.385 s cut from the start, nothing cut from the end; no fade, no level change and no loop edit in the file; encoded AAC-LC stereo 44.1 kHz at 112 kbit/s (1,409,748 bytes). In the game: played at gain 0.887 (−1.04 dB). Loop: the master ends on a note that dies away (−62.6 dBFS in its last 50 ms), so the next pass starts 2.17 s before the end and the ending pass is faded out under it, in the player |
+| Final loudness        | −14.96 LUFS integrated and a sample peak of −3.86 dBFS in the file; −16.0 LUFS as played, before the mixer's music level. True peak not measured                                                                                                                                                                                                                                                                                                                                         |
+| Length                | 99.175 s (the master: 99.56 s). Bars not counted                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Plan and licence      | To be filled by the author: the plan the account was on that day, and what its terms said about commercial use and ownership                                                                                                                                                                                                                                                                                                                                                             |
+| Checklist             | Not recorded by the author. The loop join was set by measurement and has not been listened to                                                                                                                                                                                                                                                                                                                                                                                            |
+| Raw take kept at      | The author's `suno_score` folder, outside the repository, as `ice folk.wav`                                                                                                                                                                                                                                                                                                                                                                                                              |
+
+### theme.dwarf, 2026-10-07
+
+| Field                 | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme id              | `theme.dwarf`                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Output file           | `public/assets/audio/themes/theme-dwarf.m4a`                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Date                  | 2026-10-07                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Service               | Suno                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Model or version      | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Prompt version        | `DWARF@2+s1`, `theme-prompts.json` at commit `5dae5a51`                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Fields used           | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Changes to the prompt | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Takes generated       | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Take chosen           | The author's file `steampunk dwarfs.wav`: the author's own choice among the takes                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Edits                 | None in the service that is known. By `scripts/audio/encode-themes.ts`: 0.145 s cut from the start, nothing cut from the end; no fade, no level change and no loop edit in the file; encoded AAC-LC stereo 44.1 kHz at 112 kbit/s (1,400,880 bytes). In the game: played at gain 1.073 (+0.61 dB). Loop: the master ends on a note that dies away (−40.5 dBFS in its last 50 ms), so the next pass starts 1.5 s before the end and the ending pass is faded out under it, in the player |
+| Final loudness        | −16.61 LUFS integrated and a sample peak of −5.46 dBFS in the file; −16.0 LUFS as played, before the mixer's music level. True peak not measured                                                                                                                                                                                                                                                                                                                                        |
+| Length                | 98.495 s (the master: 98.64 s). Bars not counted                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Plan and licence      | To be filled by the author: the plan the account was on that day, and what its terms said about commercial use and ownership                                                                                                                                                                                                                                                                                                                                                            |
+| Checklist             | Not recorded by the author. The loop join was set by measurement and has not been listened to                                                                                                                                                                                                                                                                                                                                                                                           |
+| Raw take kept at      | The author's `suno_score` folder, outside the repository, as `steampunk dwarfs.wav`                                                                                                                                                                                                                                                                                                                                                                                                     |
+
+### theme.candy, 2026-10-07
+
+| Field                 | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme id              | `theme.candy`                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Output file           | `public/assets/audio/themes/theme-candy.m4a`                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Date                  | 2026-10-07                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Service               | Suno                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Model or version      | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Prompt version        | `CANDY@2+s1`, `theme-prompts.json` at commit `5dae5a51`                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Fields used           | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Changes to the prompt | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Takes generated       | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Take chosen           | The author's file `candy christmassy.wav`: the author's own choice among the takes                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Edits                 | None in the service that is known. By `scripts/audio/encode-themes.ts`: nothing cut from the start, nothing cut from the end; no fade, no level change and no loop edit in the file; encoded AAC-LC stereo 44.1 kHz at 112 kbit/s (1,404,546 bytes). In the game: played at gain 0.957 (−0.38 dB). Loop: the master ends on a note that dies away (−58.9 dBFS in its last 50 ms), so the next pass starts 1.55 s before the end and the ending pass is faded out under it, in the player |
+| Final loudness        | −15.61 LUFS integrated and a sample peak of −2.57 dBFS in the file; −16.0 LUFS as played, before the mixer's music level. True peak not measured                                                                                                                                                                                                                                                                                                                                         |
+| Length                | 98.8 s (the master: 98.8 s). Bars not counted                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Plan and licence      | To be filled by the author: the plan the account was on that day, and what its terms said about commercial use and ownership                                                                                                                                                                                                                                                                                                                                                             |
+| Checklist             | Not recorded by the author. The loop join was set by measurement and has not been listened to                                                                                                                                                                                                                                                                                                                                                                                            |
+| Raw take kept at      | The author's `suno_score` folder, outside the repository, as `candy christmassy.wav`                                                                                                                                                                                                                                                                                                                                                                                                     |
+
+### theme.title, 2026-10-07
+
+| Field                 | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme id              | `theme.title`                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Output file           | `public/assets/audio/themes/theme-title.m4a`                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Date                  | 2026-10-07                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Service               | Suno                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Model or version      | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Prompt version        | `theme.title@2+s1`, `theme-prompts.json` at commit `5dae5a51`                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Fields used           | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Changes to the prompt | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Takes generated       | To be filled by the author                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Take chosen           | The author's file `pulp wars title 2.wav`: the author's own choice among the takes                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Edits                 | None in the service that is known. By `scripts/audio/encode-themes.ts`: nothing cut from the start, nothing cut from the end; no fade, no level change and no loop edit in the file; encoded AAC-LC stereo 44.1 kHz at 112 kbit/s (1,404,582 bytes). In the game: played at gain 0.978 (−0.19 dB). Loop: the master ends on a note that dies away (−63.8 dBFS in its last 50 ms), so the next pass starts 2.8 s before the end and the ending pass is faded out under it, in the player |
+| Final loudness        | −15.81 LUFS integrated and a sample peak of −2.52 dBFS in the file; −16.0 LUFS as played, before the mixer's music level. True peak not measured                                                                                                                                                                                                                                                                                                                                        |
+| Length                | 98.8 s (the master: 98.8 s). Bars not counted                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Plan and licence      | To be filled by the author: the plan the account was on that day, and what its terms said about commercial use and ownership                                                                                                                                                                                                                                                                                                                                                            |
+| Checklist             | Not recorded by the author. The loop join was set by measurement and has not been listened to                                                                                                                                                                                                                                                                                                                                                                                           |
+| Raw take kept at      | The author's `suno_score` folder, outside the repository, as `pulp wars title 2.wav`                                                                                                                                                                                                                                                                                                                                                                                                    |
+
+<!-- theme-records:end -->

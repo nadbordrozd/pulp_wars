@@ -274,6 +274,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#dwarfActionButtons":
     "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#viewerFaction": "SEAT",
+  // Bead pulp_wars-2yc.27: the match's theme music is the viewing seat's
+  // faction theme; no unit is involved.
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#syncMusic": "SEAT",
   // The campaign screens (pulp_wars-68k.5) read the factions of a mission's
   // seats and of the unlock table; no unit is involved.
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#campaignList": "SEAT",
@@ -330,8 +333,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // whose colour): registry factions, never a live unit, so there is no
   // kind to resolve.
   "src/render/gallery-sounds-presentation-v7.ts::themeEntry": "SEAT",
-  "src/render/gallery-sounds-presentation-v7.ts::gallerySoundPlayLabelV7":
-    "SEAT",
+  // Bead pulp_wars-2yc.27: the themes of no faction (the title theme)
+  // are the manifest entries whose faction is null.
+  "src/render/gallery-sounds-presentation-v7.ts::gallerySoundGroupsV7": "SEAT",
   "src/render/dom/gallery-sounds-v7.ts::gallerySoundsPanelV7": "SEAT",
   // Bead pulp_wars-2yc.4 (classified by pulp_wars-2yp): the title scene
   // draws authored figures, each the registry faction its layout names

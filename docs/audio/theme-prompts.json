@@ -13,7 +13,7 @@
       "minSeconds": 90,
       "maxSeconds": 120
     },
-    "outputFilePattern": "public/audio/theme-<name>.ogg",
+    "outputFilePattern": "public/assets/audio/themes/theme-<name>.m4a",
     "motif": "rising three-note call",
     "sunoCommonStyle": "instrumental, playful strategy game theme, clear melody, steady tempo, loopable",
     "sunoCommonExclude": "vocals, singing, choir, lyrics, spoken word, dark, grim, horror, epic trailer, heavy metal, long intro, fade out",
@@ -24,7 +24,7 @@
     "ORIGINAL": {
       "name": "Human",
       "themeId": "theme.human",
-      "outputFile": "public/audio/theme-human.ogg",
+      "outputFile": "public/assets/audio/themes/theme-human.m4a",
       "promptVersion": 2,
       "identity": "A tidy storybook-kingdom march: the town band of a practical realm of settlers, soldiers and builders.",
       "palette": {
@@ -53,7 +53,7 @@
     "UNDEAD": {
       "name": "Undead",
       "themeId": "theme.undead",
-      "outputFile": "public/audio/theme-undead.ogg",
+      "outputFile": "public/assets/audio/themes/theme-undead.m4a",
       "promptVersion": 2,
       "identity": "A spooky-fun graveyard waltz from a Halloween picture book: creaky, mock-solemn and creepy-cute.",
       "palette": {
@@ -82,7 +82,7 @@
     "GOBLIN": {
       "name": "Goblin",
       "themeId": "theme.goblin",
-      "outputFile": "public/audio/theme-goblin.ogg",
+      "outputFile": "public/assets/audio/themes/theme-goblin.m4a",
       "promptVersion": 2,
       "identity": "A rowdy, ramshackle horde shuffle on junk percussion that always sounds about to fall apart and never does.",
       "palette": {
@@ -118,7 +118,7 @@
     "DINOSAUR": {
       "name": "Dinosaur",
       "themeId": "theme.dinosaur",
-      "outputFile": "public/audio/theme-dinosaur.ogg",
+      "outputFile": "public/assets/audio/themes/theme-dinosaur.m4a",
       "promptVersion": 2,
       "identity": "A cheerful lost-world stomp: a sunny ocarina tune over the footsteps of something huge and friendly.",
       "palette": {
@@ -151,7 +151,7 @@
     "MARTIAN": {
       "name": "Martian",
       "themeId": "theme.martian",
-      "outputFile": "public/audio/theme-martian.ogg",
+      "outputFile": "public/assets/audio/themes/theme-martian.m4a",
       "promptVersion": 2,
       "identity": "A campy 1950s pulp sci-fi invasion: a wobbling theremin over a strict machine pulse, menace played for laughs.",
       "palette": {
@@ -184,7 +184,7 @@
     "ICE_FOLK": {
       "name": "Ice Folk",
       "themeId": "theme.ice-folk",
-      "outputFile": "public/audio/theme-ice-folk.ogg",
+      "outputFile": "public/assets/audio/themes/theme-ice-folk.m4a",
       "promptVersion": 2,
       "identity": "A calm, crystalline winter picture book from the high peaks: glassy bells and a far-off mountain horn.",
       "palette": {
@@ -213,7 +213,7 @@
     "DWARF": {
       "name": "Dwarf",
       "themeId": "theme.dwarf",
-      "outputFile": "public/audio/theme-dwarf.ogg",
+      "outputFile": "public/assets/audio/themes/theme-dwarf.m4a",
       "promptVersion": 2,
       "identity": "A sturdy steam-and-forge work tune: low brass in unison, an anvil on the backbeat and ticking clockwork.",
       "palette": {
@@ -247,7 +247,7 @@
     "CANDY": {
       "name": "Candy",
       "themeId": "theme.candy",
-      "outputFile": "public/audio/theme-candy.ogg",
+      "outputFile": "public/assets/audio/themes/theme-candy.m4a",
       "promptVersion": 2,
       "identity": "A sugary, bouncy polka on toy instruments with a warm chocolate-rich bass, a giddy rush and a woozy crash.",
       "palette": {
@@ -283,8 +283,8 @@
     {
       "id": "theme.title",
       "name": "Title theme",
-      "use": "Title screen and menus. Not a faction theme: the manifest's theme entry is per faction, so playing it needs a small manifest change.",
-      "outputFile": "public/audio/theme-title.ogg",
+      "use": "Title screen and menus. Not a faction theme: its manifest entry names no faction.",
+      "outputFile": "public/assets/audio/themes/theme-title.m4a",
       "loop": true,
       "durationSeconds": 100,
       "promptVersion": 2,

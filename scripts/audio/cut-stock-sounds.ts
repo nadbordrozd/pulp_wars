@@ -371,7 +371,8 @@ function main(): void {
   // Clips the manifest does not list: said always, removed with --prune.
   const listed = new Set(STOCK_SOUND_ALL_CLIPS_V1.map((clip) => clip.file));
   for (const file of readdirSync(out).sort()) {
-    if (listed.has(file)) continue;
+    // The theme music has a folder of its own in there; it is not a clip.
+    if (listed.has(file) || statSync(join(out, file)).isDirectory()) continue;
     if (prune) rmSync(join(out, file));
     lines.push(
       `${file} is not in the manifest${prune ? ": removed" : " (--prune removes it)"}`,

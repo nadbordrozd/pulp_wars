@@ -562,6 +562,8 @@ import {
 import { GalleryViewV7 } from "./gallery-v7";
 import {
   createBrowserGameAudioV1,
+  themeForSceneV1,
+  type MusicSceneV1,
   soundCuesForBoundaryV7,
   soundCuesForStepV7,
   type GameAudioV1,
@@ -1051,6 +1053,12 @@ export class Ruleset7DomAppView {
   readonly #audio: GameAudioV1;
   readonly #ownsAudio: boolean;
   #soundTestOpen = false;
+  /**
+   * The faction the player last chose as their own on this visit to New
+   * game: its theme plays there (bead pulp_wars-2yc.27). Null until they
+   * choose one, and again when the screen is left.
+   */
+  #setupThemeFaction: FactionIdV7 | null = null;
 
   constructor(
     documentRoot: Document,
@@ -1440,8 +1448,29 @@ export class Ruleset7DomAppView {
     return view === null ? undefined : this.#playerColour(view, view.viewer.id);
   }
 
+  /**
+   * Tells the audio which theme belongs to what is shown (bead
+   * pulp_wars-2yc.27, docs/ui/SOUND.md "Where the themes play"): the
+   * viewer's faction theme in a match, the title theme on the menus, the
+   * chosen faction's on New game, none on the Gallery's Sounds tab.
+   */
+  #syncMusic(): void {
+    const { view, phase } = this.#snapshot;
+    const scene: MusicSceneV1 =
+      view !== null &&
+      (phase === "ACTIVE" || phase === "COMPLETE" || phase === "ERROR")
+        ? { kind: "MATCH", viewer: view.viewer.faction }
+        : this.#galleryOpen
+          ? { kind: this.#gallery?.tab === "SOUNDS" ? "SOUNDS" : "MENU" }
+          : this.#frontPage === "SETUP" && phase !== "RECOVERY"
+            ? { kind: "SETUP", preview: this.#setupThemeFaction }
+            : { kind: "MENU" };
+    this.#audio.setMusic(themeForSceneV1(scene));
+  }
+
   #render(): void {
     if (this.#destroyed) return;
+    this.#syncMusic();
     if (
       this.#snapshot.view !== null &&
       (this.#snapshot.phase === "ACTIVE" ||
@@ -1642,6 +1671,7 @@ export class Ruleset7DomAppView {
   #openFrontPage(page: FrontPageV7): void {
     const from = this.#frontPage;
     this.#frontPage = page;
+    this.#setupThemeFaction = null;
     this.#briefingMissionId = null;
     this.#confirmCampaignReset = false;
     this.#error = "";
@@ -2247,7 +2277,13 @@ export class Ruleset7DomAppView {
     const syncShowcase = (): void => this.#syncSetupFields(form);
     syncShowcase();
     form.addEventListener("change", () => {
+      const own = this.#draft.factions[0];
       this.#readDraft(form);
+      // The player chose a faction: its theme is heard at once.
+      if (this.#draft.factions[0] !== own) {
+        this.#setupThemeFaction = this.#draft.factions[0] ?? null;
+        this.#syncMusic();
+      }
       syncShowcase();
       const description = form.querySelector<HTMLElement>(
         ".v7-map-type-description",
@@ -2550,6 +2586,7 @@ export class Ruleset7DomAppView {
       storage: this.#settingsStorage,
       onBack: () => this.#closeGallery(),
       audio: this.#audio,
+      onTabChange: () => this.#syncMusic(),
       motion: () => this.#motion,
       ...(this.#chibiDomEnvironment === null
         ? {}
@@ -2747,7 +2784,7 @@ export class Ruleset7DomAppView {
     if (this.#compactMenuOpen) {
       const menu = el(this.#document, "div", "v7-hud-menu");
       menu.id = "v7-hud-menu";
-      menu.append(this.#muteMenuItem());
+      menu.append(this.#muteMenuItem("sound"), this.#muteMenuItem("music"));
       for (const [label, screen, action] of [
         ["Leaderboard", "LEADERBOARD", "leaderboard"],
         ["Achievements", "ACHIEVEMENTS", "achievements"],
@@ -6444,29 +6481,36 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * The match menu's mute (bead pulp_wars-2yc.10): one press turns sound
-   * off or on. It redraws itself, so the menu stays open.
+   * The match menu's mutes (beads pulp_wars-2yc.10 and pulp_wars-2yc.27):
+   * one press turns the sound effects, or the music, off or on. Each
+   * redraws itself, so the menu stays open.
    */
-  #muteMenuItem(): HTMLButtonElement {
+  #muteMenuItem(level: "sound" | "music"): HTMLButtonElement {
+    const music = level === "music";
+    const name = music ? "Music" : "Sound";
     const item = this.#document.createElement("button");
     item.type = "button";
-    item.dataset.action = "mute";
+    item.dataset.action = music ? "mute-music" : "mute";
     item.className = "v7-menu-item v7-menu-sound";
     item.setAttribute(SILENT_CLICK_ATTRIBUTE_V7, "");
+    const on = (): boolean =>
+      music ? this.#audio.settings.musicEnabled : this.#audio.settings.enabled;
     const sync = (): void => {
-      const enabled = this.#audio.settings.enabled;
+      const enabled = on();
       item.replaceChildren(
-        uiIconV7(this.#document, enabled ? "sound" : "sound-off"),
-        text(this.#document, "span", "Sound"),
+        uiIconV7(this.#document, enabled ? level : `${level}-off`),
+        text(this.#document, "span", name),
       );
       item.setAttribute("aria-pressed", String(enabled));
       item.dataset.sound = enabled ? "on" : "off";
-      item.title = enabled ? "Sound on" : "Sound off";
+      item.title = `${name} ${enabled ? "on" : "off"}`;
     };
     sync();
     item.onclick = () => {
-      if (!this.#audio.setEnabled(!this.#audio.settings.enabled))
-        this.#error = "Settings could not be saved.";
+      const stored = music
+        ? this.#audio.setMusicEnabled(!on())
+        : this.#audio.setEnabled(!on());
+      if (!stored) this.#error = "Settings could not be saved.";
       sync();
       this.#audio.play("ui.toggle");
     };
@@ -6539,7 +6583,8 @@ export class Ruleset7DomAppView {
       this.#persistSettings();
       this.#render();
     };
-    // Sound: an icon toggle and a volume slider (docs/ui/SOUND.md).
+    // Music and Sound: an icon toggle and a volume slider each
+    // (docs/ui/SOUND.md).
     const sound = soundControlsV7(this.#document, this.#audio, {
       onStoreFailed: () => {
         this.#error = "Settings could not be saved.";

@@ -24,6 +24,9 @@ export interface SoundSmokeDriverV7 {
 const REVIEW = "globalThis.__SOUND_SMOKE__";
 const AUDIO = `${REVIEW}.view.audio`;
 const TOGGLE = '[data-action="sound-toggle"]';
+const MUSIC_TOGGLE = '[data-action="music-toggle"]';
+/** The fixture's viewer plays the Undead. */
+const THEME_FILE = "assets/audio/themes/theme-undead.m4a";
 
 export async function probeSoundV7(
   driver: SoundSmokeDriverV7,
@@ -41,11 +44,32 @@ export async function probeSoundV7(
   await driver.waitForExpression(
     `${REVIEW}?.boardHost !== undefined && document.querySelector('canvas.board-canvas-v7') !== null`,
   );
+  // Bead pulp_wars-2yc.27: the match knows its theme (the viewer's
+  // faction's) and has fetched nothing for it before a gesture.
+  const quiet = await driver.evaluate<{
+    readonly scene: string | null;
+    readonly requests: number;
+  }>(
+    `({ scene: ${AUDIO}.music.scene, requests: ${AUDIO}.music.requests.length })`,
+  );
+  if (quiet.scene !== "theme.undead" || quiet.requests !== 0)
+    throw new Error(`Theme before a gesture: ${JSON.stringify(quiet)}`);
   // Settings: the toggle turns sound off and on again.
   await driver.openCompactMenuItem("settings");
   await driver.waitForExpression(
     `document.querySelector('${TOGGLE}')?.getAttribute('aria-pressed') === 'true' && document.querySelector('#v7-sound-volume') !== null && ${AUDIO}.settings.enabled === true`,
   );
+  // Two levels: Music beside Sound, each a toggle and a slider.
+  await driver.waitForExpression(
+    `document.querySelector('${MUSIC_TOGGLE}')?.getAttribute('aria-pressed') === 'true' && document.querySelector('#v7-music-volume')?.type === 'range' && ${AUDIO}.settings.musicEnabled === true`,
+  );
+  // Opening the menu was the first gesture: the theme is asked for now
+  // (where the browser has a sound device at all).
+  await driver.waitForExpression(
+    `${AUDIO}.unlocked !== true || ${AUDIO}.music.requests.some((url) => url.includes('${THEME_FILE}'))`,
+    300,
+  );
+  const theme = await driver.evaluate<boolean>(`${AUDIO}.unlocked === true`);
   const listed = await driver.evaluate<number>(
     `document.querySelectorAll('[data-v7-sound-test] [data-sound-id]').length`,
   );
@@ -95,5 +119,5 @@ export async function probeSoundV7(
   );
   const ids = [...new Set(log.map((entry) => entry.id))];
   const outcomes = [...new Set(log.map((entry) => entry.outcome))];
-  return `toggle off (muted) and on, ${listed} sounds listed, Lich attack asked for ${ids.join(", ")} (${outcomes.join("/")})`;
+  return `Music and Sound sliders, Undead theme ${theme ? "requested after the first gesture" : "not requested (no sound device)"}, toggle off (muted) and on, ${listed} sounds listed, Lich attack asked for ${ids.join(", ")} (${outcomes.join("/")})`;
 }

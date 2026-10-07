@@ -1,11 +1,21 @@
-import type { SoundOutputV1, SoundStartV1, SoundStopV1 } from "./mixer";
+import {
+  DEFAULT_CATEGORY_GAINS_V1,
+  type SoundOutputV1,
+  type SoundStartV1,
+  type SoundStopV1,
+} from "./mixer";
+import {
+  MusicPlayerV1,
+  type MusicPlayerStateV1,
+  type MusicTrackV1,
+} from "./music-player";
 import {
   playableRecipeV1,
   playableSoundIdsV1,
   playableSoundV1,
 } from "./playable-sound";
 import { soundFileBytesV1, type SoundFileFetchV1 } from "./sound-file-store";
-import type { SoundKeyV1 } from "./sound-manifest";
+import { SOUND_THEMES_V1, type SoundKeyV1 } from "./sound-manifest";
 import {
   isStockSoundChoiceV1,
   stockSoundChoiceV1,
@@ -47,6 +57,13 @@ import {
  *
  * Voices run through one master gain and a gentle limiter, so several
  * sounds at once cannot clip.
+ *
+ * Music (bead pulp_wars-2yc.27, docs/ui/SOUND.md "Theme music") has a gain
+ * of its own beside the effects' master, straight to the device: the
+ * limiter never pumps it when an effect is loud. A theme's file is not
+ * fetched when the device opens. It is fetched and decoded when the theme
+ * is first asked for (`setMusic`), and only the theme that plays is held
+ * (`music-player.ts`).
  */
 export interface WebAudioOutputV1 extends SoundOutputV1 {
   /** True once a gesture has created the context. */
@@ -55,8 +72,27 @@ export interface WebAudioOutputV1 extends SoundOutputV1 {
   readonly stockSounds: boolean;
   /** Creates the context if needed and resumes it. Call from a gesture. */
   unlock(): void;
-  /** Master volume, 0 to 1. */
+  /** The effects' master volume, 0 to 1. */
   setVolume(volume: number): void;
+  /** The music's volume, 0 to 1. */
+  setMusicVolume(volume: number): void;
+  /**
+   * The theme to play, or null for none. It is loaded now if it is not the
+   * one playing, and takes over with a crossfade of `fadeSeconds` (the
+   * player's own when absent). Ignored before the device has opened.
+   */
+  setMusic(id: SoundKeyV1 | null, fadeSeconds?: number): void;
+  /** What the music player holds and plays; null before the device opened. */
+  musicState(): MusicPlayerStateV1 | null;
+  /** The theme files asked for so far, oldest first (a test and smoke hook). */
+  musicRequests(): readonly string[];
+  /**
+   * Stops the audio clock (the tab is hidden) or starts it again: music
+   * pauses where it is and goes on from there.
+   */
+  setPaused(paused: boolean): void;
+  /** A theme that does not loop ended, or a theme could not be loaded. */
+  onMusicEnded: ((id: SoundKeyV1, reason: "ENDED" | "FAILED") => void) | null;
   /**
    * What a play of this sound uses right now: its recording once that is
    * decoded, else the synthesiser. Null for a sound with neither.
@@ -106,8 +142,13 @@ export function createWebAudioOutputV1(
   const stockSounds = options.stockSounds ?? true;
   let context: AudioContext | null = null;
   let master: GainNode | null = null;
+  let musicMaster: GainNode | null = null;
+  let player: MusicPlayerV1 | null = null;
   let volume = 1;
+  let musicVolume = 1;
+  let paused = false;
   let closed = false;
+  const musicRequests: string[] = [];
   /** Rendered synth recipes. */
   const synthBuffers = new Map<SoundKeyV1, AudioBuffer>();
   /** Decoded files, by their URL. */
@@ -203,19 +244,73 @@ export function createWebAudioOutputV1(
     return pending;
   };
 
-  /** What every sound plays by default or by this browser's pick. */
+  /**
+   * What the music player needs to play a theme. Its file is fetched and
+   * decoded on each call and kept nowhere here: the player holds the one
+   * buffer that plays, and the browser's cache holds the bytes.
+   */
+  const musicTrack = (
+    target: AudioContext,
+    id: SoundKeyV1,
+  ): MusicTrackV1 | null => {
+    const entry = playableSoundV1(id);
+    if (entry === null || entry.category !== "music") return null;
+    const source = entry.source;
+    const theme = SOUND_THEMES_V1.find((candidate) => candidate.id === id);
+    const own = source.kind === "FILE" ? (source.gain ?? 1) : 1;
+    const synth = (): AudioBuffer => {
+      const buffer = synthBufferOf(id);
+      if (buffer === null) throw new Error(`No sound for ${id}`);
+      return buffer;
+    };
+    return {
+      id,
+      loop: entry.loop,
+      gain:
+        DEFAULT_CATEGORY_GAINS_V1.music *
+        (Number.isFinite(own) ? Math.min(2, Math.max(0, own)) : 1),
+      overlapSeconds: theme?.loopOverlapSeconds ?? 0,
+      load: async (abandoned?: AbortSignal): Promise<AudioBuffer> => {
+        if (source.kind === "SYNTH") return synth();
+        try {
+          const fetchFile = Reflect.get(browser, "fetch") as unknown;
+          if (typeof fetchFile !== "function") throw new Error("No fetch");
+          musicRequests.push(source.url);
+          const response = await (fetchFile as typeof fetch).call(
+            browser,
+            source.url,
+            abandoned === undefined ? undefined : { signal: abandoned },
+          );
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const data = await response.arrayBuffer();
+          // Another theme was asked for meanwhile: this one is not decoded.
+          if (abandoned?.aborted === true) throw new Error("Abandoned");
+          return await target.decodeAudioData(data);
+        } catch (error) {
+          // A theme with a synthesised stand-in plays that instead.
+          if (source.fallback !== undefined) return synth();
+          throw error;
+        }
+      },
+    };
+  };
+
+  /** What every effect plays by default or by this browser's pick. */
   const loadFiles = (target: AudioContext): void => {
     for (const id of playableSoundIdsV1()) {
+      // Music is loaded when it is asked for, one theme at a time.
+      if (playableSoundV1(id)?.category === "music") continue;
       const choice = choiceOf(id);
       if (choice !== null) void load(target, choice.url);
     }
   };
 
-  return {
+  const output: WebAudioOutputV1 = {
     get unlocked(): boolean {
       return context !== null && !closed;
     },
     stockSounds,
+    onMusicEnded: null,
     unlock(): void {
       if (closed) return;
       if (context === null) {
@@ -231,8 +326,24 @@ export function createWebAudioOutputV1(
           gain.gain.value = volume;
           gain.connect(limiter);
           limiter.connect(created.destination);
+          // Music has its own level and does not pass the limiter.
+          const music = created.createGain();
+          music.gain.value = musicVolume;
+          music.connect(created.destination);
           context = created;
           master = gain;
+          musicMaster = music;
+          player = new MusicPlayerV1({
+            context: created,
+            destination: music,
+            track: (id) => musicTrack(created, id),
+            onEnded: (id, reason) => output.onMusicEnded?.(id, reason),
+          });
+          if (paused) {
+            player.pause();
+            if (typeof created.suspend === "function")
+              void created.suspend().catch(() => undefined);
+          }
           try {
             loadFiles(created);
           } catch {
@@ -241,21 +352,54 @@ export function createWebAudioOutputV1(
         } catch {
           context = null;
           master = null;
+          musicMaster = null;
+          player = null;
           return;
         }
       }
-      if (context.state === "suspended")
+      // A hidden tab keeps its clock stopped until it is shown again.
+      if (context.state === "suspended" && !paused)
         void context.resume().catch(() => undefined);
     },
     setVolume(next: number): void {
       volume = Math.min(1, Math.max(0, next));
       if (master !== null) master.gain.value = volume;
     },
+    setMusicVolume(next: number): void {
+      musicVolume = Math.min(1, Math.max(0, next));
+      if (musicMaster !== null) musicMaster.gain.value = musicVolume;
+    },
+    setMusic(id: SoundKeyV1 | null, fadeSeconds?: number): void {
+      if (closed || player === null) return;
+      if (fadeSeconds === undefined) player.set(id);
+      else player.set(id, fadeSeconds);
+    },
+    musicState(): MusicPlayerStateV1 | null {
+      return player?.state ?? null;
+    },
+    musicRequests(): readonly string[] {
+      return musicRequests;
+    },
+    setPaused(next: boolean): void {
+      if (closed || next === paused) return;
+      paused = next;
+      if (context === null) return;
+      if (next) {
+        player?.pause();
+        if (typeof context.suspend === "function")
+          void context.suspend().catch(() => undefined);
+      } else {
+        player?.resume();
+        void context.resume().catch(() => undefined);
+      }
+    },
     start(request: SoundStartV1): { readonly stop: SoundStopV1 } | null {
       if (context === null || master === null || closed) return null;
       // A context still waiting to resume would play everything at once
       // later; nothing is queued on it.
       if (context.state !== "running") return null;
+      // Music is the music player's (`setMusic`), never a voice here.
+      if (request.category === "music") return null;
       const choice =
         request.generated === true
           ? null
@@ -341,10 +485,14 @@ export function createWebAudioOutputV1(
       synthBuffers.clear();
       fileBuffers.clear();
       loading.clear();
+      player?.close();
+      player = null;
       const closing = context;
       context = null;
       master = null;
+      musicMaster = null;
       if (closing !== null) void closing.close().catch(() => undefined);
     },
   };
+  return output;
 }

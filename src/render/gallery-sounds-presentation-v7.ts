@@ -185,8 +185,10 @@ export interface GallerySoundEntryV7 {
   readonly variants: readonly GallerySoundVariantV7[];
   /** Long enough (or looping) to need a stop control. */
   readonly long: boolean;
-  /** The faction of a theme row. */
+  /** The faction of a faction's theme row. */
   readonly faction: FactionIdV7 | null;
+  /** A theme row: it follows the Music level, the others Sound. */
+  readonly theme: boolean;
   /** Where the sound comes from; null for a theme that is not there yet. */
   readonly origin: GallerySoundOriginV7 | null;
   /**
@@ -552,6 +554,7 @@ function effectEntry(
         ),
       ) >= GALLERY_SOUND_LONG_MS_V7,
     faction: null,
+    theme: false,
     origin,
     choices,
   };
@@ -573,6 +576,7 @@ function themeEntry(
     variants: [],
     long: true,
     faction,
+    theme: true,
     // A theme has no synthesised version to fall back to, so the switch
     // for recordings does not change what its row says.
     origin: theme === undefined ? null : originOf(theme.id, theme.source, {}),
@@ -580,10 +584,28 @@ function themeEntry(
   };
 }
 
+/** The row of a theme of no faction (the title theme). */
+function otherThemeEntry(theme: SoundThemeEntryV1): GallerySoundEntryV7 {
+  const name = theme.id.slice("theme.".length);
+  return {
+    key: theme.id,
+    rowId: `theme:${name.toUpperCase()}`,
+    name: theme.label ?? name,
+    when: "Theme",
+    picture: icon("music"),
+    variants: [],
+    long: true,
+    faction: null,
+    theme: true,
+    origin: originOf(theme.id, theme.source, {}),
+    choices: [],
+  };
+}
+
 /**
  * The Sounds tab: the non-empty effect groups in order, then Themes with
- * one row per faction of the game. `themes` is the manifest's list (a test
- * passes its own).
+ * one row per faction of the game and one per theme of no faction (the
+ * title theme). `themes` is the manifest's list (a test passes its own).
  */
 export function gallerySoundGroupsV7(
   themes: readonly SoundThemeEntryV1[] = SOUND_THEMES_V1,
@@ -593,7 +615,14 @@ export function gallerySoundGroupsV7(
   for (const id of GALLERY_SOUND_GROUP_IDS_V7) {
     const entries =
       id === "THEMES"
-        ? GALLERY_FACTIONS_V7.map((faction) => themeEntry(faction, themes))
+        ? [
+            ...GALLERY_FACTIONS_V7.map((faction) =>
+              themeEntry(faction, themes),
+            ),
+            ...themes
+              .filter((theme) => theme.faction === null)
+              .map(otherThemeEntry),
+          ]
         : SOUND_IDS_V1.filter(
             (sound) => gallerySoundGroupOfV7(sound) === id,
           ).map((sound) => effectEntry(sound, options));
@@ -608,7 +637,7 @@ export function gallerySoundPlayLabelV7(
   entry: GallerySoundEntryV7,
   variant: GallerySoundVariantV7 | null = null,
 ): string {
-  const name = entry.faction === null ? entry.name : `${entry.name} theme`;
+  const name = entry.theme ? `${entry.name} theme` : entry.name;
   return `${variant?.label ?? "Play"}: ${name}`;
 }
 

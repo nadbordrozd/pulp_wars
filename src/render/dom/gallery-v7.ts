@@ -121,6 +121,8 @@ export interface GalleryViewOptionsV7 {
    * Sounds tab that plays every sound of the manifest.
    */
   readonly audio?: GameAudioV1;
+  /** The shown tab changed (the app silences its music on Sounds). */
+  readonly onTabChange?: (tab: GalleryTabV7) => void;
 }
 
 type GalleryDetailV7 =
@@ -544,6 +546,12 @@ export class GalleryViewV7 {
   #selectTab(tab: GalleryTabV7): void {
     this.#gridFocusKey = null;
     this.#setFilters({ ...this.#filters, tab });
+    this.#options.onTabChange?.(tab);
+  }
+
+  /** The tab that is shown. */
+  get tab(): GalleryTabV7 {
+    return this.#filters.tab;
   }
 
   #panel(): HTMLElement {

@@ -168,10 +168,13 @@ export function assetInventoryForFactionsV7(
 
 /**
  * The sound files of the client (bead pulp_wars-2yc.20, docs/ui/SOUND.md
- * "Stock recordings"): the file of every sound and theme of the audio
+ * "Stock recordings"): the file of every sound effect of the audio
  * manifest that names one. The game's start fetches them beside the art,
  * without waiting for them (src/app/v7-preload-boot.ts); a sound whose
  * file has not arrived plays its synthesised fallback.
+ *
+ * No theme is listed (bead pulp_wars-2yc.27): a theme is megabytes, so its
+ * file is fetched when it is first played, one theme at a time.
  *
  * A sound with several recordings (bead pulp_wars-2yc.24) lists one file:
  * its default recording, or the one this browser picked (`picks`); none
@@ -195,8 +198,10 @@ export function soundAssetUrlsV7(
       if (clip !== null) urls.add(stockSoundUrlV1(clip));
       continue;
     }
-    const source = playableSoundV1(id)?.source;
-    if (source?.kind !== "FILE") continue;
+    const entry = playableSoundV1(id);
+    if (entry === null || entry.category === "music") continue;
+    const source = entry.source;
+    if (source.kind !== "FILE") continue;
     if (!stockSounds && source.fallback !== undefined) continue;
     urls.add(source.url);
   }

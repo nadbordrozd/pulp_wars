@@ -8,10 +8,39 @@ import {
   stockSoundStatusRowsV1,
   stockSoundStatusTextV1,
 } from "../../scripts/audio/stock-sound-choices";
+import {
+  THEME_MASTERS_V1,
+  THEME_MUSIC_BIT_RATE_V1,
+  THEME_MUSIC_FOLDER_V1,
+  THEME_MUSIC_SAMPLE_RATE_V1,
+  THEME_MUSIC_TARGET_LUFS_V1,
+  integratedLufsV1,
+  tailSecondsV1,
+  themeMusicFileV1,
+  trimPointsV1,
+} from "../../scripts/audio/encode-themes";
+import {
+  THEME_RECORDS_AUTHOR_FIELDS_V1,
+  THEME_RECORDS_AUTHOR_V1,
+  THEME_RECORDS_DATE_V1,
+  THEME_RECORDS_DOC_PATH,
+  renderThemeRecordsV1,
+  themeRecordFieldsV1,
+  themeRecordsSectionV1,
+} from "../../scripts/audio/theme-records";
 import { soundAssetUrlsV7 } from "../../src/assets/asset-inventory-v7";
+import { FACTION_IDS_V7 } from "../../src/engine/index";
 import {
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
+  SOUND_THEMES_V1,
+  SOUND_TITLE_THEME_ID_V1,
+  THEME_MUSIC_OUTPUT_V1,
+  THEME_MUSIC_PUBLIC_PATH_V1,
+  THEME_MUSIC_TRACKS_V1,
+  playableSoundV1,
+  soundThemeOfFactionV1,
+  themeMusicUrlV1,
   STOCK_SOUNDS_ENABLED_V1,
   STOCK_SOUNDS_V1,
   STOCK_SOUND_ALL_CLIPS_V1,
@@ -43,8 +72,29 @@ import {
 
 const ROOT = resolve(import.meta.dirname, "../..");
 const FOLDER = join(ROOT, STOCK_SOUND_OUTPUT_V1.folder);
-/** No audio file in the repository's game folders may be larger. */
+/** The theme music's folder, inside the clips' (bead pulp_wars-2yc.27). */
+const THEMES_FOLDER = join(ROOT, THEME_MUSIC_OUTPUT_V1.folder);
+/**
+ * No audio file in the repository's game folders may be larger, except
+ * the theme music, which has a budget of its own below.
+ */
 const MAX_AUDIO_FILE_BYTES = 200_000;
+/**
+ * The theme music's own budget (bead pulp_wars-2yc.27): a theme is about
+ * 100 seconds of stereo AAC at 112 kbit/s, 1.4 MB. One theme may not be
+ * larger than this, nor all of them together (nine are 12.6 MB). It is
+ * for the files of the theme manifest in their folder and for nothing
+ * else; raise it on purpose, with a tenth theme.
+ */
+const MAX_THEME_BYTES = 1_700_000;
+const MAX_THEMES_TOTAL_BYTES = 14_000_000;
+/** A theme is a loop of about 100 seconds (THEME_MUSIC.md). */
+const THEME_SECONDS = { min: 90, max: 120 } as const;
+
+/** The theme files, by their path: the only audio allowed to be large. */
+const THEME_PATHS = new Set(
+  THEME_MUSIC_TRACKS_V1.map((track) => join(THEMES_FOLDER, track.file)),
+);
 /** What a clip is expected to stay under. */
 const MAX_CLIP_BYTES = 60_000;
 /**
@@ -216,7 +266,17 @@ describe("recorded sound clips", () => {
 
   it("holds a clip for every candidate and nothing else, each small and an MP4 file", () => {
     const expected = STOCK_SOUND_ALL_CLIPS_V1.map((clip) => clip.file).sort();
-    expect(readdirSync(FOLDER).sort()).toEqual(expected);
+    // The theme music has a folder of its own in there, and nothing else.
+    const entries = readdirSync(FOLDER, { withFileTypes: true });
+    expect(
+      entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name),
+    ).toEqual([THEME_MUSIC_OUTPUT_V1.folder.split("/").at(-1)]);
+    expect(
+      entries
+        .filter((entry) => !entry.isDirectory())
+        .map((entry) => entry.name)
+        .sort(),
+    ).toEqual(expected);
     let total = 0;
     for (const file of expected) {
       const path = join(FOLDER, file);
@@ -235,18 +295,25 @@ describe("recorded sound clips", () => {
       ...audioFilesUnder(join(ROOT, "public")),
       ...audioFilesUnder(join(ROOT, "src")),
     ];
-    // Every one of them is a clip of the provenance manifest, or another
-    // file the audio manifest plays (a theme).
+    // Every one of them is a clip of the provenance manifest, another
+    // file the game fetches at its start, or a theme of the theme manifest.
     expect(files.map((path) => path.split("/").at(-1)).sort()).toEqual(
       [
         ...new Set([
           ...STOCK_SOUND_ALL_CLIPS_V1.map((clip) => clip.file),
           ...soundAssetUrlsV7().map((url) => url.split("/").at(-1) ?? url),
+          ...THEME_MUSIC_TRACKS_V1.map((track) => track.file),
         ]),
       ].sort(),
     );
     for (const path of files) {
       const bytes = statSync(path).size;
+      expect(
+        [".wav", ".aif", ".aiff", ".bwf", ".rf64", ".w64", ".flac"],
+        `${path} is an uncompressed recording`,
+      ).not.toContain(extname(path).toLowerCase());
+      // A theme has its own budget; the limit on everything else stands.
+      if (THEME_PATHS.has(path)) continue;
       expect(
         bytes,
         `${path} is ${bytes} bytes: only short clips belong in the repository`,
@@ -267,7 +334,8 @@ describe("recorded sound clips", () => {
       .flatMap(audioFilesUnder)
       .filter(
         (path) =>
-          statSync(path).size > MAX_AUDIO_FILE_BYTES ||
+          statSync(path).size >
+            (THEME_PATHS.has(path) ? MAX_THEME_BYTES : MAX_AUDIO_FILE_BYTES) ||
           /\.(wav|aiff?|bwf|rf64|w64|flac|caf)$/i.test(path),
       );
     expect(offenders).toEqual([]);
@@ -313,6 +381,212 @@ describe("recorded sound clips", () => {
     // A pick the sound does not have is no pick.
     expect(soundAssetUrlsV7(true, { [hit]: 99 })).toEqual(soundAssetUrlsV7());
     expect(soundAssetUrlsV7(false, { [hit]: 2 })).toEqual([]);
+  });
+});
+
+describe("theme music files", () => {
+  it("has a theme for every faction of the game, and the title theme", () => {
+    for (const faction of FACTION_IDS_V7) {
+      const theme = soundThemeOfFactionV1(faction);
+      expect(theme, faction).not.toBeNull();
+      expect(
+        SOUND_THEMES_V1.filter((entry) => entry.faction === faction),
+        `${faction}: one theme`,
+      ).toHaveLength(1);
+    }
+    const title = SOUND_THEMES_V1.find(
+      (theme) => theme.id === SOUND_TITLE_THEME_ID_V1,
+    );
+    expect(title?.faction).toBeNull();
+    expect(title?.label).toBe("Title");
+    expect(SOUND_THEMES_V1).toHaveLength(FACTION_IDS_V7.length + 1);
+    expect(new Set(SOUND_THEMES_V1.map((theme) => theme.id)).size).toBe(
+      SOUND_THEMES_V1.length,
+    );
+  });
+
+  it("registers each encoded theme as looping music at its measured level", () => {
+    expect(THEME_MUSIC_TRACKS_V1.map((track) => track.id)).toEqual(
+      SOUND_THEMES_V1.map((theme) => theme.id),
+    );
+    for (const track of THEME_MUSIC_TRACKS_V1) {
+      const theme = SOUND_THEMES_V1.find((entry) => entry.id === track.id);
+      expect(theme?.loop, track.id).toBe(true);
+      expect(theme?.loopOverlapSeconds, track.id).toBe(
+        track.loopOverlapSeconds,
+      );
+      expect(theme?.source, track.id).toEqual({
+        kind: "FILE",
+        url: themeMusicUrlV1(track),
+        gain: track.gain,
+      });
+      expect(
+        themeMusicUrlV1(track).endsWith(
+          THEME_MUSIC_PUBLIC_PATH_V1 + track.file,
+        ),
+      ).toBe(true);
+      expect(
+        playableSoundV1(track.id as `theme.${string}`),
+        track.id,
+      ).toMatchObject({ category: "music", jitterCents: 0, loop: true });
+    }
+  });
+
+  it("holds one small AAC file per theme in its folder, and nothing else", () => {
+    expect(THEME_MUSIC_OUTPUT_V1).toEqual({
+      folder: THEME_MUSIC_FOLDER_V1,
+      codec: "AAC-LC",
+      channels: 2,
+      sampleRate: THEME_MUSIC_SAMPLE_RATE_V1,
+      bitRate: THEME_MUSIC_BIT_RATE_V1,
+      targetLufs: THEME_MUSIC_TARGET_LUFS_V1,
+    });
+    expect(readdirSync(THEMES_FOLDER).sort()).toEqual(
+      THEME_MUSIC_TRACKS_V1.map((track) => track.file).sort(),
+    );
+    let total = 0;
+    for (const track of THEME_MUSIC_TRACKS_V1) {
+      // The game's own name: the theme's id with dashes.
+      expect(track.file, track.id).toBe(themeMusicFileV1(track.id));
+      const path = join(THEMES_FOLDER, track.file);
+      const bytes = statSync(path).size;
+      total += bytes;
+      expect(bytes, `${track.file}: the manifest's size`).toBe(track.bytes);
+      expect(bytes, `${track.file} is ${bytes} bytes`).toBeLessThanOrEqual(
+        MAX_THEME_BYTES,
+      );
+      // An MP4 container, never an uncompressed recording.
+      expect(readFileSync(path).toString("latin1", 4, 8), track.file).toBe(
+        "ftyp",
+      );
+      expect(extname(track.file)).toBe(".m4a");
+    }
+    expect(total, `all themes are ${total} bytes`).toBeLessThanOrEqual(
+      MAX_THEMES_TOTAL_BYTES,
+    );
+  });
+
+  it("records where each theme came from and what was done to it", () => {
+    expect(THEME_MASTERS_V1.map((master) => master.id)).toEqual(
+      THEME_MUSIC_TRACKS_V1.map((track) => track.id),
+    );
+    for (const track of THEME_MUSIC_TRACKS_V1) {
+      const master = THEME_MASTERS_V1.find((entry) => entry.id === track.id);
+      expect(track.master, track.id).toBe(master?.master);
+      expect(track.faction, track.id).toBe(master?.faction);
+      expect(track.prompt, track.id).toBe(master?.prompt);
+      // The master's name is its author's; the game's file has its own.
+      expect(track.master, track.id).toMatch(/\.wav$/);
+      expect(track.file.toLowerCase()).not.toBe(track.master.toLowerCase());
+      expect(track.seconds, track.id).toBeGreaterThanOrEqual(THEME_SECONDS.min);
+      expect(track.seconds, track.id).toBeLessThanOrEqual(THEME_SECONDS.max);
+      expect(
+        track.headTrimSeconds + track.seconds + track.tailTrimSeconds,
+        track.id,
+      ).toBeCloseTo(track.masterSeconds, 2);
+      // The level brings every theme to the same loudness without clipping.
+      expect(track.lufs + 20 * Math.log10(track.gain), track.id).toBeCloseTo(
+        THEME_MUSIC_OUTPUT_V1.targetLufs,
+        1,
+      );
+      expect(track.gain, track.id).toBeGreaterThan(0.5);
+      expect(track.gain, track.id).toBeLessThan(1.5);
+      expect(track.peakDb + 20 * Math.log10(track.gain), track.id).toBeLessThan(
+        -1,
+      );
+      // The next pass of the loop starts under the dying last note.
+      expect(track.loopOverlapSeconds, track.id).toBeGreaterThan(0);
+      expect(track.loopOverlapSeconds, track.id).toBeLessThanOrEqual(4);
+    }
+  });
+
+  it("has a record in the document for every theme (npx tsx scripts/audio/theme-records.ts render)", async () => {
+    const doc = readFileSync(THEME_RECORDS_DOC_PATH, "utf8");
+    expect(themeRecordsSectionV1(doc)).toBe(await renderThemeRecordsV1(doc));
+    for (const track of THEME_MUSIC_TRACKS_V1) {
+      expect(doc, track.id).toContain(
+        `### ${track.id}, ${THEME_RECORDS_DATE_V1}`,
+      );
+      const fields = new Map(themeRecordFieldsV1(track));
+      expect(fields.get("Service")).toBe("Suno");
+      expect(fields.get("Take chosen"), track.id).toContain(track.master);
+      // What only the author knows is left for the author.
+      for (const field of THEME_RECORDS_AUTHOR_FIELDS_V1)
+        expect(fields.get(field), `${track.id}: ${field}`).toMatch(
+          new RegExp(`^${THEME_RECORDS_AUTHOR_V1}`),
+        );
+    }
+    // What the author wrote into such a cell survives a new rendering.
+    const filled = doc.replace(
+      `| Model or version      | ${THEME_RECORDS_AUTHOR_V1}`,
+      "| Model or version      | v9 (as shown)             ",
+    );
+    expect(filled).not.toBe(doc);
+    expect(await renderThemeRecordsV1(filled)).toContain("v9 (as shown)");
+    // The plan's terms decide commercial use: the document says so.
+    expect(doc).toMatch(
+      /plan's terms[^.]*decide whether it may be used\s+commercially/,
+    );
+  });
+
+  it("is not fetched at the game's start", () => {
+    for (const url of soundAssetUrlsV7())
+      expect(url.includes(THEME_MUSIC_PUBLIC_PATH_V1), url).toBe(false);
+    for (const track of THEME_MUSIC_TRACKS_V1)
+      expect(soundAssetUrlsV7()).not.toContain(themeMusicUrlV1(track));
+  });
+
+  it("keeps the masters out: no WAV is checked in, and Git refuses one", () => {
+    const ignored = readFileSync(join(ROOT, ".gitignore"), "utf8");
+    for (const pattern of ["*.wav", "*.aif", "*.aiff", "*.flac", "*.caf"])
+      expect(ignored.split("\n"), pattern).toContain(pattern);
+    for (const master of THEME_MASTERS_V1)
+      expect(
+        audioFilesUnder(join(ROOT, "public")).map((path) =>
+          (path.split("/").at(-1) ?? "").toLowerCase(),
+        ),
+      ).not.toContain(master.master.toLowerCase());
+  });
+});
+
+describe("the theme encoder's measurements", () => {
+  const rate = 48_000;
+  const tone = (seconds: number, level: number): Float32Array =>
+    Float32Array.from(
+      { length: Math.round(seconds * rate) },
+      (_, index) => level * Math.sin((2 * Math.PI * 997 * index) / rate),
+    );
+
+  it("measures loudness as BS.1770 does", () => {
+    // A full-scale 997 Hz sine in one channel is -3.01 LUFS; in two, 0.
+    expect(integratedLufsV1([tone(3, 1)], rate)).toBeCloseTo(-3.01, 1);
+    expect(integratedLufsV1([tone(3, 1), tone(3, 1)], rate)).toBeCloseTo(0, 1);
+    expect(integratedLufsV1([tone(3, 0.1)], rate)).toBeCloseTo(-23.01, 1);
+    // Silence is gated out, not averaged in.
+    const half = new Float32Array(rate * 6);
+    half.set(tone(3, 0.1));
+    expect(integratedLufsV1([half], rate)).toBeCloseTo(-23.01, 0);
+    expect(integratedLufsV1([new Float32Array(rate)], rate)).toBe(-Infinity);
+  });
+
+  it("trims a stray click and the silence at both ends", () => {
+    const sound = new Float32Array(rate * 3);
+    // A click, a pause, a second of tone, then silence.
+    sound[10] = 0.01;
+    sound.set(tone(1, 0.2), rate);
+    const { start, end } = trimPointsV1([sound], rate);
+    expect(start / rate).toBeCloseTo(0.995, 2);
+    expect(end / rate).toBeCloseTo(2, 2);
+  });
+
+  it("finds how long the last note takes to die away", () => {
+    // Ten seconds at one level, then two seconds 20 dB down.
+    const sound = new Float32Array(rate * 12);
+    sound.set(tone(10, 0.3));
+    sound.set(tone(2, 0.03), rate * 10);
+    expect(tailSecondsV1([sound], rate)).toBeCloseTo(2, 1);
+    // A track that ends at its usual level has next to no tail.
+    expect(tailSecondsV1([tone(10, 0.3)], rate)).toBeLessThan(0.1);
   });
 });
 

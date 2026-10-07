@@ -3,6 +3,7 @@ import {
   AUDIO_SETTINGS_STORAGE_KEY_V1,
   DEFAULT_AUDIO_SETTINGS_V1,
   DEFAULT_CATEGORY_GAINS_V1,
+  MUSIC_SETTINGS_STORAGE_KEY_V1,
   DEFAULT_MAX_VOICES_V1,
   GameAudioV1,
   SoundMixerV1,
@@ -51,6 +52,26 @@ class FakeOutput implements WebAudioOutputV1 {
   }
   setVolume(volume: number): void {
     this.volume = volume;
+  }
+  musicVolume = -1;
+  /** The themes the audio asked for, in order (null is silence). */
+  readonly music: (SoundKeyV1 | null)[] = [];
+  readonly pauses: boolean[] = [];
+  onMusicEnded: WebAudioOutputV1["onMusicEnded"] = null;
+  setMusicVolume(volume: number): void {
+    this.musicVolume = volume;
+  }
+  setMusic(id: SoundKeyV1 | null): void {
+    this.music.push(id);
+  }
+  musicState(): null {
+    return null;
+  }
+  musicRequests(): readonly string[] {
+    return [];
+  }
+  setPaused(paused: boolean): void {
+    this.pauses.push(paused);
   }
   start(request: SoundStartV1): { stop: () => void } | null {
     if (!this.unlocked) return null;
@@ -284,7 +305,12 @@ describe("sound mixer", () => {
 
 describe("sound preference", () => {
   it("defaults to on at 70%, and survives malformed values", () => {
-    expect(DEFAULT_AUDIO_SETTINGS_V1).toEqual({ enabled: true, volume: 70 });
+    expect(DEFAULT_AUDIO_SETTINGS_V1).toEqual({
+      enabled: true,
+      volume: 70,
+      musicEnabled: true,
+      musicVolume: 70,
+    });
     expect(parseStoredAudioSettingsV1(null)).toEqual(DEFAULT_AUDIO_SETTINGS_V1);
     expect(parseStoredAudioSettingsV1("not json")).toEqual(
       DEFAULT_AUDIO_SETTINGS_V1,
@@ -293,8 +319,9 @@ describe("sound preference", () => {
     expect(
       parseStoredAudioSettingsV1('{"enabled":"yes","volume":"loud"}'),
     ).toEqual(DEFAULT_AUDIO_SETTINGS_V1);
+    // Music takes the sound's value while it has none of its own.
     expect(parseStoredAudioSettingsV1('{"enabled":false,"volume":33}')).toEqual(
-      { enabled: false, volume: 35 },
+      { enabled: false, volume: 35, musicEnabled: false, musicVolume: 35 },
     );
     expect(clampAudioVolumeV1(140)).toBe(100);
     expect(clampAudioVolumeV1(-5)).toBe(0);
@@ -306,16 +333,21 @@ describe("sound preference", () => {
 
   it("is stored under its own key and read back", () => {
     const storage = memoryStorage();
-    expect(storeAudioSettingsV1(storage, { enabled: false, volume: 40 })).toBe(
-      true,
-    );
+    const stored = {
+      enabled: false,
+      volume: 40,
+      musicEnabled: true,
+      musicVolume: 55,
+    };
+    expect(storeAudioSettingsV1(storage, stored)).toBe(true);
+    // Sound keeps its key and its shape; Music has a key of its own.
     expect(storage.values.get(AUDIO_SETTINGS_STORAGE_KEY_V1)).toBe(
       '{"enabled":false,"volume":40}',
     );
-    expect(loadAudioSettingsV1(storage)).toEqual({
-      enabled: false,
-      volume: 40,
-    });
+    expect(storage.values.get(MUSIC_SETTINGS_STORAGE_KEY_V1)).toBe(
+      '{"enabled":true,"volume":55}',
+    );
+    expect(loadAudioSettingsV1(storage)).toEqual(stored);
     expect(loadAudioSettingsV1(null)).toEqual(DEFAULT_AUDIO_SETTINGS_V1);
     const broken = {
       getItem: (): string | null => {
@@ -389,7 +421,12 @@ describe("game audio", () => {
       '{"enabled":false,"volume":70}',
     );
     expect(audio.setVolume(23)).toBe(true);
-    expect(audio.settings).toEqual({ enabled: false, volume: 25 });
+    expect(audio.settings).toEqual({
+      enabled: false,
+      volume: 25,
+      musicEnabled: true,
+      musicVolume: 70,
+    });
     expect(output.volume).toBeCloseTo(0.0625, 5);
     expect(audio.setEnabled(true)).toBe(true);
     expect(audio.play("impact.hit")).toBe("PLAYED");
@@ -397,12 +434,21 @@ describe("game audio", () => {
     unsubscribe();
     // A new session reads the stored preference.
     const next = new GameAudioV1({ storage, output: new FakeOutput() });
-    expect(next.settings).toEqual({ enabled: true, volume: 25 });
+    expect(next.settings).toEqual({
+      enabled: true,
+      volume: 25,
+      musicEnabled: true,
+      musicVolume: 70,
+    });
   });
 
   it("opens no device while sound is off, until it is turned on", () => {
     const storage = memoryStorage();
-    storeAudioSettingsV1(storage, { enabled: false, volume: 70 });
+    // Stored while there was one level: Music is off with it.
+    storage.setItem(
+      AUDIO_SETTINGS_STORAGE_KEY_V1,
+      '{"enabled":false,"volume":70}',
+    );
     const output = new FakeOutput();
     const audio = new GameAudioV1({ storage, output });
     audio.unlock();
@@ -428,6 +474,61 @@ describe("game audio", () => {
     expect(output.started.map((start) => start.id)).toEqual(["turn.start"]);
     hidden = false;
     expect(audio.play("impact.hit")).toBe("PLAYED");
+  });
+
+  it("asks the device for the screen's theme once a gesture has opened it", () => {
+    let hidden = false;
+    const output = new FakeOutput();
+    const audio = new GameAudioV1({
+      storage: null,
+      output,
+      isHidden: () => hidden,
+    });
+    expect(output.musicVolume).toBeCloseTo(0.49, 5);
+    audio.setMusic("theme.title");
+    expect(output.music).toEqual([]);
+    audio.unlock();
+    expect(output.music).toEqual(["theme.title"]);
+    // The same theme again, or another gesture, asks for nothing.
+    audio.setMusic("theme.title");
+    audio.unlock();
+    expect(output.music).toEqual(["theme.title"]);
+    audio.setMusic("theme.goblin");
+    audio.setMusic(null);
+    expect(output.music).toEqual(["theme.title", "theme.goblin", null]);
+    // A theme is not an effect: the mixer never starts one.
+    audio.setMusic("theme.undead");
+    expect(audio.play("theme.goblin")).toBe("PLAYED");
+    expect(output.started).toEqual([]);
+    expect(output.music.at(-1)).toBe("theme.goblin");
+    audio.stop("theme.goblin");
+    expect(output.music.at(-1)).toBe("theme.undead");
+    // Music off asks for silence; the effects go on.
+    audio.setMusicEnabled(false);
+    expect(output.music.at(-1)).toBeNull();
+    expect(audio.play("impact.hit")).toBe("PLAYED");
+    audio.setMusicEnabled(true);
+    expect(output.music.at(-1)).toBe("theme.undead");
+    audio.setMusicVolume(0);
+    expect(output.music.at(-1)).toBeNull();
+    expect(output.musicVolume).toBe(0);
+    audio.setMusicVolume(50);
+    expect(output.music.at(-1)).toBe("theme.undead");
+    expect(output.musicVolume).toBeCloseTo(0.25, 5);
+    // A theme that could not be loaded is not asked for again by itself.
+    const asked = output.music.length;
+    output.onMusicEnded?.("theme.undead", "FAILED");
+    expect(output.music.slice(asked)).toEqual([null]);
+    audio.unlock();
+    expect(output.music.slice(asked)).toEqual([null]);
+    audio.setMusic("theme.title");
+    expect(output.music.at(-1)).toBe("theme.title");
+    // The tab hidden pauses the device, shown starts it again.
+    hidden = true;
+    audio.visibilityChanged();
+    hidden = false;
+    audio.visibilityChanged();
+    expect(output.pauses).toEqual([true, false]);
   });
 
   it("scales cue delays with the animation speed", () => {

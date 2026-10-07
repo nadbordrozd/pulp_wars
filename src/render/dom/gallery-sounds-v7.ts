@@ -35,8 +35,10 @@ import { uiIconV7 } from "./ui-icons-v7";
  *
  * A card plays through the game's own audio, at the player's volume. A
  * second press starts the sound again. While a sound plays its card is
- * marked, and a long sound has a stop button. With sound off or the volume
- * at zero the tab says so and offers to turn it on.
+ * marked, and a long sound has a stop button. With Sound off or at zero
+ * the tab says so and offers to turn it on. A theme row follows Music
+ * instead (bead pulp_wars-2yc.27): pressed with Music off or at zero, the
+ * tab says that and offers to turn Music on.
  *
  * A sound with recordings (bead pulp_wars-2yc.24, docs/ui/SOUND.md
  * "Choosing between recordings") lists them under its card as a numbered
@@ -136,7 +138,54 @@ export function gallerySoundsPanelV7(
   unmute.setAttribute(SILENT_CLICK_ATTRIBUTE_V7, "");
   notice.append(uiIconV7(documentRoot, "sound-off"), noticeText, unmute);
 
+  // The same notice for Music: shown once a theme row was pressed while
+  // Music is off or at zero, until Music can be heard again.
+  const musicNotice = documentRoot.createElement("p");
+  musicNotice.className = "v7-gallery-sounds-notice";
+  musicNotice.dataset.level = "music";
+  musicNotice.setAttribute("role", "status");
+  musicNotice.hidden = true;
+  const musicNoticeText = documentRoot.createElement("span");
+  const musicUnmute = documentRoot.createElement("button");
+  musicUnmute.type = "button";
+  musicUnmute.className = "v7-gallery-sounds-unmute";
+  musicUnmute.dataset.action = "gallery-music-unmute";
+  musicUnmute.setAttribute(SILENT_CLICK_ATTRIBUTE_V7, "");
+  musicNotice.append(
+    uiIconV7(documentRoot, "music-off"),
+    musicNoticeText,
+    musicUnmute,
+  );
+  /** A theme row was pressed while Music could not be heard. */
+  let musicAsked = false;
+
+  const syncMusicNotice = (): void => {
+    const { musicEnabled, musicVolume } = audio.settings;
+    const quiet = !musicEnabled || musicVolume === 0;
+    root.dataset.musicMuted = String(quiet);
+    if (!quiet) musicAsked = false;
+    musicNotice.hidden = !quiet || !musicAsked;
+    musicNotice.dataset.reason = !musicEnabled ? "off" : "volume";
+    musicNoticeText.textContent = !musicEnabled
+      ? "Music is off"
+      : "Music is at 0";
+    musicUnmute.textContent = !musicEnabled ? "Turn on" : "Turn up";
+    if (musicNotice.hidden) delete musicNotice.dataset.nudged;
+  };
+
+  musicUnmute.onclick = () => {
+    audio.setMusicEnabled(true);
+    if (audio.settings.musicVolume === 0)
+      audio.setMusicVolume(DEFAULT_AUDIO_SETTINGS_V1.musicVolume);
+    drawControls();
+    bar
+      .querySelector<HTMLElement>('[data-sound-level="music"] button')
+      ?.focus();
+    audio.unlock();
+  };
+
   const syncNotice = (): void => {
+    syncMusicNotice();
     const { enabled, volume } = audio.settings;
     const quiet = !enabled || volume === 0;
     notice.hidden = !quiet && !silent;
@@ -167,7 +216,9 @@ export function gallerySoundsPanelV7(
     // The toggle and the slider are redrawn at the new preference, and take
     // the focus the vanishing button held.
     drawControls();
-    bar.querySelector<HTMLElement>("button")?.focus();
+    bar
+      .querySelector<HTMLElement>('[data-sound-level="sound"] button')
+      ?.focus();
     audio.unlock();
     audio.play("ui.toggle");
   };
@@ -230,9 +281,20 @@ export function gallerySoundsPanelV7(
     syncNotice();
   };
 
-  /** False (and the notice is pointed at) when nothing would be heard. */
-  const audible = (): boolean => {
-    const { enabled, volume } = audio.settings;
+  /**
+   * False (and the notice is pointed at) when nothing would be heard: a
+   * theme row follows Music, every other card Sound.
+   */
+  const audible = (entry: GallerySoundEntryV7): boolean => {
+    const { enabled, volume, musicEnabled, musicVolume } = audio.settings;
+    if (entry.theme) {
+      if (musicEnabled && musicVolume !== 0) return true;
+      musicAsked = true;
+      syncMusicNotice();
+      musicNotice.dataset.nudged = "true";
+      musicNotice.scrollIntoView?.({ block: "nearest" });
+      return false;
+    }
     if (enabled && volume !== 0) return true;
     notice.dataset.nudged = "true";
     notice.scrollIntoView?.({ block: "nearest" });
@@ -276,7 +338,7 @@ export function gallerySoundsPanelV7(
   };
 
   const play = (row: RowV7, variant: GallerySoundVariantV7 | null): void => {
-    if (row.entry.key === null || destroyed || !audible()) return;
+    if (row.entry.key === null || destroyed || !audible(row.entry)) return;
     playRequest(row.entry.rowId, {
       ...(variant?.detune === undefined ? {} : { detune: variant.detune }),
       ...(variant?.gain === undefined ? {} : { gain: variant.gain }),
@@ -290,7 +352,7 @@ export function gallerySoundsPanelV7(
    */
   const playChoice = (row: RowV7, choice: GallerySoundChoiceV7): void => {
     const key = row.entry.key;
-    if (key === null || destroyed || !audible()) return;
+    if (key === null || destroyed || !audible(row.entry)) return;
     const rowId = row.entry.rowId;
     if (choice.n === STOCK_SOUND_GENERATED_CHOICE_V1) {
       playRequest(rowId, GENERATED_REQUEST);
@@ -730,7 +792,7 @@ export function gallerySoundsPanelV7(
     syncPicks();
   };
 
-  root.append(bar, notice, picksBar);
+  root.append(bar, notice, musicNotice, picksBar);
   for (const group of groupsNow()) {
     const section = documentRoot.createElement("section");
     section.className = "v7-gallery-sound-group";

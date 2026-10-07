@@ -4,11 +4,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type * as SoundManifestModule from "../../src/audio/sound-manifest";
 
 /**
- * A faction theme registered in the manifest (bead pulp_wars-2yc.19,
- * docs/ui/SOUND.md "Faction themes"). The game has no theme yet, so this
- * file registers two for itself, the way a later bead will: one entry each
- * in `SOUND_THEMES_V1`. Nothing else is changed, and the audio plays them
- * and the Gallery's rows become playable.
+ * A theme registered in the manifest (bead pulp_wars-2yc.19,
+ * docs/ui/SOUND.md "Theme music"), whatever its source. This file
+ * registers two of its own in place of the game's nine, one entry each in
+ * `SOUND_THEMES_V1`: a recording that cannot be fetched and has a
+ * synthesised stand-in, and a synthesised tune that does not loop. Nothing
+ * else is changed, and the audio plays them and the Gallery's rows become
+ * playable.
  */
 vi.mock("../../src/audio/sound-manifest", async (importOriginal) => {
   const original = await importOriginal<typeof SoundManifestModule>();
@@ -17,7 +19,7 @@ vi.mock("../../src/audio/sound-manifest", async (importOriginal) => {
       id: "theme.undead",
       faction: "UNDEAD",
       loop: true,
-      // A recording that has not loaded plays its fallback recipe.
+      // A recording that cannot be loaded plays its fallback recipe.
       source: {
         kind: "FILE",
         url: "audio/theme-undead.ogg",
@@ -66,6 +68,11 @@ function playing(): string[] {
   ].map((node) => node.dataset.soundRow ?? "");
 }
 
+/** Lets a theme's load settle, then moves the timers on. */
+async function after(ms: number): Promise<void> {
+  await vi.advanceTimersByTimeAsync(ms);
+}
+
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
   window.localStorage.clear();
@@ -99,7 +106,7 @@ describe("a registered faction theme", () => {
     expect(playableSoundV1("theme.goblin")?.loop).toBe(false);
   });
 
-  it("makes its Gallery row playable, with a stop, while the others wait", () => {
+  it("makes its Gallery row playable, with a stop, while the others wait", async () => {
     vi.useFakeTimers();
     const device = installFakeAudioContext(window);
     app = bootstrapRuleset7App(document, {
@@ -126,6 +133,16 @@ describe("a registered faction theme", () => {
       ["DWARF", "true"],
       ["CANDY", "true"],
     ]);
+    // A faction without a theme waits: named, focusable, not playable.
+    const human = required<HTMLButtonElement>(
+      '[data-sound-play="theme:ORIGINAL"]',
+    );
+    expect(human.getAttribute("aria-label")).toBe(
+      "Play: Human theme, coming soon",
+    );
+    expect(human.getAttribute("aria-disabled")).toBe("true");
+    expect(human.disabled).toBe(false);
+    expect(human.dataset.soundId).toBeUndefined();
     const undead = required<HTMLButtonElement>(
       '[data-sound-play="theme:UNDEAD"]',
     );
@@ -143,41 +160,70 @@ describe("a registered faction theme", () => {
     expect(undead.dataset.soundId).toBe("theme.undead");
     expect(undead.textContent).toBe("UndeadThemetheme-undead.ogg");
 
-    app.view.audio.clearLog();
+    const audio = app.view.audio;
+    audio.clearLog();
+    human.click();
+    expect(audio.log).toEqual([]);
+    const sourcesBefore = device.sources.length;
     undead.click();
-    expect(app.view.audio.log).toEqual([
-      { id: "theme.undead", outcome: "PLAYED" },
-    ]);
-    const first = device.sources.at(-1);
-    expect(first).toMatchObject({ loop: true, rate: 1, stopped: false });
-    expect(first?.gain).toBeCloseTo(DEFAULT_CATEGORY_GAINS_V1.music, 6);
+    expect(audio.log).toEqual([{ id: "theme.undead", outcome: "PLAYED" }]);
     expect(playing()).toEqual(["theme:UNDEAD"]);
+    await after(0);
+    // Its recording could not be fetched: the half-second stand-in plays,
+    // through the music's own level.
+    const first = device.sources[sourcesBefore];
+    expect(first).toMatchObject({ rate: 1, stopped: false, at: 0 });
+    expect(first?.seconds).toBeGreaterThan(0.45);
+    expect(first?.seconds).toBeLessThan(0.7);
+    // Once it has faded in it is at the mixer's music level.
+    expect(first?.levelAt(0.45)).toBeCloseTo(
+      DEFAULT_CATEGORY_GAINS_V1.music * device.musicGain(),
+      6,
+    );
+
+    expect(audio.music.player).toMatchObject({ playing: "theme.undead" });
     const stop = required<HTMLButtonElement>(
       '[data-sound-row="theme:UNDEAD"] .v7-gallery-sound-stop',
     );
     expect(stop.hidden).toBe(false);
     expect(stop.getAttribute("aria-label")).toBe("Stop: Undead theme");
     // A loop does not end by itself.
-    vi.advanceTimersByTime(60_000);
+    await after(60_000);
     expect(playing()).toEqual(["theme:UNDEAD"]);
-    expect(app.view.audio.remainingMs("theme.undead")).toBe(Infinity);
+    expect(audio.remainingMs("theme.undead")).toBe(Infinity);
+    expect(audio.music.player).toMatchObject({ playing: "theme.undead" });
 
     // An effect plays over the music; another theme takes its place.
     required<HTMLButtonElement>('[data-sound-play="impact.hit"]').click();
-    expect(first?.stopped).toBe(false);
+    expect(audio.music.player).toMatchObject({ playing: "theme.undead" });
     required<HTMLButtonElement>('[data-sound-play="theme:GOBLIN"]').click();
-    expect(first?.stopped).toBe(true);
-    expect(device.sources.at(-1)).toMatchObject({ loop: false });
+    await after(0);
+    expect(audio.music.player).toMatchObject({ playing: "theme.goblin" });
+    expect(device.sources.at(-1)?.seconds).toBeGreaterThan(2.9);
+    expect(device.sources.at(-1)?.loop).toBe(false);
     expect(playing()).toEqual(["impact.hit", "theme:GOBLIN"]);
-    // The Goblin theme is three seconds long and does not loop.
-    vi.advanceTimersByTime(3100);
+    // The Goblin theme is three seconds long and does not loop: when it
+    // is over its row is unmarked and nothing is held.
+    await after(3100);
     expect(playing()).toEqual([]);
+    expect(audio.music).toMatchObject({ audition: null, wanted: null });
+    expect(audio.music.player).toMatchObject({
+      playing: null,
+      heldBuffers: 0,
+    });
 
     // Stop ends a loop.
     undead.click();
+    await after(0);
+    expect(audio.music.player).toMatchObject({ playing: "theme.undead" });
     stop.click();
-    expect(device.sources.at(-1)?.stopped).toBe(true);
     expect(playing()).toEqual([]);
-    expect(app.view.audio.remainingMs("theme.undead")).toBe(0);
+    expect(audio.remainingMs("theme.undead")).toBe(0);
+    await after(1000);
+    expect(device.sources.at(-1)?.stopped).toBe(true);
+    expect(audio.music.player).toMatchObject({
+      playing: null,
+      heldBuffers: 0,
+    });
   });
 });

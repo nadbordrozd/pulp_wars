@@ -1,4 +1,4 @@
-import { SOUND_IDS_V1 } from "../src/audio/index";
+import { playableSoundIdsV1 } from "../src/audio/index";
 
 /**
  * The Gallery step of the Ruleset 7 browser smoke (bead pulp_wars-ic8):
@@ -188,7 +188,8 @@ const SOUNDS_PLAYED = "match.victory";
 
 /**
  * The Sounds tab (bead pulp_wars-2yc.19, docs/ui/SOUND.md): a card for
- * every sound of the manifest, a pending theme row per faction, and one
+ * every sound of the manifest, a theme row per faction and the title
+ * theme's, the Music and Sound sliders, and one
  * sound played by a pointer click: the audio is asked for it, the card
  * shows that it plays, and its stop control ends it. A browser without a
  * sound device shows the tab's notice instead of a playing card.
@@ -206,19 +207,22 @@ async function probeGallerySoundsV7(
     readonly groups: number;
     readonly pending: number;
     readonly themes: number;
+    readonly levels: number;
     readonly enabled: boolean;
     readonly noticeHidden: boolean;
     readonly overflow: number;
   }>(
-    `({ ids: [...document.querySelectorAll('[data-v7-gallery-sounds] [data-sound-play][data-sound-id]')].map((card) => card.dataset.soundId), groups: document.querySelectorAll('.v7-gallery-sound-group').length, pending: document.querySelectorAll('.v7-gallery-sound-group[data-group="themes"] .v7-gallery-sound[data-pending="true"] [aria-disabled="true"]').length, themes: document.querySelectorAll('.v7-gallery-sound-group[data-group="themes"] .v7-gallery-sound').length, enabled: ${SOUNDS_AUDIO}.settings.enabled, noticeHidden: document.querySelector('.v7-gallery-sounds-notice')?.hidden === true, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth })`,
+    `({ ids: [...document.querySelectorAll('[data-v7-gallery-sounds] [data-sound-play][data-sound-id]')].map((card) => card.dataset.soundId), groups: document.querySelectorAll('.v7-gallery-sound-group').length, pending: document.querySelectorAll('.v7-gallery-sound-group[data-group="themes"] .v7-gallery-sound[data-pending="true"] [aria-disabled="true"]').length, themes: document.querySelectorAll('.v7-gallery-sound-group[data-group="themes"] .v7-gallery-sound').length, levels: document.querySelectorAll('[data-v7-gallery-sounds] #v7-music-volume-gallery, [data-v7-gallery-sounds] #v7-sound-volume-gallery').length, enabled: ${SOUNDS_AUDIO}.settings.enabled, noticeHidden: document.querySelector('.v7-gallery-sounds-notice')?.hidden === true, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth })`,
   );
-  // Every manifest sound once; one theme row per faction column, none of
-  // them playable while the manifest has no theme; sound is on.
+  // Every manifest sound and theme once; one theme row per faction column
+  // and one for the title theme, all playable (bead pulp_wars-2yc.27); the
+  // Music and Sound sliders above them; sound is on.
   if (
-    [...listed.ids].sort().join() !== [...SOUND_IDS_V1].sort().join() ||
+    [...listed.ids].sort().join() !== [...playableSoundIdsV1()].sort().join() ||
     listed.groups < 2 ||
-    listed.themes !== factions ||
-    listed.pending !== factions ||
+    listed.themes !== factions + 1 ||
+    listed.pending !== 0 ||
+    listed.levels !== 2 ||
     !listed.enabled ||
     !listed.noticeHidden ||
     listed.overflow > 0

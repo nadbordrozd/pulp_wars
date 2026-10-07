@@ -6,6 +6,7 @@ export {
   AUDIO_SETTINGS_STORAGE_KEY_V1,
   AUDIO_VOLUME_STEP_V1,
   DEFAULT_AUDIO_SETTINGS_V1,
+  MUSIC_SETTINGS_STORAGE_KEY_V1,
   clampAudioVolumeV1,
   loadAudioSettingsV1,
   parseStoredAudioSettingsV1,
@@ -17,6 +18,7 @@ export {
   audioVolumeGainV1,
   createBrowserGameAudioV1,
   type GameAudioOptionsV1,
+  type GameMusicStateV1,
   type SoundLogEntryV1,
   type SoundRequestOutcomeV1,
 } from "./game-audio";
@@ -32,12 +34,33 @@ export {
   type SoundStartV1,
 } from "./mixer";
 export {
+  MUSIC_CROSSFADE_SECONDS_V1,
+  MUSIC_FADE_IN_SECONDS_V1,
+  MUSIC_FADE_OUT_SECONDS_V1,
+  MusicPlayerV1,
+  type MusicPlayerOptionsV1,
+  type MusicPlayerStateV1,
+  type MusicTrackV1,
+  type MusicVoiceStateV1,
+} from "./music-player";
+export {
+  THEME_MUSIC_OUTPUT_V1,
+  THEME_MUSIC_PUBLIC_PATH_V1,
+  THEME_MUSIC_TRACKS_V1,
+  themeMusicUrlV1,
+  type ThemeMusicOutputV1,
+  type ThemeMusicTrackV1,
+} from "./theme-music";
+export { themeForSceneV1, type MusicSceneV1 } from "./theme-scene";
+export {
   SOUND_CATEGORIES_V1,
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
   SOUND_THEMES_V1,
+  SOUND_TITLE_THEME_ID_V1,
   midiHzV1,
   soundRecipeV1,
+  soundThemeOfFactionV1,
   type SoundCategoryV1,
   type SoundEntryV1,
   type SoundIdV1,

@@ -102,7 +102,7 @@ describe("Gallery sounds", () => {
   it("names every sound, says when it plays and pictures what makes it", () => {
     for (const group of gallerySoundGroupsV7())
       for (const entry of group.entries) {
-        if (entry.faction !== null) continue;
+        if (entry.theme) continue;
         const id = entry.rowId as (typeof SOUND_IDS_V1)[number];
         expect(gallerySoundHasNoteV7(id), id).toBe(true);
         // The name is the manifest's label; the note adds, never repeats.
@@ -138,7 +138,7 @@ describe("Gallery sounds", () => {
   it("offers the two ends of a detuned sound, and the quiet building", () => {
     const entries = gallerySoundGroupsV7().flatMap((group) => group.entries);
     for (const entry of entries) {
-      if (entry.faction !== null) continue;
+      if (entry.theme) continue;
       const id = entry.rowId as (typeof SOUND_IDS_V1)[number];
       const pitches = entry.variants.filter(
         (variant) => variant.id === "LOW" || variant.id === "HIGH",
@@ -174,10 +174,10 @@ describe("Gallery sounds", () => {
     // Only a sound of a second or more gets a stop control: a long tune,
     // or a sound one of whose recordings is that long.
     const long = entries
-      .filter((entry) => entry.faction === null && entry.long)
+      .filter((entry) => !entry.theme && entry.long)
       .map((entry) => entry.rowId);
     for (const entry of entries) {
-      if (entry.faction !== null) continue;
+      if (entry.theme) continue;
       const id = entry.rowId as (typeof SOUND_IDS_V1)[number];
       const recipe = soundRecipeV1(id);
       const lengths = [
@@ -200,10 +200,48 @@ describe("Gallery sounds", () => {
     expect(long).not.toContain("ui.click");
   });
 
-  it("has a pending theme row for every faction while none is registered", () => {
-    // No faction theme has been written yet.
-    expect(SOUND_THEMES_V1).toEqual([]);
+  it("has a playable theme row for every faction, and one for the title theme", () => {
+    // Bead pulp_wars-2yc.27: the nine themes are in the manifest.
     const themes = gallerySoundGroupsV7().at(-1);
+    expect(themes?.id).toBe("THEMES");
+    expect(themes?.entries.map((entry) => entry.faction)).toEqual([
+      ...FACTION_IDS_V7,
+      null,
+    ]);
+    for (const entry of themes?.entries ?? []) {
+      // Each plays its manifest entry and says which file that is.
+      const theme = SOUND_THEMES_V1.find(
+        (candidate) => candidate.faction === entry.faction,
+      );
+      expect(entry.key, entry.rowId).toBe(theme?.id);
+      expect(entry.theme, entry.rowId).toBe(true);
+      expect(entry.when, entry.rowId).toBe("Theme");
+      expect(entry.long, entry.rowId).toBe(true);
+      expect(entry.variants).toEqual([]);
+      expect(entry.choices).toEqual([]);
+      expect(entry.origin, entry.rowId).toEqual({
+        kind: "FILE",
+        text: `${theme?.id.replace(".", "-")}.m4a`,
+      });
+    }
+    const title = themes?.entries.at(-1);
+    expect(title).toMatchObject({
+      key: "theme.title",
+      rowId: "theme:TITLE",
+      name: "Title",
+      picture: { kind: "ICON", icon: "music" },
+    });
+    if (title === undefined) throw new Error("missing title theme");
+    expect(gallerySoundCardLabelV7(title)).toBe(
+      "Play: Title theme. File: theme-title.m4a",
+    );
+    // No effect card is a theme row: those follow Sound, these Music.
+    for (const group of gallerySoundGroupsV7().slice(0, -1))
+      for (const entry of group.entries) expect(entry.theme).toBe(false);
+  });
+
+  it("has a pending theme row for every faction without a theme", () => {
+    const themes = gallerySoundGroupsV7([]).at(-1);
     expect(themes?.id).toBe("THEMES");
     expect(themes?.entries.map((entry) => entry.faction)).toEqual([
       ...FACTION_IDS_V7,
@@ -233,6 +271,7 @@ describe("Gallery sounds", () => {
   it("makes a faction's row playable once its theme is in the manifest", () => {
     const themes = gallerySoundGroupsV7([TEST_THEME]).at(-1);
     const undead = themes?.entries.find((entry) => entry.faction === "UNDEAD");
+    expect(themes?.entries).toHaveLength(FACTION_IDS_V7.length);
     expect(undead).toMatchObject({
       key: "theme.undead",
       rowId: "theme:UNDEAD",
@@ -251,7 +290,8 @@ describe("Gallery sounds", () => {
   });
 
   it("keeps the theme manifest well formed", () => {
-    // One theme per faction at most, ids of their own that start "theme.".
+    // One theme per faction at most (and one of no faction, the title
+    // theme), ids of their own that start "theme.".
     expect(new Set(SOUND_THEMES_V1.map((theme) => theme.faction)).size).toBe(
       SOUND_THEMES_V1.length,
     );
@@ -260,7 +300,8 @@ describe("Gallery sounds", () => {
     );
     for (const theme of SOUND_THEMES_V1) {
       expect(theme.id.startsWith("theme.")).toBe(true);
-      expect(FACTION_IDS_V7).toContain(theme.faction);
+      if (theme.faction === null) expect(theme.label).toBe("Title");
+      else expect(FACTION_IDS_V7).toContain(theme.faction);
       expect((SOUND_IDS_V1 as readonly string[]).includes(theme.id)).toBe(
         false,
       );
@@ -275,7 +316,7 @@ describe("Gallery sounds", () => {
  */
 describe("Gallery sound origins", () => {
   const entries = gallerySoundGroupsV7().flatMap((group) => group.entries);
-  const effects = entries.filter((entry) => entry.faction === null);
+  const effects = entries.filter((entry) => !entry.theme);
 
   it("shows the library file and the cut of every recorded sound", () => {
     expect(STOCK_SOUND_CLIPS_V1.length).toBeGreaterThan(0);
@@ -359,7 +400,7 @@ describe("Gallery sound origins", () => {
   it("shows every sound as generated when recordings are switched off", () => {
     const off = gallerySoundGroupsV7(SOUND_THEMES_V1, { stockSounds: false })
       .flatMap((group) => group.entries)
-      .filter((entry) => entry.faction === null);
+      .filter((entry) => !entry.theme);
     expect(off.length).toBe(SOUND_IDS_V1.length);
     for (const entry of off) {
       expect(entry.origin?.kind, entry.rowId).toBe("GENERATED");
@@ -415,7 +456,7 @@ describe("Gallery sound choices", () => {
   ) =>
     gallerySoundGroupsV7(SOUND_THEMES_V1, options)
       .flatMap((group) => group.entries)
-      .filter((entry) => entry.faction === null);
+      .filter((entry) => !entry.theme);
   const entryOf = (
     id: string,
     options: Parameters<typeof gallerySoundGroupsV7>[1] = {},

@@ -2667,15 +2667,16 @@ audio exists), UI scale, motion (Full/Reduced), animation speed (Normal/Fast),
 high-contrast map overlays, and Help/Controls. System `prefers-reduced-motion`
 is the initial default unless the player overrides it.
 
-**Sound** (bead `pulp_wars-2yc.10`, [Sound](SOUND.md)) is one row in the
-current Ruleset 7 Settings: a loudspeaker toggle and a volume slider (0–100%,
-default on at 70%), with no separate music or effects volume. A collapsed
-**Sound test** below lists every sound with a play button. The match menu's
-first item, **Sound**, mutes and unmutes without closing the menu. The
-Gallery has a **Sounds** tab with every sound and the faction themes
-([Sound](SOUND.md#the-gallerys-sounds-tab)). Reduced
-motion does not turn sound off. The preference is stored under
-`pulpWars.audio.v1`, outside the shared settings envelope.
+**Music and Sound** (beads `pulp_wars-2yc.10` and `pulp_wars-2yc.27`,
+[Sound](SOUND.md)) are two rows in the current Ruleset 7 Settings, the
+themes and the effects: each an icon toggle and a volume slider (0–100%,
+default on at 70%). A collapsed **Sound test** below lists every sound
+effect with a play button. The match menu's first two items, **Sound** and
+**Music**, mute and unmute without closing the menu. The Gallery has a
+**Sounds** tab with every sound and the themes
+([Sound](SOUND.md#the-gallerys-sounds-tab)). Reduced motion does not turn
+sound off. The preference is stored under `pulpWars.audio.v1` (Sound) and
+`pulpWars.music.v1` (Music), outside the shared settings envelope.
 
 Match-only actions are Resume, Restart Same Match, Exit to Hub, and Delete Save.
 Restart uses the same setup/seed and requires confirmation. Exit preserves the

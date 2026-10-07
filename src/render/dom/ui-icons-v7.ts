@@ -58,6 +58,10 @@ export type UiIconIdV7 =
   // crossed out, and a play triangle for the sound test.
   | "sound"
   | "sound-off"
+  // Music (bead pulp_wars-2yc.27): a pair of beamed notes, and the same
+  // crossed out.
+  | "music"
+  | "music-off"
   | "play"
   // The main menu (bead pulp_wars-2yc.18): a pennant for the campaign and
   // a chevron for the way back.
@@ -158,6 +162,10 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   sound:
     "M4 9.5h3.5L12 5.5v13l-4.5-4H4ZM15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11",
   "sound-off": "M4 9.5h3.5L12 5.5v13l-4.5-4H4ZM16 9.5l5 5M21 9.5l-5 5",
+  music:
+    "M9 17.5V6l10-2v11.5M9 17.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM19 15.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM9 9.5l10-2",
+  "music-off":
+    "M9 17.5V6l10-2v11.5M9 17.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM19 15.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM3.5 3.5l17 17",
   play: "M8 5.5v13l10.5-6.5Z",
   flag: "M6 21V3.5M6 4.5h12.5l-3 4 3 4H6",
   back: "M14.5 5 7.5 12l7 7",

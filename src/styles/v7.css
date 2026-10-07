@@ -5172,11 +5172,22 @@
    slider of Settings, the match menu's mute, and the sound test. */
 .v7-sound-controls {
   display: grid;
-  grid-template-columns: max-content minmax(0, 1fr) 3.2rem;
   grid-column: 1 / -1;
+  gap: 0.2rem;
+}
+
+/* One level (Music, Sound): its toggle, its name, its slider, its value. */
+.v7-sound-level {
+  display: grid;
+  grid-template-columns: max-content 3.4rem minmax(0, 1fr) 3.2rem;
   gap: 0.6rem;
   align-items: center;
   min-height: 44px;
+}
+
+.v7-sound-level-name {
+  color: var(--paper);
+  font-weight: 700;
 }
 
 .v7-sound-toggle[data-sound="off"] {

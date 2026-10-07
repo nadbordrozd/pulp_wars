@@ -6,6 +6,8 @@ import {
   AUDIO_SETTINGS_STORAGE_KEY_V1,
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
+  SOUND_THEMES_V1,
+  SOUND_TITLE_THEME_ID_V1,
   STOCK_SOUNDS_V1,
   STOCK_SOUND_CLIPS_V1,
   STOCK_SOUND_PICKS_STORAGE_KEY_V1,
@@ -41,6 +43,15 @@ const HIT: SoundIdV1 = "impact.hit";
 const DEATH: SoundIdV1 = "unit.death";
 /** No recording at all. */
 const ARROW: SoundIdV1 = "attack.ranged";
+
+/** The menus' theme: the one piece of music the first gesture asks for. */
+const TITLE_THEME_URL = ((): string => {
+  const source = SOUND_THEMES_V1.find(
+    (theme) => theme.id === SOUND_TITLE_THEME_ID_V1,
+  )?.source;
+  if (source?.kind !== "FILE") throw new Error("no title theme file");
+  return source.url;
+})();
 
 /** In the stand-in device, candidate n of any sound decodes to this long. */
 const seconds = (n: number): number => 0.5 + n / 10;
@@ -283,10 +294,14 @@ describe("Gallery Sounds tab: the recordings of a sound", () => {
   it("fetches an alternative when it is played, not before, and plays it", async () => {
     const view = mount().view;
     openSounds();
-    // Opening the tab was the first gesture: the defaults were asked for.
+    // Opening the Gallery was the first gesture: the defaults were asked
+    // for, and the menus' title theme (the one theme, bead 2yc.27).
     await settle();
     expect([...fetched].sort()).toEqual(
-      STOCK_SOUND_CLIPS_V1.map((clip) => stockSoundUrlV1(clip)).sort(),
+      [
+        ...STOCK_SOUND_CLIPS_V1.map((clip) => stockSoundUrlV1(clip)),
+        TITLE_THEME_URL,
+      ].sort(),
     );
     expect(fetched).not.toContain(url(HIT, 2));
     const play = vi.spyOn(view.audio, "play");
@@ -701,7 +716,9 @@ describe("Gallery Sounds tab: the picks as text", () => {
       expect(required("[data-v7-sound-picks]").hidden).toBe(true);
       card(HIT).click();
       expect(device.sources.at(-1)?.seconds).toBeCloseTo(synthSeconds(HIT), 6);
-      expect(fetched).toEqual([]);
+      // No clip at all; the title theme is music, not a recording of a
+      // sound, and the switch does not concern it.
+      expect(fetched).toEqual([TITLE_THEME_URL]);
       // The stored pick is kept for a visit with the recordings on.
       expect(storedPicks()).toEqual({ [HIT]: 2 });
     } finally {
