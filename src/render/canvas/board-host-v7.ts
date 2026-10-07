@@ -202,6 +202,7 @@ import {
   CURIOSITY_RULES_V7,
   curiosityOverlayOnTileV7,
 } from "../curiosity-presentation-v7";
+import { cityAccessibleNameV7 } from "../city-names-presentation-v7";
 
 export interface BoardHostModelV7 {
   readonly matchInstanceId: string | number;
@@ -2267,7 +2268,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       })(),
       city === undefined
         ? ""
-        : `${city.isCapital ? "Capital" : "City"} level ${city.level}`,
+        : `${cityAccessibleNameV7(model.view, city)}, level ${city.level}`,
       unit === undefined
         ? ""
         : [

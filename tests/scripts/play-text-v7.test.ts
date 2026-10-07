@@ -12,6 +12,8 @@ import {
   viewForV7,
   type GameStateV7,
 } from "../../src/engine/index";
+import { CITY_NAME_LISTS_V7 } from "../../src/render/city-name-lists-v7";
+import { cityNameV7 } from "../../src/render/city-names-presentation-v7";
 import {
   TEXT_PLAY_LABS_V7,
   runTextPlayV7,
@@ -159,6 +161,30 @@ describe("text-mode play harness", () => {
     const log = ok("log", "--session", first);
     expect(log).toMatch(/^R1 coins \d+ income \+\d+/m);
     expect(log).toContain("TECH ORDER R1 ");
+  });
+
+  it("prints each city's name beside its command id", () => {
+    // City names (`pulp_wars-2yc.30`): the id stays for commands, the name
+    // the game shows stands beside it, in the owner's first faction's voice.
+    const session = path.join(root, "names.json");
+    const started = ok("lab", "--session", session, "LAB_GOBLIN_MID");
+    const view = viewForV7(
+      sessionState(session),
+      sessionState(session).humanPlayerId,
+    );
+    const own = view.cities.filter((city) => city.ownerId === view.viewer.id);
+    expect(own.length).toBeGreaterThan(1);
+    for (const city of own) {
+      const name = cityNameV7(view, city);
+      expect(CITY_NAME_LISTS_V7.GOBLIN).toContain(name);
+      expect(started).toMatch(
+        new RegExp(`^c${city.id} ${name} (CAPITAL|city) @`, "m"),
+      );
+    }
+    // The same session read again prints the same names.
+    const again = ok("view", "--session", session);
+    for (const city of own)
+      expect(again).toContain(`c${city.id} ${cityNameV7(view, city)} `);
   });
 
   it("shows nothing the seat has not explored", () => {

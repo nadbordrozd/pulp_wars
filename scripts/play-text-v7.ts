@@ -181,6 +181,7 @@ import {
   OVERRUN_BUDGET_TEXT_V7,
 } from "../src/render/technology-unlock-text-v7";
 import { MARKET_PLACEMENT_TEXT_V7 } from "../src/render/economy-presentation-v7";
+import { cityNameByIdV7 } from "../src/render/city-names-presentation-v7";
 import {
   CHARGE_DESCRIPTION_V7,
   DINOSAUR_HIRE_NOTE_V7,
@@ -702,6 +703,16 @@ function cityBesiegedV7(view: PlayerViewV7, city: PublicCityV7): boolean {
       sameV7(unit.at, city.at) &&
       arePlayersHostileV7(view, city.ownerId, unit.ownerId),
   );
+}
+
+/**
+ * A city as the harness prints it: its command id and, beside it, the name
+ * the game shows (`c7 Aldmere`). A city out of the seat's sight has only
+ * its id.
+ */
+function cityTagV7(view: PlayerViewV7, cityId: number): string {
+  const name = cityNameByIdV7(view, cityId);
+  return name === null ? `c${cityId}` : `c${cityId} ${name}`;
 }
 
 function ownCitiesV7(view: PlayerViewV7): readonly PublicCityV7[] {
@@ -1601,7 +1612,7 @@ function describeCommandV7(
       const where = unit === undefined ? "" : ` @${xyV7(unit.at)}`;
       return city === undefined
         ? `capture the settlement${where} (a neutral village becomes your level-1 city)`
-        : `capture city c${city.id}${where} from ${seatNameV7(view, city.ownerId)} (L${city.level}${city.isCapital ? ", its capital" : ""})`;
+        : `capture city ${cityTagV7(view, city.id)}${where} from ${seatNameV7(view, city.ownerId)} (L${city.level}${city.isCapital ? ", its capital" : ""})`;
     }
     case "RECOVER": {
       const amount = queryIdleRecoveryV7(view).find(
@@ -1737,7 +1748,7 @@ function describeCommandV7(
                 SURVEY_RAIDERS_V7[view.viewer.faction] === 1
               ? `Scouts: ${scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", view.viewer.faction).label)} (${effectiveRoleRuleV7("RAIDER", view.viewer.faction).label}; it fills a unit slot of this city, and may stand above the unit limit)`
               : (REWARD_TEXT_V7[command.reward] ?? command.reward);
-      return `reward for city c${command.cityId} reaching level ${command.reachedLevel}: ${special}`;
+      return `reward for city ${cityTagV7(view, command.cityId)} reaching level ${command.reachedLevel}: ${special}`;
     }
     case "RESEARCH": {
       const node = safeTechTreeV7(view)?.nodes.find(
@@ -1892,7 +1903,7 @@ function eventTextV7(
       // seat, but a city the seat has not explored is not named (its id
       // was printed; the fog test met one once an Undead AI seat took a
       // village in round 3).
-      const text = `CITY_CAPTURED ${city === undefined ? "a city out of your sight" : `c${event.cityId} @${xyV7(city.at)}`} by ${seatLabelV7(context.view, event.to)} from ${event.from === null ? "neutral" : seatLabelV7(context.view, event.from)}`;
+      const text = `CITY_CAPTURED ${city === undefined ? "a city out of your sight" : `${cityTagV7(context.view, event.cityId)} @${xyV7(city.at)}`} by ${seatLabelV7(context.view, event.to)} from ${event.from === null ? "neutral" : seatLabelV7(context.view, event.from)}`;
       lines.push(text);
       notes.push(text);
       break;
@@ -1901,9 +1912,13 @@ function eventTextV7(
       const city = context.view.cities.find(
         (candidate) => candidate.id === event.cityId,
       );
-      lines.push(`CITY_LEVELED_UP c${event.cityId} to level ${event.level}`);
+      lines.push(
+        `CITY_LEVELED_UP ${cityTagV7(context.view, event.cityId)} to level ${event.level}`,
+      );
       if (city?.ownerId === me)
-        notes.push(`LEVEL c${event.cityId} reached ${event.level}`);
+        notes.push(
+          `LEVEL ${cityTagV7(context.view, event.cityId)} reached ${event.level}`,
+        );
       break;
     }
     case "UNIT_TRAINED": {
@@ -2989,7 +3004,7 @@ function headerLinesV7(session: SessionV7, view: PlayerViewV7): string[] {
   if (view.outcome !== null) lines.push(outcomeLineV7(view));
   for (const choice of view.pendingChoices)
     lines.push(
-      `PENDING CHOICE: city c${choice.cityId} reached level ${choice.reachedLevel}; choose one with do: ${rewardChoicesTextV7(view, choice)} (nothing else is offered until you choose)`,
+      `PENDING CHOICE: city ${cityTagV7(view, choice.cityId)} reached level ${choice.reachedLevel}; choose one with do: ${rewardChoicesTextV7(view, choice)} (nothing else is offered until you choose)`,
     );
   return lines;
 }
@@ -3105,7 +3120,7 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
       return `${rule.label} ${cost}c${id === undefined ? ` (${why})` : ` [${id.startsWith(`c${city.id}.egg`) ? `c${city.id}.egg.${role}.x,y` : id}]`}`;
     });
     lines.push(
-      `c${city.id} ${city.isCapital ? "CAPITAL" : "city"} @${xyV7(city.at)} L${city.level} pop ${city.population}/${city.level + 1} income +${cityIncomeV7(view, city)} slots ${slots.used}/${slots.capacity} action ${city.cityActionAvailable === true ? "ready" : "used"}${cityBesiegedV7(view, city) ? " BESIEGED" : ""}${city.landGrantUsed ? " land-grant-used" : ""}${city.rewards.length === 0 ? "" : ` rewards ${city.rewards.map((entry) => rewardNameV7(view.viewer.faction, entry.reward)).join(",")}`}`,
+      `${cityTagV7(view, city.id)} ${city.isCapital ? "CAPITAL" : "city"} @${xyV7(city.at)} L${city.level} pop ${city.population}/${city.level + 1} income +${cityIncomeV7(view, city)} slots ${slots.used}/${slots.capacity} action ${city.cityActionAvailable === true ? "ready" : "used"}${cityBesiegedV7(view, city) ? " BESIEGED" : ""}${city.landGrantUsed ? " land-grant-used" : ""}${city.rewards.length === 0 ? "" : ` rewards ${city.rewards.map((entry) => rewardNameV7(view.viewer.faction, entry.reward)).join(",")}`}`,
     );
     // The Martian pass, correction: where the giant unit comes from (a
     // tester reached level 5 in another city and never found it).
@@ -3178,7 +3193,7 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
   for (const city of otherCities) {
     const garrison = view.units.find((unit) => sameV7(unit.at, city.at));
     lines.push(
-      `c${city.id} ${seatNameV7(view, city.ownerId)} ${city.isCapital ? "CAPITAL" : "city"} @${xyV7(city.at)} L${city.level} pop ${city.population}/${city.level + 1}${city.rewards.some((entry) => entry.reward === "WALLS") ? " WALLS" : ""}${garrison === undefined ? " center empty" : ` center ${unitTagV7(view, garrison)}`}`,
+      `${cityTagV7(view, city.id)} ${seatNameV7(view, city.ownerId)} ${city.isCapital ? "CAPITAL" : "city"} @${xyV7(city.at)} L${city.level} pop ${city.population}/${city.level + 1}${city.rewards.some((entry) => entry.reward === "WALLS") ? " WALLS" : ""}${garrison === undefined ? " center empty" : ` center ${unitTagV7(view, garrison)}`}`,
     );
   }
   if (otherCities.length === 0) lines.push("(none)");
@@ -3386,7 +3401,7 @@ function commandOptionsV7(args: ArgsV7): string {
       throw new TextPlayErrorV7(`no known city c${id} (see view)`);
     lines.push(
       "",
-      `c${id} ${seatNameV7(view, city.ownerId)} @${xyV7(city.at)} L${city.level} pop ${city.population}/${city.level + 1}`,
+      `${cityTagV7(view, id)} ${seatNameV7(view, city.ownerId)} @${xyV7(city.at)} L${city.level} pop ${city.population}/${city.level + 1}`,
     );
     const mine = offered.filter(
       (entry) => commandCityIdV7(view, entry.command) === id,
@@ -3792,7 +3807,7 @@ function commandDoV7(args: ArgsV7): string {
   );
   for (const choice of view.pendingChoices)
     lines.push(
-      `PENDING CHOICE: city c${choice.cityId} reached level ${choice.reachedLevel}; choose one with do: ${rewardChoicesTextV7(view, choice)}`,
+      `PENDING CHOICE: city ${cityTagV7(view, choice.cityId)} reached level ${choice.reachedLevel}; choose one with do: ${rewardChoicesTextV7(view, choice)}`,
     );
   if (view.outcome !== null) lines.push(outcomeLineV7(view));
   else lines.push(offeredSummaryV7(offeredV7(view)));

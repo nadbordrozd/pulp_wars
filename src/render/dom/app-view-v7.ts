@@ -554,6 +554,11 @@ import {
   roleAbilityNameV7,
 } from "../role-presentation-v7";
 import { economicFormulaV7 } from "../economy-presentation-v7";
+import {
+  cityBoundaryNoticeV7,
+  cityNameByIdV7,
+  cityNameV7,
+} from "../city-names-presentation-v7";
 import { GalleryViewV7 } from "./gallery-v7";
 import {
   createBrowserGameAudioV1,
@@ -4309,7 +4314,7 @@ export class Ruleset7DomAppView {
         identity(
           this.#document,
           `building-city-${cityTier}`,
-          city.isCapital ? "Capital" : "City",
+          cityNameV7(view, city),
           true,
           null,
           this.#chibiArt(
@@ -4323,6 +4328,17 @@ export class Ruleset7DomAppView {
           )?.element,
         ),
       );
+      // The title is the city's name; "Capital" or "City" sits under it.
+      dock
+        .querySelector(".v7-identity")
+        ?.append(
+          text(
+            this.#document,
+            "span",
+            city.isCapital ? "Capital" : "City",
+            "v7-identity-kind",
+          ),
+        );
       const owner = view.players.find((player) => player.id === city.ownerId);
       if (!owned && owner !== undefined)
         dock
@@ -6752,13 +6768,12 @@ export class Ruleset7DomAppView {
     modal.setAttribute("role", "alertdialog");
     modal.setAttribute("aria-modal", "true");
     if (choice === undefined) return modal;
-    const city = view.cities.find((entry) => entry.id === choice.cityId);
     modal.append(
       text(this.#document, "h2", `Level ${choice.reachedLevel}!`),
       text(
         this.#document,
         "p",
-        `${city?.isCapital ? "Your capital" : "A city"} grew. Pick a reward.`,
+        `${cityNameByIdV7(view, choice.cityId) ?? "A city"} grew. Pick a reward.`,
         "v7-screen-lede",
       ),
     );
@@ -10890,7 +10905,10 @@ function boundaryNoticeV7(
   const naval = navalBoundaryNoticeV7(events, before, after);
   // The frozen sea: a Freeze, a thaw, the crush, a slip.
   const frozenSea = frozenSeaBoundaryNoticeV7(events, before, after);
+  // City names: a village or a city taken, an own city grown.
+  const city = cityBoundaryNoticeV7(events, before, after);
   const parts = [
+    city?.text ?? null,
     curiosity?.text ?? null,
     naval?.text ?? null,
     frozenSea?.text ?? null,
@@ -10913,7 +10931,8 @@ function boundaryNoticeV7(
     candy === null &&
     curiosity === null &&
     naval === null &&
-    frozenSea === null
+    frozenSea === null &&
+    city === null
   )
     return { text: special, toast: special !== null };
   return {
@@ -10929,7 +10948,8 @@ function boundaryNoticeV7(
       candy?.toast === true ||
       curiosity?.toast === true ||
       naval?.toast === true ||
-      frozenSea?.toast === true,
+      frozenSea?.toast === true ||
+      city?.toast === true,
   };
 }
 function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {

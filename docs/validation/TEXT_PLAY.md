@@ -260,6 +260,11 @@ OFFERED 17: research 5 | train 1 | move 9 | unit 2 | end available
 The Goblin seat's turn printed nothing because nothing it did was on a tile
 this seat has explored.
 
+A city is printed with its command id and, beside it, the name the game
+shows ([docs/ui/CITY_NAMES.md](../ui/CITY_NAMES.md)): `c1 Bellory CAPITAL
+@8,8`, `CITY_LEVELED_UP c1 Bellory to level 2`, `capture city c7 Snagrot`.
+Commands take the id alone. The example above predates the names.
+
 ## Reading the output
 
 - **Unit lines.** `u20 Guard [GUARD] @4,4 hp 17/17 atk 1.5 def 4.5 mov 1 rng 1

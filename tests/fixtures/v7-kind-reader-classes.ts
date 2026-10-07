@@ -444,6 +444,12 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/ice.ts::resolveBlackIceV7": "SEAT",
   "src/engine/v7/achievements.ts::revision21AchievementCountsV7": "SEAT",
   "src/engine/v7/state-schema.ts::iceValid": "KIND",
+  // City names (`pulp_wars-2yc.30`): a city is named from the list of a
+  // seat's faction (the owner of the site at the start, or of the nearest
+  // starting capital); no unit is involved.
+  "src/render/city-names-presentation-v7.ts::assignCityNamesV7": "SEAT",
+  "src/render/city-names-presentation-v7.ts::cityNameSitesV7": "SEAT",
+  "src/render/city-names-presentation-v7.ts::cityNameEntryV7": "SEAT",
 };
 
 /**

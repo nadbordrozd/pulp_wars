@@ -561,9 +561,10 @@ describe("Revision 19 Dinosaur city panel", () => {
     );
     expect(document.querySelector('[data-v7-lay-egg="picking"]')).toBe(null);
     expect(host.lastModel?.interaction.layEgg).toBeUndefined();
-    expect(requiredElement(".v7-selection-dock h2").textContent).toBe(
-      "Capital",
-    );
+    // The panel's title is the city's name (`pulp_wars-2yc.30`).
+    expect(
+      requiredElement(".v7-selection-dock .v7-identity-kind").textContent,
+    ).toBe("Capital");
     requiredButton("lay-egg-knight").click();
     requiredButton("cancel-lay-egg").click();
     expect(document.querySelector('[data-v7-lay-egg="picking"]')).toBe(null);

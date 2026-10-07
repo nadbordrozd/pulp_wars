@@ -326,7 +326,12 @@ import {
   drawCoastSandV7,
   type CoastSandArtV7,
 } from "./coast-sand-v7";
+import { drawCityNameLabelV7 } from "./city-name-label-v7";
 import { drawSettlementShadowV7 } from "./settlement-shadow-v7";
+import {
+  cityAccessibleNameV7,
+  cityNameV7,
+} from "../city-names-presentation-v7";
 import {
   drawFogEdgeV7,
   drawFogV7,
@@ -775,6 +780,8 @@ export interface BoardRenderPlanEntryV7 {
   readonly coveredByImprovement?: boolean;
   /** CITY only: the owner's capital (marked by a crown in the CHIBI art set). */
   readonly capital?: boolean;
+  /** CITY only: the city's name, drawn on a plate under it. */
+  readonly cityName?: string;
   /**
    * UNIT only: an Undead-, Goblin- or Dinosaur-owned unit. It is drawn
    * with its faction badge unless the CHIBI art set shows its own faction
@@ -1105,7 +1112,8 @@ export function buildBoardRenderPlanV7(
       at: city.at,
       ownerId: city.ownerId,
       ...ownerPresentation(view, city.ownerId),
-      label: `${city.isCapital ? "Capital" : "City"} ${city.id}`,
+      label: cityAccessibleNameV7(view, city),
+      cityName: cityNameV7(view, city),
       ...(city.isCapital ? { capital: true } : {}),
       value: city.level,
       population: city.population,
@@ -2184,6 +2192,9 @@ export function drawBoardV7(input: {
   // Grave corner markers are drawn last in both art sets, over every piece
   // and its overlays.
   const deferredGraveMarkers: (() => void)[] = [];
+  // City name plates are drawn after every piece and marker, each from its
+  // city's draw position this frame.
+  const deferredCityNames: (() => void)[] = [];
   // CHIBI draws every road casing before any road fill, so a corner join
   // and its cell's road read as one path instead of crossing outlines.
   // A Road (or a corner join) on tall terrain passes under the tree or rock
@@ -3658,6 +3669,17 @@ export function drawBoardV7(input: {
             devicePixelRatio,
           });
         }
+        if (entry.kind === "CITY" && entry.cityName !== undefined) {
+          const cityName = entry.cityName;
+          const ownerColor = entry.ownerColor;
+          deferredCityNames.push(() =>
+            drawCityNameLabelV7(context, { x, y }, camera.zoom, cityName, {
+              ...(ownerColor === undefined ? {} : { ownerColor }),
+              highContrast: input.highContrast ?? false,
+              alpha: sceneAlpha,
+            }),
+          );
+        }
         if (
           entry.kind === "CITY" &&
           entry.capital === true &&
@@ -3924,6 +3946,7 @@ export function drawBoardV7(input: {
     }
   for (const drawOverlays of deferredChibiOverlays) drawOverlays();
   for (const drawMarker of deferredGraveMarkers) drawMarker();
+  for (const drawName of deferredCityNames) drawName();
   // The Ice Folk revision: the selected (or hovered) Witch's nine tiles.
   for (const entry of input.plan.entries)
     if (

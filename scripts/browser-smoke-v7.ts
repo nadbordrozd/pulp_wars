@@ -1799,7 +1799,7 @@ async function probeDinosaurMatch(connection: Connection): Promise<string> {
   await pressKey(connection, "Enter", "Enter");
   await waitForExpression(
     connection,
-    `document.querySelector('.v7-selection-dock h2')?.textContent === 'City' && document.querySelector('[data-stat="units"]')?.dataset.capacity === 'slots' && document.querySelector('[data-action="lay-egg-raider"]:not([aria-disabled="true"]):not(:disabled)') !== null`,
+    `document.querySelector('.v7-selection-dock .v7-identity-kind')?.textContent === 'City' && document.querySelector('[data-stat="units"]')?.dataset.capacity === 'slots' && document.querySelector('[data-action="lay-egg-raider"]:not([aria-disabled="true"]):not(:disabled)') !== null`,
   );
   const slots = await evaluate<string>(
     connection,

@@ -1474,6 +1474,16 @@
   font-weight: 700;
 }
 
+/* City names (pulp_wars-2yc.30): "Capital" or "City" under the name. */
+.v7-identity-kind {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
 .v7-tactical-role {
   color: var(--muted);
   font-size: 0.68rem;
