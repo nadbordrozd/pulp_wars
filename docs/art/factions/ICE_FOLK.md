@@ -409,7 +409,8 @@ Made in `pulp_wars-7g3.6` and recorded so that they can be overruled:
    with a white cap on a navy disc with a pale ice rim, **not a snowflake**:
    the Frosted marker is a snowflake glyph on the other side of the unit,
    and the two must not be confused. The DOM uses the same peak
-   (`ice-peak`). Snow, the Blizzard and every marker are code-drawn in
+   (`ice-peak`), as blue ink on a pale fill like the Ice Folk chips
+   ([interface style](../../ui/STYLE.md)). Snow, the Blizzard and every marker are code-drawn in
    both looks; LEGACY caps its raised Forest and Mountain bodies too.
 2. **Snow under the bodies.** On a Snow cell a Forest or Mountain is drawn
    like one under a Road: its ground, then the Snow, then the body (after

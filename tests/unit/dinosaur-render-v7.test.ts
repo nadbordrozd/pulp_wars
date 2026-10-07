@@ -654,7 +654,7 @@ describe("Revision 19 board drawing", () => {
       countdown.log.find(
         (call) => call[0] === "set" && call[1] === "font",
       )?.[2],
-    ).toBe("800 10px system-ui");
+    ).toBe('800 10px "Public Sans", system-ui, sans-serif');
     const allowed = new Set([
       "#ffffff",
       "#efe6c8",

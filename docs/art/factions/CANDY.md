@@ -167,8 +167,9 @@ grass stays.
 `caramel` (`#e0a040`), `caramelShade`, `milkChocolate` and dark
 `chocolate` (`#4a2412`) where it named three pinks, so the Rush path and
 its sparkles, the Crashed swirl, the Rushed bolt, the Crumbs token's rim,
-the cue sparkles and the dock chips and Sugar Frenzy pips are caramel on
-chocolate; the Peppermint dot and sparkles are mint. **Still pink by
+and the cue sparkles are caramel on chocolate; the Peppermint dot and
+sparkles are mint. The dock chips and Sugar Frenzy pips are amber ink on a
+pale fill ([interface style](../../ui/STYLE.md)). **Still pink by
 design:** the territory border (`CANDY_PALETTE_V7.faction`, the faction
 identity colour) and the picked-ability outline in the dock, which is that
 colour.

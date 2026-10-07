@@ -11,6 +11,7 @@ import {
   wrapPreviewTextV7,
   type PreviewLabelPlacerV7,
 } from "./preview-label-layout-v7";
+import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 
 export type AbilityPreviewStyleV7 =
   | "WAIL"
@@ -117,7 +118,7 @@ export function drawStandInBadgeV7(
   context.fill();
   context.stroke();
   context.fillStyle = "#171722";
-  context.font = `${800} ${Math.max(6, size * 0.62)}px system-ui`;
+  context.font = `${800} ${Math.max(6, size * 0.62)}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.fillText(letter, cx, cy + size * 0.04);
@@ -678,7 +679,7 @@ export function drawAbilityTargetV7(
     context.save();
     // Labels stay legible at the smallest zoom: never below 11 CSS px.
     const font = Math.max(11, 15 * zoom);
-    context.font = `${800} ${font}px system-ui`;
+    context.font = `${800} ${font}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
     context.textAlign = "center";
     // Fullest first; a crowded cell falls back to a shorter form, and a
     // label that fits nowhere is left out rather than covering another.
@@ -715,7 +716,7 @@ export function drawAbilityTargetV7(
     const { text, width, height } = chosen;
     const paint = (): void => {
       context.save();
-      context.font = `${800} ${font}px system-ui`;
+      context.font = `${800} ${font}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
       context.textAlign = "center";
       context.fillStyle = lethal
         ? "#8f1f22ee"
@@ -778,7 +779,7 @@ export function drawPreviewTextStackV7(
   const font = Math.max(PREVIEW_TEXT_MIN_FONT_CSS_PX_V7, 10 * zoom);
   const lineStep = font * 1.2;
   context.save();
-  context.font = `${700} ${font}px system-ui`;
+  context.font = `${700} ${font}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
   context.textAlign = "center";
   const measure = (line: string): number => context.measureText(line).width;
   const cell = 128 * zoom;

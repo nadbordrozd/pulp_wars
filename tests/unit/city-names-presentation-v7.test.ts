@@ -485,7 +485,9 @@ describe("the city name plate", () => {
     );
     expect(calls).toEqual(["save", "fill", "text:Aldmere", "restore"]);
     expect(strokes).toEqual(["#e2574c"]);
-    expect(context.font).toMatch(/^800 [\d.]+px system-ui$/);
+    expect(context.font).toMatch(
+      /^800 [\d.]+px "Public Sans", system-ui, sans-serif$/,
+    );
     if (drawn === null) throw new Error("nothing was drawn");
     // Centred under the city, no wider than the cell and a little.
     expect(drawn.left + drawn.width / 2).toBeCloseTo(200);

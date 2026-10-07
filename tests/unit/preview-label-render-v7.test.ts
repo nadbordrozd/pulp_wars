@@ -335,8 +335,18 @@ describe("board preview label layout (pulp_wars-nbl)", () => {
       height: 16,
     });
     expect(texts).toEqual([
-      { text: "Deal 3", x, y: y + 52, font: "700 10px system-ui" },
-      { text: "Heal +2", x, y: y + 69, font: "700 10px system-ui" },
+      {
+        text: "Deal 3",
+        x,
+        y: y + 52,
+        font: '700 10px "Public Sans", system-ui, sans-serif',
+      },
+      {
+        text: "Heal +2",
+        x,
+        y: y + 69,
+        font: '700 10px "Public Sans", system-ui, sans-serif',
+      },
     ]);
   });
 
@@ -431,7 +441,7 @@ describe("dense Goblin preview labels never overlap (pulp_wars-0ao.12)", () => {
     WARNING_FILL,
     LETHAL_FILL,
   ]);
-  /** Bold system-ui is about 0.62 em per character. */
+  /** A bold label face is about 0.62 em per character. */
   const charWidth = (font: string): number => fontPx(font) * 0.62;
   const NO_INTERACTION = {
     selection: null,

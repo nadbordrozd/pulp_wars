@@ -437,7 +437,7 @@ describe("Ruleset 7 popup scrim", () => {
     const rule = /\.v7-scrim \{[^}]*\}/.exec(css)?.[0] ?? "";
     expect(rule).toContain("position: absolute;");
     expect(rule).toContain("inset: 0;");
-    expect(rule).toMatch(/background: rgb\(\d+ \d+ \d+ \/ \d+%\);/);
+    expect(rule).toContain("background: var(--pw-scrim);");
     const scrimZ = Number(/z-index: (\d+);/.exec(rule)?.[1]);
     const dialogs =
       /\.v7-overlay,\s*\.v7-recruit-help,[^{]*\{[^}]*\}/.exec(css)?.[0] ?? "";
@@ -453,8 +453,8 @@ describe("Ruleset 7 popup scrim", () => {
     expect(close).toContain("top: 0;");
     expect(close).toContain("justify-self: end;");
     expect(close).toContain("width: 2.75rem;");
-    expect(close).toContain("background: var(--paper);");
-    expect(close).toContain("color: var(--ink);");
+    expect(close).toContain("background: var(--pw-accent);");
+    expect(close).toContain("color: var(--pw-accent-text);");
   });
 });
 

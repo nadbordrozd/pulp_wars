@@ -394,7 +394,10 @@ The spec makes these code-drawn; the colours are `MARTIAN_PALETTE_V7`.
   two tendrils waving down to it, and a brain on the status chip, in the
   Martian faction colour `#e83aae` (`faction-colours-v7.ts`) on its dark
   shade, pulsing toward its glow; the dashed control link between a
-  selected controlled unit and its Brain in the same colour.
+  selected controlled unit and its Brain in the same colour. In the
+  interface the brain badge and the Martian chips are pink ink on a pale
+  fill, and the faction colour itself is only a swatch, stripe or ring
+  ([interface style](../../ui/STYLE.md)).
 - **Flying:** the shadow ellipse above; a ready flyer may bob by 1 px.
 - **Heat ray:** a 3 px line from the emitter to the target, `#ff2fb0` with
   a 1 px `#ffffff` core, ending in the `heat-ray` flash; the Pierce victim
@@ -452,7 +455,8 @@ Made in `pulp_wars-t6s.4` and recorded so that they can be overruled:
    draw the Human sprite of the role (the Fighter for a Thrall) with a
    code-drawn **saucer badge** (a chrome saucer with a pale dome and a
    magenta light on a gunmetal disc, chrome rim) in the corner every
-   earlier faction's badge uses, and the Human city. LEGACY does not borrow
+   earlier faction's badge uses, and the Human city. The saucer badge of the
+   interface is ink on a pale plate ([interface style](../../ui/STYLE.md)). LEGACY does not borrow
    the direction art: its sprites are of another style, and the badge is
    the rule every faction followed before its art. Every marker is
    code-drawn in both.

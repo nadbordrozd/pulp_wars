@@ -1,4 +1,5 @@
 import type { UnitTurnStateV7 } from "./unit-turn-state-v7";
+import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 
 /**
  * Bead pulp_wars-2yc.29: the code-drawn parts of the feedback animations
@@ -370,7 +371,7 @@ export function drawPopulationIconV7(
   }
   if (options.value > 1) {
     const label = String(options.value);
-    context.font = `800 ${Math.max(9, size * 0.55)}px system-ui`;
+    context.font = `800 ${Math.max(9, size * 0.55)}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.lineJoin = "round";

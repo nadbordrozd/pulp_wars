@@ -1,23 +1,127 @@
 /*
- * Ruleset 7 in-game UI. Board-first: floating translucent chrome, icon-led
- * controls, and short copy. Explanations live behind "?" and detail sheets.
+ * Ruleset 7 interface. Board-first: floating plates, icon-led controls, and
+ * short copy. Explanations live behind "?" and detail sheets.
+ *
+ * The look is "Newsstand" (bead pulp_wars-2yc.35, docs/ui/STYLE.md): printed
+ * cover stock. Cream plates, an ink keyline, a hard offset shadow with no
+ * blur, and red and yellow spot colour. Every colour, radius, shadow, type
+ * size and weight below reads one of the --pw-* tokens of this block.
  */
 
 .v7-app-shell {
-  --v7-glass: rgb(22 24 34 / 90%);
-  --v7-glass-strong: rgb(30 32 45 / 97%);
-  --v7-edge: rgb(255 255 255 / 10%);
-  --v7-edge-strong: rgb(255 255 255 / 22%);
-  --v7-shadow: 0 10px 30px rgb(0 0 0 / 38%);
-  --v7-radius: 14px;
-  --v7-gain: #8ee8a8;
-  --v7-loss: #ff8f86;
+  /* ---- type ---- */
+  --pw-display:
+    "Bowlby One", Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  --pw-ui: "Public Sans", system-ui, "Segoe UI", sans-serif;
+  --pw-fw-body: 500;
+  --pw-fw-semi: 600;
+  --pw-fw-bold: 700;
+  --pw-fw-heavy: 800;
+  --pw-fs-xs: 0.75rem;
+  --pw-fs-sm: 0.85rem;
+  --pw-fs-md: 0.95rem;
+  --pw-fs-base: 1rem;
+  --pw-fs-lg: 1.15rem;
+  --pw-fs-xl: 1.4rem;
+  --pw-fs-2xl: 1.7rem;
+  --pw-fs-3xl: 2.3rem;
+  --pw-fs-4xl: 3rem;
+
+  /* ---- ink and paper ---- */
+  --pw-ink: #1a1410;
+  --pw-surface: #f7efd8;
+  --pw-surface-2: #eadcb4;
+  --pw-surface-raised: #fffaf0;
+  --pw-dock: #efe4c4;
+  --pw-text: var(--pw-ink);
+  --pw-text-2: #55463a;
+  --pw-text-inverse: #fff8e6;
+  --pw-line: var(--pw-ink);
+  --pw-line-soft: #8d7f6c;
+  --pw-tint-1: rgb(26 20 16 / 5%);
+  --pw-tint-2: rgb(26 20 16 / 9%);
+  --pw-tint-3: rgb(26 20 16 / 15%);
+  --pw-shade: rgb(26 20 16 / 45%);
+  --pw-scrim: rgb(20 16 13 / 72%);
+  --pw-board-bg: #171722;
+
+  /* ---- spot colour ---- */
+  --pw-accent: #c4261c;
+  --pw-accent-dark: #7d140f;
+  --pw-accent-text: #fff8e6;
+  --pw-yellow: #ffcf3a;
+  --pw-focus: #c4261c;
+  --pw-coin: var(--pw-ink);
+  --pw-gain: #0b6a5c;
+  --pw-loss: #a81d17;
+
+  /* ---- hues: an ink that reads as text or a rule, and a pale fill ---- */
+  --pw-red: #a81d17;
+  --pw-red-fill: #f9d7cc;
+  --pw-amber: #8a4a00;
+  --pw-amber-fill: #fbe3a6;
+  --pw-green: #2f6b1e;
+  --pw-green-fill: #dcebc2;
+  --pw-teal: #0b6a5c;
+  --pw-teal-fill: #cfe9d6;
+  --pw-blue: #1f55a8;
+  --pw-blue-fill: #d5e4f6;
+  --pw-violet: #6a2fb0;
+  --pw-violet-fill: #e6d8f5;
+  --pw-pink: #a81a78;
+  --pw-pink-fill: #f8d6ea;
+  --pw-brown: #6b4423;
+  --pw-brown-fill: #ecd9bf;
+
+  /*
+   * ---- the board's own colours, shown in the interface ----
+   * The sky behind the title scene, and the landing markers a legend
+   * repeats from the Canvas (they are drawn on a board-coloured swatch).
+   */
+  --pw-sky-high: #2f5fa8;
+  --pw-sky-mid: #6fb1e3;
+  --pw-sky-low: #d4eef5;
+  --pw-marker-landing: #64e6cf;
+  --pw-marker-after-move: #f4c95d;
+  --pw-marker-slide: #d6f0ff;
+  --pw-marker-launch: #c7e7f5;
+
+  /* ---- shape ---- */
+  --pw-line-w: 3px;
+  --pw-line-w-sm: 2px;
+  --pw-radius: 6px;
+  --pw-radius-sm: 4px;
+  --pw-radius-xs: 2px;
+  --pw-radius-pill: 3px;
+  --pw-shadow: 6px 6px 0 var(--pw-ink);
+  --pw-shadow-sm: 3px 3px 0 var(--pw-ink);
+
+  /* An unavailable control that still explains itself: ink stays over 4.5:1. */
+  --pw-dim: 0.7;
+
+  /*
+   * The shared rules of main.css (button, input, :focus-visible, .destructive)
+   * read the legacy names; inside this shell they resolve to the tokens.
+   */
+  --paper: var(--pw-ink);
+  --ink: var(--pw-surface-raised);
+  --muted: var(--pw-text-2);
+  --panel: var(--pw-surface);
+  --panel-strong: var(--pw-surface-raised);
+  --line: var(--pw-line);
+  --focus: var(--pw-focus);
+  --gold: var(--pw-accent);
+  --danger: var(--pw-red);
 
   width: 100%;
   min-height: 100dvh;
-  color: var(--paper);
-  background: #171722;
+  color: var(--pw-text);
+  background: var(--pw-board-bg);
+  font-family: var(--pw-ui);
   font-size: calc(1rem * var(--ui-scale));
+  font-weight: var(--pw-fw-body);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-synthesis: none;
 
   /*
    * The whole interface is chrome, not a document: nothing in it selects
@@ -48,14 +152,91 @@
   display: none !important;
 }
 
+/* High contrast: pure black on white, no secondary grey, no soft rules. */
 .v7-app-shell[data-contrast="high"] {
-  --line: #fff;
-  --focus: #fff;
-  --v7-edge: rgb(255 255 255 / 55%);
-  --v7-edge-strong: #fff;
-  --v7-glass: rgb(10 10 14 / 97%);
-  --v7-glass-strong: rgb(10 10 14);
+  --pw-ink: #000;
+  --pw-surface: #fff;
+  --pw-surface-2: #e4e4e4;
+  --pw-surface-raised: #fff;
+  --pw-dock: #fff;
+  --pw-text-2: #000;
+  --pw-line-soft: #000;
+  --pw-accent: #a30d05;
+  --pw-focus: #000;
+  --pw-scrim: rgb(0 0 0 / 82%);
   filter: contrast(1.22);
+}
+
+/*
+ * Base controls and headings. :where() keeps these at the weight of the
+ * element rules of main.css, which they replace inside the shell; every
+ * class rule below still wins.
+ */
+:where(.v7-app-shell) :is(button, input, select) {
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  color: var(--pw-text);
+}
+
+:where(.v7-app-shell) button {
+  font-weight: var(--pw-fw-bold);
+}
+
+:where(.v7-app-shell) :is(button, input):disabled {
+  opacity: var(--pw-dim);
+}
+
+/* The display face is for capitals at 20px and over; smaller headings are type. */
+:where(.v7-app-shell) :is(h1, h2, h3) {
+  font-family: var(--pw-ui);
+  font-weight: var(--pw-fw-heavy);
+  letter-spacing: 0.04em;
+  line-height: 1.05;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: manual;
+}
+
+.v7-brand h1,
+.v7-front-title,
+.v7-campaign-title,
+.v7-briefing-title,
+.v7-overlay h2,
+.v7-recruit-help h2,
+.v7-unit-help-dialog h2,
+.v7-mandatory-choice h2,
+.v7-achievement-notice h2,
+.v7-results h2,
+.v7-gallery-header h1,
+.v7-gallery-detail h2 {
+  font-family: var(--pw-display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.v7-app-shell .primary-action {
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  background: var(--pw-accent);
+  box-shadow: var(--pw-shadow-sm);
+  color: var(--pw-accent-text);
+  font-weight: var(--pw-fw-heavy);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.v7-app-shell .primary-action:focus-visible {
+  outline-color: var(--pw-ink);
+}
+
+.v7-app-shell .destructive {
+  border-color: var(--pw-red);
+  color: var(--pw-red);
+}
+
+.v7-app-shell a {
+  color: var(--pw-text);
 }
 
 .v7-sr-only {
@@ -81,9 +262,10 @@
 
 .v7-warning {
   padding: 0.6rem 0.8rem;
-  border-left: 4px solid var(--gold);
-  border-radius: 0.5rem;
-  background: var(--panel);
+  border-left: 6px solid var(--pw-accent);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
 }
 
 /*
@@ -110,19 +292,20 @@
   max-width: min(34rem, calc(100vw - 2rem));
   margin: 0;
   padding: 0.6rem 1rem;
-  border: 2px solid var(--danger);
-  border-radius: 14px;
-  background: var(--v7-glass-strong);
-  box-shadow: var(--v7-shadow);
-  font-weight: 700;
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-radius: var(--pw-radius);
+  background: var(--pw-surface);
+  box-shadow: var(--pw-shadow);
+  font-weight: var(--pw-fw-bold);
   text-align: center;
   translate: -50% 0;
+  border-left: 8px solid var(--pw-red);
 }
 
 .v7-front-shell > .v7-warning {
   top: auto;
   bottom: 0.75rem;
-  border-color: var(--gold);
+  border-left-color: var(--pw-yellow);
 }
 
 /* ---------- Loading screen (asset preload) ---------- */
@@ -134,6 +317,7 @@
   gap: 1.5rem;
   min-height: 100dvh;
   padding: 1.25rem;
+  background: var(--pw-surface);
 }
 
 .v7-loading-icon {
@@ -142,30 +326,30 @@
 }
 
 .v7-loading-shield {
-  fill: var(--accent-dark, #7c2f2a);
-  stroke: var(--paper, #f6efdd);
+  fill: var(--pw-accent);
+  stroke: var(--pw-line);
   stroke-width: 3;
   stroke-linejoin: round;
 }
 
 .v7-loading-star {
-  fill: var(--gold, #e9b949);
+  fill: var(--pw-yellow);
 }
 
 .v7-loading-bar {
   width: min(16rem, 70vw);
-  height: 0.6rem;
+  height: 0.9rem;
   overflow: hidden;
-  border: 1px solid var(--v7-edge-strong);
-  border-radius: 999px;
-  background: var(--v7-glass);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-surface-raised);
 }
 
 .v7-loading-fill {
   display: block;
   height: 100%;
-  border-radius: inherit;
-  background: var(--gold, #e9b949);
+  border-radius: 0;
+  background: var(--pw-accent);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -197,23 +381,32 @@
 .v7-brand h1 {
   max-width: none;
   margin: 0;
-  color: var(--paper);
-  font-size: clamp(3rem, 9vw, 8.5rem);
+  color: var(--pw-yellow);
+  font-size: clamp(2.8rem, 7.2vw, 7rem);
   line-height: 0.95;
   text-shadow:
-    0 0.055em 0 var(--accent-dark),
-    0 0.1em 0.22em rgb(10 14 30 / 55%);
+    0.07em 0.07em 0 var(--pw-accent),
+    0.11em 0.11em 0 var(--pw-ink);
+  -webkit-text-stroke: 0.11em var(--pw-ink);
+  paint-order: stroke fill;
+  rotate: -3deg;
+  transform-origin: left bottom;
+  margin-top: 0.42em;
 }
 
 .v7-recovery-summary {
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-title-scene {
   position: fixed;
   z-index: -2;
   inset: 0;
-  background: linear-gradient(#2f5fa8 0%, #6fb1e3 48%, #d4eef5 78%);
+  background: linear-gradient(
+    var(--pw-sky-high) 0%,
+    var(--pw-sky-mid) 48%,
+    var(--pw-sky-low) 78%
+  );
 }
 
 .v7-title-scene canvas {
@@ -231,11 +424,15 @@
   background:
     linear-gradient(
       90deg,
-      rgb(13 15 32 / 66%) 0,
-      rgb(13 15 32 / 40%) 16em,
-      rgb(13 15 32 / 0%) 32em
+      color-mix(in srgb, var(--pw-ink) 66%, transparent) 0,
+      color-mix(in srgb, var(--pw-ink) 40%, transparent) 16em,
+      color-mix(in srgb, var(--pw-ink) 0%, transparent) 32em
     ),
-    linear-gradient(0deg, rgb(13 15 32 / 50%) 0, rgb(13 15 32 / 0%) 8em);
+    linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--pw-ink) 50%, transparent) 0,
+      color-mix(in srgb, var(--pw-ink) 0%, transparent) 8em
+    );
   content: "";
   pointer-events: none;
 }
@@ -258,9 +455,9 @@
 }
 
 /*
- * A menu button: a cream plate with an ink edge and the logo's red drop,
+ * A menu button: a cream plate with an ink edge and a hard ink shadow,
  * like a pulp cover's title block. Selected (hover or keyboard focus) it
- * turns gold and steps forward; pressed it sinks onto its drop.
+ * turns yellow and steps forward; pressed it sinks onto its shadow.
  */
 .v7-menu-button {
   position: relative;
@@ -270,17 +467,15 @@
   align-items: center;
   min-height: 2.3em;
   padding: 0.28em 0.8em 0.22em 0.7em;
-  border: 3px solid #1c1424;
-  border-radius: 0.42em;
-  background: linear-gradient(#fffdf2, var(--paper) 55%, #f1e4b8);
-  box-shadow:
-    0 5px 0 var(--accent-dark),
-    0 12px 20px rgb(8 10 24 / 45%);
-  color: #231317;
-  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  box-shadow: var(--pw-shadow);
+  color: var(--pw-text);
+  font-family: var(--pw-display);
   font-size: 1.55em;
   font-weight: 400;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.06em;
   line-height: 1;
   text-align: left;
   text-transform: uppercase;
@@ -292,34 +487,30 @@
 }
 
 .v7-menu-button.is-primary {
-  border-color: #3a1014;
-  background: linear-gradient(#ffa173, var(--accent) 70%, #e24c3c);
-  box-shadow:
-    0 5px 0 #6d1a22,
-    0 12px 20px rgb(8 10 24 / 45%);
-  color: #fffdf2;
-  text-shadow: 0 2px 0 rgb(90 20 26 / 75%);
+  border-color: var(--pw-line);
+  background: var(--pw-accent);
+  box-shadow: var(--pw-shadow);
+  color: var(--pw-accent-text);
+  text-shadow: none;
 }
 
 .v7-menu-button:hover:not(:disabled),
 .v7-menu-button:focus-visible {
-  border-color: #1c1424;
-  background: linear-gradient(#fff0a8, #ffd34e 55%, var(--gold));
-  color: #231317;
+  border-color: var(--pw-line);
+  background: var(--pw-yellow);
+  color: var(--pw-text);
   text-shadow: none;
   translate: 0.4em 0;
 }
 
 .v7-menu-button:focus-visible {
-  outline: 3px solid #fffdf2;
+  outline: 3px solid var(--pw-text-inverse);
   outline-offset: 3px;
 }
 
 .v7-menu-button:active:not(:disabled) {
-  box-shadow:
-    0 1px 0 var(--accent-dark),
-    0 4px 8px rgb(8 10 24 / 45%);
-  translate: 0.4em 4px;
+  box-shadow: 2px 2px 0 var(--pw-ink);
+  translate: calc(0.4em + 4px) 4px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -334,9 +525,9 @@
 .v7-menu-button .v7-resume-summary {
   grid-column: 2;
   padding-top: 0.3em;
-  font-family: Inter, ui-rounded, "Segoe UI", system-ui, sans-serif;
+  font-family: var(--pw-ui);
   font-size: 0.5em;
-  font-weight: 800;
+  font-weight: var(--pw-fw-bold);
   letter-spacing: 0.02em;
   line-height: 1.2;
   text-shadow: none;
@@ -353,15 +544,16 @@
 .v7-menu-footer > * {
   min-height: 44px;
   padding: 0 0.9em;
-  border-radius: 999px;
-  background: rgb(13 15 32 / 72%);
-  color: var(--paper);
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-surface);
+  color: var(--pw-text);
   font-size: 0.85em;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  font-weight: var(--pw-fw-semi);
 }
 
 .v7-menu-footer-action {
-  border-width: 1px;
-  font-weight: 700;
+  font-weight: var(--pw-fw-bold);
 }
 
 /* A short window: the same stack, tighter. */
@@ -420,7 +612,7 @@
   }
 
   .v7-menu-button:active:not(:disabled) {
-    translate: 0 4px;
+    translate: 4px 4px;
   }
 
   .v7-menu-footer {
@@ -432,11 +624,15 @@
     background:
       linear-gradient(
         180deg,
-        rgb(13 15 32 / 52%) 0,
-        rgb(13 15 32 / 34%) 50%,
-        rgb(13 15 32 / 0%) 72%
+        color-mix(in srgb, var(--pw-ink) 52%, transparent) 0,
+        color-mix(in srgb, var(--pw-ink) 34%, transparent) 50%,
+        color-mix(in srgb, var(--pw-ink) 0%, transparent) 72%
       ),
-      linear-gradient(0deg, rgb(13 15 32 / 55%) 0, rgb(13 15 32 / 0%) 6em);
+      linear-gradient(
+        0deg,
+        color-mix(in srgb, var(--pw-ink) 55%, transparent) 0,
+        color-mix(in srgb, var(--pw-ink) 0%, transparent) 6em
+      );
   }
 }
 
@@ -447,7 +643,7 @@
 }
 
 .v7-front-page.v7-titled::before {
-  background: rgb(13 15 32 / 64%);
+  background: var(--pw-scrim);
 }
 
 .v7-front-page .v7-brand {
@@ -456,6 +652,7 @@
 
 .v7-front-page .v7-brand h1 {
   font-size: clamp(1.7rem, 4.5vw, 2.6rem);
+  margin-top: 0.2em;
 }
 
 .v7-front-panel {
@@ -463,12 +660,10 @@
   gap: 1.1rem;
   width: min(44rem, 100%);
   padding: 1rem 1.15rem 1.25rem;
-  border: 2px solid #0d0f20;
-  border-radius: 18px;
-  background: rgb(27 28 41 / 95%);
-  box-shadow:
-    0 6px 0 rgb(8 9 20 / 60%),
-    var(--v7-shadow);
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-radius: var(--pw-radius);
+  background: var(--pw-surface);
+  box-shadow: var(--pw-shadow);
 }
 
 .v7-front-panel-bar {
@@ -477,11 +672,12 @@
   gap: 0.6rem 1rem;
   align-items: center;
   padding-bottom: 0.9rem;
-  border-bottom: 1px solid var(--v7-edge);
+  border-bottom: var(--pw-line-w-sm) solid var(--pw-line);
 }
 
 .v7-front-title {
-  font-size: 1.7rem;
+  font-size: var(--pw-fs-2xl);
+  color: var(--pw-accent);
 }
 
 .v7-front-back {
@@ -489,8 +685,8 @@
   gap: 0.2rem;
   align-items: center;
   padding: 0.4rem 1rem 0.4rem 0.55rem;
-  border-color: var(--v7-edge-strong);
-  border-radius: 999px;
+  border-radius: var(--pw-radius-sm);
+  box-shadow: var(--pw-shadow-sm);
 }
 
 .v7-setup-heading {
@@ -499,10 +695,10 @@
   gap: 0.45rem;
   align-items: center;
   margin: 0;
-  color: var(--gold);
-  font-family: inherit;
-  font-size: 0.85rem;
-  font-weight: 900;
+  color: var(--pw-accent);
+  font-family: var(--pw-ui);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-heavy);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -510,13 +706,13 @@
 .v7-setup-heading:not(:first-child) {
   margin-top: 0.4rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--v7-edge);
+  border-top: var(--pw-line-w-sm) solid var(--pw-line);
 }
 
 .v7-front-screen.v7-titled .button-row > .primary-action {
   flex: 1 1 100%;
   min-height: 3.4rem;
-  font-size: 1.2rem;
+  font-size: var(--pw-fs-lg);
 }
 
 .v7-setup-form {
@@ -528,17 +724,17 @@
 .v7-setup-form label {
   display: grid;
   gap: 0.35rem;
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .v7-setup-form select,
 .v7-setup-form input {
-  color: var(--paper);
-  font-size: 1rem;
+  color: var(--pw-text);
+  font-size: var(--pw-fs-base);
   letter-spacing: 0;
   text-transform: none;
 }
@@ -546,7 +742,7 @@
 .v7-map-type-description {
   grid-column: 1 / -1;
   margin-top: -0.3rem;
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 /* The Curiosities checkbox: a small box beside its label, on one row. */
@@ -571,13 +767,13 @@
   min-height: 0;
   margin: 0;
   padding: 0;
-  accent-color: var(--gold);
+  accent-color: var(--pw-accent);
 }
 
 /* Map curiosities: the Spider's dock, a curiosity tile and Help. */
 .v7-neutral-chip {
-  border-color: #b9a58a;
-  color: #efe6d0;
+  border-color: var(--pw-amber);
+  color: var(--pw-text);
 }
 
 .v7-curiosity-info {
@@ -627,29 +823,30 @@
 
 .v7-seed-toggle {
   display: inline-flex;
-  padding: 0.2rem;
-  border: 1px solid var(--v7-edge-strong);
-  border-radius: 12px;
-  background: var(--panel);
+  padding: 0;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  overflow: hidden;
 }
 
 .v7-seed-option {
   min-height: 44px;
   padding: 0 1rem;
   border: 0;
-  border-radius: 9px;
+  border-radius: 0;
   background: transparent;
-  color: var(--muted);
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-seed-option[aria-pressed="true"] {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--pw-ink);
+  color: var(--pw-text-inverse);
 }
 
 .v7-seed-hint {
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-setup-form label.v7-seed-field {
@@ -661,7 +858,7 @@
 .v7-launch {
   grid-column: 1 / -1;
   min-height: 3.4rem;
-  font-size: 1.2rem;
+  font-size: var(--pw-fs-lg);
 }
 
 .v7-compatibility-link {
@@ -669,19 +866,19 @@
   justify-self: start;
   min-height: 44px;
   align-items: center;
-  color: var(--muted);
-  font-size: 0.9rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-md);
 }
 
 .v7-recovery-details summary {
   min-height: 44px;
   cursor: pointer;
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-recovery-details p {
-  color: var(--muted);
-  font-size: 0.85rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
   overflow-wrap: anywhere;
 }
 
@@ -696,7 +893,7 @@
 
 .v7-campaign-title,
 .v7-briefing-title {
-  font-size: 1.6rem;
+  font-size: var(--pw-fs-2xl);
 }
 
 .v7-briefing-title:focus {
@@ -704,15 +901,15 @@
 }
 
 .v7-briefing-title:focus-visible {
-  outline: 3px solid var(--focus);
+  outline: 3px solid var(--pw-focus);
   outline-offset: 1px;
 }
 
 /* The pulp flavour lives in the story blurbs only. */
 .v7-campaign-story {
   padding-left: 0.8rem;
-  border-left: 3px solid var(--accent);
-  color: var(--paper);
+  border-left: 4px solid var(--pw-accent);
+  color: var(--pw-text);
   font-style: italic;
   line-height: 1.45;
 }
@@ -745,23 +942,29 @@
   align-items: center;
   width: 100%;
   padding: 0.65rem 0.8rem;
-  border: 1px solid var(--v7-edge-strong);
-  border-radius: var(--v7-radius);
-  background: var(--panel);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
   text-align: left;
+  box-shadow: var(--pw-shadow-sm);
 }
 
 .v7-mission-card[data-status="done"] {
-  border-color: rgb(240 185 63 / 55%);
+  border-color: var(--pw-line);
+  background: var(--pw-teal-fill);
 }
 
 .v7-mission-card[data-status="locked"] {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: 1;
+  background: var(--pw-surface-2);
+  border-color: var(--pw-line-soft);
+  box-shadow: none;
+  color: var(--pw-text-2);
 }
 
 .v7-mission-card[data-status="locked"]:hover {
-  border-color: var(--v7-edge-strong);
+  border-color: var(--pw-line-soft);
   translate: none;
 }
 
@@ -772,18 +975,21 @@
   width: 2.2rem;
   height: 2.2rem;
   border-radius: 50%;
-  background: var(--paper);
-  color: var(--ink);
-  font-size: 1.1rem;
+  background: var(--pw-yellow);
+  color: var(--pw-text);
+  font-size: var(--pw-fs-lg);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  font-weight: var(--pw-fw-heavy);
 }
 
 .v7-mission-card[data-status="done"] .v7-mission-number {
-  background: var(--gold);
+  background: var(--pw-teal);
+  color: var(--pw-text-inverse);
 }
 
 .v7-mission-name {
   grid-area: name;
-  font-size: 1.1rem;
+  font-size: var(--pw-fs-lg);
 }
 
 .v7-mission-state {
@@ -791,12 +997,12 @@
   grid-area: state;
   gap: 0.35rem;
   align-items: center;
-  color: var(--muted);
-  font-size: 0.85rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
 }
 
 .v7-mission-card[data-status="done"] .v7-mission-state {
-  color: var(--gold);
+  color: var(--pw-teal);
 }
 
 .v7-mission-sides,
@@ -808,9 +1014,9 @@
 }
 
 .v7-mission-versus {
-  color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
   text-transform: uppercase;
 }
 
@@ -822,7 +1028,7 @@
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 50%;
-  background: rgb(255 255 255 / 7%);
+  background: var(--pw-surface-2);
 }
 
 .v7-faction-emblem > .v7-art-frame,
@@ -837,8 +1043,8 @@
 }
 
 .v7-campaign-roster h3 {
-  color: var(--muted);
-  font-size: 0.85rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -851,13 +1057,13 @@
 
 .v7-campaign-faction[data-unlocked="false"] {
   filter: grayscale(1);
-  opacity: 0.35;
+  opacity: 0.45;
 }
 
 .v7-campaign-settings summary {
   min-height: 44px;
   align-content: center;
-  color: var(--muted);
+  color: var(--pw-text-2);
   cursor: pointer;
 }
 
@@ -867,9 +1073,9 @@
 }
 
 .v7-briefing-kicker {
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -883,12 +1089,12 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: baseline;
-  font-weight: 800;
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-briefing-objective strong {
-  color: var(--gold);
-  font-size: 0.85rem;
+  color: var(--pw-accent);
+  font-size: var(--pw-fs-sm);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -896,12 +1102,12 @@
 .v7-briefing-hints {
   display: grid;
   gap: 0.35rem;
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-briefing-hints li::before {
   margin-right: 0.45rem;
-  color: var(--gold);
+  color: var(--pw-accent);
   content: "▸";
 }
 
@@ -914,10 +1120,11 @@
 
 .v7-briefing-size {
   padding: 0.35rem 0.7rem;
-  border: 1px solid var(--v7-edge-strong);
-  border-radius: 999px;
-  color: var(--muted);
-  font-weight: 800;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-pill);
+  color: var(--pw-text-2);
+  font-weight: var(--pw-fw-bold);
+  background: var(--pw-surface-raised);
 }
 
 .v7-briefing-opponent {
@@ -925,7 +1132,7 @@
 }
 
 .v7-briefing-opponent span:last-child {
-  font-weight: 800;
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-briefing-lead {
@@ -946,15 +1153,15 @@
 
 .v7-briefing-lead-label,
 .v7-briefing-choice {
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .v7-briefing-lead-text strong {
-  font-size: 1.1rem;
+  font-size: var(--pw-fs-lg);
 }
 
 .v7-briefing-choice {
@@ -964,15 +1171,15 @@
 }
 
 .v7-briefing-choice select {
-  color: var(--paper);
-  font-size: 1rem;
+  color: var(--pw-text);
+  font-size: var(--pw-fs-base);
   letter-spacing: 0;
   text-transform: none;
 }
 
 .v7-briefing-actions .primary-action {
   min-height: 3.4rem;
-  font-size: 1.2rem;
+  font-size: var(--pw-fs-lg);
 }
 
 .v7-unlock-notice {
@@ -980,19 +1187,20 @@
   gap: 0.75rem;
   align-items: center;
   padding: 0.5rem 1rem 0.5rem 0.5rem;
-  border: 2px solid var(--gold);
-  border-radius: 999px;
-  color: var(--gold);
-  font-weight: 800;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-pill);
+  color: var(--pw-coin);
+  font-weight: var(--pw-fw-bold);
+  background: var(--pw-yellow);
 }
 
 .v7-results.v7-mission-results h2 {
   margin-top: -0.6rem;
-  font-size: 2.3rem;
+  font-size: var(--pw-fs-3xl);
 }
 
 .v7-campaign-outro {
-  color: var(--muted);
+  color: var(--pw-text-2);
   font-style: italic;
 }
 
@@ -1013,7 +1221,7 @@
   width: 100%;
   height: 100dvh;
   overflow: hidden;
-  background: #173632;
+  background: var(--pw-board-bg);
 }
 
 .v7-match-shell > .v7-live,
@@ -1055,7 +1263,7 @@
   padding: max(0.6rem, env(safe-area-inset-top))
     max(0.75rem, env(safe-area-inset-right)) 1.4rem
     max(0.75rem, env(safe-area-inset-left));
-  background: linear-gradient(rgb(12 14 20 / 72%), rgb(12 14 20 / 0%));
+  background: none;
   pointer-events: none;
 }
 
@@ -1079,16 +1287,18 @@
   gap: 0.35rem;
   min-height: 2.5rem;
   padding: 0.2rem 0.85rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 999px;
-  background: var(--v7-glass);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface);
   white-space: nowrap;
+  box-shadow: var(--pw-shadow-sm);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-coins {
   padding-left: 0.35rem;
-  color: var(--gold);
-  font-weight: 900;
+  color: var(--pw-coin);
+  font-weight: var(--pw-fw-heavy);
 }
 
 .v7-coins .v7-economy-icon {
@@ -1098,7 +1308,7 @@
 
 .v7-coin-balance {
   display: inline-block;
-  font-size: 1.35rem;
+  font-size: var(--pw-fs-xl);
   line-height: 1;
   /* The number ticks up as coins land: its width must not jitter. */
   font-variant-numeric: tabular-nums;
@@ -1148,7 +1358,7 @@
 
 @keyframes v7-coin-count {
   35% {
-    color: #fff6cf;
+    color: var(--pw-text);
     scale: 1.14;
   }
 }
@@ -1168,28 +1378,28 @@
 }
 
 .v7-income-rate {
-  color: var(--v7-gain);
-  font-size: 0.9rem;
-  font-weight: 800;
+  color: var(--pw-gain);
+  font-size: var(--pw-fs-md);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-hud-round {
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-md);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-turn-status {
-  color: var(--paper);
-  font-size: 0.9rem;
-  font-weight: 800;
+  color: var(--pw-text);
+  font-size: var(--pw-fs-md);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-turn-status::before {
   width: 0.55rem;
   height: 0.55rem;
   border-radius: 50%;
-  background: var(--gold);
+  background: var(--pw-accent);
   content: "";
   animation: v7-pulse 1.1s ease-in-out infinite;
 }
@@ -1227,10 +1437,11 @@
   min-width: 44px;
   min-height: 44px;
   padding: 0 0.7rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 12px;
-  background: var(--v7-glass);
-  font-size: 0.95rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  font-size: var(--pw-fs-md);
+  box-shadow: var(--pw-shadow-sm);
 }
 
 .v7-icon-button:not(.has-label) {
@@ -1244,12 +1455,13 @@
 }
 
 .v7-icon-button:hover:not(:disabled) {
-  border-color: var(--v7-edge-strong);
+  border-color: var(--pw-line);
 }
 
 .v7-icon-button[aria-expanded="true"] {
-  border-color: var(--gold);
-  color: var(--gold);
+  border-color: var(--pw-line);
+  color: var(--pw-text);
+  background: var(--pw-yellow);
 }
 
 .v7-hud-tech {
@@ -1260,13 +1472,15 @@
   min-width: 7.5rem;
   min-height: 44px;
   padding: 0 1.1rem;
-  border: 0;
-  border-radius: 12px;
-  color: #241a07;
-  background: linear-gradient(#ffd66b, #eab23a);
-  box-shadow: 0 3px 0 #9a6b16;
-  font-size: 1rem;
-  font-weight: 900;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  color: var(--pw-accent-text);
+  background: var(--pw-accent);
+  box-shadow: var(--pw-shadow-sm);
+  font-size: var(--pw-fs-base);
+  font-weight: var(--pw-fw-heavy);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .v7-hud-end-turn:hover:not(:disabled) {
@@ -1280,10 +1494,10 @@
   gap: 0.15rem;
   margin-left: 0.45rem;
   padding: 0.1rem 0.4rem 0.1rem 0.3rem;
-  border-radius: 999px;
-  color: #eaffe9;
-  background: #1f5a2c;
-  font-size: 0.8rem;
+  border-radius: var(--pw-radius-pill);
+  color: var(--pw-text);
+  background: var(--pw-surface-raised);
+  font-size: var(--pw-fs-sm);
   line-height: 1.2;
   vertical-align: middle;
 }
@@ -1295,8 +1509,8 @@
 
 .v7-chip.v7-idle-recovery-chip {
   padding: 0.16rem 0.4rem;
-  color: #b9f5c0;
-  font-size: 0.65rem;
+  color: var(--pw-green);
+  font-size: var(--pw-fs-xs);
   line-height: 1;
   white-space: nowrap;
 }
@@ -1309,32 +1523,33 @@
   display: grid;
   min-width: 13rem;
   padding: 0.35rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: var(--v7-radius);
-  background: var(--v7-glass-strong);
-  box-shadow: var(--v7-shadow);
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-radius: var(--pw-radius);
+  background: var(--pw-surface);
+  box-shadow: var(--pw-shadow);
 }
 
 .v7-menu-item {
   justify-content: flex-start;
   padding: 0.55rem 0.8rem;
   border: 0;
-  border-radius: 10px;
+  border-radius: var(--pw-radius-xs);
   background: transparent;
   text-align: left;
-  font-weight: 700;
+  font-weight: var(--pw-fw-bold);
+  box-shadow: none;
 }
 
 .v7-menu-item:hover:not(:disabled) {
-  background: rgb(255 255 255 / 8%);
+  background: var(--pw-yellow);
   translate: none;
 }
 
 .v7-main-menu-action {
   margin-top: 0.25rem;
-  border-top: 1px solid var(--v7-edge);
-  border-radius: 0 0 10px 10px;
-  color: var(--muted);
+  border-top: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: 0;
+  color: var(--pw-text-2);
 }
 
 .v7-zoom-controls {
@@ -1348,7 +1563,7 @@
 }
 
 .v7-zoom-controls .v7-icon-button {
-  opacity: 0.8;
+  opacity: 1;
 }
 
 .v7-zoom-controls .v7-icon-button:hover {
@@ -1362,20 +1577,22 @@
   left: 50%;
   max-width: min(30rem, calc(100% - 2rem));
   padding: 0.55rem 1.1rem;
-  border: 1px solid var(--gold);
-  border-radius: 999px;
-  background: var(--v7-glass-strong);
-  box-shadow: var(--v7-shadow);
-  font-weight: 800;
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-yellow);
+  box-shadow: var(--pw-shadow);
+  font-weight: var(--pw-fw-bold);
   text-align: center;
   transform: translateX(-50%);
   animation: v7-toast-in 180ms ease-out;
   pointer-events: none;
+  color: var(--pw-text);
 }
 
 .v7-toast-error {
-  border-color: var(--danger);
-  color: #ffd9d6;
+  border-color: var(--pw-line);
+  color: var(--pw-accent-text);
+  background: var(--pw-accent);
 }
 
 .v7-fast-forward {
@@ -1386,8 +1603,9 @@
 }
 
 .v7-fast-forward.is-active {
-  border-color: var(--gold);
-  color: var(--gold);
+  border-color: var(--pw-line);
+  color: var(--pw-text);
+  background: var(--pw-yellow);
 }
 
 /* ---------- Economy tokens ---------- */
@@ -1418,10 +1636,10 @@
   align-items: center;
   gap: 0.1rem;
   padding: 0 0.3rem 0 0.4rem;
-  border-radius: 999px;
-  background: rgb(0 0 0 / 28%);
-  font-size: 0.8rem;
-  font-weight: 800;
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-tint-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
   line-height: 1.35rem;
   white-space: nowrap;
 }
@@ -1432,15 +1650,15 @@
 }
 
 .v7-economy-chip.is-cost {
-  color: var(--gold);
+  color: var(--pw-coin);
 }
 
 .v7-economy-chip.is-gain {
-  color: var(--v7-gain);
+  color: var(--pw-gain);
 }
 
 .v7-economy-chip.is-loss {
-  color: var(--v7-loss);
+  color: var(--pw-loss);
 }
 
 .v7-chip {
@@ -1449,18 +1667,19 @@
   gap: 0.3rem;
   width: max-content;
   padding: 0.15rem 0.6rem 0.15rem 0.45rem;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 8%);
-  font-size: 0.85rem;
-  font-weight: 800;
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-surface-raised);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
+  border: 1px solid var(--pw-line-soft);
 }
 
 .v7-chip.is-idle {
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-port-state.state-blockaded {
-  color: var(--v7-loss);
+  color: var(--pw-loss);
 }
 
 /* ---------- Selection dock ---------- */
@@ -1486,10 +1705,10 @@
   max-height: min(45dvh, calc(100dvh - 8rem));
   margin-inline: auto;
   padding: 0.6rem 3.4rem 0.6rem 0.75rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 18px;
-  background: var(--v7-glass-strong);
-  box-shadow: var(--v7-shadow);
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-radius: var(--pw-radius);
+  background: var(--pw-dock);
+  box-shadow: var(--pw-shadow);
 }
 
 /*
@@ -1512,11 +1731,12 @@
   right: 0.45rem;
   border: 0;
   background: transparent;
-  color: var(--muted);
+  color: var(--pw-text-2);
+  box-shadow: none;
 }
 
 .v7-selection-dock > .close-button:hover:not(:disabled) {
-  color: var(--paper);
+  color: var(--pw-text);
 }
 
 .v7-identity {
@@ -1528,32 +1748,38 @@
 }
 
 .v7-identity h2 {
-  max-width: 7.5rem;
-  font-size: 1rem;
+  max-width: 9rem;
+  font-size: var(--pw-fs-md);
   line-height: 1.05;
   text-align: center;
+  font-family: var(--pw-ui);
+  letter-spacing: 0.02em;
+  color: var(--pw-text);
+  font-weight: var(--pw-fw-heavy);
+  overflow-wrap: normal;
+  min-width: min-content;
 }
 
 .v7-identity-owner {
-  color: var(--muted);
-  font-size: 0.75rem;
-  font-weight: 700;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
 }
 
 /* City names (pulp_wars-2yc.30): "Capital" or "City" under the name. */
 .v7-identity-kind {
-  color: var(--muted);
-  font-size: 0.68rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
   letter-spacing: 0.04em;
   line-height: 1;
   text-transform: uppercase;
 }
 
 .v7-tactical-role {
-  color: var(--muted);
-  font-size: 0.68rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
   letter-spacing: 0.04em;
   line-height: 1;
   text-transform: uppercase;
@@ -1570,7 +1796,7 @@
 
 .v7-unit-status-cues .v7-chip {
   padding: 0.16rem 0.4rem;
-  font-size: 0.65rem;
+  font-size: var(--pw-fs-xs);
   line-height: 1;
   white-space: nowrap;
 }
@@ -1623,16 +1849,17 @@
   place-items: center;
   width: 24px;
   height: 24px;
-  border: 1px solid var(--v7-edge-strong);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
   border-radius: 50%;
-  background: var(--panel-strong);
-  font-size: 0.8rem;
+  background: var(--pw-surface-raised);
+  font-size: var(--pw-fs-sm);
   line-height: 1;
+  font-weight: var(--pw-fw-heavy);
 }
 
 .v7-unit-help:hover:not(:disabled) .v7-unit-help-glyph,
 .v7-train-help:hover:not(:disabled) .v7-train-help-glyph {
-  border-color: var(--paper);
+  border-color: var(--pw-line);
 }
 
 /*
@@ -1654,13 +1881,14 @@
   gap: 0.25rem;
   min-height: 1.6rem;
   padding: 0 0.5rem 0 0.35rem;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 7%);
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-surface-raised);
+  border: 1px solid var(--pw-line-soft);
 }
 
 .v7-stat dt {
   display: flex;
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-stat .v7-ui-icon {
@@ -1669,20 +1897,20 @@
 }
 
 .v7-stat[data-stat="hp"] dt {
-  color: #ff7b72;
+  color: var(--pw-red);
 }
 
 .v7-stat[data-stat="attack"] dt {
-  color: #ffb45c;
+  color: var(--pw-amber);
 }
 
 .v7-stat[data-stat="defense"] dt {
-  color: #7fb8ff;
+  color: var(--pw-blue);
 }
 
 .v7-stat dd {
   margin: 0;
-  font-weight: 800;
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-stat-value {
@@ -1699,7 +1927,7 @@
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: var(--v7-gain);
+  color: var(--pw-gain);
   font: inherit;
   font-weight: inherit;
 }
@@ -1713,12 +1941,12 @@
   width: max-content;
   max-width: min(18rem, calc(100vw - 2rem));
   padding: 0.35rem 0.6rem;
-  border: 1px solid var(--v7-edge-strong);
-  border-radius: 8px;
-  color: var(--paper);
-  background: var(--ink);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  color: var(--pw-text);
+  background: var(--pw-surface-raised);
   content: attr(data-tooltip);
-  font-size: 0.8rem;
+  font-size: var(--pw-fs-sm);
   text-align: left;
   white-space: normal;
   transform: translateX(-50%);
@@ -1731,7 +1959,7 @@
 }
 
 .v7-stat-unknown {
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-city-stats {
@@ -1762,9 +1990,10 @@
   gap: 0.3rem;
   min-height: 1.6rem;
   padding: 0 0.55rem;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 7%);
-  font-weight: 800;
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-surface-raised);
+  font-weight: var(--pw-fw-bold);
+  border: 1px solid var(--pw-line-soft);
 }
 
 .v7-city-stat dt {
@@ -1776,8 +2005,8 @@
 }
 
 .v7-city-stat[data-stat="level"]::before {
-  color: var(--muted);
-  font-size: 0.75rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
   content: "LV";
 }
 
@@ -1789,18 +2018,19 @@
 }
 
 .v7-city-stat.is-warning {
-  color: #ffd9d6;
-  background: rgb(255 107 104 / 22%);
+  color: var(--pw-red);
+  background: var(--pw-red-fill);
+  border-color: var(--pw-red);
 }
 
 .v7-city-income {
-  color: var(--gold);
+  color: var(--pw-coin);
 }
 
 .v7-city-units .v7-ui-icon {
   width: 1rem;
   height: 1rem;
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-population-meter {
@@ -1811,23 +2041,23 @@
 .v7-population-pip {
   width: 11px;
   height: 11px;
-  border: 1px solid #f8f2df;
-  border-radius: 2px;
-  background: #132c2b;
-  box-shadow: 0 0 0 1px rgb(10 21 21 / 70%);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-xs);
+  background: var(--pw-surface-raised);
+  box-shadow: none;
 }
 
 .v7-population-pip[data-state="filled"] {
-  background: #b8f4d0;
+  background: var(--pw-teal);
 }
 
 .v7-population-pip[data-state="deficit"] {
-  background: var(--v7-loss);
+  background: var(--pw-loss);
 }
 
 .v7-population-count {
-  color: var(--muted);
-  font-size: 0.8rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
 }
 
 .v7-selection-summary {
@@ -1849,8 +2079,8 @@
 .v7-building-flavour {
   flex-basis: 100%;
   margin: 0;
-  color: var(--muted);
-  font-size: 0.85rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
   line-height: 1.25;
 }
 
@@ -1861,8 +2091,8 @@
 }
 
 .v7-dock-hint {
-  color: var(--muted);
-  font-size: 0.9rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-md);
 }
 
 .v7-selection-dock[data-handled="true"] .v7-identity-art {
@@ -1901,11 +2131,12 @@
   width: 5.4rem;
   min-height: 6.2rem;
   padding: 0.35rem 0.25rem 0.4rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 12px;
-  background: rgb(255 255 255 / 6%);
-  font-size: 0.78rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  font-size: var(--pw-fs-sm);
   line-height: 1.1;
+  box-shadow: var(--pw-shadow-sm);
 }
 
 /*
@@ -1921,8 +2152,8 @@
 
 .v7-context-action:hover:not(:disabled),
 .v7-train-action:hover:not(:disabled) {
-  border-color: var(--gold);
-  background: rgb(255 214 107 / 10%);
+  border-color: var(--pw-line);
+  background: var(--pw-yellow);
 }
 
 .v7-context-action > .v7-art-frame,
@@ -1940,11 +2171,11 @@
 
 /*
  * Research prompt (bead pulp_wars-gl1): the technology a tile's resource
- * needs. A dashed gold edge sets it apart from the actions on offer.
+ * needs. A dashed red edge sets it apart from the actions on offer.
  */
 .v7-context-action.v7-research-prompt {
   border-style: dashed;
-  border-color: var(--gold);
+  border-color: var(--pw-accent);
 }
 
 .v7-train-card {
@@ -1977,11 +2208,11 @@
 .v7-train-help-glyph {
   width: 20px;
   height: 20px;
-  font-size: 0.7rem;
+  font-size: var(--pw-fs-xs);
 }
 
 .v7-movement-status {
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 /* ---------- Dialogs ---------- */
@@ -1995,7 +2226,7 @@
   position: absolute;
   z-index: 29;
   inset: 0;
-  background: rgb(6 7 12 / 64%);
+  background: var(--pw-scrim);
 }
 
 .v7-scrim[data-dismissable="true"] {
@@ -2016,10 +2247,10 @@
   gap: 0.9rem;
   overflow: auto;
   padding: 1.25rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 20px;
-  background: var(--v7-glass-strong);
-  box-shadow: var(--v7-shadow);
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-radius: var(--pw-radius);
+  background: var(--pw-surface);
+  box-shadow: var(--pw-shadow);
 }
 
 .v7-overlay {
@@ -2066,11 +2297,11 @@
   height: 2.75rem;
   min-height: 2.75rem;
   margin: -0.6rem -0.6rem calc(-2.15rem - 0.9rem) 0;
-  border: 2px solid var(--ink);
-  border-radius: 50%;
-  background: var(--paper);
-  box-shadow: 0 3px 10px rgb(0 0 0 / 45%);
-  color: var(--ink);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-accent);
+  box-shadow: var(--pw-shadow-sm);
+  color: var(--pw-accent-text);
 }
 
 .v7-overlay > .close-button .v7-ui-icon,
@@ -2084,15 +2315,15 @@
 .v7-overlay > .close-button:hover:not(:disabled),
 .v7-recruit-help > .close-button:hover:not(:disabled),
 .v7-unit-help-dialog > .close-button:hover:not(:disabled) {
-  border-color: var(--ink);
-  background: #fff;
+  border-color: var(--pw-line);
+  background: var(--pw-surface-raised);
 }
 
 .v7-mandatory-hint {
   grid-column: 1 / -1;
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-md);
+  font-weight: var(--pw-fw-bold);
   text-align: center;
 }
 
@@ -2103,11 +2334,12 @@
 .v7-achievement-notice h2,
 .v7-results h2 {
   padding-right: 3rem;
-  font-size: 1.7rem;
+  font-size: var(--pw-fs-2xl);
+  color: var(--pw-accent);
 }
 
 .v7-screen-lede {
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-dialog-header {
@@ -2151,7 +2383,7 @@
 .v7-unit-ability span,
 .v7-transport-passenger,
 .v7-transport-move {
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 /* Revision 16: legend for the two landing preview marker styles. */
@@ -2163,9 +2395,9 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  color: var(--muted);
-  font-size: 0.75rem;
-  font-weight: 700;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-landing-legend-item {
@@ -2178,14 +2410,15 @@
   flex: none;
   width: 0.95rem;
   height: 0.95rem;
-  border: 2px dashed #64e6cf;
-  border-radius: 3px;
+  border: 2px dashed var(--pw-marker-landing);
+  border-radius: var(--pw-radius-xs);
+  background: var(--pw-board-bg);
 }
 
 .v7-landing-legend-item[data-landing-marker="after-move"]
   .v7-landing-legend-swatch {
   border-style: dotted;
-  border-color: #f4c95d;
+  border-color: var(--pw-marker-after-move);
 }
 
 .v7-tactical-state {
@@ -2193,8 +2426,8 @@
   gap: 0.5rem;
   align-items: center;
   padding: 0.45rem 0.7rem;
-  border-radius: 10px;
-  background: rgb(255 255 255 / 7%);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-2);
 }
 
 .v7-tactical-symbol {
@@ -2209,7 +2442,7 @@
   gap: 0.35rem;
   margin: 0;
   padding-left: 1.2rem;
-  color: var(--muted);
+  color: var(--pw-text-2);
   line-height: 1.35;
 }
 
@@ -2242,13 +2475,13 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  font-weight: 700;
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-target-legend-swatch {
   flex: none;
-  border-radius: 4px;
-  background: #1c2a25;
+  border-radius: var(--pw-radius-xs);
+  background: var(--pw-board-bg);
 }
 
 .v7-help-keys {
@@ -2267,17 +2500,18 @@
 .v7-help-key dt {
   min-width: 2rem;
   padding: 0.1rem 0.45rem;
-  border: 1px solid var(--v7-edge-strong);
-  border-bottom-width: 3px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 800;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-bottom-width: 4px;
+  border-radius: var(--pw-radius-xs);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
   text-align: center;
+  background: var(--pw-surface-raised);
 }
 
 .v7-help-key dd {
   margin: 0;
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-leaderboard {
@@ -2291,33 +2525,35 @@
 
 .v7-leaderboard-row {
   /* Set per row to the faction colour (faction-colours-v7.ts). */
-  --player: #9c968a;
+  --player: var(--pw-line-soft);
 
   display: flex;
   align-items: center;
   gap: 0.9rem;
   min-height: 3rem;
   padding: 0.3rem 0.8rem;
-  border: 1px solid var(--v7-edge);
-  border-left: 4px solid var(--player);
-  border-radius: 12px;
-  background: rgb(255 255 255 / 5%);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-left: 10px solid var(--player);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
   counter-increment: v7-rank;
 }
 
 .v7-leaderboard-row::before {
   min-width: 1.2rem;
-  color: var(--muted);
-  font-weight: 900;
+  color: var(--pw-text-2);
+  font-weight: var(--pw-fw-heavy);
   content: counter(v7-rank);
 }
 
 .v7-leaderboard-row[data-viewer="true"] {
-  background: rgb(255 255 255 / 10%);
+  background: var(--pw-amber-fill);
 }
 
 .v7-leaderboard-row[data-status="eliminated"] {
-  opacity: 0.55;
+  opacity: 1;
+  background: var(--pw-surface-2);
+  color: var(--pw-text-2);
 }
 
 .v7-leaderboard-name {
@@ -2326,7 +2562,7 @@
   align-items: center;
   gap: 0.5rem;
   min-width: 0;
-  font-weight: 800;
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-player-swatch {
@@ -2334,13 +2570,14 @@
   height: 0.8rem;
   border-radius: 50%;
   background: var(--player);
+  border: 2px solid var(--pw-line);
 }
 
 .v7-leaderboard-stat {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  font-weight: 800;
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-leaderboard-stat .v7-art-frame {
@@ -2351,7 +2588,7 @@
 .v7-leaderboard-stat .v7-ui-icon {
   width: 1.1rem;
   height: 1.1rem;
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-achievement {
@@ -2361,17 +2598,20 @@
   align-items: center;
   /* Revision 21: seven cards fit a 900px-high window without scrolling. */
   padding: 0.55rem 0.8rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 14px;
-  background: rgb(255 255 255 / 5%);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
 }
 
 .v7-achievement[data-state="locked"] {
-  opacity: 0.6;
+  opacity: 1;
+  background: var(--pw-surface-2);
+  border-color: var(--pw-line-soft);
 }
 
 .v7-achievement[data-state="complete"] {
-  border-color: var(--gold);
+  border-color: var(--pw-line);
+  background: var(--pw-teal-fill);
 }
 
 .v7-achievement-symbols {
@@ -2383,22 +2623,23 @@
 
 .v7-achievement-goal,
 .v7-achievement-status {
-  color: var(--muted);
-  font-size: 0.9rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-md);
 }
 
 .v7-achievement-meter {
-  height: 6px;
+  height: 10px;
   overflow: hidden;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 12%);
+  border-radius: 0;
+  background: var(--pw-surface-raised);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
 }
 
 .v7-achievement-fill {
   display: block;
   height: 100%;
-  border-radius: inherit;
-  background: var(--gold);
+  border-radius: 0;
+  background: var(--pw-accent);
 }
 
 .v7-achievement-badge {
@@ -2408,8 +2649,9 @@
   height: 4rem;
   margin-inline: auto;
   border-radius: 50%;
-  color: #241a07;
-  background: linear-gradient(#ffd66b, #eab23a);
+  color: var(--pw-text);
+  background: var(--pw-yellow);
+  border: var(--pw-line-w) solid var(--pw-line);
 }
 
 .v7-achievement-badge .v7-ui-icon {
@@ -2436,24 +2678,26 @@
 .v7-settings-grid label {
   display: grid;
   gap: 0.3rem;
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-settings-grid select {
-  color: var(--paper);
-  font-size: 1rem;
+  color: var(--pw-text);
+  font-size: var(--pw-fs-base);
 }
 
 .v7-toggle[aria-pressed="true"] {
-  border-color: var(--gold);
+  border-color: var(--pw-line);
+  background: var(--pw-ink);
+  color: var(--pw-text-inverse);
 }
 
 .v7-developer-tools summary {
   min-height: 44px;
   align-content: center;
-  color: var(--muted);
+  color: var(--pw-text-2);
   cursor: pointer;
 }
 
@@ -2462,15 +2706,15 @@
   gap: 0.5rem;
   margin: 0 0 0.8rem;
   padding: 0.6rem 0.8rem 0.8rem;
-  border: 1px solid var(--v7-edge-strong);
-  border-radius: 8px;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
 }
 
 .v7-saturation-tools legend {
   padding: 0 0.3rem;
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-classic-look-toggle {
@@ -2478,9 +2722,9 @@
   gap: 0.5rem;
   align-items: center;
   min-height: 44px;
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
   cursor: pointer;
 }
 
@@ -2490,7 +2734,7 @@
   height: 1.3rem;
   min-height: 0;
   margin: 0;
-  accent-color: var(--gold);
+  accent-color: var(--pw-accent);
 }
 
 .v7-saturation-row {
@@ -2502,22 +2746,22 @@
 }
 
 .v7-saturation-row label {
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-saturation-row input[type="range"] {
   width: 100%;
   min-height: 44px;
   margin: 0;
-  accent-color: var(--gold);
+  accent-color: var(--pw-accent);
 }
 
 .v7-saturation-value {
-  color: var(--paper);
+  color: var(--pw-text);
   font-variant-numeric: tabular-nums;
-  font-weight: 800;
+  font-weight: var(--pw-fw-bold);
   text-align: right;
 }
 
@@ -2542,13 +2786,15 @@
   justify-items: center;
   gap: 0.2rem;
   padding: 0.7rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 16px;
-  background: rgb(255 255 255 / 6%);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  box-shadow: var(--pw-shadow-sm);
 }
 
 .v7-reward-action:hover:not(:disabled) {
-  border-color: var(--gold);
+  border-color: var(--pw-line);
+  background: var(--pw-yellow);
 }
 
 .v7-reward-action > .v7-art-frame {
@@ -2557,12 +2803,12 @@
 }
 
 .v7-reward-action strong {
-  font-size: 1.05rem;
+  font-size: var(--pw-fs-lg);
 }
 
 .v7-reward-detail {
-  color: var(--gold);
-  font-size: 0.9rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-md);
 }
 
 .v7-results {
@@ -2572,11 +2818,11 @@
 
 .v7-results h2 {
   padding-right: 0;
-  font-size: 3rem;
+  font-size: var(--pw-fs-4xl);
 }
 
 .v7-results[data-outcome="victory"] h2 {
-  color: var(--gold);
+  color: var(--pw-accent);
 }
 
 .v7-results .button-row {
@@ -2641,12 +2887,17 @@
 }
 
 .v7-tech-branch > h3 {
-  color: var(--muted);
-  font-family: inherit;
-  font-size: 0.8rem;
-  font-weight: 900;
+  color: var(--pw-text-inverse);
+  font-family: var(--pw-ui);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-heavy);
   letter-spacing: 0.1em;
   text-align: center;
+  justify-self: center;
+  padding: 0.15rem 0.7rem;
+  border-radius: var(--pw-radius-xs);
+  background: var(--pw-ink);
+  line-height: 1.3;
 }
 
 .v7-tech-node,
@@ -2661,7 +2912,7 @@
   grid-template-columns: repeat(var(--v7-tech-leaves, 2), minmax(0, 1fr));
   gap: 0.6rem;
   padding-top: 0.6rem;
-  border-top: 2px solid var(--v7-edge-strong);
+  border-top: 2px solid var(--pw-line);
 }
 
 .v7-tech-children.is-unary {
@@ -2679,7 +2930,7 @@
   left: 50%;
   width: 2px;
   height: 1.1rem;
-  background: var(--v7-edge-strong);
+  background: var(--pw-line);
   content: "";
 }
 
@@ -2695,9 +2946,9 @@
   min-width: 0;
   min-height: 8.2rem;
   padding: 0.55rem 0.4rem;
-  border: 2px solid var(--v7-edge);
-  border-radius: 14px;
-  background: rgb(255 255 255 / 4%);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
   overflow-wrap: normal;
 }
 
@@ -2722,17 +2973,23 @@
 }
 
 .v7-tech-name {
-  font-size: 0.85rem;
+  font-size: var(--pw-fs-sm);
   line-height: 1.1;
   text-align: center;
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-tech-cost {
   display: inline-flex;
   align-items: center;
   gap: 0.15rem;
-  color: var(--gold);
-  font-size: 0.85rem;
+  color: var(--pw-coin);
+  font-size: var(--pw-fs-sm);
+  padding: 0 0.3rem 0 0.4rem;
+  border: 1px solid var(--pw-line-soft);
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-surface-raised);
+  font-weight: var(--pw-fw-heavy);
 }
 
 .v7-tech-cost .v7-economy-icon {
@@ -2741,15 +2998,15 @@
 }
 
 .v7-tech-check {
-  color: var(--teal);
-  font-size: 1.1rem;
+  color: var(--pw-teal);
+  font-size: var(--pw-fs-lg);
 }
 
 .v7-tech-achievement {
   position: absolute;
   top: 0.35rem;
   right: 0.35rem;
-  color: var(--gold);
+  color: var(--pw-coin);
 }
 
 .v7-tech-achievement .v7-ui-icon {
@@ -2758,28 +3015,56 @@
 }
 
 .v7-tech-card.state-owned {
-  border-color: var(--teal);
-  background: rgb(54 182 164 / 14%);
+  border-color: var(--pw-teal);
+  background: var(--pw-teal-fill);
 }
 
 .v7-tech-card.state-available {
-  border-color: var(--gold);
+  border-color: var(--pw-line);
+  background: var(--pw-yellow);
+  box-shadow: var(--pw-shadow-sm);
 }
 
-.v7-tech-card.state-blocked .v7-tech-art,
+.v7-tech-card.state-available .v7-tech-art {
+  border-radius: var(--pw-radius-xs);
+  background: var(--pw-surface-raised);
+}
+
+.v7-tech-card.state-blocked {
+  border-color: var(--pw-line-soft);
+  background: var(--pw-surface-2);
+}
+
+.v7-tech-card.state-blocked .v7-tech-art {
+  opacity: var(--pw-dim);
+}
+
 .v7-tech-card.state-blocked .v7-tech-name {
-  opacity: 0.55;
+  color: var(--pw-text-2);
+}
+
+.v7-app-shell[data-contrast="high"] .v7-tech-card.state-blocked {
+  border-style: dashed;
+}
+
+.v7-app-shell[data-contrast="high"] .v7-tech-card.state-blocked .v7-tech-art {
+  border-radius: var(--pw-radius-xs);
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 5px,
+    var(--pw-ink) 5px 6px
+  );
 }
 
 .v7-tech-card[data-selected="true"] {
-  outline: 3px solid var(--paper);
-  outline-offset: 2px;
+  outline: 3px solid var(--pw-accent);
+  outline-offset: 3px;
 }
 
 /* The technology a research prompt asked for (bead pulp_wars-gl1). */
 .v7-tech-card[data-goal="true"] {
   border-style: dashed;
-  border-color: var(--gold);
+  border-color: var(--pw-accent);
 }
 
 .v7-tech-detail {
@@ -2793,10 +3078,10 @@
   width: min(40rem, 100%);
   margin-inline: auto;
   padding: 0.9rem 1rem;
-  border: 1px solid var(--v7-edge-strong);
-  border-radius: 18px;
-  background: #2a2c3c;
-  box-shadow: 0 -8px 30px rgb(0 0 0 / 45%);
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-radius: var(--pw-radius);
+  background: var(--pw-surface-raised);
+  box-shadow: 6px 6px 0 var(--pw-accent);
 }
 
 .v7-tech-detail > .close-button {
@@ -2805,7 +3090,8 @@
   right: 0.4rem;
   border: 0;
   background: transparent;
-  color: var(--muted);
+  color: var(--pw-text-2);
+  box-shadow: none;
 }
 
 .v7-tech-detail > .v7-identity {
@@ -2819,23 +3105,23 @@
 }
 
 .v7-tech-detail > .v7-identity h2 {
-  max-width: 8rem;
-  font-size: 1.1rem;
+  max-width: 9rem;
+  font-size: var(--pw-fs-base);
 }
 
 .v7-tech-status {
   grid-column: 2;
-  font-size: 0.9rem;
-  font-weight: 800;
+  font-size: var(--pw-fs-md);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-tech-status.is-owned {
-  color: var(--teal);
+  color: var(--pw-teal);
 }
 
 .v7-tech-status.is-locked,
 .v7-tech-status.is-short {
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-tech-unlocks {
@@ -2853,7 +3139,7 @@
   align-items: center;
   gap: 0.3rem;
   margin-left: -1.1rem;
-  color: var(--gold);
+  color: var(--pw-coin);
   list-style: none;
 }
 
@@ -2872,8 +3158,10 @@
 }
 
 .v7-research-action .v7-economy-chip {
-  color: #231317;
-  background: rgb(255 255 255 / 35%);
+  color: var(--pw-text);
+  background: var(--pw-surface-raised);
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 /* ---------- Motion ---------- */
@@ -2970,7 +3258,7 @@
 
   .v7-selection-dock > .v7-context-actions .v7-action-label,
   .v7-selection-dock > .v7-context-actions .v7-research-label {
-    font-size: 0.72rem;
+    font-size: var(--pw-fs-xs);
   }
 
   .v7-city-stats {
@@ -3000,6 +3288,19 @@
 
   .v7-tech-detail {
     grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.35rem 0.6rem;
+    padding-inline: 0.6rem;
+  }
+
+  /* A long name must leave the unlock list its width. */
+  .v7-tech-detail > .v7-identity h2 {
+    max-width: 6.5rem;
+    font-size: var(--pw-fs-sm);
+    letter-spacing: 0;
+  }
+
+  .v7-tech-detail .v7-tech-unlocks {
+    padding-right: 0.25rem;
   }
 
   .v7-research-action {
@@ -3069,7 +3370,7 @@
   bottom: max(0.6rem, env(safe-area-inset-bottom));
   left: max(0.75rem, env(safe-area-inset-left));
   max-width: min(22rem, calc(100% - 1.5rem));
-  font-size: 0.85rem;
+  font-size: var(--pw-fs-sm);
 }
 
 /* ---------- Revision 13 Undead (setup factions) ---------- */
@@ -3081,15 +3382,15 @@
   gap: 0.9rem 1rem;
   margin: 0;
   padding: 0.75rem 0.9rem 0.9rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 12px;
+  border: 1px solid var(--pw-line-soft);
+  border-radius: var(--pw-radius-sm);
 }
 
 .v7-setup-factions legend {
   padding: 0 0.35rem;
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -3098,7 +3399,7 @@
 .v7-setup-factions-hint {
   grid-column: 1 / -1;
   margin: 0;
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-undead-art {
@@ -3136,17 +3437,17 @@
   width: 1.15rem;
   height: 1.15rem;
   padding: 0.12rem;
-  border: 1.5px solid #efe8cf;
+  border: 1.5px solid var(--pw-line);
   border-radius: 50%;
-  background: #231a2c;
-  color: #efe8cf;
+  background: var(--pw-violet-fill);
+  color: var(--pw-text);
   pointer-events: none;
 }
 
 .v7-undead-badge path {
   fill: currentcolor;
   fill-rule: evenodd;
-  stroke: #231a2c;
+  stroke: var(--pw-violet);
   stroke-width: 1.2;
 }
 
@@ -3159,30 +3460,30 @@
 }
 
 .v7-faction-chip[data-faction="undead"] {
-  border: 1px solid #efe8cf55;
-  background: #231a2c;
-  color: #efe8cf;
+  border: 1px solid var(--pw-line-soft);
+  background: var(--pw-violet-fill);
+  color: var(--pw-text);
 }
 
 .v7-leaderboard-name .v7-faction-chip {
   padding: 0.05rem 0.45rem;
-  font-size: 0.7rem;
+  font-size: var(--pw-fs-xs);
 }
 
 .v7-command-icon {
   width: 2.4rem;
   height: 2.4rem;
   margin: 0.3rem;
-  color: #d9c6ff;
+  color: var(--pw-violet);
 }
 
 .v7-undead-preview-chip {
   padding: 0.05rem 0.4rem;
-  border-radius: 999px;
-  background: rgb(201 166 255 / 18%);
-  color: #eadcff;
-  font-size: 0.7rem;
-  font-weight: 800;
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-violet-fill);
+  color: var(--pw-violet);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
   white-space: nowrap;
 }
 
@@ -3195,7 +3496,7 @@
 
 .v7-context-action[data-disabled-reason="restless"] {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: var(--pw-dim);
 }
 
 .v7-tactical-state[data-tactical-state="restless"] {
@@ -3206,7 +3507,7 @@
 /* Revision 14: Plague and Bitten status chips, public to every viewer. */
 .v7-affliction-chip {
   padding: 0.12rem 0.45rem 0.12rem 0.3rem;
-  font-size: 0.7rem;
+  font-size: var(--pw-fs-xs);
   line-height: 1;
   white-space: nowrap;
 }
@@ -3217,9 +3518,9 @@
 }
 
 .v7-affliction-chip[data-unit-status="plague"] {
-  border: 1px solid #b4d77a66;
-  background: #1c2618;
-  color: #cfe6a6;
+  border: 1px solid var(--pw-green);
+  background: var(--pw-green-fill);
+  color: var(--pw-green);
 }
 
 /*
@@ -3228,15 +3529,15 @@
  * the Coral player colour.
  */
 .v7-affliction-chip[data-unit-status="bitten"] {
-  border: 1px solid #7f8ca0aa;
-  background: #2f3746;
-  color: #ece6d2;
+  border: 1px solid var(--pw-line-soft);
+  background: var(--pw-blue-fill);
+  color: var(--pw-text);
 }
 
 .v7-context-action[data-disabled-reason="plagued"],
 .v7-context-action[data-disabled-reason="bitten"] {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: var(--pw-dim);
 }
 
 .v7-tactical-state[data-tactical-state="plague"],
@@ -3291,62 +3592,62 @@
  * from the Undead skull.
  */
 .v7-goblin-badge {
-  border-color: #efe6c8;
-  background: #33363d;
-  color: #9aa83e;
+  border-color: var(--pw-line);
+  background: var(--pw-surface-2);
+  color: var(--pw-amber);
 }
 
 .v7-goblin-badge path {
-  stroke: #33363d;
+  stroke: var(--pw-line);
 }
 
 /*
  * Revision 19 Dinosaurs (docs/art/factions/DINOSAUR.md): the footprint badge
- * is dusty blue on basalt charcoal with a cream rim, apart from every owner
+ * is amber ink on a pale plate (docs/ui/STYLE.md), apart from every owner
  * colour and from the Undead skull and the Goblin head.
  */
 .v7-dinosaur-badge {
-  border-color: #efe6c8;
-  background: #33363d;
-  color: #7f9cc4;
+  border-color: var(--pw-line);
+  background: var(--pw-surface-2);
+  color: var(--pw-amber);
 }
 
 .v7-dinosaur-badge path {
-  stroke: #33363d;
+  stroke: var(--pw-line);
   stroke-width: 0.6;
 }
 
 .v7-faction-chip[data-faction="goblin"] {
-  border: 1px solid #efe6c855;
-  background: #33363d;
-  color: #d6df9a;
+  border: 1px solid var(--pw-line-soft);
+  background: var(--pw-surface-2);
+  color: var(--pw-amber);
 }
 
 .v7-command-icon[data-icon="bomb"] {
-  color: #efe6c8;
+  color: var(--pw-text);
 }
 
 .v7-warrens-chip {
   margin-left: 0.35rem;
   padding: 0.05rem 0.4rem;
-  font-size: 0.68rem;
+  font-size: var(--pw-fs-xs);
   white-space: nowrap;
 }
 
 /* Friendly fire on the Kaboom! chip reads as a warning. */
 .v7-kaboom-chip[data-friendly-fire="true"] {
-  background: #ffd84a;
-  color: #1b1b1f;
+  background: var(--pw-yellow);
+  color: var(--pw-text);
 }
 
 .v7-context-action[data-kaboom="armed"] {
-  outline: 3px solid #fff8d0;
+  outline: 3px solid var(--pw-line);
   outline-offset: 1px;
 }
 
 .v7-context-action[data-disabled-reason="goblin-field-defense"] {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: var(--pw-dim);
 }
 
 /* The armed Kaboom! confirmation spans the whole dock. */
@@ -3355,14 +3656,14 @@
   grid-column: 1 / -1;
   gap: 0.4rem;
   padding: 0.55rem 0.7rem;
-  border: 1px solid #fff8d066;
-  border-radius: 12px;
-  background: rgb(43 45 51 / 92%);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
 }
 
 .v7-kaboom-summary {
   margin: 0;
-  font-weight: 800;
+  font-weight: var(--pw-fw-bold);
 }
 
 /*
@@ -3402,7 +3703,7 @@
 }
 
 .v7-pick-info:hover:not(:disabled) .v7-unit-help-glyph {
-  border-color: var(--paper);
+  border-color: var(--pw-line);
 }
 
 .v7-kaboom-lines {
@@ -3411,17 +3712,17 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 0.85rem;
+  font-size: var(--pw-fs-sm);
   line-height: 1.3;
 }
 
 .v7-kaboom-line.is-warning {
   padding: 0.2rem 0.5rem;
-  border-left: 4px solid #ffd84a;
-  border-radius: 6px;
-  background: #4d3500;
-  color: #ffe9a8;
-  font-weight: 800;
+  border-left: 4px solid var(--pw-amber);
+  border-radius: var(--pw-radius-xs);
+  background: var(--pw-brown-fill);
+  color: var(--pw-text);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-kaboom-actions {
@@ -3436,39 +3737,39 @@
 
 /*
  * Revision 19 Dinosaurs (docs/art/factions/DINOSAUR.md): interface cues use
- * the unowned effect palette (cream, greys, basalt charcoal) and the badge's
- * dusty blue, apart from every owner colour.
+ * plain plates and ink, and the amber ink of the faction's hue on its
+ * chip, apart from every owner colour.
  */
 .v7-faction-chip[data-faction="dinosaur"] {
-  border: 1px solid #efe6c855;
-  background: #33363d;
-  color: #b9cdea;
+  border: 1px solid var(--pw-amber);
+  background: var(--pw-amber-fill);
+  color: var(--pw-amber);
 }
 
 .v7-command-icon[data-icon="stampede"],
 .v7-command-icon[data-icon="hatch"] {
-  color: #efe6c8;
+  color: var(--pw-text);
 }
 
 /* Egg countdown, slots and growth chips beside the unit's name. */
 .v7-dinosaur-chip {
-  border: 1px solid #efe6c855;
-  background: #33363d;
-  color: #efe6c8;
+  border: 1px solid var(--pw-line-soft);
+  background: var(--pw-surface-2);
+  color: var(--pw-text);
   white-space: nowrap;
 }
 
 .v7-dinosaur-chip[data-growth-stage="1"],
 .v7-dinosaur-chip[data-growth-stage="2"] {
-  border-color: #efe6c8;
-  font-weight: 800;
+  border-color: var(--pw-line);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-egg-info {
   grid-column: 1 / -1;
   margin: 0;
-  color: var(--muted);
-  font-size: 0.85rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
   line-height: 1.3;
 }
 
@@ -3485,7 +3786,7 @@
 
 /* Slot capacity: a city holding more slots than it has reads as a warning. */
 .v7-city-units.is-over-capacity {
-  color: #ffd84a;
+  color: var(--pw-amber);
 }
 
 /*
@@ -3515,15 +3816,15 @@
   width: 1.4rem;
   height: 1.4rem;
   padding: 0.16rem;
-  border: 1.5px solid #efe6c8;
+  border: 1.5px solid var(--pw-line);
   border-radius: 50%;
-  background: #33363d;
-  color: #efe6c8;
+  background: var(--pw-surface-2);
+  color: var(--pw-text);
   pointer-events: none;
 }
 
 .v7-egg-cue path {
-  stroke: #1d1a17;
+  stroke: var(--pw-line);
   stroke-width: 1.4;
 }
 
@@ -3532,28 +3833,28 @@
   flex-wrap: wrap;
   gap: 0.15rem 0.25rem;
   justify-content: center;
-  font-size: 0.68rem;
-  font-weight: 800;
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-egg-fact {
   padding: 0.05rem 0.35rem;
-  border-radius: 999px;
-  background: rgb(239 230 200 / 14%);
-  color: #efe6c8;
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-tint-3);
+  color: var(--pw-text);
   white-space: nowrap;
 }
 
 /* Two-slot bodies (Triceratops, T-Rex) are marked. */
 .v7-egg-fact[data-slots="2"] {
-  background: #efe6c8;
-  color: #1d1a17;
+  background: var(--pw-surface-raised);
+  color: var(--pw-text);
 }
 
 .v7-egg-reason {
-  color: #ffe9a8;
-  font-size: 0.68rem;
-  font-weight: 800;
+  color: var(--pw-text);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
   line-height: 1.15;
   text-align: center;
 }
@@ -3567,11 +3868,11 @@
 .v7-lay-egg-action[aria-disabled="true"] > .v7-action-label,
 .v7-lay-egg-action[aria-disabled="true"] > .v7-command-economy,
 .v7-lay-egg-action[aria-disabled="true"] > .v7-egg-facts {
-  opacity: 0.5;
+  opacity: var(--pw-dim);
 }
 
 .v7-lay-egg-action[aria-pressed="true"] {
-  outline: 3px solid #fff8d0;
+  outline: 3px solid var(--pw-line);
   outline-offset: 1px;
 }
 
@@ -3583,7 +3884,7 @@
 
   .v7-selection-dock > .v7-context-actions .v7-lay-egg-action .v7-action-label {
     overflow-wrap: anywhere;
-    font-size: 0.6rem;
+    font-size: var(--pw-fs-xs);
     letter-spacing: -0.01em;
   }
 }
@@ -3592,13 +3893,13 @@
   flex: 1 1 100%;
   grid-column: 1 / -1;
   margin: 0;
-  color: var(--muted);
-  font-size: 0.85rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
 }
 
 .v7-lay-egg-detail {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--pw-fs-sm);
   line-height: 1.3;
 }
 
@@ -3606,7 +3907,7 @@
 .v7-context-action[data-disabled-reason="hatch-new-egg"],
 .v7-context-action[data-disabled-reason="dinosaur-field-defense"] {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: var(--pw-dim);
 }
 
 /*
@@ -3632,47 +3933,48 @@
 
 /*
  * The Martian revision (docs/art/factions/MARTIAN.md, bead pulp_wars-t6s.4):
- * the saucer badge is chrome on gunmetal with a chrome rim; the Martian
- * chips, the aiming panel and the ability glyphs use the faction's magenta
- * glow (MARTIAN_PALETTE_V7), apart from every owner colour.
+ * the saucer badge is ink on a pale plate (docs/ui/STYLE.md); the Martian
+ * chips, the aiming panel and the ability glyphs use the pink ink of the
+ * faction's hue, apart from every owner colour.
  */
 .v7-martian-badge {
-  border-color: #d5dde6;
-  background: #4a5262;
-  color: #d5dde6;
+  border-color: var(--pw-blue);
+  background: var(--pw-surface-2);
+  color: var(--pw-blue);
 }
 
 .v7-martian-badge path {
-  stroke: #ff2fb0;
+  stroke: var(--pw-pink);
   stroke-width: 0.8;
 }
 
 .v7-faction-chip[data-faction="martian"] {
-  border: 1px solid #ff8fd655;
-  background: #2b2f3a;
-  color: #ffd3ee;
+  border: 1px solid var(--pw-pink);
+  background: var(--pw-surface-2);
+  color: var(--pw-pink);
 }
 
 .v7-martian-chip {
-  border: 1px solid #ff8fd655;
-  background: #2b2f3a;
-  color: #ffd3ee;
+  border: 1px solid var(--pw-pink);
+  background: var(--pw-surface-2);
+  color: var(--pw-pink);
   white-space: nowrap;
 }
 
 .v7-martian-chip[data-unit-status="cooling"] {
-  border-color: #aab3c066;
-  color: #aab3c0;
+  border-color: var(--pw-line-soft);
+  color: var(--pw-text-2);
 }
 
 .v7-martian-chip[data-force-field="true"] {
-  border-color: #ff8fd6;
-  font-weight: 800;
+  border-color: var(--pw-pink);
+  font-weight: var(--pw-fw-bold);
 }
 
 /*
  * The Mind Control revision (bead pulp_wars-b5f.3): a controlled unit's
- * badge, a brain in the Martian faction colour (#e83aae, faction-colours-v7)
+ * badge, a brain in the pink ink of the Martian hue (the faction colour
+ * itself is the board's: on a pale plate it would not read)
  * and "Controlled", then its controller and original owner on swatches of
  * their faction colours; a Brain's chip holds its controlled unit's
  * portrait.
@@ -3682,10 +3984,10 @@
   flex-wrap: wrap;
   gap: 2px 5px;
   align-items: center;
-  border: 1px solid #e83aae;
-  background: #2b1a28;
-  color: #f8d4ec;
-  font-weight: 800;
+  border: 1px solid var(--pw-pink);
+  background: var(--pw-pink-fill);
+  color: var(--pw-pink);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-control-chip-icon {
@@ -3694,25 +3996,25 @@
   height: 18px;
   min-width: 0;
   min-height: 0;
-  color: #e83aae;
+  color: var(--pw-pink);
 }
 
 .v7-control-owner {
   display: inline-flex;
   gap: 3px;
   align-items: center;
-  font-weight: 700;
+  font-weight: var(--pw-fw-bold);
   white-space: nowrap;
 }
 
 .v7-control-owner .v7-player-swatch {
   width: 0.65rem;
   height: 0.65rem;
-  border: 1px solid #00000080;
+  border: 1px solid var(--pw-line-soft);
 }
 
 .v7-control-arrow {
-  color: #f4a5da;
+  color: var(--pw-pink);
 }
 
 .v7-martian-chip[data-unit-status="controlled"] {
@@ -3728,20 +4030,20 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border: 1px solid #e83aae;
-  border-radius: 6px;
-  background: #1d1420;
+  border: 1px solid var(--pw-pink);
+  border-radius: var(--pw-radius-xs);
+  background: var(--pw-violet-fill);
   overflow: hidden;
 }
 
 .v7-command-icon[data-icon="beam-down"],
 .v7-command-icon[data-icon="mind-control"],
 .v7-command-icon[data-icon="tractor-beam"] {
-  color: #ff8fd6;
+  color: var(--pw-pink);
 }
 
 .v7-martian-pick {
-  border-color: #ff8fd666;
+  border-color: var(--pw-pink);
 }
 
 .v7-martian-choices {
@@ -3755,16 +4057,16 @@
 .v7-martian-choice-button {
   min-height: 2rem;
   padding: 0.2rem 0.6rem;
-  border: 1px solid #ff8fd6;
-  border-radius: 8px;
-  background: #3a2236;
-  color: #ffd3ee;
-  font-weight: 700;
+  border: 1px solid var(--pw-pink);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-pink-fill);
+  color: var(--pw-pink);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-martian-detail {
-  color: var(--muted);
-  font-size: 0.8rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
 }
 
 /*
@@ -3784,9 +4086,9 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  border: 1px solid #ff8fd655;
-  background: #2b2f3a;
-  color: #ffd3ee;
+  border: 1px solid var(--pw-pink);
+  background: var(--pw-surface-2);
+  color: var(--pw-pink);
   white-space: nowrap;
 }
 
@@ -3796,8 +4098,8 @@
 }
 
 .v7-beam-hint-chip[data-beam-hint="no-move"] {
-  border-color: #aab3c066;
-  color: #aab3c0;
+  border-color: var(--pw-line-soft);
+  color: var(--pw-text-2);
 }
 
 .v7-beam-hint-chip[data-beam-hint="no-move"] > .v7-ui-icon {
@@ -3813,31 +4115,31 @@
 /* The Mothership's Heavy Tractor Beam costs no action: a "Free" tag. */
 .v7-action-tag {
   padding: 0 0.3rem;
-  border: 1px solid #ff8fd6;
-  border-radius: 6px;
-  background: #3a2236;
-  color: #ffd3ee;
-  font-size: 0.65rem;
-  font-weight: 800;
+  border: 1px solid var(--pw-pink);
+  border-radius: var(--pw-radius-xs);
+  background: var(--pw-pink-fill);
+  color: var(--pw-pink);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
   line-height: 1.3;
   text-transform: uppercase;
 }
 
 .v7-context-action[data-martian-ability][aria-disabled="true"] {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: var(--pw-dim);
 }
 
 .v7-martian-chip[data-unit-status="tractor-used"] {
-  border-color: #aab3c066;
-  color: #aab3c0;
+  border-color: var(--pw-line-soft);
+  color: var(--pw-text-2);
 }
 
 /* An Ice Folk unit's Glide tiles: pale-ice dashed outlines. */
 .v7-landing-legend-item[data-landing-marker="slide"] .v7-landing-legend-swatch,
 .v7-landing-legend-item[data-landing-marker="slip"] .v7-landing-legend-swatch,
 .v7-landing-legend-item[data-landing-marker="glide"] .v7-landing-legend-swatch {
-  border-color: #d6f0ff;
+  border-color: var(--pw-marker-slide);
 }
 
 /* Snow cover is a multiplier: its Defense term reads "+25%". */
@@ -3849,85 +4151,85 @@
 .v7-landing-legend-item[data-landing-marker="launch"]
   .v7-landing-legend-swatch {
   border-style: dotted;
-  border-color: #c7e7f5;
+  border-color: var(--pw-marker-launch);
 }
 
 /*
  * The Ice Folk revision (docs/art/factions/ICE_FOLK.md, bead
- * pulp_wars-7g3.6): the snowflake badge is ice on navy with a pale ice rim;
+ * pulp_wars-7g3.6): the snowflake badge is blue ink on a pale blue plate;
  * the Ice Folk chips, the aiming panel and the ability glyphs use the
- * faction's ice glow (ICE_FOLK_PALETTE_V7), apart from every owner colour.
+ * blue ink of the faction's hue, apart from every owner colour.
  */
 .v7-ice-folk-badge {
-  border-color: #d6f0ff;
-  background: #1b2552;
-  color: #37b1fa;
+  border-color: var(--pw-blue);
+  background: var(--pw-blue-fill);
+  color: var(--pw-blue);
 }
 
 .v7-faction-chip[data-faction="ice_folk"] {
-  border: 1px solid #7fcbff55;
-  background: #1b2552;
-  color: #d6f0ff;
+  border: 1px solid var(--pw-blue);
+  background: var(--pw-blue-fill);
+  color: var(--pw-blue);
 }
 
 .v7-ice-folk-chip {
-  border: 1px solid #7fcbff55;
-  background: #1c2a3e;
-  color: #d6f0ff;
+  border: 1px solid var(--pw-blue);
+  background: var(--pw-blue-fill);
+  color: var(--pw-blue);
   white-space: nowrap;
 }
 
 .v7-ice-folk-chip[data-chill="frozen"] {
-  border-color: #7fcbff;
-  background: #145a9c;
-  color: #ffffff;
-  font-weight: 800;
+  border-color: var(--pw-blue);
+  background: var(--pw-blue-fill);
+  color: var(--pw-text);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-ice-folk-chip[data-chill="thawing"] {
-  border-color: #9aaec766;
-  color: #bccbdd;
+  border-color: var(--pw-blue);
+  color: var(--pw-blue);
 }
 
 .v7-command-icon[data-icon="snowflake"],
 .v7-command-icon[data-icon="bolas"] {
-  color: #7fcbff;
+  color: var(--pw-blue);
 }
 
 .v7-ice-folk-pick {
-  border-color: #7fcbff66;
+  border-color: var(--pw-blue);
 }
 
 .v7-ice-folk-pick .v7-martian-choice-button {
-  border-color: #7fcbff;
-  background: #1c2a3e;
-  color: #d6f0ff;
+  border-color: var(--pw-blue);
+  background: var(--pw-blue-fill);
+  color: var(--pw-blue);
 }
 
 .v7-context-action[data-disabled-reason="frozen"],
 .v7-context-action[data-disabled-reason="ice-folk-field-defense"],
 .v7-context-action[data-ice-folk-ability][aria-disabled="true"] {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: var(--pw-dim);
 }
 
 /*
  * The Dwarf revision (docs/art/factions/DWARF.md, bead pulp_wars-78i.6):
- * the cog badge is copper on dark leather with an iron rim; the Dwarf
+ * the cog badge is amber ink on a pale brown plate; the Dwarf
  * chips, the mound information, the aiming panel and the ability glyphs use
  * the faction's earth, copper and steam (DWARF_PALETTE_V7), apart from
  * every owner colour.
  */
 .v7-dwarf-badge {
-  border-color: #9c9c9d;
-  background: #4e2417;
-  color: #de6f2a;
+  border-color: var(--pw-line-soft);
+  background: var(--pw-brown-fill);
+  color: var(--pw-amber);
 }
 
 .v7-faction-chip[data-faction="dwarf"] {
-  border: 1px solid #de6f2a55;
-  background: #2a1f1a;
-  color: #f0d2b4;
+  border: 1px solid var(--pw-amber);
+  background: var(--pw-brown-fill);
+  color: var(--pw-text);
 }
 
 /* The naval branch interface (bead pulp_wars-5ti.7): Submerged, Boardable. */
@@ -3935,9 +4237,9 @@
   display: inline-flex;
   gap: 4px;
   align-items: center;
-  border: 1px solid #9fd8f266;
-  background: #10243a;
-  color: #d6f1fb;
+  border: 1px solid var(--pw-blue);
+  background: var(--pw-blue-fill);
+  color: var(--pw-blue);
   white-space: nowrap;
 }
 
@@ -3947,26 +4249,26 @@
   height: 18px;
   min-width: 0;
   min-height: 0;
-  color: #9fd8f2;
+  color: var(--pw-blue);
 }
 
 .v7-naval-chip[data-unit-status="boardable"] .v7-ui-icon {
-  color: #ffd98a;
+  color: var(--pw-amber);
 }
 
 /* The frozen sea (bead pulp_wars-5ti.7): Freeze, Icebound, the crush. */
 .v7-context-action[data-freeze-ability][aria-disabled="true"] {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: var(--pw-dim);
 }
 
 .v7-context-action[data-freeze-ability][aria-pressed="true"] {
-  border-color: #7fcbff;
+  border-color: var(--pw-blue);
 }
 
 .v7-ice-folk-chip[data-unit-status="ice-crush"] {
-  border-color: #ff8a80;
-  color: #ffd9d4;
+  border-color: var(--pw-red);
+  color: var(--pw-red);
 }
 
 .v7-ice-folk-chip .v7-ui-icon {
@@ -3976,25 +4278,25 @@
 }
 
 .v7-naval-pick {
-  border-color: #9fd8f266;
+  border-color: var(--pw-blue);
 }
 
 .v7-context-action[data-naval-ability][aria-disabled="true"] {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: var(--pw-dim);
 }
 
 .v7-context-action[data-naval-ability][aria-pressed="true"] {
-  border-color: #9fd8f2;
+  border-color: var(--pw-blue);
 }
 
 .v7-dwarf-chip {
   display: inline-flex;
   gap: 4px;
   align-items: center;
-  border: 1px solid #a07a5266;
-  background: #2a2019;
-  color: #f0e2cc;
+  border: 1px solid var(--pw-brown);
+  background: var(--pw-brown-fill);
+  color: var(--pw-text);
   white-space: nowrap;
 }
 
@@ -4006,24 +4308,24 @@
   height: 18px;
   min-width: 0;
   min-height: 0;
-  color: #de6f2a;
+  color: var(--pw-amber);
 }
 
 .v7-dwarf-chip[data-unit-status="dug-in"] {
-  border-color: #c99a66;
-  background: #3d2a1e;
-  font-weight: 800;
+  border-color: var(--pw-amber);
+  background: var(--pw-brown-fill);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-dwarf-chip[data-unit-status="not-dug-in"],
 .v7-dwarf-chip[data-unit-status="bombed"] {
-  border-color: #9aaec766;
-  color: #c9c2b6;
+  border-color: var(--pw-blue);
+  color: var(--pw-text-2);
 }
 
 .v7-dwarf-repair-chip {
   margin-left: 4px;
-  color: #f2a46a;
+  color: var(--pw-amber);
   font-size: 0.8em;
   white-space: nowrap;
 }
@@ -4037,10 +4339,10 @@
   max-width: 30rem;
   margin-top: 4px;
   padding: 6px 8px;
-  border: 1px solid #a07a5266;
-  border-radius: 8px;
-  background: #2a2019;
-  color: #f0e2cc;
+  border: 1px solid var(--pw-brown);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-brown-fill);
+  color: var(--pw-text);
 }
 
 .v7-dwarf-mound p {
@@ -4061,11 +4363,11 @@
 .v7-command-icon[data-icon="drill"],
 .v7-command-icon[data-icon="bomb-run"],
 .v7-command-icon[data-icon="key"] {
-  color: #de6f2a;
+  color: var(--pw-amber);
 }
 
 .v7-dwarf-pick {
-  border-color: #c99a6666;
+  border-color: var(--pw-amber);
 }
 
 /* Bead pulp_wars-78i.9: the Tunnel's passenger control and confirmation. */
@@ -4082,17 +4384,17 @@
   gap: 0.3rem;
   min-height: 2.6rem;
   padding: 0.15rem 0.6rem;
-  border: 1px solid #c99a66;
-  border-radius: 8px;
-  background: #2a2019;
-  color: #f0e2cc;
-  font-weight: 700;
+  border: 1px solid var(--pw-amber);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-brown-fill);
+  color: var(--pw-text);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-dwarf-passenger[aria-pressed="true"] {
-  border-color: #ffd9a0;
-  background: #5a3d24;
-  box-shadow: inset 0 0 0 1px #ffd9a0;
+  border-color: var(--pw-line);
+  background: var(--pw-brown-fill);
+  box-shadow: inset 0 0 0 1px var(--pw-line);
 }
 
 .v7-dwarf-passenger-hp {
@@ -4109,7 +4411,7 @@
 .v7-context-action[data-disabled-reason="dwarf-field-defense"],
 .v7-context-action[data-dwarf-ability][aria-disabled="true"] {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: var(--pw-dim);
 }
 
 /* ---------- Candy (bead pulp_wars-jdb.6) ---------- */
@@ -4118,10 +4420,10 @@
   display: inline-flex;
   gap: 4px;
   align-items: center;
-  /* Chocolatier (pulp_wars-jdb.10): caramel on dark chocolate, cream text. */
-  border: 1px solid #e0a04088;
-  background: #2e1c12;
-  color: #fff1d0;
+  /* Chocolatier (pulp_wars-jdb.10): amber ink on a pale brown plate. */
+  border: 1px solid var(--pw-amber);
+  background: var(--pw-brown-fill);
+  color: var(--pw-text);
   white-space: nowrap;
 }
 
@@ -4133,12 +4435,12 @@
 
 .v7-candy-chip[data-unit-status="crashed"],
 .v7-candy-chip[data-unit-status="splatted"] {
-  border-color: #c9bca866;
-  color: #ddd2c2;
+  border-color: var(--pw-amber);
+  color: var(--pw-text);
 }
 
 .v7-candy-chip[data-unit-status="home-sweet-home"] {
-  border-color: #8ddab388;
+  border-color: var(--pw-green);
 }
 
 /* Sugar Frenzy: the continuations left, as pips. */
@@ -4151,28 +4453,28 @@
 .v7-candy-pip {
   width: 8px;
   height: 8px;
-  border: 1px solid #e0a040;
+  border: 1px solid var(--pw-amber);
   border-radius: 50%;
   background: transparent;
 }
 
 .v7-candy-pip[data-filled="true"] {
-  background: #e0a040;
+  background: var(--pw-yellow);
 }
 
 .v7-candy-pick {
-  border-color: #ffb8d866;
+  border-color: var(--pw-pink);
 }
 
 .v7-context-action[data-disabled-reason="candy-field-defense"],
 .v7-context-action[data-candy-ability][aria-disabled="true"] {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: var(--pw-dim);
 }
 
 .v7-context-action[data-candy-ability][aria-pressed="true"] {
-  border-color: #ffb8d8;
-  box-shadow: inset 0 0 0 1px #ffb8d8;
+  border-color: var(--pw-pink);
+  box-shadow: inset 0 0 0 1px var(--pw-pink);
 }
 
 /* ---------- Gallery (bead pulp_wars-ic8) ---------- */
@@ -4180,6 +4482,7 @@
 .v7-gallery {
   display: block;
   min-height: 100dvh;
+  background: var(--pw-surface);
 }
 
 .v7-gallery-content {
@@ -4201,9 +4504,9 @@
 
 .v7-gallery-header h1 {
   margin: 0;
-  color: var(--paper);
+  color: var(--pw-accent);
   font-size: clamp(1.8rem, 6vw, 2.6rem);
-  text-shadow: 0 3px 0 var(--accent-dark);
+  text-shadow: none;
 }
 
 .v7-gallery-back {
@@ -4212,32 +4515,36 @@
   gap: 0.25rem;
   min-height: 44px;
   padding: 0 0.9rem 0 0.55rem;
-  border: 1px solid var(--v7-edge-strong);
-  border-radius: 12px;
-  color: var(--paper);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  color: var(--pw-text);
+  background: var(--pw-surface-raised);
+  box-shadow: var(--pw-shadow-sm);
 }
 
 .v7-gallery-tabs {
   display: inline-flex;
   justify-self: start;
-  padding: 0.2rem;
-  border: 1px solid var(--v7-edge-strong);
-  border-radius: 12px;
-  background: var(--panel);
+  padding: 0;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  overflow: hidden;
 }
 
 .v7-gallery-tab {
   min-height: 44px;
   padding: 0 1.1rem;
   border: 0;
-  border-radius: 9px;
+  border-radius: 0;
   background: transparent;
-  color: var(--muted);
+  color: var(--pw-text-2);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-gallery-tab[aria-selected="true"] {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--pw-ink);
+  color: var(--pw-text-inverse);
 }
 
 .v7-gallery-panel {
@@ -4248,9 +4555,9 @@
 
 .v7-gallery-filters {
   padding: 0 0.8rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 12px;
-  background: rgb(255 255 255 / 3%);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
 }
 
 .v7-gallery-filters[open] {
@@ -4262,9 +4569,9 @@
   align-items: center;
   min-height: 44px;
   cursor: pointer;
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -4280,9 +4587,9 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.4rem;
-  color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -4294,11 +4601,11 @@
 .v7-gallery-filter-mode {
   min-height: 44px;
   padding: 0 0.75rem;
-  border: 1px solid var(--v7-edge-strong);
-  border-radius: 10px;
-  background: transparent;
-  color: var(--paper);
-  font-size: 0.8rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  color: var(--pw-text);
+  font-size: var(--pw-fs-sm);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -4315,20 +4622,21 @@
   gap: 0.4rem;
   min-height: 44px;
   padding: 0 0.85rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 999px;
+  border: var(--pw-line-w-sm) dashed var(--pw-line-soft);
+  border-radius: var(--pw-radius-pill);
   background: transparent;
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-gallery-chip[aria-pressed="false"] {
-  opacity: 0.55;
+  opacity: 1;
 }
 
 .v7-gallery-chip[aria-pressed="true"] {
-  border-color: var(--faction, var(--v7-edge-strong));
-  background: var(--panel-strong);
-  color: var(--paper);
+  border-color: var(--pw-line);
+  background: var(--pw-surface-raised);
+  color: var(--pw-text);
+  border-style: solid;
 }
 
 .v7-gallery-swatch {
@@ -4337,7 +4645,7 @@
   height: 0.8rem;
   border-radius: 50%;
   background: var(--faction);
-  box-shadow: 0 0 0 2px rgb(0 0 0 / 35%);
+  box-shadow: 0 0 0 2px var(--pw-line);
 }
 
 /*
@@ -4349,15 +4657,15 @@
   max-height: calc(100dvh - 1.5rem);
   overflow: auto;
   overscroll-behavior: contain;
-  border: 1px solid var(--v7-edge);
-  border-radius: 14px;
-  background: #1c1e2a;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
 }
 
 .v7-gallery-nothing {
   margin: 0;
   padding: 2rem 1rem;
-  color: var(--muted);
+  color: var(--pw-text-2);
   text-align: center;
 }
 
@@ -4381,16 +4689,16 @@
   position: sticky;
   z-index: 2;
   top: 0;
-  background: var(--panel-strong);
+  background: var(--pw-surface-2);
 }
 
 .v7-gallery-table .v7-gallery-faction {
   min-width: 7rem;
   padding: 0.45rem 0.35rem 0.4rem;
-  border-bottom: 3px solid var(--faction);
-  color: var(--paper);
-  font-size: 0.85rem;
-  font-weight: 900;
+  border-bottom: 5px solid var(--faction);
+  color: var(--pw-text);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-heavy);
   text-align: center;
 }
 
@@ -4407,7 +4715,7 @@
   margin: 0 auto 0.2rem;
   overflow: hidden;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--faction) 28%, var(--panel));
+  background: var(--pw-surface-raised);
   box-shadow: 0 0 0 2px var(--faction);
 }
 
@@ -4423,31 +4731,31 @@
   width: 6.5rem;
   min-width: 6.5rem;
   padding: 0 0.6rem;
-  border-top: 1px solid var(--v7-edge);
-  border-right: 1px solid var(--v7-edge);
-  background: var(--panel);
-  color: var(--muted);
-  font-size: 0.82rem;
-  font-weight: 900;
+  border-top: 1px solid var(--pw-line-soft);
+  border-right: 1px solid var(--pw-line-soft);
+  background: var(--pw-surface-2);
+  color: var(--pw-text);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-heavy);
   text-align: left;
 }
 
 .v7-gallery-cell-wrap {
-  border-top: 1px solid var(--v7-edge);
+  border-top: 1px solid var(--pw-line-soft);
   text-align: center;
   vertical-align: top;
 }
 
 .v7-gallery-cell-wrap.is-empty {
-  color: var(--line);
+  color: var(--pw-text-2);
   vertical-align: middle;
 }
 
 /* The frozen sea: a shipless faction's naval rows (the Ice Folk). */
 .v7-gallery-cell-wrap.is-frozen {
-  color: #9fd8f2;
-  font-size: 0.75rem;
-  font-weight: 800;
+  color: var(--pw-blue);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-gallery-cell-wrap.is-frozen .v7-ui-icon {
@@ -4467,16 +4775,16 @@
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: var(--paper);
+  color: var(--pw-text);
 }
 
 .v7-gallery-cell:hover:not(:disabled) {
   border-color: transparent;
-  background: rgb(255 255 255 / 6%);
+  background: var(--pw-yellow);
 }
 
 .v7-gallery-cell:focus-visible {
-  outline: 3px solid var(--focus);
+  outline: 3px solid var(--pw-focus);
   outline-offset: -3px;
 }
 
@@ -4487,18 +4795,19 @@
 
 .v7-gallery-cell-name {
   max-width: 7.5rem;
-  font-size: 0.78rem;
+  font-size: var(--pw-fs-xs);
   line-height: 1.15;
 }
 
 .v7-gallery-shared {
   padding: 0.05rem 0.45rem;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 10%);
-  color: var(--muted);
-  font-size: 0.68rem;
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-surface-2);
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  border: 1px solid var(--pw-line-soft);
 }
 
 /* The detail dialog. */
@@ -4518,11 +4827,11 @@
   max-height: calc(100dvh - 2rem);
   overflow: auto;
   padding: 1.25rem;
-  border: 1px solid var(--v7-edge-strong);
-  border-top: 4px solid var(--faction, var(--paper));
-  border-radius: var(--v7-radius);
-  background: var(--v7-glass-strong);
-  box-shadow: var(--v7-shadow);
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-top: 10px solid var(--faction, var(--pw-line));
+  border-radius: var(--pw-radius);
+  background: var(--pw-surface);
+  box-shadow: var(--pw-shadow);
   transform: translate(-50%, -50%);
 }
 
@@ -4536,11 +4845,11 @@
   height: 2.75rem;
   min-height: 2.75rem;
   margin: -0.6rem -0.6rem calc(-2.15rem - 0.9rem) 0;
-  border: 2px solid var(--ink);
-  border-radius: 50%;
-  background: var(--paper);
-  box-shadow: 0 3px 10px rgb(0 0 0 / 45%);
-  color: var(--ink);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-accent);
+  box-shadow: var(--pw-shadow-sm);
+  color: var(--pw-accent-text);
 }
 
 .v7-gallery-detail > .close-button .v7-ui-icon {
@@ -4559,8 +4868,9 @@
 
 .v7-gallery-detail-stage {
   padding: 0.25rem;
-  border-radius: 12px;
-  background: rgb(0 0 0 / 22%);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-2);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
 }
 
 .v7-gallery-detail-titles {
@@ -4571,7 +4881,7 @@
 
 .v7-gallery-detail h2 {
   margin: 0;
-  font-size: 1.8rem;
+  font-size: var(--pw-fs-2xl);
 }
 
 .v7-gallery-detail-faction {
@@ -4579,16 +4889,16 @@
   align-items: center;
   gap: 0.4rem;
   margin: 0;
-  color: var(--paper);
-  font-size: 0.8rem;
-  font-weight: 900;
+  color: var(--pw-text);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-heavy);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .v7-gallery-detail-kicker {
   margin: 0;
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-gallery-portrait {
@@ -4598,8 +4908,8 @@
   height: 5rem;
   overflow: hidden;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--faction, #888) 25%, var(--panel));
-  box-shadow: 0 0 0 3px var(--faction, var(--line));
+  background: var(--pw-surface-raised);
+  box-shadow: 0 0 0 3px var(--faction, var(--pw-line-soft));
 }
 
 .v7-gallery-stepper {
@@ -4615,10 +4925,10 @@
   min-width: 44px;
   height: 44px;
   padding: 0;
-  border: 1px solid var(--v7-edge-strong);
-  border-radius: 10px;
-  background: var(--panel-strong);
-  color: var(--paper);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  color: var(--pw-text);
 }
 
 .v7-gallery-step:disabled {
@@ -4651,9 +4961,9 @@
   position: relative;
   height: 320px;
   overflow: hidden;
-  border: 1px solid var(--v7-edge);
-  border-radius: 12px;
-  background: #10121a;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-board-bg);
 }
 
 /* The preview is a picture: it never takes the pointer or the wheel. */
@@ -4663,8 +4973,8 @@
 
 /* Terrain (pulp_wars-2yc.3): "same as default" cells and the piece strip. */
 .v7-gallery-cell-wrap.is-same {
-  font-size: 1.1rem;
-  font-weight: 800;
+  font-size: var(--pw-fs-lg);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-gallery-pieces {
@@ -4676,8 +4986,8 @@
   margin: 0;
   padding: 0.5rem;
   overflow: auto;
-  border-radius: 12px;
-  background: rgb(0 0 0 / 22%);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-2);
   list-style: none;
 }
 
@@ -4695,15 +5005,15 @@
 .v7-gallery-replay {
   min-height: 44px;
   padding: 0 0.9rem;
-  border: 1px solid var(--v7-edge-strong);
-  border-radius: 10px;
-  background: var(--panel-strong);
-  color: var(--paper);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  color: var(--pw-text);
 }
 
 .v7-gallery-cue[aria-pressed="true"] {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--pw-ink);
+  color: var(--pw-text-inverse);
 }
 
 .v7-gallery-replay {
@@ -4714,7 +5024,7 @@
 }
 
 .v7-gallery-replay-glyph {
-  font-size: 1.15rem;
+  font-size: var(--pw-fs-lg);
   line-height: 1;
 }
 
@@ -4730,11 +5040,11 @@
   align-items: center;
   gap: 0.4rem;
   margin: 0;
-  font-weight: 800;
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-gallery-cost {
-  font-size: 1.15rem;
+  font-size: var(--pw-fs-lg);
 }
 
 .v7-gallery-coin,
@@ -4757,13 +5067,13 @@
 
 .v7-gallery-ability strong {
   display: block;
-  color: var(--paper);
+  color: var(--pw-text);
 }
 
 .v7-gallery-ability span,
 .v7-gallery-description {
-  color: var(--muted);
-  font-size: 0.92rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-md);
 }
 
 .v7-gallery-description {
@@ -4775,8 +5085,8 @@
   gap: 0.25rem;
   margin: 0;
   padding-left: 1.1rem;
-  color: var(--muted);
-  font-size: 0.85rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
 }
 
 @media (max-width: 720px) {
@@ -4787,7 +5097,7 @@
   .v7-gallery-table .v7-gallery-row-head {
     width: 5rem;
     min-width: 5rem;
-    font-size: 0.75rem;
+    font-size: var(--pw-fs-xs);
   }
 
   /*
@@ -4801,7 +5111,7 @@
 
   .v7-gallery-tab {
     padding: 0 0.5rem;
-    font-size: 0.82rem;
+    font-size: var(--pw-fs-sm);
   }
 
   /*
@@ -4838,7 +5148,7 @@
   }
 
   .v7-gallery-detail h2 {
-    font-size: 1.45rem;
+    font-size: var(--pw-fs-xl);
   }
 
   .v7-gallery-detail-body {
@@ -4875,8 +5185,8 @@
   align-items: center;
   min-height: 1.7rem;
   margin-top: -0.4rem;
-  color: var(--muted);
-  font-size: 0.95rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-md);
 }
 
 .v7-setup-size-info[hidden],
@@ -4885,9 +5195,9 @@
 }
 
 .v7-crowded-chip {
-  border: 1px solid rgb(255 143 134 / 45%);
-  background: rgb(255 143 134 / 14%);
-  color: var(--v7-loss);
+  border: 1px solid var(--pw-red);
+  background: var(--pw-red-fill);
+  color: var(--pw-loss);
 }
 
 .v7-crowded-chip .v7-ui-icon {
@@ -4896,24 +5206,24 @@
 }
 
 .v7-setup-note {
-  color: var(--gold);
-  font-weight: 800;
+  color: var(--pw-red);
+  font-weight: var(--pw-fw-bold);
 }
 
 /* A size or map the setup changed by itself is ringed until the next change. */
 .v7-setup-form select[data-moved="true"] {
-  outline: 2px solid var(--gold);
+  outline: 2px solid var(--pw-accent);
   outline-offset: 2px;
   animation: v7-setup-moved 0.9s ease-out 1;
 }
 
 @keyframes v7-setup-moved {
   from {
-    box-shadow: 0 0 0 0.6rem rgb(255 215 96 / 35%);
+    box-shadow: 0 0 0 0.6rem var(--pw-amber);
   }
 
   to {
-    box-shadow: 0 0 0 0 rgb(255 215 96 / 0%);
+    box-shadow: 0 0 0 0 var(--pw-amber);
   }
 }
 
@@ -4923,7 +5233,7 @@
 
 .v7-setup-seat {
   /* Set per seat to the faction colour (faction-colours-v7.ts). */
-  --player: #9c968a;
+  --player: var(--pw-line-soft);
 
   display: flex;
   gap: 0.5rem;
@@ -4944,16 +5254,17 @@
 .v7-front-screen.v7-titled .v7-setup-seat {
   align-items: center;
   padding: 0.5rem 0.6rem;
-  border: 1px solid color-mix(in srgb, var(--player) 60%, transparent);
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--player) 16%, transparent);
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  border-left: 10px solid var(--player);
 }
 
 .v7-front-screen.v7-titled .v7-setup-seat > .v7-faction-emblem {
   width: 4rem;
   height: 4rem;
   margin: 0;
-  background: rgb(0 0 0 / 25%);
+  background: var(--pw-surface-2);
 }
 
 /* The portrait fills its ring (the art sizes itself for the small one). */
@@ -4986,15 +5297,15 @@
 .v7-front-screen.v7-titled .v7-setup-factions legend {
   margin-bottom: 0.6rem;
   padding: 1rem 0 0;
-  border-top: 1px solid var(--v7-edge);
+  border-top: var(--pw-line-w-sm) solid var(--pw-line);
   width: 100%;
-  color: var(--gold);
-  font-weight: 900;
+  color: var(--pw-accent);
+  font-weight: var(--pw-fw-heavy);
   letter-spacing: 0.12em;
 }
 
 .v7-front-screen.v7-titled .v7-setup-factions-hint {
-  font-size: 0.85rem;
+  font-size: var(--pw-fs-sm);
 }
 
 @media (max-width: 420px) {
@@ -5021,7 +5332,7 @@
 .v7-setup-factions[data-seats="8"] .v7-setup-seat > label,
 .v7-setup-factions[data-seats="9"] .v7-setup-seat > label {
   gap: 0.15rem;
-  font-size: 0.72rem;
+  font-size: var(--pw-fs-xs);
 }
 
 .v7-turn-strip {
@@ -5032,9 +5343,9 @@
   max-width: 100%;
   min-height: 2.5rem;
   padding: 0.2rem 0.5rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 999px;
-  background: var(--v7-glass);
+  border: 1px solid var(--pw-line-soft);
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-surface);
 }
 
 .v7-turn-strip-list {
@@ -5051,7 +5362,7 @@
 
 .v7-turn-chip {
   /* Set per player to the faction colour (faction-colours-v7.ts). */
-  --player: #9c968a;
+  --player: var(--pw-line-soft);
 
   position: relative;
   display: grid;
@@ -5065,13 +5376,13 @@
 .v7-turn-chip[data-active="true"] {
   box-shadow:
     0 0 0 2px var(--player),
-    0 0 0 4px var(--gold);
+    0 0 0 4px var(--pw-accent);
   opacity: 1;
   transform: scale(1.12);
 }
 
 .v7-turn-chip[data-status="eliminated"] {
-  box-shadow: 0 0 0 2px rgb(255 255 255 / 25%);
+  box-shadow: 0 0 0 2px var(--pw-shade);
   opacity: 0.45;
   filter: grayscale(1);
 }
@@ -5080,31 +5391,31 @@
 .v7-turn-chip[data-status="eliminated"]::after {
   position: absolute;
   inset: 45% -10%;
-  border-radius: 2px;
-  background: var(--paper);
+  border-radius: var(--pw-radius-xs);
+  background: var(--pw-surface-raised);
   content: "";
   transform: rotate(-40deg);
 }
 
 .v7-turn-strip-count {
   display: none;
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-md);
+  font-weight: var(--pw-fw-bold);
   white-space: nowrap;
 }
 
 .v7-turn-place {
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-leaderboard-row[data-active="true"] {
-  border-color: var(--gold);
+  border-color: var(--pw-accent);
   border-left-color: var(--player);
 }
 
 .v7-leaderboard-row[data-active="true"] .v7-player-swatch {
-  box-shadow: 0 0 0 3px var(--gold);
+  box-shadow: 0 0 0 3px var(--pw-accent);
 }
 
 .v7-result-seats {
@@ -5119,39 +5430,39 @@
 
 .v7-result-seat {
   /* Set per player to the faction colour (faction-colours-v7.ts). */
-  --player: #9c968a;
+  --player: var(--pw-line-soft);
 
   display: flex;
   gap: 0.6rem;
   align-items: center;
   min-height: 2.6rem;
   padding: 0.15rem 0.6rem 0.15rem 0.3rem;
-  border: 1px solid var(--v7-edge);
+  border: 1px solid var(--pw-line-soft);
   border-left: 4px solid var(--player);
-  border-radius: 12px;
-  background: rgb(255 255 255 / 5%);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-tint-1);
 }
 
 .v7-result-seat[data-viewer="true"] {
-  background: rgb(255 255 255 / 10%);
+  background: var(--pw-tint-3);
 }
 
 .v7-result-seat[data-status="eliminated"] {
-  opacity: 0.6;
+  opacity: var(--pw-dim);
 }
 
 .v7-result-seat-name {
   flex: 1;
   min-width: 0;
   overflow: hidden;
-  font-weight: 800;
+  font-weight: var(--pw-fw-bold);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .v7-result-winner {
   display: inline-flex;
-  color: var(--gold);
+  color: var(--pw-coin);
 }
 
 @media (max-width: 599px) {
@@ -5166,7 +5477,7 @@
 
   .v7-setup-form .v7-setup-factions .v7-setup-seat > label {
     gap: 0.15rem;
-    font-size: 0.66rem;
+    font-size: var(--pw-fs-xs);
     letter-spacing: 0;
     white-space: nowrap;
   }
@@ -5174,7 +5485,7 @@
   /* Room for the longest faction name beside the emblem. */
   .v7-setup-form .v7-setup-seat select {
     padding-inline: 0.5rem 0.2rem;
-    font-size: 0.95rem;
+    font-size: var(--pw-fs-md);
   }
 
   .v7-setup-factions {
@@ -5239,7 +5550,7 @@
 .v7-sound-controls {
   display: grid;
   grid-column: 1 / -1;
-  gap: 0.2rem;
+  gap: 0.6rem;
 }
 
 /* One level (Music, Sound): its toggle, its name, its slider, its value. */
@@ -5252,23 +5563,23 @@
 }
 
 .v7-sound-level-name {
-  color: var(--paper);
-  font-weight: 700;
+  color: var(--pw-text);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-sound-toggle[data-sound="off"] {
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-sound-volume {
   width: 100%;
   min-height: 44px;
   margin: 0;
-  accent-color: var(--gold);
+  accent-color: var(--pw-accent);
 }
 
 .v7-sound-volume-value {
-  color: var(--paper);
+  color: var(--pw-text);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
@@ -5285,7 +5596,7 @@
 }
 
 .v7-menu-sound[data-sound="off"] {
-  color: var(--muted);
+  color: var(--pw-text-2);
 }
 
 .v7-sound-test {
@@ -5295,9 +5606,9 @@
 
 .v7-sound-test h3 {
   margin: 0 0 0.4rem;
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-sound-test-list {
@@ -5312,22 +5623,22 @@
   align-items: center;
   min-height: 44px;
   padding: 0 0.7rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 12px;
-  background: var(--v7-glass);
-  font-size: 0.9rem;
+  border: 1px solid var(--pw-line-soft);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface);
+  font-size: var(--pw-fs-md);
   text-align: left;
 }
 
 .v7-sound-test-button:hover {
-  border-color: var(--v7-edge-strong);
+  border-color: var(--pw-line);
 }
 
 .v7-sound-test-icon {
   flex: none;
   width: 16px;
   height: 16px;
-  color: var(--gold);
+  color: var(--pw-coin);
 }
 
 /* The Gallery's Sounds tab (bead pulp_wars-2yc.19, docs/ui/SOUND.md):
@@ -5350,10 +5661,10 @@
   justify-self: start;
   margin: 0;
   padding: 0.4rem 0.5rem 0.4rem 0.8rem;
-  border: 1px solid var(--gold);
-  border-radius: 12px;
-  background: var(--panel);
-  color: var(--paper);
+  border: 1px solid var(--pw-accent);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface);
+  color: var(--pw-text);
 }
 
 .v7-gallery-sounds-notice[hidden] {
@@ -5361,13 +5672,13 @@
 }
 
 .v7-gallery-sounds-notice[data-nudged="true"] {
-  box-shadow: 0 0 0 3px var(--gold);
+  box-shadow: 0 0 0 3px var(--pw-accent);
 }
 
 .v7-gallery-sounds-notice .v7-ui-icon {
   width: 22px;
   height: 22px;
-  color: var(--gold);
+  color: var(--pw-coin);
 }
 
 .v7-gallery-sounds-unmute {
@@ -5377,9 +5688,9 @@
 
 .v7-gallery-sound-group h2 {
   margin: 0 0 0.45rem;
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 800;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-md);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-gallery-sound-list {
@@ -5410,31 +5721,31 @@
   min-width: 0;
   min-height: 56px;
   padding: 0.3rem 0.7rem 0.3rem 0.4rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 12px;
-  background: var(--v7-glass);
+  border: 1px solid var(--pw-line-soft);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface);
   text-align: left;
 }
 
 .v7-gallery-sound-play:hover:not([aria-disabled="true"]) {
-  border-color: var(--v7-edge-strong);
+  border-color: var(--pw-line);
 }
 
 .v7-gallery-sound-play:focus-visible,
 .v7-gallery-sound-variant:focus-visible,
 .v7-gallery-sound-stop:focus-visible {
-  outline: 3px solid var(--focus);
+  outline: 3px solid var(--pw-focus);
   outline-offset: -3px;
 }
 
 .v7-gallery-sound[data-playing="true"] .v7-gallery-sound-play {
-  border-color: var(--gold);
-  background: color-mix(in srgb, var(--gold) 16%, var(--panel));
+  border-color: var(--pw-accent);
+  background: color-mix(in srgb, var(--pw-yellow) 16%, var(--pw-surface));
 }
 
 /* With sound off the cards are dimmed: the notice is the way on. */
 .v7-gallery-sounds-panel[data-muted="true"] .v7-gallery-sound-list {
-  opacity: 0.6;
+  opacity: var(--pw-dim);
 }
 
 .v7-gallery-sound[data-pending="true"] .v7-gallery-sound-play {
@@ -5444,7 +5755,7 @@
 
 .v7-gallery-sound[data-pending="true"] .v7-gallery-sound-picture {
   filter: grayscale(0.7);
-  opacity: 0.6;
+  opacity: var(--pw-dim);
 }
 
 .v7-gallery-sound-picture {
@@ -5453,9 +5764,9 @@
   width: 2.75rem;
   height: 2.75rem;
   overflow: hidden;
-  border-radius: 10px;
-  background: rgb(0 0 0 / 22%);
-  color: var(--paper);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-tint-3);
+  color: var(--pw-text);
 }
 
 .v7-gallery-sound-picture > * {
@@ -5469,7 +5780,7 @@
 
 .v7-gallery-sound-picture[style*="--faction"] {
   border-radius: 50%;
-  background: color-mix(in srgb, var(--faction) 28%, var(--panel));
+  background: color-mix(in srgb, var(--faction) 28%, var(--pw-surface));
   box-shadow: inset 0 0 0 2px var(--faction);
 }
 
@@ -5495,16 +5806,16 @@
 
 .v7-gallery-sound-name {
   overflow: hidden;
-  color: var(--paper);
-  font-weight: 800;
+  color: var(--pw-text);
+  font-weight: var(--pw-fw-bold);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .v7-gallery-sound-when {
   overflow: hidden;
-  color: var(--muted);
-  font-size: 0.8rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -5518,9 +5829,9 @@
   grid-template-columns: minmax(0, 1fr) auto;
   column-gap: 0.5em;
   min-width: 0;
-  color: var(--muted);
-  font-size: 0.68rem;
-  font-weight: 500;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-body);
   line-height: 1.25;
 }
 
@@ -5553,7 +5864,7 @@
 
 .v7-gallery-sound-origin[data-sound-origin="recorded"]
   .v7-gallery-sound-origin-file {
-  color: var(--gold);
+  color: var(--pw-coin);
 }
 
 .v7-gallery-sound-origin-cut {
@@ -5577,7 +5888,7 @@
   place-items: center;
   width: 1.4rem;
   height: 1.4rem;
-  color: var(--gold);
+  color: var(--pw-coin);
 }
 
 .v7-gallery-sound-mark > * {
@@ -5600,7 +5911,7 @@
 .v7-gallery-sound-bars i {
   width: 4px;
   height: 100%;
-  border-radius: 2px;
+  border-radius: var(--pw-radius-xs);
   background: currentColor;
   transform-origin: bottom;
 }
@@ -5666,23 +5977,23 @@
   width: 2.25rem;
   min-height: 44px;
   padding: 0;
-  border: 1px solid var(--v7-edge);
-  border-radius: 10px;
+  border: 1px solid var(--pw-line-soft);
+  border-radius: var(--pw-radius-sm);
   background: transparent;
-  color: var(--muted);
+  color: var(--pw-text-2);
   /* A face that has the flat and sharp signs. */
   font-family:
     system-ui, "Apple Symbols", "Segoe UI Symbol", "Noto Sans Symbols2",
     sans-serif;
-  font-size: 1.25rem;
-  font-weight: 400;
+  font-size: var(--pw-fs-lg);
+  font-weight: var(--pw-fw-body);
   line-height: 1;
 }
 
 .v7-gallery-sound-variant:hover,
 .v7-gallery-sound-stop:hover {
-  border-color: var(--v7-edge-strong);
-  color: var(--paper);
+  border-color: var(--pw-line);
+  color: var(--pw-text);
 }
 
 .v7-gallery-sound-variant .v7-ui-icon {
@@ -5695,14 +6006,14 @@
   width: auto;
   padding: 0 0.5rem;
   font-family: inherit;
-  font-size: 0.68rem;
+  font-size: var(--pw-fs-xs);
   font-style: italic;
-  font-weight: 600;
+  font-weight: var(--pw-fw-semi);
 }
 
 .v7-gallery-sound-stop {
-  border-color: var(--gold);
-  color: var(--gold);
+  border-color: var(--pw-accent);
+  color: var(--pw-coin);
 }
 
 .v7-gallery-sound-stop[hidden] {
@@ -5712,7 +6023,7 @@
 .v7-gallery-sound-stop-mark {
   width: 0.8rem;
   height: 0.8rem;
-  border-radius: 2px;
+  border-radius: var(--pw-radius-xs);
   background: currentColor;
 }
 
@@ -5753,12 +6064,12 @@
   min-width: 0;
   min-height: 44px;
   padding: 0 0.55rem 0 0.35rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 10px;
+  border: 1px solid var(--pw-line-soft);
+  border-radius: var(--pw-radius-sm);
   background: transparent;
-  color: var(--muted);
-  font-size: 0.72rem;
-  font-weight: 500;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-body);
   text-align: left;
 }
 
@@ -5767,24 +6078,24 @@
   min-width: 3.6rem;
   min-height: 44px;
   padding: 0 0.5rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 10px;
+  border: 1px solid var(--pw-line-soft);
+  border-radius: var(--pw-radius-sm);
   background: transparent;
-  color: var(--muted);
-  font-size: 0.72rem;
-  font-weight: 700;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-gallery-sound-choice-play:hover,
 .v7-gallery-sound-choice-use:hover {
-  border-color: var(--v7-edge-strong);
-  color: var(--paper);
+  border-color: var(--pw-line);
+  color: var(--pw-text);
 }
 
 .v7-gallery-sound-choice-play:focus-visible,
 .v7-gallery-sound-choice-use:focus-visible,
 .v7-gallery-sounds-picks-button:focus-visible {
-  outline: 3px solid var(--focus);
+  outline: 3px solid var(--pw-focus);
   outline-offset: -3px;
 }
 
@@ -5796,9 +6107,9 @@
   height: 1.5rem;
   border: 1px solid currentColor;
   border-radius: 50%;
-  color: var(--paper);
-  font-size: 0.8rem;
-  font-weight: 800;
+  color: var(--pw-text);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
   line-height: 1;
 }
 
@@ -5834,27 +6145,27 @@
 
 .v7-gallery-sound-choice-default {
   padding: 0.05rem 0.35rem;
-  border: 1px solid var(--v7-edge-strong);
-  border-radius: 999px;
-  color: var(--paper);
-  font-size: 0.62rem;
-  font-weight: 700;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-pill);
+  color: var(--pw-text);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
   text-transform: uppercase;
 }
 
 /* The one in use: what the game plays for this sound in this browser. */
 .v7-gallery-sound-choice[data-chosen="true"] .v7-gallery-sound-choice-play {
-  border-color: var(--gold);
+  border-color: var(--pw-accent);
 }
 
 .v7-gallery-sound-choice[data-chosen="true"] .v7-gallery-sound-choice-file {
-  color: var(--gold);
+  color: var(--pw-coin);
 }
 
 .v7-gallery-sound-choice-use[aria-pressed="true"] {
-  border-color: var(--gold);
-  background: var(--gold);
-  color: var(--ink);
+  border-color: var(--pw-accent);
+  background: var(--pw-yellow);
+  color: var(--pw-text);
 }
 
 /* The numbered recording being heard. */
@@ -5866,8 +6177,8 @@
   .v7-gallery-sound-choice-play[data-choice="3"],
 .v7-gallery-sound[data-playing-choice="4"]
   .v7-gallery-sound-choice-play[data-choice="4"] {
-  border-color: var(--gold);
-  background: color-mix(in srgb, var(--gold) 16%, var(--panel));
+  border-color: var(--pw-accent);
+  background: color-mix(in srgb, var(--pw-yellow) 16%, var(--pw-surface));
 }
 
 /* The picks: how many, and the controls that copy and forget them. */
@@ -5876,9 +6187,9 @@
   gap: 0.5rem;
   max-width: 46rem;
   padding: 0.6rem 0.8rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 12px;
-  background: var(--v7-glass);
+  border: 1px solid var(--pw-line-soft);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface);
 }
 
 .v7-gallery-sounds-picks[hidden] {
@@ -5887,13 +6198,13 @@
 
 .v7-gallery-sounds-picks-text {
   margin: 0;
-  color: var(--muted);
-  font-size: 0.85rem;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
   line-height: 1.35;
 }
 
 .v7-gallery-sounds-picks-text strong {
-  color: var(--paper);
+  color: var(--pw-text);
 }
 
 .v7-gallery-sounds-picks-actions {
@@ -5913,21 +6224,21 @@
 }
 
 .v7-gallery-sounds-picks-status {
-  color: var(--gold);
-  font-size: 0.85rem;
-  font-weight: 700;
+  color: var(--pw-coin);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
 }
 
 .v7-gallery-sounds-picks-output {
   width: 100%;
   min-height: 11rem;
   padding: 0.5rem;
-  border: 1px solid var(--v7-edge);
-  border-radius: 8px;
-  background: rgb(0 0 0 / 25%);
-  color: var(--paper);
+  border: 1px solid var(--pw-line-soft);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-tint-3);
+  color: var(--pw-text);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.72rem;
+  font-size: var(--pw-fs-xs);
   line-height: 1.35;
   resize: vertical;
 }

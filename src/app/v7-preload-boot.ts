@@ -20,6 +20,7 @@ import {
   type AssetPreloaderV7,
 } from "./asset-preloader-v7";
 import { loadBoardClassicLookV7 } from "./board-visual-direction-v7";
+import { loadInterfaceFontsV7 } from "./interface-fonts-v7";
 import {
   bootstrapRuleset7App,
   browserStorageV7,
@@ -105,6 +106,8 @@ export async function bootstrapPreloadedRuleset7App(
   }
 
   const started = now();
+  // The interface faces load beside the art: board labels need them drawn.
+  const fonts = loadInterfaceFontsV7(documentRoot);
   let screen: ReturnType<typeof mountLoadingScreenV7> | null = null;
   let progress: AssetPreloadProgressV7 | null = null;
   const show = (): void => {
@@ -125,6 +128,7 @@ export async function bootstrapPreloadedRuleset7App(
     // raster then loads on demand, as it did before preloading.
     result = { total: 0, loaded: 0, failed: [], unfinished: 0 };
   } finally {
+    await fonts;
     if (timer !== null) globalThis.clearTimeout(timer);
     (screen as ReturnType<typeof mountLoadingScreenV7> | null)?.destroy();
     markRasterPreloadCompleteV7();

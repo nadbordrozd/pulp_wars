@@ -197,19 +197,19 @@ neutral village (`SITE:VILLAGE`) is the shared one.
 
 ## Ability effects and status markers
 
-| Cue                         | Default look                                           | Why                                                                                                   |
-| --------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| Wail (`EFFECT:WAIL`)        | violet sprite, violet rings                            | the faction's magic                                                                                   |
-| Lich splash                 | violet sprite                                          | the faction's magic                                                                                   |
-| Raise Dead (`EFFECT:RAISE`) | bone hands with violet wisps                           | the faction's magic                                                                                   |
-| Spirit wisp                 | violet sprite (Infect, a bite rising, lifesteal)       | the faction's magic                                                                                   |
-| Raise Dead target preview   | violet outline `#c9a6ff`, like the Wail radius         | one colour for the faction's abilities; it was green                                                  |
-| Plague marker and puff      | **unchanged**: grey-green cloud `#9fac8a`              | an affliction on any faction's unit, not the caster's magic; a dull green is the opposite of the glow |
-| Bitten marker               | **unchanged**: slate jaws, ivory teeth                 | an affliction, as above                                                                               |
-| Cure sparkle                | **unchanged**: white                                   | a Human Captain's Tend cures; it is not Undead magic                                                  |
-| Devour and splash previews  | **unchanged**: coral and orange                        | they mark damage and healing amounts, like every faction's previews                                   |
-| Grave marker                | **unchanged**: a neutral stone tombstone drawn in code | it belongs to no faction                                                                              |
-| Undead badge of a stand-in  | **unchanged**: bone on violet-black                    | it already agrees                                                                                     |
+| Cue                         | Default look                                                                                                                         | Why                                                                                                   |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Wail (`EFFECT:WAIL`)        | violet sprite, violet rings                                                                                                          | the faction's magic                                                                                   |
+| Lich splash                 | violet sprite                                                                                                                        | the faction's magic                                                                                   |
+| Raise Dead (`EFFECT:RAISE`) | bone hands with violet wisps                                                                                                         | the faction's magic                                                                                   |
+| Spirit wisp                 | violet sprite (Infect, a bite rising, lifesteal)                                                                                     | the faction's magic                                                                                   |
+| Raise Dead target preview   | violet outline `#c9a6ff`, like the Wail radius                                                                                       | one colour for the faction's abilities; it was green                                                  |
+| Plague marker and puff      | **unchanged**: grey-green cloud `#9fac8a`                                                                                            | an affliction on any faction's unit, not the caster's magic; a dull green is the opposite of the glow |
+| Bitten marker               | **unchanged**: slate jaws, ivory teeth                                                                                               | an affliction, as above                                                                               |
+| Cure sparkle                | **unchanged**: white                                                                                                                 | a Human Captain's Tend cures; it is not Undead magic                                                  |
+| Devour and splash previews  | **unchanged**: coral and orange                                                                                                      | they mark damage and healing amounts, like every faction's previews                                   |
+| Grave marker                | **unchanged**: a neutral stone tombstone drawn in code                                                                               | it belongs to no faction                                                                              |
+| Undead badge of a stand-in  | **unchanged** on the board: bone on violet-black; in the interface, ink on a pale violet fill ([interface style](../../ui/STYLE.md)) | it already agrees                                                                                     |
 
 The four violet effect sprites are the accepted sprites of batch
 `effects-undead` in the palette

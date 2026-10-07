@@ -8,6 +8,7 @@
  */
 
 import { UNDEAD_BADGE_FRAME_V7 } from "./undead-canvas-v7";
+import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 
 /** Legacy and CHIBI Dinosaur badge frames: the Undead badge's corner. */
 export const DINOSAUR_BADGE_FRAME_V7 = UNDEAD_BADGE_FRAME_V7;
@@ -300,7 +301,7 @@ export function drawEggCountdownV7(
   context.fillStyle = options.highContrast
     ? "#ffffff"
     : DINOSAUR_CUE_COLORS_V7.cream;
-  context.font = `800 ${Math.max(10, radius * 1.25)}px system-ui`;
+  context.font = `800 ${Math.max(10, radius * 1.25)}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.fillText(String(turns), cx, cy + radius * 0.06);

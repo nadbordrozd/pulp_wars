@@ -296,8 +296,9 @@ the other factions' previews and are unchanged.
 
 **LEGACY and missing rasters.** A Dinosaur unit or portrait shown with Human
 art wears the Dinosaur badge: a dusty-blue three-toed footprint on a
-charcoal disc with a cream rim (`drawDinosaurBadgeV7`, and the `dinosaur`
-glyph of `ui-icons-v7.ts` in the DOM). The Egg has no Human counterpart and
+charcoal disc with a cream rim on the board (`drawDinosaurBadgeV7`). In the
+interface the `dinosaur` glyph of `ui-icons-v7.ts` and the faction's chips
+are amber ink on a pale fill ([interface style](../../ui/STYLE.md)). The Egg has no Human counterpart and
 never wears it; in LEGACY the board and the dock draw a code-native Egg with
 a band in the owner's colour.
 

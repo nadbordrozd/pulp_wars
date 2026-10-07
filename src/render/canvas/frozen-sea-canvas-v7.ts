@@ -8,6 +8,7 @@ import type {
   IceboundMarkerV7,
   SeaIceCellV7,
 } from "./frozen-sea-board-plan-v7";
+import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 
 /**
  * The frozen sea on the canvas (bead pulp_wars-5ti.7, second part;
@@ -371,7 +372,7 @@ export function drawIceboundMarkerV7(
     marker.lethal && !highContrast
       ? SEA_ICE_COLOURS_V7.crushLethal
       : SEA_ICE_COLOURS_V7.crushText;
-  context.font = `800 ${Math.max(8, 11.5 * zoom)}px system-ui`;
+  context.font = `800 ${Math.max(8, 11.5 * zoom)}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.fillText(marker.crush.replace(" HP", ""), cx, cy + 0.5 * zoom);

@@ -1,4 +1,10 @@
 import { selectBrowserRulesetRoute } from "./app/browser-routing";
+// The interface faces (docs/ui/STYLE.md): bundled, self-hosted, Latin only.
+import "@fontsource/bowlby-one/latin-400.css";
+import "@fontsource/public-sans/latin-500.css";
+import "@fontsource/public-sans/latin-600.css";
+import "@fontsource/public-sans/latin-700.css";
+import "@fontsource/public-sans/latin-800.css";
 import "./styles/main.css";
 import "./styles/v7.css";
 

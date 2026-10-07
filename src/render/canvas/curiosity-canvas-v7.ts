@@ -11,6 +11,7 @@ import type {
   BoardSelectionV7,
 } from "./board-renderer-v7";
 import type { TileEdge } from "./geometry";
+import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 
 /**
  * Map curiosities on the board (bead pulp_wars-737.6,
@@ -401,7 +402,7 @@ export function drawProvokedMarkerV7(
   context.fill();
   context.stroke();
   context.fillStyle = BONE;
-  context.font = `900 ${size * 0.72}px system-ui`;
+  context.font = `900 ${size * 0.72}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.fillText("!", x, y + size * 0.04);

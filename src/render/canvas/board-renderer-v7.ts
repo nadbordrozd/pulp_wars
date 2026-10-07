@@ -395,6 +395,7 @@ import {
   promotionMarkerSizeCssPxV7,
   type BoardFeedbackFrameV7,
 } from "./feedback-canvas-v7";
+import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 
 export type BoardSelectionV7 =
   | { readonly kind: "TILE"; readonly at: CoordV7 }
@@ -1796,7 +1797,7 @@ export function drawChibiFieldDefenseV7(
   context.fillRect(px(0), py(15), 28 * unit, 5 * unit);
   context.strokeRect(px(0), py(15), 28 * unit, 5 * unit);
   if (level > 0) {
-    context.font = `800 ${16 * unit}px system-ui`;
+    context.font = `800 ${16 * unit}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
     context.textAlign = "center";
     context.lineWidth = 3.5 * unit;
     context.fillStyle = "#ffffff";
@@ -3209,7 +3210,7 @@ export function drawBoardV7(input: {
           context.fillStyle = input.highContrast ? "#ffffff" : "#fff8df";
           context.strokeStyle = "#172529";
           context.lineWidth = 3 * camera.zoom;
-          context.font = `800 ${13 * camera.zoom}px system-ui`;
+          context.font = `800 ${13 * camera.zoom}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
           context.textAlign = "center";
           context.strokeText(
             String(entry.value),
@@ -3717,7 +3718,7 @@ export function drawBoardV7(input: {
             badge.size * camera.zoom,
           );
           context.fillStyle = "#171722";
-          context.font = `${800} ${11 * camera.zoom}px system-ui`;
+          context.font = `${800} ${11 * camera.zoom}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
           context.textAlign = "center";
           context.fillText(
             String((entry.ownerSeat ?? 0) + 1),

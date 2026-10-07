@@ -1,4 +1,5 @@
 import { TILE_HEIGHT, TILE_WIDTH } from "./geometry";
+import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 
 /**
  * The name plate under a city on the board (bead `pulp_wars-2yc.30`): a
@@ -81,9 +82,9 @@ export function cityNameLabelLayoutV7(
   };
 }
 
-/** The label face: the board's heavy system face, as on its other labels. */
+/** The label face: the interface's body face, heavy, as on the board's other labels. */
 export function cityNameLabelFontV7(fontPx: number): string {
-  return `800 ${fontPx}px system-ui`;
+  return `800 ${fontPx}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
 }
 
 export const CITY_NAME_LABEL_COLOURS_V7 = Object.freeze({

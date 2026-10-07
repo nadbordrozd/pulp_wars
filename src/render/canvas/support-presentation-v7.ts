@@ -10,6 +10,7 @@ import type { CoordV7 } from "../../engine/index";
 import { chibiMasterScale, isWholeScale } from "./chibi-geometry-v7";
 import { projectGrid, worldToScreen, type CameraState } from "./geometry";
 import type { SupportCueUnitV7, SupportEffectV7 } from "./presentation-plan-v7";
+import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 
 export interface SupportFeedbackV7 {
   readonly effect: SupportEffectV7;
@@ -590,7 +591,7 @@ function drawRegeneration(
   context.save();
   // The float stays fully opaque for its first half, then fades.
   context.globalAlpha = progress <= 0.5 ? 1 : Math.max(0, fade * 1.15);
-  context.font = `900 ${font}px system-ui`;
+  context.font = `900 ${font}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.lineJoin = "round";
@@ -727,7 +728,7 @@ function drawFloat(
   const y = center.y - (50 + 20 * progress) * zoom;
   context.save();
   context.globalAlpha = progress <= 0.5 ? 1 : Math.max(0, fade * 1.15);
-  context.font = `900 ${font}px system-ui`;
+  context.font = `900 ${font}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.lineJoin = "round";

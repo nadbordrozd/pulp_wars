@@ -512,7 +512,9 @@ overlay"); each decision can be overruled:
    firing") show on the focused target only.
 8. **The Classic look and LEGACY** draw the Human stand-in with the cog
    badge (a copper cog on dark leather), and a code-drawn heap with a drill
-   tip (and a hammer head for the rider) for the mound.
+   tip (and a hammer head for the rider) for the mound. In the interface the
+   cog badge and the Dwarf chips are amber ink on a pale fill
+   ([interface style](../../ui/STYLE.md)).
 
 ## Weak spots
 

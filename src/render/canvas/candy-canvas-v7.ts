@@ -7,6 +7,7 @@ import type {
   CandyCrumbsMarkerV7,
   CandyUnitMarkersV7,
 } from "./candy-board-plan-v7";
+import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 
 /**
  * The Candy board markers (bead pulp_wars-jdb.6, docs/art/factions/CANDY.md
@@ -270,7 +271,7 @@ export function drawCandyCrumbsV7(
     context.restore();
   } else if (options.initial !== undefined) {
     context.fillStyle = highContrast ? "#ffffff" : chocolate;
-    context.font = `700 ${Math.max(7, px(10))}px system-ui, sans-serif`;
+    context.font = `700 ${Math.max(7, px(10))}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.fillText(options.initial, tx, ty + px(0.5));

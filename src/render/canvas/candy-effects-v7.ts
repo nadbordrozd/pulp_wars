@@ -4,6 +4,7 @@ import type { CandyEffectIdV7 } from "../../assets/chibi-art-v7";
 import { chibiMasterScale, isWholeScale } from "./chibi-geometry-v7";
 import { projectGrid, worldToScreen, type CameraState } from "./geometry";
 import type { SupportEffectArtV7 } from "./support-presentation-v7";
+import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 
 /**
  * Candy cues on the board's effects overlay (bead pulp_wars-jdb.6,
@@ -270,7 +271,7 @@ export function drawCandyFeedbackV7(
     if (alpha <= 0) return;
     context.save();
     context.globalAlpha *= alpha;
-    context.font = `800 ${Math.max(11, 20 * zoom)}px system-ui, sans-serif`;
+    context.font = `800 ${Math.max(11, 20 * zoom)}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.lineWidth = Math.max(2, 4 * zoom);
