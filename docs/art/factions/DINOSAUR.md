@@ -39,9 +39,11 @@ territory border.
 ## Prompt fragment
 
 It names only a mood, materials, surfaces, colours and small motifs: no
-figure and no place or building. Every recipe of batch `direction-dinosaur`
-is an edit, which sends only its instruction; this fragment is for a fresh
-creation if one is ever needed.
+figure and no place or building. The recipes of batch `direction-dinosaur`
+are edits, which send only their instruction, except the fresh creations of
+the [Stegosaurus](#ninth-unit-the-stegosaurus-beads-pulp_wars-w4917-and-pulp_wars-2yc34)
+and its portrait (bead `pulp_wars-2yc.34`), the first requests sent with this
+fragment.
 
 ```text
 Faction: cheerful prehistoric lost-world storybook, playful and never scary.
@@ -400,33 +402,58 @@ Decided in bead `pulp_wars-3tq.13` (each is described in the
 19. **Effects, previews and the growth display** are unchanged; no
     Alpha-only raster.
 
-## Ninth unit: the Stegosaurus (bead `pulp_wars-w49.17`, stand-in art)
+## Ninth unit: the Stegosaurus (beads `pulp_wars-w49.17` and `pulp_wars-2yc.34`)
 
 Ruleset `7r55` gives every faction a ninth land unit ([what was
-built](../../product/RULESET_7_NINTH_UNIT.md)). The Dinosaur one with no art
-of its own is the **Stegosaurus** (engine role `CATAPULT`). **It has no art
-yet.** No PixelLab call was made for it.
+built](../../product/RULESET_7_NINTH_UNIT.md)). The Dinosaur one is the
+**Stegosaurus** (engine role `CATAPULT`), the siege unit. It was drawn as the
+Ankylosaurus under a steel disc lettered **S** until bead `pulp_wars-2yc.34`
+gave it its own art.
 
-- **Art slot.** `UNIT:DINOSAUR:SWORDSMAN` and `PORTRAIT:DINOSAUR:SWORDSMAN`:
+- **Art slot.** `UNIT:DINOSAUR:SWORDSMAN` and `PORTRAIT:DINOSAUR:SWORDSMAN`,
   the ninth art slot of the faction (`unitArtRoleV7` in
-  `src/assets/chibi-art-v7.ts`). No raster is registered for either subject.
-- **Stand-in.** Until an art bead registers them, both fall back to the
-  Ankylosaurus (`UNIT:DINOSAUR:GUARD`, `PORTRAIT:DINOSAUR:GUARD`) through
-  `chibiFallbackSubjectV7` (`NINTH_UNIT_STAND_INS_V7`). The board marks the
-  piece with a steel disc lettered **S** where the faction badges go
-  (`drawStandInBadgeV7`), and the Gallery shows its stand-in mark.
-- **What the art bead must make.** One board sprite and one 48 x 48 portrait
-  in this fragment's direction: A plated Stegosaurus caught at the top of a tail
-  swing, a boulder flying off its spiked tail.
-- **Notes for that bead.** A siege unit that shoots two or three tiles: the
-  tail and the boulder are the read. It uses the shared Egg sprite before it
-  hatches (no Egg art is needed) and grows Big and Alpha like every dinosaur
-  (the board's growth marks, no new sprite).
-- **When the art lands.** Register the two subjects in this faction's
-  direction manifest, delete the faction's entry from `NINTH_UNIT_STAND_INS_V7`
-  (the fallback and the letter badge go with it), regenerate the unit shadow
-  measurements, and update the stand-in assertions in
-  `tests/unit/ruleset-v7-ninth-unit.test.ts`.
+  `src/assets/chibi-art-v7.ts`): `chibi-direction-dinosaur-stegosaurus`
+  (72 x 88, `LARGE_UNIT`, default anchor: the siege role's canvas, the
+  Triceratops's) and `chibi-direction-portrait-dinosaur-stegosaurus` (48 x 48,
+  `icon` recipe class), fixed colours, no mask, no accent step. Recipes
+  `stegosaurus-*` and `portrait-stegosaurus-*` in batch `direction-dinosaur`;
+  9 PixelLab calls.
+- **Sprite** (`stegosaurus-a-fins`, 66 x 63 px, feet on row 75): a level
+  four-legged body in the roster's deep blue with a cream belly, a row of
+  bright orange back fins, a round snout, and the tail swung up high with a fan
+  of cream spikes. A fresh creation in the side view the quadrupeds use
+  (`"view": "side", "direction": "east"`), the first use of this faction's
+  fragment, then four edits.
+- **Told apart at board size:** the Ankylosaurus is a low navy dome with an
+  orange tail club; the Triceratops a navy frill with two orange eye-spots and
+  horns; the Stegosaurus is the only one with a saw of orange fins along its
+  back and a raised spiked tail.
+- **Portrait** (`portrait-stegosaurus-a-blue`): the whole animal, small, like
+  the Ankylosaurus's portrait, since the fins and the tail are what tell it
+  apart; a fresh creation recoloured to the sprite's blue and orange.
+- **No boulder.** The first description had a boulder flying off the tail. A
+  projectile is not baked into a sprite (the board draws shots), so the read is
+  the raised tail and its spikes.
+- **The Egg** is the shared Egg sprite, as for every dinosaur: no Egg art was
+  made. Big and Alpha are the board's growth marks.
+- **Key colour.** 0.9% of the sprite lies in the owner key's band (the mouth);
+  the roster's limit is 2%. The first accepted step (`stegosaurus-a-snout`) had
+  2.25%, from an orange smear on the neck shaded in red.
+- **Light.** `lighting-qa`: the sprite is lit from the left (faces +1.9); the
+  portrait reads -5.8, where its dark head is at the right.
+- **Rejected.** `stegosaurus-a`: a grey slate hide with brown spots, an orange
+  smear on the neck and a nose horn; `-b`: the same grey with a spiky ruff and
+  a horn, a Triceratops cousin; `-a-blue`: the horn stayed; `-a-snout`: the red
+  on the neck; `-a-neck`: the edit paled the fins to peach. Portraits: slate
+  blue with dark red fins (`-a`), a horned grey one (`-b`).
+- **What worked:** "Change only one thing: erase the pointed cream horn …"
+  removed the horn first time; a recolour that names the hide by hex value
+  moved a grey slate to the roster's blue; an edit that erased the neck marks
+  also paled the fins, and a second recolour with hex values for the fin and
+  its shadow side (`#f47b20`, `#c9540f`) brought the orange back without red.
+- LEGACY (`?art=legacy`) and the developer option "Classic look" have no
+  Stegosaurus art: there it falls back like every faction subject, to the
+  Human unit of the slot under the Dinosaur badge.
 
 The Triceratops is the heavy line role now (`SWORDSMAN`); its rasters, prompts
 and generation records stay under the art slot they were made for,

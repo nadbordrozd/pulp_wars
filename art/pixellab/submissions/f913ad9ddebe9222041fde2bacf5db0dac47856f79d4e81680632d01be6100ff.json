@@ -1,0 +1,37 @@
+{
+  "id": "portrait-wight-a",
+  "jobId": "5615404e-4480-48a1-919b-71a4ff194186",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-portrait-undead-wight",
+    "subject": "PORTRAIT:UNDEAD:SWORDSMAN",
+    "faction": "UNDEAD",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 234251,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as an armoured barrow-king. His head becomes a huge closed weathered grey iron great helm with rust patches that hides the whole skull, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top; no face shows. Big round grey iron pauldrons with tarnished bronze rims on the shoulders. The sword becomes the broad light grey blade of a notched greataxe beside the helm. Keep proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw him as an armoured barrow-king. His head becomes a huge closed weathered grey iron great helm with rust patches that hides the whole skull, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top; no face shows. Big round grey iron pauldrons with tarnished bronze rims on the shoulders. The sword becomes the broad light grey blade of a notched greataxe beside the helm. Keep proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw him as an armoured barrow-king. His head becomes a huge closed weathered grey iron great helm with rust patches that hides the whole skull, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top; no face shows. Big round grey iron pauldrons with tarnished bronze rims on the shoulders. The sword becomes the broad light grey blade of a notched greataxe beside the helm. Keep proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Redraw him as an armoured barrow-king. His head becomes a huge closed weathered grey iron great helm with rust patches that hides the whole skull, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top; no face shows. Big round grey iron pauldrons with tarnished bronze rims on the shoulders. The sword becomes the broad light grey blade of a notched greataxe beside the helm. Keep proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-undead-skeleton-bone-edit",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "46fc030e2c21ad5ee202f8ab667a3323aed1b620a9909488992cc30cbe209f24"
+    }
+  }
+}

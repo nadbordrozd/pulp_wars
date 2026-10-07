@@ -522,6 +522,32 @@
         "path": "scripts/art/chibi/palettes/candy-sugar.png",
         "sha256": "fbaf551ec19deb9e05fe2f3d376ee4acd7c57119c4cea199cd762fd456cc47be"
       }
+    },
+    {
+      "id": "chibi-direction-candy-jawbreaker",
+      "subject": "UNIT:CANDY:SWORDSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "candy-pink",
+      "subjectKey": "UNIT:CANDY:SWORDSMAN/CHOCOLATIER"
+    },
+    {
+      "id": "chibi-direction-portrait-candy-jawbreaker",
+      "subject": "PORTRAIT:CANDY:SWORDSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "candy-pink",
+      "subjectKey": "PORTRAIT:CANDY:SWORDSMAN/CHOCOLATIER"
     }
   ],
   "recipes": [
@@ -2258,6 +2284,44 @@
       },
       "editInstruction": "Change only one thing: erase the hammer on his back completely, both its grey stone head behind his shoulder at the top left and its striped handle that sticks out at the lower left behind his arm, leaving empty transparent space. Do not redraw anything else: keep the smiling face, the gingerbread head and body, the icing trim, the bow tie, the buttons, the chocolate gauntlets and boots, the pose, the size, thick black outline and style the same, on a transparent background.",
       "notes": "Bead pulp_wars-jdb.10 follow-up: the hammer on his back was never asked for; removed so the gauntlets carry the big hitter."
+    },
+    {
+      "id": "jawbreaker-a",
+      "asset": "chibi-direction-candy-jawbreaker",
+      "endpoint": "create-image-pixen",
+      "seed": 234501,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "human, person, skin, hair, helmet, armour, gumball machine, glass globe, planet, beach ball, basketball, blue stripes, grey shading, sword, spear, shield",
+      "notes": "Bead pulp_wars-2yc.34: the Jawbreaker (ruleset 7r55, the Candy heavy line unit), first sample: a fresh creation with the unit class and the Chocolatier fragment."
+    },
+    {
+      "id": "jawbreaker-b",
+      "asset": "chibi-direction-candy-jawbreaker",
+      "endpoint": "create-image-pixen",
+      "seed": 234502,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The ball is lit from the left: its left side is the lightest and its right side is in shadow.",
+      "negativeAddendum": "human, person, skin, hair, helmet, armour, gumball machine, glass globe, planet, beach ball, basketball, blue stripes, grey shading, sword, spear, shield",
+      "notes": "Bead pulp_wars-2yc.34: second sample of the Jawbreaker, another seed with the light stated in an addendum."
+    },
+    {
+      "id": "portrait-jawbreaker-a",
+      "asset": "chibi-direction-portrait-candy-jawbreaker",
+      "endpoint": "create-image-pixen",
+      "seed": 234551,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up: the round striped ball with its face fills the whole square; no legs and no body under it.",
+      "negativeAddendum": "human, person, skin, hair, moustache, beard, turban, helmet, armour, gumball machine, glass globe, planet, legs, feet, full body",
+      "notes": "Bead pulp_wars-2yc.34: the Jawbreaker's portrait, a fresh creation with the portrait class: the striped ball with its scowl and the head of the rock-candy mace, to match the accepted map sprite (jawbreaker-a)."
     }
   ]
 }

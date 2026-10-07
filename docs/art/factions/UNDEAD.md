@@ -268,29 +268,42 @@ Decided in bead `pulp_wars-3tq.12` under the user's direction of
     becomes violet.
 15. **Cities:** a new calm-style set with a code-drawn pennant.
 
-## Ninth unit: the Wight (bead `pulp_wars-w49.17`, stand-in art)
+## Ninth unit: the Wight (beads `pulp_wars-w49.17` and `pulp_wars-2yc.34`)
 
 Ruleset `7r55` gives every faction a ninth land unit ([what was
-built](../../product/RULESET_7_NINTH_UNIT.md)). The Undead one with no art of
-its own is the **Wight** (engine role `SWORDSMAN`). **It has no art yet.** No
-PixelLab call was made for it.
+built](../../product/RULESET_7_NINTH_UNIT.md)). The Undead one is the
+**Wight** (engine role `SWORDSMAN`), the heavy line unit. It was drawn as the
+Skeleton under a steel disc lettered **W** until bead `pulp_wars-2yc.34` gave
+it its own art.
 
-- **Art slot.** `UNIT:UNDEAD:SWORDSMAN` and `PORTRAIT:UNDEAD:SWORDSMAN`: the
+- **Art slot.** `UNIT:UNDEAD:SWORDSMAN` and `PORTRAIT:UNDEAD:SWORDSMAN`, the
   ninth art slot of the faction (`unitArtRoleV7` in
-  `src/assets/chibi-art-v7.ts`). No raster is registered for either subject.
-- **Stand-in.** Until an art bead registers them, both fall back to the
-  Skeleton (`UNIT:UNDEAD:FIGHTER`, `PORTRAIT:UNDEAD:FIGHTER`) through
-  `chibiFallbackSubjectV7` (`NINTH_UNIT_STAND_INS_V7`). The board marks the
-  piece with a steel disc lettered **W** where the faction badges go
-  (`drawStandInBadgeV7`), and the Gallery shows its stand-in mark.
-- **What the art bead must make.** One board sprite and one 48 x 48 portrait
-  in this fragment's direction: A tall barrow-king in rusted crowned helm and
-  corroded mail, pale blue light in the eye slits, a notched greataxe over one
-  shoulder.
-- **Notes for that bead.** It must read apart from the Skeleton at board size
-  (the crown and the two-handed axe) and from the Lich (no robe, no staff).
-- **When the art lands.** Register the two subjects in this faction's
-  direction manifest, delete the faction's entry from `NINTH_UNIT_STAND_INS_V7`
-  (the fallback and the letter badge go with it), regenerate the unit shadow
-  measurements, and update the stand-in assertions in
-  `tests/unit/ruleset-v7-ninth-unit.test.ts`.
+  `src/assets/chibi-art-v7.ts`): `chibi-direction-undead-wight` (56 x 80,
+  `STANDARD_UNIT`) and `chibi-direction-portrait-undead-wight` (48 x 48), fixed
+  colours, no mask, accent `undead-violet`. Recipes `wight-*` and
+  `portrait-wight-a` in batch `direction-undead`; 4 PixelLab calls.
+- **Sprite** (`wight-c`, 53 x 77 px): a closed iron great helm with two violet
+  eye slits and a spiky tarnished bronze crown, weathered grey iron plate with
+  rust patches and bronze rims, two round pauldrons, a mail skirt with a violet
+  hem, bone hands and feet, and a notched greataxe held up beside the helm; no
+  shield. An edit of the accepted Skeleton (`wight-a`), then a recolour, so the
+  body, feet and scale are the Skeleton's.
+- **Told apart at board size:** the Skeleton shows a pale skull, bare ribs and
+  a round shield; the Lich a pale skull under a crown, a wide robe and a violet
+  orb; the Wight is the only faceless one, a block of grey iron with a crown
+  and an axe.
+- **Portrait** (`portrait-wight-a`): the Skeleton's bust redrawn with the same
+  helm, crown, pauldron and axe blade.
+- **Violet, not pale blue.** The first description gave the eye slits a pale
+  blue light; the faction has one accent, so they are the roster's violet.
+- **Light.** `lighting-qa` reads the sprite as lit from the right (faces
+  -12.7) and the portrait too (-32.8): the pale axe blade is at the right of
+  both, and the helm's lit ridge is at its centre. On a unit the measure lists
+  sprites to look at, as the [art direction](../ART_DIRECTION.md) says.
+- **Rejected.** `wight-a`: the right figure but near-black all over (mean L\*
+  29, 72% dark), with violet only in the eye slits. `wight-b`, a fresh
+  creation: the bare skull shows under a crown (it reads as the Lich), the
+  armour is orange-brown and the weapon a sword.
+- LEGACY (`?art=legacy`) and the developer option "Classic look" have no Wight
+  art: there it falls back like every faction subject, to the Human unit of
+  the slot under the Undead badge.

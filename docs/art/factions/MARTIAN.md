@@ -581,30 +581,42 @@ decisions":
 - **The Shield Projector's dish** sits beside the helmet as a small rig of
   a mast and a rod; in the bust it overlaps the helmet glass.
 
-## Ninth unit: the Shock Trooper (bead `pulp_wars-w49.17`, stand-in art)
+## Ninth unit: the Shock Trooper (beads `pulp_wars-w49.17` and `pulp_wars-2yc.34`)
 
 Ruleset `7r55` gives every faction a ninth land unit ([what was
-built](../../product/RULESET_7_NINTH_UNIT.md)). The Martian one with no art of
-its own is the **Shock Trooper** (engine role `SWORDSMAN`). **It has no art
-yet.** No PixelLab call was made for it.
+built](../../product/RULESET_7_NINTH_UNIT.md)). The Martian one is the
+**Shock Trooper** (engine role `SWORDSMAN`), the heavy line unit. It was drawn
+as the Grunt under a steel disc lettered **T** until bead `pulp_wars-2yc.34`
+gave it its own art.
 
-- **Art slot.** `UNIT:MARTIAN:SWORDSMAN` and `PORTRAIT:MARTIAN:SWORDSMAN`: the
+- **Art slot.** `UNIT:MARTIAN:SWORDSMAN` and `PORTRAIT:MARTIAN:SWORDSMAN`, the
   ninth art slot of the faction (`unitArtRoleV7` in
-  `src/assets/chibi-art-v7.ts`). No raster is registered for either subject.
-- **Stand-in.** Until an art bead registers them, both fall back to the Grunt
-  (`UNIT:MARTIAN:FIGHTER`, `PORTRAIT:MARTIAN:FIGHTER`) through
-  `chibiFallbackSubjectV7` (`NINTH_UNIT_STAND_INS_V7`). The board marks the
-  piece with a steel disc lettered **T** where the faction badges go
-  (`drawStandInBadgeV7`), and the Gallery shows its stand-in mark.
-- **What the art bead must make.** One board sprite and one 48 x 48 portrait
-  in this fragment's direction: A squat one-eyed Martian sealed in a domed
-  chrome battle-suit with one heavy pincer arm, small lightning arcs crawling
-  over the dome.
-- **Notes for that bead.** The faction's only melee unit: no ray gun in its
-  silhouette. The lightning arcs are the Shock Field; they belong to the sprite,
-  and the Shield ring is drawn by the board as for every Martian unit.
-- **When the art lands.** Register the two subjects in this faction's
-  direction manifest, delete the faction's entry from `NINTH_UNIT_STAND_INS_V7`
-  (the fallback and the letter badge go with it), regenerate the unit shadow
-  measurements, and update the stand-in assertions in
-  `tests/unit/ruleset-v7-ninth-unit.test.ts`.
+  `src/assets/chibi-art-v7.ts`): `chibi-direction-martian-shock-trooper`
+  (56 x 80, `STANDARD_UNIT`) and
+  `chibi-direction-portrait-martian-shock-trooper` (48 x 48), fixed colours, no
+  mask, accent `martian-magenta`. Recipes `shock-trooper-*` and
+  `portrait-shock-trooper-a` in batch `direction-martian`; 3 PixelLab calls.
+- **Sprite** (`shock-trooper-a`, 52 x 74 px): the Grunt's head, eyes, glass
+  dome and antenna on a wide round chrome battle-suit with two big shoulder
+  plates and short thick legs; one arm ends in a pincer claw, the other in a
+  fist; magenta lightning arcs cross the dome and both shoulder plates; no gun.
+  A sibling edit of the accepted Grunt, so the alien is the same alien.
+- **Told apart at board size:** the Grunt is slim, in a plain jumpsuit, with a
+  pistol; the Shield Projector stands behind a chrome disc with a magenta lens;
+  the Shock Trooper is twice the Grunt's width, all chrome armour, with
+  magenta cracks of lightning and nothing held in front of it.
+- **Portrait** (`portrait-shock-trooper-a`): the Grunt's bust with a big chrome
+  shoulder plate, lightning arcs over the dome and a raised pincer; no pistol.
+- **Two eyes.** The first description made it one-eyed; it keeps the two black
+  eyes of the faction's aliens, which a sibling edit preserves. The lightning
+  arcs are the Shock Field and belong to the sprite; the Shield ring is the
+  board's, as for every Martian unit.
+- **Light.** `lighting-qa` reads the sprite -12.4 and the portrait -6.9: the
+  dome's white highlight is at its upper left, and the magenta arcs and the
+  dark pincer lie at the left.
+- **Rejected.** `shock-trooper-b`, the Shield Projector without its disc: a
+  dark gunmetal body with two small claws and no antenna, darker than the
+  faction's chrome and less clearly a new unit.
+- LEGACY (`?art=legacy`) and the developer option "Classic look" have no Shock
+  Trooper art: there it falls back like every faction subject, to the Human
+  unit of the slot under the Martian badge.

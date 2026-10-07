@@ -1,0 +1,36 @@
+{
+  "id": "stegosaurus-a-neck",
+  "jobId": "234bbe7a-5ec4-45eb-a776-6aa6eba9eb81",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-stegosaurus",
+    "subject": "UNIT:DINOSAUR:SWORDSMAN",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 234305,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the orange and red marks on the neck and shoulder just behind the head, so the neck and shoulder are plain deep blue hide like the rest of the body. Nothing red is left there. Do not redraw anything else: keep the head, eye, mouth, the big orange fins along the back, the deep blue hide, the cream belly, the raised tail with its cream spikes, the legs, pose, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the orange and red marks on the neck and shoulder just behind the head, so the neck and shoulder are plain deep blue hide like the rest of the body. Nothing red is left there. Do not redraw anything else: keep the head, eye, mouth, the big orange fins along the back, the deep blue hide, the cream belly, the raised tail with its cream spikes, the legs, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the orange and red marks on the neck and shoulder just behind the head, so the neck and shoulder are plain deep blue hide like the rest of the body. Nothing red is left there. Do not redraw anything else: keep the head, eye, mouth, the big orange fins along the back, the deep blue hide, the cream belly, the raised tail with its cream spikes, the legs, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the orange and red marks on the neck and shoulder just behind the head, so the neck and shoulder are plain deep blue hide like the rest of the body. Nothing red is left there. Do not redraw anything else: keep the head, eye, mouth, the big orange fins along the back, the deep blue hide, the cream belly, the raised tail with its cream spikes, the legs, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "stegosaurus-a-snout",
+      "candidate": 0,
+      "sha256": "5c92626c07afe845925b2f3a841add8aac1e18343bc5ab1daff14763f6fd5259"
+    }
+  }
+}

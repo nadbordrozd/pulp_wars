@@ -526,31 +526,47 @@ Decided in bead `pulp_wars-7g3.5` under the user's delegation:
   Roads and borders). Since `pulp_wars-7g3.6` the renderer draws them; its
   evidence is the Ice Folk UI review (`npm run review:ruleset7-ice-folk-ui`).
 
-## Ninth unit: the Musk Ox (bead `pulp_wars-w49.17`, stand-in art)
+## Ninth unit: the Musk Ox (beads `pulp_wars-w49.17` and `pulp_wars-2yc.34`)
 
 Ruleset `7r55` gives every faction a ninth land unit ([what was
-built](../../product/RULESET_7_NINTH_UNIT.md)). The Ice Folk one with no art
-of its own is the **Musk Ox** (engine role `GUARD`). **It has no art yet.** No
-PixelLab call was made for it.
+built](../../product/RULESET_7_NINTH_UNIT.md)). The Ice Folk one is the
+**Musk Ox** (engine role `GUARD`), the defender. It was drawn as the Mammoth
+under a steel disc lettered **X** until bead `pulp_wars-2yc.34` gave it its
+own art.
 
-- **Art slot.** `UNIT:ICE_FOLK:SWORDSMAN` and `PORTRAIT:ICE_FOLK:SWORDSMAN`:
+- **Art slot.** `UNIT:ICE_FOLK:SWORDSMAN` and `PORTRAIT:ICE_FOLK:SWORDSMAN`,
   the ninth art slot of the faction (`unitArtRoleV7` in
-  `src/assets/chibi-art-v7.ts`). No raster is registered for either subject.
-- **Stand-in.** Until an art bead registers them, both fall back to the
-  Mammoth (`UNIT:ICE_FOLK:GUARD`, `PORTRAIT:ICE_FOLK:GUARD`) through
-  `chibiFallbackSubjectV7` (`NINTH_UNIT_STAND_INS_V7`). The board marks the
-  piece with a steel disc lettered **X** where the faction badges go
-  (`drawStandInBadgeV7`), and the Gallery shows its stand-in mark.
-- **What the art bead must make.** One board sprite and one 48 x 48 portrait
-  in this fragment's direction: A low, shaggy cream-furred ox with frost-rimed
-  horns, head down, breath steaming.
-- **Notes for that bead.** A cheap wall: lower and wider than a Yeti, much
-  smaller than the Mammoth (STANDARD_UNIT). The frost on the horns is Frostbite.
-- **When the art lands.** Register the two subjects in this faction's
-  direction manifest, delete the faction's entry from `NINTH_UNIT_STAND_INS_V7`
-  (the fallback and the letter badge go with it), regenerate the unit shadow
-  measurements, and update the stand-in assertions in
-  `tests/unit/ruleset-v7-ninth-unit.test.ts`.
+  `src/assets/chibi-art-v7.ts`): `chibi-direction-ice-folk-musk-ox` (56 x 80,
+  `STANDARD_UNIT`) and `chibi-direction-portrait-ice-folk-musk-ox` (48 x 48),
+  fixed colours, no mask, accent `ice-folk-blue`. Recipes `musk-ox-*` and
+  `portrait-musk-ox-a` in batch `direction-ice-folk`; 4 PixelLab calls: three
+  fresh creations and one rejected relight.
+- **Sprite** (`musk-ox-b`, 54 x 53 px): a low wide body under a skirt of dark
+  brown wool with a paler mane and a rust-brown saddle patch, a slate muzzle
+  held low, and two thick horns that curl down beside the cheeks, coated in
+  ice-blue frost (the Frostbite). A fresh creation in the side view the Mammoth
+  uses.
+- **Dark wool, not cream.** The first description made it cream-furred. The
+  Mammoth and the Yeti are cream, and a cream ox was a small Mammoth; the dark
+  brown-grey of the faction's hides sets it apart at a glance.
+- **Told apart at board size:** the Mammoth (53 x 61) is cream with a trunk
+  and long tusks; the Yeti stands upright; the Sabretooth is pale and long; the
+  Musk Ox is the only dark one, lower than the Mammoth, with blue horns.
+- **Portrait** (`portrait-musk-ox-a`): the shaggy dark head and shoulders with
+  the paler mane, the slate muzzle and the two frost-blue horns.
+- **Light.** `lighting-qa` reads the sprite -16.3 and the portrait -21.9: the
+  pale mane and the frosted horns are at the head, on the right, and the dark
+  rump is on the left. This is local colour more than shading, but the sprite
+  has no clear lit left side either. One relight was tried and rejected (below),
+  so this stays a known deviation.
+- **Rejected.** `musk-ox-a`: a tall bison seen from the front with a cream
+  mane, 65 px high (taller than the Mammoth) with horns that point up.
+  `musk-ox-b-light`, an edit asked to light the rump and back from the left:
+  it turned the whole skirt of wool light tan, the Mammoth's colour, and the
+  face near-black, so the ox lost the dark coat that sets it apart.
+- LEGACY (`?art=legacy`) and the developer option "Classic look" have no Musk
+  Ox art: there it falls back like every faction subject, to the Human unit of
+  the slot under the Ice Folk badge.
 
 The Mammoth is the heavy line role now (`SWORDSMAN`); its rasters, prompts and
 generation records stay under the art slot they were made for,

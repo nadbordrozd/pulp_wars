@@ -227,7 +227,8 @@ candidate for the faction's hand play to overrule.
     are re-staged when their faction is next played by hand.
 19. **Stand-in art in the panels.** A card or portrait of a unit without
     art shows its stand-in with the faction badge the interface already
-    puts on placeholder art; the board uses the lettered badge.
+    puts on placeholder art; the board uses the lettered badge. (No unit
+    is in that state since bead `pulp_wars-2yc.34`, section 8.)
 
 ## 5. Technology names
 
@@ -338,13 +339,17 @@ A first pass so that nothing breaks. None of it was tuned.
 - **Not built:** "shoot the Shields off before melee" for the enemies of a
   Shock Trooper, and a Jawbreaker garrison against pullers.
 
-## 8. Stand-in art
+## 8. Art of the seven new units
 
-Seven units have no art: the Ogre, Wight, Shock Trooper, Jawbreaker,
-Stegosaurus, Musk Ox, and Whirligig. Each is drawn as the nearest unit of
-its own faction with a lettered steel badge on the board and the stand-in
-mark in the Gallery. No PixelLab call was made. What an art bead must make
-for each is in its faction's art document:
+At `7r55` seven units had no art: the Ogre, Wight, Shock Trooper,
+Jawbreaker, Stegosaurus, Musk Ox, and Whirligig. Each was drawn as the
+nearest unit of its own faction with a lettered steel badge on the board
+and the stand-in mark in the Gallery.
+
+**Since bead `pulp_wars-2yc.34` each has its own sprite and portrait** in
+the live look, and no unit wears a letter badge or the Gallery's mark
+(`NINTH_UNIT_STAND_INS_V7` is empty). What was made for each is in its
+faction's art document:
 [Goblin](../art/factions/GOBLIN.md), [Undead](../art/factions/UNDEAD.md),
 [Martian](../art/factions/MARTIAN.md), [Candy](../art/factions/CANDY.md),
 [Dinosaur](../art/factions/DINOSAUR.md),
@@ -352,15 +357,19 @@ for each is in its faction's art document:
 The Champion keeps the Swordsman's art
 ([Human](../art/factions/ORIGINAL.md)).
 
-| Unit          | Art slot                  | Drawn as         | Badge |
-| ------------- | ------------------------- | ---------------- | ----- |
-| Ogre          | `UNIT:GOBLIN:SWORDSMAN`   | Orc Brute        | O     |
-| Wight         | `UNIT:UNDEAD:SWORDSMAN`   | Skeleton         | W     |
-| Shock Trooper | `UNIT:MARTIAN:SWORDSMAN`  | Grunt            | T     |
-| Jawbreaker    | `UNIT:CANDY:SWORDSMAN`    | Marshmallow      | J     |
-| Stegosaurus   | `UNIT:DINOSAUR:SWORDSMAN` | Ankylosaurus     | S     |
-| Musk Ox       | `UNIT:ICE_FOLK:SWORDSMAN` | Mammoth          | X     |
-| Whirligig     | `UNIT:DWARF:SWORDSMAN`    | Clockwork Gunner | W     |
+| Unit          | Art slot                  | Sprite                                  | Stood in until then |
+| ------------- | ------------------------- | --------------------------------------- | ------------------- |
+| Ogre          | `UNIT:GOBLIN:SWORDSMAN`   | `chibi-direction-goblin-ogre`           | Orc Brute, O        |
+| Wight         | `UNIT:UNDEAD:SWORDSMAN`   | `chibi-direction-undead-wight`          | Skeleton, W         |
+| Shock Trooper | `UNIT:MARTIAN:SWORDSMAN`  | `chibi-direction-martian-shock-trooper` | Grunt, T            |
+| Jawbreaker    | `UNIT:CANDY:SWORDSMAN`    | `chibi-direction-candy-jawbreaker`      | Marshmallow, J      |
+| Stegosaurus   | `UNIT:DINOSAUR:SWORDSMAN` | `chibi-direction-dinosaur-stegosaurus`  | Ankylosaurus, S     |
+| Musk Ox       | `UNIT:ICE_FOLK:SWORDSMAN` | `chibi-direction-ice-folk-musk-ox`      | Mammoth, X          |
+| Whirligig     | `UNIT:DWARF:SWORDSMAN`    | `chibi-direction-dwarf-whirligig`       | Clockwork Gunner, W |
+
+The Classic look (a developer option) and LEGACY have no art for these
+seven: there each falls back like any other faction subject, to the Human
+unit of the slot under its faction badge.
 
 ## 9. Shapes
 
@@ -392,7 +401,8 @@ The Champion keeps the Swordsman's art
 `tests/unit/ruleset-v7-ninth-unit.test.ts` has the rules of this pass:
 the nine jobs of every faction, the heavy at Metallurgy, each of the seven
 mechanics with its edges, the moved units' kept rules, the names, the
-stand-in art, the labs, and the Normal AI's research and purchases.
+art slots and the seven units' own art, the labs, and the Normal AI's
+research and purchases.
 
 The older tests were brought to `7r55` without weakening what they check:
 

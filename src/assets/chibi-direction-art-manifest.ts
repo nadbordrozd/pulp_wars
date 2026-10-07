@@ -446,6 +446,27 @@ export const CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
       url: chibiArtUrl("assets/chibi/units/chibi-direction-goblin-troll.png"),
       fixedColours: true,
     },
+    // The Ogre (ruleset 7r55, bead pulp_wars-2yc.34): the ninth art slot.
+    {
+      id: "chibi-direction-goblin-ogre",
+      subject: "UNIT:GOBLIN:SWORDSMAN",
+      assetClass: "LARGE_UNIT",
+      width: 72,
+      height: 88,
+      url: chibiArtUrl("assets/chibi/units/chibi-direction-goblin-ogre.png"),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-portrait-goblin-ogre",
+      subject: "PORTRAIT:GOBLIN:SWORDSMAN",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-goblin-ogre.png",
+      ),
+      fixedColours: true,
+    },
     {
       id: "chibi-direction-portrait-goblin-goblin",
       subject: "PORTRAIT:GOBLIN:FIGHTER",

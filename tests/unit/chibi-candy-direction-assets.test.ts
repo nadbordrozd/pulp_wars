@@ -78,6 +78,9 @@ const UNITS = [
   ["CATAPULT", "pie-launcher"],
   ["KNIGHT", "gummy-bear"],
   ["JUGGERNAUT", "rock-candy-golem"],
+  // The ninth art slot (ruleset 7r55, bead pulp_wars-2yc.34): the
+  // Jawbreaker, the heavy line unit.
+  ["SWORDSMAN", "jawbreaker"],
 ] as const;
 const ICONS = [
   ["ICON:ACTION:SUGAR_RUSH", "icon-action-sugar-rush"],
@@ -191,7 +194,7 @@ describe("Candy production art (pulp_wars-jdb.5)", () => {
     CHIBI_DIRECTION_CANDY_ART_ASSETS_V7.map((asset) => [asset.id, asset]),
   );
 
-  it("lists the eight units, the portraits, City 1-3, the Crumbs, twelve icons and seven effects", () => {
+  it("lists the nine units, the portraits, City 1-3, the Crumbs, twelve icons and seven effects", () => {
     const expected: [string, string][] = [
       ...UNITS.map(
         ([role, name]) =>
@@ -507,9 +510,9 @@ describe("Candy production art (pulp_wars-jdb.5)", () => {
     // roster as its dark anchor and the pink is a cherry. No unit is more
     // than a tenth pink (the Confectioner's bow and the cheeks), the roster
     // as a whole under 5% (it was 46% at first, 15% after pulp_wars-2o7.3),
-    // and chocolate brown is at least a tenth of every one of the eight
-    // units (the Chocolate Bunny and the Gingerbread Giant included) and a
-    // fifth of the roster.
+    // and chocolate brown is at least a tenth of every one of the nine
+    // units (the Chocolate Bunny, the Gingerbread Giant and the Jawbreaker
+    // included) and a fifth of the roster.
     let rosterPink = 0;
     let rosterChocolate = 0;
     let rosterOpaque = 0;
@@ -640,6 +643,7 @@ describe("Candy production art (pulp_wars-jdb.5)", () => {
       "gumball-gunner": [56, 80, "STANDARD_UNIT"],
       marshmallow: [56, 80, "STANDARD_UNIT"],
       confectioner: [56, 80, "STANDARD_UNIT"],
+      jawbreaker: [56, 80, "STANDARD_UNIT"],
       "donut-racer": [72, 88, "LARGE_UNIT"],
       "pie-launcher": [72, 88, "LARGE_UNIT"],
       "gummy-bear": [72, 88, "LARGE_UNIT"],

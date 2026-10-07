@@ -76,6 +76,10 @@ const UNITS = [
   ["CATAPULT", "boulder-yeti"],
   ["KNIGHT", "sabretooth"],
   ["JUGGERNAUT", "frost-giant"],
+  // The ninth art slot (ruleset 7r55, bead pulp_wars-2yc.34): the Musk Ox,
+  // a STANDARD_UNIT like the Human unit of the slot. The Mammoth keeps the
+  // slot GUARD.
+  ["SWORDSMAN", "musk-ox"],
 ] as const;
 const ICONS = [
   ["ICON:ACTION:THROW_BOLAS", "action-throw-bolas"],
@@ -133,7 +137,7 @@ describe("Ice Folk production art (pulp_wars-7g3.5)", () => {
     CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7.map((asset) => [asset.id, asset]),
   );
 
-  it("lists the eight units and portraits, ten icons, five effects and City 1-3", () => {
+  it("lists the nine units and portraits, ten icons, five effects and City 1-3", () => {
     const expected: [string, string][] = [
       ...UNITS.map(
         ([role, name]) =>

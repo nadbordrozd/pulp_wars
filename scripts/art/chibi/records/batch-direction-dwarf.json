@@ -5980,6 +5980,316 @@
         "reviewedAt": "2026-10-03T11:00:49.472Z"
       }
     },
+    "portrait-whirligig-a": {
+      "id": "portrait-whirligig-a",
+      "asset": "chibi-direction-portrait-dwarf-whirligig",
+      "jobId": "sync-49eba265-4f3b-4d31-812b-803eb65fc678",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-dwarf",
+        "asset": "chibi-direction-portrait-dwarf-whirligig",
+        "subject": "PORTRAIT:DWARF:SWORDSMAN",
+        "faction": "DWARF",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 234751,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DWARF.md#prompt-fragment + docs/art/factions/DWARF.md#negative-fragment",
+            "text": "Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears.",
+            "negative": "brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DWARF.json",
+            "text": "Subject: Whirligig, a chunky cute wind-up spinning-top war machine shown whole, with no dwarf and no face: a fat round soot-black riveted iron body like a spinning top with a bright copper band round its middle, tapering down to one small iron wheel; exactly three big square soot-black iron hammer heads on short copper arms, one at the upper left, one at the upper right and one at the front centre; on top a small iron dome with two round glass lenses, a copper wind-up key and one small bright signal-green lamp, colour #2bd94a."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The machine with its three hammers fills the whole square.",
+            "negative": "grass, ground, slab, platform, dwarf, beard, face, person, legs, feet, cannon, gun, caterpillar tracks, propeller, four hammers, two hammers, motion lines"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Whirligig, a chunky cute wind-up spinning-top war machine shown whole, with no dwarf and no face: a fat round soot-black riveted iron body like a spinning top with a bright copper band round its middle, tapering down to one small iron wheel; exactly three big square soot-black iron hammer heads on short copper arms, one at the upper left, one at the upper right and one at the front centre; on top a small iron dome with two round glass lenses, a copper wind-up key and one small bright signal-green lamp, colour #2bd94a. The machine with its three hammers fills the whole square.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, slab, platform, dwarf, beard, face, person, legs, feet, cannon, gun, caterpillar tracks, propeller, four hammers, two hammers, motion lines",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Whirligig, a chunky cute wind-up spinning-top war machine shown whole, with no dwarf and no face: a fat round soot-black riveted iron body like a spinning top with a bright copper band round its middle, tapering down to one small iron wheel; exactly three big square soot-black iron hammer heads on short copper arms, one at the upper left, one at the upper right and one at the front centre; on top a small iron dome with two round glass lenses, a copper wind-up key and one small bright signal-green lamp, colour #2bd94a. The machine with its three hammers fills the whole square. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, slab, platform, dwarf, beard, face, person, legs, feet, cannon, gun, caterpillar tracks, propeller, four hammers, two hammers, motion lines."
+      },
+      "submittedAt": "2026-10-07T20:57:46.688Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dwarf/portrait-whirligig-a.png",
+      "rawSheetSha256": "f88555d92aa1518a2ff5c266b513d1a58e1c8943bd316128659a76c4d1359366",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.0301,
+          "footprintWidthShare": 0.6905,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:58:12.673Z",
+      "usageUsd": 0.007615774366590711,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Four hammer blocks at its corners and two lenses over a grille that read as a face: Three Hammers is the rule, and the machine has no face.",
+        "reviewedAt": "2026-10-07T21:01:40.177Z"
+      }
+    },
+    "portrait-whirligig-b": {
+      "id": "portrait-whirligig-b",
+      "asset": "chibi-direction-portrait-dwarf-whirligig",
+      "jobId": "sync-5589ec00-a0aa-4bb7-b28d-24baa17bc74a",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-dwarf",
+        "asset": "chibi-direction-portrait-dwarf-whirligig",
+        "subject": "PORTRAIT:DWARF:SWORDSMAN",
+        "faction": "DWARF",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 234752,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DWARF.md#prompt-fragment + docs/art/factions/DWARF.md#negative-fragment",
+            "text": "Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears.",
+            "negative": "brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DWARF.json",
+            "text": "Subject: Whirligig, a chunky cute wind-up spinning-top war machine shown whole, with no dwarf and no face: a fat round soot-black riveted iron body like a spinning top with a bright copper band round its middle, tapering down to one small iron wheel; exactly three big square soot-black iron hammer heads on short copper arms, one at the upper left, one at the upper right and one at the front centre; on top a small iron dome with two round glass lenses, a copper wind-up key and one small bright signal-green lamp, colour #2bd94a."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The machine with its three hammers fills the whole square.",
+            "negative": "grass, ground, slab, platform, dwarf, beard, face, person, legs, feet, cannon, gun, caterpillar tracks, propeller, four hammers, two hammers, motion lines"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Whirligig, a chunky cute wind-up spinning-top war machine shown whole, with no dwarf and no face: a fat round soot-black riveted iron body like a spinning top with a bright copper band round its middle, tapering down to one small iron wheel; exactly three big square soot-black iron hammer heads on short copper arms, one at the upper left, one at the upper right and one at the front centre; on top a small iron dome with two round glass lenses, a copper wind-up key and one small bright signal-green lamp, colour #2bd94a. The machine with its three hammers fills the whole square.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, slab, platform, dwarf, beard, face, person, legs, feet, cannon, gun, caterpillar tracks, propeller, four hammers, two hammers, motion lines",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Whirligig, a chunky cute wind-up spinning-top war machine shown whole, with no dwarf and no face: a fat round soot-black riveted iron body like a spinning top with a bright copper band round its middle, tapering down to one small iron wheel; exactly three big square soot-black iron hammer heads on short copper arms, one at the upper left, one at the upper right and one at the front centre; on top a small iron dome with two round glass lenses, a copper wind-up key and one small bright signal-green lamp, colour #2bd94a. The machine with its three hammers fills the whole square. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, slab, platform, dwarf, beard, face, person, legs, feet, cannon, gun, caterpillar tracks, propeller, four hammers, two hammers, motion lines."
+      },
+      "submittedAt": "2026-10-07T20:58:12.677Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dwarf/portrait-whirligig-b.png",
+      "rawSheetSha256": "82f6ce40df620af7bbcefed812aab8603304bcc8eef2c45497fc5ef0f1250809",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.0568,
+          "footprintWidthShare": 0.4878,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:59:40.237Z",
+      "usageUsd": 0.013942456589804756,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right machine with exactly three hammers, but a pale blue motion ring is drawn round it. Source of the accepted portrait-whirligig-b-ring.",
+        "reviewedAt": "2026-10-07T21:01:44.948Z"
+      }
+    },
+    "portrait-whirligig-b-ring": {
+      "id": "portrait-whirligig-b-ring",
+      "asset": "chibi-direction-portrait-dwarf-whirligig",
+      "jobId": "3c69336b-e284-426d-8757-cd8d8fa33c99",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-dwarf",
+        "asset": "chibi-direction-portrait-dwarf-whirligig",
+        "subject": "PORTRAIT:DWARF:SWORDSMAN",
+        "faction": "DWARF",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 234753,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the pale grey-blue swirl ring around the machine completely, on both sides, leaving those areas transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: erase the pale grey-blue swirl ring around the machine completely, on both sides, leaving those areas transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the pale grey-blue swirl ring around the machine completely, on both sides, leaving those areas transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: erase the pale grey-blue swirl ring around the machine completely, on both sides, leaving those areas transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-whirligig-b",
+          "candidate": 0,
+          "sha256": "82f6ce40df620af7bbcefed812aab8603304bcc8eef2c45497fc5ef0f1250809"
+        }
+      },
+      "submittedAt": "2026-10-07T21:00:22.891Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dwarf/portrait-whirligig-b-ring.png",
+      "rawSheetSha256": "f3fa41550424c9fa1e050226917f37f2c4093e54901544246a9d1b554762e86b",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.0568,
+          "footprintWidthShare": 0.4878,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.0568,
+          "footprintWidthShare": 0.4878,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T21:00:54.042Z",
+      "usageUsd": 0.007384269105063544,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The machine with three hammers and no motion ring, accepted first; a small bluish steam wisp was left beside the lamp. Source of the accepted portrait-whirligig-b-wisp.",
+        "reviewedAt": "2026-10-07T21:25:43.210Z"
+      }
+    },
+    "portrait-whirligig-b-wisp": {
+      "id": "portrait-whirligig-b-wisp",
+      "asset": "chibi-direction-portrait-dwarf-whirligig",
+      "jobId": "fafffec9-3f8a-4814-ae91-766ba9fc8c84",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-dwarf",
+        "asset": "chibi-direction-portrait-dwarf-whirligig",
+        "subject": "PORTRAIT:DWARF:SWORDSMAN",
+        "faction": "DWARF",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 234754,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the small pale blue-grey wisp of steam at the upper right, between the green lamp and the top right hammer, leaving that area transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: erase the small pale blue-grey wisp of steam at the upper right, between the green lamp and the top right hammer, leaving that area transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the small pale blue-grey wisp of steam at the upper right, between the green lamp and the top right hammer, leaving that area transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: erase the small pale blue-grey wisp of steam at the upper right, between the green lamp and the top right hammer, leaving that area transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-whirligig-b-ring",
+          "candidate": 0,
+          "sha256": "006ce08eb2ddf67e096eab900efba896d76c6446b29b75d85db6ff299ecc251d"
+        }
+      },
+      "submittedAt": "2026-10-07T21:23:27.224Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dwarf/portrait-whirligig-b-wisp.png",
+      "rawSheetSha256": "c36b72843632cc6260eaf11b1085295d575906ce3444e1392c821b9b72611d12",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.0568,
+          "footprintWidthShare": 0.4878,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.0568,
+          "footprintWidthShare": 0.4878,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T21:24:15.630Z",
+      "usageUsd": 0.008960750738779704,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-2yc.34, correction pass: accepted Whirligig portrait. The machine shown whole with exactly three hammer heads, two lenses and the green lamp; the bluish steam wisp beside the lamp is gone and nothing else changed. Reviewed at 1:1 and x6 beside portrait-whirligig-b-ring.",
+        "reviewedAt": "2026-10-07T21:25:35.887Z"
+      }
+    },
     "steam-cannon-a": {
       "id": "steam-cannon-a",
       "asset": "chibi-direction-dwarf-steam-cannon",
@@ -6638,6 +6948,251 @@
         "candidate": 0,
         "notes": "A closed soot-iron dome with a copper band, light grey rim highlights, a cannon snout, a tall copper stack with white steam, a ginger-bearded dwarf in the hatch and the signal-green lamp on the dome.",
         "reviewedAt": "2026-10-03T11:00:43.805Z"
+      }
+    },
+    "whirligig-a": {
+      "id": "whirligig-a",
+      "asset": "chibi-direction-dwarf-whirligig",
+      "jobId": "sync-46c7e704-fa7e-4ecf-b12f-3380bfb82da8",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-dwarf",
+        "asset": "chibi-direction-dwarf-whirligig",
+        "subject": "UNIT:DWARF:SWORDSMAN",
+        "faction": "DWARF",
+        "recipeClass": "machine",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 234701,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DWARF.md#prompt-fragment + docs/art/factions/DWARF.md#negative-fragment",
+            "text": "Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears.",
+            "negative": "brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-machine.txt + scripts/art/chibi/fragments/class-machine.negative.txt",
+            "text": "Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DWARF.json",
+            "text": "Subject: Whirligig, a chunky cute wind-up spinning-top war machine, with no dwarf inside and no face: a fat round body of soot-black riveted iron shaped like a spinning top, widest at its middle with a bright copper band, tapering down to one small iron wheel at the bottom; exactly three big square soot-black iron hammer heads on three short copper arms stick straight out from the copper band, one to the left, one to the right and one to the front, flung wide as it spins; on top a small iron dome with two round glass lenses, a big copper wind-up key standing up behind it, and one small bright signal-green lamp, colour #2bd94a; a thin light warm grey highlight along its lit iron edges; simple shapes and very few details; clearly a spinning machine with three hammers, neither the Clockwork Gunner on its two legs nor the Steam Tank."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The machine with its three hammers fills most of the width of the image. It is lit from the left.",
+            "negative": "dwarf, beard, face, mouth, person, human, legs, feet, cannon, gun, smokestack, caterpillar tracks, helicopter rotor, propeller, four hammers, two hammers, motion lines"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: Whirligig, a chunky cute wind-up spinning-top war machine, with no dwarf inside and no face: a fat round body of soot-black riveted iron shaped like a spinning top, widest at its middle with a bright copper band, tapering down to one small iron wheel at the bottom; exactly three big square soot-black iron hammer heads on three short copper arms stick straight out from the copper band, one to the left, one to the right and one to the front, flung wide as it spins; on top a small iron dome with two round glass lenses, a big copper wind-up key standing up behind it, and one small bright signal-green lamp, colour #2bd94a; a thin light warm grey highlight along its lit iron edges; simple shapes and very few details; clearly a spinning machine with three hammers, neither the Clockwork Gunner on its two legs nor the Steam Tank. The machine with its three hammers fills most of the width of the image. It is lit from the left.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, dwarf, beard, face, mouth, person, human, legs, feet, cannon, gun, smokestack, caterpillar tracks, helicopter rotor, propeller, four hammers, two hammers, motion lines",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: Whirligig, a chunky cute wind-up spinning-top war machine, with no dwarf inside and no face: a fat round body of soot-black riveted iron shaped like a spinning top, widest at its middle with a bright copper band, tapering down to one small iron wheel at the bottom; exactly three big square soot-black iron hammer heads on three short copper arms stick straight out from the copper band, one to the left, one to the right and one to the front, flung wide as it spins; on top a small iron dome with two round glass lenses, a big copper wind-up key standing up behind it, and one small bright signal-green lamp, colour #2bd94a; a thin light warm grey highlight along its lit iron edges; simple shapes and very few details; clearly a spinning machine with three hammers, neither the Clockwork Gunner on its two legs nor the Steam Tank. The machine with its three hammers fills most of the width of the image. It is lit from the left. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, dwarf, beard, face, mouth, person, human, legs, feet, cannon, gun, smokestack, caterpillar tracks, helicopter rotor, propeller, four hammers, two hammers, motion lines."
+      },
+      "submittedAt": "2026-10-07T20:42:39.234Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dwarf/whirligig-a.png",
+      "rawSheetSha256": "9271ab14e878bc24d89b9c09355c3819d5fe5fe81ecfe00ff7ee6880695a66d4",
+      "plateHints": [
+        {
+          "bandRows": 17,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2029,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:43:22.170Z",
+      "usageUsd": 0.009253506422042847,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right machine (an iron spinning top with a copper band on one wheel, the key and the green lamp), but four hammers show, where Three Hammers is the rule, and thin pale ring lines are drawn round it. Source of the accepted whirligig-a-three.",
+        "reviewedAt": "2026-10-07T21:01:27.084Z"
+      }
+    },
+    "whirligig-a-three": {
+      "id": "whirligig-a-three",
+      "asset": "chibi-direction-dwarf-whirligig",
+      "jobId": "669e9152-e056-464d-80af-8a600bec48da",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-dwarf",
+        "asset": "chibi-direction-dwarf-whirligig",
+        "subject": "UNIT:DWARF:SWORDSMAN",
+        "faction": "DWARF",
+        "recipeClass": "machine",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 234703,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the hammers at the bottom: erase the bottom left and the bottom right black hammer blocks with their arms, and draw one single big square soot-black iron hammer head on a short copper arm at the front centre of the copper band, between where they were. The machine then has exactly three hammers: top left, top right and front centre. Also erase the thin pale ring lines around the machine. Keep the body, copper band, key, lamp, steam, wheel, black outline and style the same."
+          }
+        ],
+        "prompt": "Change only the hammers at the bottom: erase the bottom left and the bottom right black hammer blocks with their arms, and draw one single big square soot-black iron hammer head on a short copper arm at the front centre of the copper band, between where they were. The machine then has exactly three hammers: top left, top right and front centre. Also erase the thin pale ring lines around the machine. Keep the body, copper band, key, lamp, steam, wheel, black outline and style the same.",
+        "negativePrompt": "",
+        "description": "Change only the hammers at the bottom: erase the bottom left and the bottom right black hammer blocks with their arms, and draw one single big square soot-black iron hammer head on a short copper arm at the front centre of the copper band, between where they were. The machine then has exactly three hammers: top left, top right and front centre. Also erase the thin pale ring lines around the machine. Keep the body, copper band, key, lamp, steam, wheel, black outline and style the same.",
+        "editInstruction": "Change only the hammers at the bottom: erase the bottom left and the bottom right black hammer blocks with their arms, and draw one single big square soot-black iron hammer head on a short copper arm at the front centre of the copper band, between where they were. The machine then has exactly three hammers: top left, top right and front centre. Also erase the thin pale ring lines around the machine. Keep the body, copper band, key, lamp, steam, wheel, black outline and style the same.",
+        "source": {
+          "recipe": "whirligig-a",
+          "candidate": 0,
+          "sha256": "9271ab14e878bc24d89b9c09355c3819d5fe5fe81ecfe00ff7ee6880695a66d4"
+        }
+      },
+      "submittedAt": "2026-10-07T20:52:27.433Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dwarf/whirligig-a-three.png",
+      "rawSheetSha256": "d4646f8731d545540c177796f864047449bd82c288c6e209bf7d6a7c2fcae279",
+      "plateHints": [
+        {
+          "bandRows": 17,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2,
+          "suspect": false
+        },
+        {
+          "bandRows": 17,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:53:16.440Z",
+      "usageUsd": 0.008326391405529446,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-2yc.34: accepted Whirligig. A soot-black iron spinning top with a copper band on one wheel, exactly three square iron hammer heads on copper arms (two behind, one at the front centre), a copper wind-up key, two lenses, the signal-green lamp and a puff of steam on top; 70 x 84 px. Reviewed at 1:1 and x4 on Grass, Snow and Mountain beside the Clockwork Gunner and the Steam Tank.",
+        "reviewedAt": "2026-10-07T20:57:02.557Z"
+      }
+    },
+    "whirligig-b": {
+      "id": "whirligig-b",
+      "asset": "chibi-direction-dwarf-whirligig",
+      "jobId": "sync-45d050a2-7f47-44d6-9ad1-9284d535d5d0",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-dwarf",
+        "asset": "chibi-direction-dwarf-whirligig",
+        "subject": "UNIT:DWARF:SWORDSMAN",
+        "faction": "DWARF",
+        "recipeClass": "machine",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 234702,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DWARF.md#prompt-fragment + docs/art/factions/DWARF.md#negative-fragment",
+            "text": "Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears.",
+            "negative": "brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-machine.txt + scripts/art/chibi/fragments/class-machine.negative.txt",
+            "text": "Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DWARF.json",
+            "text": "Subject: Whirligig, a chunky cute wind-up spinning-top war machine, with no dwarf inside and no face: a fat round body of soot-black riveted iron shaped like a spinning top, widest at its middle with a bright copper band, tapering down to one small iron wheel at the bottom; exactly three big square soot-black iron hammer heads on three short copper arms stick straight out from the copper band, one to the left, one to the right and one to the front, flung wide as it spins; on top a small iron dome with two round glass lenses, a big copper wind-up key standing up behind it, and one small bright signal-green lamp, colour #2bd94a; a thin light warm grey highlight along its lit iron edges; simple shapes and very few details; clearly a spinning machine with three hammers, neither the Clockwork Gunner on its two legs nor the Steam Tank."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The machine with its three hammers fills most of the width of the image. It is lit from the left.",
+            "negative": "dwarf, beard, face, mouth, person, human, legs, feet, cannon, gun, smokestack, caterpillar tracks, helicopter rotor, propeller, four hammers, two hammers, motion lines"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: Whirligig, a chunky cute wind-up spinning-top war machine, with no dwarf inside and no face: a fat round body of soot-black riveted iron shaped like a spinning top, widest at its middle with a bright copper band, tapering down to one small iron wheel at the bottom; exactly three big square soot-black iron hammer heads on three short copper arms stick straight out from the copper band, one to the left, one to the right and one to the front, flung wide as it spins; on top a small iron dome with two round glass lenses, a big copper wind-up key standing up behind it, and one small bright signal-green lamp, colour #2bd94a; a thin light warm grey highlight along its lit iron edges; simple shapes and very few details; clearly a spinning machine with three hammers, neither the Clockwork Gunner on its two legs nor the Steam Tank. The machine with its three hammers fills most of the width of the image. It is lit from the left.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, dwarf, beard, face, mouth, person, human, legs, feet, cannon, gun, smokestack, caterpillar tracks, helicopter rotor, propeller, four hammers, two hammers, motion lines",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: Whirligig, a chunky cute wind-up spinning-top war machine, with no dwarf inside and no face: a fat round body of soot-black riveted iron shaped like a spinning top, widest at its middle with a bright copper band, tapering down to one small iron wheel at the bottom; exactly three big square soot-black iron hammer heads on three short copper arms stick straight out from the copper band, one to the left, one to the right and one to the front, flung wide as it spins; on top a small iron dome with two round glass lenses, a big copper wind-up key standing up behind it, and one small bright signal-green lamp, colour #2bd94a; a thin light warm grey highlight along its lit iron edges; simple shapes and very few details; clearly a spinning machine with three hammers, neither the Clockwork Gunner on its two legs nor the Steam Tank. The machine with its three hammers fills most of the width of the image. It is lit from the left. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, dwarf, beard, face, mouth, person, human, legs, feet, cannon, gun, smokestack, caterpillar tracks, helicopter rotor, propeller, four hammers, two hammers, motion lines."
+      },
+      "submittedAt": "2026-10-07T20:43:22.174Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dwarf/whirligig-b.png",
+      "rawSheetSha256": "50019e001e27e8eec2d56e6be70963a68026994b60a8150d5531831eb99751f8",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6563,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:44:08.082Z",
+      "usageUsd": 0.008922126134236654,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A squat riveted ball with four or five hammer blocks round it and no clear spinning-top taper; lower contrast (7% outline) than the roster.",
+        "reviewedAt": "2026-10-07T21:01:33.631Z"
       }
     }
   },
@@ -7412,6 +7967,66 @@
       },
       "notes": "A closed soot-iron dome with a copper band, light grey rim highlights, a cannon snout, a tall copper stack with white steam, a ginger-bearded dwarf in the hatch and the signal-green lamp on the dome.",
       "acceptedAt": "2026-10-03T11:00:43.805Z"
+    },
+    "chibi-direction-dwarf-whirligig": {
+      "id": "chibi-direction-dwarf-whirligig",
+      "subject": "UNIT:DWARF:SWORDSMAN",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "whirligig-a-three",
+      "candidate": 0,
+      "candidateSha256": "b2175fea450fb912fc3d976bec6caa217aa253a6cbec7200af78a592e1a9813b",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-direction-dwarf-whirligig.png",
+        "sha256": "254fbcc2cb07f794d5bc71db30f5112e5cc895a71ad3fab0cb64714ab7474563",
+        "pixelSha256": "2f5b92ef04a677b4e82847d854710bd5459f18130f1db97612d77006a52da424",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "dwarf-copper",
+          "spec": {
+            "band": {
+              "hueFrom": 340,
+              "hueTo": 9,
+              "saturationMin": 0.45,
+              "valueMin": 0.2,
+              "hueCentre": 4
+            },
+            "hue": 13,
+            "hueSpread": 0.25
+          },
+          "accentPixels": 376,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 17,
+        "groundShare": 0,
+        "footprintWidthShare": 0.2,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Bead pulp_wars-2yc.34: accepted Whirligig. A soot-black iron spinning top with a copper band on one wheel, exactly three square iron hammer heads on copper arms (two behind, one at the front centre), a copper wind-up key, two lenses, the signal-green lamp and a puff of steam on top; 70 x 84 px. Reviewed at 1:1 and x4 on Grass, Snow and Mountain beside the Clockwork Gunner and the Steam Tank.",
+      "acceptedAt": "2026-10-07T20:57:02.556Z"
     },
     "chibi-direction-effect-dwarf-bomb-blast": {
       "id": "chibi-direction-effect-dwarf-bomb-blast",
@@ -8660,6 +9275,66 @@
       },
       "notes": "The whole Steam Tank: a black iron dome with a cannon snout, a tall stack with steam, a dwarf in the hatch and the green lamp; small in the square.",
       "acceptedAt": "2026-10-03T11:00:49.472Z"
+    },
+    "chibi-direction-portrait-dwarf-whirligig": {
+      "id": "chibi-direction-portrait-dwarf-whirligig",
+      "subject": "PORTRAIT:DWARF:SWORDSMAN",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-whirligig-b-wisp",
+      "candidate": 0,
+      "candidateSha256": "bb99fbc338088c186ee3dca0953f1c4c8be7ac6b6d5c65dc81f8af1b3b0f82b2",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-direction-portrait-dwarf-whirligig.png",
+        "sha256": "bb99fbc338088c186ee3dca0953f1c4c8be7ac6b6d5c65dc81f8af1b3b0f82b2",
+        "pixelSha256": "7d84b4f721bd522af9fa7efa365b9c6bc6b929748fa7f810cabe2e986d6f0e53",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "dwarf-copper",
+          "spec": {
+            "band": {
+              "hueFrom": 340,
+              "hueTo": 9,
+              "saturationMin": 0.45,
+              "valueMin": 0.2,
+              "hueCentre": 4
+            },
+            "hue": 13,
+            "hueSpread": 0.25
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.0568,
+        "footprintWidthShare": 0.4878,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Bead pulp_wars-2yc.34, correction pass: accepted Whirligig portrait. The machine shown whole with exactly three hammer heads, two lenses and the green lamp; the bluish steam wisp beside the lamp is gone and nothing else changed. Reviewed at 1:1 and x6 beside portrait-whirligig-b-ring.",
+      "acceptedAt": "2026-10-07T21:25:35.887Z"
     }
   }
 }

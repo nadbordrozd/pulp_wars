@@ -1,0 +1,37 @@
+{
+  "id": "portrait-shock-trooper-a",
+  "jobId": "eb26ceed-1e1c-46fe-87b9-4a73732d21af",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-portrait-martian-shock-trooper",
+    "subject": "PORTRAIT:MARTIAN:SWORDSMAN",
+    "faction": "MARTIAN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 234451,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only what he wears and holds. His narrow shoulders become very big round polished chrome shoulder plates of a heavy battle-suit, wider than his helmet. Remove the pistol completely: in its place one heavy chrome pincer claw raised beside the head. Thin jagged hot magenta lightning arcs crackle over the glass dome and the shoulder plates. Keep his head, big black eyes, glass dome helmet, antenna, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only what he wears and holds. His narrow shoulders become very big round polished chrome shoulder plates of a heavy battle-suit, wider than his helmet. Remove the pistol completely: in its place one heavy chrome pincer claw raised beside the head. Thin jagged hot magenta lightning arcs crackle over the glass dome and the shoulder plates. Keep his head, big black eyes, glass dome helmet, antenna, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only what he wears and holds. His narrow shoulders become very big round polished chrome shoulder plates of a heavy battle-suit, wider than his helmet. Remove the pistol completely: in its place one heavy chrome pincer claw raised beside the head. Thin jagged hot magenta lightning arcs crackle over the glass dome and the shoulder plates. Keep his head, big black eyes, glass dome helmet, antenna, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only what he wears and holds. His narrow shoulders become very big round polished chrome shoulder plates of a heavy battle-suit, wider than his helmet. Remove the pistol completely: in its place one heavy chrome pincer claw raised beside the head. Thin jagged hot magenta lightning arcs crackle over the glass dome and the shoulder plates. Keep his head, big black eyes, glass dome helmet, antenna, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-grunt-b-edit",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "add491ce298edd1ae48857ae5369e29930588cba26893371d5c08c841e2c3eb1"
+    }
+  }
+}

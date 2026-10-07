@@ -263,6 +263,32 @@
       "ownerColour": false,
       "subjectKey": "CITY:GOBLIN:3/LIME",
       "accent": "goblin-hazard"
+    },
+    {
+      "id": "chibi-direction-goblin-ogre",
+      "subject": "UNIT:GOBLIN:SWORDSMAN",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:GOBLIN:SWORDSMAN/LIME",
+      "accent": "goblin-hazard"
+    },
+    {
+      "id": "chibi-direction-portrait-goblin-ogre",
+      "subject": "PORTRAIT:GOBLIN:SWORDSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:GOBLIN:SWORDSMAN/LIME",
+      "accent": "goblin-hazard"
     }
   ],
   "recipes": [
@@ -1883,6 +1909,101 @@
       },
       "editInstruction": "Recolour only his dull olive skin (face, ears, arms, hands) to a fresh bright leaf green, not olive and not yellow: colour #5aa546, with light green #98d975 on the face, nose and cheeks and #3f8232 only as thin shading. Keep everything else exactly the same: the open shouting mouth, tusks, eyes, beard, horned tin helmet, cream fur mantle, yellow megaphone, straps, pale sand trousers, yellow flap, boots, pose, thick black outline and art style, on a transparent background.",
       "notes": "Production fix (bead pulp_wars-wrn.2): the leather edit (orc-warboss-a-sand) drifted the skin back to a dull olive (#667515, L* 46); the Orcs share the Brute's leaf green."
+    },
+    {
+      "id": "ogre-a",
+      "asset": "chibi-direction-goblin-ogre",
+      "endpoint": "create-image-pixen",
+      "seed": 234101,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "notes": "Bead pulp_wars-2yc.34: the Ogre (ruleset 7r55, the Goblin heavy line unit), first sample: a fresh creation at the LARGE_UNIT size with the live Goblin fragment."
+    },
+    {
+      "id": "ogre-b",
+      "asset": "chibi-direction-goblin-ogre",
+      "endpoint": "create-image-pixen",
+      "seed": 234102,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "He is lit from the left: the left side of his head, belly and arms is the lightest and the right side is in shadow. He is very wide and round, wider than he is tall below the head.",
+      "notes": "Bead pulp_wars-2yc.34: second sample of the Ogre, with the light and the width stated in an addendum."
+    },
+    {
+      "id": "ogre-c",
+      "asset": "chibi-direction-goblin-ogre",
+      "endpoint": "create-image-pixen",
+      "seed": 234103,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "notes": "Bead pulp_wars-2yc.34: ogre-a and ogre-b drew a small-headed armoured soldier in dull olive, outside the roster's chibi proportions. The subject line now gives the head half of the height, an enormously fat body, bare shoulders and jade green skin."
+    },
+    {
+      "id": "ogre-d",
+      "asset": "chibi-direction-goblin-ogre",
+      "endpoint": "create-image-pixen",
+      "seed": 234104,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "He is lit from the left: the left side of his head, belly and arms is the lightest and the right side is in shadow.",
+      "notes": "Bead pulp_wars-2yc.34: the rewritten Ogre subject with another seed and the light stated in an addendum."
+    },
+    {
+      "id": "ogre-d-dim",
+      "asset": "chibi-direction-goblin-ogre",
+      "endpoint": "edit-image-pixen",
+      "seed": 234105,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "ogre-d",
+        "candidate": 0
+      },
+      "editInstruction": "Change three things only. His face: a dim goofy look, sleepy half-closed eyes, a vacant open smile and one big cream tooth sticking up. His skin: lighter jade green, colour #6aa98a, with #a3d1b5 on the face and arms. His club: a much thicker knobbly wooden club, twice as wide at the top, with big light grey tin nails. Keep the tin bucket hat, the belly plate with its yellow stripe, straps, loincloth, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.34: ogre-d is the right bulk (bucket hat, belly plate with a yellow stripe, bare arms, a club, no shield) but its face is the Orc Brute's scowl, its skin a dark green close to the Brute's and its club reads as a broom: a dim face, lighter jade skin and a knobbly nailed club."
+    },
+    {
+      "id": "portrait-ogre-a",
+      "asset": "chibi-direction-portrait-goblin-ogre",
+      "endpoint": "edit-image-pixen",
+      "seed": 234151,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-orc-brute-a-zoom",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw him as a dim-witted ogre. Skin: pale jade green, colour #a3d1b5, shaded #6aa98a. Face: sleepy half-closed eyes, a big round nose, a vacant open smile with one big cream tooth sticking up. The tin cap becomes a small light grey tin bucket worn upside down as a hat. Remove the shield: enormous bare pale jade shoulders with two sand-buff straps, and the fat nail-studded head of a dark brown wooden club beside his head. Keep the thick black outline and art style, transparent background.",
+      "notes": "Bead pulp_wars-2yc.34: the Ogre's bust from the Orc Brute's, to match the accepted map sprite (ogre-d-dim): pale jade skin, sleepy eyes, one tooth, the bucket hat and the nailed club."
+    },
+    {
+      "id": "portrait-ogre-a-jade",
+      "asset": "chibi-direction-portrait-goblin-ogre",
+      "endpoint": "edit-image-pixen",
+      "seed": 234152,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-ogre-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin: the pale yellow-green skin of his face, ears, neck, shoulders and chest becomes a cooler pale jade mint green, colour #a3d1b5, with #6aa98a shadows: clearly a blue-ish mint, not yellow-green. Do not change any shape: keep the closed sleepy eyes, the nose, the teeth, the tin bucket hat, the straps, the club, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.34: portrait-ogre-a is the right bust (sleepy closed eyes, bucket hat, straps, the club) but its skin is a yellow-green, where the map sprite's is a mint jade."
     }
   ]
 }

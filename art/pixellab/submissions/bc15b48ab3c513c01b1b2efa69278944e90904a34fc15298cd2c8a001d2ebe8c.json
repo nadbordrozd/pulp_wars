@@ -1,0 +1,36 @@
+{
+  "id": "ogre-d-dim",
+  "jobId": "b3142984-888f-4516-9273-cd4f72985a06",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-ogre",
+    "subject": "UNIT:GOBLIN:SWORDSMAN",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 234105,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change three things only. His face: a dim goofy look, sleepy half-closed eyes, a vacant open smile and one big cream tooth sticking up. His skin: lighter jade green, colour #6aa98a, with #a3d1b5 on the face and arms. His club: a much thicker knobbly wooden club, twice as wide at the top, with big light grey tin nails. Keep the tin bucket hat, the belly plate with its yellow stripe, straps, loincloth, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change three things only. His face: a dim goofy look, sleepy half-closed eyes, a vacant open smile and one big cream tooth sticking up. His skin: lighter jade green, colour #6aa98a, with #a3d1b5 on the face and arms. His club: a much thicker knobbly wooden club, twice as wide at the top, with big light grey tin nails. Keep the tin bucket hat, the belly plate with its yellow stripe, straps, loincloth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change three things only. His face: a dim goofy look, sleepy half-closed eyes, a vacant open smile and one big cream tooth sticking up. His skin: lighter jade green, colour #6aa98a, with #a3d1b5 on the face and arms. His club: a much thicker knobbly wooden club, twice as wide at the top, with big light grey tin nails. Keep the tin bucket hat, the belly plate with its yellow stripe, straps, loincloth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change three things only. His face: a dim goofy look, sleepy half-closed eyes, a vacant open smile and one big cream tooth sticking up. His skin: lighter jade green, colour #6aa98a, with #a3d1b5 on the face and arms. His club: a much thicker knobbly wooden club, twice as wide at the top, with big light grey tin nails. Keep the tin bucket hat, the belly plate with its yellow stripe, straps, loincloth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "ogre-d",
+      "candidate": 0,
+      "sha256": "9f5d2646a56e159373145ebe3866b0869b39df33cf577fc52d513ace768264e0"
+    }
+  }
+}

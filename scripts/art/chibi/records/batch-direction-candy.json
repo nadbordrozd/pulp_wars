@@ -6318,6 +6318,184 @@
         "reviewedAt": "2026-10-05T16:47:33.053Z"
       }
     },
+    "jawbreaker-a": {
+      "id": "jawbreaker-a",
+      "asset": "chibi-direction-candy-jawbreaker",
+      "jobId": "sync-fc5dfa5b-fbd6-4e0d-8c55-f9b23ad4731a",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-candy-jawbreaker",
+        "subject": "UNIT:CANDY:SWORDSMAN",
+        "faction": "CANDY",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 234501,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Jawbreaker, a chunky cute living jawbreaker sweet, a heavy brawler with no separate head and no neck: one huge perfectly round ball of rock-hard glossy candy filling the whole width of the image, with wide bold swirling stripes of mint green, colour #8fdcb4, and vanilla cream white, colour #fff1d0, and one hard pure white highlight at its upper left; one big chip bitten out of its upper right edge showing thin layers inside; the face is on the ball itself, two black dot eyes under thick angry dark chocolate brows and a gritted scowl; two short thick dark chocolate arms, colour #4a2412, with big round fists, one fist raised holding a rock-candy mace, a short chocolate stick topped with a chunky cluster of golden caramel sugar crystals; two short dark chocolate legs with big feet planted wide; simple shapes and very few details; clearly an immovable round bruiser, neither the square Marshmallow with its chocolate shield nor a small gumball."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "human, person, skin, hair, helmet, armour, gumball machine, glass globe, planet, beach ball, basketball, blue stripes, grey shading, sword, spear, shield"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Jawbreaker, a chunky cute living jawbreaker sweet, a heavy brawler with no separate head and no neck: one huge perfectly round ball of rock-hard glossy candy filling the whole width of the image, with wide bold swirling stripes of mint green, colour #8fdcb4, and vanilla cream white, colour #fff1d0, and one hard pure white highlight at its upper left; one big chip bitten out of its upper right edge showing thin layers inside; the face is on the ball itself, two black dot eyes under thick angry dark chocolate brows and a gritted scowl; two short thick dark chocolate arms, colour #4a2412, with big round fists, one fist raised holding a rock-candy mace, a short chocolate stick topped with a chunky cluster of golden caramel sugar crystals; two short dark chocolate legs with big feet planted wide; simple shapes and very few details; clearly an immovable round bruiser, neither the square Marshmallow with its chocolate shield nor a small gumball.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, skin, hair, helmet, armour, gumball machine, glass globe, planet, beach ball, basketball, blue stripes, grey shading, spear, shield",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Jawbreaker, a chunky cute living jawbreaker sweet, a heavy brawler with no separate head and no neck: one huge perfectly round ball of rock-hard glossy candy filling the whole width of the image, with wide bold swirling stripes of mint green, colour #8fdcb4, and vanilla cream white, colour #fff1d0, and one hard pure white highlight at its upper left; one big chip bitten out of its upper right edge showing thin layers inside; the face is on the ball itself, two black dot eyes under thick angry dark chocolate brows and a gritted scowl; two short thick dark chocolate arms, colour #4a2412, with big round fists, one fist raised holding a rock-candy mace, a short chocolate stick topped with a chunky cluster of golden caramel sugar crystals; two short dark chocolate legs with big feet planted wide; simple shapes and very few details; clearly an immovable round bruiser, neither the square Marshmallow with its chocolate shield nor a small gumball. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, skin, hair, helmet, armour, gumball machine, glass globe, planet, beach ball, basketball, blue stripes, grey shading, spear, shield."
+      },
+      "submittedAt": "2026-10-07T20:39:34.941Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/jawbreaker-a.png",
+      "rawSheetSha256": "913e86a22f5daf5c3d35b08d5ac6a1067558f7f8def8e6746da2a47a50c3a37a",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0.0081,
+          "footprintWidthShare": 0.5849,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:40:22.291Z",
+      "usageUsd": 0.009366075330310399,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-2yc.34: accepted Jawbreaker. One round hard-candy ball with bold mint, cream, caramel and chocolate swirl stripes, an angry face on the ball, chocolate arms and boots and a caramel rock-candy mace; 53 x 53 px. Reviewed at 1:1 and x4 on Grass, Snow and Mountain beside the Toffee Trooper, the Marshmallow and the Gumball Gunner.",
+        "reviewedAt": "2026-10-07T20:47:27.715Z"
+      }
+    },
+    "jawbreaker-b": {
+      "id": "jawbreaker-b",
+      "asset": "chibi-direction-candy-jawbreaker",
+      "jobId": "sync-ebb2ff42-c5d6-4fdc-a17b-19fa0ad9bccc",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-candy-jawbreaker",
+        "subject": "UNIT:CANDY:SWORDSMAN",
+        "faction": "CANDY",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 234502,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Jawbreaker, a chunky cute living jawbreaker sweet, a heavy brawler with no separate head and no neck: one huge perfectly round ball of rock-hard glossy candy filling the whole width of the image, with wide bold swirling stripes of mint green, colour #8fdcb4, and vanilla cream white, colour #fff1d0, and one hard pure white highlight at its upper left; one big chip bitten out of its upper right edge showing thin layers inside; the face is on the ball itself, two black dot eyes under thick angry dark chocolate brows and a gritted scowl; two short thick dark chocolate arms, colour #4a2412, with big round fists, one fist raised holding a rock-candy mace, a short chocolate stick topped with a chunky cluster of golden caramel sugar crystals; two short dark chocolate legs with big feet planted wide; simple shapes and very few details; clearly an immovable round bruiser, neither the square Marshmallow with its chocolate shield nor a small gumball."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The ball is lit from the left: its left side is the lightest and its right side is in shadow.",
+            "negative": "human, person, skin, hair, helmet, armour, gumball machine, glass globe, planet, beach ball, basketball, blue stripes, grey shading, sword, spear, shield"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Jawbreaker, a chunky cute living jawbreaker sweet, a heavy brawler with no separate head and no neck: one huge perfectly round ball of rock-hard glossy candy filling the whole width of the image, with wide bold swirling stripes of mint green, colour #8fdcb4, and vanilla cream white, colour #fff1d0, and one hard pure white highlight at its upper left; one big chip bitten out of its upper right edge showing thin layers inside; the face is on the ball itself, two black dot eyes under thick angry dark chocolate brows and a gritted scowl; two short thick dark chocolate arms, colour #4a2412, with big round fists, one fist raised holding a rock-candy mace, a short chocolate stick topped with a chunky cluster of golden caramel sugar crystals; two short dark chocolate legs with big feet planted wide; simple shapes and very few details; clearly an immovable round bruiser, neither the square Marshmallow with its chocolate shield nor a small gumball. The ball is lit from the left: its left side is the lightest and its right side is in shadow.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, skin, hair, helmet, armour, gumball machine, glass globe, planet, beach ball, basketball, blue stripes, grey shading, spear, shield",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Jawbreaker, a chunky cute living jawbreaker sweet, a heavy brawler with no separate head and no neck: one huge perfectly round ball of rock-hard glossy candy filling the whole width of the image, with wide bold swirling stripes of mint green, colour #8fdcb4, and vanilla cream white, colour #fff1d0, and one hard pure white highlight at its upper left; one big chip bitten out of its upper right edge showing thin layers inside; the face is on the ball itself, two black dot eyes under thick angry dark chocolate brows and a gritted scowl; two short thick dark chocolate arms, colour #4a2412, with big round fists, one fist raised holding a rock-candy mace, a short chocolate stick topped with a chunky cluster of golden caramel sugar crystals; two short dark chocolate legs with big feet planted wide; simple shapes and very few details; clearly an immovable round bruiser, neither the square Marshmallow with its chocolate shield nor a small gumball. The ball is lit from the left: its left side is the lightest and its right side is in shadow. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, skin, hair, helmet, armour, gumball machine, glass globe, planet, beach ball, basketball, blue stripes, grey shading, spear, shield."
+      },
+      "submittedAt": "2026-10-07T20:40:22.299Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/jawbreaker-b.png",
+      "rawSheetSha256": "8530953b42bf708c65622b606121d116f9299d822e490879db0e5ad81eb5b893",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.3537,
+          "footprintWidthShare": 0.8545,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-07T20:40:59.866Z",
+      "usageUsd": 0.008217658758163451,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A moustached man in a striped turban and a cloak, 77 px tall: a person, not a living sweet.",
+        "reviewedAt": "2026-10-07T21:01:19.775Z"
+      }
+    },
     "marshmallow-a": {
       "id": "marshmallow-a",
       "asset": "chibi-direction-candy-marshmallow",
@@ -8158,6 +8336,95 @@
         "reviewedAt": "2026-10-05T16:47:25.977Z"
       }
     },
+    "portrait-jawbreaker-a": {
+      "id": "portrait-jawbreaker-a",
+      "asset": "chibi-direction-portrait-candy-jawbreaker",
+      "jobId": "sync-56d4cab7-f7b4-44b3-9728-c22592500506",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-portrait-candy-jawbreaker",
+        "subject": "PORTRAIT:CANDY:SWORDSMAN",
+        "faction": "CANDY",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 234551,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Jawbreaker portrait, a close-up of a living jawbreaker sweet: one big perfectly round ball of rock-hard glossy candy with wide bold swirling stripes of mint green, vanilla cream white, golden caramel and dark chocolate, colour #4a2412, and one hard pure white highlight at its upper left; the face is on the ball itself, two angry white eyes under thick dark chocolate brows and a gritted scowl of white teeth; and the chunky golden caramel sugar-crystal head of a rock-candy mace beside it."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "A close-up: the round striped ball with its face fills the whole square; no legs and no body under it.",
+            "negative": "human, person, skin, hair, moustache, beard, turban, helmet, armour, gumball machine, glass globe, planet, legs, feet, full body"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Jawbreaker portrait, a close-up of a living jawbreaker sweet: one big perfectly round ball of rock-hard glossy candy with wide bold swirling stripes of mint green, vanilla cream white, golden caramel and dark chocolate, colour #4a2412, and one hard pure white highlight at its upper left; the face is on the ball itself, two angry white eyes under thick dark chocolate brows and a gritted scowl of white teeth; and the chunky golden caramel sugar-crystal head of a rock-candy mace beside it. A close-up: the round striped ball with its face fills the whole square; no legs and no body under it.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, human, person, skin, hair, moustache, beard, turban, helmet, armour, gumball machine, glass globe, planet",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Jawbreaker portrait, a close-up of a living jawbreaker sweet: one big perfectly round ball of rock-hard glossy candy with wide bold swirling stripes of mint green, vanilla cream white, golden caramel and dark chocolate, colour #4a2412, and one hard pure white highlight at its upper left; the face is on the ball itself, two angry white eyes under thick dark chocolate brows and a gritted scowl of white teeth; and the chunky golden caramel sugar-crystal head of a rock-candy mace beside it. A close-up: the round striped ball with its face fills the whole square; no legs and no body under it. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, human, person, skin, hair, moustache, beard, turban, helmet, armour, gumball machine, glass globe, planet."
+      },
+      "submittedAt": "2026-10-07T20:54:03.975Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/portrait-jawbreaker-a.png",
+      "rawSheetSha256": "90df1b3ef3a4cc6f66a7fff94622bc577ec8d7dfb6e6632d2ae41fa6779a05b0",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.2857,
+          "footprintWidthShare": 0.6,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-07T20:54:31.254Z",
+      "usageUsd": 0.007612883117463854,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-2yc.34: accepted Jawbreaker portrait. The round ball with mint, cream and caramel swirl stripes, its scowling face with gritted teeth and the caramel rock-candy mace, matching the map sprite. Reviewed at 1:1 and x8.",
+        "reviewedAt": "2026-10-07T21:00:54.681Z"
+      }
+    },
     "portrait-machine-b": {
       "id": "portrait-machine-b",
       "asset": "chibi-direction-portrait-candy-gumball-gunner",
@@ -9937,6 +10204,75 @@
       "notes": "Chocolatier look (pulp_wars-jdb.10): the user chose the Chocolate Bunny for the Knight role in place of the Gummy Bear. One moulded piece of glossy milk chocolate with tall ears, a caramel gold ribbon and bow, fists up, a few sprinkles (62 x 79 px, feet on row 81): a fast heavy striker with an outline no other Candy unit has. Imported from the options run; the asset id keeps the name gummy-bear.",
       "acceptedAt": "2026-10-05T17:30:32.619Z"
     },
+    "chibi-direction-candy-jawbreaker": {
+      "id": "chibi-direction-candy-jawbreaker",
+      "subject": "UNIT:CANDY:SWORDSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "jawbreaker-a",
+      "candidate": 0,
+      "candidateSha256": "913e86a22f5daf5c3d35b08d5ac6a1067558f7f8def8e6746da2a47a50c3a37a",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-direction-candy-jawbreaker.png",
+        "sha256": "e212fb4fda9e9dfefb97191a8a609ab493dd575b8ddf7816e9a1e7628a2995b8",
+        "pixelSha256": "cdef348214bf4bedf2e55c9f6cef912207f244158fe8b23ee64af30fbd015a5a",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "candy-pink",
+          "spec": {
+            "band": {
+              "hueFrom": 310,
+              "hueTo": 356,
+              "saturationMin": 0.3,
+              "valueMin": 0.3,
+              "hueCentre": 340
+            },
+            "hue": 334,
+            "hueSpread": 0.25,
+            "saturation": {
+              "scale": 0.55,
+              "add": 0.08,
+              "max": 0.5
+            },
+            "value": {
+              "scale": 0.6,
+              "add": 0.42
+            }
+          },
+          "accentPixels": 15,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 11,
+        "groundShare": 0.0081,
+        "footprintWidthShare": 0.5849,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Bead pulp_wars-2yc.34: accepted Jawbreaker. One round hard-candy ball with bold mint, cream, caramel and chocolate swirl stripes, an angry face on the ball, chocolate arms and boots and a caramel rock-candy mace; 53 x 53 px. Reviewed at 1:1 and x4 on Grass, Snow and Mountain beside the Toffee Trooper, the Marshmallow and the Gumball Gunner.",
+      "acceptedAt": "2026-10-07T20:47:27.715Z"
+    },
     "chibi-direction-candy-marshmallow": {
       "id": "chibi-direction-candy-marshmallow",
       "subject": "UNIT:CANDY:GUARD",
@@ -11638,6 +11974,75 @@
       },
       "notes": "Chocolatier look (pulp_wars-jdb.10): the Chocolate Bunny's portrait, a milk chocolate rabbit with tall ears, dot eyes, a caramel gold bow and a raised fist, like the map sprite. More of the figure than a bust, large in the square.",
       "acceptedAt": "2026-10-05T17:32:52.960Z"
+    },
+    "chibi-direction-portrait-candy-jawbreaker": {
+      "id": "chibi-direction-portrait-candy-jawbreaker",
+      "subject": "PORTRAIT:CANDY:SWORDSMAN",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-jawbreaker-a",
+      "candidate": 0,
+      "candidateSha256": "90df1b3ef3a4cc6f66a7fff94622bc577ec8d7dfb6e6632d2ae41fa6779a05b0",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-direction-portrait-candy-jawbreaker.png",
+        "sha256": "2aa38a135912135e8416dd36d3de096f197831b3e060f0fb533fa5f4fd2c4fbf",
+        "pixelSha256": "32233735e4eb1c8a095d95bc8c0ca93336665cc7fad6f4839c0d82988669e449",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "candy-pink",
+          "spec": {
+            "band": {
+              "hueFrom": 310,
+              "hueTo": 356,
+              "saturationMin": 0.3,
+              "valueMin": 0.3,
+              "hueCentre": 340
+            },
+            "hue": 334,
+            "hueSpread": 0.25,
+            "saturation": {
+              "scale": 0.55,
+              "add": 0.08,
+              "max": 0.5
+            },
+            "value": {
+              "scale": 0.6,
+              "add": 0.42
+            }
+          },
+          "accentPixels": 34,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.2857,
+        "footprintWidthShare": 0.6,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Bead pulp_wars-2yc.34: accepted Jawbreaker portrait. The round ball with mint, cream and caramel swirl stripes, its scowling face with gritted teeth and the caramel rock-candy mace, matching the map sprite. Reviewed at 1:1 and x8.",
+      "acceptedAt": "2026-10-07T21:00:54.681Z"
     },
     "chibi-direction-portrait-candy-marshmallow": {
       "id": "chibi-direction-portrait-candy-marshmallow",

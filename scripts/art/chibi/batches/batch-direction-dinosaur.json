@@ -291,6 +291,30 @@
       },
       "ownerColour": false,
       "subjectKey": "CITY:DINOSAUR:3/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-dinosaur-stegosaurus",
+      "subject": "UNIT:DINOSAUR:SWORDSMAN",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:DINOSAUR:SWORDSMAN/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-portrait-dinosaur-stegosaurus",
+      "subject": "PORTRAIT:DINOSAUR:SWORDSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:DINOSAUR:SWORDSMAN/PRIMAL"
     }
   ],
   "recipes": [
@@ -1154,6 +1178,154 @@
       },
       "editInstruction": "Recolour only the one bright orange tent on the right: its orange hide becomes the same dull tawny brown hide as the other three tents, colour #a67c3d with #6e4f26 shadows, not orange; its dark brown spots stay. Add nothing. Do not redraw anything. Keep the other tents, the small orange feathers on the tent tips, the bone totem, the tusks, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
       "notes": "roof-edit-a turned the red hut into a fourth tent, in bright orange: an accent-coloured roof."
+    },
+    {
+      "id": "stegosaurus-a",
+      "asset": "chibi-direction-dinosaur-stegosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 234301,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+      "negativeAddendum": "rider, person, saddle, blanket, standing upright, two legs, club on the tail, horns, neck frill, two animals",
+      "notes": "Bead pulp_wars-2yc.34: the Stegosaurus (ruleset 7r55, the Dinosaur siege unit), first sample: a fresh creation in the side view the Dinosaur quadrupeds use."
+    },
+    {
+      "id": "stegosaurus-b",
+      "asset": "chibi-direction-dinosaur-stegosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 234302,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+      "negativeAddendum": "rider, person, saddle, blanket, standing upright, two legs, club on the tail, horns, neck frill, two animals",
+      "notes": "Bead pulp_wars-2yc.34: second sample of the Stegosaurus, the same request with another seed."
+    },
+    {
+      "id": "stegosaurus-a-blue",
+      "asset": "chibi-direction-dinosaur-stegosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 234303,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "stegosaurus-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change three things only. Recolour the hide: the grey-blue head, body, legs and tail become saturated deep blue, colour #24509c, shaded dark navy #16224a on the back, and the brown spots become plain blue. Erase the orange marks on the neck and shoulder: plain deep blue. Remove the small horn on the nose: a round snout. Keep the orange back fins, cream belly, cream tail spikes, pose, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.34: stegosaurus-a is the right animal (level four-legged body, orange back fins, the tail swung up with a fan of cream spikes) but its hide is a grey slate blue with brown spots, an orange smear lies on the neck and the snout has a horn: the roster's deep blue, a plain neck and a round snout."
+    },
+    {
+      "id": "stegosaurus-a-snout",
+      "asset": "chibi-direction-dinosaur-stegosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 234304,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "stegosaurus-a-blue",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the pointed cream horn on the tip of the nose, so the snout is round and plain deep blue with a cream lower jaw. Do not redraw anything else: keep the eye, the open mouth, the orange back fins, the deep blue hide, the cream belly, the raised tail with its cream spikes, the legs, pose, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.34: stegosaurus-a-blue has the roster's deep blue hide, but the nose horn stayed: a horn belongs to the Triceratops."
+    },
+    {
+      "id": "portrait-stegosaurus-a",
+      "asset": "chibi-direction-portrait-dinosaur-stegosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 234351,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "The whole animal fills the square, standing level on all four legs. It is lit from the left.",
+      "negativeAddendum": "rider, person, saddle, blanket, standing upright, horns, neck frill, tail club, grey hide, brown spots, grass, ground, two animals",
+      "notes": "Bead pulp_wars-2yc.34: the Stegosaurus's portrait, shown whole like the Ankylosaurus's (its back fins and tail spikes are what tell it apart): a fresh creation with the icon class in side view."
+    },
+    {
+      "id": "portrait-stegosaurus-b",
+      "asset": "chibi-direction-portrait-dinosaur-stegosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 234352,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "The whole animal fills the square, standing level on all four legs. It is lit from the left.",
+      "negativeAddendum": "rider, person, saddle, blanket, standing upright, horns, neck frill, tail club, grey hide, brown spots, grass, ground, two animals",
+      "notes": "Bead pulp_wars-2yc.34: second sample of the Stegosaurus's portrait, another seed."
+    },
+    {
+      "id": "stegosaurus-a-neck",
+      "asset": "chibi-direction-dinosaur-stegosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 234305,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "stegosaurus-a-snout",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the orange and red marks on the neck and shoulder just behind the head, so the neck and shoulder are plain deep blue hide like the rest of the body. Nothing red is left there. Do not redraw anything else: keep the head, eye, mouth, the big orange fins along the back, the deep blue hide, the cream belly, the raised tail with its cream spikes, the legs, pose, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.34: stegosaurus-a-snout reads well, but the orange smear on its neck is shaded in red: 2.25% of the sprite lies in the owner key's band (the roster's limit is 2%). The same animal with a plain blue neck."
+    },
+    {
+      "id": "portrait-stegosaurus-a-blue",
+      "asset": "chibi-direction-portrait-dinosaur-stegosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 234353,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-stegosaurus-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only. The hide of the head, body, legs and tail becomes saturated deep blue, colour #24509c, shaded dark navy #16224a, with no spots. The back fins become bright orange, colour #f47b20, shaded #c9540f, with no red. The red of the mouth becomes cream. The belly and the tail spikes stay cream. Do not change any shape: keep the pose, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.34: portrait-stegosaurus-a is the right small whole animal, but in slate blue with dark red fins (2.1% of it in the owner key's band): the map sprite's deep blue and bright orange."
+    },
+    {
+      "id": "stegosaurus-a-fins",
+      "asset": "chibi-direction-dinosaur-stegosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 234306,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "stegosaurus-a-neck",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the fins along the back: the pale peach fins become bright saturated orange, colour #f47b20, with a darker orange #c9540f shadow side, not red and not pale. Do not change any shape and do not redraw anything else: keep the plain deep blue hide, the head, eye, mouth, the cream belly, the raised tail with its cream spikes, the legs, pose, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.34: stegosaurus-a-neck has the plain blue neck (1.2% in the owner key's band), but the edit paled the back fins to peach: the roster's bright orange, shaded in orange and not red."
     }
   ]
 }

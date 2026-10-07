@@ -101,6 +101,30 @@ export const CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
       ),
       fixedColours: true,
     },
+    // The Shock Trooper (ruleset 7r55, bead pulp_wars-2yc.34): the ninth art
+    // slot.
+    {
+      id: "chibi-direction-martian-shock-trooper",
+      subject: "UNIT:MARTIAN:SWORDSMAN",
+      assetClass: "STANDARD_UNIT",
+      width: 56,
+      height: 80,
+      url: chibiArtUrl(
+        "assets/chibi/units/chibi-direction-martian-shock-trooper.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-portrait-martian-shock-trooper",
+      subject: "PORTRAIT:MARTIAN:SWORDSMAN",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-martian-shock-trooper.png",
+      ),
+      fixedColours: true,
+    },
     {
       id: "chibi-direction-portrait-martian-grunt",
       subject: "PORTRAIT:MARTIAN:FIGHTER",

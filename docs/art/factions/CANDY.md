@@ -711,28 +711,40 @@ Decided in bead `pulp_wars-jdb.5`:
   the negative list** (the stored requests keep it); no sample showed a
   likeness. New recipes use the generic wording.
 
-## Ninth unit: the Jawbreaker (bead `pulp_wars-w49.17`, stand-in art)
+## Ninth unit: the Jawbreaker (beads `pulp_wars-w49.17` and `pulp_wars-2yc.34`)
 
 Ruleset `7r55` gives every faction a ninth land unit ([what was
-built](../../product/RULESET_7_NINTH_UNIT.md)). The Candy one with no art of
-its own is the **Jawbreaker** (engine role `SWORDSMAN`). **It has no art
-yet.** No PixelLab call was made for it.
+built](../../product/RULESET_7_NINTH_UNIT.md)). The Candy one is the
+**Jawbreaker** (engine role `SWORDSMAN`), the heavy line unit. It was drawn as
+the Marshmallow under a steel disc lettered **J** until bead
+`pulp_wars-2yc.34` gave it its own art.
 
-- **Art slot.** `UNIT:CANDY:SWORDSMAN` and `PORTRAIT:CANDY:SWORDSMAN`: the
+- **Art slot.** `UNIT:CANDY:SWORDSMAN` and `PORTRAIT:CANDY:SWORDSMAN`, the
   ninth art slot of the faction (`unitArtRoleV7` in
-  `src/assets/chibi-art-v7.ts`). No raster is registered for either subject.
-- **Stand-in.** Until an art bead registers them, both fall back to the
-  Marshmallow (`UNIT:CANDY:GUARD`, `PORTRAIT:CANDY:GUARD`) through
-  `chibiFallbackSubjectV7` (`NINTH_UNIT_STAND_INS_V7`). The board marks the
-  piece with a steel disc lettered **J** where the faction badges go
-  (`drawStandInBadgeV7`), and the Gallery shows its stand-in mark.
-- **What the art bead must make.** One board sprite and one 48 x 48 portrait
-  in this fragment's direction: A huge striped hard-candy ball with a scowling
-  face and stubby arms, swinging a rock-candy mace, a chip out of its shell.
-- **Notes for that bead.** A round, heavy silhouette (nothing moves it); it
-  must not read as a Gumball (the Gumball Gunner's shot) or as the Marshmallow.
-- **When the art lands.** Register the two subjects in this faction's
-  direction manifest, delete the faction's entry from `NINTH_UNIT_STAND_INS_V7`
-  (the fallback and the letter badge go with it), regenerate the unit shadow
-  measurements, and update the stand-in assertions in
-  `tests/unit/ruleset-v7-ninth-unit.test.ts`.
+  `src/assets/chibi-art-v7.ts`): `chibi-direction-candy-jawbreaker` (56 x 80,
+  `STANDARD_UNIT`) and `chibi-direction-portrait-candy-jawbreaker` (48 x 48),
+  fixed colours, no mask, accent `candy-pink`, subject keys
+  `<subject>/CHOCOLATIER`. Recipes `jawbreaker-*` and `portrait-jawbreaker-a`
+  in batch `direction-candy`; 3 PixelLab calls, all fresh creations with the
+  Chocolatier fragment.
+- **Sprite** (`jawbreaker-a`, 53 x 53 px): one round hard-candy ball with bold
+  swirl stripes of mint, cream, caramel and chocolate and a white highlight;
+  the face is on the ball, angry white eyes under chocolate brows and gritted
+  teeth; chocolate arms and boots; a caramel rock-candy mace in one fist.
+- **Told apart at board size:** the Marshmallow is a white block behind a slab
+  of chocolate; the Toffee Trooper a caramel cube with wrapper wings; the
+  Gumball Gunner a glass globe on a chocolate base; the Jawbreaker is the only
+  striped ball, and the only mint one.
+- **Portrait** (`portrait-jawbreaker-a`): the striped ball with its scowl and
+  the head of the mace.
+- **Colours.** Chocolate brown is over a tenth of the sprite (the roster's
+  rule) and 1.75% of it lies in the owner key's band, in the mouth (the limit
+  is 8%).
+- **Light.** `lighting-qa` reads the sprite -2.1 (the caramel mace is at the
+  right; the ball's white highlight is at its upper left) and the portrait
+  +9.8.
+- **Rejected.** `jawbreaker-b`: a moustached man in a striped turban and a
+  cloak, a person and not a living sweet.
+- LEGACY (`?art=legacy`) and the developer option "Classic look" have no
+  Jawbreaker art: there it falls back like every faction subject, to the Human
+  unit of the slot under the Candy badge.

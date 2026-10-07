@@ -1,0 +1,36 @@
+{
+  "id": "portrait-whirligig-b-wisp",
+  "jobId": "fafffec9-3f8a-4814-ae91-766ba9fc8c84",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-portrait-dwarf-whirligig",
+    "subject": "PORTRAIT:DWARF:SWORDSMAN",
+    "faction": "DWARF",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 234754,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the small pale blue-grey wisp of steam at the upper right, between the green lamp and the top right hammer, leaving that area transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the small pale blue-grey wisp of steam at the upper right, between the green lamp and the top right hammer, leaving that area transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the small pale blue-grey wisp of steam at the upper right, between the green lamp and the top right hammer, leaving that area transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the small pale blue-grey wisp of steam at the upper right, between the green lamp and the top right hammer, leaving that area transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-whirligig-b-ring",
+      "candidate": 0,
+      "sha256": "006ce08eb2ddf67e096eab900efba896d76c6446b29b75d85db6ff299ecc251d"
+    }
+  }
+}

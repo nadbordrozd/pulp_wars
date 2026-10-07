@@ -113,6 +113,30 @@ export const CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7: readonly ChibiArtAssetV7[] 
       ),
       fixedColours: true,
     },
+    // The Stegosaurus (ruleset 7r55, bead pulp_wars-2yc.34): the ninth art
+    // slot; its portrait shows the whole animal, like the Ankylosaurus's.
+    {
+      id: "chibi-direction-dinosaur-stegosaurus",
+      subject: "UNIT:DINOSAUR:SWORDSMAN",
+      assetClass: "LARGE_UNIT",
+      width: 72,
+      height: 88,
+      url: chibiArtUrl(
+        "assets/chibi/units/chibi-direction-dinosaur-stegosaurus.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-portrait-dinosaur-stegosaurus",
+      subject: "PORTRAIT:DINOSAUR:SWORDSMAN",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-dinosaur-stegosaurus.png",
+      ),
+      fixedColours: true,
+    },
     {
       id: "chibi-direction-dinosaur-egg",
       subject: "UNIT:DINOSAUR:EGG",

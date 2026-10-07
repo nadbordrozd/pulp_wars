@@ -313,6 +313,32 @@
       "ownerColour": false,
       "subjectKey": "CITY:UNDEAD:3/CALM",
       "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-undead-wight",
+      "subject": "UNIT:UNDEAD:SWORDSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:UNDEAD:SWORDSMAN/BONE",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-portrait-undead-wight",
+      "subject": "PORTRAIT:UNDEAD:SWORDSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:UNDEAD:SWORDSMAN/BONE",
+      "accent": "undead-violet"
     }
   ],
   "recipes": [
@@ -1060,6 +1086,68 @@
       },
       "editInstruction": "Change only the green: the olive green rim at the bottom of the grey stone base becomes dark grey stone like the rest of the base. Nothing green is left. Keep the pale ivory bone hand, the grey stone, the bright violet sparks, the shapes, thick black outline and art style exactly the same, on a transparent background.",
       "notes": "The base kept an olive green rim."
+    },
+    {
+      "id": "wight-a",
+      "asset": "chibi-direction-undead-wight",
+      "endpoint": "edit-image-pixen",
+      "seed": 234201,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "skeleton-bone-edit-e",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw him as a heavy armoured barrow-king: a closed dark rusted iron great helm hides the whole skull, with two glowing violet eye slits and a spiky tarnished bronze crown on top; a dark iron chainmail coat and two big round rusted iron pauldrons cover the ribs and arms. Remove the shield and the sword: he holds one huge notched two-handed greataxe with a broad light grey iron blade above his head. Keep bone hands and feet, proportions, black outline and style, transparent background.",
+      "notes": "Bead pulp_wars-2yc.34: the Wight (ruleset 7r55, the Undead heavy line unit), first sample: the accepted Skeleton under a crowned closed helm, in mail and pauldrons, with a greataxe and no shield."
+    },
+    {
+      "id": "wight-b",
+      "asset": "chibi-direction-undead-wight",
+      "endpoint": "create-image-pixen",
+      "seed": 234202,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "He is lit from the left: the left side of the helm, pauldrons and axe blade is the lightest and the right side is in shadow.",
+      "notes": "Bead pulp_wars-2yc.34: second sample of the Wight, a fresh creation with the Undead fragment."
+    },
+    {
+      "id": "wight-c",
+      "asset": "chibi-direction-undead-wight",
+      "endpoint": "edit-image-pixen",
+      "seed": 234203,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "wight-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the armour: the helm, pauldrons, arm guards and breastplate become lighter weathered iron, mid grey #7a7f88 with #4a4d55 shadows and a few rust-brown patches, lightest on their left sides; the crown and the armour rims stay tarnished bronze. Add a thin bright violet trim along the hem of the mail skirt. Do not redraw anything else: keep the violet eye slits, greataxe, bone hands and feet, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.34: wight-a is the right figure (crowned closed helm, pauldrons, mail, greataxe, no shield, bone hands and feet) but near-black all over (mean L* 29, 72% dark) with violet only in the eye slits: lighter iron lit from the left and a violet hem."
+    },
+    {
+      "id": "portrait-wight-a",
+      "asset": "chibi-direction-portrait-undead-wight",
+      "endpoint": "edit-image-pixen",
+      "seed": 234251,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-undead-skeleton-bone-edit",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw him as an armoured barrow-king. His head becomes a huge closed weathered grey iron great helm with rust patches that hides the whole skull, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top; no face shows. Big round grey iron pauldrons with tarnished bronze rims on the shoulders. The sword becomes the broad light grey blade of a notched greataxe beside the helm. Keep proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.34: the Wight's bust from the Skeleton's, to match the accepted map sprite (wight-c): crowned closed iron helm with violet eye slits, pauldrons and the greataxe blade."
     }
   ]
 }

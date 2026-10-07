@@ -72,6 +72,13 @@ const UNITS = [
   ["KNIGHT", "vampire"],
   ["JUGGERNAUT", "abomination"],
 ] as const;
+/**
+ * The ninth art slot (ruleset 7r55, bead pulp_wars-2yc.34): the Wight, the
+ * heavy line unit. It has no classic sprite, so the classic comparison
+ * below leaves it out.
+ */
+const NEW_UNITS = [["SWORDSMAN", "wight"]] as const;
+const ALL_UNITS = [...UNITS, ...NEW_UNITS] as const;
 const ICONS = [
   ["ICON:ACTION:RAISE_DEAD", "raise-dead"],
   ["ICON:ACTION:DEVOUR", "devour"],
@@ -114,14 +121,14 @@ describe("Undead production art of the new visual direction (pulp_wars-3tq.12)",
 
   it("registers every Undead land unit and portrait, the four command icons, City 1-3 and four effects", () => {
     const expected: [ArtSubjectV7, string][] = [
-      ...UNITS.map(
+      ...ALL_UNITS.map(
         ([role, name]) =>
           [`UNIT:UNDEAD:${role}`, `chibi-direction-undead-${name}`] as [
             ArtSubjectV7,
             string,
           ],
       ),
-      ...UNITS.map(
+      ...ALL_UNITS.map(
         ([role, name]) =>
           [
             `PORTRAIT:UNDEAD:${role}`,
@@ -279,6 +286,28 @@ describe("Undead production art of the new visual direction (pulp_wars-3tq.12)",
         before.assetClass,
       ]);
       expect(chibiAnchorV7(after), role).toEqual(chibiAnchorV7(before));
+    }
+    // The Wight has no classic sprite: it takes the canvas and the anchor
+    // of the Skeleton it is an edit of, the Human Champion's class.
+    for (const [role] of NEW_UNITS) {
+      expect(classic.variants(`UNIT:UNDEAD:${role}`), role).toHaveLength(0);
+      const skeleton = registry.variants("UNIT:UNDEAD:FIGHTER")[0];
+      const champion = registry.variants(`UNIT:${role}`)[0];
+      const after = registry.variants(`UNIT:UNDEAD:${role}`)[0];
+      if (
+        skeleton === undefined ||
+        champion === undefined ||
+        after === undefined
+      )
+        throw new Error(`${role}: missing`);
+      for (const other of [skeleton, champion]) {
+        expect([after.width, after.height, after.assetClass], role).toEqual([
+          other.width,
+          other.height,
+          other.assetClass,
+        ]);
+        expect(chibiAnchorV7(after), role).toEqual(chibiAnchorV7(other));
+      }
     }
     for (const level of [1, 2, 3]) {
       const before = classic.variants(

@@ -1,0 +1,36 @@
+{
+  "id": "portrait-whirligig-b-ring",
+  "jobId": "3c69336b-e284-426d-8757-cd8d8fa33c99",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-portrait-dwarf-whirligig",
+    "subject": "PORTRAIT:DWARF:SWORDSMAN",
+    "faction": "DWARF",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 234753,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the pale grey-blue swirl ring around the machine completely, on both sides, leaving those areas transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the pale grey-blue swirl ring around the machine completely, on both sides, leaving those areas transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the pale grey-blue swirl ring around the machine completely, on both sides, leaving those areas transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the pale grey-blue swirl ring around the machine completely, on both sides, leaving those areas transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-whirligig-b",
+      "candidate": 0,
+      "sha256": "82f6ce40df620af7bbcefed812aab8603304bcc8eef2c45497fc5ef0f1250809"
+    }
+  }
+}

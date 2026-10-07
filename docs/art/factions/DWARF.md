@@ -556,33 +556,51 @@ overlay"); each decision can be overruled:
   units from the live registry), so they get the live look's faint ground
   shadow, which a real ship afloat does not.
 
-## Ninth unit: the Whirligig (bead `pulp_wars-w49.17`, stand-in art)
+## Ninth unit: the Whirligig (beads `pulp_wars-w49.17` and `pulp_wars-2yc.34`)
 
 Ruleset `7r55` gives every faction a ninth land unit ([what was
-built](../../product/RULESET_7_NINTH_UNIT.md)). The Dwarf one with no art of
-its own is the **Whirligig** (engine role `KNIGHT`). **It has no art yet.** No
-PixelLab call was made for it.
+built](../../product/RULESET_7_NINTH_UNIT.md)). The Dwarf one is the
+**Whirligig** (engine role `KNIGHT`), the breakthrough unit. It was drawn as
+the Clockwork Gunner under a steel disc lettered **W** until bead
+`pulp_wars-2yc.34` gave it its own art.
 
-- **Art slot.** `UNIT:DWARF:SWORDSMAN` and `PORTRAIT:DWARF:SWORDSMAN`: the
+- **Art slot.** `UNIT:DWARF:SWORDSMAN` and `PORTRAIT:DWARF:SWORDSMAN`, the
   ninth art slot of the faction (`unitArtRoleV7` in
-  `src/assets/chibi-art-v7.ts`). No raster is registered for either subject.
-- **Stand-in.** Until an art bead registers them, both fall back to the
-  Clockwork Gunner (`UNIT:DWARF:MARKSMAN`, `PORTRAIT:DWARF:MARKSMAN`) through
-  `chibiFallbackSubjectV7` (`NINTH_UNIT_STAND_INS_V7`). The board marks the
-  piece with a steel disc lettered **W** where the faction badges go
-  (`drawStandInBadgeV7`), and the Gallery shows its stand-in mark.
-- **What the art bead must make.** One board sprite and one 48 x 48 portrait
-  in this fragment's direction: A wind-up spinning top of soot-black iron on one
-  wheel, a big copper key in its back, three hammers on chains flying out around
-  it, the green lamp on top.
-- **Notes for that bead.** A construct: the green lamp is the clockwork mark
-  it shares with the Clockwork Gunner and the Brass Titan. Three hammers, not
-  two and not four (Three Hammers is the rule).
-- **When the art lands.** Register the two subjects in this faction's
-  direction manifest, delete the faction's entry from `NINTH_UNIT_STAND_INS_V7`
-  (the fallback and the letter badge go with it), regenerate the unit shadow
-  measurements, and update the stand-in assertions in
-  `tests/unit/ruleset-v7-ninth-unit.test.ts`.
+  `src/assets/chibi-art-v7.ts`): `chibi-direction-dwarf-whirligig` (72 x 88,
+  `LARGE_UNIT`, `machine` recipe class: the breakthrough role's canvas, the
+  Steam Tank's) and `chibi-direction-portrait-dwarf-whirligig` (48 x 48, `icon`
+  recipe class), fixed colours, no mask, accent `dwarf-copper`. Recipes
+  `whirligig-*` and `portrait-whirligig-*` in batch `direction-dwarf`;
+  7 PixelLab calls.
+- **Sprite** (`whirligig-a-three`, 70 x 84 px): a soot-black riveted iron
+  spinning top with a copper band, tapering to one wheel; exactly three square
+  iron hammer heads on copper arms, two behind and one at the front centre; on
+  top a small dome with two lenses, the copper wind-up key, the signal-green
+  lamp and a puff of steam. A fresh creation and one edit.
+- **Three hammers.** The creation drew four. One edit erased the two lower
+  ones and drew a single hammer at the front centre ("The machine then has
+  exactly three hammers: top left, top right and front centre"), and erased
+  the thin ring lines round the machine.
+- **Told apart at board size:** the Clockwork Gunner stands on two legs with a
+  gatling arm; the Steam Tank is a dome on wheels with a cannon snout and a
+  dwarf in the hatch; the Whirligig balances on one point with hammer blocks
+  flung out round it.
+- **Portrait** (`portrait-whirligig-b-wisp`): the machine shown whole, with its
+  three hammers, lenses and lamp, like the Steam Tank's portrait.
+- **A construct:** the green lamp is on it (4 px or more, as the test of the
+  machines asks), as on the Clockwork Gunner and the Brass Titan.
+- **Light.** `lighting-qa` reads the sprite -8.8 (the white steam and the pale
+  rim light are at the upper left, the copper key at the right) and the
+  portrait +21.0.
+- **Rejected.** `whirligig-a`: four hammers and ring lines (the source of the
+  accepted edit); `whirligig-b`: a squat ball with four or five hammer blocks
+  and no taper. Portraits: four hammers and a face-like grille (`-a`); three
+  hammers inside a pale blue motion ring (`-b`); the ring erased but a small
+  bluish steam wisp left beside the lamp (`-b-ring`, the source of the
+  accepted edit, which erased the wisp).
+- LEGACY (`?art=legacy`) and the developer option "Classic look" have no
+  Whirligig art: there it falls back like every faction subject, to the Human
+  unit of the slot under the Dwarf badge.
 
 The Steam Tank is the heavy line role now (`SWORDSMAN`); its rasters, prompts
 and generation records stay under the art slot they were made for,

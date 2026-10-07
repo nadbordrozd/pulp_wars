@@ -95,9 +95,22 @@ const UNITS = [
   ["CATAPULT", "steam-cannon"],
   ["KNIGHT", "steam-tank"],
   ["JUGGERNAUT", "brass-titan"],
+  // The ninth art slot (ruleset 7r55, bead pulp_wars-2yc.34): the
+  // Whirligig. The Steam Tank keeps the slot KNIGHT.
+  ["SWORDSMAN", "whirligig"],
 ] as const;
+/**
+ * The Human role whose canvas a unit takes where it is not its art slot's:
+ * the Whirligig is fielded in the breakthrough role (KNIGHT), a LARGE_UNIT
+ * like the Steam Tank whose slot it could not take, so it is not the size
+ * of the Human Champion (the Human `UNIT:SWORDSMAN`, a STANDARD_UNIT).
+ */
+const CANVAS_ROLES: Readonly<Partial<Record<string, "KNIGHT">>> = {
+  whirligig: "KNIGHT",
+};
 /** The machines carry the reserve signal-green lamp; the dwarves do not. */
 const MACHINES = new Set([
+  "whirligig",
   "gyrocopter",
   "clockwork-gunner",
   "steam-mole",
@@ -202,7 +215,7 @@ describe("Steampunk Dwarf production art (pulp_wars-78i.5)", () => {
     CHIBI_DIRECTION_DWARF_ART_ASSETS_V7.map((asset) => [asset.id, asset]),
   );
 
-  it("lists the eight units, the two mounds, the portraits, City 1-3, ten icons and four effects", () => {
+  it("lists the nine units, the two mounds, the portraits, City 1-3, ten icons and four effects", () => {
     const expected: [string, string][] = [
       ...UNITS.map(
         ([role, name]) =>
@@ -506,7 +519,7 @@ describe("Steampunk Dwarf production art (pulp_wars-78i.5)", () => {
     ).registry;
     for (const [role, name] of UNITS) {
       const mine = byId.get(`chibi-direction-dwarf-${name}`);
-      const theirs = human.variants(`UNIT:${role}`)[0];
+      const theirs = human.variants(`UNIT:${CANVAS_ROLES[name] ?? role}`)[0];
       if (mine === undefined || theirs === undefined)
         throw new Error(`${role}: missing`);
       expect([mine.width, mine.height, mine.assetClass], role).toEqual([

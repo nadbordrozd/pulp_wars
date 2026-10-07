@@ -1,0 +1,36 @@
+{
+  "id": "stegosaurus-a-snout",
+  "jobId": "44e039a4-7508-4dc7-862f-51c936039970",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-stegosaurus",
+    "subject": "UNIT:DINOSAUR:SWORDSMAN",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 234304,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the pointed cream horn on the tip of the nose, so the snout is round and plain deep blue with a cream lower jaw. Do not redraw anything else: keep the eye, the open mouth, the orange back fins, the deep blue hide, the cream belly, the raised tail with its cream spikes, the legs, pose, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the pointed cream horn on the tip of the nose, so the snout is round and plain deep blue with a cream lower jaw. Do not redraw anything else: keep the eye, the open mouth, the orange back fins, the deep blue hide, the cream belly, the raised tail with its cream spikes, the legs, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the pointed cream horn on the tip of the nose, so the snout is round and plain deep blue with a cream lower jaw. Do not redraw anything else: keep the eye, the open mouth, the orange back fins, the deep blue hide, the cream belly, the raised tail with its cream spikes, the legs, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the pointed cream horn on the tip of the nose, so the snout is round and plain deep blue with a cream lower jaw. Do not redraw anything else: keep the eye, the open mouth, the orange back fins, the deep blue hide, the cream belly, the raised tail with its cream spikes, the legs, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "stegosaurus-a-blue",
+      "candidate": 0,
+      "sha256": "f99eed7b4dbb58b55ff896caf858b4d7b0b56e96d9671f70a2a0e61ac02b1fe8"
+    }
+  }
+}

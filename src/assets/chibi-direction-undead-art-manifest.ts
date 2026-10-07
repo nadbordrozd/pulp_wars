@@ -106,6 +106,27 @@ export const CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
       ),
       fixedColours: true,
     },
+    // The Wight (ruleset 7r55, bead pulp_wars-2yc.34): the ninth art slot.
+    {
+      id: "chibi-direction-undead-wight",
+      subject: "UNIT:UNDEAD:SWORDSMAN",
+      assetClass: "STANDARD_UNIT",
+      width: 56,
+      height: 80,
+      url: chibiArtUrl("assets/chibi/units/chibi-direction-undead-wight.png"),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-portrait-undead-wight",
+      subject: "PORTRAIT:UNDEAD:SWORDSMAN",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-undead-wight.png",
+      ),
+      fixedColours: true,
+    },
     {
       id: "chibi-direction-portrait-undead-skeleton",
       subject: "PORTRAIT:UNDEAD:FIGHTER",

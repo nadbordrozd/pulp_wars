@@ -1682,3 +1682,53 @@ and the stand-in seat's faction colour set to the Candy pink in the page.
 Captures start Vite on port 6541 unless `--port` says otherwise and need
 `CHROME_PATH` (and `node` on the `PATH` for Vite); `--copy-to DIR` copies
 the key sheets.
+
+## The ninth units (bead `pulp_wars-2yc.34`)
+
+The seven land units ruleset `7r55` added (Ogre, Wight, Stegosaurus, Shock
+Trooper, Musk Ox, Whirligig, Jawbreaker) each got a sprite and a portrait
+as two new assets of their faction's direction batch, subjects
+`UNIT:<FACTION>:SWORDSMAN` and `PORTRAIT:<FACTION>:SWORDSMAN`: 14 assets
+from 37 recipes, all new PixelLab calls (seeds 234101 to 234754), and no
+pipeline piece. The recipes of a unit follow the recipe its faction's
+batch was made with:
+
+- **A sibling edit where the faction has a figure to keep** (the Wight from
+  the Skeleton, the Shock Trooper from the Grunt, and their busts and the
+  Ogre's from the sibling's bust): `"source": { …, "sibling": true }`.
+- **A fresh creation where it has none** (the Ogre, the Jawbreaker, the
+  Whirligig with the `machine` class, the Stegosaurus and the Musk Ox with
+  `"options": { "view": "side", "direction": "east" }`), then edits of it.
+  `direction-dinosaur` had only edits before; its fragment was first sent
+  for the Stegosaurus.
+- **Machines and whole animals as portraits** use the `icon` class (the
+  Whirligig, the Stegosaurus), like the Steam Tank's and the Ankylosaurus's.
+
+What PixelLab did, added to the prompt notes of the earlier batches:
+
+- **Chibi proportions need their sentence.** A subject line without "a huge
+  round head about half of the figure's height" drew a small-headed,
+  realistic soldier at 72 x 88 (`ogre-a`, `-b`).
+- **A light sentence that names no sun is safe.** "He is lit from the left:
+  the left side … is the lightest" in an addendum drew no sun (the
+  Swordsman's "Sun at the bottom left" did).
+- **`edit-image-pixen` returns two candidates that are the same image**, in
+  every edit of this bead; candidate 0 is accepted.
+- **An erase can shift a colour elsewhere:** erasing the Stegosaurus's neck
+  marks paled its fins; a recolour with hex values for the fin and its
+  shadow side restored them without red.
+- **Count by position:** "exactly three hammers" drew four in three
+  creations of four; an edit that names where each hammer is ("top left,
+  top right and front centre") gave three.
+- **Of six concurrent `generate` runs, five failed with "fetch failed"**
+  before any job was submitted (nothing was recorded, so the same recipe
+  ids were run again, two or three runs at a time, which worked).
+
+The generic `npm run art:chibi-batch-review -- --batch direction-<faction>
+--skip-capture` works on these fixed-colour batches (sheets and mocks of
+every asset of the batch), but it writes `index.json` into the folder of
+the faction's own direction review and overwrites that review's index: its
+output for this bead was read and not checked in. The faction direction
+reviews (`art:chibi-<faction>-direction-review`) compare each unit with a
+classic sprite or with the same role of other factions and do not list
+the ninth units yet.

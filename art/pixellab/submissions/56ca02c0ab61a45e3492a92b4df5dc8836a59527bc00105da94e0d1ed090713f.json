@@ -1,0 +1,37 @@
+{
+  "id": "shock-trooper-a",
+  "jobId": "45b8d500-6542-45d7-8d17-12cc094fc479",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-shock-trooper",
+    "subject": "UNIT:MARTIAN:SWORDSMAN",
+    "faction": "MARTIAN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 234401,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a squat heavy armoured brawler, twice as wide: his body becomes a round polished chrome battle-suit like a barrel with two big round chrome shoulder domes and short thick armoured legs. Remove the pistol: his right arm ends in a huge heavy chrome pincer claw held forward, the left in a big chrome fist. Thin jagged hot magenta lightning arcs crackle over the shoulder domes. Keep his head, black eyes, glass dome helmet, thick black outline and art style, transparent background."
+      }
+    ],
+    "prompt": "Redraw him as a squat heavy armoured brawler, twice as wide: his body becomes a round polished chrome battle-suit like a barrel with two big round chrome shoulder domes and short thick armoured legs. Remove the pistol: his right arm ends in a huge heavy chrome pincer claw held forward, the left in a big chrome fist. Thin jagged hot magenta lightning arcs crackle over the shoulder domes. Keep his head, black eyes, glass dome helmet, thick black outline and art style, transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw him as a squat heavy armoured brawler, twice as wide: his body becomes a round polished chrome battle-suit like a barrel with two big round chrome shoulder domes and short thick armoured legs. Remove the pistol: his right arm ends in a huge heavy chrome pincer claw held forward, the left in a big chrome fist. Thin jagged hot magenta lightning arcs crackle over the shoulder domes. Keep his head, black eyes, glass dome helmet, thick black outline and art style, transparent background.",
+    "editInstruction": "Redraw him as a squat heavy armoured brawler, twice as wide: his body becomes a round polished chrome battle-suit like a barrel with two big round chrome shoulder domes and short thick armoured legs. Remove the pistol: his right arm ends in a huge heavy chrome pincer claw held forward, the left in a big chrome fist. Thin jagged hot magenta lightning arcs crackle over the shoulder domes. Keep his head, black eyes, glass dome helmet, thick black outline and art style, transparent background.",
+    "source": {
+      "recipe": "grunt-r5-edit-b",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "a9d4605a4b7bb4138980ccfdd048361bd2ae8194ff8b387ecf5b4370698e9313"
+    }
+  }
+}

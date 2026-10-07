@@ -1,0 +1,36 @@
+{
+  "id": "portrait-stegosaurus-a-blue",
+  "jobId": "90200a8f-7bf2-4481-8950-31759f669229",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-portrait-dinosaur-stegosaurus",
+    "subject": "PORTRAIT:DINOSAUR:SWORDSMAN",
+    "faction": "DINOSAUR",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 234353,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only. The hide of the head, body, legs and tail becomes saturated deep blue, colour #24509c, shaded dark navy #16224a, with no spots. The back fins become bright orange, colour #f47b20, shaded #c9540f, with no red. The red of the mouth becomes cream. The belly and the tail spikes stay cream. Do not change any shape: keep the pose, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only. The hide of the head, body, legs and tail becomes saturated deep blue, colour #24509c, shaded dark navy #16224a, with no spots. The back fins become bright orange, colour #f47b20, shaded #c9540f, with no red. The red of the mouth becomes cream. The belly and the tail spikes stay cream. Do not change any shape: keep the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only. The hide of the head, body, legs and tail becomes saturated deep blue, colour #24509c, shaded dark navy #16224a, with no spots. The back fins become bright orange, colour #f47b20, shaded #c9540f, with no red. The red of the mouth becomes cream. The belly and the tail spikes stay cream. Do not change any shape: keep the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only. The hide of the head, body, legs and tail becomes saturated deep blue, colour #24509c, shaded dark navy #16224a, with no spots. The back fins become bright orange, colour #f47b20, shaded #c9540f, with no red. The red of the mouth becomes cream. The belly and the tail spikes stay cream. Do not change any shape: keep the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-stegosaurus-a",
+      "candidate": 0,
+      "sha256": "d51483521bb350f0590930e1807cac70117f8940c504432cb0a1dab5708249e7"
+    }
+  }
+}

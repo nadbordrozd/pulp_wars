@@ -4533,6 +4533,74 @@
         "reviewedAt": "2026-10-03T14:45:07.043Z"
       }
     },
+    "portrait-shock-trooper-a": {
+      "id": "portrait-shock-trooper-a",
+      "asset": "chibi-direction-portrait-martian-shock-trooper",
+      "jobId": "eb26ceed-1e1c-46fe-87b9-4a73732d21af",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-portrait-martian-shock-trooper",
+        "subject": "PORTRAIT:MARTIAN:SWORDSMAN",
+        "faction": "MARTIAN",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 234451,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only what he wears and holds. His narrow shoulders become very big round polished chrome shoulder plates of a heavy battle-suit, wider than his helmet. Remove the pistol completely: in its place one heavy chrome pincer claw raised beside the head. Thin jagged hot magenta lightning arcs crackle over the glass dome and the shoulder plates. Keep his head, big black eyes, glass dome helmet, antenna, proportions, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only what he wears and holds. His narrow shoulders become very big round polished chrome shoulder plates of a heavy battle-suit, wider than his helmet. Remove the pistol completely: in its place one heavy chrome pincer claw raised beside the head. Thin jagged hot magenta lightning arcs crackle over the glass dome and the shoulder plates. Keep his head, big black eyes, glass dome helmet, antenna, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only what he wears and holds. His narrow shoulders become very big round polished chrome shoulder plates of a heavy battle-suit, wider than his helmet. Remove the pistol completely: in its place one heavy chrome pincer claw raised beside the head. Thin jagged hot magenta lightning arcs crackle over the glass dome and the shoulder plates. Keep his head, big black eyes, glass dome helmet, antenna, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only what he wears and holds. His narrow shoulders become very big round polished chrome shoulder plates of a heavy battle-suit, wider than his helmet. Remove the pistol completely: in its place one heavy chrome pincer claw raised beside the head. Thin jagged hot magenta lightning arcs crackle over the glass dome and the shoulder plates. Keep his head, big black eyes, glass dome helmet, antenna, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-grunt-b-edit",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "add491ce298edd1ae48857ae5369e29930588cba26893371d5c08c841e2c3eb1"
+        }
+      },
+      "submittedAt": "2026-10-07T20:53:16.735Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/portrait-shock-trooper-a.png",
+      "rawSheetSha256": "ddb48eaca3a03ae4b1ed249fe0205a3173cf3d539ca48a70a3b98431180fd05e",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8636,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8636,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:53:55.454Z",
+      "usageUsd": 0.00810341223080953,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-2yc.34: accepted Shock Trooper portrait. The Grunt's head in its glass dome with magenta lightning arcs over it, a big round chrome shoulder plate and a raised pincer claw, no pistol, matching the map sprite. Reviewed at 1:1 and x8 beside the Grunt's portrait.",
+        "reviewedAt": "2026-10-07T20:59:53.707Z"
+      }
+    },
     "portrait-thrall-a": {
       "id": "portrait-thrall-a",
       "asset": "chibi-direction-portrait-martian-grunt",
@@ -5808,6 +5876,142 @@
         "candidate": null,
         "notes": "A strong alternative: a radar dish on a backpack frame rising above the helmet. Rejected for the big front shield (shield-projector-r5-edit-a-2): the body under the dish is still the old Shield Projector, so at 1:1 the lower half reads like the Grunt's, and the round dish over the head competes with the Brain's jar and the bubble helmets; the front shield changes the whole outline and says defender at a glance.",
         "reviewedAt": "2026-10-03T14:34:03.509Z"
+      }
+    },
+    "shock-trooper-a": {
+      "id": "shock-trooper-a",
+      "asset": "chibi-direction-martian-shock-trooper",
+      "jobId": "45b8d500-6542-45d7-8d17-12cc094fc479",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-shock-trooper",
+        "subject": "UNIT:MARTIAN:SWORDSMAN",
+        "faction": "MARTIAN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 234401,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw him as a squat heavy armoured brawler, twice as wide: his body becomes a round polished chrome battle-suit like a barrel with two big round chrome shoulder domes and short thick armoured legs. Remove the pistol: his right arm ends in a huge heavy chrome pincer claw held forward, the left in a big chrome fist. Thin jagged hot magenta lightning arcs crackle over the shoulder domes. Keep his head, black eyes, glass dome helmet, thick black outline and art style, transparent background."
+          }
+        ],
+        "prompt": "Redraw him as a squat heavy armoured brawler, twice as wide: his body becomes a round polished chrome battle-suit like a barrel with two big round chrome shoulder domes and short thick armoured legs. Remove the pistol: his right arm ends in a huge heavy chrome pincer claw held forward, the left in a big chrome fist. Thin jagged hot magenta lightning arcs crackle over the shoulder domes. Keep his head, black eyes, glass dome helmet, thick black outline and art style, transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw him as a squat heavy armoured brawler, twice as wide: his body becomes a round polished chrome battle-suit like a barrel with two big round chrome shoulder domes and short thick armoured legs. Remove the pistol: his right arm ends in a huge heavy chrome pincer claw held forward, the left in a big chrome fist. Thin jagged hot magenta lightning arcs crackle over the shoulder domes. Keep his head, black eyes, glass dome helmet, thick black outline and art style, transparent background.",
+        "editInstruction": "Redraw him as a squat heavy armoured brawler, twice as wide: his body becomes a round polished chrome battle-suit like a barrel with two big round chrome shoulder domes and short thick armoured legs. Remove the pistol: his right arm ends in a huge heavy chrome pincer claw held forward, the left in a big chrome fist. Thin jagged hot magenta lightning arcs crackle over the shoulder domes. Keep his head, black eyes, glass dome helmet, thick black outline and art style, transparent background.",
+        "source": {
+          "recipe": "grunt-r5-edit-b",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "a9d4605a4b7bb4138980ccfdd048361bd2ae8194ff8b387ecf5b4370698e9313"
+        }
+      },
+      "submittedAt": "2026-10-07T20:34:21.584Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/shock-trooper-a.png",
+      "rawSheetSha256": "15b9bb27d19371ac493bb91febb768caf9dc42a2bf509c935ef93463b710e303",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9038,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9038,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:34:58.552Z",
+      "usageUsd": 0.008046419382095337,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-2yc.34: accepted Shock Trooper. The Grunt's head and glass dome on a wide round chrome battle-suit with big shoulder plates, a pincer arm and a fist, magenta lightning arcs over the dome and both shoulders, and no gun; 54 x 74 px. Reviewed at 1:1 and x4 on Grass, Snow and Mountain beside the Grunt and the Shield Projector.",
+        "reviewedAt": "2026-10-07T20:47:27.451Z"
+      }
+    },
+    "shock-trooper-b": {
+      "id": "shock-trooper-b",
+      "asset": "chibi-direction-martian-shock-trooper",
+      "jobId": "99092e77-d9f5-434d-9b48-8cced6b5f4fd",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-shock-trooper",
+        "subject": "UNIT:MARTIAN:SWORDSMAN",
+        "faction": "MARTIAN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 234402,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove the round shield disc completely, so his whole armoured body shows: a wide round polished chrome chest like a barrel with one small hot magenta chest light. His two hands become two huge heavy chrome pincer claws held out at his sides. Remove the two antennae. Thin jagged hot magenta lightning arcs crackle over both big shoulder plates. Keep his head, black eyes, glass bubble helmet, shoulder plates, thick legs, wide stance, thick black outline and art style, transparent background."
+          }
+        ],
+        "prompt": "Remove the round shield disc completely, so his whole armoured body shows: a wide round polished chrome chest like a barrel with one small hot magenta chest light. His two hands become two huge heavy chrome pincer claws held out at his sides. Remove the two antennae. Thin jagged hot magenta lightning arcs crackle over both big shoulder plates. Keep his head, black eyes, glass bubble helmet, shoulder plates, thick legs, wide stance, thick black outline and art style, transparent background.",
+        "negativePrompt": "",
+        "description": "Remove the round shield disc completely, so his whole armoured body shows: a wide round polished chrome chest like a barrel with one small hot magenta chest light. His two hands become two huge heavy chrome pincer claws held out at his sides. Remove the two antennae. Thin jagged hot magenta lightning arcs crackle over both big shoulder plates. Keep his head, black eyes, glass bubble helmet, shoulder plates, thick legs, wide stance, thick black outline and art style, transparent background.",
+        "editInstruction": "Remove the round shield disc completely, so his whole armoured body shows: a wide round polished chrome chest like a barrel with one small hot magenta chest light. His two hands become two huge heavy chrome pincer claws held out at his sides. Remove the two antennae. Thin jagged hot magenta lightning arcs crackle over both big shoulder plates. Keep his head, black eyes, glass bubble helmet, shoulder plates, thick legs, wide stance, thick black outline and art style, transparent background.",
+        "source": {
+          "recipe": "shield-projector-r5-edit-a-3",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "6800105d5ec60aa39f342d9bd295ddf68b3aa511d12b1753f313319033292693"
+        }
+      },
+      "submittedAt": "2026-10-07T20:34:58.563Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/shock-trooper-b.png",
+      "rawSheetSha256": "bc348e20822cde4ece66f1ae615fbac68a2ddba991d70386569f171610e1a7f2",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:35:46.205Z",
+      "usageUsd": 0.008197448306613498,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The Shield Projector without its disc: a dark gunmetal body with two small claws, hunched, with no antenna. Darker than the faction's chrome and less clearly a new unit than shock-trooper-a.",
+        "reviewedAt": "2026-10-07T21:01:19.496Z"
       }
     },
     "thrall-a": {
@@ -7826,6 +8030,66 @@
       "notes": "Bead pulp_wars-b5f.1: the line holder. One big round chrome shield disc with a magenta lens and a thin magenta arc covers him from the chest to the knees, wider than his body, between big round shoulder plates; an emitter rig on his back (a small dish with a magenta centre on a gunmetal mast left of the helmet, a rod on the right) frames the head, so the top of the outline differs from the Grunt's antenna and the Ray Gunner's crest. The broadest, heaviest outline of the three (54 x 73 px, 2849 opaque pixels); no pixel below the feet.",
       "acceptedAt": "2026-10-03T14:43:45.875Z"
     },
+    "chibi-direction-martian-shock-trooper": {
+      "id": "chibi-direction-martian-shock-trooper",
+      "subject": "UNIT:MARTIAN:SWORDSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "shock-trooper-a",
+      "candidate": 0,
+      "candidateSha256": "59038c389f990a354f60a08518668a4c48fe461b0e3ed3e964c575a7435e446a",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-direction-martian-shock-trooper.png",
+        "sha256": "57a11cc6c940738344fcd513bd150ab2e0ab495f1e1cd5d09487043fb47ba984",
+        "pixelSha256": "9d5f3973d16c61a3ee6647f64e4869462c08dc5a4e817764972d4efb387cd34f",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "martian-magenta",
+          "spec": {
+            "band": {
+              "hueFrom": 285,
+              "hueTo": 350,
+              "saturationMin": 0.4,
+              "valueMin": 0.25,
+              "hueCentre": 320
+            },
+            "hue": 322,
+            "hueSpread": 0.2
+          },
+          "accentPixels": 93,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0,
+        "footprintWidthShare": 0.9038,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Bead pulp_wars-2yc.34: accepted Shock Trooper. The Grunt's head and glass dome on a wide round chrome battle-suit with big shoulder plates, a pincer arm and a fist, magenta lightning arcs over the dome and both shoulders, and no gun; 54 x 74 px. Reviewed at 1:1 and x4 on Grass, Snow and Mountain beside the Grunt and the Shield Projector.",
+      "acceptedAt": "2026-10-07T20:47:27.451Z"
+    },
     "chibi-direction-martian-tripod": {
       "id": "chibi-direction-martian-tripod",
       "subject": "UNIT:MARTIAN:CATAPULT",
@@ -8305,6 +8569,66 @@
       },
       "notes": "Bead pulp_wars-b5f.1: the bust of the new Shield Projector: a big round chrome shield disc with a magenta lens and rim fills the lower half, the eyes look over it, big round shoulder plates frame it, and the small dish emitter on its mast sits at the top left of the helmet as on the map sprite; no weapon. Told from the Grunt's and the Ray Gunner's busts at a glance.",
       "acceptedAt": "2026-10-03T14:45:07.043Z"
+    },
+    "chibi-direction-portrait-martian-shock-trooper": {
+      "id": "chibi-direction-portrait-martian-shock-trooper",
+      "subject": "PORTRAIT:MARTIAN:SWORDSMAN",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-shock-trooper-a",
+      "candidate": 0,
+      "candidateSha256": "5421eba929448843f64ef61f9b20f5d46bcc36fe0e7e3aa932170c37e171610d",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-direction-portrait-martian-shock-trooper.png",
+        "sha256": "beb1f81e78834c602d5ed222930d53915d37ec756a524e0585c825f66b80657e",
+        "pixelSha256": "5d04ebf04a6b10f63ed093f019dfe1d32943d885f721d8cfc9ef6b9823d85096",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "martian-magenta",
+          "spec": {
+            "band": {
+              "hueFrom": 285,
+              "hueTo": 350,
+              "saturationMin": 0.4,
+              "valueMin": 0.25,
+              "hueCentre": 320
+            },
+            "hue": 322,
+            "hueSpread": 0.2
+          },
+          "accentPixels": 72,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0,
+        "footprintWidthShare": 0.8636,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Bead pulp_wars-2yc.34: accepted Shock Trooper portrait. The Grunt's head in its glass dome with magenta lightning arcs over it, a big round chrome shoulder plate and a raised pincer claw, no pistol, matching the map sprite. Reviewed at 1:1 and x8 beside the Grunt's portrait.",
+      "acceptedAt": "2026-10-07T20:59:53.707Z"
     },
     "chibi-direction-portrait-martian-tripod": {
       "id": "chibi-direction-portrait-martian-tripod",

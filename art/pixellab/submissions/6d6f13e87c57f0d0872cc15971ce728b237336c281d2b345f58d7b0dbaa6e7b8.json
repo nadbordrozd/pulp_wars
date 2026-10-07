@@ -1,0 +1,36 @@
+{
+  "id": "musk-ox-b-light",
+  "jobId": "8159a447-638c-4583-b9e3-20c22e887be9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-musk-ox",
+    "subject": "UNIT:ICE_FOLK:SWORDSMAN",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 234603,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change the shading of the wool only, so that the animal is lit from the left: the rump, the back and the left half of the body become lighter warm brown wool, colour #8a7560, with a pale highlight along the top left of the back; the chest, the belly and the wool under the head on the right become one tone darker, colour #4a3b30. Do not change any shape or other colour: keep the mane, saddle patch, muzzle, eyes, frost-blue horns, legs, black outline and art style the same, transparent background."
+      }
+    ],
+    "prompt": "Change the shading of the wool only, so that the animal is lit from the left: the rump, the back and the left half of the body become lighter warm brown wool, colour #8a7560, with a pale highlight along the top left of the back; the chest, the belly and the wool under the head on the right become one tone darker, colour #4a3b30. Do not change any shape or other colour: keep the mane, saddle patch, muzzle, eyes, frost-blue horns, legs, black outline and art style the same, transparent background.",
+    "negativePrompt": "",
+    "description": "Change the shading of the wool only, so that the animal is lit from the left: the rump, the back and the left half of the body become lighter warm brown wool, colour #8a7560, with a pale highlight along the top left of the back; the chest, the belly and the wool under the head on the right become one tone darker, colour #4a3b30. Do not change any shape or other colour: keep the mane, saddle patch, muzzle, eyes, frost-blue horns, legs, black outline and art style the same, transparent background.",
+    "editInstruction": "Change the shading of the wool only, so that the animal is lit from the left: the rump, the back and the left half of the body become lighter warm brown wool, colour #8a7560, with a pale highlight along the top left of the back; the chest, the belly and the wool under the head on the right become one tone darker, colour #4a3b30. Do not change any shape or other colour: keep the mane, saddle patch, muzzle, eyes, frost-blue horns, legs, black outline and art style the same, transparent background.",
+    "source": {
+      "recipe": "musk-ox-b",
+      "candidate": 0,
+      "sha256": "bfb419ec04a8f829428fcb2b52c874039f43e941231ced3ad592cf00abb768d0"
+    }
+  }
+}

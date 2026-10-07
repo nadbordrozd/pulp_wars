@@ -28,11 +28,15 @@ import {
   scoreCommandV7,
 } from "../../src/ai/v7";
 import {
+  NINTH_UNIT_STAND_INS_V7,
   chibiFallbackSubjectV7,
   ninthUnitStandInLetterV7,
+  ninthUnitStandInSubjectV7,
   unitArtRoleV7,
   unitArtSubjectV7,
+  type ArtSubjectV7,
 } from "../../src/assets/chibi-art-v7";
+import { chibiDirectionArtRegistryV7 } from "../../src/assets/chibi-direction-art-manifest";
 import { portraitSubjectV7 } from "../../src/assets/chibi-ui-art-v7";
 import {
   DOMAIN_EVENT_KIND_ORDER_V7,
@@ -942,8 +946,8 @@ describe("the ninth unit: technology display names", () => {
   });
 });
 
-describe("the ninth unit: stand-in art", () => {
-  it("keeps a moved unit's art slot and marks the seven new units as stand-ins", () => {
+describe("the ninth unit: its own art", () => {
+  it("keeps a moved unit's art slot and gives the seven new units their own sprite and portrait", () => {
     // The moved units keep the art made for them.
     expect(unitArtRoleV7("SWORDSMAN", "DINOSAUR")).toBe("CATAPULT");
     expect(unitArtRoleV7("SWORDSMAN", "ICE_FOLK")).toBe("GUARD");
@@ -959,44 +963,61 @@ describe("the ninth unit: stand-in art", () => {
     // The Champion keeps the Swordsman's art.
     expect(subject("SWORDSMAN", "ORIGINAL")).toBe("UNIT:SWORDSMAN");
     expect(ninthUnitStandInLetterV7("UNIT:SWORDSMAN")).toBeNull();
-    // Each new unit is the ninth art slot of its faction, drawn as the
-    // nearest unit of that faction and lettered.
-    const standIns: readonly (readonly [
+    // Each new unit is the ninth art slot of its faction. Bead
+    // `pulp_wars-2yc.34`: each has its own sprite and portrait in the live
+    // registry, no sibling stands in, and no unit wears the letter badge.
+    expect(NINTH_UNIT_STAND_INS_V7).toEqual({});
+    const live = chibiDirectionArtRegistryV7();
+    const newUnits: readonly (readonly [
       FactionIdV7,
       UnitRoleIdV7,
       string,
       string,
     ])[] = [
-      ["UNDEAD", "SWORDSMAN", "FIGHTER", "W"],
-      ["GOBLIN", "SWORDSMAN", "GUARD", "O"],
-      ["MARTIAN", "SWORDSMAN", "FIGHTER", "T"],
-      ["CANDY", "SWORDSMAN", "GUARD", "J"],
-      ["DINOSAUR", "CATAPULT", "GUARD", "S"],
-      ["ICE_FOLK", "GUARD", "GUARD", "X"],
-      ["DWARF", "KNIGHT", "MARKSMAN", "W"],
+      ["UNDEAD", "SWORDSMAN", "undead-wight", "FIGHTER"],
+      ["GOBLIN", "SWORDSMAN", "goblin-ogre", "GUARD"],
+      ["MARTIAN", "SWORDSMAN", "martian-shock-trooper", "FIGHTER"],
+      ["CANDY", "SWORDSMAN", "candy-jawbreaker", "GUARD"],
+      ["DINOSAUR", "CATAPULT", "dinosaur-stegosaurus", "GUARD"],
+      ["ICE_FOLK", "GUARD", "ice-folk-musk-ox", "GUARD"],
+      ["DWARF", "KNIGHT", "dwarf-whirligig", "MARKSMAN"],
     ];
-    for (const [faction, role, standIn, letter] of standIns) {
+    for (const [faction, role, name, formerStandIn] of newUnits) {
       const own = subject(role, faction);
       expect(own, faction).toBe(`UNIT:${faction}:SWORDSMAN`);
-      expect(chibiFallbackSubjectV7(own), faction).toBe(
-        `UNIT:${faction}:${standIn}`,
-      );
-      expect(ninthUnitStandInLetterV7(own), faction).toBe(letter);
+      expect(
+        live.variants(own).map((asset) => asset.id),
+        faction,
+      ).toEqual([`chibi-direction-${name}`]);
+      expect(ninthUnitStandInSubjectV7(own), faction).toBeNull();
+      expect(ninthUnitStandInLetterV7(own), faction).toBeNull();
       const portrait = portraitSubjectV7(role, faction);
       expect(portrait, faction).toBe(`PORTRAIT:${faction}:SWORDSMAN`);
+      expect(
+        live.variants(portrait).map((asset) => asset.id),
+        faction,
+      ).toEqual([`chibi-direction-portrait-${name}`]);
+      expect(ninthUnitStandInSubjectV7(portrait), faction).toBeNull();
+      // The sibling that stood in keeps its own art and is another raster.
+      const sibling = live.variants(
+        `UNIT:${faction}:${formerStandIn}` as ArtSubjectV7,
+      );
+      expect(sibling).toHaveLength(1);
+      expect(sibling[0]?.id, faction).not.toBe(`chibi-direction-${name}`);
+      // In a look without the faction's art it falls back like every
+      // other faction subject: to the Human unit of the slot.
+      expect(chibiFallbackSubjectV7(own), faction).toBe("UNIT:SWORDSMAN");
       expect(chibiFallbackSubjectV7(portrait), faction).toBe(
-        `PORTRAIT:${faction}:${standIn}`,
+        "PORTRAIT:SWORDSMAN",
       );
     }
-    // No other unit subject is a stand-in.
+    // No unit subject is a stand-in.
     for (const faction of FACTION_IDS_V7)
-      for (const role of LAND_ROLES) {
-        const own = subject(role, faction);
+      for (const role of LAND_ROLES)
         expect(
-          ninthUnitStandInLetterV7(own) !== null,
+          ninthUnitStandInLetterV7(subject(role, faction)),
           `${faction} ${role}`,
-        ).toBe(own.endsWith(":SWORDSMAN") && faction !== "ORIGINAL");
-      }
+        ).toBeNull();
     expect(
       NAVAL_ROLE_IDS_V7.map((role) => unitArtRoleV7(role, "DWARF")),
     ).toEqual(NAVAL_ROLE_IDS_V7);

@@ -1,0 +1,64 @@
+{
+  "id": "musk-ox-b",
+  "jobId": "sync-5c24063a-90b8-4b85-8c6f-23b0e4798203",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-musk-ox",
+    "subject": "UNIT:ICE_FOLK:SWORDSMAN",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 234602,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+        "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+        "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+        "text": "Subject: Musk Ox, a chunky cute shaggy musk ox, low and very wide like a wall of wool, clearly lower and smaller than a mammoth: a long skirt of shaggy dark brown-grey wool, colour #6b5a4a, hanging almost to the ground, with a pale warm cream saddle patch on its back and a cream fringe over the brow, a big broad head held low with a dark charcoal slate muzzle and small friendly eyes, two big thick pale ivory horns that sweep down beside the cheeks and hook up and forward at their tips, with bright ice blue frost on the tips, four very short legs with pale cream socks and dark slate hooves, a tiny tail; no trunk and no tusks; simple shapes and very few details; the hooves are the lowest thing in the image."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "It is a four-legged animal: it stands on all four legs with its body level and low, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+        "negative": "rider, person, saddle, blanket, armour, trunk, tusks, elephant, mammoth, bison hump, cow, bull, orange wool, white wool, blue-grey wool, two animals"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Musk Ox, a chunky cute shaggy musk ox, low and very wide like a wall of wool, clearly lower and smaller than a mammoth: a long skirt of shaggy dark brown-grey wool, colour #6b5a4a, hanging almost to the ground, with a pale warm cream saddle patch on its back and a cream fringe over the brow, a big broad head held low with a dark charcoal slate muzzle and small friendly eyes, two big thick pale ivory horns that sweep down beside the cheeks and hook up and forward at their tips, with bright ice blue frost on the tips, four very short legs with pale cream socks and dark slate hooves, a tiny tail; no trunk and no tusks; simple shapes and very few details; the hooves are the lowest thing in the image. It is a four-legged animal: it stands on all four legs with its body level and low, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, armour, trunk, tusks, elephant, mammoth, bison hump, cow, bull, orange wool, white wool, blue-grey wool, two animals",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Musk Ox, a chunky cute shaggy musk ox, low and very wide like a wall of wool, clearly lower and smaller than a mammoth: a long skirt of shaggy dark brown-grey wool, colour #6b5a4a, hanging almost to the ground, with a pale warm cream saddle patch on its back and a cream fringe over the brow, a big broad head held low with a dark charcoal slate muzzle and small friendly eyes, two big thick pale ivory horns that sweep down beside the cheeks and hook up and forward at their tips, with bright ice blue frost on the tips, four very short legs with pale cream socks and dark slate hooves, a tiny tail; no trunk and no tusks; simple shapes and very few details; the hooves are the lowest thing in the image. It is a four-legged animal: it stands on all four legs with its body level and low, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, armour, trunk, tusks, elephant, mammoth, bison hump, cow, bull, orange wool, white wool, blue-grey wool, two animals."
+  }
+}

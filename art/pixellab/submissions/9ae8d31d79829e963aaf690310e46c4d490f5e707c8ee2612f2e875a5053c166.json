@@ -1,0 +1,36 @@
+{
+  "id": "portrait-ogre-a-jade",
+  "jobId": "cb1ee388-608d-48c3-bc36-509990040d04",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-ogre",
+    "subject": "PORTRAIT:GOBLIN:SWORDSMAN",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 234152,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his skin: the pale yellow-green skin of his face, ears, neck, shoulders and chest becomes a cooler pale jade mint green, colour #a3d1b5, with #6aa98a shadows: clearly a blue-ish mint, not yellow-green. Do not change any shape: keep the closed sleepy eyes, the nose, the teeth, the tin bucket hat, the straps, the club, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only his skin: the pale yellow-green skin of his face, ears, neck, shoulders and chest becomes a cooler pale jade mint green, colour #a3d1b5, with #6aa98a shadows: clearly a blue-ish mint, not yellow-green. Do not change any shape: keep the closed sleepy eyes, the nose, the teeth, the tin bucket hat, the straps, the club, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only his skin: the pale yellow-green skin of his face, ears, neck, shoulders and chest becomes a cooler pale jade mint green, colour #a3d1b5, with #6aa98a shadows: clearly a blue-ish mint, not yellow-green. Do not change any shape: keep the closed sleepy eyes, the nose, the teeth, the tin bucket hat, the straps, the club, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only his skin: the pale yellow-green skin of his face, ears, neck, shoulders and chest becomes a cooler pale jade mint green, colour #a3d1b5, with #6aa98a shadows: clearly a blue-ish mint, not yellow-green. Do not change any shape: keep the closed sleepy eyes, the nose, the teeth, the tin bucket hat, the straps, the club, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-ogre-a",
+      "candidate": 0,
+      "sha256": "50d2039eb2c7ad9fd38db025bbf9156749c2cc7e2f0a3adddc7cf5014f5a1735"
+    }
+  }
+}

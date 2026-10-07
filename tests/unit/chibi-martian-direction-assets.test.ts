@@ -70,6 +70,9 @@ const UNITS = [
   ["CATAPULT", "tripod", "CATAPULT"],
   ["KNIGHT", "mothership", "KNIGHT"],
   ["JUGGERNAUT", "colossus", "JUGGERNAUT"],
+  // The ninth art slot (ruleset 7r55, bead pulp_wars-2yc.34): the Shock
+  // Trooper, the heavy line unit.
+  ["SWORDSMAN", "shock-trooper", "SWORDSMAN"],
 ] as const;
 const ICONS = [
   ["ICON:ACTION:BEAM_DOWN", "action-beam-down"],
@@ -126,7 +129,7 @@ describe("Martian production art (pulp_wars-t6s.6)", () => {
     CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7.map((asset) => [asset.id, asset]),
   );
 
-  it("lists the eight units and portraits, seven icons, five effects and City 1-3", () => {
+  it("lists the nine units and portraits, seven icons, five effects and City 1-3", () => {
     const expected: [ArtSubjectV7, string][] = [
       ...UNITS.map(
         ([role, name]) =>

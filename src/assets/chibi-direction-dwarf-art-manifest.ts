@@ -101,6 +101,29 @@ export const CHIBI_DIRECTION_DWARF_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     ),
     fixedColours: true,
   },
+  // The Whirligig (ruleset 7r55, bead pulp_wars-2yc.34): the ninth art slot
+  // (the Steam Tank keeps the slot KNIGHT); its portrait shows the whole
+  // machine.
+  {
+    id: "chibi-direction-dwarf-whirligig",
+    subject: "UNIT:DWARF:SWORDSMAN",
+    assetClass: "LARGE_UNIT",
+    width: 72,
+    height: 88,
+    url: chibiArtUrl("assets/chibi/units/chibi-direction-dwarf-whirligig.png"),
+    fixedColours: true,
+  },
+  {
+    id: "chibi-direction-portrait-dwarf-whirligig",
+    subject: "PORTRAIT:DWARF:SWORDSMAN",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-direction-portrait-dwarf-whirligig.png",
+    ),
+    fixedColours: true,
+  },
   {
     id: "chibi-direction-dwarf-mound",
     subject: "UNIT:DWARF:MOUND",

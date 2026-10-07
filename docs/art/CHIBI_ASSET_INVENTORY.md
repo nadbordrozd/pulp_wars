@@ -442,7 +442,33 @@ WAAAGH! icons (batch `5-goblin`, unchanged) and the shared ships.
 | 4                  | Windmill, Sawmill, Forge, Workshop, Market, Shipyard, Patrol Boat, Battleship, Embarked form           | 9                                                                                                                                                     |
 | 5                  | portraits, 23 technology icons, action, reward and HUD art                                             | 8 portraits, 3 dedicated technology icons plus 5 reused portraits or actions, 13 action icons, 3 reward icons, 2 HUD icons; vector glyphs by decision |
 | `direction-human`  | the 9 Human land units and their portraits, the 10 improvements, City 1–3, the Village (new direction) | 32                                                                                                                                                    |
-| `direction-goblin` | the 8 Goblin land units and their portraits, Goblin City 1–3 (new direction)                           | 19                                                                                                                                                    |
+| `direction-goblin` | the 9 Goblin land units and their portraits, Goblin City 1–3 (new direction)                           | 21                                                                                                                                                    |
+
+## The ninth units (bead `pulp_wars-2yc.34`)
+
+Ruleset `7r55` added seven land units, filed under the art slot
+`<FACTION>:SWORDSMAN` (`unitArtRoleV7`). Each has a board sprite and a
+portrait in its faction's direction batch and manifest, fixed colours, no
+mask, the default anchor; the sections above that count "eight" units of a
+faction describe the batches as first made. What each shows is in the
+"Ninth unit" section of its [faction document](factions/).
+
+| Subject                                  | Asset id                                    | Batch                | Canvas  | Class           | Recipe class                                                          | Accent            |
+| ---------------------------------------- | ------------------------------------------- | -------------------- | ------- | --------------- | --------------------------------------------------------------------- | ----------------- |
+| `UNIT:GOBLIN:SWORDSMAN` (Ogre)           | `chibi-direction-goblin-ogre`               | `direction-goblin`   | 72 x 88 | `LARGE_UNIT`    | `unit`                                                                | `goblin-hazard`   |
+| `UNIT:UNDEAD:SWORDSMAN` (Wight)          | `chibi-direction-undead-wight`              | `direction-undead`   | 56 x 80 | `STANDARD_UNIT` | `unit`                                                                | `undead-violet`   |
+| `UNIT:DINOSAUR:SWORDSMAN` (Stegosaurus)  | `chibi-direction-dinosaur-stegosaurus`      | `direction-dinosaur` | 72 x 88 | `LARGE_UNIT`    | `unit`                                                                | none              |
+| `UNIT:MARTIAN:SWORDSMAN` (Shock Trooper) | `chibi-direction-martian-shock-trooper`     | `direction-martian`  | 56 x 80 | `STANDARD_UNIT` | `unit`                                                                | `martian-magenta` |
+| `UNIT:ICE_FOLK:SWORDSMAN` (Musk Ox)      | `chibi-direction-ice-folk-musk-ox`          | `direction-ice-folk` | 56 x 80 | `STANDARD_UNIT` | `unit`                                                                | `ice-folk-blue`   |
+| `UNIT:DWARF:SWORDSMAN` (Whirligig)       | `chibi-direction-dwarf-whirligig`           | `direction-dwarf`    | 72 x 88 | `LARGE_UNIT`    | `machine`                                                             | `dwarf-copper`    |
+| `UNIT:CANDY:SWORDSMAN` (Jawbreaker)      | `chibi-direction-candy-jawbreaker`          | `direction-candy`    | 56 x 80 | `STANDARD_UNIT` | `unit`                                                                | `candy-pink`      |
+| `PORTRAIT:<FACTION>:SWORDSMAN` (seven)   | `chibi-direction-portrait-<faction>-<unit>` | the same batch       | 48 x 48 | `PORTRAIT`      | `portrait`; `icon` for the Stegosaurus and the Whirligig, shown whole | as the unit       |
+
+The Ogre is a `LARGE_UNIT` (between the Orc Brute and the Troll); the
+Stegosaurus and the Whirligig take the canvas of the role they are fielded
+in (siege and breakthrough), the Triceratops's and the Steam Tank's. No Egg
+art, attack frames or badges were made: units of this art set have one
+sprite and one portrait, and the Stegosaurus's Egg is the shared one.
 
 ## Flags the plan did not foresee
 

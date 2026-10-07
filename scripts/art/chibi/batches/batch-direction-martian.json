@@ -384,6 +384,30 @@
       "ownerColour": false,
       "subjectKey": "CITY:MARTIAN:3/CALM",
       "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-martian-shock-trooper",
+      "subject": "UNIT:MARTIAN:SWORDSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-portrait-martian-shock-trooper",
+      "subject": "PORTRAIT:MARTIAN:SWORDSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
     }
   ],
   "recipes": [
@@ -1621,6 +1645,57 @@
       },
       "editInstruction": "Add a second deck: under the wide chrome disc draw a second chrome disc of the same width, directly below it and touching it, with its own ring of hot magenta lights along its rim; the round magenta beam port sits in the middle of this lower disc, short and wide. The ship now fills the image from left to right. Keep the upper disc, the dark armoured dome, the fins, the antenna, the chrome colours, thick black outline and art style exactly the same, on a transparent background.",
       "notes": "Bead pulp_wars-2o7.3: portrait-mothership-r6-a got the armoured dome but still shows one disc over a pod; the map sprite has two stacked decks."
+    },
+    {
+      "id": "shock-trooper-a",
+      "asset": "chibi-direction-martian-shock-trooper",
+      "endpoint": "edit-image-pixen",
+      "seed": 234401,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "grunt-r5-edit-b",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw him as a squat heavy armoured brawler, twice as wide: his body becomes a round polished chrome battle-suit like a barrel with two big round chrome shoulder domes and short thick armoured legs. Remove the pistol: his right arm ends in a huge heavy chrome pincer claw held forward, the left in a big chrome fist. Thin jagged hot magenta lightning arcs crackle over the shoulder domes. Keep his head, black eyes, glass dome helmet, thick black outline and art style, transparent background.",
+      "notes": "Bead pulp_wars-2yc.34: the Shock Trooper (ruleset 7r55, the Martian heavy line unit), first sample: the accepted Grunt's head and helmet on a wide chrome battle-suit with a pincer arm and lightning arcs, no gun."
+    },
+    {
+      "id": "shock-trooper-b",
+      "asset": "chibi-direction-martian-shock-trooper",
+      "endpoint": "edit-image-pixen",
+      "seed": 234402,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "shield-projector-r5-edit-a-3",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Remove the round shield disc completely, so his whole armoured body shows: a wide round polished chrome chest like a barrel with one small hot magenta chest light. His two hands become two huge heavy chrome pincer claws held out at his sides. Remove the two antennae. Thin jagged hot magenta lightning arcs crackle over both big shoulder plates. Keep his head, black eyes, glass bubble helmet, shoulder plates, thick legs, wide stance, thick black outline and art style, transparent background.",
+      "notes": "Bead pulp_wars-2yc.34: second sample of the Shock Trooper: the accepted Shield Projector's heavy armour with no shield disc, two pincer claws and lightning arcs on the shoulders."
+    },
+    {
+      "id": "portrait-shock-trooper-a",
+      "asset": "chibi-direction-portrait-martian-shock-trooper",
+      "endpoint": "edit-image-pixen",
+      "seed": 234451,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-grunt-b-edit",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Change only what he wears and holds. His narrow shoulders become very big round polished chrome shoulder plates of a heavy battle-suit, wider than his helmet. Remove the pistol completely: in its place one heavy chrome pincer claw raised beside the head. Thin jagged hot magenta lightning arcs crackle over the glass dome and the shoulder plates. Keep his head, big black eyes, glass dome helmet, antenna, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.34: the Shock Trooper's bust from the Grunt's, to match the accepted map sprite (shock-trooper-a): the same head and dome over big chrome shoulder plates, lightning arcs and a pincer, no pistol."
     }
   ]
 }

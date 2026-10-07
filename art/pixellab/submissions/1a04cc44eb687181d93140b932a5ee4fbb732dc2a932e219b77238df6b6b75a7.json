@@ -1,0 +1,36 @@
+{
+  "id": "wight-c",
+  "jobId": "67cc55f1-a5e0-4772-8277-4695e80666c8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-undead-wight",
+    "subject": "UNIT:UNDEAD:SWORDSMAN",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 234203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the armour: the helm, pauldrons, arm guards and breastplate become lighter weathered iron, mid grey #7a7f88 with #4a4d55 shadows and a few rust-brown patches, lightest on their left sides; the crown and the armour rims stay tarnished bronze. Add a thin bright violet trim along the hem of the mail skirt. Do not redraw anything else: keep the violet eye slits, greataxe, bone hands and feet, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the armour: the helm, pauldrons, arm guards and breastplate become lighter weathered iron, mid grey #7a7f88 with #4a4d55 shadows and a few rust-brown patches, lightest on their left sides; the crown and the armour rims stay tarnished bronze. Add a thin bright violet trim along the hem of the mail skirt. Do not redraw anything else: keep the violet eye slits, greataxe, bone hands and feet, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the armour: the helm, pauldrons, arm guards and breastplate become lighter weathered iron, mid grey #7a7f88 with #4a4d55 shadows and a few rust-brown patches, lightest on their left sides; the crown and the armour rims stay tarnished bronze. Add a thin bright violet trim along the hem of the mail skirt. Do not redraw anything else: keep the violet eye slits, greataxe, bone hands and feet, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only the armour: the helm, pauldrons, arm guards and breastplate become lighter weathered iron, mid grey #7a7f88 with #4a4d55 shadows and a few rust-brown patches, lightest on their left sides; the crown and the armour rims stay tarnished bronze. Add a thin bright violet trim along the hem of the mail skirt. Do not redraw anything else: keep the violet eye slits, greataxe, bone hands and feet, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "wight-a",
+      "candidate": 0,
+      "sha256": "3060d75497ee625f6caad7a6b46401d0e0e1c068863f9b274d8a7d99f9c72459"
+    }
+  }
+}

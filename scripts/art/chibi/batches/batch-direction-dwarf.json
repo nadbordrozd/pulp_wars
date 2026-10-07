@@ -427,6 +427,30 @@
       },
       "ownerColour": false,
       "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-dwarf-whirligig",
+      "subject": "UNIT:DWARF:SWORDSMAN",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-portrait-dwarf-whirligig",
+      "subject": "PORTRAIT:DWARF:SWORDSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
     }
   ],
   "recipes": [
@@ -1581,6 +1605,106 @@
       },
       "editInstruction": "Remove all ground: erase the green grass and the dirt slab under the city, so the walls, towers, halls, the rock peak and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper domes and roofs, the chimneys and steam, the cog wheel, the tall iron pole, the colours, outline and art style exactly the same.",
       "notes": "The city stands on a grass and dirt slab."
+    },
+    {
+      "id": "whirligig-a",
+      "asset": "chibi-direction-dwarf-whirligig",
+      "endpoint": "create-image-pixen",
+      "seed": 234701,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The machine with its three hammers fills most of the width of the image. It is lit from the left.",
+      "negativeAddendum": "dwarf, beard, face, mouth, person, human, legs, feet, cannon, gun, smokestack, caterpillar tracks, helicopter rotor, propeller, four hammers, two hammers, motion lines",
+      "notes": "Bead pulp_wars-2yc.34: the Whirligig (ruleset 7r55, the Dwarf breakthrough unit), first sample: a fresh creation with the machine class at the LARGE_UNIT size."
+    },
+    {
+      "id": "whirligig-b",
+      "asset": "chibi-direction-dwarf-whirligig",
+      "endpoint": "create-image-pixen",
+      "seed": 234702,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The machine with its three hammers fills most of the width of the image. It is lit from the left.",
+      "negativeAddendum": "dwarf, beard, face, mouth, person, human, legs, feet, cannon, gun, smokestack, caterpillar tracks, helicopter rotor, propeller, four hammers, two hammers, motion lines",
+      "notes": "Bead pulp_wars-2yc.34: second sample of the Whirligig, the same request with another seed."
+    },
+    {
+      "id": "whirligig-a-three",
+      "asset": "chibi-direction-dwarf-whirligig",
+      "endpoint": "edit-image-pixen",
+      "seed": 234703,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "whirligig-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the hammers at the bottom: erase the bottom left and the bottom right black hammer blocks with their arms, and draw one single big square soot-black iron hammer head on a short copper arm at the front centre of the copper band, between where they were. The machine then has exactly three hammers: top left, top right and front centre. Also erase the thin pale ring lines around the machine. Keep the body, copper band, key, lamp, steam, wheel, black outline and style the same.",
+      "notes": "Bead pulp_wars-2yc.34: whirligig-a is the right machine (an iron spinning top with a copper band on one wheel, the key and the green lamp on top) but shows four hammers, and Three Hammers is the rule: two at the back and one at the front centre."
+    },
+    {
+      "id": "portrait-whirligig-a",
+      "asset": "chibi-direction-portrait-dwarf-whirligig",
+      "endpoint": "create-image-pixen",
+      "seed": 234751,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The machine with its three hammers fills the whole square.",
+      "negativeAddendum": "grass, ground, slab, platform, dwarf, beard, face, person, legs, feet, cannon, gun, caterpillar tracks, propeller, four hammers, two hammers, motion lines",
+      "notes": "Bead pulp_wars-2yc.34: the Whirligig's portrait, a machine portrait with the icon class shown whole, as for the Steam Tank's."
+    },
+    {
+      "id": "portrait-whirligig-b",
+      "asset": "chibi-direction-portrait-dwarf-whirligig",
+      "endpoint": "create-image-pixen",
+      "seed": 234752,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The machine with its three hammers fills the whole square.",
+      "negativeAddendum": "grass, ground, slab, platform, dwarf, beard, face, person, legs, feet, cannon, gun, caterpillar tracks, propeller, four hammers, two hammers, motion lines",
+      "notes": "Bead pulp_wars-2yc.34: second sample of the Whirligig's portrait, another seed."
+    },
+    {
+      "id": "portrait-whirligig-b-ring",
+      "asset": "chibi-direction-portrait-dwarf-whirligig",
+      "endpoint": "edit-image-pixen",
+      "seed": 234753,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-whirligig-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the pale grey-blue swirl ring around the machine completely, on both sides, leaving those areas transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.34: portrait-whirligig-b is the right machine with exactly three hammers, but a pale blue motion ring is drawn round it: effects are not baked into a sprite, and blue is not a Dwarf colour."
+    },
+    {
+      "id": "portrait-whirligig-b-wisp",
+      "asset": "chibi-direction-portrait-dwarf-whirligig",
+      "endpoint": "edit-image-pixen",
+      "seed": 234754,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-whirligig-b-ring",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the small pale blue-grey wisp of steam at the upper right, between the green lamp and the top right hammer, leaving that area transparent. Do not redraw anything else: keep the round soot-black iron body, the copper band, the three black hammer heads on their copper arms, the two glass lenses, the green lamp on top, the wheel at the bottom, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-2yc.34, correction pass: a small bluish steam wisp was left beside the lamp of portrait-whirligig-b-ring."
     }
   ]
 }

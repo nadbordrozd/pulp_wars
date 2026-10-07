@@ -3228,6 +3228,251 @@
         "reviewedAt": "2026-10-02T23:12:29.960Z"
       }
     },
+    "musk-ox-a": {
+      "id": "musk-ox-a",
+      "asset": "chibi-direction-ice-folk-musk-ox",
+      "jobId": "sync-4fe0027b-d454-4557-bef5-fce79efb41c7",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-ice-folk-musk-ox",
+        "subject": "UNIT:ICE_FOLK:SWORDSMAN",
+        "faction": "ICE_FOLK",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 234601,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+            "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+            "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: Musk Ox, a chunky cute shaggy musk ox, low and very wide like a wall of wool, clearly lower and smaller than a mammoth: a long skirt of shaggy dark brown-grey wool, colour #6b5a4a, hanging almost to the ground, with a pale warm cream saddle patch on its back and a cream fringe over the brow, a big broad head held low with a dark charcoal slate muzzle and small friendly eyes, two big thick pale ivory horns that sweep down beside the cheeks and hook up and forward at their tips, with bright ice blue frost on the tips, four very short legs with pale cream socks and dark slate hooves, a tiny tail; no trunk and no tusks; simple shapes and very few details; the hooves are the lowest thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It is a four-legged animal: it stands on all four legs with its body level and low, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+            "negative": "rider, person, saddle, blanket, armour, trunk, tusks, elephant, mammoth, bison hump, cow, bull, orange wool, white wool, blue-grey wool, two animals"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Musk Ox, a chunky cute shaggy musk ox, low and very wide like a wall of wool, clearly lower and smaller than a mammoth: a long skirt of shaggy dark brown-grey wool, colour #6b5a4a, hanging almost to the ground, with a pale warm cream saddle patch on its back and a cream fringe over the brow, a big broad head held low with a dark charcoal slate muzzle and small friendly eyes, two big thick pale ivory horns that sweep down beside the cheeks and hook up and forward at their tips, with bright ice blue frost on the tips, four very short legs with pale cream socks and dark slate hooves, a tiny tail; no trunk and no tusks; simple shapes and very few details; the hooves are the lowest thing in the image. It is a four-legged animal: it stands on all four legs with its body level and low, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, armour, trunk, tusks, elephant, mammoth, bison hump, cow, bull, orange wool, white wool, blue-grey wool, two animals",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Musk Ox, a chunky cute shaggy musk ox, low and very wide like a wall of wool, clearly lower and smaller than a mammoth: a long skirt of shaggy dark brown-grey wool, colour #6b5a4a, hanging almost to the ground, with a pale warm cream saddle patch on its back and a cream fringe over the brow, a big broad head held low with a dark charcoal slate muzzle and small friendly eyes, two big thick pale ivory horns that sweep down beside the cheeks and hook up and forward at their tips, with bright ice blue frost on the tips, four very short legs with pale cream socks and dark slate hooves, a tiny tail; no trunk and no tusks; simple shapes and very few details; the hooves are the lowest thing in the image. It is a four-legged animal: it stands on all four legs with its body level and low, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, armour, trunk, tusks, elephant, mammoth, bison hump, cow, bull, orange wool, white wool, blue-grey wool, two animals."
+      },
+      "submittedAt": "2026-10-07T20:41:08.562Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/musk-ox-a.png",
+      "rawSheetSha256": "20f560b1efc7e81e3842d2c9c79e1a6c2b7c64f6b035364218aaf2c3c0152a0f",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.0184,
+          "footprintWidthShare": 0.7736,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:41:43.582Z",
+      "usageUsd": 0.008313359366522895,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A tall bison seen from the front with a cream mane and a stray cream blob on its flank: 65 px high (taller than the Mammoth), not the low wide wall the unit is, and the horns point up like a bull's.",
+        "reviewedAt": "2026-10-07T20:47:27.979Z"
+      }
+    },
+    "musk-ox-b": {
+      "id": "musk-ox-b",
+      "asset": "chibi-direction-ice-folk-musk-ox",
+      "jobId": "sync-5c24063a-90b8-4b85-8c6f-23b0e4798203",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-ice-folk-musk-ox",
+        "subject": "UNIT:ICE_FOLK:SWORDSMAN",
+        "faction": "ICE_FOLK",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 234602,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+            "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+            "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: Musk Ox, a chunky cute shaggy musk ox, low and very wide like a wall of wool, clearly lower and smaller than a mammoth: a long skirt of shaggy dark brown-grey wool, colour #6b5a4a, hanging almost to the ground, with a pale warm cream saddle patch on its back and a cream fringe over the brow, a big broad head held low with a dark charcoal slate muzzle and small friendly eyes, two big thick pale ivory horns that sweep down beside the cheeks and hook up and forward at their tips, with bright ice blue frost on the tips, four very short legs with pale cream socks and dark slate hooves, a tiny tail; no trunk and no tusks; simple shapes and very few details; the hooves are the lowest thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It is a four-legged animal: it stands on all four legs with its body level and low, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+            "negative": "rider, person, saddle, blanket, armour, trunk, tusks, elephant, mammoth, bison hump, cow, bull, orange wool, white wool, blue-grey wool, two animals"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Musk Ox, a chunky cute shaggy musk ox, low and very wide like a wall of wool, clearly lower and smaller than a mammoth: a long skirt of shaggy dark brown-grey wool, colour #6b5a4a, hanging almost to the ground, with a pale warm cream saddle patch on its back and a cream fringe over the brow, a big broad head held low with a dark charcoal slate muzzle and small friendly eyes, two big thick pale ivory horns that sweep down beside the cheeks and hook up and forward at their tips, with bright ice blue frost on the tips, four very short legs with pale cream socks and dark slate hooves, a tiny tail; no trunk and no tusks; simple shapes and very few details; the hooves are the lowest thing in the image. It is a four-legged animal: it stands on all four legs with its body level and low, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, armour, trunk, tusks, elephant, mammoth, bison hump, cow, bull, orange wool, white wool, blue-grey wool, two animals",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Musk Ox, a chunky cute shaggy musk ox, low and very wide like a wall of wool, clearly lower and smaller than a mammoth: a long skirt of shaggy dark brown-grey wool, colour #6b5a4a, hanging almost to the ground, with a pale warm cream saddle patch on its back and a cream fringe over the brow, a big broad head held low with a dark charcoal slate muzzle and small friendly eyes, two big thick pale ivory horns that sweep down beside the cheeks and hook up and forward at their tips, with bright ice blue frost on the tips, four very short legs with pale cream socks and dark slate hooves, a tiny tail; no trunk and no tusks; simple shapes and very few details; the hooves are the lowest thing in the image. It is a four-legged animal: it stands on all four legs with its body level and low, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, armour, trunk, tusks, elephant, mammoth, bison hump, cow, bull, orange wool, white wool, blue-grey wool, two animals."
+      },
+      "submittedAt": "2026-10-07T20:41:43.586Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/musk-ox-b.png",
+      "rawSheetSha256": "bfb419ec04a8f829428fcb2b52c874039f43e941231ced3ad592cf00abb768d0",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0.0792,
+          "footprintWidthShare": 0.7037,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:42:38.899Z",
+      "usageUsd": 0.01054473967022366,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-2yc.34: accepted Musk Ox. A low wide body under a skirt of dark brown wool with a paler mane and a rust-brown saddle patch, a slate muzzle held low and two thick horns curling down beside the cheeks, coated in ice-blue frost; 54 x 53 px, lower than the Mammoth (53 x 61) and as low as the Yeti. Reviewed at 1:1 and x4 on Grass, Snow and Mountain beside the Yeti, the Mammoth and the Sabretooth.",
+        "reviewedAt": "2026-10-07T20:57:02.259Z"
+      }
+    },
+    "musk-ox-b-light": {
+      "id": "musk-ox-b-light",
+      "asset": "chibi-direction-ice-folk-musk-ox",
+      "jobId": "8159a447-638c-4583-b9e3-20c22e887be9",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-ice-folk-musk-ox",
+        "subject": "UNIT:ICE_FOLK:SWORDSMAN",
+        "faction": "ICE_FOLK",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 234603,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change the shading of the wool only, so that the animal is lit from the left: the rump, the back and the left half of the body become lighter warm brown wool, colour #8a7560, with a pale highlight along the top left of the back; the chest, the belly and the wool under the head on the right become one tone darker, colour #4a3b30. Do not change any shape or other colour: keep the mane, saddle patch, muzzle, eyes, frost-blue horns, legs, black outline and art style the same, transparent background."
+          }
+        ],
+        "prompt": "Change the shading of the wool only, so that the animal is lit from the left: the rump, the back and the left half of the body become lighter warm brown wool, colour #8a7560, with a pale highlight along the top left of the back; the chest, the belly and the wool under the head on the right become one tone darker, colour #4a3b30. Do not change any shape or other colour: keep the mane, saddle patch, muzzle, eyes, frost-blue horns, legs, black outline and art style the same, transparent background.",
+        "negativePrompt": "",
+        "description": "Change the shading of the wool only, so that the animal is lit from the left: the rump, the back and the left half of the body become lighter warm brown wool, colour #8a7560, with a pale highlight along the top left of the back; the chest, the belly and the wool under the head on the right become one tone darker, colour #4a3b30. Do not change any shape or other colour: keep the mane, saddle patch, muzzle, eyes, frost-blue horns, legs, black outline and art style the same, transparent background.",
+        "editInstruction": "Change the shading of the wool only, so that the animal is lit from the left: the rump, the back and the left half of the body become lighter warm brown wool, colour #8a7560, with a pale highlight along the top left of the back; the chest, the belly and the wool under the head on the right become one tone darker, colour #4a3b30. Do not change any shape or other colour: keep the mane, saddle patch, muzzle, eyes, frost-blue horns, legs, black outline and art style the same, transparent background.",
+        "source": {
+          "recipe": "musk-ox-b",
+          "candidate": 0,
+          "sha256": "bfb419ec04a8f829428fcb2b52c874039f43e941231ced3ad592cf00abb768d0"
+        }
+      },
+      "submittedAt": "2026-10-07T21:24:30.503Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/musk-ox-b-light.png",
+      "rawSheetSha256": "95d0b6a54fbf62c8d10ac1042e1887689972a9a5d6f8e04acd8c104dabc4f20f",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0.2679,
+          "footprintWidthShare": 0.7037,
+          "suspect": true
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.2679,
+          "footprintWidthShare": 0.7037,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-07T21:25:16.504Z",
+      "usageUsd": 0.0072698142793443474,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Correction pass: the relight turned the whole skirt of wool light tan, the Mammoth's colour, so the Musk Ox lost the dark coat that sets it apart, and the face went near-black. Not clearly better than musk-ox-b, which stays accepted.",
+        "reviewedAt": "2026-10-07T21:25:35.628Z"
+      }
+    },
     "portrait-boulder-yeti-a": {
       "id": "portrait-boulder-yeti-a",
       "asset": "chibi-direction-portrait-ice-folk-boulder-yeti",
@@ -3931,6 +4176,95 @@
         "candidate": 0,
         "notes": "Mammoth portrait: a whole small mammoth with cream wool, a charcoal face and trunk and frosted tusks. Weak: a whole figure, not a bust.",
         "reviewedAt": "2026-10-02T23:48:47.924Z"
+      }
+    },
+    "portrait-musk-ox-a": {
+      "id": "portrait-musk-ox-a",
+      "asset": "chibi-direction-portrait-ice-folk-musk-ox",
+      "jobId": "sync-27813b58-51fb-4f58-8ca1-132685ca2852",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-portrait-ice-folk-musk-ox",
+        "subject": "PORTRAIT:ICE_FOLK:SWORDSMAN",
+        "faction": "ICE_FOLK",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 234651,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+            "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+            "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: Musk Ox portrait, the head and shoulders of a chunky cute shaggy musk ox seen from the front-right: a big broad head held low, covered in shaggy dark brown-grey wool, colour #6b5a4a, with a paler brown mane over the brow, a dark charcoal slate muzzle, small friendly eyes, and two big thick horns that sweep down beside the cheeks and hook up and forward at their tips, coated in bright ice blue frost; no trunk and no tusks."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "A close-up of the head only: the big shaggy dark brown head with its two frost-blue horns fills the whole square; no body and no legs. The wool is dark brown-grey, never orange, red or white.",
+            "negative": "full body, legs, feet, hooves, rider, saddle, trunk, tusks, elephant, mammoth, cow, bull, orange wool, red wool, white wool, cream wool"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Musk Ox portrait, the head and shoulders of a chunky cute shaggy musk ox seen from the front-right: a big broad head held low, covered in shaggy dark brown-grey wool, colour #6b5a4a, with a paler brown mane over the brow, a dark charcoal slate muzzle, small friendly eyes, and two big thick horns that sweep down beside the cheeks and hook up and forward at their tips, coated in bright ice blue frost; no trunk and no tusks. A close-up of the head only: the big shaggy dark brown head with its two frost-blue horns fills the whole square; no body and no legs. The wool is dark brown-grey, never orange, red or white.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, hooves, rider, saddle, trunk, tusks, elephant, mammoth, cow, bull, orange wool, red wool, white wool, cream wool",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Musk Ox portrait, the head and shoulders of a chunky cute shaggy musk ox seen from the front-right: a big broad head held low, covered in shaggy dark brown-grey wool, colour #6b5a4a, with a paler brown mane over the brow, a dark charcoal slate muzzle, small friendly eyes, and two big thick horns that sweep down beside the cheeks and hook up and forward at their tips, coated in bright ice blue frost; no trunk and no tusks. A close-up of the head only: the big shaggy dark brown head with its two frost-blue horns fills the whole square; no body and no legs. The wool is dark brown-grey, never orange, red or white. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, hooves, rider, saddle, trunk, tusks, elephant, mammoth, cow, bull, orange wool, red wool, white wool, cream wool."
+      },
+      "submittedAt": "2026-10-07T20:54:31.567Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/portrait-musk-ox-a.png",
+      "rawSheetSha256": "b1ba201a0739da7a727b69ccc98a2fc899f7927589f6c178b0ccc21bf9565f44",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.1269,
+          "footprintWidthShare": 0.8511,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:55:00.181Z",
+      "usageUsd": 0.007448470883899265,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-2yc.34: accepted Musk Ox portrait. A big shaggy dark brown head and shoulders with a paler mane, a slate muzzle and two thick horns curling beside the cheeks in ice-blue frost, matching the map sprite. Reviewed at 1:1 and x8 beside the Mammoth's portrait.",
+        "reviewedAt": "2026-10-07T21:00:55.076Z"
       }
     },
     "portrait-sabretooth-a": {
@@ -6263,6 +6597,71 @@
       "notes": "A woolly mammoth in side view: warm cream-to-tan wool, a dark slate face and trunk, long ivory tusks with frost on the tips. Fills the GUARD canvas width.",
       "acceptedAt": "2026-10-02T23:30:25.595Z"
     },
+    "chibi-direction-ice-folk-musk-ox": {
+      "id": "chibi-direction-ice-folk-musk-ox",
+      "subject": "UNIT:ICE_FOLK:SWORDSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "musk-ox-b",
+      "candidate": 0,
+      "candidateSha256": "bfb419ec04a8f829428fcb2b52c874039f43e941231ced3ad592cf00abb768d0",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-direction-ice-folk-musk-ox.png",
+        "sha256": "fcf379ff07bc7c2399e7ce938f971bd5025692036dc99dd10ac5f13549d9550b",
+        "pixelSha256": "f5676ae81740864d02c58ee21221c4f83b154337ff051ac729409200299ed3b8",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "ice-folk-blue",
+          "spec": {
+            "band": {
+              "hueFrom": 175,
+              "hueTo": 218,
+              "saturationMin": 0.2,
+              "valueMin": 0.62,
+              "hueCentre": 195
+            },
+            "hue": 205,
+            "hueSpread": 0.3,
+            "saturation": {
+              "scale": 1.4,
+              "add": 0.3,
+              "max": 0.95
+            }
+          },
+          "accentPixels": 71,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 11,
+        "groundShare": 0.0792,
+        "footprintWidthShare": 0.7037,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Bead pulp_wars-2yc.34: accepted Musk Ox. A low wide body under a skirt of dark brown wool with a paler mane and a rust-brown saddle patch, a slate muzzle held low and two thick horns curling down beside the cheeks, coated in ice-blue frost; 54 x 53 px, lower than the Mammoth (53 x 61) and as low as the Yeti. Reviewed at 1:1 and x4 on Grass, Snow and Mountain beside the Yeti, the Mammoth and the Sabretooth.",
+      "acceptedAt": "2026-10-07T20:57:02.259Z"
+    },
     "chibi-direction-ice-folk-sabretooth": {
       "id": "chibi-direction-ice-folk-sabretooth",
       "subject": "UNIT:ICE_FOLK:KNIGHT",
@@ -7432,6 +7831,71 @@
       },
       "notes": "Mammoth portrait: a whole small mammoth with cream wool, a charcoal face and trunk and frosted tusks. Weak: a whole figure, not a bust.",
       "acceptedAt": "2026-10-02T23:48:47.924Z"
+    },
+    "chibi-direction-portrait-ice-folk-musk-ox": {
+      "id": "chibi-direction-portrait-ice-folk-musk-ox",
+      "subject": "PORTRAIT:ICE_FOLK:SWORDSMAN",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-musk-ox-a",
+      "candidate": 0,
+      "candidateSha256": "b1ba201a0739da7a727b69ccc98a2fc899f7927589f6c178b0ccc21bf9565f44",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-direction-portrait-ice-folk-musk-ox.png",
+        "sha256": "485ae18cfa4667e665bb1b11b6231d215c61e02ed9504d12ee1fb4f8fe70e07e",
+        "pixelSha256": "805d4641846f9ec9dd0584a50d81142ac0fb423954fba13fa72aa0d4db1d4e42",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "ice-folk-blue",
+          "spec": {
+            "band": {
+              "hueFrom": 175,
+              "hueTo": 218,
+              "saturationMin": 0.2,
+              "valueMin": 0.62,
+              "hueCentre": 195
+            },
+            "hue": 205,
+            "hueSpread": 0.3,
+            "saturation": {
+              "scale": 1.4,
+              "add": 0.3,
+              "max": 0.95
+            }
+          },
+          "accentPixels": 134,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.1269,
+        "footprintWidthShare": 0.8511,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Bead pulp_wars-2yc.34: accepted Musk Ox portrait. A big shaggy dark brown head and shoulders with a paler mane, a slate muzzle and two thick horns curling beside the cheeks in ice-blue frost, matching the map sprite. Reviewed at 1:1 and x8 beside the Mammoth's portrait.",
+      "acceptedAt": "2026-10-07T21:00:55.076Z"
     },
     "chibi-direction-portrait-ice-folk-sabretooth": {
       "id": "chibi-direction-portrait-ice-folk-sabretooth",

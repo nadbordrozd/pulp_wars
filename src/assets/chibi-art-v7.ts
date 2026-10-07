@@ -673,12 +673,17 @@ export const MOVED_UNIT_ART_SLOTS_V7: Readonly<
 });
 
 /**
- * The ninth unit (`pulp_wars-w49.17`): STAND-IN ART. The seven units added
- * at 7r55 have no art yet. Until an art bead registers the subject, each is
- * drawn with the sprite and portrait of the nearest unit of its own
+ * The ninth unit (`pulp_wars-w49.17`): STAND-IN ART. A unit added without
+ * art of its own is listed here: until an art bead registers its subject it
+ * is drawn with the sprite and portrait of the nearest unit of its own
  * faction, and the board and the Gallery mark it (a small letter badge on
  * the board, the "stand-in" mark in the Gallery). `letter` is the badge.
- * docs/art/factions/<FACTION>.md says what the art bead must make.
+ *
+ * The table is EMPTY since bead `pulp_wars-2yc.34`: the seven units added
+ * at 7r55 (Wight, Ogre, Stegosaurus, Shock Trooper, Musk Ox, Whirligig and
+ * Jawbreaker) have their own sprite and portrait under
+ * `UNIT:<FACTION>:SWORDSMAN` and `PORTRAIT:<FACTION>:SWORDSMAN` in the
+ * faction direction manifests, so no unit wears the letter badge.
  */
 export const NINTH_UNIT_STAND_INS_V7: Readonly<
   Partial<
@@ -687,29 +692,14 @@ export const NINTH_UNIT_STAND_INS_V7: Readonly<
       { readonly standIn: UnitRoleIdV7; readonly letter: string }
     >
   >
-> = Object.freeze({
-  // The Wight is drawn as the Skeleton.
-  UNDEAD: { standIn: "FIGHTER", letter: "W" },
-  // The Ogre is drawn as the Orc Brute.
-  GOBLIN: { standIn: "GUARD", letter: "O" },
-  // The Stegosaurus is drawn as the Ankylosaurus.
-  DINOSAUR: { standIn: "GUARD", letter: "S" },
-  // The Shock Trooper is drawn as the Grunt.
-  MARTIAN: { standIn: "FIGHTER", letter: "T" },
-  // The Musk Ox is drawn as the Mammoth (the art slot `GUARD`).
-  ICE_FOLK: { standIn: "GUARD", letter: "X" },
-  // The Whirligig is drawn as the Clockwork Gunner.
-  DWARF: { standIn: "MARKSMAN", letter: "W" },
-  // The Jawbreaker is drawn as the Marshmallow.
-  CANDY: { standIn: "GUARD", letter: "J" },
-});
+> = Object.freeze({});
 
 const NINTH_UNIT_STAND_IN_PATTERN_V7 =
   /^(UNIT|PORTRAIT):(UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY):SWORDSMAN$/;
 
 /**
- * The stand-in subject of a ninth-unit subject (`UNIT:GOBLIN:SWORDSMAN` is
- * `UNIT:GOBLIN:GUARD`), or null for any other subject.
+ * The stand-in subject of a ninth-unit subject listed in
+ * `NINTH_UNIT_STAND_INS_V7` (none today), or null for any other subject.
  */
 export function ninthUnitStandInSubjectV7(
   subject: ArtSubjectV7,
@@ -789,10 +779,12 @@ export function chibiFallbackSubjectV7(
   if (subject === "UNIT:DINOSAUR:EGG") return null;
   if (subject === "UNIT:DWARF:MOUND" || subject === "UNIT:DWARF:MOUND_RIDER")
     return null;
-  // The ninth unit (`pulp_wars-w49.17`, 7r55): STAND-IN. A new unit without
-  // art of its own is drawn as the nearest unit of its own faction until
-  // its art bead registers `UNIT:<FACTION>:SWORDSMAN` and
-  // `PORTRAIT:<FACTION>:SWORDSMAN` (the board and the Gallery mark it).
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): STAND-IN. A new unit listed
+  // in `NINTH_UNIT_STAND_INS_V7` is drawn as the nearest unit of its own
+  // faction until its art bead registers its subjects (the board and the
+  // Gallery mark it). No unit is listed since bead `pulp_wars-2yc.34`; the
+  // seven `<FACTION>:SWORDSMAN` subjects then fall back like every other
+  // faction subject (the Human Champion, in a look without their art).
   const standIn = ninthUnitStandInSubjectV7(subject);
   if (standIn !== null) return standIn;
   // A Submarine riding low (bead pulp_wars-5ti.6) without its own raster

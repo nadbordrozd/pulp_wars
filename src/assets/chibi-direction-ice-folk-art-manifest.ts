@@ -105,6 +105,30 @@ export const CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7: readonly ChibiArtAssetV7[] 
       ),
       fixedColours: true,
     },
+    // The Musk Ox (ruleset 7r55, bead pulp_wars-2yc.34): the ninth art slot
+    // (the Mammoth keeps the slot GUARD).
+    {
+      id: "chibi-direction-ice-folk-musk-ox",
+      subject: "UNIT:ICE_FOLK:SWORDSMAN",
+      assetClass: "STANDARD_UNIT",
+      width: 56,
+      height: 80,
+      url: chibiArtUrl(
+        "assets/chibi/units/chibi-direction-ice-folk-musk-ox.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-portrait-ice-folk-musk-ox",
+      subject: "PORTRAIT:ICE_FOLK:SWORDSMAN",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-ice-folk-musk-ox.png",
+      ),
+      fixedColours: true,
+    },
     {
       id: "chibi-direction-portrait-ice-folk-yeti",
       subject: "PORTRAIT:ICE_FOLK:FIGHTER",

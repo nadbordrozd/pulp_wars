@@ -252,8 +252,9 @@ export function technologySubjectV7(
     );
   if (subject === "UNIT:KNIGHT")
     // The ninth unit (7r55): through the art slot of the role, so a Dwarf
-    // Chivalry card shows the Whirligig (its stand-in art until its own
-    // exists). (No card is `UNIT:GUARD` since the Industry reshuffle.)
+    // Chivalry card shows the Whirligig (its own art since bead
+    // pulp_wars-2yc.34). (No card is `UNIT:GUARD` since the Industry
+    // reshuffle.)
     return unitArtSubjectV7({
       role: subject.slice("UNIT:".length) as UndeadArtRoleV7,
       form: "LAND",

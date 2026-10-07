@@ -841,29 +841,50 @@ also draws both icons in its sheets.
 - [x] The whole roster and its portraits pass mask QA, clear the HP bar and
       seat-badge strips (giants exempt) and replace every placeholder.
 
-## Ninth unit: the Ogre (bead `pulp_wars-w49.17`, stand-in art)
+## Ninth unit: the Ogre (beads `pulp_wars-w49.17` and `pulp_wars-2yc.34`)
 
 Ruleset `7r55` gives every faction a ninth land unit ([what was
-built](../../product/RULESET_7_NINTH_UNIT.md)). The Goblin one with no art of
-its own is the **Ogre** (engine role `SWORDSMAN`). **It has no art yet.** No
-PixelLab call was made for it.
+built](../../product/RULESET_7_NINTH_UNIT.md)). The Goblin one is the
+**Ogre** (engine role `SWORDSMAN`), the heavy line unit. It was drawn as the
+Orc Brute under a steel disc lettered **O** until bead `pulp_wars-2yc.34`
+gave it its own art.
 
-- **Art slot.** `UNIT:GOBLIN:SWORDSMAN` and `PORTRAIT:GOBLIN:SWORDSMAN`: the
+- **Art slot.** `UNIT:GOBLIN:SWORDSMAN` and `PORTRAIT:GOBLIN:SWORDSMAN`, the
   ninth art slot of the faction (`unitArtRoleV7` in
-  `src/assets/chibi-art-v7.ts`). No raster is registered for either subject.
-- **Stand-in.** Until an art bead registers them, both fall back to the Orc
-  Brute (`UNIT:GOBLIN:GUARD`, `PORTRAIT:GOBLIN:GUARD`) through
-  `chibiFallbackSubjectV7` (`NINTH_UNIT_STAND_INS_V7`). The board marks the
-  piece with a steel disc lettered **O** where the faction badges go
-  (`drawStandInBadgeV7`), and the Gallery shows its stand-in mark.
-- **What the art bead must make.** One board sprite and one 48 x 48 portrait
-  in this fragment's direction: A fat grey-green ogre twice a goblin's height in
-  a scrap-iron belly plate, dragging a lamp-post club, two goblins cheering on
-  its shoulders.
-- **Notes for that bead.** LARGE_UNIT is worth trying first (it is twice a
-  Goblin's height); it fills one unit slot and one tile like every other unit.
-- **When the art lands.** Register the two subjects in this faction's
-  direction manifest, delete the faction's entry from `NINTH_UNIT_STAND_INS_V7`
-  (the fallback and the letter badge go with it), regenerate the unit shadow
-  measurements, and update the stand-in assertions in
-  `tests/unit/ruleset-v7-ninth-unit.test.ts`.
+  `src/assets/chibi-art-v7.ts`): `chibi-direction-goblin-ogre` (72 x 88,
+  `LARGE_UNIT`, default anchor) and `chibi-direction-portrait-goblin-ogre`
+  (48 x 48), fixed colours, no mask, accent `goblin-hazard`. Recipes `ogre-*`
+  and `portrait-ogre-*` in batch `direction-goblin`; 7 PixelLab calls.
+- **Sprite** (`ogre-d-dim`, 72 x 85 px): a big fat ogre with pale jade skin, a
+  dim sleepy face with one tooth up, a dented tin bucket for a hat, a round tin
+  belly plate with one hazard yellow stripe, sand-buff straps and loincloth,
+  tin wrist bands and a nail-studded wooden club as tall as he is; no shield.
+  A fresh creation (`ogre-d`) and one edit of its face, skin and club.
+- **Told apart at board size:** the Orc Brute (56 x 74) is leaf green behind a
+  round yellow-rimmed shield; the Troll (76 x 93) is a pale cream-green giant
+  with mossy hair and a stone club on his shoulder; the Ogre stands between
+  them in size, mint jade, with the bucket hat, the belly plate and the
+  upright club.
+- **Portrait** (`portrait-ogre-a-jade`): the Orc Brute's bust redrawn (sleepy
+  closed eyes, bucket hat, bare shoulders with straps, the head of the club)
+  and recoloured to the sprite's mint jade.
+- **Not drawn:** the two goblins cheering on its shoulders and the lamp-post
+  club of the first description. Two more figures do not read on a 72 px
+  sprite, and a lamp post is outside the faction's materials.
+- **Light.** `lighting-qa` reads the sprite as lit from the right (faces
+  -15.9, like the Troll's -17.1): the grey shoulder patch and the dark club are
+  at its sides, and the belly plate's highlight is at its upper left. The
+  portrait reads flat (+1.3).
+- **Rejected.** Two creations with a small head and shoulder armour in dull
+  olive (`ogre-a`, `-b`: outside the roster's chibi proportions); a stubbled
+  human-faced bruiser in layered armour (`ogre-c`); the right bulk under the
+  Orc Brute's scowl and dark green, with a club that read as a broom (`ogre-d`,
+  the source of the accepted edit). The first bust was yellow-green
+  (`portrait-ogre-a`).
+- **What worked:** a subject line that says "a huge round bald head about half
+  of the figure's height and an enormously fat round body"; without it Pixen
+  drew a realistic small-headed soldier. One edit changed the face, the skin
+  (by hex value) and the club together.
+- LEGACY (`?art=legacy`) and the developer option "Classic look" have no Ogre
+  art: there it falls back like every faction subject, to the Human unit of
+  the slot under the Goblin badge.

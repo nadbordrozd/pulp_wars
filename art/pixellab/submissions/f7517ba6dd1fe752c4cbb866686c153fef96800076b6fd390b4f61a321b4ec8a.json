@@ -1,0 +1,36 @@
+{
+  "id": "stegosaurus-a-blue",
+  "jobId": "6d53cc78-9c01-4787-9617-7cc59a2c1082",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-stegosaurus",
+    "subject": "UNIT:DINOSAUR:SWORDSMAN",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 234303,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change three things only. Recolour the hide: the grey-blue head, body, legs and tail become saturated deep blue, colour #24509c, shaded dark navy #16224a on the back, and the brown spots become plain blue. Erase the orange marks on the neck and shoulder: plain deep blue. Remove the small horn on the nose: a round snout. Keep the orange back fins, cream belly, cream tail spikes, pose, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change three things only. Recolour the hide: the grey-blue head, body, legs and tail become saturated deep blue, colour #24509c, shaded dark navy #16224a on the back, and the brown spots become plain blue. Erase the orange marks on the neck and shoulder: plain deep blue. Remove the small horn on the nose: a round snout. Keep the orange back fins, cream belly, cream tail spikes, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change three things only. Recolour the hide: the grey-blue head, body, legs and tail become saturated deep blue, colour #24509c, shaded dark navy #16224a on the back, and the brown spots become plain blue. Erase the orange marks on the neck and shoulder: plain deep blue. Remove the small horn on the nose: a round snout. Keep the orange back fins, cream belly, cream tail spikes, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change three things only. Recolour the hide: the grey-blue head, body, legs and tail become saturated deep blue, colour #24509c, shaded dark navy #16224a on the back, and the brown spots become plain blue. Erase the orange marks on the neck and shoulder: plain deep blue. Remove the small horn on the nose: a round snout. Keep the orange back fins, cream belly, cream tail spikes, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "stegosaurus-a",
+      "candidate": 0,
+      "sha256": "18a9f03e64449be21de26e663975b45cca5816ec6e8c390342bbcab09194528b"
+    }
+  }
+}

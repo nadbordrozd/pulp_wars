@@ -1,0 +1,37 @@
+{
+  "id": "shock-trooper-b",
+  "jobId": "99092e77-d9f5-434d-9b48-8cced6b5f4fd",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-shock-trooper",
+    "subject": "UNIT:MARTIAN:SWORDSMAN",
+    "faction": "MARTIAN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 234402,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the round shield disc completely, so his whole armoured body shows: a wide round polished chrome chest like a barrel with one small hot magenta chest light. His two hands become two huge heavy chrome pincer claws held out at his sides. Remove the two antennae. Thin jagged hot magenta lightning arcs crackle over both big shoulder plates. Keep his head, black eyes, glass bubble helmet, shoulder plates, thick legs, wide stance, thick black outline and art style, transparent background."
+      }
+    ],
+    "prompt": "Remove the round shield disc completely, so his whole armoured body shows: a wide round polished chrome chest like a barrel with one small hot magenta chest light. His two hands become two huge heavy chrome pincer claws held out at his sides. Remove the two antennae. Thin jagged hot magenta lightning arcs crackle over both big shoulder plates. Keep his head, black eyes, glass bubble helmet, shoulder plates, thick legs, wide stance, thick black outline and art style, transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the round shield disc completely, so his whole armoured body shows: a wide round polished chrome chest like a barrel with one small hot magenta chest light. His two hands become two huge heavy chrome pincer claws held out at his sides. Remove the two antennae. Thin jagged hot magenta lightning arcs crackle over both big shoulder plates. Keep his head, black eyes, glass bubble helmet, shoulder plates, thick legs, wide stance, thick black outline and art style, transparent background.",
+    "editInstruction": "Remove the round shield disc completely, so his whole armoured body shows: a wide round polished chrome chest like a barrel with one small hot magenta chest light. His two hands become two huge heavy chrome pincer claws held out at his sides. Remove the two antennae. Thin jagged hot magenta lightning arcs crackle over both big shoulder plates. Keep his head, black eyes, glass bubble helmet, shoulder plates, thick legs, wide stance, thick black outline and art style, transparent background.",
+    "source": {
+      "recipe": "shield-projector-r5-edit-a-3",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "6800105d5ec60aa39f342d9bd295ddf68b3aa511d12b1753f313319033292693"
+    }
+  }
+}

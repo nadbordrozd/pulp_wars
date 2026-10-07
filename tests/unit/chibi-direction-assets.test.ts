@@ -707,6 +707,13 @@ const GOBLIN_UNITS = {
   KNIGHT: "scrap-buggy",
   JUGGERNAUT: "troll",
 } as const;
+/**
+ * The ninth art slot (ruleset 7r55, bead pulp_wars-2yc.34): the Ogre, the
+ * heavy line unit. It has no classic sprite (direction art only, like the
+ * Human Swordsman), and is a LARGE_UNIT: bigger than the Orc Brute, smaller
+ * than the Troll.
+ */
+const GOBLIN_NEW_UNITS = { SWORDSMAN: "ogre" } as const;
 
 /** Share of opaque pixels in the owner key's hue band (owner-mask.ts). */
 function ownerKeyShare(image: RgbaRaster): number {
@@ -743,19 +750,16 @@ describe("Goblin production art of the new visual direction (pulp_wars-3tq.9)", 
 
   it("registers every Goblin unit, portrait and city tier, beside the Human art", () => {
     const registry = chibiDirectionArtRegistryV7();
+    const units = { ...GOBLIN_UNITS, ...GOBLIN_NEW_UNITS };
     const expected: [ArtSubjectV7, string][] = [
-      ...Object.entries(GOBLIN_UNITS).map(
-        ([role, name]): [ArtSubjectV7, string] => [
-          `UNIT:GOBLIN:${role}` as ArtSubjectV7,
-          `chibi-direction-goblin-${name}`,
-        ],
-      ),
-      ...Object.entries(GOBLIN_UNITS).map(
-        ([role, name]): [ArtSubjectV7, string] => [
-          `PORTRAIT:GOBLIN:${role}` as ArtSubjectV7,
-          `chibi-direction-portrait-goblin-${name}`,
-        ],
-      ),
+      ...Object.entries(units).map(([role, name]): [ArtSubjectV7, string] => [
+        `UNIT:GOBLIN:${role}` as ArtSubjectV7,
+        `chibi-direction-goblin-${name}`,
+      ]),
+      ...Object.entries(units).map(([role, name]): [ArtSubjectV7, string] => [
+        `PORTRAIT:GOBLIN:${role}` as ArtSubjectV7,
+        `chibi-direction-portrait-goblin-${name}`,
+      ]),
       ...([1, 2, 3] as const).map((level): [ArtSubjectV7, string] => [
         `CITY:GOBLIN:${level}`,
         `chibi-direction-goblin-city-${level}`,
@@ -798,6 +802,20 @@ describe("Goblin production art of the new visual direction (pulp_wars-3tq.9)", 
     for (const asset of CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7) {
       expect(chibiAssetProblemsV7(asset), asset.id).toEqual([]);
       const before = classic.variants(asset.subject)[0];
+      // The Ogre has direction art only: a LARGE_UNIT on the class anchor,
+      // the canvas of the Wolf Rider, and a 48 x 48 portrait.
+      if (asset.subject.endsWith(":SWORDSMAN")) {
+        expect(before, asset.id).toBeUndefined();
+        expect(
+          [asset.assetClass, asset.width, asset.height, asset.anchor],
+          asset.id,
+        ).toEqual(
+          asset.subject.startsWith("UNIT:")
+            ? ["LARGE_UNIT", 72, 88, undefined]
+            : ["PORTRAIT", 48, 48, undefined],
+        );
+        continue;
+      }
       if (before === undefined) throw new Error(`${asset.id}: no classic art`);
       expect(
         [asset.assetClass, asset.width, asset.height, asset.anchor],
@@ -885,11 +903,17 @@ describe("Goblin production art of the new visual direction (pulp_wars-3tq.9)", 
       33,
     );
     expect(imported).toHaveLength(14 + 33);
+    // The Ogre and its portrait (bead pulp_wars-2yc.34) were generated in
+    // this batch, not in a study run.
     for (const asset of Object.values(records.assets))
       expect(
         records.recipes[asset.recipe]?.importedFrom?.exploration,
         asset.id,
-      ).toBe("art/explorations/goblin-redesign-2026-10/lime");
+      ).toBe(
+        asset.id.endsWith("-ogre")
+          ? undefined
+          : "art/explorations/goblin-redesign-2026-10/lime",
+      );
     for (const recipe of Object.values(records.recipes)) {
       const receipt = await loadSubmissionReceipt(
         layout.submissions,
@@ -923,7 +947,11 @@ describe("Goblin production art of the new visual direction (pulp_wars-3tq.9)", 
     // The retired look was edits of the classic sprites (seeds below
     // 93000); the redesign is fresh creations and edits of those creations
     // only, so no old shape survives.
-    const redesign = manifest.recipes.filter((recipe) => recipe.seed >= 93000);
+    // The Ogre's recipes (bead pulp_wars-2yc.34, seeds from 234000) came
+    // later and are counted apart.
+    const redesign = manifest.recipes.filter(
+      (recipe) => recipe.seed >= 93000 && recipe.seed < 234000,
+    );
     // 33 imported from the lime run and one generated here (a rejected
     // skin edit of the Warboss).
     expect(redesign).toHaveLength(34);
@@ -935,6 +963,32 @@ describe("Goblin production art of the new visual direction (pulp_wars-3tq.9)", 
           recipe.id,
         ).toBe(true);
       } else expect(recipe.endpoint, recipe.id).toBe("create-image-pixen");
+    // The Ogre: four fresh creations and an edit for the sprite; the bust
+    // is an edit of the redesign's Orc Brute bust and a recolour of it.
+    const ogre = manifest.recipes.filter((recipe) => recipe.seed >= 234000);
+    expect(ogre.map((recipe) => recipe.id).sort()).toEqual([
+      "ogre-a",
+      "ogre-b",
+      "ogre-c",
+      "ogre-d",
+      "ogre-d-dim",
+      "portrait-ogre-a",
+      "portrait-ogre-a-jade",
+    ]);
+    for (const recipe of ogre) {
+      expect(recipe.asset, recipe.id).toMatch(/-ogre$/);
+      if (recipe.endpoint !== "edit-image-pixen") {
+        expect(recipe.endpoint, recipe.id).toBe("create-image-pixen");
+        continue;
+      }
+      expect(recipe.source?.batch, recipe.id).toBeUndefined();
+      expect(
+        [...ogre, ...redesign].some(
+          (other) => other.id === recipe.source?.recipe,
+        ),
+        recipe.id,
+      ).toBe(true);
+    }
     for (const recipe of manifest.recipes) {
       if (recipe.seed < 93000)
         expect(recipe.endpoint, recipe.id).toBe("edit-image-pixen");

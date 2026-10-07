@@ -2213,6 +2213,73 @@
         "reviewedAt": "2026-10-02T16:02:02.798Z"
       }
     },
+    "portrait-wight-a": {
+      "id": "portrait-wight-a",
+      "asset": "chibi-direction-portrait-undead-wight",
+      "jobId": "5615404e-4480-48a1-919b-71a4ff194186",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-undead",
+        "asset": "chibi-direction-portrait-undead-wight",
+        "subject": "PORTRAIT:UNDEAD:SWORDSMAN",
+        "faction": "UNDEAD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 234251,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw him as an armoured barrow-king. His head becomes a huge closed weathered grey iron great helm with rust patches that hides the whole skull, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top; no face shows. Big round grey iron pauldrons with tarnished bronze rims on the shoulders. The sword becomes the broad light grey blade of a notched greataxe beside the helm. Keep proportions, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw him as an armoured barrow-king. His head becomes a huge closed weathered grey iron great helm with rust patches that hides the whole skull, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top; no face shows. Big round grey iron pauldrons with tarnished bronze rims on the shoulders. The sword becomes the broad light grey blade of a notched greataxe beside the helm. Keep proportions, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw him as an armoured barrow-king. His head becomes a huge closed weathered grey iron great helm with rust patches that hides the whole skull, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top; no face shows. Big round grey iron pauldrons with tarnished bronze rims on the shoulders. The sword becomes the broad light grey blade of a notched greataxe beside the helm. Keep proportions, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Redraw him as an armoured barrow-king. His head becomes a huge closed weathered grey iron great helm with rust patches that hides the whole skull, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top; no face shows. Big round grey iron pauldrons with tarnished bronze rims on the shoulders. The sword becomes the broad light grey blade of a notched greataxe beside the helm. Keep proportions, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "portrait-undead-skeleton-bone-edit",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "46fc030e2c21ad5ee202f8ab667a3323aed1b620a9909488992cc30cbe209f24"
+        }
+      },
+      "submittedAt": "2026-10-07T20:28:08.533Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-undead/portrait-wight-a.png",
+      "rawSheetSha256": "6d8ee857b705474ae4e5ea459a1098ee2731df26daa69e2866e2463d2f08e610",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.1362,
+          "footprintWidthShare": 0.8261,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.1362,
+          "footprintWidthShare": 0.8261,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:28:40.705Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-2yc.34: accepted Wight portrait. The crowned closed iron helm with violet eye slits, a bronze-rimmed pauldron, a bone hand and the greataxe blade, matching the map sprite. Reviewed at 1:1 and x6 beside the Skeleton's, Lich's and Zombie's portraits.",
+        "reviewedAt": "2026-10-07T20:59:40.808Z"
+      }
+    },
     "skeleton-bone-edit-a": {
       "id": "skeleton-bone-edit-a",
       "asset": "chibi-direction-undead-skeleton",
@@ -2997,6 +3064,227 @@
         "candidate": 0,
         "notes": "Black cape with a violet lining and trim, black coat with bone buttons, pale grey face, violet eyes and flames; the cravat and belt are bronze, no orange.",
         "reviewedAt": "2026-10-02T15:46:59.729Z"
+      }
+    },
+    "wight-a": {
+      "id": "wight-a",
+      "asset": "chibi-direction-undead-wight",
+      "jobId": "6305b759-8229-4546-a21f-a1842c8741da",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-undead",
+        "asset": "chibi-direction-undead-wight",
+        "subject": "UNIT:UNDEAD:SWORDSMAN",
+        "faction": "UNDEAD",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 234201,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw him as a heavy armoured barrow-king: a closed dark rusted iron great helm hides the whole skull, with two glowing violet eye slits and a spiky tarnished bronze crown on top; a dark iron chainmail coat and two big round rusted iron pauldrons cover the ribs and arms. Remove the shield and the sword: he holds one huge notched two-handed greataxe with a broad light grey iron blade above his head. Keep bone hands and feet, proportions, black outline and style, transparent background."
+          }
+        ],
+        "prompt": "Redraw him as a heavy armoured barrow-king: a closed dark rusted iron great helm hides the whole skull, with two glowing violet eye slits and a spiky tarnished bronze crown on top; a dark iron chainmail coat and two big round rusted iron pauldrons cover the ribs and arms. Remove the shield and the sword: he holds one huge notched two-handed greataxe with a broad light grey iron blade above his head. Keep bone hands and feet, proportions, black outline and style, transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw him as a heavy armoured barrow-king: a closed dark rusted iron great helm hides the whole skull, with two glowing violet eye slits and a spiky tarnished bronze crown on top; a dark iron chainmail coat and two big round rusted iron pauldrons cover the ribs and arms. Remove the shield and the sword: he holds one huge notched two-handed greataxe with a broad light grey iron blade above his head. Keep bone hands and feet, proportions, black outline and style, transparent background.",
+        "editInstruction": "Redraw him as a heavy armoured barrow-king: a closed dark rusted iron great helm hides the whole skull, with two glowing violet eye slits and a spiky tarnished bronze crown on top; a dark iron chainmail coat and two big round rusted iron pauldrons cover the ribs and arms. Remove the shield and the sword: he holds one huge notched two-handed greataxe with a broad light grey iron blade above his head. Keep bone hands and feet, proportions, black outline and style, transparent background.",
+        "source": {
+          "recipe": "skeleton-bone-edit-e",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "07b479083ed2f11df962ebd9669a814a20a3bcccc65d1fdbf8cca496ae834cc2"
+        }
+      },
+      "submittedAt": "2026-10-07T20:17:06.942Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-undead/wight-a.png",
+      "rawSheetSha256": "d768dcf9e29940e60abc0575e932dbbc9e549a37cf31a250e2d9a32eb151390a",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6604,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6604,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:17:44.223Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right figure (crowned closed helm, pauldrons, mail skirt, greataxe, no shield, bone hands and feet), but near-black all over (mean L* 29, 72% dark) with violet only in the eye slits. Source of the accepted wight-c.",
+        "reviewedAt": "2026-10-07T20:30:37.645Z"
+      }
+    },
+    "wight-b": {
+      "id": "wight-b",
+      "asset": "chibi-direction-undead-wight",
+      "jobId": "sync-bcf95d61-acd1-4c70-b240-26c075203755",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-undead",
+        "asset": "chibi-direction-undead-wight",
+        "subject": "UNIT:UNDEAD:SWORDSMAN",
+        "faction": "UNDEAD",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 234202,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, moss"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: Wight, a chunky cute armoured barrow-king risen from his own grave, with a huge round head about half of the figure's height and a short broad sturdy body, heavier and wider than a skeleton soldier: a closed dark rusted iron great helm that hides the whole face, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top, a dark iron chainmail coat down to the knees with two big round rusted iron pauldrons with tarnished bronze rims, a short ragged near-black charcoal cloak with a torn zigzag hem and a thin bright violet trim, pale ivory bone hands and bone feet, no shield at all, and one huge notched two-handed greataxe with a broad light grey iron blade resting on his right shoulder, its blade above his head; simple shapes and very few details; clearly a heavy armoured grave-king with a great axe, neither the bare-boned Skeleton with his sword and shield nor the robed Lich with his orb."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "He is lit from the left: the left side of the helm, pauldrons and axe blade is the lightest and the right side is in shadow."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Wight, a chunky cute armoured barrow-king risen from his own grave, with a huge round head about half of the figure's height and a short broad sturdy body, heavier and wider than a skeleton soldier: a closed dark rusted iron great helm that hides the whole face, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top, a dark iron chainmail coat down to the knees with two big round rusted iron pauldrons with tarnished bronze rims, a short ragged near-black charcoal cloak with a torn zigzag hem and a thin bright violet trim, pale ivory bone hands and bone feet, no shield at all, and one huge notched two-handed greataxe with a broad light grey iron blade resting on his right shoulder, its blade above his head; simple shapes and very few details; clearly a heavy armoured grave-king with a great axe, neither the bare-boned Skeleton with his sword and shield nor the robed Lich with his orb. He is lit from the left: the left side of the helm, pauldrons and axe blade is the lightest and the right side is in shadow.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, moss, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Wight, a chunky cute armoured barrow-king risen from his own grave, with a huge round head about half of the figure's height and a short broad sturdy body, heavier and wider than a skeleton soldier: a closed dark rusted iron great helm that hides the whole face, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top, a dark iron chainmail coat down to the knees with two big round rusted iron pauldrons with tarnished bronze rims, a short ragged near-black charcoal cloak with a torn zigzag hem and a thin bright violet trim, pale ivory bone hands and bone feet, no shield at all, and one huge notched two-handed greataxe with a broad light grey iron blade resting on his right shoulder, its blade above his head; simple shapes and very few details; clearly a heavy armoured grave-king with a great axe, neither the bare-boned Skeleton with his sword and shield nor the robed Lich with his orb. He is lit from the left: the left side of the helm, pauldrons and axe blade is the lightest and the right side is in shadow. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, moss, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd."
+      },
+      "submittedAt": "2026-10-07T20:17:44.228Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-undead/wight-b.png",
+      "rawSheetSha256": "a0602349ede5bcbda19f28d423f9af18e25c75bc4581278e6836d3a9331bdc14",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.0753,
+          "footprintWidthShare": 0.9464,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:18:29.738Z",
+      "usageUsd": 0.009319102313783434,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A fresh creation: the bare skull shows under a crown (reads as the Lich), the armour is orange-brown, the weapon is a sword behind the back and the squat spread-legged pose is unclear.",
+        "reviewedAt": "2026-10-07T20:30:23.469Z"
+      }
+    },
+    "wight-c": {
+      "id": "wight-c",
+      "asset": "chibi-direction-undead-wight",
+      "jobId": "67cc55f1-a5e0-4772-8277-4695e80666c8",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-undead",
+        "asset": "chibi-direction-undead-wight",
+        "subject": "UNIT:UNDEAD:SWORDSMAN",
+        "faction": "UNDEAD",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 234203,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the armour: the helm, pauldrons, arm guards and breastplate become lighter weathered iron, mid grey #7a7f88 with #4a4d55 shadows and a few rust-brown patches, lightest on their left sides; the crown and the armour rims stay tarnished bronze. Add a thin bright violet trim along the hem of the mail skirt. Do not redraw anything else: keep the violet eye slits, greataxe, bone hands and feet, pose, proportions, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour only the armour: the helm, pauldrons, arm guards and breastplate become lighter weathered iron, mid grey #7a7f88 with #4a4d55 shadows and a few rust-brown patches, lightest on their left sides; the crown and the armour rims stay tarnished bronze. Add a thin bright violet trim along the hem of the mail skirt. Do not redraw anything else: keep the violet eye slits, greataxe, bone hands and feet, pose, proportions, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour only the armour: the helm, pauldrons, arm guards and breastplate become lighter weathered iron, mid grey #7a7f88 with #4a4d55 shadows and a few rust-brown patches, lightest on their left sides; the crown and the armour rims stay tarnished bronze. Add a thin bright violet trim along the hem of the mail skirt. Do not redraw anything else: keep the violet eye slits, greataxe, bone hands and feet, pose, proportions, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Recolour only the armour: the helm, pauldrons, arm guards and breastplate become lighter weathered iron, mid grey #7a7f88 with #4a4d55 shadows and a few rust-brown patches, lightest on their left sides; the crown and the armour rims stay tarnished bronze. Add a thin bright violet trim along the hem of the mail skirt. Do not redraw anything else: keep the violet eye slits, greataxe, bone hands and feet, pose, proportions, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "wight-a",
+          "candidate": 0,
+          "sha256": "3060d75497ee625f6caad7a6b46401d0e0e1c068863f9b274d8a7d99f9c72459"
+        }
+      },
+      "submittedAt": "2026-10-07T20:23:22.000Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-undead/wight-c.png",
+      "rawSheetSha256": "ae8267272b1357bafa80b9aefdec901c8e324dec4ad172684af5559020d28c6f",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6604,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6604,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T20:25:04.622Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-2yc.34: accepted Wight. A crowned closed iron great helm with violet eye slits, weathered grey iron plate with rust and bronze rims, a mail skirt with a violet hem, bone hands and feet, a greataxe and no shield; 53 x 77 px. Reviewed at 1:1 and x4 on Grass, Snow and Mountain beside the Skeleton, Zombie and Lich.",
+        "reviewedAt": "2026-10-07T20:30:14.047Z"
       }
     },
     "zombie-bone-edit-a": {
@@ -3947,6 +4235,73 @@
       "notes": "Black cape with a violet collar lining, pale grey face, violet eyes, cream shirt.",
       "acceptedAt": "2026-10-02T16:02:07.915Z"
     },
+    "chibi-direction-portrait-undead-wight": {
+      "id": "chibi-direction-portrait-undead-wight",
+      "subject": "PORTRAIT:UNDEAD:SWORDSMAN",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-wight-a",
+      "candidate": 0,
+      "candidateSha256": "693c2b00f29aedb14da9d69fac3af9bd2abe94e1dd98434ebcd364c3e0880721",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-direction-portrait-undead-wight.png",
+        "sha256": "a99d1b105fc03abd228ea7c716a7be57b26208a83cf9cb831ee3dc9257fa57e3",
+        "pixelSha256": "045d413c22b3b162fedad4680dec1b116af5444ce35d151305606f07fc941b9f",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "undead-violet",
+          "spec": {
+            "band": {
+              "hueFrom": 250,
+              "hueTo": 320,
+              "saturationMin": 0.4,
+              "valueMin": 0.2,
+              "hueCentre": 285
+            },
+            "hue": 274,
+            "hueSpread": 0.5,
+            "trim": {
+              "maxAccentNeighbours": 2,
+              "minDarkNeighbours": 3,
+              "darkValueMax": 0.3,
+              "saturationMax": 0.62,
+              "valueMin": 0.96
+            }
+          },
+          "accentPixels": 29,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.1362,
+        "footprintWidthShare": 0.8261,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Bead pulp_wars-2yc.34: accepted Wight portrait. The crowned closed iron helm with violet eye slits, a bronze-rimmed pauldron, a bone hand and the greataxe blade, matching the map sprite. Reviewed at 1:1 and x6 beside the Skeleton's, Lich's and Zombie's portraits.",
+      "acceptedAt": "2026-10-07T20:59:40.808Z"
+    },
     "chibi-direction-portrait-undead-zombie": {
       "id": "chibi-direction-portrait-undead-zombie",
       "subject": "PORTRAIT:UNDEAD:GUARD",
@@ -4674,6 +5029,73 @@
       },
       "notes": "Black cape with a violet lining and trim, black coat with bone buttons, pale grey face, violet eyes and flames; the cravat and belt are bronze, no orange.",
       "acceptedAt": "2026-10-02T15:46:59.729Z"
+    },
+    "chibi-direction-undead-wight": {
+      "id": "chibi-direction-undead-wight",
+      "subject": "UNIT:UNDEAD:SWORDSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "wight-c",
+      "candidate": 0,
+      "candidateSha256": "08335c7ca13081f5ee2fb47ed7f0b14664e5dc5b10b0f7f21b8b701f998c1be5",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-direction-undead-wight.png",
+        "sha256": "4bd00bea666446ee28aa22b92941419fbcf97107cbcd13f56c6028bf39b54334",
+        "pixelSha256": "3053303335b66864603a32421e92d642e126f4735991d94be20b2662b49679c6",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "undead-violet",
+          "spec": {
+            "band": {
+              "hueFrom": 250,
+              "hueTo": 320,
+              "saturationMin": 0.4,
+              "valueMin": 0.2,
+              "hueCentre": 285
+            },
+            "hue": 274,
+            "hueSpread": 0.5,
+            "trim": {
+              "maxAccentNeighbours": 2,
+              "minDarkNeighbours": 3,
+              "darkValueMax": 0.3,
+              "saturationMax": 0.62,
+              "valueMin": 0.96
+            }
+          },
+          "accentPixels": 62,
+          "trimPixels": 30
+        }
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0,
+        "footprintWidthShare": 0.6604,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Bead pulp_wars-2yc.34: accepted Wight. A crowned closed iron great helm with violet eye slits, weathered grey iron plate with rust and bronze rims, a mail skirt with a violet hem, bone hands and feet, a greataxe and no shield; 53 x 77 px. Reviewed at 1:1 and x4 on Grass, Snow and Mountain beside the Skeleton, Zombie and Lich.",
+      "acceptedAt": "2026-10-07T20:30:14.047Z"
     },
     "chibi-direction-undead-zombie": {
       "id": "chibi-direction-undead-zombie",

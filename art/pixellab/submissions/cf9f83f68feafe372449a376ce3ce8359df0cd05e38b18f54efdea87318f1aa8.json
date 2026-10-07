@@ -1,0 +1,37 @@
+{
+  "id": "portrait-ogre-a",
+  "jobId": "2ffc304b-96d7-41b3-bc74-d5f85b6f6b5b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-ogre",
+    "subject": "PORTRAIT:GOBLIN:SWORDSMAN",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 234151,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a dim-witted ogre. Skin: pale jade green, colour #a3d1b5, shaded #6aa98a. Face: sleepy half-closed eyes, a big round nose, a vacant open smile with one big cream tooth sticking up. The tin cap becomes a small light grey tin bucket worn upside down as a hat. Remove the shield: enormous bare pale jade shoulders with two sand-buff straps, and the fat nail-studded head of a dark brown wooden club beside his head. Keep the thick black outline and art style, transparent background."
+      }
+    ],
+    "prompt": "Redraw him as a dim-witted ogre. Skin: pale jade green, colour #a3d1b5, shaded #6aa98a. Face: sleepy half-closed eyes, a big round nose, a vacant open smile with one big cream tooth sticking up. The tin cap becomes a small light grey tin bucket worn upside down as a hat. Remove the shield: enormous bare pale jade shoulders with two sand-buff straps, and the fat nail-studded head of a dark brown wooden club beside his head. Keep the thick black outline and art style, transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw him as a dim-witted ogre. Skin: pale jade green, colour #a3d1b5, shaded #6aa98a. Face: sleepy half-closed eyes, a big round nose, a vacant open smile with one big cream tooth sticking up. The tin cap becomes a small light grey tin bucket worn upside down as a hat. Remove the shield: enormous bare pale jade shoulders with two sand-buff straps, and the fat nail-studded head of a dark brown wooden club beside his head. Keep the thick black outline and art style, transparent background.",
+    "editInstruction": "Redraw him as a dim-witted ogre. Skin: pale jade green, colour #a3d1b5, shaded #6aa98a. Face: sleepy half-closed eyes, a big round nose, a vacant open smile with one big cream tooth sticking up. The tin cap becomes a small light grey tin bucket worn upside down as a hat. Remove the shield: enormous bare pale jade shoulders with two sand-buff straps, and the fat nail-studded head of a dark brown wooden club beside his head. Keep the thick black outline and art style, transparent background.",
+    "source": {
+      "recipe": "portrait-orc-brute-a-zoom",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "746cb99557b284ac7e2c3d8b2d9ce9bdd578c037e60c588e48667d011c2b053c"
+    }
+  }
+}

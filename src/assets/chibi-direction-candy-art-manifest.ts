@@ -104,6 +104,27 @@ export const CHIBI_DIRECTION_CANDY_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     ),
     fixedColours: true,
   },
+  // The Jawbreaker (ruleset 7r55, bead pulp_wars-2yc.34): the ninth art slot.
+  {
+    id: "chibi-direction-candy-jawbreaker",
+    subject: "UNIT:CANDY:SWORDSMAN",
+    assetClass: "STANDARD_UNIT",
+    width: 56,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/units/chibi-direction-candy-jawbreaker.png"),
+    fixedColours: true,
+  },
+  {
+    id: "chibi-direction-portrait-candy-jawbreaker",
+    subject: "PORTRAIT:CANDY:SWORDSMAN",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-direction-portrait-candy-jawbreaker.png",
+    ),
+    fixedColours: true,
+  },
   {
     id: "chibi-direction-portrait-candy-gumdrop",
     subject: "PORTRAIT:CANDY:FIGHTER",

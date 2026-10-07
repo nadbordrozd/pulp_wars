@@ -1,0 +1,63 @@
+{
+  "id": "wight-b",
+  "jobId": "sync-bcf95d61-acd1-4c70-b240-26c075203755",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-undead-wight",
+    "subject": "UNIT:UNDEAD:SWORDSMAN",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 234202,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+        "text": "Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black.",
+        "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, moss"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/UNDEAD.json",
+        "text": "Subject: Wight, a chunky cute armoured barrow-king risen from his own grave, with a huge round head about half of the figure's height and a short broad sturdy body, heavier and wider than a skeleton soldier: a closed dark rusted iron great helm that hides the whole face, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top, a dark iron chainmail coat down to the knees with two big round rusted iron pauldrons with tarnished bronze rims, a short ragged near-black charcoal cloak with a torn zigzag hem and a thin bright violet trim, pale ivory bone hands and bone feet, no shield at all, and one huge notched two-handed greataxe with a broad light grey iron blade resting on his right shoulder, its blade above his head; simple shapes and very few details; clearly a heavy armoured grave-king with a great axe, neither the bare-boned Skeleton with his sword and shield nor the robed Lich with his orb."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "He is lit from the left: the left side of the helm, pauldrons and axe blade is the lightest and the right side is in shadow."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Wight, a chunky cute armoured barrow-king risen from his own grave, with a huge round head about half of the figure's height and a short broad sturdy body, heavier and wider than a skeleton soldier: a closed dark rusted iron great helm that hides the whole face, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top, a dark iron chainmail coat down to the knees with two big round rusted iron pauldrons with tarnished bronze rims, a short ragged near-black charcoal cloak with a torn zigzag hem and a thin bright violet trim, pale ivory bone hands and bone feet, no shield at all, and one huge notched two-handed greataxe with a broad light grey iron blade resting on his right shoulder, its blade above his head; simple shapes and very few details; clearly a heavy armoured grave-king with a great axe, neither the bare-boned Skeleton with his sword and shield nor the robed Lich with his orb. He is lit from the left: the left side of the helm, pauldrons and axe blade is the lightest and the right side is in shadow.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, moss, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Wight, a chunky cute armoured barrow-king risen from his own grave, with a huge round head about half of the figure's height and a short broad sturdy body, heavier and wider than a skeleton soldier: a closed dark rusted iron great helm that hides the whole face, with two glowing bright violet eye slits and a spiky tarnished bronze crown on top, a dark iron chainmail coat down to the knees with two big round rusted iron pauldrons with tarnished bronze rims, a short ragged near-black charcoal cloak with a torn zigzag hem and a thin bright violet trim, pale ivory bone hands and bone feet, no shield at all, and one huge notched two-handed greataxe with a broad light grey iron blade resting on his right shoulder, its blade above his head; simple shapes and very few details; clearly a heavy armoured grave-king with a great axe, neither the bare-boned Skeleton with his sword and shield nor the robed Lich with his orb. He is lit from the left: the left side of the helm, pauldrons and axe blade is the lightest and the right side is in shadow. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, moss, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd."
+  }
+}

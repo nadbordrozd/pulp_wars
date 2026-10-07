@@ -417,6 +417,30 @@
       },
       "ownerColour": false,
       "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-ice-folk-musk-ox",
+      "subject": "UNIT:ICE_FOLK:SWORDSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-portrait-ice-folk-musk-ox",
+      "subject": "PORTRAIT:ICE_FOLK:SWORDSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
     }
   ],
   "recipes": [
@@ -1422,6 +1446,69 @@
       },
       "editInstruction": "Recolour only the small red mouth and the red mitten: they become a soft dark brown-grey, colour #4a3a36, so nothing is red. Do not redraw anything else: keep the tan face, the cream fur hood, the parka, the bolas and the husky, thick black outline and art style exactly the same, on a transparent background.",
       "notes": "portrait-sled-a-skin keeps five bright red pixels (#aa1b1a) in the owner key band."
+    },
+    {
+      "id": "musk-ox-a",
+      "asset": "chibi-direction-ice-folk-musk-ox",
+      "endpoint": "create-image-pixen",
+      "seed": 234601,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "It is a four-legged animal: it stands on all four legs with its body level and low, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+      "negativeAddendum": "rider, person, saddle, blanket, armour, trunk, tusks, elephant, mammoth, bison hump, cow, bull, orange wool, white wool, blue-grey wool, two animals",
+      "notes": "Bead pulp_wars-2yc.34: the Musk Ox (ruleset 7r55, the Ice Folk defender), first sample: a fresh creation in the side view the Mammoth uses, in dark brown-grey wool so that it is not a small Mammoth."
+    },
+    {
+      "id": "musk-ox-b",
+      "asset": "chibi-direction-ice-folk-musk-ox",
+      "endpoint": "create-image-pixen",
+      "seed": 234602,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "It is a four-legged animal: it stands on all four legs with its body level and low, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+      "negativeAddendum": "rider, person, saddle, blanket, armour, trunk, tusks, elephant, mammoth, bison hump, cow, bull, orange wool, white wool, blue-grey wool, two animals",
+      "notes": "Bead pulp_wars-2yc.34: second sample of the Musk Ox, the same request with another seed."
+    },
+    {
+      "id": "portrait-musk-ox-a",
+      "asset": "chibi-direction-portrait-ice-folk-musk-ox",
+      "endpoint": "create-image-pixen",
+      "seed": 234651,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up of the head only: the big shaggy dark brown head with its two frost-blue horns fills the whole square; no body and no legs. The wool is dark brown-grey, never orange, red or white.",
+      "negativeAddendum": "full body, legs, feet, hooves, rider, saddle, trunk, tusks, elephant, mammoth, cow, bull, orange wool, red wool, white wool, cream wool",
+      "notes": "Bead pulp_wars-2yc.34: the Musk Ox's portrait, a fresh creation with the portrait class and a close-up addendum (as for the Mammoth's), to match the accepted map sprite (musk-ox-b)."
+    },
+    {
+      "id": "musk-ox-b-light",
+      "asset": "chibi-direction-ice-folk-musk-ox",
+      "endpoint": "edit-image-pixen",
+      "seed": 234603,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "musk-ox-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change the shading of the wool only, so that the animal is lit from the left: the rump, the back and the left half of the body become lighter warm brown wool, colour #8a7560, with a pale highlight along the top left of the back; the chest, the belly and the wool under the head on the right become one tone darker, colour #4a3b30. Do not change any shape or other colour: keep the mane, saddle patch, muzzle, eyes, frost-blue horns, legs, black outline and art style the same, transparent background.",
+      "notes": "Bead pulp_wars-2yc.34, correction pass: musk-ox-b has no clear lit left side (lighting-qa faces -16.3: a dark rump on the left, the pale mane on the right). The same animal with its rump and back lit from the left."
     }
   ]
 }

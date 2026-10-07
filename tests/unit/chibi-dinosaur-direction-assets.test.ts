@@ -53,6 +53,14 @@ const UNITS = [
   ["KNIGHT", "t-rex"],
   ["JUGGERNAUT", "brontosaurus"],
 ] as const;
+/**
+ * The ninth art slot (ruleset 7r55, bead pulp_wars-2yc.34): the
+ * Stegosaurus, the siege unit. It has no classic sprite (it is a fresh
+ * creation and edits of it), so the classic comparisons below leave it out.
+ * The Triceratops keeps the slot CATAPULT.
+ */
+const NEW_UNITS = [["SWORDSMAN", "stegosaurus"]] as const;
+const ALL_UNITS = [...UNITS, ...NEW_UNITS] as const;
 const ICONS = [
   ["ICON:ACTION:LAY_EGG", "lay-egg"],
   ["ICON:ACTION:HATCH", "hatch"],
@@ -66,6 +74,7 @@ const DINOSAURS = [
   "triceratops",
   "t-rex",
   "brontosaurus",
+  "stegosaurus",
 ] as const;
 
 async function candidateOf(
@@ -136,7 +145,7 @@ describe("Dinosaur production art of the new visual direction (pulp_wars-3tq.13)
 
   it("registers every Dinosaur land unit and portrait, the Egg, three command icons and City 1-3", () => {
     const expected: [ArtSubjectV7, string][] = [
-      ...UNITS.map(
+      ...ALL_UNITS.map(
         ([role, name]) =>
           [`UNIT:DINOSAUR:${role}`, `chibi-direction-dinosaur-${name}`] as [
             ArtSubjectV7,
@@ -144,7 +153,7 @@ describe("Dinosaur production art of the new visual direction (pulp_wars-3tq.13)
           ],
       ),
       ["UNIT:DINOSAUR:EGG", "chibi-direction-dinosaur-egg"],
-      ...UNITS.map(
+      ...ALL_UNITS.map(
         ([role, name]) =>
           [
             `PORTRAIT:DINOSAUR:${role}`,
@@ -431,7 +440,53 @@ describe("Dinosaur production art of the new visual direction (pulp_wars-3tq.13)
     }
   });
 
-  it("gives the six dinosaurs the blue hide and the red-orange accent as drawn, one hue for the faction", async () => {
+  it("gives the Stegosaurus the siege role's canvas, with no classic sprite behind it", async () => {
+    const classic = buildChibiArtRegistryV7(CHIBI_ART_ASSETS_V7).registry;
+    const human = registry.variants("UNIT:CATAPULT")[0];
+    const sprite = registry.variants("UNIT:DINOSAUR:SWORDSMAN")[0];
+    const triceratops = registry.variants("UNIT:DINOSAUR:CATAPULT")[0];
+    const portrait = registry.variants("PORTRAIT:DINOSAUR:SWORDSMAN")[0];
+    if (
+      human === undefined ||
+      sprite === undefined ||
+      triceratops === undefined ||
+      portrait === undefined
+    )
+      throw new Error("Stegosaurus: missing");
+    // A LARGE_UNIT like the Human Catapult and the Triceratops before it.
+    expect([sprite.width, sprite.height, sprite.assetClass]).toEqual([
+      human.width,
+      human.height,
+      human.assetClass,
+    ]);
+    expect([sprite.width, sprite.height, sprite.assetClass]).toEqual([
+      triceratops.width,
+      triceratops.height,
+      triceratops.assetClass,
+    ]);
+    expect([portrait.width, portrait.height]).toEqual([48, 48]);
+    expect(classic.variants("UNIT:DINOSAUR:SWORDSMAN")).toHaveLength(0);
+    expect(classic.variants("PORTRAIT:DINOSAUR:SWORDSMAN")).toHaveLength(0);
+    // About the Triceratops's size on the tile, standing on its line.
+    const records = await loadRecords(productionLayout(ROOT, BATCH), BATCH);
+    const boundsOf = async (id: string) => {
+      const record = records.assets[id];
+      if (record === undefined) throw new Error(`${id}: no record`);
+      const bounds = opaqueBounds(
+        await readRaster(path.join(ROOT, record.master.path)),
+      );
+      if (bounds === null) throw new Error(`${id}: empty`);
+      return bounds;
+    };
+    const mine = await boundsOf(sprite.id);
+    const theirs = await boundsOf(triceratops.id);
+    expect(Math.abs(mine.bottom - theirs.bottom)).toBeLessThanOrEqual(4);
+    expect(
+      Math.abs(mine.right - mine.left - (theirs.right - theirs.left)),
+    ).toBeLessThanOrEqual(6);
+  });
+
+  it("gives the seven dinosaurs the blue hide and the red-orange accent as drawn, one hue for the faction", async () => {
     const records = await loadRecords(productionLayout(ROOT, BATCH), BATCH);
     const hues: number[] = [];
     for (const name of DINOSAURS) {
@@ -475,7 +530,24 @@ describe("Dinosaur production art of the new visual direction (pulp_wars-3tq.13)
         expect(asset.ownerColour, asset.id).toBe(false);
       expect(asset.maskOverride, asset.id).toBeUndefined();
     }
+    // Every piece is an edit, of a classic sprite or of an earlier step. The
+    // Stegosaurus (bead pulp_wars-2yc.34) had no sprite to edit: its chains
+    // start from fresh creations, the first use of the faction fragment.
+    const created = manifest.recipes
+      .filter((recipe) => recipe.endpoint !== "edit-image-pixen")
+      .map((recipe) => recipe.id)
+      .sort();
+    expect(created).toEqual([
+      "portrait-stegosaurus-a",
+      "portrait-stegosaurus-b",
+      "stegosaurus-a",
+      "stegosaurus-b",
+    ]);
     for (const recipe of manifest.recipes) {
+      if (created.includes(recipe.id)) {
+        expect(recipe.endpoint, recipe.id).toBe("create-image-pixen");
+        continue;
+      }
       expect(recipe.endpoint, recipe.id).toBe("edit-image-pixen");
       expect(
         recipe.editInstruction?.length ?? 0,
