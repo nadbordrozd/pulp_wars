@@ -806,8 +806,10 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // With the Martian pass's correction (`pulp_wars-w49.14`: the Human
     // seat's economy-first opening, its Guards, and its Knights) seed 3 has
     // no Wail; seed 0 has two (of seeds 0-12, so do 2, 5, 6, 8, 9, 10, and
-    // 12).
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 0);
+    // 12). With the Industry reshuffle (`pulp_wars-w49.21`, 7r56) the
+    // seed-0 match is over in round 13 with no Wail; seed 5 has two by
+    // round 15 (of seeds 0-15, so do 6, 7, 8, 9, 10, 14, and 15).
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 5);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
@@ -872,7 +874,10 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // unit (`pulp_wars-w49.17`, 7r55: the Wight's technologies in the
     // Undead order) the Lich of seed 0 never splashes; that of seed 8
     // does, eight times (of seeds 0-19, so do 3, 6, 10, 14, 15, and 18).
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 8), {
+    // With the Industry reshuffle (`pulp_wars-w49.21`, 7r56) seed 8
+    // trains no Lich; the two of seed 9 splash (of seeds 0-19, splashes
+    // also show on 6, 14, 15, 17, and 18).
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 9), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);

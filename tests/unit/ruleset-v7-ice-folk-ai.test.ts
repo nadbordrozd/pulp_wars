@@ -289,7 +289,8 @@ describe("Ice Folk Normal AI: production and research", () => {
   it("researches the Witch and the Snow Hunter with two cities", () => {
     const view = viewerViewV7(
       asIce([own("FIGHTER", 5, 3), foe("FIGHTER", 1, 1)], {
-        0: ["SCOUTING", "RAIDING", "DRILL"],
+        // (The Industry reshuffle, 7r56: and Deep Winter, the Musk Ox's.)
+        0: ["SCOUTING", "RAIDING", "DRILL", "FORTIFICATION"],
       }),
     );
     const plan = iceFolkResearchV7(view, 2, 3, false);

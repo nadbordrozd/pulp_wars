@@ -1,5 +1,98 @@
 # Greedy Normal AI
 
+## The Industry reshuffle (`pulp_wars-w49.21`)
+
+[The Industry reshuffle](../product/RULESET_7_INDUSTRY_RESHUFFLE.md)
+(`pulp-wars-poc-7r56`) moved the defender of every faction (the `GUARD`
+role) from the root of Industry to Fortification, and the Workshop from
+Engineering to the root. It is a placement pass: no number changed and no
+game was played. What follows is what the policy needed so that the longer
+chain to the defender neither slows a seat nor stalls it. "Drill" in the
+older sections below is the root (`DRILL`, shown as "Crafting"); where
+they say a seat gets its defender with Drill, it now gets it with the root
+and then Fortification.
+
+**No research order changed.** An army seat's chain toward a unit is read
+from the tree (`ARMY_RESEARCH_ROLES_V7`, `armyResearchTargetV7`), so every
+seat buys the root and then Fortification where its order names the
+defender: first for an Undead, Martian, or Dinosaur seat, second for a
+Human seat, third for a Goblin seat. The heavy line unit is on the other
+sub-branch (the root, Engineering, Metallurgy).
+
+**The root does not count against the research tempo**
+(`armyTempoTechnologiesV7`). The city-levels rule (`armyResearchIsDueV7`)
+and the war clock (`armyResearchClockDueV7`) count the technologies a seat
+owns. The root is a step on the way now and unlocks no unit, so both count
+the owned technologies less the root. Without this every unit of every
+order came one technology's worth of rounds later.
+
+**A seat whose order begins with its defender buys Fortification before
+its units** (`armyDefenderResearchV7`). For an Undead, Martian, or
+Dinosaur seat, when the next step of its order is the technology that
+unlocks the defender and no hostile land unit stands at the gates of one
+of its cities, that technology has the due priority
+(`ARMY_DUE_RESEARCH_PRIORITY_V7`), its price is part of the research floor
+(`armyResearchFloorV7`: the seat trains nothing that would leave it unable
+to pay), and a war does not hold it (`armyWarHoldsResearchV7`). In the
+first diagnostic match an Undead seat bought the root in round 3, trained
+Skeletons with the Coins of four turns, and had its first Zombie in round 9. With the rule: the root in round 3, Fortification in round 7, the first
+Zombie in round 8.
+
+**The root alone is not a population technology.** `armyEconomyFirstV7`
+and `armyWarGrowthDueV7` ask whether a seat owns a technology that builds
+something that adds population. The Workshop is such a building and is now
+at the root, so every seat with the root read as having its economy; both
+skip `BUILD_WORKSHOP`.
+
+**A seat that keeps Coins for a due technology builds no Field Defense**
+(`armyFieldDefenseHeldV7`, `ARMY_FIELD_DEFENSE_COINS_V7`). Human, Undead,
+and Goblin seats own Field Defense as soon as they own their defender. A
+Field Defense is not offered to the policy while the research floor is
+above zero, or while paying its 3 Coins would leave the seat short of a
+technology the war clock says is due. An Undead seat under pressure spent
+its technology Coins on Field Defenses.
+
+**The Workshop.** Nothing was added. A seat with the root builds a
+Workshop beside a Farm, a Lumber Camp, or a Mine through the same growth
+scoring as before; the root alone builds none until one of those stands.
+
+**The garrison.** Nothing was added. The purchase shares count only the
+roles a city is offered, so a seat without Fortification garrisons with
+its basic line unit.
+
+**Nesting and Force Fields.** The rules that research Nesting once an
+Ankylosaurus is fielded and Force Fields once a Shield Projector is now
+find the technology owned, since the unit is trained with it. They still
+apply to a seat that fields one without it. In the older research value
+(`researchValue`) Nesting can now be the next role technology; its own
+priority, where higher (a crowded city), stands.
+
+**A seat outside the army policy** (`defenderLastStepResearchV7`,
+`DEFENDER_RESEARCH_PRIORITY_V7` = 1,165). The army policy applies only
+when every seat of the match is Human, Undead, Goblin, Martian, or
+Dinosaur. In any other match a seat researched toward its defender at
+1,062 (the early plan of the Ice Folk, Dwarf, Candy, and older Martian
+policies) or 1,060 (the next role), below its units (1,080) and below
+every economic technology (1,160). With the defender at the root that
+bought it early, because the root is cheap. In the fourth diagnostic match
+(Ice Folk, Dwarves, Candy, Martians, 25 rounds) every seat bought the root
+by round 13, then Farming, Administration, or Engineering, and none bought
+Fortification. Now, for such a seat, the defender's technology has
+priority 1,165 once every technology before it is owned: it is bought
+when the Coins are there, ahead of an economic technology and behind the
+signature research (1,170). The seat does not save for it. The early plans
+of the Ice Folk, Dwarf, and Candy policies name the root and then the
+faction's Fortification (`iceFolkResearchV7`, `dwarfResearchV7`,
+`candyResearchV7`); a Dwarf seat used to research Dig In only under
+threat.
+
+**The opening** (`src/ai/v7-opening.ts`) is unchanged: the root is still
+valued by the Mountains and the hostile units and cities near the capital.
+
+**Not measured.** Four diagnostic matches looked for stalls and errors
+only (none). The last rule above was added after the fourth and is covered
+by a unit test, not by a match.
+
 ## The Undead hand pass at `7r55` (`pulp_wars-w49.20`)
 
 [The Undead hand pass](../product/RULESET_7_TUNING_UNDEAD.md#14-the-hand-pass-at-7r55)

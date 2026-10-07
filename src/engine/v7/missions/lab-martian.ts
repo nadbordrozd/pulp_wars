@@ -41,6 +41,15 @@ import type { MissionDefinitionV7 } from "./types";
  * revision 1, 6 Coins each now: 80 Coins of units) can be replaced. The
  * numbers quoted above are revision 1's.
  *
+ * Revision 3 (the Industry reshuffle, `pulp_wars-w49.21`, `7r56`): the
+ * defender of every faction is at Fortification, one technology behind the
+ * root of Industry. Both seats own it too (thirteen and twelve
+ * technologies), so that the Shield Projectors and the Guards on the board can
+ * be replaced. For the Martians it is Force Fields: the player owns the
+ * Shield Projectors' field from the first turn (it was a research of 17
+ * Coins in revisions 1 and 2), and the units next to a Projector start at
+ * Shield 4. The Humans can build Field Defense.
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  1   .Ge.....v....eG.      v: a neutral village
@@ -107,7 +116,7 @@ const MARTIAN_MID_RESOURCES_V7 = [
 
 export const LAB_MARTIAN_MID_V7: MissionDefinitionV7 = {
   id: "LAB_MARTIAN_MID",
-  revision: 2,
+  revision: 3,
   hidden: true,
   size: 16,
   seed: 20261401,
@@ -145,6 +154,9 @@ export const LAB_MARTIAN_MID_V7: MissionDefinitionV7 = {
         "RAIDING",
         "CHIVALRY",
         "DRILL",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the defender
+        // is at Fortification (revision 3).
+        "FORTIFICATION",
         // The ninth unit (`pulp_wars-w49.17`, 7r55): the heavy line unit's
         // technologies (revision 2).
         "ENGINEERING",
@@ -200,6 +212,9 @@ export const LAB_MARTIAN_MID_V7: MissionDefinitionV7 = {
         "RAIDING",
         "CHIVALRY",
         "DRILL",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the defender
+        // is at Fortification (revision 3).
+        "FORTIFICATION",
         "ENGINEERING",
         // The ninth unit (7r55): the Champion is at Metallurgy.
         "METALLURGY",

@@ -70,7 +70,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r55`;
+ * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r56`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 13): the Normal AI breaks
  * a line with numbers, expands and grows, researches toward its army and
  * buys its dear units, and keeps its discipline; research costs 1 Coin more
@@ -179,13 +179,13 @@ describe("tuning 6 identity and the research price", () => {
   // and the Undead pass 7r51, so 7r49 is the prior identity before the
   // last.
   it("was 7r49 after 7r48, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
-    expect(PRIOR_RULESET_7_IDS.slice(-7, -5)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+    expect(PRIOR_RULESET_7_IDS.slice(-8, -6)).toEqual([
       "pulp-wars-poc-7r48",
       "pulp-wars-poc-7r49",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-7, -5)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-8, -6)).toEqual([
       "pulpWars.save.v7r48.current",
       "pulpWars.save.v7r49.current",
     ]);
@@ -221,7 +221,7 @@ describe("tuning 6 identity and the research price", () => {
   it("is what the public technology tree and the engine charge", () => {
     const state = bare(
       field([{ seat: 1, role: "FIGHTER", at: at(2, 8) }], {
-        techs: { 0: ["GATHERING", "HUNTING", "DRILL"] },
+        techs: { 0: ["GATHERING", "HUNTING", "DRILL", "FORTIFICATION"] },
         coins: 40,
       }),
     );
@@ -886,10 +886,13 @@ describe("research toward the army", () => {
     ]);
     // Humans: the Marksman with the second technology bought, the Guard as
     // a cheap anchor with the third, then the Catapult and the Knight.
+    // (The Industry reshuffle, `pulp_wars-w49.21`, 7r56: the defender of
+    // every faction is at Fortification, one technology behind the root.)
     expect(researchOrder(oneCity("ORIGINAL"))).toEqual([
       "HUNTING",
       "MARKSMANSHIP",
       "DRILL",
+      "FORTIFICATION",
       "ENGINEERING",
       // (The ninth unit, 7r55: the Champion is at Metallurgy.)
       "METALLURGY",
@@ -905,6 +908,7 @@ describe("research toward the army", () => {
     const undead = researchOrder(oneCity("UNDEAD"));
     expect(undead).toEqual([
       "DRILL",
+      "FORTIFICATION",
       "HUNTING",
       "MARKSMANSHIP",
       // The Undead pass (`pulp_wars-w49.13`): the Lich before the
@@ -919,7 +923,7 @@ describe("research toward the army", () => {
       "RAIDING",
       "CHIVALRY",
     ]);
-    expect(undead.indexOf("DRILL")).toBeLessThan(3);
+    expect(undead.indexOf("FORTIFICATION")).toBeLessThan(3);
     // Goblins: the Bomb Chucker and the Wolf Rider, the Orc Brute (the
     // correction of the Goblin pass; it was last), then the Rocket Cart,
     // the Warboss, and the Scrap Buggy.
@@ -928,6 +932,7 @@ describe("research toward the army", () => {
       "MARKSMANSHIP",
       "SCOUTING",
       "DRILL",
+      "FORTIFICATION",
       "FORESTRY",
       "SAWMILLING",
       "ADMINISTRATION",
@@ -959,10 +964,11 @@ describe("research toward the army", () => {
       return state;
     };
     const order = researchOrder(threeCities);
-    expect(order.slice(0, 6)).toEqual([
+    expect(order.slice(0, 7)).toEqual([
       "HUNTING",
       "MARKSMANSHIP",
       "DRILL",
+      "FORTIFICATION",
       // Roads (by Scouting) once the Marksman and the Guard can be trained.
       "SCOUTING",
       "ROADS",
@@ -1267,6 +1273,7 @@ describe("the dear units get bought", () => {
               "RAIDING",
               "CHIVALRY",
               "DRILL",
+              "FORTIFICATION",
             ],
           },
           coins: 12,

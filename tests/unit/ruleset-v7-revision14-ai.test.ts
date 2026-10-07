@@ -402,9 +402,13 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // ninth unit (`pulp_wars-w49.17`, 7r55: the Wight's technologies in
     // the Undead order): the two Liches of seed 0 never plague; of seeds
     // 0-19, seeds 8 and 13 plague (seed 8: four Liches, 7 applications).
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56: the Zombie and
+    // the Guard behind Fortification): the two Liches of seed 8 never
+    // plague; of seeds 0-19, seeds 2, 10, and 13 plague (seed 10: three
+    // Liches, 10 applications, over in round 37).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 8,
+      seed: 10,
       width: 11,
       height: 11,
       aiCount: 1,

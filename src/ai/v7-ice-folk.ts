@@ -492,6 +492,12 @@ export function iceFolkProductionAdjustmentV7(
  * unit at home; Brittle when it owns a Chill source and Deep Winter; then
  * Sawmilling and Chivalry (the shorter chain first). Returns the next
  * technology to research and its tier, or null.
+ *
+ * The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Musk Ox is at
+ * Deep Winter, behind the root. The early plan takes the shorter chain
+ * first, so it is Scouting (the Sled), the root (Ore and the Workshop),
+ * Deep Winter (the Musk Ox): the seat owns Deep Winter before its
+ * signature research, whatever its cities and its wounded.
  */
 export function iceFolkResearchV7(
   view: PlayerViewV7,

@@ -350,7 +350,8 @@ describe("Steampunk Dwarf production art (pulp_wars-78i.5)", () => {
     expect(technologySubjectV7("EXPLOSIVES", "DWARF")).toBe(
       "ICON:TECH:DWARF:EXPLOSIVES",
     );
-    expect(technologySubjectV7("DRILL", "DWARF")).toBe("UNIT:DWARF:GUARD");
+    // (The root's card is the Workshop since the Industry reshuffle, 7r56.)
+    expect(technologySubjectV7("DRILL", "DWARF")).toBe("IMPROVEMENT:WORKSHOP");
     expect(commandSubjectV7(TEND, "DWARF")).toBe(
       "ICON:ACTION:DWARF:TEND_WOUNDED",
     );

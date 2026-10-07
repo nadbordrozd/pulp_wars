@@ -30,7 +30,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_2_V7: MissionDefinitionV7 = {
   id: "FRONTIER_2",
-  revision: 1,
+  revision: 2,
   size: 14,
   seed: 20261102,
   terrain: [
@@ -94,7 +94,9 @@ export const FRONTIER_2_V7: MissionDefinitionV7 = {
     {
       faction: "GOBLIN",
       coins: 0,
-      technologies: ["DRILL", "SCOUTING", "HUNTING"],
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Orc Brute is
+      // at Fortification (revision 2).
+      technologies: ["DRILL", "FORTIFICATION", "SCOUTING", "HUNTING"],
       cities: [
         { at: { x: 10, y: 3 }, level: 3, rewards: ["SURVEY", "WALLS"] },
         { at: { x: 4, y: 2 }, level: 2, rewards: ["STOCKPILE"] },

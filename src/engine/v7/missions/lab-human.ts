@@ -29,6 +29,11 @@ import type {
  * 17 of the 20 land technologies; Planning, Fieldcraft, and Explosives are
  * missing). `LAB_SIEGE` is unchanged: its player reaches the Champion by
  * Engineering and then Metallurgy.
+ *
+ * The Industry reshuffle (`pulp_wars-w49.21`, `7r56`): the Guard is at
+ * Fortification. `LAB_BACKLINE` is revision 4: its AI seat, which fields
+ * Guards and owned the root alone, owns Fortification too. `LAB_SIEGE` and
+ * `LAB_LATE` are unchanged: every seat of them owned Fortification already.
  */
 const DRY_NAVAL_V7: readonly TechnologyIdV7[] = [
   "SHORECRAFT",
@@ -194,7 +199,7 @@ export const LAB_SIEGE_V7: MissionDefinitionV7 = {
  */
 export const LAB_BACKLINE_V7: MissionDefinitionV7 = {
   id: "LAB_BACKLINE",
-  revision: 3,
+  revision: 4,
   hidden: true,
   mirror: true,
   size: 14,
@@ -277,6 +282,9 @@ export const LAB_BACKLINE_V7: MissionDefinitionV7 = {
         "DRILL",
         "ENGINEERING",
         "METALLURGY",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Guard is
+        // at Fortification (revision 4).
+        "FORTIFICATION",
       ],
       cities: [
         { at: { x: 11, y: 6 }, level: 4, rewards: ["SURVEY", "WALLS", "BOOM"] },

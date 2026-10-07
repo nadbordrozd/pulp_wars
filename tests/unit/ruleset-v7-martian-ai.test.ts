@@ -400,17 +400,36 @@ describe("Martian Normal AI: production and research", () => {
         },
       };
     };
-    expect(martianResearchV7(view([]), 1, 0, false)?.tech).toBe("DRILL");
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Shield
+    // Projector is two technologies away (the root, then Force Fields), so
+    // the Saucer's Scouting, one away, is the first of the early plan.
+    expect(martianResearchV7(view([]), 1, 0, false)?.tech).toBe("SCOUTING");
+    expect(martianResearchV7(view(["SCOUTING"]), 1, 0, false)?.tech).toBe(
+      "DRILL",
+    );
     expect(
-      martianResearchV7(view(["DRILL", "SCOUTING"]), 1, 3, false),
+      martianResearchV7(view(["SCOUTING", "DRILL"]), 1, 0, false)?.tech,
+    ).toBe("FORTIFICATION");
+    expect(
+      martianResearchV7(
+        view(["DRILL", "FORTIFICATION", "SCOUTING"]),
+        1,
+        3,
+        false,
+      ),
     ).toBeNull();
     // Marksmanship needs Hunting first.
-    const middle = martianResearchV7(view(["DRILL", "SCOUTING"]), 2, 3, false);
+    const middle = martianResearchV7(
+      view(["DRILL", "FORTIFICATION", "SCOUTING"]),
+      2,
+      3,
+      false,
+    );
     expect(middle?.tech).toBe("HUNTING");
     expect(middle?.priority).toBe(MARTIAN_RESEARCH_PRIORITY_V7);
     expect(
       martianResearchV7(
-        view(["DRILL", "SCOUTING", "HUNTING", "GATHERING"]),
+        view(["DRILL", "FORTIFICATION", "SCOUTING", "HUNTING", "GATHERING"]),
         2,
         3,
         false,
@@ -418,7 +437,12 @@ describe("Martian Normal AI: production and research", () => {
     ).toBe("MARKSMANSHIP");
     // With a small army the role research waits behind training.
     expect(
-      martianResearchV7(view(["DRILL", "SCOUTING"]), 2, 1, false)?.priority,
+      martianResearchV7(
+        view(["DRILL", "FORTIFICATION", "SCOUTING"]),
+        2,
+        1,
+        false,
+      )?.priority,
     ).toBeLessThan(1080);
   });
 });

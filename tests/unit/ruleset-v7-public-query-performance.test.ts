@@ -43,14 +43,19 @@ describe("ruleset-7 late public query performance", () => {
     // by the cities owned, and the view has four: a tier 1 costs 8 and a
     // tier 2 costs 13, so its 12 Coins buy Scouting alone (one RESEARCH
     // command instead of six).
-    expect(commands).toHaveLength(66);
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): 64. The view owns
+    // the root and not Fortification, where the Guard is now, so its two
+    // cities that can train no longer offer the Guard.
+    expect(commands).toHaveLength(64);
     expect(canonicalHash(commands)).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
       // technology owned, so the retained view's 12 Coins buy a technology
       // again and six RESEARCH commands are offered (was 83c9a2…466e).
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // 9fd994…1b96).
-      "4b8b7c439104a86d56aa7ee8f66a3c227df5f1ab4ffb195fe8a28e126478d029",
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+      // 4b8b7c…d029).
+      "4eb8ff841a02d2e31170dfa3038b8cbc826f53afc6e23ef8ccb920722670e1fc",
     );
     expect(
       commands.flatMap((command) =>
@@ -70,7 +75,10 @@ describe("ruleset-7 late public query performance", () => {
           ? [command.cityId]
           : [],
       ),
-    ).toEqual([cityId(3), cityId(16)]);
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): none. The view
+      // owns the root and not Fortification, where the Guard is now (cities
+      // 3 and 16 offered it before).
+    ).toEqual([]);
     expect(
       commands.flatMap((command) =>
         command.kind === "TRAIN" && command.cityId === cityId(35)
@@ -78,7 +86,7 @@ describe("ruleset-7 late public query performance", () => {
           : [],
       ),
     ).toEqual([]);
-    expect(commands.filter(isRevision8MergedUnlockCommand)).toHaveLength(2);
+    expect(commands.filter(isRevision8MergedUnlockCommand)).toHaveLength(0);
     expect(commands.filter(isNavalExpansionCommand)).toEqual([]);
     expect(canonicalHash(commands.filter(isRetainedLandCommand))).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
@@ -86,7 +94,9 @@ describe("ruleset-7 late public query performance", () => {
       // again and six RESEARCH commands are offered (was 83c9a2…466e).
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // 9fd994…1b96).
-      "4b8b7c439104a86d56aa7ee8f66a3c227df5f1ab4ffb195fe8a28e126478d029",
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+      // 4b8b7c…d029).
+      "4eb8ff841a02d2e31170dfa3038b8cbc826f53afc6e23ef8ccb920722670e1fc",
     );
     const ready = queryAiReadyCommandsV7(view);
     // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
@@ -117,7 +127,9 @@ describe("ruleset-7 late public query performance", () => {
       // again and six RESEARCH commands are offered (was 8926e8…9159).
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // 9ed334…056e).
-      "849b0411507f957f4a91e7074cc975023adaae7d8f38389f49302d6a0ac0a5b9",
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+      // 849b04…a5b9).
+      "9b18cff2d308423cb07e17d8908aa2cdd21b971fbff0d179fde7e72e141e883b",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.
@@ -126,7 +138,9 @@ describe("ruleset-7 late public query performance", () => {
       // (was b9b0a8…40cb).
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // 999e50…a79f).
-      "15be872621121df6f04bf6b946c61132f72ae7342ca0e1c89f24f220f4cab4f2",
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+      // 15be87…b4f2).
+      "724d39a5997ab848ec309b8c580f7ce0f29d890ea89e6d4a5d6c6bf456b25de0",
     );
     expect(
       canonicalHash(
@@ -137,7 +151,7 @@ describe("ruleset-7 late public query performance", () => {
       ),
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // fe39b7…68d3).
-    ).toBe("fc808c923499582c96c462863cabcb1e7d974fa8d16893d5cc254c192f96cbc1");
+    ).toBe("25ba7bc15c09e8d20505c900f4f635a35dc1c336905c56be939267e8d3fe4a55");
     expect(
       canonicalHash(
         commands.filter(isRetainedLandCommand).map((command) => ({
@@ -147,7 +161,7 @@ describe("ruleset-7 late public query performance", () => {
       ),
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // fe39b7…68d3).
-    ).toBe("fc808c923499582c96c462863cabcb1e7d974fa8d16893d5cc254c192f96cbc1");
+    ).toBe("25ba7bc15c09e8d20505c900f4f635a35dc1c336905c56be939267e8d3fe4a55");
     expect(elapsed).toBeLessThan(250);
 
     const incrementalView = structuredClone(RETAINED_VIEW);
@@ -250,12 +264,15 @@ describe("ruleset-7 late public query performance", () => {
         // again and six RESEARCH commands are offered (was ed2aad…46f9).
         // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
         // 447868…9983).
-        "be2fb4863ed3fb0eed545ef569f6a4bd862c042196f83b9c13a95b8a3adf6066",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+        // be2fb4…6066).
+        "70afe9e8f47129c996d843d5a251a8b29a8350e4ecab74f257766f0f6fa82b43",
       );
       const revision8Scores = leftResult.scores.filter(({ command }) =>
         isRevision8MergedUnlockCommand(command),
       );
-      expect(revision8Scores).toHaveLength(2);
+      // (None since the Industry reshuffle: the Guard is not on offer.)
+      expect(revision8Scores).toHaveLength(0);
       expect(revision8Scores.every(({ score }) => score === 0)).toBe(true);
       expect(
         canonicalHash(
@@ -269,7 +286,9 @@ describe("ruleset-7 late public query performance", () => {
         // again and six RESEARCH commands are offered (was ed2aad…46f9).
         // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
         // 447868…9983).
-        "be2fb4863ed3fb0eed545ef569f6a4bd862c042196f83b9c13a95b8a3adf6066",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+        // be2fb4…6066).
+        "70afe9e8f47129c996d843d5a251a8b29a8350e4ecab74f257766f0f6fa82b43",
       );
       expect(queryPublicEconomicPotentialsV7(leftView)).toBe(
         leftResult.potentials,
@@ -335,7 +354,9 @@ describe("ruleset-7 late public query performance", () => {
       // again and six RESEARCH commands are offered (was 83c9a2…466e).
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // 9fd994…1b96).
-      "4b8b7c439104a86d56aa7ee8f66a3c227df5f1ab4ffb195fe8a28e126478d029",
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+      // 4b8b7c…d029).
+      "4eb8ff841a02d2e31170dfa3038b8cbc826f53afc6e23ef8ccb920722670e1fc",
     );
     const firstMove = required(
       queryPlayerCommandsV7(original).find(
@@ -364,7 +385,9 @@ describe("ruleset-7 late public query performance", () => {
       // again and six RESEARCH commands are offered (was 0bfa82…8f93).
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // 8e4aa3…e4bd).
-      "39a0b08ba881085834e92ca6a2a93b0b40806ba84c55e14be78442762ad1a63b",
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+      // 39a0b0…a63b).
+      "099b6189664e3cbe9663c70590f79a6e970ca44ef3a60bffacd819aeefd56db1",
     );
     expect(canonicalHash(changedCommands.filter(isRetainedLandCommand))).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
@@ -372,7 +395,9 @@ describe("ruleset-7 late public query performance", () => {
       // again and six RESEARCH commands are offered (was 0bfa82…8f93).
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // 8e4aa3…e4bd).
-      "39a0b08ba881085834e92ca6a2a93b0b40806ba84c55e14be78442762ad1a63b",
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+      // 39a0b0…a63b).
+      "099b6189664e3cbe9663c70590f79a6e970ca44ef3a60bffacd819aeefd56db1",
     );
   });
 

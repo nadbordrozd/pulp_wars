@@ -661,7 +661,11 @@ describe("Dwarf Help and technology", () => {
       requiredButton("tech-fortification").querySelector(".v7-tech-name")
         ?.textContent,
     ).toBe("Dig In");
-    expect(unlocks("fortification")).toEqual([DIG_IN_UNLOCK_TEXT_V7]);
+    // (The Industry reshuffle, 7r56: the defender is trained with it.)
+    expect(unlocks("fortification")).toEqual([
+      "Train Steam Mole (Tunnel)",
+      DIG_IN_UNLOCK_TEXT_V7,
+    ]);
     expect(
       requiredButton("tech-explosives").querySelector(".v7-tech-name")
         ?.textContent,
@@ -670,7 +674,9 @@ describe("Dwarf Help and technology", () => {
       expect.arrayContaining([BLASTING_CHARGES_UNLOCK_TEXT_V7]),
     );
     expect(unlocks("sawmilling")).toContain(dwarfRoleUnlockTextV7("CATAPULT"));
-    expect(unlocks("drill")).toContain(dwarfRoleUnlockTextV7("GUARD"));
+    // (The Industry reshuffle, 7r56: the root gives the Workshop.)
+    expect(unlocks("drill")).toContain("Build workshop");
+    expect(unlocks("drill")).not.toContain(dwarfRoleUnlockTextV7("GUARD"));
     app.destroy();
     const engineer = recruitmentRolePresentationV7("CAPTAIN", "DWARF");
     expect(engineer.label).toBe(label("CAPTAIN"));

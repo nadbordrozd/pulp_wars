@@ -945,6 +945,8 @@ with its per-run `CAMPAIGN_TEASER_PLAYTEST.json`, written by
 run takes about 25 minutes with 8 jobs, mostly mission 4's matches running
 to the round cap.
 
+**The Industry reshuffle (`pulp_wars-w49.21`, `pulp-wars-poc-7r56`).** The defender of every faction is unlocked by Fortification, so every mission seat that owns Drill and fields its defender owns Fortification too: `FRONTIER_1`, `FRONTIER_2`, and `FRONTIER_3` are revision 2 and `FRONTIER_4` is revision 3. No unit, Coin, or map changed, and the playtest was not rerun. The technology lists in the tables of this document are as authored; [the record](RULESET_7_INDUSTRY_RESHUFFLE.md#5-labs-the-showcase-and-missions) has what each seat was given.
+
 _Final setups_ (every mission is 1 Human-side seat against 1 AI seat,
 Rival, the Naval branch forbidden; resources follow the ring floors of
 section 6):

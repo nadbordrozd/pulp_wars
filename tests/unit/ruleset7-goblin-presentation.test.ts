@@ -418,11 +418,17 @@ describe("Revision 17 Goblin presentation text", () => {
       "PORTRAIT:GOBLIN:BATTLESHIP",
     );
     expect(portraitSubjectV7("FIGHTER", "ORIGINAL")).toBe("PORTRAIT:FIGHTER");
-    expect(technologySubjectV7("DRILL", "GOBLIN")).toBe("UNIT:GOBLIN:GUARD");
+    // (The root's card is the Workshop since the Industry reshuffle, 7r56.)
+    expect(technologySubjectV7("DRILL", "GOBLIN")).toBe("IMPROVEMENT:WORKSHOP");
+    expect(technologySubjectV7("CHIVALRY", "GOBLIN")).toBe(
+      "UNIT:GOBLIN:KNIGHT",
+    );
     expect(technologySubjectV7("ADMINISTRATION", "GOBLIN")).toBe(
       "PORTRAIT:GOBLIN:CAPTAIN",
     );
-    expect(technologySubjectV7("DRILL", "ORIGINAL")).toBe("UNIT:GUARD");
+    expect(technologySubjectV7("DRILL", "ORIGINAL")).toBe(
+      "IMPROVEMENT:WORKSHOP",
+    );
   });
 
   it("stays silent in matches without a Goblin seat", () => {

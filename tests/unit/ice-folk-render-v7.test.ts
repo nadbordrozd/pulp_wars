@@ -232,11 +232,11 @@ describe("Ice Folk art wiring (ICE_FOLK.md wiring steps 1-3, 5)", () => {
     expect(technologySubjectV7("EXPLOSIVES", "ICE_FOLK")).toBe(
       "ICON:TECH:ICE_FOLK:EXPLOSIVES",
     );
-    // The ninth unit (`pulp_wars-w49.17`, 7r55): Drill unlocks the Musk
-    // Ox, whose art slot is the ninth one (a stand-in until its art is
-    // made); the Mammoth keeps the slot its art was made for.
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the root's card is
+    // the Workshop (the Musk Ox, which it showed at 7r55, is at Deep
+    // Winter, whose card is the icon above).
     expect(technologySubjectV7("DRILL", "ICE_FOLK")).toBe(
-      "UNIT:ICE_FOLK:SWORDSMAN",
+      "IMPROVEMENT:WORKSHOP",
     );
     expect(technologySubjectV7("FORTIFICATION", "ORIGINAL")).toBe(
       "ICON:TECH:FORTIFICATION",

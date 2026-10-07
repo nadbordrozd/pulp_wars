@@ -148,9 +148,15 @@ export function tileImprovementSubjectV7(
  * chibi map sprite of the same subject; where LEGACY reuses a portrait or an
  * action or reward icon, CHIBI reuses the chibi one. Fieldcraft,
  * Fortification and Navigation have dedicated icons (Navigation's legacy
- * art is a flat deep-water tile, which is no icon). Engineering shows the
- * Workshop it unlocks: the chibi Mountain carries its own grass tile and
- * reads as a map square on a card.
+ * art is a flat deep-water tile, which is no icon).
+ *
+ * The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the root (`DRILL`,
+ * shown as "Crafting") shows the Workshop it unlocks (the defender it showed
+ * until 7r55 is at Fortification, which keeps its own icon), and Engineering
+ * (which showed the Workshop) the mined Mountain, the map sprite of the Mine
+ * it unlocks. (It first showed the Redevelop icon, a cottage behind a
+ * hammer and square, which read as a second building beside the root's
+ * Workshop.) No art was made for this.
  */
 export const CHIBI_TECH_ART_SUBJECTS_V7 = {
   GATHERING: "RESOURCE:FRUIT",
@@ -168,8 +174,8 @@ export const CHIBI_TECH_ART_SUBJECTS_V7 = {
   COMMERCE: "IMPROVEMENT:MARKET",
   RAIDING: "ICON:ACTION:PILLAGE",
   CHIVALRY: "UNIT:KNIGHT",
-  DRILL: "UNIT:GUARD",
-  ENGINEERING: "IMPROVEMENT:WORKSHOP",
+  DRILL: "IMPROVEMENT:WORKSHOP",
+  ENGINEERING: "TERRAIN:MINED_MOUNTAIN",
   METALLURGY: "IMPROVEMENT:FORGE",
   FORTIFICATION: "ICON:TECH:FORTIFICATION",
   EXPLOSIVES: "ICON:ACTION:BLAST_MOUNTAIN",
@@ -196,14 +202,14 @@ export const ICE_FOLK_NAVAL_TECH_SUBJECTS_V7: Readonly<
 
 /**
  * Technology art for a viewer's faction: the units and portraits a
- * technology shows follow the faction (an Undead Drill shows the Zombie, a
- * Goblin Drill the Orc Brute, a Dinosaur Drill the Ankylosaurus, a Martian
- * Drill the Shield Projector, an Ice Folk Drill the Mammoth). The Martian
+ * technology shows follow the faction (an Undead Chivalry shows the Vampire,
+ * a Goblin Scouting the Wolf Rider). The Martian
  * Force Fields (`FORTIFICATION`) shows the Force Field icon of the Martian
  * art; the Ice Folk Deep Winter and Brittle (`FORTIFICATION`,
  * `EXPLOSIVES`) their own technology icons (bead pulp_wars-7g3.6), and so
- * do the Dwarf Dig In and Blasting Charges (bead pulp_wars-78i.6); a Dwarf
- * Drill shows the Steam Mole.
+ * do the Dwarf Dig In and Blasting Charges (bead pulp_wars-78i.6). Since the
+ * Industry reshuffle (7r56) no card shows a faction's defender: the root
+ * shows the Workshop for every faction.
  */
 export function technologySubjectV7(
   tech: TechnologyIdV7,
@@ -244,10 +250,10 @@ export function technologySubjectV7(
       subject.slice("PORTRAIT:".length) as UnitRoleIdV7,
       faction,
     );
-  if (subject === "UNIT:KNIGHT" || subject === "UNIT:GUARD")
+  if (subject === "UNIT:KNIGHT")
     // The ninth unit (7r55): through the art slot of the role, so a Dwarf
-    // Chivalry card shows the Whirligig and an Ice Folk Drill card the
-    // Musk Ox (their stand-in art until their own exists).
+    // Chivalry card shows the Whirligig (its stand-in art until its own
+    // exists). (No card is `UNIT:GUARD` since the Industry reshuffle.)
     return unitArtSubjectV7({
       role: subject.slice("UNIT:".length) as UndeadArtRoleV7,
       form: "LAND",

@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 55;
+const REVISION = 56;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -640,7 +640,7 @@ const ROSTER = [
   [
     "Shield Projector",
     "GUARD",
-    "DRILL",
+    "FORTIFICATION",
     4,
     1,
     12,
@@ -1091,7 +1091,11 @@ describe("Martian technology (section 4)", () => {
           human.unlocks.filter((unlock) => unlock.kind !== "OVERRUN"),
         );
       else if (human.id === "FORTIFICATION")
-        expect(martian.unlocks).toEqual([{ kind: "FORCE_FIELDS" }]);
+        expect(martian.unlocks).toEqual([
+          { kind: "FORCE_FIELDS" },
+          // The Industry reshuffle (7r56): the defender is here.
+          { kind: "UNIT_ROLE", role: "GUARD" },
+        ]);
       else if (human.id === "EXPLOSIVES")
         expect(martian.unlocks).toEqual([
           ...human.unlocks,
@@ -1175,7 +1179,7 @@ describe("Martian technology (section 4)", () => {
       ).map((id) => effectiveRoleRuleV7(id, "MARTIAN").label);
     expect(role("SCOUTING")).toEqual(["Saucer"]);
     expect(role("MARKSMANSHIP")).toEqual(["Ray Gunner"]);
-    expect(role("DRILL")).toEqual(["Shield Projector"]);
+    expect(role("FORTIFICATION")).toEqual(["Shield Projector"]);
     expect(role("ADMINISTRATION")).toEqual(["Brain"]);
     expect(role("SAWMILLING")).toEqual(["Tripod"]);
     expect(role("CHIVALRY")).toEqual(["Mothership"]);
@@ -1201,6 +1205,8 @@ describe("Martian technology (section 4)", () => {
     // The Martian pass (7r52): the Force Field itself is this technology's.
     // Its correction: and a whole field holds one attack.
     expect(text("FORTIFICATION")).toEqual([
+      // The Industry reshuffle (7r56): the Projector is trained with it.
+      "Train Shield Projector (Force Field)",
       "Shield Projectors raise the Shields of units next to them to 4, and at full HP one attack cannot kill such a unit; Shields also recharge at the end of your turn",
     ]);
     expect(text("EXPLOSIVES")).toContain(

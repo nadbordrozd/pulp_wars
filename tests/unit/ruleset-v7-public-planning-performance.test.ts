@@ -63,38 +63,51 @@ describe("ruleset-7 exact public-planning performance", () => {
         // again and six RESEARCH commands are offered (was 83c9a2…466e).
         // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
         // 9fd994…1b96).
-        "4b8b7c439104a86d56aa7ee8f66a3c227df5f1ab4ffb195fe8a28e126478d029",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+        // 4b8b7c…d029).
+        "4eb8ff841a02d2e31170dfa3038b8cbc826f53afc6e23ef8ccb920722670e1fc",
       resultHash:
         // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
         // technology owned, so the retained view's 12 Coins buy a technology
         // again and six RESEARCH commands are offered (was fadb84…4dc8).
         // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
         // 2df0a7…6a92).
-        "6a3551501e56511dd1a6db844a98471391ecba367aa72c484b5dd3c5d5553ef5",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+        // 6a3551…3ef5).
+        "41c906a2ed416a56fef3c3c9662382a55f6ba62176af396eef4bcf510d9e446d",
       // 4 097 since tuning 4 (one RESEARCH fewer in the retained view);
       // 4 099 since tuning 5 (`pulp_wars-w49.4`: two cities offer the
       // Swordsman); 4 105 since tuning 6 (six RESEARCH commands again);
       // 4 100 since the economy rejig (`pulp_wars-w49.16`: research is
       // priced by the cities owned, and with its four cities the view's
       // 12 Coins buy one technology, Scouting at 8).
-      operations: 4_100,
+      // 4 098 since the Industry reshuffle (`pulp_wars-w49.21`, 7r56: the
+      // Guard is at Fortification, which the view does not own, so two
+      // cities no longer offer it).
+      operations: 4_098,
     },
     {
       id: "captured-command-300",
       view: () => captured(300),
       commandHash:
-        "5502396344ada787c473598f15d01569b7daa3a89e9b738b9ff630bb6ce4aa61",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+        // 550239…aa61).
+        "2aa89493ab793892fd9aa3f864f0de207b517f4dc90856fe952e8f12fbe49307",
       // Tuning 1 (`pulp_wars-w49.3`, 7r46): one contributor counts for one
       // Windmill, Sawmill, Forge, and Market and a Monument gives 2, so the
       // planned values differ (was b32cb8…1f5b and 66 235 operations).
       resultHash:
         // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
         // 031d3b…d3bb).
-        "2d542145285eed46f202ced276cfd5807bde95bb7d06ea0a40289cf6cf043b8e",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+        // 2d5421…3b8e).
+        "d5416ea26b18c2c9a18637ea8b331c082ea7707de29c9028f56a382045fa9615",
       // Tuning 5: the Swordsman offers (was 66 233). The economy rejig
       // (`pulp_wars-w49.16`): research offers by the price per city, and a
-      // mill counts every contributor of its owner (was 66 236).
-      operations: 66_238,
+      // mill counts every contributor of its owner (was 66 236). The
+      // Industry reshuffle (`pulp_wars-w49.21`): three Guard offers fewer
+      // (was 66 238).
+      operations: 66_235,
     },
     {
       id: "captured-command-425",

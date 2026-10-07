@@ -17,6 +17,12 @@ import type { MissionDefinitionV7, MissionUnitV7 } from "./types";
  * tiles behind the line with a Guard on its center: 14 units, 63 Coins of
  * them, 12 Coins a turn.
  *
+ * Revision 4 (the Industry reshuffle, `pulp_wars-w49.21`, `7r56`): the
+ * defender of every faction is at Fortification. The three attackers,
+ * which field Guards, Orc Brutes, and Zombies and owned the root alone, own
+ * Fortification too, so that they can replace them (and can build Field
+ * Defense); the player owned it already. No unit changed.
+ *
  * Revision 3 (the ninth unit, `pulp_wars-w49.17`, `7r55`): the Swordsmen
  * are Champions (6 Coins each: the line is 67 Coins of units and the Human
  * attacker's army 131), trained with Metallurgy, which the player and the
@@ -120,6 +126,9 @@ const BREAKTHROUGH_AI_TECHNOLOGIES_V7: readonly TechnologyIdV7[] = [
   "RAIDING",
   "CHIVALRY",
   "DRILL",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the defender is at
+  // Fortification (revision 4).
+  "FORTIFICATION",
 ];
 
 /**
@@ -238,7 +247,7 @@ function breakthroughLabV7(
   const army = BREAKTHROUGH_ARMIES_V7[faction];
   return {
     id,
-    revision: 3,
+    revision: 4,
     hidden: true,
     mirror: true,
     size: 16,

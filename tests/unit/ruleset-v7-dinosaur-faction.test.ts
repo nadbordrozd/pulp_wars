@@ -126,22 +126,22 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 
 describe("ruleset-7 revision-19 identity", () => {
   it("keeps r18 among the gap-free prior identities after the r55 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r55");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r56");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 53 },
+        { length: 54 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-37)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-38)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 53 },
+        { length: 54 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -179,7 +179,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r55");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r56");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -478,7 +478,7 @@ describe("ruleset-7 Dinosaur roster", () => {
     [
       "Ankylosaurus",
       "GUARD",
-      "DRILL",
+      "FORTIFICATION",
       5,
       2,
       1,
@@ -892,6 +892,8 @@ describe("ruleset-7 Dinosaur technology", () => {
         expect(dinosaur.unlocks).toEqual([
           // The Dinosaur pass, correction (7r53): no turn off the hatch.
           { kind: "NESTING", eggHp: 4, hatchTurns: 0, citySlots: 1 },
+          // The Industry reshuffle (7r56): the defender is here.
+          { kind: "UNIT_ROLE", role: "GUARD" },
         ]);
       else if (human.id === "EXPLOSIVES")
         expect(dinosaur.unlocks).toEqual([
@@ -1021,6 +1023,8 @@ describe("ruleset-7 Dinosaur technology", () => {
       );
     };
     expect(text(0, "FORTIFICATION")).toEqual([
+      // The Industry reshuffle (7r56): the defender is laid with Nesting.
+      "Ankylosaurus Egg",
       "Eggs have +4 HP; +1 unit slot in every city",
     ]);
     expect(text(0, "EXPLOSIVES")).toEqual([
@@ -1038,6 +1042,7 @@ describe("ruleset-7 Dinosaur technology", () => {
     expect(text(0, "METALLURGY")).toContain("Triceratops Egg (Charge!)");
     expect(text(0, "SAWMILLING")[0]).toContain("Stegosaurus Egg");
     expect(text(1, "FORTIFICATION")).toEqual([
+      "Train Guard",
       "Build Field Defense: +2 Defense for the unit on it; the builder keeps its move and attack",
     ]);
     expect(text(0, "ADMINISTRATION")).toEqual([
@@ -1049,7 +1054,14 @@ describe("ruleset-7 Dinosaur technology", () => {
 
     expect(text(0, "MARKSMANSHIP")).toEqual(["Spitter Egg"]);
     expect(text(0, "SCOUTING")).toEqual(["Raptor Egg", "Raptor sight 2"]);
-    expect(text(0, "DRILL")).toContain("Ankylosaurus Egg");
+    // The Industry reshuffle (7r56): the root gives the Workshop, and the
+    // Ankylosaurus Egg is at Nesting (above).
+    expect(text(0, "DRILL")).toEqual([
+      "Build workshop",
+      "Workshop: grows with varied neighbors",
+      "Reveals Ore",
+      "+2 Coins for each city you capture",
+    ]);
     expect(text(0, "CHIVALRY")).toEqual(
       expect.arrayContaining([
         "T-Rex Egg",

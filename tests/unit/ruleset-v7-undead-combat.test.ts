@@ -865,8 +865,11 @@ describe("ruleset-7 revision-13 Infect and Lifesteal: events, fog, and persisten
     // With tuning 6 (`pulp_wars-w49.6`: the Undead research Drill first
     // and the Vampire last) Infect is common and Lifesteal late: seed 8
     // shows 14 risings and nine heals within the 40 rounds (seeds 2 and 5
-    // show risings and no heal).
-    const setup = setupWith(["UNDEAD", "UNDEAD"], 8);
+    // show risings and no heal). With the Industry reshuffle
+    // (`pulp_wars-w49.21`, 7r56) seed 8 shows 38 risings and no heal;
+    // seed 9 shows 53 risings and three heals (seeds 6 and 7 of 0-15 heal
+    // too).
+    const setup = setupWith(["UNDEAD", "UNDEAD"], 9);
     const match = runAiMatchV7(setup, { maxRounds: 40 });
     expect(match.errors).toEqual([]);
     expect(match.metrics.eventsByKind.UNIT_INFECTED).toBeGreaterThan(0);

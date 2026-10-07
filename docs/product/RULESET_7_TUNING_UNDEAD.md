@@ -60,6 +60,8 @@ which plays no match), the nine hand-played games that had an Undead seat
 AI), and two single diagnostic matches read for what the Undead AI
 researches, buys, and does. No AI-against-AI result was counted.
 
+**Superseded in part at `pulp-wars-poc-7r56`** ([the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md), `pulp_wars-w49.21`): The Zombie is unlocked by Fortification (with Field Defense), one technology behind the root, which is shown as Crafting and unlocks the Workshop; Engineering no longer does. The games recorded here were played with the Zombie at the root. Nothing else here changed, and no number did.
+
 ## 1. The changes
 
 | #   | Change           | Before (`7r50`)                                                                                                              | Now (`7r51`)                                                                                                                                                                                                                                                                                        | Other factions                                                                              |

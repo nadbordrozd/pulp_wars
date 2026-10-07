@@ -1439,12 +1439,15 @@ describe("Mind Control revision: saves and replays (section 5.4)", () => {
     // 60 of 0-60 did; seed 12 until the economy rejig, `pulp_wars-w49.16`,
     // after which seeds 15, 24, 25, 30, 31, and 32 of 0-40 did; seed 15
     // until the ninth unit, `pulp_wars-w49.17`, after which seeds 4, 5,
-    // 14, 24, 32, and 40 of 0-40 do; seed 14 now): the Normal AI
+    // 14, 24, 32, and 40 of 0-40 did; seed 14 until the Industry
+    // reshuffle, `pulp_wars-w49.21`, 7r56, after which seeds 12, 15, 18,
+    // 24, 25, 26, 32, and 37 of 0-40 do; seed 26 now, at step 219): the
+    // Normal AI
     // takes its first Mind Control within the 1,500 steps below. The
     // replay of the command log reaches the same state,
     // with the controlled unit, and a save of it loads back (the loader
     // replays the log, so a save needs a real match).
-    const setup = goblinSetupV7(["MARTIAN", "ICE_FOLK"], 14);
+    const setup = goblinSetupV7(["MARTIAN", "ICE_FOLK"], 26);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;

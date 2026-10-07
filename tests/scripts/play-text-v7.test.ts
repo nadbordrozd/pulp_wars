@@ -742,7 +742,7 @@ describe("text-mode play harness", () => {
         expect(started).toContain("YOUR TURN | coins 35 |");
         expect(started).toContain("cities 5 | units 15");
         expect(started).toContain(
-          "| Force Field needs Force Fields: then your units that start a turn next to it have Shield 4",
+          "| Force Field (the Force Fields technology, which also trains it): your units that start a turn next to it have Shield 4",
         );
         expect(started).toContain(
           "| with Heat Sinks it does not overheat (no Cooling)",
@@ -785,7 +785,8 @@ describe("text-mode play harness", () => {
         expect(started).toContain("cities 5 | units 13");
         expect(started).toContain("12 units and the Egg");
         expect(started).toMatch(
-          /Egg\(T-Rex\) \[KNIGHT\] @3,7 hp 6\/6 .* hatches in 2 \| an Egg: cannot move or fight/,
+          // (Revision 3 of the lab, 7r56: with Nesting the Egg has 10 HP.)
+          /Egg\(T-Rex\) \[KNIGHT\] @3,7 hp 10\/10 .* hatches in 2 \| an Egg: cannot move or fight/,
         );
         expect(started).not.toMatch(/Egg\(T-Rex\).*Overrun/);
         expect(started).toContain(
@@ -810,7 +811,13 @@ describe("text-mode play harness", () => {
         // The technologies under the faction's own names.
         // (Tier 2 with the lab's five cities: 7 + 8 since the economy
         // rejig, `pulp_wars-w49.16`; 16 as the tenth technology before.)
-        expect(started).toContain('FORTIFICATION "Nesting" 15c');
+        // (Revision 3 of the lab, 7r56: Nesting, the Ankylosaurus's
+        // technology, is owned; Wallbreaker, behind it, is on offer for
+        // the tier 3 price with five cities, 9 + 12.)
+        expect(started).toContain('FORTIFICATION "Nesting"');
+        expect(started).not.toContain('FORTIFICATION "Nesting" 15c');
+        expect(started).toContain('EXPLOSIVES "Wallbreaker" 21c');
+        expect(started).toContain("eight free unit slots");
         expect(ok("help")).toContain("LAB_DINOSAUR_MID: the Dinosaurs");
         const tech = ok("tech", "--session", session);
         expect(tech).toContain(
@@ -854,12 +861,11 @@ describe("text-mode play harness", () => {
         expect(
           ok("options", "--session", session, "--unit", `u${charger.id}`),
         ).toMatch(/run-up 1 tile: Charge! \+1 Attack/);
-        // With Wallbreaker (a second session: Nesting, a turn, then
-        // Wallbreaker) a tile one step away is also offered by two tiles.
+        // With Wallbreaker (a second session; Nesting is owned since
+        // revision 3 of the lab, so Wallbreaker is bought at once) a tile
+        // one step away is also offered by two tiles.
         const second = path.join(root, "dinosaur-run.json");
         ok("lab", "--session", second, lab);
-        ok("do", "--session", second, "r.FORTIFICATION");
-        ok("end", "--session", second);
         ok("do", "--session", second, "r.EXPLOSIVES");
         const later = sessionState(second);
         const runner = later.units.find(

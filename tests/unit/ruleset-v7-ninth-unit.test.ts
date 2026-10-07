@@ -250,7 +250,9 @@ const JOBS: Readonly<Record<FactionIdV7, Readonly<Record<Job, string>>>> = {
 /** The technology of each job's role (the same node in every tree). */
 const TECH_OF_JOB: Readonly<Record<Job, TechnologyIdV7 | null>> = {
   BASIC_LINE: null,
-  DEFENDER: "DRILL",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): Fortification
+  // (the root, `DRILL`, until 7r55).
+  DEFENDER: "FORTIFICATION",
   FAST: "SCOUTING",
   RANGED: "MARKSMANSHIP",
   SUPPORT: "ADMINISTRATION",
@@ -366,12 +368,12 @@ const productionOf = (
   );
 
 describe("the ninth unit: identity", () => {
-  it("is 7r55, with 7r54 the last prior identity and an obsolete save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r54");
+  it("was 7r55 after 7r54, with both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
+    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-2)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -450,7 +452,8 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
         "ARMS_INDUSTRY_DISCOUNT",
         "UNIT_ROLE",
       ]);
-      // Engineering keeps Mountains, the Mine, the Workshop, and Redevelop.
+      // Engineering keeps Mountains, the Mine, and Redevelop (the Workshop
+      // left it for the root at 7r56, the Industry reshuffle).
       expect(
         node("ENGINEERING").unlocks.map((unlock) =>
           unlock.kind === "COMMAND" ? unlock.command : unlock.kind,
@@ -460,9 +463,7 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
         "MOUNTAIN_MOVEMENT",
         "HIGH_GROUND_VISION",
         "BUILD_MINE",
-        "BUILD_WORKSHOP",
         "REDEVELOP",
-        "ECONOMIC_FORMULA",
       ]);
       // Each land unit's node unlocks that unit and no other.
       for (const role of LAND_ROLES) {
@@ -692,7 +693,8 @@ describe("the ninth unit: production", () => {
       number,
     ])[] = [
       ["DINOSAUR", "CATAPULT", "SAWMILLING", 7],
-      ["ICE_FOLK", "GUARD", "DRILL", 4],
+      // (The Musk Ox went on to Deep Winter with every defender at 7r56.)
+      ["ICE_FOLK", "GUARD", "FORTIFICATION", 4],
       ["DWARF", "KNIGHT", "CHIVALRY", 9],
     ];
     for (const [faction, role, tech, cost] of cases) {
@@ -757,7 +759,7 @@ describe("the ninth unit: technology display names", () => {
     COMMERCE: "Commerce",
     RAIDING: "Raiding",
     CHIVALRY: "Chivalry",
-    DRILL: "Garrison",
+    DRILL: "Crafting",
     ENGINEERING: "Engineering",
     METALLURGY: "Armoury",
     FORTIFICATION: "Fortification",
@@ -844,7 +846,7 @@ describe("the ninth unit: technology display names", () => {
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7).toEqual(OWN);
     // The shared table holds exactly the eight renames.
     expect(TECHNOLOGY_SHARED_DISPLAY_NAMES_V7).toEqual({
-      DRILL: "Garrison",
+      DRILL: "Crafting",
       ADMINISTRATION: "Leadership",
       PLANNING: "Land Grants",
       FIELDCRAFT: "Pathfinding",

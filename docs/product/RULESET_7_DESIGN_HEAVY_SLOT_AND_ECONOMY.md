@@ -59,6 +59,8 @@ already doing the job of the swordsman then we can just move triceratops
 into the swordsman slot and invent some new dino to do the job of the
 catapult (ish)".
 
+**Superseded in part at `pulp-wars-poc-7r56`** ([the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md), `pulp_wars-w49.21`): the defender of every faction is unlocked by Fortification and not by the root, the Workshop by the root and not by Engineering, and the root is shown as Crafting, not Garrison. The tables of this design show the placement it proposed for `7r55`. Nothing else here changed, and no number did.
+
 ## Summary
 
 **Units.** Every faction gets a ninth land unit, so all eight have nine:

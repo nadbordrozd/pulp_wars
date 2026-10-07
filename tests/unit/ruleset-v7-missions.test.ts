@@ -86,28 +86,35 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "TEST_GUARD@1:ORIGINAL":
     "75569e71228d50c8bdf4977e655316676c8f0b626a657b8c6c00bf5cefc31a50",
   // Chapter One (`pulp_wars-68k.4`).
-  "FRONTIER_1@1:ORIGINAL":
-    "9030c7d3187c9c2faa38d3db36096dad1f2424420417667a4ca0916a00d74df6",
-  "FRONTIER_2@1:ORIGINAL":
-    "521f989c0cf7c0513e6c506103d7a5b34b2cb0c23ee5e61b9e86a714605ab76d",
-  "FRONTIER_3@1:GOBLIN":
-    "88df5acb386704a039494aa57ed41a63b3e03ece60479bcac595853b867b4f94",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
+  "FRONTIER_1@2:ORIGINAL":
+    "ab23ed59117f506f2051c81223970b38cf63e55dde984c990f31602faea61111",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
+  "FRONTIER_2@2:ORIGINAL":
+    "8b3d4cea10e2a99d414026b761b03946db9ec7b1557a577d694c850c7a2ea8a1",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
+  "FRONTIER_3@2:GOBLIN":
+    "7951fb00ba2da62b103f9d04f6d9d6e59dbcef77b1fcad4f80c30e44b266ffbd",
   // Revision 2 (`pulp_wars-68k.6`): Sawmilling forbidden, two starting siege
   // units for you, a Skeleton in the Lich's place.
-  "FRONTIER_4@2:ORIGINAL":
-    "d4f54e0518201630107bb31217a250be10b4f48b236470454be5679d2538e1cb",
-  "FRONTIER_4@2:GOBLIN":
-    "bd8061605fc50d4ef4f8450993dbf9cacade241949b9d1644874828f0c42adfe",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
+  "FRONTIER_4@3:ORIGINAL":
+    "dd7d6248798094fb275a3a70265c3f4c8da81a2224811ba2653034768bafd7e8",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
+  "FRONTIER_4@3:GOBLIN":
+    "4c813e47cf92b6f05554349f960f09749b0738910c315490ffd0dbd9a2421337",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
-  "TEST_NECK@1:ORIGINAL":
-    "12888fadf662936bf1658b22795874f9ec6d27caa67d6dcee32a8fe4fa5083e4",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
+  "TEST_NECK@2:ORIGINAL":
+    "df0cdf7c6c70ded79dc9b66eb620466e8be7a26d43450971d0a409e3432de2a9",
   // The Human tuning labs (`pulp_wars-w49.3`, tuning 4).
   "LAB_SIEGE@1:ORIGINAL":
     "4dfd821eba726c3103d795c00fb6b02b8048e7904e1d216f4d26d9917a122466",
   // Tuning 5 (`pulp_wars-w49.4`): revision 2 of both, with Swordsmen.
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
-  "LAB_BACKLINE@3:ORIGINAL":
-    "602f19fe94b37d9ef70c2744b767c9a0d1519b77a08402b4d606d81c6024fb8b",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 4.
+  "LAB_BACKLINE@4:ORIGINAL":
+    "3105aba428609ef16311fb83781ecc91de68710d3868f7239dae81bc65b6702e",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
   "LAB_LATE@3:ORIGINAL":
     "4958183f0bda43d018200e40a4a83d21f1e1dfbc8d958f4c672e29a5d10f5d3f",
@@ -117,31 +124,38 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // stands two tiles behind the line and holds a Land Grant, so the two
   // Field Defenses of the line are in its territory and count.
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
-  "LAB_BREAKTHROUGH@3:ORIGINAL":
-    "8e9a809fbe66330550648acc7f3fa39c26090b8aea14f0827a6c2fada73eea7c",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 4.
+  "LAB_BREAKTHROUGH@4:ORIGINAL":
+    "322711b7e290ee377c35703b67517ad8fe394d3e8e23f4535f9e7b3a39e3c61b",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
-  "LAB_BREAKTHROUGH_GOBLIN@3:ORIGINAL":
-    "72dd5ba0e5bfc29a504717e1d8c30286eaaa4237af09718d30b5b13b17e776e8",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 4.
+  "LAB_BREAKTHROUGH_GOBLIN@4:ORIGINAL":
+    "cb4655d4334cbb87d2e52015870aa0fe5c9c133324b449158af0dba84acb2336",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
-  "LAB_BREAKTHROUGH_UNDEAD@3:ORIGINAL":
-    "5bddd44fe0b8c2ebbce7ff38da08089092ce94ffcb0147904c18893f373f18d3",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 4.
+  "LAB_BREAKTHROUGH_UNDEAD@4:ORIGINAL":
+    "ca37f19f26f491a4c11cbeb92586d647d51e54c8d4de1213420bf5b8fe0e7929",
   // The Goblin pass (`pulp_wars-w49.12`): the Goblins for the hand player.
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
-  "LAB_GOBLIN_MID@2:GOBLIN":
-    "c7cd29b120fc9d433f85b7a25af5c7c0af30a7cd5cf1781352eca724efee3c2d",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
+  "LAB_GOBLIN_MID@3:GOBLIN":
+    "4e947229121bbd4710bde19d337b5633c1feffe60ecc59e722961123ac9b03e3",
   // The Undead pass (`pulp_wars-w49.13`): the Undead for the hand player.
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
-  "LAB_UNDEAD_MID@2:UNDEAD":
-    "fe08eadba4c3ca7ec4753800bff53676c4985f272b344fb61006b5e93d781db1",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
+  "LAB_UNDEAD_MID@3:UNDEAD":
+    "098b26f0cb6f516bb482e5d91133bd539fe21555570392006e30d245fcbd3f20",
   // The Martian pass (`pulp_wars-w49.14`): the Martians for the hand player.
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
-  "LAB_MARTIAN_MID@2:MARTIAN":
-    "92aceae8fa4606f651a0d2d28fdb14d86491189e5c0ed1a9265fe807d23f6239",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
+  "LAB_MARTIAN_MID@3:MARTIAN":
+    "efa38f717f336a86840ce1fc29a03a6feee435bea970f29c9bf3f9ab22b7e488",
   // The Dinosaur pass (`pulp_wars-w49.15`): the Dinosaurs for the hand
   // player.
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
-  "LAB_DINOSAUR_MID@2:DINOSAUR":
-    "0c913df4978132c8accf991ab623b88a78824ca42aef5cbb2008bdb097149f11",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
+  "LAB_DINOSAUR_MID@3:DINOSAUR":
+    "2c1c6e42c2f3b305e7b5c97077c74a8cdb57227bd7ba36df9018be4e026eb3a3",
 };
 
 /**
@@ -227,50 +241,64 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "493749a981bcc06da8f1346adedfef54c1dd0d6a491e7167376f4a8cceb5432a",
   // Chapter One (`pulp_wars-68k.4`), added after the curiosities: the same
   // states with the two curiosities keys left out.
-  "FRONTIER_1@1:ORIGINAL":
-    "f3da8d77afc147d8c5f13ff451bd7d669745cc1f5e2a91c1d44502b7aa752928",
-  "FRONTIER_2@1:ORIGINAL":
-    "97eaffcff5ad0bd5bec8a59ebf2f38b6cf2819d243b5dc325d2956b85c146d30",
-  "FRONTIER_3@1:GOBLIN":
-    "0e4d7ec0d44c70139bf1dd4b840dea8c25e70704219fb6e836c1b8b2e7775217",
-  "FRONTIER_4@2:ORIGINAL":
-    "83afb63b639d24c9eeb001181d65515a62ba632f00aa8bdaa45845f54fe966e0",
-  "FRONTIER_4@2:GOBLIN":
-    "8086b3eaccd3ed40218d8f022356072bf09368a9c54d594f94792deb425fee8c",
-  "TEST_NECK@1:ORIGINAL":
-    "2f66fa9637b24763b0193cd54cad72170fcf4912f8cf21d950c532a9da88bd02",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
+  "FRONTIER_1@2:ORIGINAL":
+    "80f5bb1ceb7595b7dde7b530da3f005a61375a557becf16903b7b6cae4cdd143",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
+  "FRONTIER_2@2:ORIGINAL":
+    "f500ee34c7251d2b46c26fb3d672e7fcad1f1eae1d2909841aa3bd8b327a1057",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
+  "FRONTIER_3@2:GOBLIN":
+    "3d7e4f81a3b7bbc91b73ac02e3808e0893cf661645de53fa20cf83106f2c697d",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
+  "FRONTIER_4@3:ORIGINAL":
+    "4eb94830e0c15cd9e702617ebcc0e3c2064d8218d28eab8791c3a7a8610b1333",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
+  "FRONTIER_4@3:GOBLIN":
+    "86603ef994f586e9a9531fff162bb322e2bc2c27ed77ac754f4c4a2ce4117d14",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
+  "TEST_NECK@2:ORIGINAL":
+    "32595babd0a4d5371b260320b8d360786ba69b01808d2716eaadec332213500e",
   // The Human tuning labs (tuning 4) were never built before map
   // curiosities; their digests here are the same reduction of the state.
   "LAB_SIEGE@1:ORIGINAL":
     "08e89649ece323a8d5284cc1895331f236d702a507a8c68df6ff443175b539ed",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
-  "LAB_BACKLINE@3:ORIGINAL":
-    "73afbd09c53742575b1ac451ffacc198eaa5d33708c9d824de2d74ee03d01929",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 4.
+  "LAB_BACKLINE@4:ORIGINAL":
+    "5fbf6cb90165c921ad415893f5312335ba6f188958444930be6523823aeb3d7a",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
   "LAB_LATE@3:ORIGINAL":
     "1077f06138cc445c505ced579e7a197082076fbacf1ebdc4429a01cf799bfa1e",
   // The breakthrough labs of tuning 6: the same reduction of the state.
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
-  "LAB_BREAKTHROUGH@3:ORIGINAL":
-    "cb1e8715c4b1f10a3df7bab0f09bae6ad8cfa76a15d52655d98645a053e37ebb",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 4.
+  "LAB_BREAKTHROUGH@4:ORIGINAL":
+    "403cecb57f59dacd51c35e08f4d86f660a1fdba1212295ca9f0fa3b33190b4ed",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
-  "LAB_BREAKTHROUGH_GOBLIN@3:ORIGINAL":
-    "5a6d978c1de9eaca891e65720b9cd120e989c92b2091c24d7237c0eac9be7317",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 4.
+  "LAB_BREAKTHROUGH_GOBLIN@4:ORIGINAL":
+    "74002b11f11790087a1c9d132355d7d8f8f4f2f7d314f160a0e3f5af7606dd61",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
-  "LAB_BREAKTHROUGH_UNDEAD@3:ORIGINAL":
-    "35d3b8ad373cb8f10ff975e940910d2d918cfdc1fdee28b7f2e4f279d1461da4",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 4.
+  "LAB_BREAKTHROUGH_UNDEAD@4:ORIGINAL":
+    "731044b6e8f55c506316d5764b47fa743c5364ed7f8998abe840f3b0935f9d47",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
-  "LAB_GOBLIN_MID@2:GOBLIN":
-    "156aa24b4ee2382f4c540bfc6f557914ef56be62cabe9d55529899d6519640f6",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
+  "LAB_GOBLIN_MID@3:GOBLIN":
+    "a907422d4ffc1a0338434192745e07d952c6c68134f124ba0e1ab8c5f1ab762f",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
-  "LAB_UNDEAD_MID@2:UNDEAD":
-    "355b6bbece4d5eb6410be6f63f0422468c73e7b5e3e427f9715c3e7dd1c7eada",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
+  "LAB_UNDEAD_MID@3:UNDEAD":
+    "f60ce2ac800381c76d37330a7430917862693d256b80565920e289d7398eddb5",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
-  "LAB_MARTIAN_MID@2:MARTIAN":
-    "67982fb7b156593ed57d9a44fb3ccee02645e2397ad85c67c510d0d65859e771",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
+  "LAB_MARTIAN_MID@3:MARTIAN":
+    "a5d2bf334a793f8d30ef8ca819a565110c204bcedc39189023cf2c16ebef9e5a",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
-  "LAB_DINOSAUR_MID@2:DINOSAUR":
-    "6d09cf4e9c1516172fac519826cf34392109e1a28bce19256ca619d9d36f0085",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
+  "LAB_DINOSAUR_MID@3:DINOSAUR":
+    "57e1c97f2d8c05ba6e0cccffbf61ed290788552078d10bdd882eac27e23e7556",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {

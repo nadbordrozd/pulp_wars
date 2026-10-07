@@ -798,7 +798,9 @@ export const SPATIAL_ECONOMIC_ACTIONS_V7 = deepFreeze({
   },
   BUILD_WORKSHOP: {
     command: "BUILD_WORKSHOP",
-    technology: "ENGINEERING",
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the root
+    // (Engineering before). The rule and the price are unchanged.
+    technology: "DRILL",
     cost: 4,
     improvement: "WORKSHOP",
     placementMinimum: 1,
@@ -1099,9 +1101,19 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
     "INDUSTRY",
     1,
     [],
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56,
+    // docs/product/RULESET_7_INDUSTRY_RESHUFFLE.md): the root (shown as
+    // "Crafting") gives the Workshop, which left Engineering; the defender
+    // (the `GUARD` role) left it for Fortification. Reveal Ore and the
+    // first-capture Spoils stay.
     [
       { kind: "RESOURCE_REVEAL", resources: ["ORE"] },
-      { kind: "UNIT_ROLE", role: "GUARD" },
+      { kind: "COMMAND", command: "BUILD_WORKSHOP" },
+      {
+        kind: "ECONOMIC_FORMULA",
+        improvement: "WORKSHOP",
+        formula: "DISTINCT_BASIC_TYPES",
+      },
       { kind: "FIRST_HOSTILE_CAPTURE_SPOILS", coins: 2 },
     ],
   ),
@@ -1114,16 +1126,11 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
       { kind: "MOUNTAIN_MOVEMENT" },
       { kind: "HIGH_GROUND_VISION", radiusBonus: 1 },
       { kind: "COMMAND", command: "BUILD_MINE" },
-      { kind: "COMMAND", command: "BUILD_WORKSHOP" },
       { kind: "COMMAND", command: "REDEVELOP" },
-      {
-        kind: "ECONOMIC_FORMULA",
-        improvement: "WORKSHOP",
-        formula: "DISTINCT_BASIC_TYPES",
-      },
       // The ninth unit (`pulp_wars-w49.17`, 7r55): the heavy line unit
       // left this node for Metallurgy (it was the Human Swordsman's from
-      // tuning 5 to 7r54). Engineering gives no unit.
+      // tuning 5 to 7r54). Engineering gives no unit. The Industry
+      // reshuffle (7r56): the Workshop left it for the root.
     ],
   ),
   node(
@@ -1150,7 +1157,14 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
     "INDUSTRY",
     2,
     ["DRILL"],
-    [{ kind: "COMMAND", command: "BUILD_FIELD_DEFENSE" }],
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the defender of
+    // every faction (the `GUARD` role: Guard, Zombie, Orc Brute,
+    // Ankylosaurus, Shield Projector, Musk Ox, Steam Mole, Marshmallow) is
+    // here, on the other sub-branch from the heavy line unit.
+    [
+      { kind: "COMMAND", command: "BUILD_FIELD_DEFENSE" },
+      { kind: "UNIT_ROLE", role: "GUARD" },
+    ],
   ),
   node(
     "EXPLOSIVES",
@@ -1328,7 +1342,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "DRILL",
+    technology: "FORTIFICATION",
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "CAPTURE"],
   }),
@@ -1738,7 +1752,7 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "DRILL",
+    technology: "FORTIFICATION",
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "CAPTURE", "INFECT", "BITE"],
   }),
@@ -1943,7 +1957,7 @@ export const GOBLIN_ROLE_RULES_V7: Readonly<
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "DRILL",
+    technology: "FORTIFICATION",
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "CAPTURE"],
   }),
@@ -2198,7 +2212,7 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "DRILL",
+    technology: "FORTIFICATION",
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "CAPTURE", "ARMOURED", "GROW"],
   }),
@@ -2458,7 +2472,7 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "DRILL",
+    technology: "FORTIFICATION",
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "CAPTURE", "FORCE_FIELD"],
   }),
@@ -2724,7 +2738,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "DRILL",
+    technology: "FORTIFICATION",
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "CAPTURE", "FREEZE"],
   }),
@@ -2967,7 +2981,7 @@ export const DWARF_ROLE_RULES_V7: Readonly<
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "DRILL",
+    technology: "FORTIFICATION",
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "CAPTURE", "TUNNEL", "ERUPTION", "DIG_IN"],
   }),
@@ -3234,7 +3248,7 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "DRILL",
+    technology: "FORTIFICATION",
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH", "BOUNCE"],
   }),
@@ -3443,7 +3457,9 @@ export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
 export const TECHNOLOGY_SHARED_DISPLAY_NAMES_V7: Readonly<
   Partial<Record<TechnologyIdV7, string>>
 > = deepFreeze({
-  DRILL: "Garrison",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): "Crafting"
+  // ("Garrison" at 7r55, when the node gave the defender).
+  DRILL: "Crafting",
   ADMINISTRATION: "Leadership",
   PLANNING: "Land Grants",
   FIELDCRAFT: "Pathfinding",
@@ -3809,7 +3825,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r55`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r56`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the

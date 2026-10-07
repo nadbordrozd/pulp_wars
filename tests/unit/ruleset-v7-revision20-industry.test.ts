@@ -62,7 +62,11 @@ describe("ruleset-7 revision-20 Nesting city slot", () => {
     expect(
       DINOSAUR_BASELINE_V1_NODES.find((node) => node.id === "FORTIFICATION")
         ?.unlocks,
-    ).toEqual([{ kind: "NESTING", eggHp: 4, hatchTurns: 0, citySlots: 1 }]);
+    ).toEqual([
+      { kind: "NESTING", eggHp: 4, hatchTurns: 0, citySlots: 1 },
+      // The Industry reshuffle (7r56): the Ankylosaurus is laid with it.
+      { kind: "UNIT_ROLE", role: "GUARD" },
+    ]);
     expect(
       FACTION_IDS_V7.map((faction) => [
         faction,
@@ -376,6 +380,7 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
       "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
     ]);
     expect(text(0, "FORTIFICATION")).toEqual([
+      "Ankylosaurus Egg",
       "Eggs have +4 HP; +1 unit slot in every city",
     ]);
     // (The ninth unit, 7r55: the Triceratops is at Metallurgy.)

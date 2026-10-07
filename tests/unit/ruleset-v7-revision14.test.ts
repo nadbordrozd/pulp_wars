@@ -102,9 +102,9 @@ interface ArenaOptions {
 
 describe("ruleset-7 revision-14 identity and roster", () => {
   it("keeps rejecting r13 after the r54 identity and cleans the r13 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-42)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-43, -1)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
@@ -1143,7 +1143,11 @@ describe("ruleset-7 revision-14 natural play and persistence", () => {
     // ninth unit (`pulp_wars-w49.17`, 7r55: the Wight's two technologies
     // in the Undead order) seed 8 never plagues; of seeds 0-23, seeds 10,
     // 18, and 23 plague (seed 23: 6 Plague applications, 20 bites).
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 23);
+    // With the Industry reshuffle (`pulp_wars-w49.21`, 7r56: the Zombie
+    // and the Guard behind Fortification) of seeds 0-19, seeds 6, 9, 14,
+    // and 15 plague (seed 9: two Liches, 25 Plague applications, 30
+    // bites); eleven of the twenty matches are over by round 22.
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 9);
     const match = runAiMatchV7(setup, { maxRounds: 45 });
     expect(match.errors).toEqual([]);
     expect(match.stalls).toEqual([]);

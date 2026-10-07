@@ -766,7 +766,11 @@ describe("Martian Help and technology", () => {
       requiredButton("tech-fortification").querySelector(".v7-tech-name")
         ?.textContent,
     ).toBe("Force Fields");
-    expect(unlocks("fortification")).toEqual([FORCE_FIELDS_UNLOCK_TEXT_V7]);
+    // (The Industry reshuffle, 7r56: the defender is trained with it.)
+    expect(unlocks("fortification")).toEqual([
+      "Train Shield Projector (Force Field)",
+      FORCE_FIELDS_UNLOCK_TEXT_V7,
+    ]);
     expect(
       requiredButton("tech-explosives").querySelector(".v7-tech-name")
         ?.textContent,

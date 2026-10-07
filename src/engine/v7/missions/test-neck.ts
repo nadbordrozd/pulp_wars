@@ -29,7 +29,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const TEST_NECK_V7: MissionDefinitionV7 = {
   id: "TEST_NECK",
-  revision: 1,
+  revision: 2,
   hidden: true,
   size: 11,
   seed: 20261008,
@@ -72,7 +72,9 @@ export const TEST_NECK_V7: MissionDefinitionV7 = {
     {
       faction: "ORIGINAL",
       coins: 5,
-      technologies: ["DRILL"],
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the defender is at
+      // Fortification (revision 2).
+      technologies: ["DRILL", "FORTIFICATION"],
       cities: [{ at: { x: 1, y: 5 }, level: 2, rewards: ["SURVEY"] }],
       units: [
         { role: "FIGHTER", at: { x: 1, y: 5 } },
@@ -84,7 +86,9 @@ export const TEST_NECK_V7: MissionDefinitionV7 = {
     {
       faction: "UNDEAD",
       coins: 5,
-      technologies: ["DRILL"],
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the defender is at
+      // Fortification (revision 2).
+      technologies: ["DRILL", "FORTIFICATION"],
       cities: [{ at: { x: 8, y: 5 }, level: 2, rewards: ["SURVEY"] }],
       units: [
         { role: "FIGHTER", at: { x: 8, y: 5 } },

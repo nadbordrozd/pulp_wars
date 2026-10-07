@@ -29,7 +29,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_3_V7: MissionDefinitionV7 = {
   id: "FRONTIER_3",
-  revision: 1,
+  revision: 2,
   size: 14,
   seed: 20261103,
   terrain: [
@@ -81,7 +81,9 @@ export const FRONTIER_3_V7: MissionDefinitionV7 = {
     {
       faction: "GOBLIN",
       coins: 6,
-      technologies: ["SCOUTING", "DRILL"],
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Orc Brute is
+      // at Fortification (revision 2).
+      technologies: ["SCOUTING", "DRILL", "FORTIFICATION"],
       cities: [
         { at: { x: 4, y: 11 }, level: 2, rewards: ["SURVEY"] },
         { at: { x: 10, y: 11 }, level: 1, rewards: [] },
@@ -106,7 +108,8 @@ export const FRONTIER_3_V7: MissionDefinitionV7 = {
     {
       faction: "UNDEAD",
       coins: 5,
-      technologies: ["GATHERING", "DRILL", "ADMINISTRATION"],
+      // The Industry reshuffle (7r56): the Zombie is at Fortification.
+      technologies: ["GATHERING", "DRILL", "FORTIFICATION", "ADMINISTRATION"],
       cities: [
         { at: { x: 7, y: 2 }, level: 3, rewards: ["SURVEY", "WALLS"] },
         { at: { x: 2, y: 2 }, level: 2, rewards: ["STOCKPILE"] },

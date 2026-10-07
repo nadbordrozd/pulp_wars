@@ -220,7 +220,7 @@ describe("Martian texts (section 13.2)", () => {
     );
     expect(martianRoleUnlockTextV7("GUARD")).toBe(
       // The Martian pass (7r52): the field needs the Force Fields technology.
-      `Train ${label("GUARD")} (Force Field with Force Fields)`,
+      `Train ${label("GUARD")} (Force Field)`,
     );
     expect(martianRecruitNotesV7("KNIGHT", "MARTIAN")).toContain(
       `Takes ${roleMechanicsV7("KNIGHT", "MARTIAN").capacitySlots} slots in its city.`,

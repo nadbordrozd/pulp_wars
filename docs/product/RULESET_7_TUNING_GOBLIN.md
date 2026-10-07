@@ -48,6 +48,8 @@ hand-played games that had a Goblin seat (rounds 5 to 8 of the Human pass),
 and two single diagnostic matches read for what the Goblin AI researches and
 buys. No AI-against-AI result was counted.
 
+**Superseded in part at `pulp-wars-poc-7r56`** ([the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md), `pulp_wars-w49.21`): The Orc Brute is unlocked by Fortification (with Field Defense), one technology behind the root, which is shown as Crafting and unlocks the Workshop; Engineering no longer does. The games recorded here were played with the Orc Brute at the root. Nothing else here changed, and no number did.
+
 ## 1. The changes
 
 | #   | Change                   | Before (`7r49`)                                                                                                                           | Now (`7r50`)                                                                                                                                                                                            | Other factions                                                                                       |

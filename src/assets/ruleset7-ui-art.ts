@@ -66,6 +66,8 @@ export const RULESET7_FARM_ART_IDS = {
   VERTICAL_PAIR: "building-ruleset7-farm-pair-vertical",
 } as const;
 
+const RULESET7_WORKSHOP_TECH_ART_ID = "building-square-workshop";
+
 export const RULESET7_TECH_ART_IDS = {
   GATHERING: "terrain-square-original-fruit",
   FARMING: RULESET7_FARM_ART_IDS.SINGLE,
@@ -82,7 +84,9 @@ export const RULESET7_TECH_ART_IDS = {
   COMMERCE: "building-square-market",
   RAIDING: RULESET7_PLAYTEST_TECH_ART_IDS.RAIDING,
   CHIVALRY: RULESET7_REVISION9_UNIT_ART_IDS.KNIGHT,
-  DRILL: "unit-original-guard",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the root gives the
+  // Workshop (the Guard is at Fortification).
+  DRILL: RULESET7_WORKSHOP_TECH_ART_ID,
   ENGINEERING: "terrain-ruleset7-revision3-mountain-1",
   METALLURGY: "building-square-forge",
   FORTIFICATION: "ui-tech-fortification",

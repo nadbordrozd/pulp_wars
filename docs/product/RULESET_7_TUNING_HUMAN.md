@@ -63,6 +63,8 @@ just large enough to decide whether a Knight kills a basic Fighter in one
 attack. Explosives should feel like explosives. More income is the wrong
 reward for Commerce when Coins already pile up.
 
+**Superseded in part at `pulp-wars-poc-7r56`** ([the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md), `pulp_wars-w49.21`): The Guard is unlocked by Fortification (with Field Defense), one technology behind the root, which is shown as Crafting and unlocks the Workshop; Engineering no longer does. The routes, rounds, and games recorded here were played with the Guard at the root. Nothing else here changed, and no number did.
+
 ## 1. The changes
 
 | #   | Change                       | Before                                                                                                          | Now                                                                                                                                                                                             | Shared with other factions                       |

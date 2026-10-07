@@ -833,6 +833,11 @@ function factionShieldV7(view: PlayerViewV7, role: UnitRoleIdV7): number {
  * Disintegrator while a visible hostile unit stands fortified and the seat
  * owns a ray unit. Returns the next technology to research and its tier, or
  * null.
+ *
+ * The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Shield Projector
+ * is at Force Fields, behind the root. The early plan takes the shorter
+ * chain first, so it is Scouting, the root, Force Fields. (A Martian seat
+ * plays the army rules since the Martian pass; this is the older plan.)
  */
 export function martianResearchV7(
   view: PlayerViewV7,

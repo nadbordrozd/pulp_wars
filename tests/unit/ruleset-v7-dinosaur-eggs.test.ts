@@ -1476,7 +1476,14 @@ describe("ruleset-7 revision-19 hatching", () => {
       ["SWORDSMAN", 2, 20],
       ["KNIGHT", 4, 28],
     ] as const) {
-      const start = dino([], [], { techs: { 0: without("FORTIFICATION") } });
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the
+      // Ankylosaurus is laid with Nesting, which takes no turn off the
+      // hatch; the others are laid without it, as before.
+      const start = dino([], [], {
+        techs: {
+          0: role === "GUARD" ? TECHNOLOGY_IDS_V7 : without("FORTIFICATION"),
+        },
+      });
       const actor = start.humanPlayerId;
       let state = applyOkV7(start, actor, lay(start, role, NEST)).state;
       const egg = unitAtV7(state, NEST);
@@ -1830,7 +1837,8 @@ describe("ruleset-7 revision-19 Shaman Hatch", () => {
       { techs: { 0: without("FORTIFICATION") } },
     );
     const actor = start.humanPlayerId;
-    const laid = applyOkV7(start, actor, lay(start, "GUARD", NEST)).state;
+    // (A Triceratops Egg: the Ankylosaurus needs Nesting since 7r56.)
+    const laid = applyOkV7(start, actor, lay(start, "SWORDSMAN", NEST)).state;
     const shaman = unitAtV7(laid, SHAMAN);
     const egg = unitAtV7(laid, NEST);
     const command: CommandV7 = {
@@ -2010,6 +2018,20 @@ describe("ruleset-7 revision-19 Nesting", () => {
         [TECHNOLOGY_IDS_V7, EGG_HP_V7 + 4, nested],
       ] as const) {
         const state = dino([], [], { techs: { 0: techs } });
+        // The Industry reshuffle (7r56): the Ankylosaurus is laid with
+        // Nesting only.
+        if (role === "GUARD" && !techs.includes("FORTIFICATION")) {
+          expect(
+            applyCommandV7(state, state.humanPlayerId, lay(state, role, NEST)),
+          ).toMatchObject({
+            accepted: false,
+            error: {
+              code: "TECH_REQUIRED",
+              params: { tech: "FORTIFICATION" },
+            },
+          });
+          continue;
+        }
         const result = applyOkV7(
           state,
           state.humanPlayerId,

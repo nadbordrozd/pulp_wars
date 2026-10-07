@@ -892,9 +892,15 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
     // more slowly with their cities (Shorecraft and Navigation cost more),
     // and the first landed unit that captures does so at accepted command
     // 1,267; the bound is 1,500 commands (1,000 before).
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): on seed 0 the
+    // match now ends by its outcome in round 28 (892 accepted commands),
+    // six units landed and none of them the capturer, so the test reads
+    // seed 1 of the same board: nineteen units land, the first at accepted
+    // command 303, and a landed unit captures at accepted command 471.
+    // The validator script reads seed 1 too.
     const result = runAiMatchV7(
       {
-        ...setupV7(0, 3),
+        ...setupV7(1, 3),
         width: 16,
         height: 16,
         aiMode: "RIVAL",

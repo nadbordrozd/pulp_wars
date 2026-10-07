@@ -29,7 +29,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_1_V7: MissionDefinitionV7 = {
   id: "FRONTIER_1",
-  revision: 1,
+  revision: 2,
   size: 11,
   seed: 20261101,
   terrain: [
@@ -69,7 +69,9 @@ export const FRONTIER_1_V7: MissionDefinitionV7 = {
     {
       faction: "ORIGINAL",
       coins: 8,
-      technologies: ["DRILL"],
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Guard is at
+      // Fortification (revision 2).
+      technologies: ["DRILL", "FORTIFICATION"],
       cities: [{ at: { x: 2, y: 8 }, level: 3, rewards: ["SURVEY", "WALLS"] }],
       units: [
         { role: "GUARD", at: { x: 2, y: 8 } },

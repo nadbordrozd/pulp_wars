@@ -480,7 +480,7 @@ const ROSTER = [
   [
     "Musk Ox",
     "GUARD",
-    "DRILL",
+    "FORTIFICATION",
     4,
     16,
     3,
@@ -937,7 +937,11 @@ describe("Ice Folk technology (section 4)", () => {
           human.unlocks.filter((unlock) => unlock.kind !== "OVERRUN"),
         );
       else if (human.id === "FORTIFICATION")
-        expect(ice.unlocks).toEqual([{ kind: "DEEP_WINTER" }]);
+        expect(ice.unlocks).toEqual([
+          { kind: "DEEP_WINTER" },
+          // The Industry reshuffle (7r56): the defender is here.
+          { kind: "UNIT_ROLE", role: "GUARD" },
+        ]);
       else if (human.id === "EXPLOSIVES")
         expect(ice.unlocks).toEqual([...human.unlocks, { kind: "BRITTLE" }]);
       else expect(ice.unlocks).toEqual(human.unlocks);
@@ -1021,7 +1025,7 @@ describe("Ice Folk technology (section 4)", () => {
       ).map((id) => effectiveRoleRuleV7(id, "ICE_FOLK").label);
     expect(role("SCOUTING")).toEqual(["Sled"]);
     expect(role("MARKSMANSHIP")).toEqual(["Snow Hunter"]);
-    expect(role("DRILL")).toEqual(["Musk Ox"]);
+    expect(role("FORTIFICATION")).toEqual(["Musk Ox"]);
     expect(role("METALLURGY")).toEqual(["Mammoth"]);
     expect(role("ADMINISTRATION")).toEqual(["Ice Witch"]);
     expect(role("SAWMILLING")).toEqual(["Boulder Yeti"]);

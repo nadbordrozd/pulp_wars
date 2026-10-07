@@ -97,7 +97,7 @@ import {
   withoutTechsV7,
 } from "../fixtures/v7-revision20";
 
-// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r55`,
+// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r56`,
 // docs/product/RULESET_7_TUNING_MARTIAN.md): a unit pulled by the Tractor
 // Beam explores for its owner from the tile it lands on; Scouts for a
 // Martian city (a free Saucer); the Shield Projector's Force Field needs
@@ -205,13 +205,13 @@ describe("the Martian pass: identity", () => {
   // The Dinosaur pass (tests/unit/ruleset-v7-dinosaur-pass.test.ts) took
   // 7r53 and the economy rejig 7r54, so 7r52 is a prior identity.
   it("was 7r52 after 7r51, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
       "pulp-wars-poc-7r51",
       "pulp-wars-poc-7r52",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -2)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-5, -3)).toEqual([
       "pulpWars.save.v7r51.current",
       "pulpWars.save.v7r52.current",
     ]);
@@ -287,7 +287,8 @@ describe("the Martian pass: identity", () => {
       ["Grunt", 3, 8, 2, 4, 3, 1, 1, 2, null],
       ["Saucer", 4, 8, 2, 3, 2, 3, 1, 1, "SCOUTING"],
       ["Ray Gunner", 4, 8, 2, 6, 2, 1, 1, 2, "MARKSMANSHIP"],
-      ["Shield Projector", 4, 12, 3, 3, 5, 1, 1, 1, "DRILL"],
+      // The Industry reshuffle (7r56): at Force Fields (Fortification).
+      ["Shield Projector", 4, 12, 3, 3, 5, 1, 1, 1, "FORTIFICATION"],
       ["Brain", 5, 8, 2, 2, 2, 1, 1, 1, "ADMINISTRATION"],
       ["Tripod", 9, 12, 2, 8, 2, 2, 2, 2, "SAWMILLING"],
       ["Mothership", 8, 16, 4, 5, 4, 2, 1, 1, "CHIVALRY"],
@@ -571,7 +572,7 @@ describe("the Martian pass: the Force Field needs Force Fields", () => {
       `${FORCE_FIELD_NEEDS_TEXT_V7} raises the Shields of units next to it to 4; at full HP one attack cannot kill them.`,
     );
     expect(martianRoleUnlockTextV7("GUARD")).toBe(
-      "Train Shield Projector (Force Field with Force Fields)",
+      "Train Shield Projector (Force Field)",
     );
     expect(
       martianHelpRulesV7().find(([name]) => name === "Force Field")?.[1],
@@ -1076,8 +1077,14 @@ describe("the Martian pass: Martian seats play the army rules", () => {
     ).research;
 
   it("researches the Projector, the Ray Gunner, the Tripod, the Brain, the Saucer, the Mothership", () => {
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Projector is
+    // at Force Fields, one technology behind the root.
     expect(research(techsOf("GATHERING"))).toMatchObject({
       tech: "DRILL",
+      unlocks: null,
+    });
+    expect(research(techsOf("GATHERING", "DRILL"))).toMatchObject({
+      tech: "FORTIFICATION",
       unlocks: "GUARD",
     });
     // The ninth unit (7r55): the Shock Trooper, at Metallurgy, follows the
@@ -1088,6 +1095,7 @@ describe("the Martian pass: Martian seats play the army rules", () => {
           "GATHERING",
           "FARMING",
           "DRILL",
+          "FORTIFICATION",
           "ENGINEERING",
           "HUNTING",
           "MARKSMANSHIP",
@@ -1099,6 +1107,7 @@ describe("the Martian pass: Martian seats play the army rules", () => {
       "GATHERING",
       "FARMING",
       "DRILL",
+      "FORTIFICATION",
       "ENGINEERING",
       "METALLURGY",
     ] as const;
@@ -1143,12 +1152,20 @@ describe("the Martian pass: Martian seats play the army rules", () => {
       "HUNTING",
       "MARKSMANSHIP",
     ] as const;
-    // No Projector on the board: on to the Tripod.
-    expect(research(techsOf(...grown))).toMatchObject({ tech: "FORESTRY" });
-    // A Projector: its field first (the correction: already before the Ray
-    // Gunner, so also here).
+    // The Industry reshuffle (7r56): Force Fields is the Projector's own
+    // technology, the first of the order, Projector or no Projector (a
+    // seat that fields one without it, a unit it was given, researches it
+    // by the older rule too).
+    expect(research(techsOf(...grown))).toMatchObject({
+      tech: "FORTIFICATION",
+      unlocks: "GUARD",
+    });
     expect(research(techsOf(...grown), [own("GUARD", 7, 7)])).toMatchObject({
       tech: "FORTIFICATION",
+    });
+    // With it: on to the Tripod.
+    expect(research(techsOf(...grown, "FORTIFICATION"))).toMatchObject({
+      tech: "FORESTRY",
     });
     const late = [
       ...grown,
@@ -1174,7 +1191,7 @@ describe("the Martian pass: Martian seats play the army rules", () => {
     // Fertile Ground in the capital's land and no technology that builds
     // population: Farming before Hunting.
     const base = asMartian([own("FIGHTER", 8, 7), foe("FIGHTER", 2, 2)], {
-      techs: { 0: techsOf("GATHERING", "DRILL"), 1: [] },
+      techs: { 0: techsOf("GATHERING", "DRILL", "FORTIFICATION"), 1: [] },
       coins: 40,
     });
     const state: GameStateV7 = {
@@ -1600,20 +1617,29 @@ describe("the Martian pass: LAB_MARTIAN_MID", () => {
     };
     expect(cities(0)).toEqual([4, 3, 3, 2, 2]);
     expect(cities(1)).toEqual([4, 3, 3, 2, 2]);
-    // 35 Coins in hand on the first turn; twelve technologies (revision 2
+    // 35 Coins in hand on the first turn; thirteen technologies (revision 2
     // of the lab, 7r55: Engineering and Metallurgy, for the Shock
-    // Trooper), without Force Fields, Heat Sinks, and Farming.
+    // Trooper; revision 3, 7r56, the Industry reshuffle: Force Fields, for
+    // the Shield Projector), without Heat Sinks and Farming.
     expect(view.viewer.coins).toBe(35);
-    expect(view.viewer.researchedTechs).toHaveLength(12);
-    for (const tech of ["FORTIFICATION", "FIELDCRAFT", "FARMING"] as const)
+    expect(view.viewer.researchedTechs).toHaveLength(13);
+    expect(view.viewer.researchedTechs).toContain("FORTIFICATION");
+    for (const tech of ["FIELDCRAFT", "FARMING"] as const)
       expect(view.viewer.researchedTechs).not.toContain(tech);
-    // Every Martian unit starts at its Shield maximum.
-    for (const unit of state.units.filter(
-      (item) => item.ownerId === state.humanPlayerId,
-    ))
-      expect(
-        state.shields.find((entry) => entry.unitId === unit.id)?.shield,
-      ).toBe(roleMechanicsV7(unit.role, "MARTIAN").shield);
+    // Every Martian unit starts at its Shield maximum: its own, or 4 next
+    // to a Shield Projector (revision 3: the seat owns Force Fields).
+    const shields = state.units
+      .filter((item) => item.ownerId === state.humanPlayerId)
+      .map((unit) => {
+        const shield = state.shields.find(
+          (entry) => entry.unitId === unit.id,
+        )?.shield;
+        const own = roleMechanicsV7(unit.role, "MARTIAN").shield;
+        expect([own, 4], unit.role).toContain(shield);
+        return shield === own ? "OWN" : "FIELD";
+      });
+    expect(shields).toContain("FIELD");
+    expect(shields).toContain("OWN");
     // Every Martian unit is offered where its slots are free, the
     // two-slot Mothership in none of the three cities with one slot.
     const offered = queryPlayerCommandsV7(view);
@@ -1670,7 +1696,7 @@ describe("the Martian pass: LAB_MARTIAN_MID", () => {
       expect.arrayContaining([
         "FARMING",
         "PLANNING",
-        "FORTIFICATION",
+        "EXPLOSIVES",
         "FIELDCRAFT",
       ]),
     );
@@ -1943,8 +1969,12 @@ describe("the Martian pass, correction: the Martian seat of the Normal AI", () =
     ).research;
 
   it("researches Force Fields as soon as it fields a Projector, before the Ray Gunner", () => {
+    // (The Industry reshuffle, 7r56: Force Fields is the Projector's own
+    // technology and the first of the order.)
     const grown = ["GATHERING", "FARMING", "DRILL", "ENGINEERING"] as const;
-    expect(research(techsOf(...grown))).toMatchObject({ tech: "HUNTING" });
+    expect(research(techsOf(...grown))).toMatchObject({
+      tech: "FORTIFICATION",
+    });
     expect(research(techsOf(...grown), [own("GUARD", 7, 7)])).toMatchObject({
       tech: "FORTIFICATION",
     });
@@ -1957,7 +1987,7 @@ describe("the Martian pass, correction: the Martian seat of the Normal AI", () =
   const economy = (coins: number, faction: FactionIdV7 = "MARTIAN") => {
     const techs =
       faction === "MARTIAN"
-        ? techsOf("GATHERING", "DRILL")
+        ? techsOf("GATHERING", "DRILL", "FORTIFICATION")
         : techsOf("GATHERING", "HUNTING", "MARKSMANSHIP");
     const base = orphaned(
       martianFieldV7([own("FIGHTER", 8, 7), foe("FIGHTER", 2, 2)], {

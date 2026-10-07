@@ -101,6 +101,14 @@ export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;
  * Champion, in city 16) and the candidate count are unchanged; the Champion
  * costs 6 Coins (5) and is unlocked by Metallurgy, so the candidates that
  * weigh its price or its chain score differently.
+ *
+ * The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the command, the
+ * candidate count, and `policyDecisionHash` are unchanged. The view owns
+ * the root of Industry and not Fortification, where the Guard is now, so
+ * its command surface has 64 commands (66: cities 3 and 16 no longer offer
+ * the Guard); neither offer was a candidate. The digests of that surface
+ * are pinned in `tests/unit/ruleset-v7-public-query-performance.test.ts`
+ * and the three tests beside it.
  */
 export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   /** `canonicalHash` of the retained fixture as read from disk. */
@@ -219,10 +227,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r55",
+    rulesetId: "pulp-wars-poc-7r56",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r55",
+      rulesetId: "pulp-wars-poc-7r56",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

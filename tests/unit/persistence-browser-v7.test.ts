@@ -105,6 +105,7 @@ describe("Ruleset 7 browser persistence", () => {
       ["pulpWars.save.v7r52.current", "r52"],
       ["pulpWars.save.v7r53.current", "r53"],
       ["pulpWars.save.v7r54.current", "r54"],
+      ["pulpWars.save.v7r55.current", "r55"],
       ...preserved,
     ]);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toEqual([
@@ -162,10 +163,11 @@ describe("Ruleset 7 browser persistence", () => {
       "pulpWars.save.v7r52.current",
       "pulpWars.save.v7r53.current",
       "pulpWars.save.v7r54.current",
+      "pulpWars.save.v7r55.current",
     ]);
     expect(cleanupObsoleteRuleset7Saves(storage)).toEqual({
       removedKeys: OBSOLETE_SAVE_STORAGE_KEYS_V7,
-      removedCount: 54,
+      removedCount: 55,
       warning: null,
     });
     for (const [key, value] of preserved)

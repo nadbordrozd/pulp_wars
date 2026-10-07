@@ -328,9 +328,11 @@ export function dinosaurCityPoorFixtureV7(): GameStateV7 {
 }
 
 /**
- * The capital without Planning or Nesting and with two homed Cavemen: its
- * capacity (2 at level 1) is full, so every Lay Egg card says it needs its
- * slots.
+ * The capital without Planning and with three homed Cavemen: its capacity
+ * (3 at level 1 with Nesting) is full, so every Lay Egg card says it needs
+ * its slots. (The Industry reshuffle, `pulp_wars-w49.21`, 7r56: with
+ * Nesting, where the Ankylosaurus is; without it, and with two Cavemen,
+ * before.)
  */
 export function dinosaurCityFullFixtureV7(): GameStateV7 {
   const at = DINOSAUR_CITY_V7;
@@ -338,11 +340,12 @@ export function dinosaurCityFullFixtureV7(): GameStateV7 {
     [
       { seat: 0, role: "FIGHTER", at: at.caveman },
       { seat: 0, role: "FIGHTER", at: { x: 7, y: 6 } },
+      { seat: 0, role: "FIGHTER", at: { x: 9, y: 6 } },
       { seat: 1, role: "FIGHTER", at: { x: 2, y: 6 } },
     ],
     {
-      techs: { 0: dinosaurTechsWithoutV7("PLANNING", "FORTIFICATION") },
-      homed: [at.caveman, { x: 7, y: 6 }],
+      techs: { 0: dinosaurTechsWithoutV7("PLANNING") },
+      homed: [at.caveman, { x: 7, y: 6 }, { x: 9, y: 6 }],
     },
   );
 }

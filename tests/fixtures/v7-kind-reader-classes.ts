@@ -179,6 +179,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7.ts::armyCorrectionSeatV7": "SEAT",
   "src/ai/v7.ts::armyOpenToRangedUselessV7": "SEAT",
   "src/ai/v7.ts::armyEconomyFirstV7": "SEAT",
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): whether the seat's
+  // own research order begins with its defender (the viewer's faction).
+  "src/ai/v7.ts::armyDefenderResearchV7": "SEAT",
+  "src/ai/v7.ts::defenderLastStepResearchV7": "SEAT",
   "src/ai/v7.ts::armyShootsBiterFirstV7": "SEAT",
   "src/ai/v7.ts::armyCureDueV7": "SEAT",
   "src/ai/v7.ts::armyCureResearchV7": "SEAT",

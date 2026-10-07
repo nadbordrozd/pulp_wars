@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r54 and preserves the r55 save", () => {
+  it("cleans obsolete keys through v7r55 and preserves the r56 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r54.current",
+      "pulpWars.save.v7r55.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(54);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(55);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -574,7 +574,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         1,
         1,
         1,
-        "DRILL",
+        "FORTIFICATION",
         false,
         ["ATTACK", "CAPTURE", "INFECT", "BITE"],
       ],
@@ -876,7 +876,8 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       MARKSMANSHIP: "Banshee",
       SCOUTING: "Ghoul",
       CHIVALRY: "Vampire",
-      DRILL: "Zombie",
+      // The Industry reshuffle (7r56): the defender, at Fortification.
+      FORTIFICATION: "Zombie",
       // The ninth unit (7r55).
       METALLURGY: "Wight",
       SHORECRAFT: "Patrol Boat",
@@ -889,7 +890,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       MARKSMANSHIP: "Marksman",
       SCOUTING: "Raider",
       CHIVALRY: "Knight",
-      DRILL: "Guard",
+      FORTIFICATION: "Guard",
       // The ninth unit (7r55): the Champion, at Metallurgy.
       METALLURGY: "Champion",
       SHORECRAFT: "Patrol Boat",
@@ -1793,7 +1794,13 @@ describe("ruleset-7 all-Human parity digests", () => {
       // Tuning 8 (`pulp_wars-w49.11`): 364 commands, recomputed.
       // The economy rejig (`pulp_wars-w49.16`, 7r54): 338 commands (364);
       // the hashes below were recomputed with it.
-      acceptedCommands: 338,
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56: the Guard at
+      // Fortification, one technology behind the root, and the Workshop at
+      // the root): 357 commands (338); the five digests of play below were
+      // recomputed, and the map and the post-generation PRNG digests are
+      // unchanged. (The seed-7 match above is unchanged: no seat of it
+      // buys the root.)
+      acceptedCommands: 357,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1803,23 +1810,33 @@ describe("ruleset-7 all-Human parity digests", () => {
       commandHash:
         // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
         // f0241a…e2f2).
-        "29fd885b17d80f6bed72a4165f0503d146f06588ed4d7d31c20868b14da871a3",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+        // 29fd88…71a3).
+        "2538470ce7efea9a0cb212532059a1a62f674d9ff9de8be72bc27b84e9148b8c",
       eventHash:
         // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
         // 6194fb…cc7c).
-        "a75ebdf1a0dc6c6ffc8ff37727807c492a1d5acbd32841aaae0f7729daae9f75",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+        // a75ebd…9f75).
+        "72340f4c4cc2c8cbabb8d353d9ad7ae2add358f409079aeaeea3469ae0812f4c",
       normalizedFinalStateHash:
         // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
         // 1f799a…0828).
-        "9c21dee42e4c8ebc6c48168436ebf7c76903e5efe72ef3ff73e237f237585fb4",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+        // 9c21de…5fb4).
+        "4638a2c33ceb1902f27b381347815a584a903b064145e0fc39fdc6658c591bc5",
       normalizedHumanViewHash:
         // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
         // 6111b8…5070).
-        "7825d2b1a82e833ffbe8316681d688eb416f2298ec54d6fac3af122e6fe9a1b8",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+        // 7825d2…a1b8).
+        "800648baf00b7600b83687764a3e0289e8abd572b52ebbb9b47df875bf0e83f9",
       normalizedHumanCommandsHash:
         // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
         // 75cd99…98bf).
-        "8811217677a112f4f4a52b6552c48dbdbbfcc94459c0faecb579e70ba202ae25",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+        // 881121…ae25).
+        "b7c041a9e9e7b9b8233609a9bbbca6a2e7af364b600bca09bf9d5b5770dbae40",
     },
   ] as const;
 

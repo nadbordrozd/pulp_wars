@@ -3757,8 +3757,24 @@ function armyResearchIsDueV7(context: PolicyContextV7): boolean {
         city.ownerId === view.viewer.id ? total + city.level : total,
       0,
     ),
-    view.viewer.researchedTechs.length,
+    armyTempoTechnologiesV7(view),
   );
+}
+
+/**
+ * The Industry reshuffle (`pulp_wars-w49.21`, 7r56,
+ * docs/product/RULESET_7_INDUSTRY_RESHUFFLE.md): the technologies a seat
+ * owns as its research tempo counts them (the city-levels rule of
+ * `armyResearchDueV7` and the war clock of `armyResearchClockDueV7`). The
+ * root of Industry does not count. A defender costs two technologies since
+ * the reshuffle (the root, then Fortification) where it cost one, so with
+ * the root counted every unit of an order came one technology's worth of
+ * city levels, or of rounds at war, later: an Undead seat bought the root
+ * in round 3 and Fortification, for its first Zombie, in round 8.
+ */
+function armyTempoTechnologiesV7(view: PlayerViewV7): number {
+  const owned = view.viewer.researchedTechs;
+  return owned.length - Number(owned.includes("DRILL"));
 }
 
 /**
@@ -4255,6 +4271,11 @@ function armyEconomyFirstV7(context: PolicyContextV7): boolean {
     return false;
   for (const kind of ARMY_GROWTH_KINDS_V7) {
     if (kind === "HARVEST_FRUIT" || kind === "HUNT_GAME") continue;
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Workshop is
+    // at the root, which a seat buys on the way to its defender, and is
+    // built only beside a Farm, a Lumber Camp, or a Mine: the root alone
+    // builds no population.
+    if (kind === "BUILD_WORKSHOP") continue;
     const technology =
       kind in BASIC_ECONOMIC_ACTIONS_V7
         ? BASIC_ECONOMIC_ACTIONS_V7[kind as BasicEconomicCommandKindV7]
@@ -4283,6 +4304,73 @@ function armyEconomyResearchV7(
     (city) =>
       city.ownerId === view.viewer.id && armyAtTheGatesV7(context, city.id),
   );
+}
+
+/**
+ * The Industry reshuffle (`pulp_wars-w49.21`, 7r56,
+ * docs/product/RULESET_7_INDUSTRY_RESHUFFLE.md): `tech` is the last step to
+ * the defender of a seat whose research order begins with its defender (an
+ * Undead, Martian, or Dinosaur seat: the Zombie, the Shield Projector, the
+ * Ankylosaurus), which is Fortification once the root is owned, and no
+ * hostile land unit stands at the gates of an own city. Like the economy
+ * technology of `armyEconomyFirstV7` it is bought as soon as the Coins are
+ * there, before the units, and the Coins are kept for it
+ * (`armyResearchFloorV7`). The defender cost one technology until 7r55 and
+ * costs two now: an Undead seat that bought the root in round 3 trained
+ * Skeletons with the Coins of four turns and had its first Zombie in round
+ * 9.
+ */
+function armyDefenderResearchV7(
+  context: PolicyContextV7,
+  tech: TechnologyIdV7,
+): boolean {
+  if (!context.army) return false;
+  const view = context.view;
+  if ((ARMY_RESEARCH_ROLES_V7[view.viewer.faction] ?? [])[0] !== "GUARD")
+    return false;
+  const target = armyResearchTargetV7(context);
+  if (target === null || target.unlocks !== "GUARD" || target.tech !== tech)
+    return false;
+  return !view.cities.some(
+    (city) =>
+      city.ownerId === view.viewer.id && armyAtTheGatesV7(context, city.id),
+  );
+}
+
+/**
+ * The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the same last step
+ * for a seat that does not play the army policy (every seat of a match
+ * with an Ice Folk, Dwarf, or Candy seat). `tech` is its defender's
+ * technology and every technology before it is owned. Such a seat
+ * researched toward its defender at 1,062 (the early role research of the
+ * faction policies) or 1,060 (the next role), under its units (1,080) and
+ * under every economic technology (1,160): with the defender two
+ * technologies away, four seats of a 25-round diagnostic match (Ice Folk,
+ * Dwarves, Candy, Martians) bought the root by round 13, then Farming,
+ * Administration, and Engineering, and none bought Fortification. The
+ * last step now has `DEFENDER_RESEARCH_PRIORITY_V7`, above the best
+ * economic technology, and is bought when its Coins are there; the seat
+ * does not save for it. The value of the unit it unlocks, or null.
+ */
+const DEFENDER_RESEARCH_PRIORITY_V7 = 1165;
+
+function defenderLastStepResearchV7(
+  context: PolicyContextV7,
+  tech: TechnologyIdV7,
+): number | null {
+  if (context.army) return null;
+  const view = context.view;
+  const faction = view.viewer.faction;
+  const rule = effectiveRoleRuleV7("GUARD", faction);
+  if (
+    rule.technology !== tech ||
+    rule.cost === null ||
+    !factionUnlocksRoleV7(faction, "GUARD")
+  )
+    return null;
+  const chain = researchChain(view, tech);
+  if (chain.length !== 1 || chain[0] !== tech) return null;
+  return rule.maxHp + rule.attack2 + rule.defense2;
 }
 
 /** A unit that cannot attack a neighbour (a Banshee, a Lich). */
@@ -6967,6 +7055,8 @@ function armyWarHoldsResearchV7(
   // is the cure.
   if (armyEconomyResearchV7(context, tech) || armyCureResearchV7(context, tech))
     return false;
+  // The Industry reshuffle (7r56): nor is the defender's last step.
+  if (armyDefenderResearchV7(context, tech)) return false;
   // The Dinosaur pass: nor is the slot technology of a crowded Dinosaur
   // seat (`armyDinosaurCrowdedV7`): it is what lets its Coins become units.
   if (target.growth && armyDinosaurCrowdedV7(context)) return false;
@@ -7056,7 +7146,8 @@ function armyResearchClockDueV7(context: PolicyContextV7): boolean {
   const view = context.view;
   return (
     view.round >=
-    armyResearchRoundsV7(context, target) * view.viewer.researchedTechs.length
+    // (The Industry reshuffle, 7r56: the root does not count.)
+    armyResearchRoundsV7(context, target) * armyTempoTechnologiesV7(view)
   );
 }
 
@@ -7083,13 +7174,41 @@ function armyResearchFloorV7(context: PolicyContextV7): number {
       armyCorrectionSeatV7(context) &&
       armyEconomyResearchV7(context, target.tech)) ||
     // The Dinosaur pass, correction: and for Wallbreaker.
-    (target !== null && armyWallbreakerDueV7(context, target.tech))
+    (target !== null && armyWallbreakerDueV7(context, target.tech)) ||
+    // The Industry reshuffle (7r56): and for the defender's last step.
+    (target !== null && armyDefenderResearchV7(context, target.tech))
   ) {
     if (target !== null && context.view.viewer.coins < target.cost)
       floor = Math.max(0, target.cost - armyIncomeV7(context));
   }
   context.armyResearchFloor = floor;
   return floor;
+}
+
+/** What a Field Defense costs (the reducer's `BUILD_FIELD_DEFENSE` price). */
+const ARMY_FIELD_DEFENSE_COINS_V7 = 3;
+
+/**
+ * The Industry reshuffle (`pulp_wars-w49.21`, 7r56,
+ * docs/product/RULESET_7_INDUSTRY_RESHUFFLE.md): an army seat builds no
+ * Field Defense while it keeps Coins for its due technology
+ * (`armyResearchFloorV7`), nor one that would leave it short of a technology
+ * its war clock says is due and it can pay now. Fortification is on the way
+ * to every defender, so a seat at war owns it early: an Undead seat with
+ * the enemy at its border built a Field Defense in two turns of four, the
+ * last with exactly the price of its due technology in hand, and did not
+ * buy it.
+ */
+function armyFieldDefenseHeldV7(context: PolicyContextV7): boolean {
+  if (!context.army) return false;
+  if (armyResearchFloorV7(context) > 0) return true;
+  const target = armyResearchTargetV7(context);
+  return (
+    target !== null &&
+    armyWarV7(context) &&
+    armyResearchClockDueV7(context) &&
+    context.view.viewer.coins - ARMY_FIELD_DEFENSE_COINS_V7 < target.cost
+  );
 }
 
 /**
@@ -7257,6 +7376,11 @@ function armyWarGrowthDueV7(context: PolicyContextV7): boolean {
   // Lumber Camp, a Mine, a building), whatever its land still offers.
   for (const kind of ARMY_GROWTH_KINDS_V7) {
     if (kind === "HARVEST_FRUIT" || kind === "HUNT_GAME") continue;
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Workshop is
+    // at the root, which a seat buys on the way to its defender, and is
+    // built only beside a Farm, a Lumber Camp, or a Mine: the root alone
+    // builds no population.
+    if (kind === "BUILD_WORKSHOP") continue;
     const technology =
       kind in BASIC_ECONOMIC_ACTIONS_V7
         ? BASIC_ECONOMIC_ACTIONS_V7[kind as BasicEconomicCommandKindV7]
@@ -9005,6 +9129,10 @@ function isPolicyCandidate(
     context.view.viewer.coins - trainingCostV7(context.view, command) <
       armyResearchFloorV7(context)
   )
+    return false;
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): nor is a Field
+  // Defense built out of them (`armyFieldDefenseHeldV7`).
+  if (command.kind === "BUILD_FIELD_DEFENSE" && armyFieldDefenseHeldV7(context))
     return false;
   // The Dinosaur pass, correction: no eighth Ankylosaurus before growth.
   if (armyProductionV7(command) && armyDinosaurDefenderHeldV7(context, command))
@@ -10902,6 +11030,13 @@ function scoreCommandWithContext(
         strategicValue = plan.strategic;
       }
     }
+    // The Industry reshuffle (7r56): the last step to the defender of a
+    // seat outside the army policy (`defenderLastStepResearchV7`).
+    const defender = defenderLastStepResearchV7(context, command.tech);
+    if (defender !== null && priority < DEFENDER_RESEARCH_PRIORITY_V7) {
+      priority = DEFENDER_RESEARCH_PRIORITY_V7;
+      strategicValue = Math.max(strategicValue, defender);
+    }
     // The Dinosaur pass (`pulp_wars-w49.15`): an army seat follows the
     // army's order (`ARMY_RESEARCH_ROLES_V7.DINOSAUR`).
     if (
@@ -10984,7 +11119,10 @@ function scoreCommandWithContext(
     if (
       armyEconomyResearchV7(context, command.tech) ||
       // And the cure (`armyCureDueV7`): the Captain's technology.
-      armyCureResearchV7(context, command.tech)
+      armyCureResearchV7(context, command.tech) ||
+      // The Industry reshuffle (7r56): and the last step to the defender
+      // of a seat whose order begins with it (`armyDefenderResearchV7`).
+      armyDefenderResearchV7(context, command.tech)
     )
       priority = ARMY_DUE_RESEARCH_PRIORITY_V7;
     strategicValue = Math.max(strategicValue, 100);
@@ -19380,13 +19518,19 @@ function researchValue(
         UNIT_ROLE_IDS_V7.indexOf(left.role) -
           UNIT_ROLE_IDS_V7.indexOf(right.role),
     );
+  // Revision 20: Nesting's city slot and Wallbreaker (Dinosaur seat only).
+  const branch = dinosaurBranchResearchV7(context, tech);
   if (
     rolePlans[0]?.first === tech &&
     context.view.cities.some(
       (city) =>
         city.ownerId === context.view.viewer.id &&
         freeCapacity(context.view, city.id) > 0,
-    )
+    ) &&
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): Nesting is also
+    // the Ankylosaurus's technology now, so it can be the next role
+    // technology; its own value, where higher (a crowded city), stands.
+    !(branch !== null && branch.priority > 1060)
   )
     return {
       priority: 1060,
@@ -19397,8 +19541,6 @@ function researchValue(
     tech === "ENGINEERING"
       ? (context.view.leaderboard.find((item) => item.isViewer)?.cityCount ?? 0)
       : 0;
-  // Revision 20: Nesting's city slot and Wallbreaker (Dinosaur seat only).
-  const branch = dinosaurBranchResearchV7(context, tech);
   if (branch !== null) return { ...branch, cost: node.cost };
   return { priority: 1040, strategic: fortification, cost: node.cost };
 }

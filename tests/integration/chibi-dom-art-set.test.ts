@@ -269,11 +269,19 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     ];
     expect(cards).toHaveLength(25);
     for (const card of cards) expect(card.dataset.artSet).toBe("chibi");
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the root's card is
+    // the Workshop for every faction (the defender, at Fortification now,
+    // is on no card); Chivalry is a card that follows the faction.
     expect(
       document
         .querySelector('[data-action="tech-drill"] img')
         ?.getAttribute("data-chibi-subject"),
-    ).toBe("UNIT:UNDEAD:GUARD");
+    ).toBe("IMPROVEMENT:WORKSHOP");
+    expect(
+      document
+        .querySelector('[data-action="tech-chivalry"] img')
+        ?.getAttribute("data-chibi-subject"),
+    ).toBe("UNIT:UNDEAD:KNIGHT");
     app.destroy();
 
     const human = snapshotOf(humanArena());
@@ -471,10 +479,16 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     expect(identity()?.dataset.chibiAssetId).toBe("chibi-direction-fighter");
     // The technology tree's unit cards are the Goblin direction sprites.
     document.querySelector<HTMLButtonElement>('[data-action="tech"]')?.click();
+    // (The Scrap Buggy's card: the root's card is the Workshop since 7r56.)
+    expect(
+      document.querySelector<HTMLImageElement>(
+        '[data-action="tech-chivalry"] img',
+      )?.dataset.chibiAssetId,
+    ).toBe("chibi-direction-goblin-scrap-buggy");
     expect(
       document.querySelector<HTMLImageElement>('[data-action="tech-drill"] img')
         ?.dataset.chibiAssetId,
-    ).toBe("chibi-direction-goblin-orc-brute");
+    ).toBe("chibi-direction-workshop");
     goblin.app.destroy();
     // The city dock and its training cards (a fresh Goblin capital with
     // room to train): the Goblin city and portraits, never the Human ones.

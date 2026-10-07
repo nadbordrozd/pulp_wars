@@ -243,12 +243,17 @@ describe("ruleset-7 revision-16 income previews", () => {
     // run to the round cap with a city above the income cap and a Market
     // at its cap (so do seed 5 against Dwarves and seeds 0, 1, and 5
     // against Ice Folk). The scan read only those three facts.
+    // With the Industry reshuffle (`pulp_wars-w49.21`, 7r56: the defender
+    // of every faction one technology later) every match of seeds 0-12
+    // against Candy and against Ice Folk ends before the round cap; the
+    // match is Humans against Dwarves, seed 8 (of seeds 0-12, seeds 4 and
+    // 12 also run to the cap with both facts).
     const setup: MatchSetupV7 = {
-      ...setupV7(1, 1),
+      ...setupV7(8, 1),
       width: 11,
       height: 11,
       mapType: "PANGEA",
-      factions: ["ORIGINAL", "CANDY"],
+      factions: ["ORIGINAL", "DWARF"],
     };
     const match = runAiMatchV7(setup, { maxRounds: 30, maxCommands: 30_000 });
     expect(match.errors).toEqual([]);

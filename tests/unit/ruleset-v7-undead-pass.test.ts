@@ -190,13 +190,13 @@ describe("the Undead pass: identity", () => {
   // , the Dinosaur pass 7r53, and the economy rejig 7r54, so 7r51 is a
   // prior identity.
   it("was 7r51 after 7r50, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-6, -4)).toEqual([
       "pulp-wars-poc-7r50",
       "pulp-wars-poc-7r51",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-5, -3)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -4)).toEqual([
       "pulpWars.save.v7r50.current",
       "pulpWars.save.v7r51.current",
     ]);
@@ -1554,6 +1554,8 @@ describe("the correction: Plague needs Pestilence", () => {
     const techs = techsOf(
       "GATHERING",
       "DRILL",
+      // (The Industry reshuffle, 7r56: the Zombie is at Fortification.)
+      "FORTIFICATION",
       "HUNTING",
       "MARKSMANSHIP",
       "FORESTRY",
@@ -1577,8 +1579,8 @@ describe("the correction: Plague needs Pestilence", () => {
         ],
         { techs: { 0: techs } },
       ).view;
-    // Fortification is the first step to Explosives (Pestilence).
-    expect(inspectNormalArmyV7(seat(2)).research?.tech).toBe("FORTIFICATION");
+    // Explosives (Pestilence); its Fortification came with the Zombie.
+    expect(inspectNormalArmyV7(seat(2)).research?.tech).toBe("EXPLOSIVES");
     // With one Lich the Vampire's chain comes first, as before.
     expect(inspectNormalArmyV7(seat(1)).research?.tech).toBe("SCOUTING");
   });
@@ -1888,18 +1890,24 @@ describe("the correction: the Undead Normal AI's economy", () => {
     // that builds population. Its land has two Forests: Forestry, by way
     // of Hunting.
     expect(
-      inspectNormalArmyV7(land("UNDEAD", ["GATHERING", "DRILL"], "FOREST"))
-        .research,
+      inspectNormalArmyV7(
+        land("UNDEAD", ["GATHERING", "DRILL", "FORTIFICATION"], "FOREST"),
+      ).research,
     ).toMatchObject({ tech: "HUNTING", growth: true, due: true });
     expect(
       inspectNormalArmyV7(
-        land("UNDEAD", techsOf("GATHERING", "DRILL", "HUNTING"), "FOREST"),
+        land(
+          "UNDEAD",
+          techsOf("GATHERING", "DRILL", "FORTIFICATION", "HUNTING"),
+          "FOREST",
+        ),
       ).research,
     ).toMatchObject({ tech: "FORESTRY", growth: true, due: true });
     // Fertile ground: Farming.
     expect(
-      inspectNormalArmyV7(land("UNDEAD", ["GATHERING", "DRILL"], "FERTILE"))
-        .research,
+      inspectNormalArmyV7(
+        land("UNDEAD", ["GATHERING", "DRILL", "FORTIFICATION"], "FERTILE"),
+      ).research,
     ).toMatchObject({ tech: "FARMING", growth: true, due: true });
     // Two Forests and one fertile tile: the Forests, which count
     // threefold (Forestry is also the first step to the Lich). By
@@ -1907,20 +1915,27 @@ describe("the correction: the Undead Normal AI's economy", () => {
     // technology) is ahead of the two Lumber Camps (2 for two).
     expect(ARMY_ECONOMY_FORESTRY_WEIGHT_V7).toBe(3);
     expect(
-      inspectNormalArmyV7(land("UNDEAD", ["GATHERING", "DRILL"], "BOTH"))
-        .research,
+      inspectNormalArmyV7(
+        land("UNDEAD", ["GATHERING", "DRILL", "FORTIFICATION"], "BOTH"),
+      ).research,
     ).toMatchObject({ tech: "HUNTING", growth: true });
     // Its first unit comes before that.
     expect(
       inspectNormalArmyV7(land("UNDEAD", ["GATHERING"], "FOREST")).research,
     ).toMatchObject({ tech: "DRILL", growth: false });
+    // (The Industry reshuffle, 7r56: the Zombie is at Fortification, one
+    // technology behind the root, and still comes before the growth.)
+    expect(
+      inspectNormalArmyV7(land("UNDEAD", ["GATHERING", "DRILL"], "FOREST"))
+        .research,
+    ).toMatchObject({ tech: "FORTIFICATION", growth: false, unlocks: "GUARD" });
     // With the growth technology owned it goes on to the Banshee, and then
     // to the Lich.
     expect(
       inspectNormalArmyV7(
         land(
           "UNDEAD",
-          techsOf("GATHERING", "DRILL", "HUNTING", "FORESTRY"),
+          techsOf("GATHERING", "DRILL", "FORTIFICATION", "HUNTING", "FORESTRY"),
           "FOREST",
         ),
       ).research,
@@ -1929,7 +1944,14 @@ describe("the correction: the Undead Normal AI's economy", () => {
       inspectNormalArmyV7(
         land(
           "UNDEAD",
-          techsOf("GATHERING", "DRILL", "FORESTRY", "HUNTING", "MARKSMANSHIP"),
+          techsOf(
+            "GATHERING",
+            "DRILL",
+            "FORTIFICATION",
+            "FORESTRY",
+            "HUNTING",
+            "MARKSMANSHIP",
+          ),
           "FOREST",
         ),
       ).research,
@@ -1963,18 +1985,32 @@ describe("the correction: the Undead Normal AI's economy", () => {
         (command) => command.kind === "RESEARCH" || command.kind === "TRAIN",
       );
     const cost = inspectNormalArmyV7(
-      land("UNDEAD", ["GATHERING", "DRILL"], "FERTILE"),
+      land("UNDEAD", ["GATHERING", "DRILL", "FORTIFICATION"], "FERTILE"),
     ).research?.cost;
     if (cost === undefined) throw new Error("no research target");
     // With the Coins for it and for a unit, the technology goes first (the
     // seat still expands: its first units take the villages).
     expect(
-      first(land("UNDEAD", ["GATHERING", "DRILL"], "FERTILE", cost)),
+      first(
+        land(
+          "UNDEAD",
+          ["GATHERING", "DRILL", "FORTIFICATION"],
+          "FERTILE",
+          cost,
+        ),
+      ),
     ).toEqual({ kind: "RESEARCH", tech: "FARMING" });
     // With a Human Knight two tiles from the capital it trains.
     expect(
-      first(land("UNDEAD", ["GATHERING", "DRILL"], "FERTILE", cost, at(6, 8)))
-        ?.kind,
+      first(
+        land(
+          "UNDEAD",
+          ["GATHERING", "DRILL", "FORTIFICATION"],
+          "FERTILE",
+          cost,
+          at(6, 8),
+        ),
+      )?.kind,
     ).toBe("TRAIN");
   });
 });

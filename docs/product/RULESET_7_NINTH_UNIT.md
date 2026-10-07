@@ -25,6 +25,8 @@ catapult (ish)". "the human unit could be a champion to keep it short. we
 could regenerate the art to make him look more championy although the
 current one is cool."
 
+**Superseded in part at `pulp-wars-poc-7r56`** ([the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md), `pulp_wars-w49.21`): the defender of every faction is unlocked by Fortification and not by the root, the Workshop by the root and not by Engineering, and the root is shown as Crafting, not Garrison. Where this document places a defender at Drill or Garrison, or the Workshop at Engineering, read it so. Nothing else here changed, and no number did.
+
 ## 1. What changed
 
 - **Every faction has nine land units**, one for each of nine jobs: basic

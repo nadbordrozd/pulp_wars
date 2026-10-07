@@ -516,6 +516,10 @@ export interface DwarfResearchFactsV7 {
  * technology to research and its tier, or null. (The first draft pushed
  * Scouting with Drill and Raiding with two cities: Gyrocopters too early,
  * and the head-to-head was lost.)
+ *
+ * The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Steam Mole is at
+ * Dig In, behind the root. The early plan is the root (Ore and the
+ * Workshop) and then Dig In, threatened or not.
  */
 export function dwarfResearchV7(
   view: PlayerViewV7,

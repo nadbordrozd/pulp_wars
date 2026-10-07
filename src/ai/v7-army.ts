@@ -260,6 +260,27 @@ export const ARMY_SPLASH_SPACING_VALUE_V7 = 6;
  * - Martians: the Shock Trooper after the Ray Gunner and before the Tripod.
  * - Dinosaurs: the Triceratops second, as before, by its new chain; the
  *   Stegosaurus (Sawmilling, the Triceratops's old chain) after the Spitter.
+ *
+ * The Industry reshuffle (`pulp_wars-w49.21`, 7r56,
+ * docs/product/RULESET_7_INDUSTRY_RESHUFFLE.md): the defender of every
+ * faction (the `GUARD` role) is at Fortification, one technology behind
+ * the root of Industry (shown as "Crafting": Ore, the Workshop, Spoils),
+ * and the heavy is on the other sub-branch (the root, Engineering,
+ * Metallurgy). No order changed: a chain is read from the tree, so every
+ * seat buys the root and then Fortification where its order names the
+ * defender (first for an Undead, Martian, or Dinosaur seat; second for a
+ * Human seat; third for a Goblin seat). "Drill" in the notes above and
+ * below is that root. What the policy does about the longer chain
+ * (`src/ai/v7.ts`): the root does not count against the research tempo
+ * (`armyTempoTechnologiesV7`); a seat whose order begins with its defender
+ * buys Fortification before its units and keeps the Coins for it
+ * (`armyDefenderResearchV7`); the root alone is no population technology
+ * for "economy first"; and a seat that keeps Coins for a due technology
+ * builds no Field Defense (`armyFieldDefenseHeldV7`). The rules that
+ * research Force Fields once a Shield Projector is fielded and Nesting
+ * once an Ankylosaurus is (below) now find the technology owned, since the
+ * unit is trained with it; they still apply to a seat that fields one
+ * without it (a unit it was given).
  */
 export const ARMY_RESEARCH_ROLES_V7: Readonly<
   Partial<Record<FactionIdV7, readonly UnitRoleIdV7[]>>

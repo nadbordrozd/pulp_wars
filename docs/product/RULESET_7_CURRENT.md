@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r55`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r56`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -199,6 +199,30 @@ balance on water maps, `pulp_wars-5ti.8`; and the polish items of
 a unit on ice has no fortification, so a Dwarf Hammerer or Steam Mole is
 never dug in on an ice tile ([section 22.7](#227-dig-in)). No shape changed,
 and a match without both a Dwarf and an Ice Folk seat plays as at `7r44`.
+`pulp-wars-poc-7r56` (`pulp_wars-w49.21`) is
+**[the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md)**, a placement
+pass for every faction that no game has tested: no unit, price, or other
+technology changed. **The defender of every faction (the `GUARD` role:
+Guard, Zombie, Orc Brute, Ankylosaurus, Shield Projector, Musk Ox, Steam
+Mole, Marshmallow) is unlocked by Fortification** (tier 2), which keeps
+what it had (Field Defense, Nesting, Force Fields, Deep Winter, Dig In,
+Home Sweet Home), so the defender and the heavy line unit are on the two
+sub-branches of Industry. **The Workshop is unlocked by the root, Drill**,
+with Reveal Ore and the first-capture Spoils; Engineering keeps Mountain
+entry, the Mountain Sight, the Mine, and Redevelop. **The root is shown as
+Crafting** (Garrison at `7r55`) for every faction
+([section 6.2](#62-technology-tree)); no technology ID changed. Milling
+and the mills are untouched. No state, command, event, or view shape
+changed; thirteen missions have a new revision because a seat that fields
+its defender was given Fortification
+([the record](RULESET_7_INDUSTRY_RESHUFFLE.md#5-labs-the-showcase-and-missions)).
+**Where another passage of this document, a tuning document, or a
+faction's revision document still places a defender at Drill, at the
+root, or at "Garrison", gives it to a seat with the first technology it
+buys, places the Workshop at Engineering, or says that Force Fields,
+Nesting, Deep Winter, Dig In, or Home Sweet Home is researched after the
+defender is fielded, this paragraph and the sections it names are
+current.**
 `pulp-wars-poc-7r55` (`pulp_wars-w49.17`) is
 **[the ninth unit](RULESET_7_NINTH_UNIT.md)** (designed in Parts A and B of
 [the heavy slot and economy design](RULESET_7_DESIGN_HEAVY_SLOT_AND_ECONOMY.md)),
@@ -612,7 +636,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r55`.
+resolved ones as of `pulp-wars-poc-7r56`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -713,10 +737,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r55`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r56`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r55.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r56.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -728,7 +752,7 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r54`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r55`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
   and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
   Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
@@ -2679,38 +2703,39 @@ ordinary formula applies to every technology.
 
 ### 6.2 Technology tree
 
-| Branch     | Tier | ID                  | Requires       | Exact unlocks                                                                                          |
-| ---------- | ---: | ------------------- | -------------- | ------------------------------------------------------------------------------------------------------ |
-| Settlement |    1 | `GATHERING`         | —              | reveal Fertile Ground; Harvest Fruit                                                                   |
-| Settlement |    2 | `FARMING`           | Gathering      | Farm; connected-Farm visuals                                                                           |
-| Settlement |    3 | `MILLING`           | Farming        | Windmill; Windmill Start Turn healing (6 HP)                                                           |
-| Settlement |    2 | `ADMINISTRATION`    | Gathering      | Captain (Rally, Tend Wounded); Market; Disband                                                         |
-| Settlement |    3 | `PLANNING`          | Administration | +1 capacity in every owned city; Land Grant                                                            |
-| Wilds      |    1 | `HUNTING`           | —              | Hunt Game                                                                                              |
-| Wilds      |    2 | `FORESTRY`          | Hunting        | Lumber Camp; Clear Forest; Forest cover (round 3)                                                      |
-| Wilds      |    3 | `SAWMILLING`        | Forestry       | Sawmill; Catapult                                                                                      |
-| Wilds      |    2 | `MARKSMANSHIP`      | Hunting        | Marksman                                                                                               |
-| Wilds      |    3 | `FIELDCRAFT`        | Marksmanship   | Replant Forest; Forest march (round 4: no ground unit stops in Forest); Marksman Sight 2               |
-| Mobility   |    1 | `SCOUTING`          | —              | Raider; Raider Sight 2                                                                                 |
-| Mobility   |    2 | `ROADS`             | Scouting       | Build Road; half-cost Road movement; connected-city Road population                                    |
-| Mobility   |    3 | `COMMERCE`          | Roads          | +1 Coin land trade for every Road-linked city (round 4; 2 before); Hire at a Market                    |
-| Mobility   |    2 | `RAIDING`           | Scouting       | Pillage (3 Coins; a Raider keeps its Move) for all trainable land roles; Raider Charge                 |
-| Mobility   |    3 | `CHIVALRY`          | Raiding        | Knight; Overrun; Cultivate Forest                                                                      |
-| Industry   |    1 | `DRILL`             | —              | reveal Ore; Guard; first-hostile-capture Spoils (2 Coins)                                              |
-| Industry   |    2 | `ENGINEERING`       | Drill          | land units enter Mountain; +1 Sight on Mountain; Mine; Workshop; Redevelop (no unit since `7r55`)      |
-| Industry   |    3 | `METALLURGY`        | Engineering    | Forge; Arms Industry (−1 land training cost); **the faction's heavy line unit** (the Champion; `7r55`) |
-| Industry   |    2 | `FORTIFICATION`     | Drill          | Fighter/Guard Build Field Defense                                                                      |
-| Industry   |    3 | `EXPLOSIVES`        | Fortification  | Blast Mountain (an explosion; +1 population in the territory); Breach                                  |
-| Naval      |    1 | `SHORECRAFT`        | —              | Harvest Fish; Build Port; embarkation and Shallow Water transport; Patrol Boat                         |
-| Naval      |    2 | `NAVIGATION`        | Shorecraft     | Deep Water movement; Gather Pearls; sea trade                                                          |
-| Naval      |    3 | `NAVAL_ENGINEERING` | Navigation     | Battleship; Shipyard; −2 Coin naval training at a Shipyard                                             |
-| Naval      |    2 | `SEAMANSHIP`        | Shorecraft     | Ram (Patrol Boats); Board (every ship)                                                                 |
-| Naval      |    3 | `SUBMERSIBLES`      | Seamanship     | Submarine; Harbours (+1 population from every active Port and Shipyard)                                |
+| Branch     | Tier | ID                  | Requires       | Exact unlocks                                                                                                     |
+| ---------- | ---: | ------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Settlement |    1 | `GATHERING`         | —              | reveal Fertile Ground; Harvest Fruit                                                                              |
+| Settlement |    2 | `FARMING`           | Gathering      | Farm; connected-Farm visuals                                                                                      |
+| Settlement |    3 | `MILLING`           | Farming        | Windmill; Windmill Start Turn healing (6 HP)                                                                      |
+| Settlement |    2 | `ADMINISTRATION`    | Gathering      | Captain (Rally, Tend Wounded); Market; Disband                                                                    |
+| Settlement |    3 | `PLANNING`          | Administration | +1 capacity in every owned city; Land Grant                                                                       |
+| Wilds      |    1 | `HUNTING`           | —              | Hunt Game                                                                                                         |
+| Wilds      |    2 | `FORESTRY`          | Hunting        | Lumber Camp; Clear Forest; Forest cover (round 3)                                                                 |
+| Wilds      |    3 | `SAWMILLING`        | Forestry       | Sawmill; Catapult                                                                                                 |
+| Wilds      |    2 | `MARKSMANSHIP`      | Hunting        | Marksman                                                                                                          |
+| Wilds      |    3 | `FIELDCRAFT`        | Marksmanship   | Replant Forest; Forest march (round 4: no ground unit stops in Forest); Marksman Sight 2                          |
+| Mobility   |    1 | `SCOUTING`          | —              | Raider; Raider Sight 2                                                                                            |
+| Mobility   |    2 | `ROADS`             | Scouting       | Build Road; half-cost Road movement; connected-city Road population                                               |
+| Mobility   |    3 | `COMMERCE`          | Roads          | +1 Coin land trade for every Road-linked city (round 4; 2 before); Hire at a Market                               |
+| Mobility   |    2 | `RAIDING`           | Scouting       | Pillage (3 Coins; a Raider keeps its Move) for all trainable land roles; Raider Charge                            |
+| Mobility   |    3 | `CHIVALRY`          | Raiding        | Knight; Overrun; Cultivate Forest                                                                                 |
+| Industry   |    1 | `DRILL`             | —              | reveal Ore; Workshop (`7r56`; Engineering before); first-hostile-capture Spoils (2 Coins); no unit since `7r56`   |
+| Industry   |    2 | `ENGINEERING`       | Drill          | land units enter Mountain; +1 Sight on Mountain; Mine; Redevelop (no unit since `7r55`, no Workshop since `7r56`) |
+| Industry   |    3 | `METALLURGY`        | Engineering    | Forge; Arms Industry (−1 land training cost); **the faction's heavy line unit** (the Champion; `7r55`)            |
+| Industry   |    2 | `FORTIFICATION`     | Drill          | Fighter/Guard Build Field Defense; **the faction's defender** (the Guard; `7r56`, Drill before)                   |
+| Industry   |    3 | `EXPLOSIVES`        | Fortification  | Blast Mountain (an explosion; +1 population in the territory); Breach                                             |
+| Naval      |    1 | `SHORECRAFT`        | —              | Harvest Fish; Build Port; embarkation and Shallow Water transport; Patrol Boat                                    |
+| Naval      |    2 | `NAVIGATION`        | Shorecraft     | Deep Water movement; Gather Pearls; sea trade                                                                     |
+| Naval      |    3 | `NAVAL_ENGINEERING` | Navigation     | Battleship; Shipyard; −2 Coin naval training at a Shipyard                                                        |
+| Naval      |    2 | `SEAMANSHIP`        | Shorecraft     | Ram (Patrol Boats); Board (every ship)                                                                            |
+| Naval      |    3 | `SUBMERSIBLES`      | Seamanship     | Submarine; Harbours (+1 population from every active Port and Shipyard)                                           |
 
 **Display names (`7r55`, `technologyDisplayNameV7`).** The IDs above are
 what commands, events, and saves carry. The interface shows a faction's own
 name for a technology if it has one, else the shared name, else the ID in
-sentence case. Eight shared names changed at `7r55`: `DRILL` is **Garrison**,
+sentence case. Eight shared names changed at `7r55`: `DRILL` was **Garrison** and is
+**Crafting** since `7r56` (the node gives the Workshop, not the defender),
 `ADMINISTRATION` **Leadership**, `PLANNING` **Land Grants**, `FIELDCRAFT`
 **Pathfinding**, `METALLURGY` **Armoury**, `SHORECRAFT` **Sailing**,
 `NAVAL_ENGINEERING` **Shipbuilding**, and `SEAMANSHIP` **Boarding**. The
@@ -2733,7 +2758,7 @@ names every player sees (a cell in bold is the faction's own):
 | `COMMERCE`          | Commerce      | Commerce       | **Plunder**       | Commerce        | Commerce          | Commerce        | Commerce             | Commerce                |
 | `RAIDING`           | Raiding       | Raiding        | Raiding           | Raiding         | Raiding           | Raiding         | **Dive Bombing**     | Raiding                 |
 | `CHIVALRY`          | Chivalry      | **Vampires**   | **Scrap Buggies** | **T-Rex**       | **Motherships**   | **Sabretooths** | **Whirligigs**       | **Chocolate Bunnies**   |
-| `DRILL`             | Garrison      | Garrison       | Garrison          | Garrison        | Garrison          | Garrison        | Garrison             | Garrison                |
+| `DRILL`             | Crafting      | Crafting       | Crafting          | Crafting        | Crafting          | Crafting        | Crafting             | Crafting                |
 | `ENGINEERING`       | Engineering   | Engineering    | Engineering       | Engineering     | Engineering       | Engineering     | **Mining**           | Engineering             |
 | `METALLURGY`        | Armoury       | Armoury        | Armoury           | **Triceratops** | Armoury           | **Mammoths**    | **Steam Tanks**      | **Jawbreakers**         |
 | `FORTIFICATION`     | Fortification | Fortification  | Fortification     | **Nesting**     | **Force Fields**  | **Deep Winter** | **Dig In**           | **Home Sweet Home**     |
@@ -2758,6 +2783,17 @@ the Mammoth, the Steam Tank, and the Jawbreaker. Engineering unlocks no
 unit in any tree. Three units of the tables below moved: the Triceratops
 Egg left Sawmilling (which unlocks the Stegosaurus Egg), the Mammoth left
 Drill (the Musk Ox), and the Steam Tank left Chivalry (the Whirligig).
+
+**The Industry reshuffle (`7r56`).** In every tree Fortification unlocks
+the faction's `GUARD` role next to what the node had (the Guard with Field
+Defense; the Zombie and the Orc Brute with Field Defense; the Ankylosaurus
+Egg with Nesting; the Shield Projector with Force Fields; the Musk Ox with
+Deep Winter; the Steam Mole with Dig In; the Marshmallow with Home Sweet
+Home), and the root (Drill, shown as **Crafting**) unlocks the Workshop
+and no unit. A defender is two technologies from the start (5 and 7 Coins
+with one city; the first technology of a match is free) and the heavy
+line unit three, on the other sub-branch. The defender rows of the
+faction tables below are at Fortification.
 
 There are 25 technologies. Since `pulp-wars-poc-7r43` the Naval branch has
 the shape of every other branch: one tier-1 root (Shorecraft), two tier-2
@@ -2793,8 +2829,8 @@ the table above are:
 | Raiding        | Pillage for all trainable land roles; Ghoul Charge                              |
 | Chivalry       | Vampire; Cultivate Forest                                                       |
 | Pestilence     | (Explosives) Blast Mountain; Breach; Liches plague the units they hit           |
-| Drill          | reveal Ore; Zombie; first-hostile-capture Spoils (2 Coins)                      |
-| Fortification  | Skeleton/Zombie Build Field Defense                                             |
+| Drill          | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                    |
+| Fortification  | Zombie (`7r56`); Skeleton/Zombie Build Field Defense                            |
 
 The Goblin tree (`GOBLIN_BASELINE_V1`) has the same graph, tiers,
 prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
@@ -2821,8 +2857,8 @@ differently from the Human table are:
 | Commerce       | Plunder     | +2 Coins for each enemy unit your units or blasts kill                                         |
 | Raiding        | same        | Pillage for all trainable land roles; Wolf Rider Charge                                        |
 | Chivalry       | same        | Scrap Buggy; Ram; Cultivate Forest                                                             |
-| Drill          | same        | reveal Ore; Orc Brute; first-hostile-capture Spoils (2 Coins)                                  |
-| Fortification  | same        | Orc Brute Build Field Defense                                                                  |
+| Drill          | same        | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                   |
+| Fortification  | same        | Orc Brute (`7r56`); Orc Brute Build Field Defense                                              |
 
 The Dinosaur tree (`DINOSAUR_BASELINE_V1`) has the same graph, tiers,
 prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
@@ -2859,9 +2895,9 @@ read differently from the Human table are:
 | Scouting       | same          | Raptor Egg; Raptor Sight 2                                                                        |
 | Raiding        | same          | Pillage for all trainable land roles; Raptor Pounce                                               |
 | Chivalry       | same          | T-Rex Egg; Rampage; Cultivate Forest                                                              |
-| Drill          | same          | reveal Ore; Ankylosaurus Egg; first-hostile-capture Spoils (2 Coins)                              |
+| Drill          | same          | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                      |
 | Metallurgy     | same          | Forge; Arms Industry (−1 Coin for trained land units and Eggs); Triceratops Egg (Charge!; `7r55`) |
-| Fortification  | Nesting       | Eggs have +4 HP; +1 unit slot in every city                                                       |
+| Fortification  | Nesting       | Ankylosaurus Egg (`7r56`); Eggs have +4 HP; +1 unit slot in every city                            |
 | Sawmilling     | Timber        | Chopping Block (the Sawmill); Stegosaurus Egg                                                     |
 | Explosives     | Wallbreaker   | Blast Mountain; Breach; a Triceratops's run-up counts 2 tiles; dinosaurs ignore City Walls        |
 
@@ -2890,18 +2926,18 @@ only to foot units (walkers and flyers need none); every technology still
 has a live unlock for a Martian seat. The Martian unlocks that read
 differently from the Human table are:
 
-| Technology     | Martian name  | Martian unlocks                                                                                               |
-| -------------- | ------------- | ------------------------------------------------------------------------------------------------------------- |
-| Administration | same          | Brain (Psychic Command, Mind Control); Market; Disband                                                        |
-| Sawmilling     | same          | Sawmill; Tripod (heat ray, Pierce)                                                                            |
-| Marksmanship   | same          | Ray Gunner (heat ray)                                                                                         |
-| Fieldcraft     | Heat Sinks    | Replant Forest; Ray Gunner ignores Forest movement stops; Ray Gunner Sight 2; Ray Gunners do not overheat     |
-| Scouting       | same          | Saucer (flies, Beam Down, Tractor Beam); Saucer Sight 2                                                       |
-| Raiding        | same          | Pillage for land units that do not fly; Saucer Strafe                                                         |
-| Chivalry       | same          | Mothership (flies, Beam Down, Tractor Beam); Cultivate Forest                                                 |
-| Drill          | same          | reveal Ore; Shield Projector (Force Field with Force Fields); first-hostile-capture Spoils (2 Coins)          |
-| Fortification  | Force Fields  | Shield Projectors raise the Shields of units next to them to 4; Shields also recharge at the end of your turn |
-| Explosives     | Disintegrator | Blast Mountain; Breach; heat rays ignore Walls and Field Defense                                              |
+| Technology     | Martian name  | Martian unlocks                                                                                                                          |
+| -------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Administration | same          | Brain (Psychic Command, Mind Control); Market; Disband                                                                                   |
+| Sawmilling     | same          | Sawmill; Tripod (heat ray, Pierce)                                                                                                       |
+| Marksmanship   | same          | Ray Gunner (heat ray)                                                                                                                    |
+| Fieldcraft     | Heat Sinks    | Replant Forest; Ray Gunner ignores Forest movement stops; Ray Gunner Sight 2; Ray Gunners do not overheat                                |
+| Scouting       | same          | Saucer (flies, Beam Down, Tractor Beam); Saucer Sight 2                                                                                  |
+| Raiding        | same          | Pillage for land units that do not fly; Saucer Strafe                                                                                    |
+| Chivalry       | same          | Mothership (flies, Beam Down, Tractor Beam); Cultivate Forest                                                                            |
+| Drill          | same          | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                                                             |
+| Fortification  | Force Fields  | Shield Projector (`7r56`); Shield Projectors raise the Shields of units next to them to 4; Shields also recharge at the end of your turn |
+| Explosives     | Disintegrator | Blast Mountain; Breach; heat rays ignore Walls and Field Defense                                                                         |
 
 The Ice Folk tree (`ICE_FOLK_BASELINE_V1`) has the same graph, tiers,
 prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
@@ -2946,9 +2982,9 @@ differently from the Human table are:
 | Scouting          | same          | Sled (Bolas); Sled Sight 2                                                                                                      |
 | Raiding           | same          | Pillage; Sled Charge                                                                                                            |
 | Chivalry          | same          | Sabretooth (Prowl); Cultivate Forest                                                                                            |
-| Drill             | same          | reveal Ore; Musk Ox (Frostbite; `7r55`, the Mammoth before, now at Metallurgy); first-hostile-capture Spoils (2 Coins)          |
-| Engineering       | same          | every unit enters Mountain; +1 Sight on Mountain; Mine; Workshop; Redevelop                                                     |
-| Fortification     | Deep Winter   | Snow spreads two tiles from your city centers; Recover heals 6 in your territory                                                |
+| Drill             | same          | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                                                    |
+| Engineering       | same          | every unit enters Mountain; +1 Sight on Mountain; Mine; Redevelop                                                               |
+| Fortification     | Deep Winter   | Musk Ox (Frostbite; `7r56`); Snow spreads two tiles from your city centers; Recover heals 6 in your territory                   |
 | Explosives        | Brittle       | Blast Mountain; Breach; Shatter at 4 HP or less                                                                                 |
 | Shorecraft        | Rime          | Harvest Fish; Build Port; Freeze Shallow Water; your units slide on ice; no Patrol Boat and no embarking                        |
 | Navigation        | Pack Ice      | Freeze Deep Water; Gather Pearls; sea trade                                                                                     |
@@ -2985,18 +3021,18 @@ also lowers the Assemble cost, and every technology still has a live
 unlock for a Dwarf seat. The Dwarf unlocks that read differently from the
 Human table are:
 
-| Technology     | Dwarf name       | Dwarf unlocks                                                                                 |
-| -------------- | ---------------- | --------------------------------------------------------------------------------------------- |
-| Administration | same             | Engineer (Repair); Market; Disband                                                            |
-| Sawmilling     | same             | Sawmill; Steam Cannon (Knockback)                                                             |
-| Marksmanship   | same             | Clockwork Gunner (two shots standing still); Engineers Assemble Gunners                       |
-| Fieldcraft     | same             | Replant Forest; Gunners ignore Forest movement stops; Gunner Sight 2                          |
-| Scouting       | same             | Gyrocopter (Bomb Run); Gyrocopter Sight 2                                                     |
-| Raiding        | same             | Pillage; Dive: bombs deal 6                                                                   |
-| Chivalry       | same             | Whirligig (Three Hammers; `7r55`, the Steam Tank before, now at Metallurgy); Cultivate Forest |
-| Drill          | same             | reveal Ore; Steam Mole (Tunnel); first-hostile-capture Spoils (2 Coins)                       |
-| Fortification  | Dig In           | Hammerers and Moles that stand still on or next to your city centers are dug in               |
-| Explosives     | Blasting Charges | Blast Mountain; Breach; eruptions deal 3; Cannons ignore Walls                                |
+| Technology     | Dwarf name       | Dwarf unlocks                                                                                                |
+| -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------ |
+| Administration | same             | Engineer (Repair); Market; Disband                                                                           |
+| Sawmilling     | same             | Sawmill; Steam Cannon (Knockback)                                                                            |
+| Marksmanship   | same             | Clockwork Gunner (two shots standing still); Engineers Assemble Gunners                                      |
+| Fieldcraft     | same             | Replant Forest; Gunners ignore Forest movement stops; Gunner Sight 2                                         |
+| Scouting       | same             | Gyrocopter (Bomb Run); Gyrocopter Sight 2                                                                    |
+| Raiding        | same             | Pillage; Dive: bombs deal 6                                                                                  |
+| Chivalry       | same             | Whirligig (Three Hammers; `7r55`, the Steam Tank before, now at Metallurgy); Cultivate Forest                |
+| Drill          | same             | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                                 |
+| Fortification  | Dig In           | Steam Mole (Tunnel; `7r56`); Hammerers and Moles that stand still on or next to your city centers are dug in |
+| Explosives     | Blasting Charges | Blast Mountain; Breach; eruptions deal 3; Cannons ignore Walls                                               |
 
 The Candy tree (`CANDY_BASELINE_V1`) has the same graph, tiers,
 prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
@@ -3019,18 +3055,18 @@ and Re-bake need no technology beyond the unit that uses them, and every
 technology still has a live unlock for a Candy seat. The Candy unlocks that
 read differently from the Human table are:
 
-| Technology     | Candy name          | Candy unlocks                                                                         |
-| -------------- | ------------------- | ------------------------------------------------------------------------------------- |
-| Administration | same                | Confectioner (Frosting, Re-bake); Market; Disband                                     |
-| Sawmilling     | same                | Sawmill; Pie Launcher (Splat)                                                         |
-| Marksmanship   | same                | Gumball Gunner (Sugar Toss)                                                           |
-| Fieldcraft     | same                | Replant Forest; Donut Racers and Gunners ignore Forest movement stops; Gunner Sight 2 |
-| Scouting       | same                | Donut Racer; Donut Racer Sight 2                                                      |
-| Raiding        | same                | Pillage; Donut Racer Charge                                                           |
-| Chivalry       | same                | Chocolate Bunny (Sugar Frenzy while Rushed); Cultivate Forest                         |
-| Drill          | same                | reveal Ore; Marshmallow (Bounce); first-hostile-capture Spoils (2 Coins)              |
-| Fortification  | Home Sweet Home     | Rushed units that end the turn on or next to your city centers don't Crash            |
-| Explosives     | Peppermint Surprise | Blast Mountain; Breach; enemies that eat your Crumbs take 3                           |
+| Technology     | Candy name          | Candy unlocks                                                                                            |
+| -------------- | ------------------- | -------------------------------------------------------------------------------------------------------- |
+| Administration | same                | Confectioner (Frosting, Re-bake); Market; Disband                                                        |
+| Sawmilling     | same                | Sawmill; Pie Launcher (Splat)                                                                            |
+| Marksmanship   | same                | Gumball Gunner (Sugar Toss)                                                                              |
+| Fieldcraft     | same                | Replant Forest; Donut Racers and Gunners ignore Forest movement stops; Gunner Sight 2                    |
+| Scouting       | same                | Donut Racer; Donut Racer Sight 2                                                                         |
+| Raiding        | same                | Pillage; Donut Racer Charge                                                                              |
+| Chivalry       | same                | Chocolate Bunny (Sugar Frenzy while Rushed); Cultivate Forest                                            |
+| Drill          | same                | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                             |
+| Fortification  | Home Sweet Home     | Marshmallow (Bounce; `7r56`); Rushed units that end the turn on or next to your city centers don't Crash |
+| Explosives     | Peppermint Surprise | Blast Mountain; Breach; enemies that eat your Crumbs take 3                                              |
 
 The other technologies read the same for every faction. The engine, query,
 and AI checks of land trade read the technology capability
@@ -3134,7 +3170,7 @@ and no tile command changes a tile into water, a Rift, or a site.
 | Windmill | Milling        |    5 | one/city | at least one adjacent same-owner Farm                       | +1 per adjacent same-owner Farm, cap 8                                    |
 | Sawmill  | Sawmilling     |    5 | one/city | at least one adjacent same-owner Lumber Camp                | +1 per adjacent same-owner Lumber Camp, cap 8                             |
 | Forge    | Metallurgy     |    6 | one/city | at least one adjacent same-owner Mine                       | +1 per adjacent same-owner Mine, cap 6                                    |
-| Workshop | Engineering    |    4 | one/city | at least one adjacent same-owner Farm, Lumber Camp, or Mine | 0 without support; else 1 + number of distinct adjacent basic types (2–4) |
+| Workshop | Drill (`7r56`) |    4 | one/city | at least one adjacent same-owner Farm, Lumber Camp, or Mine | 0 without support; else 1 + number of distinct adjacent basic types (2–4) |
 | Market   | Administration |    6 | one/city | at least one adjacent economic family                       | Coins, not population ([section 9.4](#94-market))                         |
 | Monument | achievement    |    0 | one/city | an unspent achievement entitlement                          | +3                                                                        |
 
@@ -3552,7 +3588,7 @@ numbers are first guesses ([the ninth unit](RULESET_7_NINTH_UNIT.md)):
 | Fighter     | start             |    2 | 12² |      2 |       2 |    1 |     1 |     1 | yes               | yes     | Field Defense                                                |
 | Raider      | Scouting          |    4 | 12² |      2 |       1 |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Escape; ignores zones of control (round 4) |
 | Marksman    | Marksmanship      |   4³ | 12² |      2 |       1 |    1 |   1–2 |    1¹ | yes               | yes     | never advances³                                              |
-| Guard       | Drill             |    3 | 17² |    1.5 |      3⁶ |    1 |     1 |     1 | no                | yes     | Field Defense; open to ranged attacks⁶                       |
+| Guard       | Fortification     |    3 | 17² |    1.5 |      3⁶ |    1 |     1 |     1 | no                | yes     | Field Defense; open to ranged attacks⁶                       |
 | Champion⁷   | Metallurgy        |    6 |  15 |    3.5 |     2.5 |    1 |     1 |     1 | yes               | yes     | —                                                            |
 | Captain     | Administration    |    5 |  10 |      1 |       1 |    1 |     1 |     1 | yes               | no      | Rally; Tend Wounded                                          |
 | Catapult    | Sawmilling        |    8 |  10 |     3³ |     0.5 |    1 |   2–3 |     1 | no                | no      | —                                                            |
@@ -3646,7 +3682,7 @@ parentheses):
 | Skeleton    | `FIGHTER`     | start             |    2 |  10 |  2 (4) |  2 (4)³ |    1 |     1 |     1 | yes               | yes     | Field Defense; Bones³                             |
 | Ghoul       | `RAIDER`      | Scouting          |    3 |  10 |  2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Devour; Carrion⁴                |
 | Banshee     | `MARKSMAN`    | Marksmanship      |    3 |   8 |  1 (2) |   1 (2) |    1 |     — |    1² | Wail: yes         | yes     | Wail; no targeted Attack                          |
-| Zombie      | `GUARD`       | Drill             |    3 |  18 |  2 (4) |   2 (4) |    1 |     1 |     1 | no                | yes     | Field Defense; Infect; Bite; never advances       |
+| Zombie      | `GUARD`       | Fortification     |    3 |  18 |  2 (4) |   2 (4) |    1 |     1 |     1 | no                | yes     | Field Defense; Infect; Bite; never advances       |
 | Necromancer | `CAPTAIN`     | Administration    |    5 |  10 |  1 (2) |   1 (2) |    1 |     1 |     1 | yes               | no      | Frenzy; Raise Dead (2 tiles⁴)                     |
 | Lich        | `CATAPULT`    | Sawmilling        |    8 |  10 |  3 (6) |   1 (2) |    1 |   2–3 |     1 | no                | no      | splash; Plague (Pestilence⁴); never advances      |
 | Vampire     | `KNIGHT`      | Chivalry          |    9 |  10 |  3 (6) |   1 (2) |    3 |     1 |     1 | yes               | no      | Lifesteal; Unanswered; Escape³                    |
@@ -3721,7 +3757,7 @@ damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
 | Goblin       | `FIGHTER`     | start             |    1 |   6 | 1.5 (3) | 0.5 (1) |    1 |     1 |     1 | yes               | yes     |      5 |           — | Kaboom; no Field Defense                                        |
 | Wolf Rider   | `RAIDER`      | Scouting          |    3 |  10 |   2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     |      4 |           — | Charge (Raiding); Kaboom; no Escape                             |
 | Bomb Chucker | `MARKSMAN`    | Marksmanship      |    3 |   8 |   2 (4) |   1 (2) |    1 |     2 |    1³ | yes               | yes     |      4 |           2 | bombs (friendly-fire splash, no Gang Up); Kaboom                |
-| Orc Brute    | `GUARD`       | Drill             |    3 |  15 |   2 (4) | 2.5 (5) |    1 |     1 |     1 | no                | yes     |      — |           — | Field Defense; Blast-proof                                      |
+| Orc Brute    | `GUARD`       | Fortification     |    3 |  15 |   2 (4) | 2.5 (5) |    1 |     1 |     1 | no                | yes     |      — |           — | Field Defense; Blast-proof                                      |
 | Orc Warboss  | `CAPTAIN`     | Administration    |    5 |  12 |   2 (4) |   1 (2) |    1 |     1 |     1 | yes               | no      |      — |           — | WAAAGH!; no Tend Wounded                                        |
 | Rocket Cart  | `CATAPULT`    | Sawmilling        |    7 |   8 | 3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | no                | no      |      5 |           4 | Kaboom; never advances; Gang Up +1 at most                      |
 | Scrap Buggy  | `KNIGHT`      | Chivalry          |    8 |  10 |   3 (6) |   1 (2) |    3 |     1 |     1 | yes               | no      |      5 |           4 | Ram; Kaboom, also after attacking (Crash)                       |
@@ -3787,7 +3823,7 @@ capacity the unit, or its Egg, uses
 | Caveman      | `FIGHTER`     | start             |    2 | trained |     1 |  10 |   2 (4) |   2 (4) |    1 |     1 |     1 | yes               | yes     | no    | no Field Defense                                                       |
 | Raptor       | `RAIDER`      | Scouting          |    4 | 1       |     1 |  12 | 2.5 (5) |   1 (2) |    2 |     1 |     2 | yes               | yes     | yes   | Pounce (Raiding); no Escape                                            |
 | Spitter      | `MARKSMAN`    | Marksmanship      |    4 | 1       |     1 |  10 |   2 (4) |   1 (2) |    1 |   1–2 |    1⁴ | yes               | yes     | yes   | Acid                                                                   |
-| Ankylosaurus | `GUARD`       | Drill             |    5 | 2       |     1 |  20 |   2 (4) |   3 (6) |    1 |     1 |     1 | no                | yes     | yes   | Armoured; no Field Defense                                             |
+| Ankylosaurus | `GUARD`       | Fortification     |    5 | 2       |     1 |  20 |   2 (4) |   3 (6) |    1 |     1 |     1 | no                | yes     | yes   | Armoured; no Field Defense                                             |
 | Shaman       | `CAPTAIN`     | Administration    |    5 | trained |     1 |  10 |   1 (2) |   1 (2) |    1 |     1 |     1 | yes               | no      | no    | War Drums; Tend Wounded; Hatch                                         |
 | Stegosaurus  | `CATAPULT`    | Sawmilling        |    7 | 2       |     1 |  12 | 2.5 (5) |   1 (2) |    1 |   2–3 |     1 | no                | no      | yes   | Thagomizer (Cracked; `7r55`); destroys Field Defense; never advances   |
 | Triceratops  | `SWORDSMAN`   | Metallurgy        |    8 | 2       |     2 |  20 |   3 (6) |   2 (4) |    2 |     1 |     1 | yes               | no      | yes   | Charge! (the heavy role since `7r55`; `CATAPULT` at Sawmilling before) |
@@ -3869,7 +3905,7 @@ is its movement mode ([section 20.6](#206-movement-stride-flying-and-crossing-wa
 | Grunt            | `FIGHTER`     | start             |   3⁶ |     1 |  8⁸ |      2 |  2 (4)⁷ |  1.5 (3) |    1 |  1–2⁶ |     1 | ground | yes               | yes     | ray pistol (plain shot); no Field Defense                                           |
 | Saucer           | `RAIDER`      | Scouting          |    4 |     1 |   8 |      2 | 1.5 (3) |    1 (2) |    3 |     1 |     2 | fly    | yes               | no      | Beam Down; Tractor Beam⁷; Strafe (Raiding); no Escape, Pillage, or advance          |
 | Ray Gunner       | `MARKSMAN`    | Marksmanship      |    4 |     1 |   8 |      2 |   3 (6) |    1 (2) |    1 |   1–2 |    1⁵ | ground | yes               | yes     | heat ray                                                                            |
-| Shield Projector | `GUARD`       | Drill             |    4 |     1 |  12 |      3 | 1.5 (3) |  2.5 (5) |    1 |     1 |     1 | ground | no                | yes     | Force Field; no Field Defense                                                       |
+| Shield Projector | `GUARD`       | Fortification     |    4 |     1 |  12 |      3 | 1.5 (3) |  2.5 (5) |    1 |     1 |     1 | ground | no                | yes     | Force Field; no Field Defense                                                       |
 | Brain            | `CAPTAIN`     | Administration    |    5 |     1 |   8 |      2 |   1 (2) |    1 (2) |    1 |     1 |     1 | ground | yes               | no      | Psychic Command; Mind Control; no Tend Wounded                                      |
 | Tripod           | `CATAPULT`    | Sawmilling        |    9 |     1 |  12 |      2 |   4 (8) |    1 (2) |    2 |    2⁶ |    2⁶ | stride | yes               | no      | heat ray; Pierce; never advances                                                    |
 | Mothership       | `KNIGHT`      | Chivalry          |   8⁷ |     2 |  16 |      4 | 2.5 (5) |    2 (4) |    2 |     1 |     1 | fly    | yes               | no      | Beam Down⁷; Heavy Tractor Beam⁷ (free once a turn); no Overrun, Pillage, or advance |
@@ -3976,7 +4012,7 @@ units cross Mountains without Engineering and without stopping
 | Yeti         | `FIGHTER`    | start          |    2 |  9⁸ |                2 (4) | 1.5 (3)⁸ |    1 |    1⁹ |     1 | yes               | yes     | Mountain-born; Rockfall; no Field Defense                                               |
 | Sled         | `RAIDER`     | Scouting       |    3 |  10 |                2 (4) |    1 (2) |    2 |     1 |     2 | yes               | yes     | Bolas; Charge (Raiding); no Escape                                                      |
 | Snow Hunter  | `MARKSMAN`   | Marksmanship   |    3 |   8 |                2 (4) |    1 (2) |    1 |   1–2 |    1⁷ | yes               | yes     | Cold Blood                                                                              |
-| Musk Ox      | `GUARD`      | Drill          |    4 |  16 |              1.5 (3) |  2.5 (5) |    1 |     1 |     1 | no                | yes     | Frostbite (`7r55`); no Field Defense                                                    |
+| Musk Ox      | `GUARD`      | Fortification  |    4 |  16 |              1.5 (3) |  2.5 (5) |    1 |     1 |     1 | no                | yes     | Frostbite (`7r55`); no Field Defense                                                    |
 | Mammoth      | `SWORDSMAN`  | Metallurgy     |    6 |  20 |              2.5 (5) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; no Field Defense (the heavy role since `7r55`; `GUARD` at Drill before) |
 | Ice Witch    | `CAPTAIN`    | Administration |    5 |  12 |                1 (2) |    1 (2) |    1 |     1 |     1 | yes               | no      | Blizzard; Cold Snap; no Rally; no Tend Wounded                                          |
 | Boulder Yeti | `CATAPULT`   | Sawmilling     |    8 |  12 | 2 (4); 3 (6) planted |  1.5 (3) |    2 |   1–2 |     1 | yes               | no      | Boulders (ignore fortification); Planted; Mountain-born; never advances                 |
@@ -4063,7 +4099,7 @@ The Dwarf (`DWARF`) roster, by mechanical role, with the
 | Hammerer         | `FIGHTER`     | start             |    2 |  12 |     2 (4) |   2 (4) |    1 |     1 |     1 | living             | yes                  | yes     | rides the tunnel; Dig In; no Field Defense                                                  |
 | Gyrocopter       | `RAIDER`      | Scouting          |    4 |   8 | 1.5 (3)¹¹ |   1 (2) |    3 |  bomb |     2 | living; machine    | the bomb is its Move | no      | flies; Bomb Run (5, Dive 6¹²), once per target per turn                                     |
 | Clockwork Gunner | `MARKSMAN`    | Marksmanship      |    3 |  10 |   1.5 (3) |   1 (2) |    1 |   1–2 |   1¹⁰ | construct; machine | yes, one shot        | yes     | two shots if it has not moved; never moves after firing                                     |
-| Steam Mole       | `GUARD`       | Drill             |    5 |  16 |     2 (4) | 2.5 (5) |    1 |     1 |     1 | living; machine    | yes                  | yes     | Tunnel 3 with a rider; Eruption 2 (3); Dig In; no Field Defense                             |
+| Steam Mole       | `GUARD`       | Fortification     |    5 |  16 |     2 (4) | 2.5 (5) |    1 |     1 |     1 | living; machine    | yes                  | yes     | Tunnel 3 with a rider; Eruption 2 (3); Dig In; no Field Defense                             |
 | Engineer         | `CAPTAIN`     | Administration    |    5 |  10 |     1 (2) |   1 (2) |    1 |     1 |     1 | living             | yes                  | no      | Repair; Assemble; no Rally                                                                  |
 | Steam Cannon     | `CATAPULT`    | Sawmilling        |    8 |  10 |   3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | living; machine    | no                   | no      | Knockback; with Blasting Charges ignores Walls and Field Defense                            |
 | Whirligig        | `KNIGHT`      | Chivalry          |    9 |  12 |     3 (6) | 1.5 (3) |    3 |     1 |     1 | construct; machine | yes                  | no      | Three Hammers (three attacks a turn on different units; `7r55`); never advances; no Overrun |
@@ -4151,7 +4187,7 @@ living, and every Candy land unit is a ground unit:
 | Toffee Trooper    | `FIGHTER`     | start             |    2 |  10 |   2 (4) |   2 (4) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; no Field Defense                                       |
 | Donut Racer       | `RAIDER`      | Scouting          |    3 |  10 |   2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Sugar Rush (Rushed: Escape); Charge (Raiding); no Escape otherwise |
 | Gumball Gunner    | `MARKSMAN`    | Marksmanship      |    3 |   8 |   2 (4) |   1 (2) |    1 |   1–2 |   1¹³ | yes               | yes     | Sugar Rush; Sugar Toss                                             |
-| Marshmallow       | `GUARD`       | Drill             |    4 |  18 | 1.5 (3) | 2.5 (5) |    1 |     1 |     1 | no                | yes     | Sugar Rush; Bounce; no Field Defense                               |
+| Marshmallow       | `GUARD`       | Fortification     |    4 |  18 | 1.5 (3) | 2.5 (5) |    1 |     1 |     1 | no                | yes     | Sugar Rush; Bounce; no Field Defense                               |
 | Confectioner      | `CAPTAIN`     | Administration    |    5 |  10 |   1 (2) |   1 (2) |    1 |     1 |     1 | yes               | no      | Sugar Rush; Frosting; Re-bake; no Rally                            |
 | Pie Launcher      | `CATAPULT`    | Sawmilling        |    8 |  10 |   3 (6) | 0.5 (1) |    1 |   2–3 |     1 | no                | no      | Sugar Rush; Splat; never advances                                  |
 | Chocolate Bunny   | `KNIGHT`      | Chivalry          |    9 |  14 |   3 (6) | 1.5 (3) |    2 |     1 |     1 | yes               | no      | Sugar Rush (Rushed: Sugar Frenzy); no Overrun otherwise            |
@@ -5512,6 +5548,23 @@ Harbours from it.
   drawn onto a hostile Wight's marked Grave, and an Undead seat leaves its
   own Wight's Grave alone while no enemy is near it.
   [Normal AI, the ninth unit](../architecture/NORMAL_AI.md#the-ninth-unit-pulp_wars-w4917).
+- **The Industry reshuffle** (`pulp_wars-w49.21`, `7r56`), untested. No
+  research order changed: a chain is read from the tree, so every seat
+  buys the root and then Fortification where its order names the defender
+  (first for an Undead, Martian, or Dinosaur seat, second for a Human
+  seat, third for a Goblin seat). The root does not count against the
+  research tempo (the city-levels rule and the war clock). A seat whose
+  order begins with its defender buys Fortification before its units and
+  keeps the Coins for it. The root alone is no population technology for
+  "economy first". A seat that keeps Coins for a due technology builds no
+  Field Defense. A seat with the root builds a Workshop beside a Farm, a
+  Lumber Camp, or a Mine like any other growth. A Dwarf, Ice Folk, or
+  Candy seat's early plan reaches its defender by the root and its
+  Fortification. In a match with such a seat no seat plays the army
+  policy; there a seat that owns the root researches Fortification when
+  it can pay for it, ahead of an economic technology (it does not save
+  for it).
+  [Normal AI, the Industry reshuffle](../architecture/NORMAL_AI.md#the-industry-reshuffle-pulp_wars-w4921).
 - **The Goblin hand pass** (`pulp_wars-w49.19`, `7r55`, no rule and no
   identity change). A Goblin seat's unit that can step back and kill with
   its attack does not use Kaboom for that kill: when the blast would kill
@@ -9372,8 +9425,8 @@ HP, Attack 2.5, Defense 2, Move 1, Sweep, Trample, captures, Glides). Where
 sections 21.1 to 21.16 call the Mammoth the `GUARD` role or a `DEFENDER`,
 read the `SWORDSMAN` role.
 
-The **Musk Ox** is the defender it left (role `GUARD`, `DEFENDER`; Drill,
-shown as Garrison): 4 Coins, 16 HP, Attack 1.5, Defense 2.5, Move 1, melee,
+The **Musk Ox** is the defender it left (role `GUARD`, `DEFENDER`; at
+Fortification, shown as Deep Winter, since `7r56`; at Drill before): 4 Coins, 16 HP, Attack 1.5, Defense 2.5, Move 1, melee,
 no attack after moving, captures, Glides, Freezes with Rime, builds no
 Field Defense. Its numbers are first guesses.
 
@@ -10678,6 +10731,7 @@ first guesses.
 | Ninth unit    | `pulp-wars-poc-7r55` | `pulp_wars-w49.17` [the ninth unit](RULESET_7_NINTH_UNIT.md), a quick pass with untested first-guess numbers: every faction has nine land units, one for each of nine jobs; the heavy line unit of every faction (role `SWORDSMAN`) is at Metallurgy and Engineering unlocks no unit; the Human Swordsman is the Champion at 6 Coins; the new heavies Ogre (Heavyweight), Wight (Rise Again), Shock Trooper (Shock Field), and Jawbreaker (Rock Hard); the Triceratops, the Mammoth, and the Steam Tank moved into the heavy role, with the Stegosaurus (Thagomizer) as the Dinosaur `CATAPULT`, the Musk Ox (Frostbite) as the Ice Folk `GUARD`, and the Whirligig (Three Hammers) as the Dwarf `KNIGHT`; new display names for technologies (IDs unchanged); the state and view key `ninthUnit`, the event `WIGHT_RISEN`, the `UNITS_CHILLED` source `FROSTBITE`, the preview fields `shockDamage`, `crackApplied`, and `frostbiteApplied`, the `ATTACK_NOT_LEGAL` reason `ALREADY_STRUCK`; the Showcase fields twelve units a seat; the middle-game labs at revision 2 and the other Human labs at revision 3; a first Normal AI pass              |
 | Tuning        | `pulp-wars-poc-7r55` | `pulp_wars-w49.19` [the Goblin hand pass](RULESET_7_TUNING_GOBLIN.md#13-the-hand-pass-at-7r55) after four hand-played games as the Goblins, a lab, and two as the Humans against them, no rule and no identity change: the Normal AI of a Goblin seat does not use Kaboom for a single kill that its unit makes by stepping back and attacking (a Bomb Chucker beside a wounded unit); the Human hand pass (`pulp_wars-w49.18`, [round 9](RULESET_7_TUNING_HUMAN.md#16-round-9)) before it changed nothing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Tuning        | `pulp-wars-poc-7r55` | `pulp_wars-w49.20` [the Undead hand pass](RULESET_7_TUNING_UNDEAD.md#14-the-hand-pass-at-7r55) after three hand-played games as the Undead (against the Humans, the Goblins, and three AIs), no rule and no identity change: the Normal AI of an Undead seat does not step a unit onto a hostile center under ranged units when the enemies in its sight kill the unit there before it can capture; the text harness shows a Wight's marked Grave and says which villages, chests, and curiosities a Move revealed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Reshuffle     | `pulp-wars-poc-7r56` | `pulp_wars-w49.21` [the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md), a placement pass with no number changed and no game played: the defender of every faction (role `GUARD`) is at Fortification, which keeps what it had; the Workshop is at the root (Drill), with Reveal Ore and the Spoils; Engineering keeps Mountains, the Mine, and Redevelop; the root is shown as Crafting (Garrison); Milling and the mills untouched; no state, command, event, or view shape changed; `FRONTIER_1` to `FRONTIER_3` and `TEST_NECK` at revision 2, `FRONTIER_4` and the four middle-game labs at revision 3, `LAB_BACKLINE` and the three breakthrough labs at revision 4 (a seat that fields its defender owns Fortification); the Normal AI's research tempo does not count the root, a seat whose order begins with its defender buys Fortification before its units, and a seat that keeps Coins for a due technology builds no Field Defense                                                                                                                                                                                                |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

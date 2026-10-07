@@ -50,7 +50,7 @@ import {
 } from "../../src/ai/v7-campaign";
 
 /**
- * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r55`;
+ * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r56`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 14, the Normal AI of a
  * Human, Undead, or Goblin seat): it commits against the enemy in front of
  * it and keeps committing after the line breaks, every faction's seat
@@ -194,7 +194,7 @@ const whereIs = (state: GameStateV7, id: UnitId): CoordV7 => {
 
 describe("tuning 7 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
   });
 });
 
@@ -808,7 +808,7 @@ describe("2. every faction's seat grows", () => {
   };
 
   it.each([
-    ["UNDEAD", ["GATHERING", "HUNTING", "DRILL"]],
+    ["UNDEAD", ["GATHERING", "HUNTING", "DRILL", "FORTIFICATION"]],
     ["GOBLIN", ["GATHERING", "HUNTING", "MARKSMANSHIP"]],
   ] as const)(
     "a %s seat at its unit limit with nothing to buy population with researches the growth its land can use, and builds it",
@@ -841,15 +841,17 @@ describe("2. every faction's seat grows", () => {
       "HUNTING",
       "FORESTRY",
       "DRILL",
+      "FORTIFICATION",
     ]);
     // Growth is on offer: the next technology is the army's again.
     expect(armyOf(state).research?.growth).toBe(false);
     const turn = policyTurn(state);
     const kinds = kindsOf(turn.commands);
-    expect(kinds.slice(0, 2)).toEqual([
-      "BUILD_LUMBER_CAMP",
-      "BUILD_LUMBER_CAMP",
-    ]);
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Workshop is
+    // at the root, which this seat owns, so with one Lumber Camp built the
+    // second purchase is the Workshop beside it (2 population for 4 Coins;
+    // a second Lumber Camp, 1 for 3, before).
+    expect(kinds.slice(0, 2)).toEqual(["BUILD_LUMBER_CAMP", "BUILD_WORKSHOP"]);
     // The Undead pass (`pulp_wars-w49.13`): an Undead level-2 Survey is
     // Scouts, with a free Ghoul, so the level's slot is filled by the
     // reward (it was a TRAIN after the two camps before).
@@ -880,7 +882,7 @@ describe("2. every faction's seat grows", () => {
         ],
         {
           factions: UNDEAD,
-          techs: { 0: ["GATHERING", "HUNTING", "DRILL"] },
+          techs: { 0: ["GATHERING", "HUNTING", "DRILL", "FORTIFICATION"] },
           coins: 20,
         },
       ),
@@ -961,6 +963,9 @@ describe("2. every faction's seat grows", () => {
     expect(bought.filter((kind) => kind.startsWith("RESEARCH"))).toEqual([
       "RESEARCH GATHERING",
       "RESEARCH DRILL",
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Zombie is
+      // at Fortification, bought right after the root.
+      "RESEARCH FORTIFICATION",
       "RESEARCH HUNTING",
       "RESEARCH FORESTRY",
       "RESEARCH MARKSMANSHIP",
@@ -1571,8 +1576,10 @@ describe("7. the strategic choice", () => {
 
 describe("the defects of the round-6 hand play", () => {
   it("the staged Field Defenses of the breakthrough labs fortify the Guards on them", () => {
-    // (Revision 3 since the ninth unit, 7r55: the player owns Metallurgy.)
-    expect(LAB_BREAKTHROUGH_V7.revision).toBe(3);
+    // (Revision 3 since the ninth unit, 7r55: the player owns Metallurgy;
+    // revision 4 since the Industry reshuffle, 7r56: the attackers own
+    // Fortification, where their defenders are.)
+    expect(LAB_BREAKTHROUGH_V7.revision).toBe(4);
     expect(LAB_BREAKTHROUGH_CAPITAL_V7).toEqual(at(4, 7));
     for (const id of [
       "LAB_BREAKTHROUGH",
@@ -1580,7 +1587,7 @@ describe("the defects of the round-6 hand play", () => {
       "LAB_BREAKTHROUGH_UNDEAD",
     ]) {
       expect(MISSION_REGISTRY_V7.find((item) => item.id === id)?.revision).toBe(
-        3,
+        4,
       );
       const state = breakthroughLabV7(id);
       const player = state.humanPlayerId;

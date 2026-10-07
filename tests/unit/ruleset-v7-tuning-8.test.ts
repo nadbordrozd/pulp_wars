@@ -65,7 +65,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r55`;
+ * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r56`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 15, the Normal AI of a
  * Human, Undead, or Goblin seat). Round 7 was played by hand four times
  * (`r7a` to `r7d`); every position below is one of those games, or the
@@ -383,7 +383,7 @@ function scene(options: SceneV7): GameStateV7 {
 
 describe("tuning 8 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
   });
 });
 
@@ -438,9 +438,10 @@ describe("1. it captures what it reaches", () => {
           "SCOUTING",
           "ROADS",
           "DRILL",
+          "FORTIFICATION",
         ],
-        1: ["GATHERING", "DRILL", "ENGINEERING"],
-        2: ["GATHERING", "FARMING", "DRILL", "ENGINEERING"],
+        1: ["GATHERING", "DRILL", "ENGINEERING", "FORTIFICATION"],
+        2: ["GATHERING", "FARMING", "DRILL", "ENGINEERING", "FORTIFICATION"],
       },
     });
 
@@ -565,6 +566,7 @@ describe("1. it captures what it reaches", () => {
           "CHIVALRY",
           "DRILL",
           "ENGINEERING",
+          "FORTIFICATION",
         ],
         1: [
           "GATHERING",
@@ -575,8 +577,16 @@ describe("1. it captures what it reaches", () => {
           "SCOUTING",
           "ROADS",
           "DRILL",
+          "FORTIFICATION",
         ],
-        2: ["HUNTING", "FORESTRY", "SAWMILLING", "DRILL", "ENGINEERING"],
+        2: [
+          "HUNTING",
+          "FORESTRY",
+          "SAWMILLING",
+          "DRILL",
+          "ENGINEERING",
+          "FORTIFICATION",
+        ],
       },
     });
 
@@ -935,7 +945,9 @@ describe("2. research while at war", () => {
 
   /**
    * An Undead seat with Gathering and Drill (the hand-played `r7d`: three
-   * technologies in twenty-one rounds, never Hunting): its capital can
+   * technologies in twenty-one rounds, never Hunting), and since the
+   * Industry reshuffle (`pulp_wars-w49.21`, 7r56) Fortification, where the
+   * Zombie it fields is now: its capital can
    * train, two of its units stand in the field, and a Human Fighter is
    * three tiles from them.
    */
@@ -950,7 +962,10 @@ describe("2. research while at war", () => {
               { seat: 1, role: "FIGHTER", at: at(3, 7) },
               { seat: 1, role: "FIGHTER", at: at(2, 8) },
             ],
-            { factions: UNDEAD, techs: { 0: techs("GATHERING", "DRILL") } },
+            {
+              factions: UNDEAD,
+              techs: { 0: techs("GATHERING", "DRILL", "FORTIFICATION") },
+            },
           ),
         ),
       ),
@@ -987,7 +1002,9 @@ describe("2. research while at war", () => {
     expect(ARMY_WAR_RESEARCH_ROUNDS_V7).toBe(3);
     expect(ARMY_WAR_RESEARCH_SPARE_TURNS_V7).toBe(1);
     // Toward the Banshee (Marksmanship) the first step is Hunting. Two
-    // technologies owned: the third is due in the round that is twice the
+    // technologies owned as the clock counts them (the root of Industry
+    // does not count since 7r56, when the Zombie went on to
+    // Fortification): the next is due in the round that is twice the
     // clock (three rounds a technology, or the turns this seat's income
     // needs to pay the price and one more).
     const { cost, tech } = economy(undeadAtWar(1, 0));
@@ -1030,7 +1047,10 @@ describe("2. research while at war", () => {
               { seat: 1, role: "FIGHTER", at: at(6, 6) },
               { seat: 1, role: "FIGHTER", at: at(2, 8) },
             ],
-            { factions: UNDEAD, techs: { 0: techs("GATHERING", "DRILL") } },
+            {
+              factions: UNDEAD,
+              techs: { 0: techs("GATHERING", "DRILL", "FORTIFICATION") },
+            },
           ),
         ),
       ),
@@ -1064,10 +1084,13 @@ describe("2. research while at war", () => {
           ],
           {
             techs: {
+              // (The Industry reshuffle, 7r56: and Fortification, the
+              // Guard's technology.)
               0: slots
-                ? techs(...BASIC, "ADMINISTRATION")
+                ? techs(...BASIC, "ADMINISTRATION", "FORTIFICATION")
                 : techs(
                     ...BASIC,
+                    "FORTIFICATION",
                     "SCOUTING",
                     "RAIDING",
                     "CHIVALRY",
@@ -1114,7 +1137,9 @@ describe("2. research while at war", () => {
     // Champion's technology and already owned, so the first three bought
     // are the other three; the Coins left after them are spent as in
     // peace.)
-    const late = ARMY_LATE_RESEARCH_V7.filter((tech) => !BASIC.includes(tech));
+    const late = ARMY_LATE_RESEARCH_V7.filter(
+      (tech) => !BASIC.includes(tech) && tech !== "FORTIFICATION",
+    );
     expect(researchOf(spent.commands).slice(0, late.length)).toEqual(late);
   });
 
@@ -1146,6 +1171,7 @@ describe("2. research while at war", () => {
                   "HUNTING",
                   "MARKSMANSHIP",
                   "DRILL",
+                  "FORTIFICATION",
                   "FORESTRY",
                   "SAWMILLING",
                 ),
@@ -1165,7 +1191,9 @@ describe("2. research while at war", () => {
 
   it("a rich seat researches toward its strong units first and trains the dear ones, not more Fighters", () => {
     expect(ARMY_RICH_INCOME_V7).toBe(15);
-    // Fourteen units against three: rich. Six technologies in round 13:
+    // Fourteen units against three: rich. Six technologies in round 13
+    // (seven with the root of Industry, which the clock does not count
+    // since 7r56, when the Guard went on to Fortification):
     // due on the clock of a rich seat (two rounds a technology), not on
     // the ordinary one (three or more). The Goblin pass, correction
     // (`pulp_wars-w49.12`): the Swordsman is third in the Human order, so
@@ -1293,7 +1321,7 @@ describe("2. research while at war", () => {
   it("r8d round 7: an Undead seat with the enemy at its border buys Marksmanship within four turns, before Engineering, and still trains", () => {
     const start = stalled(
       UNDEAD,
-      techs("GATHERING", "DRILL", "HUNTING"),
+      techs("GATHERING", "DRILL", "FORTIFICATION", "HUNTING"),
       12,
       5,
     );
@@ -1307,7 +1335,10 @@ describe("2. research while at war", () => {
     expect(trained).toBeGreaterThan(0);
   });
 
-  it("an Undead seat on the map of the hand-played game buys a ranged-unit technology by round 14, and keeps training", () => {
+  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): by round 15 (round 14
+  // before). The Zombie costs the seat one technology more (the root, then
+  // Fortification), and Marksmanship comes a round later.
+  it("an Undead seat on the map of the hand-played game buys a ranged-unit technology by round 15, and keeps training", () => {
     // `r7d`: dry land 14 x 14, seed 4, Humans against the Undead Normal
     // AI. There the Undead seat bought Gathering, Drill, and Engineering in
     // twenty-one rounds, never Hunting or Marksmanship, and its capital
@@ -1335,7 +1366,7 @@ describe("2. research while at war", () => {
     const researched: string[] = [];
     let trained = 0;
     let idleTurns = 0;
-    while (state.outcome === null && state.round <= 14) {
+    while (state.outcome === null && state.round <= 15) {
       const actor = state.turnOrder[state.activeSeatIndex];
       if (actor === undefined) throw new Error("no actor");
       let bought = 0;
@@ -1892,7 +1923,10 @@ describe("5. a small seat", () => {
         { seat: 0, role: "FIGHTER", at: at(8, 8) },
         { seat: 1, role: "FIGHTER", at: at(2, 8) },
       ],
-      techs: { 0: techs("GATHERING", "DRILL"), 1: techs(...BASIC) },
+      techs: {
+        0: techs("GATHERING", "DRILL", "FORTIFICATION"),
+        1: techs(...BASIC),
+      },
       coins: 2,
     });
     const state = patchTileV7(
@@ -1932,7 +1966,10 @@ describe("5. a small seat", () => {
           { seat: 1, role: "FIGHTER", at: at(5, 7) },
           { seat: 1, role: "FIGHTER", at: at(2, 8) },
         ],
-        { factions: UNDEAD, techs: { 0: techs("GATHERING", "DRILL") } },
+        {
+          factions: UNDEAD,
+          techs: { 0: techs("GATHERING", "DRILL", "FORTIFICATION") },
+        },
       ),
     );
 
@@ -1967,7 +2004,10 @@ describe("5. a small seat", () => {
           { seat: 1, role: "MARKSMAN", at: at(4, 7) },
           { seat: 1, role: "FIGHTER", at: at(2, 8) },
         ],
-        { factions: UNDEAD, techs: { 0: techs("GATHERING", "DRILL") } },
+        {
+          factions: UNDEAD,
+          techs: { 0: techs("GATHERING", "DRILL", "FORTIFICATION") },
+        },
       ),
     );
     const zombie = unitAtV7(state, at(5, 5)).id;
@@ -2001,7 +2041,7 @@ describe("5. a small seat", () => {
           ],
           {
             factions: UNDEAD,
-            techs: { 0: techs("GATHERING", "DRILL") },
+            techs: { 0: techs("GATHERING", "DRILL", "FORTIFICATION") },
             coins,
           },
         ),
@@ -2014,18 +2054,26 @@ describe("5. a small seat", () => {
     const poor = policyTurn(threatened(2));
     expect(kindsOf(poor.commands)).not.toContain("TRAIN");
     expect(unitAtV7(poor.state, at(8, 8)).role).toBe("GUARD");
-    // With 3 Coins it steps aside and a second Zombie takes the center.
-    const paid = policyTurn(threatened(3));
-    expect(paid.commands).toContainEqual(
-      expect.objectContaining({ kind: "TRAIN", role: "GUARD" }),
-    );
-    expect(unitAtV7(paid.state, at(8, 8)).role).toBe("GUARD");
-    expect(
-      paid.state.units.filter(
-        (unit) =>
-          unit.ownerId === seatIdV7(paid.state, 0) && unit.role === "GUARD",
-      ),
-    ).toHaveLength(2);
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Zombie's
+    // technology is Fortification, so a seat that can train one can build
+    // a Field Defense, and with 3 Coins it does that under the Zombie on
+    // its threatened center (the older rule of every seat with
+    // Fortification) instead of training.
+    const fortified = policyTurn(threatened(3));
+    expect(kindsOf(fortified.commands)).toEqual([
+      "BUILD_FIELD_DEFENSE",
+      "END_TURN",
+    ]);
+    expect(unitAtV7(fortified.state, at(8, 8)).role).toBe("GUARD");
+    // A Zombie on a Field Defense is the better garrison and holds the
+    // center: it does not step aside for a second Zombie, whatever the
+    // Coins. (Until 7r55 a seat with the root alone trained Zombies: with
+    // 3 Coins this Zombie stepped aside and a second one took the center.)
+    for (const coins of [3, 6]) {
+      const held = policyTurn(fieldDefenseV7(threatened(coins), at(8, 8)));
+      expect(kindsOf(held.commands), String(coins)).not.toContain("TRAIN");
+      expect(unitAtV7(held.state, at(8, 8)).role).toBe("GUARD");
+    }
   });
 });
 
@@ -2425,7 +2473,10 @@ describe("correction: small fixes", () => {
               { seat: 1, role: "KNIGHT", at: at(7, 7) },
               { seat: 1, role: "GUARD", at: at(2, 8) },
             ],
-            { factions: UNDEAD, techs: { 0: techs("GATHERING", "DRILL") } },
+            {
+              factions: UNDEAD,
+              techs: { 0: techs("GATHERING", "DRILL", "FORTIFICATION") },
+            },
           ),
         ),
       ),

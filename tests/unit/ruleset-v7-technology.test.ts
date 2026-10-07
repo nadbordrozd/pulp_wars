@@ -104,7 +104,8 @@ describe("ruleset-7 technology", () => {
       ["RAIDER", 4, 12, 4, 2, 2, 1, 1, "SCOUTING", true],
       // Tuning 1 (7r46): Marksman 4 Coins, Catapult Attack 3, Knight 13 HP.
       ["MARKSMAN", 4, 12, 4, 2, 1, 2, 1, "MARKSMANSHIP", true],
-      ["GUARD", 3, 17, 3, 6, 1, 1, 1, "DRILL", false],
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): at Fortification.
+      ["GUARD", 3, 17, 3, 6, 1, 1, 1, "FORTIFICATION", false],
       ["CAPTAIN", 5, 10, 2, 2, 1, 1, 1, "ADMINISTRATION", true],
       ["CATAPULT", 8, 10, 6, 1, 1, 3, 2, "SAWMILLING", false],
       // Tuning 3 (`pulp_wars-w49.3`): Knight Attack 4.

@@ -121,7 +121,7 @@ import {
   walledV7,
 } from "../fixtures/v7-revision20";
 
-// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r55`,
+// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r56`,
 // docs/product/RULESET_7_TUNING_DINOSAUR.md): Scouts for a Dinosaur city (a
 // free Raptor); a Triceratops's run-up counts one tile, two with
 // Wallbreaker; the Caveman's Pack Hunt; a Dinosaur Market hires a dinosaur
@@ -206,15 +206,15 @@ describe("the Dinosaur pass: identity", () => {
   // The economy rejig (tests/unit/ruleset-v7-economy-rejig.test.ts) took
   // 7r54, so 7r53 is the last prior identity.
   it("was 7r53 after 7r52, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
     // The ninth unit (`pulp_wars-w49.17`) took 7r55, so 7r54 is prior too.
-    expect(PRIOR_RULESET_7_IDS.slice(-3)).toEqual([
+    expect(PRIOR_RULESET_7_IDS.slice(-4, -1)).toEqual([
       "pulp-wars-poc-7r52",
       "pulp-wars-poc-7r53",
       "pulp-wars-poc-7r54",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -1)).toEqual([
       "pulpWars.save.v7r52.current",
       "pulpWars.save.v7r53.current",
       "pulpWars.save.v7r54.current",
@@ -1024,7 +1024,7 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     // The field's land has nothing to build on, so the order alone decides.
     const order: TechnologyIdV7[] = [];
     let owned: readonly TechnologyIdV7[] = techsOf("GATHERING");
-    for (let step = 0; step < 12; step += 1) {
+    for (let step = 0; step < 13; step += 1) {
       const next = research(owned);
       if (next === null) break;
       order.push(next.tech);
@@ -1033,8 +1033,11 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     // The ninth unit (7r55): the Triceratops is at Metallurgy, behind
     // Drill and Engineering, and the Stegosaurus at Sawmilling follows the
     // Spitter.
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Ankylosaurus
+    // is at Nesting (Fortification), one technology behind the root.
     expect(order).toEqual([
       "DRILL",
+      "FORTIFICATION",
       "ENGINEERING",
       "METALLURGY",
       "SCOUTING",
@@ -1050,19 +1053,31 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     ]);
     expect(research(techsOf("GATHERING"))).toMatchObject({
       tech: "DRILL",
+      unlocks: null,
+    });
+    expect(research(techsOf("GATHERING", "DRILL"))).toMatchObject({
+      tech: "FORTIFICATION",
       unlocks: "GUARD",
     });
     expect(
-      research(techsOf("GATHERING", "DRILL", "ENGINEERING")),
+      research(techsOf("GATHERING", "DRILL", "FORTIFICATION", "ENGINEERING")),
     ).toMatchObject({ tech: "METALLURGY", unlocks: "SWORDSMAN" });
   });
 
   it("researches Nesting once it fields an Ankylosaurus, and Wallbreaker with two Triceratops", () => {
+    // The Industry reshuffle (7r56): Nesting is the Ankylosaurus's own
+    // technology, so the order reaches it before one is fielded; a seat
+    // that fields one without it (a unit it was given) researches it too.
     const early = techsOf("GATHERING", "DRILL");
-    expect(research(early)).toMatchObject({ tech: "ENGINEERING" });
-    // An Egg is not a fielded unit.
+    expect(research(early)).toMatchObject({
+      tech: "FORTIFICATION",
+      unlocks: "GUARD",
+    });
     expect(research(early, [own("GUARD", 7, 7)])).toMatchObject({
       tech: "FORTIFICATION",
+    });
+    expect(research(techsOf(...early, "FORTIFICATION"))).toMatchObject({
+      tech: "ENGINEERING",
     });
     const late = techsOf(
       "GATHERING",
@@ -1103,9 +1118,10 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       own("GUARD", 7, 9),
     ];
     const early = techsOf("GATHERING", "DRILL", "HUNTING");
-    // Uncrowded (one unit), the next technology is the order's.
+    // Uncrowded (one unit), the next technology is the order's (Nesting,
+    // for the Ankylosaurus, since the Industry reshuffle).
     expect(research(early)).toMatchObject({
-      tech: "ENGINEERING",
+      tech: "FORTIFICATION",
       growth: false,
     });
     expect(research(early, crowd.slice(1))).toMatchObject({
@@ -1225,7 +1241,7 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
 
   it("buys one growth technology after the Ankylosaurus's and before the Triceratops's (economy first)", () => {
     const base = asDinosaur([own("FIGHTER", 8, 7), foe("FIGHTER", 2, 2)], {
-      techs: { 0: techsOf("GATHERING", "DRILL"), 1: [] },
+      techs: { 0: techsOf("GATHERING", "DRILL", "FORTIFICATION"), 1: [] },
       coins: 40,
     });
     const state = patchTileV7(base, at(9, 9), { resource: "FERTILE_GROUND" });
@@ -1628,7 +1644,9 @@ describe("the Dinosaur pass: LAB_DINOSAUR_MID", () => {
     // Shaman next to it and able to hatch it on the first turn.
     const eggUnit = own0.find((unit) => unit.form === "EGG");
     if (eggUnit === undefined) throw new Error("no Egg");
-    expect(eggUnit).toMatchObject({ role: "KNIGHT", hp: 6, maxHp: 6 });
+    // (Revision 3 of the lab, 7r56: the seat owns Nesting, so the Egg has
+    // 4 more HP.)
+    expect(eggUnit).toMatchObject({ role: "KNIGHT", hp: 10, maxHp: 10 });
     expect(state.eggs).toEqual([
       { unitId: eggUnit.id, turnsRemaining: 2, laidThisTurn: false },
     ]);
@@ -1644,15 +1662,19 @@ describe("the Dinosaur pass: LAB_DINOSAUR_MID", () => {
     };
     expect(cities(0)).toEqual([4, 3, 3, 2, 2]);
     expect(cities(1)).toEqual([4, 3, 3, 2, 2]);
-    // 35 Coins in hand on the first turn; twelve technologies (revision 2
-    // of the lab, 7r55: Engineering and Metallurgy, for the Triceratops),
-    // without Nesting, Wallbreaker, and Farming.
+    // 35 Coins in hand on the first turn; thirteen technologies (revision 2
+    // of the lab, 7r55: Engineering and Metallurgy, for the Triceratops;
+    // revision 3, 7r56, the Industry reshuffle: Nesting, for the
+    // Ankylosaurus), without Wallbreaker and Farming.
     expect(view.viewer.coins).toBe(35);
-    expect(view.viewer.researchedTechs).toHaveLength(12);
-    for (const tech of ["FORTIFICATION", "EXPLOSIVES", "FARMING"] as const)
+    expect(view.viewer.researchedTechs).toHaveLength(13);
+    expect(view.viewer.researchedTechs).toContain("FORTIFICATION");
+    for (const tech of ["EXPLOSIVES", "FARMING"] as const)
       expect(view.viewer.researchedTechs).not.toContain(tech);
-    // Three free slots: two in the capital (a Triceratops or a T-Rex Egg
-    // fits there only) and one in the northern level-3 city.
+    // Eight free slots since revision 3 (Nesting is one more in every
+    // city): three in the capital, two in the northern level-3 city (a
+    // Triceratops or a T-Rex Egg fits in those two), one in each other
+    // city. (Three before: two in the capital, one in the northern city.)
     const laid = (role: UnitRoleIdV7): number =>
       new Set(
         offered.flatMap((command) =>
@@ -1665,7 +1687,7 @@ describe("the Dinosaur pass: LAB_DINOSAUR_MID", () => {
       (["RAIDER", "MARKSMAN", "GUARD", "SWORDSMAN", "KNIGHT"] as const).map(
         laid,
       ),
-    ).toEqual([2, 2, 2, 1, 1]);
+    ).toEqual([5, 5, 5, 2, 2]);
     expect(
       [
         ...new Set(
@@ -1680,7 +1702,7 @@ describe("the Dinosaur pass: LAB_DINOSAUR_MID", () => {
       offered.flatMap((command) =>
         command.kind === "RESEARCH" ? [command.tech] : [],
       ),
-    ).toEqual(expect.arrayContaining(["FARMING", "PLANNING", "FORTIFICATION"]));
+    ).toEqual(expect.arrayContaining(["FARMING", "PLANNING", "EXPLOSIVES"]));
   });
 
   it("builds a mission unit's kills and an Egg only where the rules allow them", () => {
@@ -2033,7 +2055,10 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
     // Ankylosaurus (it was, on a threatened center, turn after turn).
     const state = asDinosaur(
       [own("FIGHTER", 8, 8), own("GUARD", 7, 7), foe("FIGHTER", 6, 8)],
-      { coins: 30, techs: { 0: techsOf("GATHERING", "DRILL"), 1: [] } },
+      {
+        coins: 30,
+        techs: { 0: techsOf("GATHERING", "DRILL", "FORTIFICATION"), 1: [] },
+      },
     );
     expect(
       produced(state).filter(
@@ -2049,7 +2074,10 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
         own("GUARD", 7, 7),
         foe("FIGHTER", 6, 8),
       ],
-      { coins: 30, techs: { 0: techsOf("GATHERING", "DRILL"), 1: [] } },
+      {
+        coins: 30,
+        techs: { 0: techsOf("GATHERING", "DRILL", "FORTIFICATION"), 1: [] },
+      },
     );
     const screened: GameStateV7 = {
       ...three,
@@ -2306,7 +2334,10 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
     // laid all the same, nine Ankylosauruses of sixteen units.)
     const state = asDinosaur(
       [own("FIGHTER", 8, 8), own("GUARD", 7, 7), foe("FIGHTER", 2, 2)],
-      { coins: 30, techs: { 0: techsOf("GATHERING", "DRILL"), 1: [] } },
+      {
+        coins: 30,
+        techs: { 0: techsOf("GATHERING", "DRILL", "FORTIFICATION"), 1: [] },
+      },
     );
     const homeless: GameStateV7 = {
       ...state,
@@ -2335,7 +2366,7 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
     // Ankylosaurus Egg (two turns) is not laid.
     const open = asDinosaur([own("FIGHTER", 10, 4), foe("RAIDER", 4, 8)], {
       coins: 30,
-      techs: { 0: techsOf("GATHERING", "DRILL"), 1: [] },
+      techs: { 0: techsOf("GATHERING", "DRILL", "FORTIFICATION"), 1: [] },
     });
     expect(
       produced(open).filter((command) => command.kind === "LAY_EGG"),
@@ -2343,13 +2374,13 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
     // A Fighter there reaches three tiles in two turns: the Egg is laid.
     const slow = asDinosaur([own("FIGHTER", 10, 4), foe("FIGHTER", 4, 8)], {
       coins: 30,
-      techs: { 0: techsOf("GATHERING", "DRILL"), 1: [] },
+      techs: { 0: techsOf("GATHERING", "DRILL", "FORTIFICATION"), 1: [] },
     });
     expect(produced(slow)).toMatchObject([{ kind: "LAY_EGG", role: "GUARD" }]);
     // With a unit of its own on the center the Egg is guarded and laid.
     const guarded = asDinosaur([own("FIGHTER", 8, 8), foe("RAIDER", 4, 8)], {
       coins: 30,
-      techs: { 0: techsOf("GATHERING", "DRILL"), 1: [] },
+      techs: { 0: techsOf("GATHERING", "DRILL", "FORTIFICATION"), 1: [] },
     });
     expect(produced(guarded)).toMatchObject([
       { kind: "LAY_EGG", role: "GUARD" },

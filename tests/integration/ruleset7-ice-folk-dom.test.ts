@@ -453,7 +453,11 @@ describe("Ice Folk Help and technology", () => {
       requiredButton("tech-fortification").querySelector(".v7-tech-name")
         ?.textContent,
     ).toBe("Deep Winter");
-    expect(unlocks("fortification")).toEqual([DEEP_WINTER_UNLOCK_TEXT_V7]);
+    // (The Industry reshuffle, 7r56: the defender is trained with it.)
+    expect(unlocks("fortification")).toEqual([
+      "Train Musk Ox",
+      DEEP_WINTER_UNLOCK_TEXT_V7,
+    ]);
     expect(
       requiredButton("tech-explosives").querySelector(".v7-tech-name")
         ?.textContent,
@@ -464,7 +468,9 @@ describe("Ice Folk Help and technology", () => {
     expect(unlocks("administration")).toContain(
       iceFolkRoleUnlockTextV7("CAPTAIN"),
     );
-    expect(unlocks("drill")).toContain(iceFolkRoleUnlockTextV7("GUARD"));
+    // (The Industry reshuffle, 7r56: the root gives the Workshop.)
+    expect(unlocks("drill")).toContain("Build workshop");
+    expect(unlocks("drill")).not.toContain(iceFolkRoleUnlockTextV7("GUARD"));
     app.destroy();
     const witch = recruitmentRolePresentationV7("CAPTAIN", "ICE_FOLK");
     expect(witch.label).toBe(label("CAPTAIN"));

@@ -1082,7 +1082,11 @@ describe("Revision 19 growth, abilities and labels", () => {
         (item) => item.textContent,
       );
     };
-    expect(unlocks("fortification")).toEqual([nestingUnlockTextV7()]);
+    // (The Industry reshuffle, 7r56: the Ankylosaurus is laid with it.)
+    expect(unlocks("fortification")).toEqual([
+      "Ankylosaurus Egg",
+      nestingUnlockTextV7(),
+    ]);
     // Revision 20: Nesting also gives every city a slot.
     expect(nestingUnlockTextV7()).toBe(
       `Eggs have +${nestingEggHpBonusV7()} HP; +1 unit slot in every city`,

@@ -82,11 +82,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
-    expect(PRIOR_RULESET_7_IDS.at(-39)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(54);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-39)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
+    expect(PRIOR_RULESET_7_IDS.at(-40)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(55);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-40)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -372,7 +372,7 @@ describe("ruleset-7 Goblin roster", () => {
     GUARD: [
       "Orc Brute",
       "DEFENDER",
-      "DRILL",
+      "FORTIFICATION",
       3,
       15,
       4,
@@ -882,7 +882,11 @@ describe("ruleset-7 Goblin technology", () => {
     expect(text(0, "MARKSMANSHIP")).toEqual(["Train Bomb Chucker"]);
     expect(text(0, "SCOUTING")).toContain("Train Wolf Rider");
     expect(text(0, "CHIVALRY")).toContain("Train Scrap Buggy");
-    expect(text(0, "DRILL")).toContain("Train Orc Brute");
+    // The Industry reshuffle (7r56): the Brute is at Fortification and the
+    // root gives the Workshop.
+    expect(text(0, "FORTIFICATION")).toContain("Train Orc Brute");
+    expect(text(0, "DRILL")).not.toContain("Train Orc Brute");
+    expect(text(0, "DRILL")).toContain("Build workshop");
   });
 });
 

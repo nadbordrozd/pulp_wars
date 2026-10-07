@@ -5,7 +5,6 @@ import {
   DEFENCE_TUNNEL_PRIORITY_V7,
   DWARF_EARLY_RESEARCH_PRIORITY_V7,
   DWARF_FIRST_OF_ROLE_BIAS_V7,
-  DWARF_RESEARCH_PRIORITY_V7,
   ERUPTION_ESCAPE_PRIORITY_V7,
   GUNNER_CHIP_OFFSET_V7,
   KNOCKBACK_CENTER_VALUE_V7,
@@ -424,12 +423,18 @@ describe("Dwarf Normal AI: production and research", () => {
         techs: { 0: ["DRILL"], 1: TECHNOLOGY_IDS_V7 },
       }),
     );
-    expect(
-      dwarfResearchV7(drilled, { ...facts, cityThreatened: true }),
-    ).toMatchObject({
-      tech: "FORTIFICATION",
-      priority: DWARF_RESEARCH_PRIORITY_V7,
-    });
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Steam Mole is
+    // at Dig In, so that is the second step of the early plan, threatened
+    // or not (it was researched only under threat, at the ordinary
+    // priority, when the Mole came with the root).
+    for (const cityThreatened of [false, true])
+      expect(
+        dwarfResearchV7(drilled, { ...facts, cityThreatened }),
+        String(cityThreatened),
+      ).toMatchObject({
+        tech: "FORTIFICATION",
+        priority: DWARF_EARLY_RESEARCH_PRIORITY_V7,
+      });
   });
 });
 

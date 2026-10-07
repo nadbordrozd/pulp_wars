@@ -118,7 +118,7 @@ const ROSTER = [
   [
     "Marshmallow",
     "GUARD",
-    "DRILL",
+    "FORTIFICATION",
     4,
     18,
     3,
@@ -653,7 +653,11 @@ describe("Candy technology (section 4)", () => {
           human.unlocks.filter((unlock) => unlock.kind !== "OVERRUN"),
         );
       else if (human.id === "FORTIFICATION")
-        expect(candy.unlocks).toEqual([{ kind: "HOME_SWEET_HOME" }]);
+        expect(candy.unlocks).toEqual([
+          { kind: "HOME_SWEET_HOME" },
+          // The Industry reshuffle (7r56): the defender is here.
+          { kind: "UNIT_ROLE", role: "GUARD" },
+        ]);
       else if (human.id === "EXPLOSIVES")
         expect(candy.unlocks).toEqual([
           ...human.unlocks,
@@ -725,7 +729,7 @@ describe("Candy technology (section 4)", () => {
       ).map((id) => effectiveRoleRuleV7(id, "CANDY").label);
     expect(role("SCOUTING")).toEqual(["Donut Racer"]);
     expect(role("MARKSMANSHIP")).toEqual(["Gumball Gunner"]);
-    expect(role("DRILL")).toEqual(["Marshmallow"]);
+    expect(role("FORTIFICATION")).toEqual(["Marshmallow"]);
     expect(role("ADMINISTRATION")).toEqual(["Confectioner"]);
     expect(role("SAWMILLING")).toEqual(["Pie Launcher"]);
     expect(role("CHIVALRY")).toEqual(["Chocolate Bunny"]);

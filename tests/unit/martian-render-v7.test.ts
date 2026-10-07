@@ -227,7 +227,13 @@ describe("Martian art wiring (MARTIAN.md wiring steps 1-4, 6)", () => {
     expect(portraitSubjectV7("CAPTAIN", "MARTIAN")).toBe(
       "PORTRAIT:MARTIAN:CAPTAIN",
     );
-    expect(technologySubjectV7("DRILL", "MARTIAN")).toBe("UNIT:MARTIAN:GUARD");
+    // (The root's card is the Workshop since the Industry reshuffle, 7r56.)
+    expect(technologySubjectV7("DRILL", "MARTIAN")).toBe(
+      "IMPROVEMENT:WORKSHOP",
+    );
+    expect(technologySubjectV7("CHIVALRY", "MARTIAN")).toBe(
+      "UNIT:MARTIAN:KNIGHT",
+    );
     expect(technologySubjectV7("FORTIFICATION", "MARTIAN")).toBe(
       "ICON:ACTION:FORCE_FIELD",
     );

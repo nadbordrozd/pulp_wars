@@ -20,7 +20,11 @@ import type { PlayerViewV7 } from "../engine/v7/view";
  * - HUNTING = 4 per visible Game + floor(Forest / 3).
  * - DRILL = 2 per Mountain (Ore is masked before Drill) + 3 per visible
  *   hostile unit within Chebyshev 4 + 2 per visible hostile city within
- *   Chebyshev 5.
+ *   Chebyshev 5. (The Industry reshuffle, `pulp_wars-w49.21`, 7r56: the
+ *   root gives the Workshop and no unit; the defender is one technology
+ *   behind it, at Fortification. The formula is unchanged: a threatened
+ *   seat that opens with the root has the first of the two steps to its
+ *   defender for nothing.)
  * - SHORECRAFT (only when offered, so never on Dry Land, and only when the
  *   capital's own territory contains Shallow Water, i.e. a Port can be built)
  *   = 4 per visible Fish + floor(Shallow Water / 2).

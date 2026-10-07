@@ -594,9 +594,10 @@ export function martianRoleUnlockTextV7(role: UnitRoleIdV7): string {
     ...(abilities.includes("HEAT_RAY") ? ["heat ray"] : []),
     ...(abilities.includes("PIERCE") ? ["Pierce"] : []),
     // The Martian pass: the Force Field is the Force Fields technology's.
-    ...(abilities.includes("FORCE_FIELD")
-      ? ["Force Field with Force Fields"]
-      : []),
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Shield
+    // Projector is trained with Force Fields itself, so the note is the
+    // field alone ("Force Field with Force Fields" at the root before).
+    ...(abilities.includes("FORCE_FIELD") ? ["Force Field"] : []),
     ...(abilities.includes("BEAM_DOWN") ? [BEAM_DOWN_LABEL_V7] : []),
     ...(abilities.includes("TRACTOR_BEAM") ? [TRACTOR_BEAM_LABEL_V7] : []),
   ];

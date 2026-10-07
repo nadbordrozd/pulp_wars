@@ -60,7 +60,9 @@ describe("ruleset-7 exact public query indexing", () => {
     const commands = queryPlayerCommandsV7(measured.view);
 
     expect(canonicalHash(commands)).toBe(
-      "5502396344ada787c473598f15d01569b7daa3a89e9b738b9ff630bb6ce4aa61",
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+      // 550239…aa61).
+      "2aa89493ab793892fd9aa3f864f0de207b517f4dc90856fe952e8f12fbe49307",
     );
     const reads = measured.reads();
     expect(reads.tileReads).toBeLessThan(6_000);
@@ -87,13 +89,16 @@ describe("ruleset-7 exact public query indexing", () => {
     expect(planned.operations).toBe(
       // Tuning 5 (`pulp_wars-w49.4`): the Swordsman offers (was 66 233).
       // The economy rejig (`pulp_wars-w49.16`): the research offers follow
-      // the price per city (was 66 236).
-      66_238 + publicPlanningFactScanOperations(measured.view),
+      // the price per city (was 66 236). The Industry reshuffle
+      // (`pulp_wars-w49.21`): three Guard offers fewer (was 66 238).
+      66_235 + publicPlanningFactScanOperations(measured.view),
     );
     expect(canonicalHash(planned.result)).toBe(
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // 031d3b…d3bb).
-      "2d542145285eed46f202ced276cfd5807bde95bb7d06ea0a40289cf6cf043b8e",
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+      // 2d5421…3b8e).
+      "d5416ea26b18c2c9a18637ea8b331c082ea7707de29c9028f56a382045fa9615",
     );
   });
 
@@ -136,7 +141,9 @@ describe("ruleset-7 exact public query indexing", () => {
       // 4 099 since tuning 5 (two cities offer the Swordsman).
       // 4 105 since tuning 6 (six RESEARCH commands are offered again).
       // 4 100 since the economy rejig (`pulp_wars-w49.16`: one is).
-      4_100 + publicPlanningFactScanOperations(rightView),
+      // 4 098 since the Industry reshuffle (`pulp_wars-w49.21`: two cities
+      // no longer offer the Guard).
+      4_098 + publicPlanningFactScanOperations(rightView),
     );
     expect(canonicalHash(leftResult)).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
@@ -144,7 +151,9 @@ describe("ruleset-7 exact public query indexing", () => {
       // again and six RESEARCH commands are offered (was fadb84…4dc8).
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // 2df0a7…6a92).
-      "6a3551501e56511dd1a6db844a98471391ecba367aa72c484b5dd3c5d5553ef5",
+      // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+      // 6a3551…3ef5).
+      "41c906a2ed416a56fef3c3c9662382a55f6ba62176af396eef4bcf510d9e446d",
     );
     expect(rightResult).toEqual(leftResult);
   });

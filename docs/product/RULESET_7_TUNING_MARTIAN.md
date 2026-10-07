@@ -58,6 +58,8 @@ no match), and two diagnostic matches read for what the Martian AI
 researches, buys, and does. No AI-against-AI result was counted as
 evidence of balance.
 
+**Superseded in part at `pulp-wars-poc-7r56`** ([the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md), `pulp_wars-w49.21`): The Shield Projector is unlocked by Force Fields, one technology behind the root, which is shown as Crafting and unlocks the Workshop; Engineering no longer does. The games recorded here were played with the Projector at the root and Force Fields as its later upgrade. Nothing else here changed, and no number did.
+
 ## 1. The changes
 
 | #   | Change            | Before (`7r51`)                                                                                                    | Now (`7r52`)                                                                                                                                                                                                                         | Other factions                                                                              |

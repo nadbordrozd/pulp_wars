@@ -58,6 +58,8 @@ played by the reducer (`scripts/dinosaur-tuning-analysis-v7.ts` and
 diagnostic matches read for what the Dinosaur AI researches, lays, and
 does. No AI-against-AI result was counted as evidence of balance.
 
+**Superseded in part at `pulp-wars-poc-7r56`** ([the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md), `pulp_wars-w49.21`): The Ankylosaurus Egg is unlocked by Nesting, one technology behind the root, which is shown as Crafting and unlocks the Workshop; Engineering no longer does. The games recorded here were played with the Ankylosaurus at the root. Nothing else here changed, and no number did.
+
 ## 1. The changes
 
 | #   | Change             | Before (`7r52`)                                                                                                                | Now (`7r53`)                                                                                                                                                                                                       | Other factions                                                                      |

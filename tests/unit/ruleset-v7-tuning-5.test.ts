@@ -66,7 +66,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 5 (`pulp_wars-w49.4`, identity `pulp-wars-poc-7r55`;
+ * Tuning 5 (`pulp_wars-w49.4`, identity `pulp-wars-poc-7r56`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 12): the Normal AI's army
  * play, the Human Guard open to ranged attacks, the Swordsman, the removal
  * of Drill, the Blast Mountain's setter, the Land Grant's price, and the
@@ -163,13 +163,13 @@ describe("tuning 5 identity", () => {
   // took 7r49 and the Goblin pass 7r50, so 7r48 is the prior identity
   // before the last.
   it("was 7r48 after 7r47, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
-    expect(PRIOR_RULESET_7_IDS.slice(-8, -6)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+    expect(PRIOR_RULESET_7_IDS.slice(-9, -7)).toEqual([
       "pulp-wars-poc-7r47",
       "pulp-wars-poc-7r48",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-8, -6)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-9, -7)).toEqual([
       "pulpWars.save.v7r47.current",
       "pulpWars.save.v7r48.current",
     ]);
@@ -703,7 +703,7 @@ describe("Normal AI army play: units before research and buildings", () => {
         ],
         {
           factions: [faction, "ORIGINAL"],
-          techs: { 0: ["HUNTING", "DRILL"] },
+          techs: { 0: ["HUNTING", "DRILL", "FORTIFICATION"] },
           coins: 14,
         },
       );
@@ -739,19 +739,15 @@ describe("Normal AI army play: units before research and buildings", () => {
       expect(
         turn.commands.find((command) => command.kind === "RESEARCH"),
         faction,
-        // The Martian pass's correction (`pulp_wars-w49.14`): a Martian
-        // seat that fields its Projector researches Force Fields next.
         // The Dinosaur pass: a Dinosaur seat with the Ankylosaurus's
         // technology goes on toward the Triceratops (Engineering, the step
         // to Metallurgy, since the ninth unit, 7r55; Forestry before).
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the seat owns
+        // Fortification, its defender's technology (Force Fields for a
+        // Martian seat, which researched it here as its next step before).
       ).toEqual({
         kind: "RESEARCH",
-        tech:
-          faction === "MARTIAN"
-            ? "FORTIFICATION"
-            : faction === "DINOSAUR"
-              ? "ENGINEERING"
-              : "MARKSMANSHIP",
+        tech: faction === "DINOSAUR" ? "ENGINEERING" : "MARKSMANSHIP",
       });
     }
   });
@@ -764,7 +760,10 @@ describe("Normal AI army play: units before research and buildings", () => {
         { seat: 0, role: "GUARD", at: at(7, 7) },
         { seat: 1, role: "FIGHTER", at: at(2, 8) },
       ],
-      { techs: { 0: ["HUNTING", "MARKSMANSHIP", "DRILL"] }, coins: 30 },
+      {
+        techs: { 0: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"] },
+        coins: 30,
+      },
     );
     const captured = applyOkV7(base, seatIdV7(base, 0), {
       kind: "CAPTURE",
@@ -921,7 +920,7 @@ describe("Normal AI army play: the garrison and the siege units", () => {
           { seat: 1, ...threat },
           { seat: 1, role: "FIGHTER", at: at(2, 8) },
         ],
-        { techs: { 0: ["HUNTING", "DRILL"] }, coins: 20 },
+        { techs: { 0: ["HUNTING", "DRILL", "FORTIFICATION"] }, coins: 20 },
       );
       const owner = unitAtV7(state, at(8, 8)).ownerId;
       const turn = policyTurn(state);
@@ -943,7 +942,7 @@ describe("Normal AI army play: the garrison and the siege units", () => {
         { seat: 1, role: "KNIGHT", at: at(5, 8) },
         { seat: 1, role: "FIGHTER", at: at(2, 8) },
       ],
-      { techs: { 0: ["HUNTING", "DRILL"] }, coins: 0 },
+      { techs: { 0: ["HUNTING", "DRILL", "FORTIFICATION"] }, coins: 0 },
     );
     const poorTurn = policyTurn(poor);
     expect(kindsOf(poorTurn.commands)).not.toContain("MOVE");
@@ -954,7 +953,7 @@ describe("Normal AI army play: the garrison and the siege units", () => {
         { seat: 0, role: "GUARD", at: at(8, 8) },
         { seat: 1, role: "FIGHTER", at: at(1, 8) },
       ],
-      { techs: { 0: ["HUNTING", "DRILL"] }, coins: 0 },
+      { techs: { 0: ["HUNTING", "DRILL", "FORTIFICATION"] }, coins: 0 },
     );
     expect(kindsOf(policyTurn(quiet).commands)).toContain("MOVE");
   });

@@ -139,13 +139,13 @@ describe("the Goblin pass: identity", () => {
   // pass 7r53 (tests/unit/ruleset-v7-dinosaur-pass.test.ts), and the
   // economy rejig 7r54, so 7r50 is a prior identity.
   it("was 7r50 after 7r49, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-6, -4)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-7, -5)).toEqual([
       "pulp-wars-poc-7r49",
       "pulp-wars-poc-7r50",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -4)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-7, -5)).toEqual([
       "pulpWars.save.v7r49.current",
       "pulpWars.save.v7r50.current",
     ]);
@@ -1129,9 +1129,14 @@ describe("the Goblin pass, correction: the Normal AI", () => {
     expect(
       state.players.find((player) => player.id === actor)?.researchedTechs,
     ).toHaveLength(5);
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the recorded seat
+    // owns the root and not Fortification, where the Guard (the second unit
+    // of the Human order) is now; it researches that (Engineering, the
+    // first step to the Champion, before 7r56). What the test is for is
+    // that the seat buys a technology of its order here.
     expect(policyTurn(state).commands).toContainEqual({
       kind: "RESEARCH",
-      tech: "ENGINEERING",
+      tech: "FORTIFICATION",
     });
   });
 

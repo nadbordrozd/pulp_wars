@@ -121,9 +121,9 @@ call a Zombie); the unit lists give the faction's own name.
 - **Technologies.** Commands, ids, and this document use the technology
   ID (`r.DRILL`, `DRILL`). Wherever the name the player sees differs from
   the ID, `tech`, `options`, `view`, the log, and `debrief` print the ID
-  and then the name in quotes: `DRILL "Garrison"`, `METALLURGY "Armoury"`,
+  and then the name in quotes: `DRILL "Crafting"`, `METALLURGY "Armoury"`,
   `SAWMILLING "Liches"` for an Undead seat. Eight shared names changed
-  (Garrison, Leadership, Land Grants, Pathfinding, Armoury, Sailing,
+  (Crafting, which was Garrison at `7r55`, Leadership, Land Grants, Pathfinding, Armoury, Sailing,
   Shipbuilding, Boarding) and a faction names several nodes after its own
   building or unit.
 - **The heavy line unit** is the role `SWORDSMAN` for every faction and
@@ -160,6 +160,34 @@ GRAVE of S1 (a Wight returns here with 7 HP at the start of S1's turn)`,
   player's 63 in the breakthrough labs (the Goblin and Undead attackers
   are 1.87 times that, not twice), and 80 Coins for the Human side's 77 in
   the middle-game labs.
+
+**The Industry reshuffle (`pulp-wars-poc-7r56`,
+[its record](../product/RULESET_7_INDUSTRY_RESHUFFLE.md)).**
+
+- **The tree.** `tech` lists the Workshop (`cmd BUILD_WORKSHOP`) at the
+  root, `DRILL "Crafting"`, with Reveal Ore and the Spoils, and no unit
+  there; the defender of your faction (the `GUARD` role: Guard, Zombie, Orc
+  Brute, Ankylosaurus Egg, Shield Projector, Musk Ox, Steam Mole,
+  Marshmallow) is listed at `FORTIFICATION` (printed with its faction
+  name, `FORTIFICATION "Nesting"`, `"Force Fields"`, `"Deep Winter"`,
+  `"Dig In"`, `"Home Sweet Home"`). `ENGINEERING` lists Mountains, the
+  Mine, and Redevelop. A city's train line offers the defender only with
+  Fortification (`r.DRILL` and then `r.FORTIFICATION`: 5 and 7 Coins with
+  one city, the first technology of a match free).
+- **The Workshop** is offered on a tile of your land next to one of your
+  Farms, Lumber Camps, or Mines once you own the root (`t.<x>,<y>.
+build_workshop`, 4 Coins); on a Mountain it still needs Engineering.
+- **Labs.** A seat that fields its defender owns Fortification. In the
+  four labs in which you play another faction both seats own it
+  (thirteen technologies for you, twelve for the Humans; revision 3), so:
+  in `LAB_MARTIAN_MID` you own Force Fields from the first turn (units
+  next to a Shield Projector start at Shield 4); in `LAB_DINOSAUR_MID`
+  you own Nesting (eight free unit slots, not three, and the T-Rex Egg
+  has 10 HP); in `LAB_GOBLIN_MID` and `LAB_UNDEAD_MID` both sides can
+  build Field Defense. `LAB_BACKLINE` and the three breakthrough labs are
+  at revision 4 (the AI seat owns Fortification); `LAB_SIEGE` and
+  `LAB_LATE` are unchanged. The lab table below was written before
+  these revisions.
 
 `???????` is an unexplored tile. The game has no re-fog: once a tile is
 explored, you see every unit on it for the rest of the match. A unit on an

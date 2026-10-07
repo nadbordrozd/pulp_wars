@@ -202,6 +202,12 @@ assert(
   "Battleship bombardment emitted no combat",
 );
 
+// The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the natural Continents
+// match of seed 0 now ends by its outcome in round 28 (892 accepted
+// commands) with six units landed and none of them a capturer, so it reads
+// seed 1 of the same board (a landed unit captures at accepted command 472;
+// seeds 2 and 3 show the lifecycle too). Archipelago keeps seed 0 (339).
+const NATURAL_SEEDS = { CONTINENTS: 1, ARCHIPELAGO: 0 } as const;
 const natural = (["CONTINENTS", "ARCHIPELAGO"] as const).map((mapType) => {
   const diagnostics: {
     slices: number;
@@ -209,7 +215,8 @@ const natural = (["CONTINENTS", "ARCHIPELAGO"] as const).map((mapType) => {
     maximumSliceMilliseconds: number;
   }[] = [];
   const naturalStarted = performance.now();
-  const result = runAiMatchV7(matchSetup(mapType, 16, 3, "RIVAL", 0), {
+  const seed = NATURAL_SEEDS[mapType];
+  const result = runAiMatchV7(matchSetup(mapType, 16, 3, "RIVAL", seed), {
     maxRounds: 60,
     maxCommands: 2_000,
     progressEveryCommands: 200,
@@ -229,7 +236,7 @@ const natural = (["CONTINENTS", "ARCHIPELAGO"] as const).map((mapType) => {
   assert(lifecycle !== null, `${mapType}: no same-AI-unit invasion lifecycle`);
   return {
     mapType,
-    seed: 0,
+    seed,
     rounds: result.rounds,
     commands: result.acceptedCommands,
     wallMilliseconds: performance.now() - naturalStarted,

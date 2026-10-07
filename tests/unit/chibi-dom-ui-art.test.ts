@@ -131,7 +131,13 @@ describe("CHIBI interface subjects", () => {
     expect(CHIBI_TECH_ART_SUBJECTS_V7.NAVIGATION).toBe("ICON:TECH:NAVIGATION");
     for (const subject of Object.values(CHIBI_TECH_ART_SUBJECTS_V7))
       expect(subject).not.toMatch(/UNDEAD/);
-    expect(technologySubjectV7("DRILL", "UNDEAD")).toBe("UNIT:UNDEAD:GUARD");
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the root's card is
+    // the Workshop for every faction (the defender, at Fortification now,
+    // is on no card); Chivalry is a card that follows the faction.
+    expect(technologySubjectV7("DRILL", "UNDEAD")).toBe("IMPROVEMENT:WORKSHOP");
+    expect(technologySubjectV7("CHIVALRY", "UNDEAD")).toBe(
+      "UNIT:UNDEAD:KNIGHT",
+    );
     expect(technologySubjectV7("SCOUTING", "UNDEAD")).toBe(
       "PORTRAIT:UNDEAD:RAIDER",
     );
@@ -142,7 +148,13 @@ describe("CHIBI interface subjects", () => {
     expect(technologySubjectV7("NAVAL_ENGINEERING", "ORIGINAL")).toBe(
       "UNIT:BATTLESHIP",
     );
-    expect(technologySubjectV7("DRILL", "ORIGINAL")).toBe("UNIT:GUARD");
+    expect(technologySubjectV7("DRILL", "ORIGINAL")).toBe(
+      "IMPROVEMENT:WORKSHOP",
+    );
+    expect(technologySubjectV7("CHIVALRY", "ORIGINAL")).toBe("UNIT:KNIGHT");
+    expect(technologySubjectV7("ENGINEERING", "ORIGINAL")).toBe(
+      "TERRAIN:MINED_MOUNTAIN",
+    );
   });
 
   it("gives every command with legacy art a chibi subject and keeps Undead art faction-aware", () => {
@@ -223,8 +235,12 @@ describe("CHIBI interface subjects", () => {
     expect(commandSubjectV7(commands[13] as CommandV7, "DINOSAUR")).toBe(
       "PORTRAIT:DINOSAUR:GUARD",
     );
+    // (The root's card is the Workshop since the Industry reshuffle.)
     expect(technologySubjectV7("DRILL", "DINOSAUR")).toBe(
-      "UNIT:DINOSAUR:GUARD",
+      "IMPROVEMENT:WORKSHOP",
+    );
+    expect(technologySubjectV7("CHIVALRY", "DINOSAUR")).toBe(
+      "UNIT:DINOSAUR:KNIGHT",
     );
     expect(technologySubjectV7("SCOUTING", "DINOSAUR")).toBe(
       "PORTRAIT:DINOSAUR:RAIDER",

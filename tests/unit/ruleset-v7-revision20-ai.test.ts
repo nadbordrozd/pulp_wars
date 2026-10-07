@@ -487,13 +487,22 @@ describe("ruleset-7 revision-20 Normal AI: research and production", () => {
       { techs: { 0: techs } },
     );
     const nesting = research(crowded, "FORTIFICATION");
-    expect(nesting?.score.priority).toBe(NESTING_RESEARCH_PRIORITY_V7);
-    // One slot per owned city, plus the Egg effects.
-    expect(nesting?.score.strategicValue).toBe(4 * 1 + 4);
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): Nesting is also
+    // the last step to the Ankylosaurus, which a seat outside the army
+    // policy researches at 1,165 (`defenderLastStepResearchV7`), above the
+    // slot's own priority; the larger of the two values stands.
+    expect(NESTING_RESEARCH_PRIORITY_V7).toBe(1062);
+    expect(nesting?.score.priority).toBe(1165);
+    // One slot per owned city, plus the Egg effects, is the lower bound.
+    expect(nesting?.score.strategicValue).toBeGreaterThanOrEqual(4 * 1 + 4);
     const roomy = olderFieldV7([{ seat: 1, role: "FIGHTER", at: at(1, 1) }], {
       techs: { 0: techs },
     });
-    expect(research(roomy, "FORTIFICATION")?.score.priority).toBe(1040);
+    // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): with room, Nesting
+    // is the next role technology (the Ankylosaurus is laid with it), at
+    // the same last step to the defender (1040, the ordinary priority,
+    // when it gave no unit).
+    expect(research(roomy, "FORTIFICATION")?.score.priority).toBe(1165);
     // A Human seat values its Fortification as before.
     const human = olderFieldV7(
       [

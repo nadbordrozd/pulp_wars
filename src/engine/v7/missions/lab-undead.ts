@@ -30,6 +30,13 @@ import type { MissionDefinitionV7 } from "./types";
  * revision 1, 6 Coins each now: 80 Coins of units) can be replaced. The
  * numbers quoted above are revision 1's.
  *
+ * Revision 3 (the Industry reshuffle, `pulp_wars-w49.21`, `7r56`): the
+ * defender of every faction is at Fortification, one technology behind the
+ * root of Industry. Both seats own it too (thirteen and twelve
+ * technologies), so that the Zombies and the Guards on the board can be
+ * replaced. With it both sides can build Field Defense from the first
+ * turn (Skeletons and Zombies; Fighters and Guards).
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  1   ........v.......      v: a neutral village
@@ -73,7 +80,7 @@ const UNDEAD_MID_TERRAIN_V7 = [
 
 export const LAB_UNDEAD_MID_V7: MissionDefinitionV7 = {
   id: "LAB_UNDEAD_MID",
-  revision: 2,
+  revision: 3,
   hidden: true,
   size: 16,
   seed: 20261301,
@@ -100,6 +107,9 @@ export const LAB_UNDEAD_MID_V7: MissionDefinitionV7 = {
         "RAIDING",
         "CHIVALRY",
         "DRILL",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the defender
+        // is at Fortification (revision 3).
+        "FORTIFICATION",
         // The ninth unit (`pulp_wars-w49.17`, 7r55): the heavy line unit's
         // technologies (revision 2).
         "ENGINEERING",
@@ -156,6 +166,9 @@ export const LAB_UNDEAD_MID_V7: MissionDefinitionV7 = {
         "RAIDING",
         "CHIVALRY",
         "DRILL",
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the defender
+        // is at Fortification (revision 3).
+        "FORTIFICATION",
         "ENGINEERING",
         // The ninth unit (7r55): the Champion is at Metallurgy.
         "METALLURGY",

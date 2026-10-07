@@ -439,18 +439,26 @@ describe("headless parity and the CLI flag", () => {
         // state are unchanged). Its correction (the Undead seat's opening
         // and economy rules, the Human seat's answer to Zombies): 15
         // rounds still, recomputed.
-        rounds: 15,
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56: the defender
+        // of every faction at Fortification, one technology behind the
+        // root): recomputed for every pin of this list (the boards and the
+        // final PRNG states are unchanged), 17 rounds here.
+        rounds: 17,
         // The Martian pass's correction (`pulp_wars-w49.14`: the Human
         // seat's economy-first opening, growth at war, and Knights):
         // recomputed, 15 rounds still.
         commandHash:
           // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
           // 520b30…afe0).
-          "1eb537ba7a982494a4807e5af740433b2603a96c199d2600fba430ffc752ca55",
+          // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+          // 1eb537…ca55).
+          "d1bedaa3da165f160472eda3471a4070d340d5ada4bcd4835bfe2e444dee64cb",
         eventHash:
           // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
           // bd5818…355f).
-          "1448d49e116b67847aa541b91ad909c5085b219915d7522d97b18ba00d9647f4",
+          // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+          // 1448d4…47f4).
+          "a5db4a5e20a17b03e1e044fc59ddfc8b2132d6f4f0a8680a669ee6332e89efec",
         mapHash:
           "1f6ad08d476884229d6cb8a7319ea209b8667cf4e28e24cd07352ebafc3055de",
         finalPrngHash:
@@ -480,11 +488,15 @@ describe("headless parity and the CLI flag", () => {
         commandHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // b030da…af4c).
-          "4bc5040fcad4095b43991b265d4fb23f95c6bcd68be7eccd1f01051535a06f14",
+          // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+          // 4bc504…6f14).
+          "ed5934a6f131009afb55e735c25bb4792051af0045b55dfeb659071a09e76bf4",
         eventHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // 6f55cd…6484).
-          "3d8b8f683880e419626dbf6c557c4da946815fb04ade8b5d2a7ff4ee68d91845",
+          // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+          // 3d8b8f…1845).
+          "bde7a3688953d033f12be9f9bf873dd1eb8d64f5e17ca011f70a95e51ae8b117",
         mapHash:
           "5b286bbe8cdb2f8a339cd7a74ba219bc2b57a4322370548442b3c8f26bef4ad9",
         finalPrngHash:
@@ -499,15 +511,20 @@ describe("headless parity and the CLI flag", () => {
         seed: 5,
         // Tuning 6: 20 rounds (22 before). The economy rejig: 19.
         // The ninth unit (7r55): 18 rounds (19 before).
+        // The Industry reshuffle (7r56): 18 rounds again.
         rounds: 18,
         commandHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // 9f171d…eba6).
-          "fd31d23a7e3f6ccd73ece607ef9f85e93c20fee7effa1eba4b527470eff95e68",
+          // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+          // fd31d2…5e68).
+          "9b3f26f66645271a88eab512c7488a10dc7e4154ba4ce711e436c6962ded3d95",
         eventHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // b0de91…c9cf).
-          "1dfe18122e60abe3fcfe9ef446e97816a333dce7a509c2416c3446b221808d4d",
+          // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+          // 1dfe18…8d4d).
+          "2aee4f883f0d83e3166e61ac29d260232fcd03c9e9580419157a82a955052671",
         mapHash:
           "2cbf36a1c5d03e70dd785be13a1ed7d5dd04fecdd54925baa1b483261d71c9be",
         finalPrngHash:
@@ -543,15 +560,20 @@ describe("headless parity and the CLI flag", () => {
         factions: ["DWARF", "UNDEAD", "ICE_FOLK", "DINOSAUR"],
         seed: 2,
         // Tuning 6: 10 rounds (11 before). The economy rejig: 11.
-        rounds: 11,
+        // The Industry reshuffle (7r56): 10 rounds.
+        rounds: 10,
         commandHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // 85af21…7e03).
-          "b331e25f7f6715e4d4a69b0f912e33531308369e2ba298bac9d7de051d0e17ee",
+          // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+          // b331e2…17ee).
+          "1d70af9769cb3d195262cecc2963f618ab857d478560a6fa78a61085aa58254e",
         eventHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // 263a85…a9e5).
-          "19d010c77dbc137bf56b28b098db836d6e7d90160e4e546752eefe8a0ce589f2",
+          // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
+          // 19d010…89f2).
+          "7ebf0830ed2acc37c8604a6c416c0d1d29806ea2c6a5ce6d01029954cfebad22",
         mapHash:
           "70ff339440ce86f231bca6b2be56c748891436934f614f6ef66fa53933f3d5ab",
         finalPrngHash:

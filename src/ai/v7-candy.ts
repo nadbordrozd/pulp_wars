@@ -1071,6 +1071,12 @@ export interface CandyResearchFactsV7 {
  * Home once a visible hostile unit stands within 3 of an own center; then
  * Chivalry (the Chocolate Bunny); Peppermint Surprise last. Returns the next
  * technology to research and its tier, or null.
+ *
+ * The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Marshmallow is at
+ * Home Sweet Home, behind the root. With a hostile unit in sight the plan
+ * is the root and then Home Sweet Home; otherwise this plan comes to the
+ * root with the Marshmallow at two cities (the ordinary scorer of economic
+ * technologies may choose it earlier for a Workshop).
  */
 export function candyResearchV7(
   view: PlayerViewV7,

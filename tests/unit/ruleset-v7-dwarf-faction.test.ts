@@ -556,7 +556,7 @@ const ROSTER = [
   [
     "Steam Mole",
     "GUARD",
-    "DRILL",
+    "FORTIFICATION",
     5,
     16,
     4,
@@ -972,7 +972,11 @@ describe("Dwarf technology (section 4)", () => {
           human.unlocks.filter((unlock) => unlock.kind !== "OVERRUN"),
         );
       else if (human.id === "FORTIFICATION")
-        expect(dwarf.unlocks).toEqual([{ kind: "DIG_IN" }]);
+        expect(dwarf.unlocks).toEqual([
+          { kind: "DIG_IN" },
+          // The Industry reshuffle (7r56): the defender is here.
+          { kind: "UNIT_ROLE", role: "GUARD" },
+        ]);
       else if (human.id === "EXPLOSIVES")
         expect(dwarf.unlocks).toEqual([
           ...human.unlocks,
@@ -1060,7 +1064,7 @@ describe("Dwarf technology (section 4)", () => {
       ).map((id) => effectiveRoleRuleV7(id, "DWARF").label);
     expect(role("SCOUTING")).toEqual(["Gyrocopter"]);
     expect(role("MARKSMANSHIP")).toEqual(["Clockwork Gunner"]);
-    expect(role("DRILL")).toEqual(["Steam Mole"]);
+    expect(role("FORTIFICATION")).toEqual(["Steam Mole"]);
     expect(role("ADMINISTRATION")).toEqual(["Engineer"]);
     expect(role("SAWMILLING")).toEqual(["Steam Cannon"]);
     expect(role("CHIVALRY")).toEqual(["Whirligig"]);

@@ -29,8 +29,8 @@ import {
 
 describe("Ruleset 7 inherited Industry and shared adjacency", () => {
   it("uses the current identity and the two exact Industry branches", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
     expect(TECHNOLOGY_IDS_V7).toEqual(
       expect.arrayContaining([
         "DRILL",
@@ -55,14 +55,19 @@ describe("Ruleset 7 inherited Industry and shared adjacency", () => {
     expect(lane[0]?.unlocks).toEqual(
       expect.arrayContaining([
         { kind: "RESOURCE_REVEAL", resources: ["ORE"] },
-        { kind: "UNIT_ROLE", role: "GUARD" },
+        // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Workshop
+        // (Engineering before); the Guard left for Fortification.
+        { kind: "COMMAND", command: "BUILD_WORKSHOP" },
         { kind: "FIRST_HOSTILE_CAPTURE_SPOILS", coins: 2 },
       ]),
     );
+    expect(lane[0]?.unlocks).not.toContainEqual({
+      kind: "UNIT_ROLE",
+      role: "GUARD",
+    });
     expect(lane[1]?.unlocks).toEqual(
       expect.arrayContaining([
         { kind: "COMMAND", command: "BUILD_MINE" },
-        { kind: "COMMAND", command: "BUILD_WORKSHOP" },
         { kind: "COMMAND", command: "REDEVELOP" },
         { kind: "MOUNTAIN_MOVEMENT" },
       ]),
@@ -73,10 +78,10 @@ describe("Ruleset 7 inherited Industry and shared adjacency", () => {
         { kind: "ARMS_INDUSTRY_DISCOUNT", coins: 1 },
       ]),
     );
-    expect(lane[3]?.unlocks).toContainEqual({
-      kind: "COMMAND",
-      command: "BUILD_FIELD_DEFENSE",
-    });
+    expect(lane[3]?.unlocks).toEqual([
+      { kind: "COMMAND", command: "BUILD_FIELD_DEFENSE" },
+      { kind: "UNIT_ROLE", role: "GUARD" },
+    ]);
     expect(lane[4]?.unlocks).toEqual(
       expect.arrayContaining([{ kind: "COMMAND", command: "BLAST_MOUNTAIN" }]),
     );
