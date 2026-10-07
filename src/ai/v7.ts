@@ -14490,6 +14490,63 @@ function goblinDoomedAtV7(
 }
 
 /**
+ * The Goblin hand pass at `7r55` (`pulp_wars-w49.19`): whether `actor`,
+ * which cannot attack `victim` from where it stands, kills it this turn
+ * with its ordinary attack after a Move: a fresh unit that may attack after
+ * moving, an offered destination at its range, and a projected hit of the
+ * victim's HP (a bomb only where its splash would be accepted). A Bomb
+ * Chucker beside a Fighter with 3 HP, which it cannot throw at from the
+ * next tile, blew itself up for that one kill, twice in one hand-played
+ * game, where a step back and a bomb kill the Fighter too and the Bomb
+ * Chucker lives. A unit with an offered attack on the victim is not the
+ * case: its kill is already ranked above the blast.
+ */
+function goblinStepBackKillV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  victimId: UnitId,
+): boolean {
+  const view = context.view;
+  const victim = context.lookup.unitsById.get(victimId);
+  if (victim === undefined) return false;
+  if (
+    context.commands.some(
+      (command) =>
+        command.kind === "ATTACK" &&
+        command.unitId === actor.id &&
+        command.targetUnitId === victimId,
+    )
+  )
+    return false;
+  if (
+    actor.activation.moved ||
+    !unitMayActAfterMoveV7(view, actor) ||
+    !primaryReadyForPolicyV7(actor)
+  )
+    return false;
+  const facts = publicCombatFacts(view, actor, context.lookup);
+  if (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0) return false;
+  const bomber = friendlyFireBomberV7(view, actor);
+  for (const to of context.lookup.moveDestinationsByUnit.get(actor.id) ?? []) {
+    const range = distance(to, victim.at);
+    if (range < facts.minimumRange || range > facts.maximumRange) continue;
+    const dealt = publicProjectedDamageWithLookupV7(
+      view,
+      { ...actor, at: to },
+      victim,
+      victim.at,
+      {},
+      context.lookup,
+    );
+    if (dealt < victim.hp) continue;
+    if (bomber && !armyBombSplashAcceptedV7(context, actor, victim, dealt))
+      continue;
+    return true;
+  }
+  return false;
+}
+
+/**
  * Kaboom (section 6.2) by previewed net value: hostile damage and kills
  * (target value) plus Plunder, a city save, or a cleared hostile center for
  * an own capturer, minus own and allied damage and kills and the exploder
@@ -14541,6 +14598,17 @@ function kaboomScoreV7(
       chain.friendlyKills === 0 &&
       goblinDoomedAtV7(context, actor, actor.at);
     if (chain.hostileKills === 0 && hit.size < 2 && !crash) return none;
+    // The Goblin hand pass at `7r55`: a blast whose whole gain is one kill
+    // is not made by a unit that steps back and makes that kill with its
+    // attack (`goblinStepBackKillV7`).
+    const onlyKill = chain.hostileKilledIds[0];
+    if (
+      chain.hostileKills === 1 &&
+      hit.size === 1 &&
+      onlyKill !== undefined &&
+      goblinStepBackKillV7(context, actor, onlyKill)
+    )
+      return none;
     clusterHits = hit.size;
   }
   const doomed = goblinDoomedAtV7(context, actor, actor.at);

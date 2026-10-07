@@ -16,7 +16,9 @@ counts as two helpers for Gang Up), so the roster, the research order
 the Humans' alone are out of date. The Human Swordsman this document
 fights is the Champion (6 Coins, at Metallurgy). `LAB_GOBLIN_MID` is at
 revision 2: your seat owns Engineering and Metallurgy too. The record
-below is unchanged.
+below is unchanged. **The Goblins were played by hand at `7r55`** (bead
+`pulp_wars-w49.19`): no rule changed, one correction to the Normal AI, and
+the findings are [section 13](#13-the-hand-pass-at-7r55).
 
 **Superseded in part by [the economy rejig](RULESET_7_ECONOMY_REJIG.md)
 (`pulp-wars-poc-7r54`, `pulp_wars-w49.16`).** Where this document gives a research price by the technologies owned (the
@@ -919,3 +921,297 @@ revision 14 (2 to 6).
 - **The Wolf Rider** has no rule of its own (fork 6).
 - **The other six factions** keep the plain level-2 Survey until their
   passes.
+
+## 13. The hand pass at `7r55`
+
+The first hand play of the Goblins on `pulp-wars-poc-7r55`
+([the ninth unit](RULESET_7_NINTH_UNIT.md) and
+[the economy rejig](RULESET_7_ECONOMY_REJIG.md), both built without
+playing), bead `pulp_wars-w49.19`. **No rule and no number changed, and
+the identity stays `7r55`.** One correction to the Normal AI
+([section 13.7](#137-the-normal-ai-one-correction)). The bar was the
+user's: "the faction is not crazy op or crazy weak and that all the tech
+branches are useful and that units are differentiated from other factions
+by more than stats".
+
+### 13.1 The games
+
+All in text mode against the Normal AI, on Dry Land.
+
+| Game  | Played as | Against                  | Map         | Route                                                                                       | Result                                                                                             |
+| ----- | --------- | ------------------------ | ----------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `ga`  | Goblin    | Human                    | 14, seed 3  | the mob: Leadership 8, Forestry 11, Garrison 14, Land Grants 17, Engineering 19, Armoury 21 | won, stopped in round 24: 8 cities against 3, income 35, 23 units against 8                        |
+| `gb`  | Goblin    | Undead                   | 14, seed 5  | bombs and rockets: Bomb Chuckers 4, Forestry 7, Rocket Carts 17                             | lost in round 21: 4 units against 25, 4 cities against 8                                           |
+| `gc`  | Goblin    | Human, Dinosaur, Martian | 16, seed 8  | the Ogre first: Garrison 1, Engineering 3, Armoury 8, all with one city                     | stopped in round 17 without hope: 2 cities against the Dinosaur seat's 9                           |
+| `gd`  | Goblin    | Dinosaur                 | 14, seed 6  | Mobility: Scouting 3, Raiding 7, Roads 10, Plunder 13, Scrap Buggies 16                     | stopped in round 19, level to slightly behind: 5 cities and 12 units against 7 and 21              |
+| `gl`  | Goblin    | Human                    | the lab     | `LAB_GOBLIN_MID`, four rounds, four Ogres bought                                            | two Knights and two shooters killed 12 of 29 units in one turn; both Knights killed the turn after |
+| `hg`  | Human     | Goblin                   | 14, seed 11 | Hunting 3, Marksmanship 6                                                                   | abandoned in round 8: 1 city and 3 units against 4 cities and 11 units                             |
+| `hg2` | Human     | Goblin                   | 14, seed 11 | Hunting 3, Marksmanship 7, Garrison 11                                                      | lost by round 12: 2 cities and 2 units against 6 cities and 14 units                               |
+
+The numbers after a technology are the rounds it was bought in. `gd` was
+added because the three planned Goblin games never bought the Mobility
+branch. The two Human games have opening errors of the player in them
+(section 13.2).
+
+### 13.2 What the Human pass handed over
+
+**1. Is the Goblin opening against Humans an always-win?** No rule was
+changed. The evidence is mixed and the two Human games of this pass are
+weak evidence.
+
+- On seed 11 a hand-played Human has now lost four times in four games
+  (two in the Human pass, two here), and the Human AI loses on it too. In
+  `hg2` the Goblin seat had 5 units in round 4, three cities in round 6,
+  and six cities and 14 units (5 Goblins, 4 Wolf Riders, 5 Bomb Chuckers)
+  in round 11, on an income of 3 to 11. It researched two technologies and
+  reached level 2 in round 1, which its Coins alone do not pay for.
+- The fights themselves were even. In `hg2` each side killed one unit a
+  turn: the Goblins lost two Wolf Riders and a Goblin (7 Coins), the Human
+  a Raider and three Fighters (10). Every Gang Up was +1, and no Kaboom and
+  no bomb was used before round 12. The game was lost on numbers: a Goblin
+  capital of level 2 holds four units and a village three, a Human one
+  three and two, and the Goblin unit that fills a slot costs 1 Coin.
+- The player's errors: a lone Raider sent at two Wolf Riders (twice); 6
+  Coins of fruit in a village that fell the next turn; a village three
+  tiles from the capital, shown by the level-2 Scouts in round 1, seen in
+  round 7; Marksmanship in round 6 or 7.
+- On seed 4 the hand-played Human of the Human pass took the Goblin
+  capital in round 16. The Goblins played by hand lost to the Undead AI
+  (`gb`) and got nowhere among three AIs (`gc`).
+- **What a Human has against it**, each seen in these games: a Marksman
+  kills a Goblin with every shot and takes nothing back (two Marksmen
+  killed nine Goblins, a Wolf Rider, and an Orc Brute in `ga` before an
+  Ogre killed one of them in round 22); a Fighter and a Marksman kill a
+  Wolf Rider a turn (6 + 4); a Knight kills every Goblin unit but the Orc
+  Brute and the Ogre in one attack and rides on (nine kills by two Knights
+  in one turn of `gl`); a Champion deals an Ogre 9 and two Catapults
+  killed one with 14 HP (9 + 5); ground where three units do not fit
+  around a target (the mob of `ga` stood in single file between Mountains
+  from round 13 to 19).
+- **The strong turns exist and need three units and a Warboss.** A 1-Coin
+  Goblin with two helpers and WAAAGH! deals a full Fighter in Forest cover
+  12 (a kill), a Guard on a Mountain 10, and a Champion in a Forest 11. An
+  Orc Brute with an Ogre and a Goblin beside the target and WAAAGH! deals
+  a Guard 15. A Wolf Rider with Charge and two helpers deals 16 (a Big
+  Raptor, Defense 1, from full). The attacker then stands in front of the
+  enemy army: the three Wolf Riders that killed in `gd` were dead within
+  two turns, and the Ogre of `ga` the turn after its kill.
+- **If the opening is to be slowed**, these games do not point at Kaboom
+  or at Gang Up +2. What took the map in `hg2` was bodies: the 1-Coin
+  capturer, the fourth unit slot, and the free Wolf Rider of every level-2
+  city. That is a question for the user (section 13.8), not a defect.
+
+**2. A Bomb Chucker blew itself up on one Fighter with 3 HP.** Confirmed
+in the recorded game (twice, rounds 11 and 14) and corrected: section
+13.7.
+
+**3. Where should the Ogre sit in the Goblin research order?** Where it
+is: after the Warboss, before the Scrap Buggy. Bought first (`gc`: three
+technologies for 16 Coins with one city, the first Ogre in round 10) it
+came into an income of 4 with three Goblins around it and took one
+village. Bought eighth (`ga`, round 21, 27 Coins with seven cities) it was
+worth it at once. An AI seat that reaches Armoury in round 22 is in step
+with that.
+
+**4. Is Milling a dead node?** Not shown, and nothing was changed. The
+numbers of the Human pass hold for every mill: beside one building a
+Workshop (tier 2, 4 Coins) gives 2 and a Windmill, a Sawmill (5 Coins),
+or a Forge (6 Coins) gives 1; beside two buildings of different kinds the
+Workshop gave 3 (`ga`). A mill is ahead from three buildings of its kind
+around one tile, and a city may have both. The Sawmill and the Forge come
+with a unit and the Forge with Arms Industry; the Windmill comes with 6 HP
+a turn for the units beside it and nothing else. Farming was bought in
+none of the four Goblin games (at most one Fertile Ground tile in a
+city's land in `ga`, none in `gb` and `gc`; `gd` had Farm land and its
+route did not go there), so Milling was never a choice. It is a weak node
+on a map without Farm clusters, as Pathfinding is on a map without Forest;
+whether that is acceptable is a question for the user (section 13.8).
+
+**5. Arms Industry.** Built in `ga`, round 21: a Forge beside two Mines
+(6 Coins, +2 population), and that city trained an Ogre for 4 Coins, an
+Orc Brute for 2, and a Warboss for 4 (a Goblin stays 1). Three Ogres came
+from it in three rounds. The limit was the one training a turn, not the
+price: 52, 63, and 92 Coins were unspent in rounds 21 to 24.
+
+### 13.3 The Ogre
+
+- **Wanted, and not a must.** It is the second Goblin unit a Knight's
+  chain stops on (a Knight deals it 12 of 16, an Orc Brute 9 of 15, and
+  kills every other Goblin unit), and the only one of the two that moves
+  and attacks.
+- **One for each group, not an army of them.** Its worth is the +2 it
+  gives the others alone: with one Ogre and one Goblin beside the target
+  an Orc Brute hit at Attack 5. Its own attack is 2.5: alone it dealt a
+  Marksman on a village 8. A second Ogre beside the same target adds
+  nothing (the maximum is +2).
+- **A Rocket Cart with one Ogre is not more reliable than with one
+  Goblin.** A rocket's Gang Up is +1 at most, so Heavyweight gives it
+  nothing. With one helper a rocket killed a Knight with 11 HP, a Zombie
+  with 13, and a Skeleton with 8 through Bones. What the Ogre adds there
+  is that it is still alive beside the target the next turn.
+- **Not Blast-proof: a cost, not a trap.** The Kaboom preview names it
+  (`u114(S0 Ogre) YOURS -5`). One Kaboom was not made because an Ogre
+  stood in it; none hit one.
+- **It dies in the open.** Advanced after a kill, the Ogre of `ga` took 9
+  from a Champion, 3 from a Guard, and 4 from a Marksman in one turn; two
+  Catapults killed one in `gl` (9 + 5).
+- 5 Coins and Armoury are right for that. Nothing was changed.
+
+### 13.4 The units
+
+No unit was the best in every game: Goblins and a Warboss in `ga`, Bomb
+Chuckers in `gb` (14 kills, 11 by bombs or their splash, in a lost game),
+Wolf Riders with Charge in `gd`.
+
+| Unit         | What it did                                                                                                                                                                                                                                        |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Goblin       | Not obsolete: 12 of 23 units in round 24 of `ga`, and one of them killed a Guard on a city in round 23. It takes villages, fills the third tile around a target, and dies to every attack. Seventeen were bought in `ga` and eight came as Militia |
+| Wolf Rider   | Took three villages by round 7 of `gd`. With Raiding it is the Goblin unit that kills on open ground. Level-2 Scouts gave one or two free ones a game                                                                                              |
+| Bomb Chucker | The answer to Zombies, which cannot attack after moving: it steps back and throws. Three throws at one Zombie dealt it 16 and three units beside it 9 each. Skeletons (Bones, then 6 to it in melee) and its own blasts are the answer to it       |
+| Orc Brute    | The only unit that stood on a contested centre for more than a turn (`ga`). It earns its place as the anchor. Blast-proof was never the reason: the player made three Kabooms in four games and none beside a Brute                                |
+| Orc Warboss  | In every attack turn of `ga`. WAAAGH! is what turned 10 into 12                                                                                                                                                                                    |
+| Rocket Cart  | Two in `gb`, too late: one killed a Zombie and died to a Vampire the same round, and its death blast of 4 killed a Goblin and a Bomb Chucker beside it, whose own blast killed a second Goblin. One in the lab killed a Knight                     |
+| Scrap Buggy  | One in `gd`: it rammed two Cavemen in one turn (10, then 8) and then crashed for 4 + 4 on two Ankylosauruses once the Wolf Rider beside it had stepped away. A Dinosaur grows from a kill, and the Crash denied it one. Crash earns its place      |
+| Ogre         | Section 13.3                                                                                                                                                                                                                                       |
+
+**The Goblin weakness is real and it is the faction's own.** In `gb` a
+bitten Bomb Chucker with 2 HP died beside two more wounded ones and the
+three death blasts chained; in the next Undead turn two Wails and a
+Vampire's kill of a Rocket Cart took ten units. Every unit a Zombie kills
+rises as a Zombie; a Kaboom denies it. The player also splashed his own
+units on six throws, by throwing before moving the units beside the
+target away (about 25 HP).
+
+### 13.5 The branches
+
+| Branch     | Bought                                                                | Verdict                                                                                                                                                                                                                                                                                                                      |
+| ---------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Settlement | Gathering (`ga`, `gd`), Leadership and Land Grants (`ga`)             | strong. Leadership gave the Warboss and four Markets beside Lumber Camps (24 Coins, +8 a turn). Land Grants was bought for the unit slot in round 17, when four cities were full. Farming and Milling were never bought                                                                                                      |
+| Wilds      | Hunting, Forestry (`ga`, `gb`), Bomb Chuckers and Rocket Carts (`gb`) | useful. Hunting took three villages to level 2 in one turn of `ga` (six hunts for 12 Coins; two Stockpiles and a free Wolf Rider back). Forestry without Leadership or Sawmilling gave `gb` only Lumber Camps and an income of 5 to 7 until round 13, which lost that game as much as anything. Pathfinding was never bought |
+| Mobility   | Scouting, Raiding, Roads, Plunder, Scrap Buggies (`gd`)               | useful, and thin alone. Raiding makes the Wolf Rider. Roads was the surprise: eight Road tiles (16 Coins) took the capital to level 4 and a village to level 2. Plunder paid 8 Coins in six rounds for 21. Nothing in the branch hurts an Ankylosaurus                                                                       |
+| Industry   | Garrison, Engineering, Armoury (`ga`, `gc`)                           | useful as a second branch, as for the Humans. Engineering without a unit paid in both games (six Mines and a Workshop in `ga`; two Mines and a Workshop were the whole economy of `gc`). Fortification and Explosives were never bought                                                                                      |
+
+**Plunder** is the weakest node that was bought. At the rate of these
+games it would have paid about 2 Coins a turn in `ga` (13 kills in rounds
+12 to 24), 2 to 3 in `gb`, and 1 to 2 in `gd`, where five Road-linked
+cities pay a Human seat 5 a turn for the same technology. Its hire needs a
+Market, which is Leadership, in another branch. It was left alone: Coins
+for kills is the economy the user wants, and the number was doubled one
+pass ago.
+
+### 13.6 The economy as a Goblin player meets it
+
+- **Income.** `ga`: 6 in round 9, 10 in round 12, 17 in round 15, 25 in
+  round 17, 33 in round 22, with seven cities. `gd`: 9 to 11 in rounds 11
+  to 19 with five. `gb`: 5 to 7 until round 13.
+- **Research price.** In `ga` a tier-2 technology cost 9 with two cities
+  and 19 with seven; Land Grants and Armoury cost 27 each. In four games
+  the player researched before a capture eight times to pay the lower
+  price, and three times left a unit standing on a village for one to
+  three turns to do it. It was worth 1 to 4 Coins each time.
+- **Unit slots** bound in rounds 15 to 17 of `ga` (four cities full) and
+  at once in the lab. **One training a city a turn** bound from round 20:
+  Coins piled up to 92.
+- **Level-2 villages.** Two hunts or harvests (4 Coins) and the Stockpile
+  (4 Coins back) or a free Wolf Rider: a village costs nothing to take to
+  level 2 where it has two Game or Fruit tiles.
+- **Monuments.** Explorer in rounds 6 to 17; Land Baron in round 24 of
+  `ga`. No other.
+- **Level 6.** No city passed level 4 in any game. No Troll was seen.
+
+### 13.7 The Normal AI: one correction
+
+A Goblin seat's unit that can step back and kill with its ordinary attack
+no longer blows itself up for that kill. In the recorded game (`a2` of the
+Human pass, rounds 11 and 14) a Bomb Chucker stood beside a Fighter with 3
+HP, which it cannot throw at from the next tile, and used Kaboom (4
+damage) for the kill. The score allowed it because the enemy would have
+killed the Bomb Chucker anyway and a doomed unit counts a third of its
+value. One step back and a bomb kill the Fighter too, and the Bomb Chucker
+lives.
+
+The rule (`goblinStepBackKillV7` in `src/ai/v7.ts`): a Kaboom of an army
+seat whose whole gain is one enemy unit killed, with no other enemy in
+the blast, is not made when the unit has no attack on that enemy from
+where it stands, has not moved, may attack after a Move, and would kill
+it from a tile it can move to (a bomb only where its splash on own units
+would be accepted). In practice that is a Bomb Chucker beside its victim.
+A unit with an attack on the victim was already handled: its kill ranks
+above a Kaboom's. A unit that has moved, a blast that hits two enemies,
+and a Crash are as before. The rule reads the public view and the public
+previews only.
+
+No other policy number or order was changed. The research order keeps the
+Ogre after the Warboss (section 13.2, item 3).
+
+**Two diagnostic matches** between Normal AIs were run once each on the
+corrected source (14 x 14, 30 rounds), to see that nothing breaks. They
+are not a balance measurement. Both ran without an error or a stall and
+with no Kaboom at all.
+
+- **Goblins first, Humans second, seed 9.** Round 31: the Goblin seat
+  holds ten cities and 19 units, the Human seat one city and two units.
+  The Goblin seat researched Bomb Chuckers in round 4, Scouting 8,
+  Forestry 10, Garrison 12, Rocket Carts 15, Leadership 17, Engineering
+  19, **Armoury in round 21**, Raiding 23, and Scrap Buggies 25, and
+  trained one Ogre.
+- **Goblins first, Undead second, seed 5** (the map of `gb`, which the
+  hand player lost as the Goblins). The Goblin seat eliminated the Undead
+  seat in round 29 with 13 cities and 38 units (9 Rocket Carts, 9 Orc
+  Brutes, 7 Bomb Chuckers, 6 Goblins, 3 Wolf Riders, 2 Warbosses, 2
+  Ogres); **Armoury in round 27**.
+
+With the two of the pass before (section 8.3), the Goblin seat has won
+every diagnostic match that was run. That is a fact about the Normal AI
+of the two seats and it is one more reason for question 1 of section
+13.8.
+
+### 13.8 Open, for the user
+
+1. **The Goblin opening on a contested map.** Left as it is. If the user
+   wants it slower, the levers these games point at are the free Wolf
+   Rider of every level-2 Goblin city (given at `7r50`; a second and
+   later city could give the plain Survey) or the fourth unit slot of a
+   level-2 capital, not Kaboom and not Gang Up.
+2. **Plunder** pays a third to a half of what land trade pays a Human
+   seat. 3 Coins a kill, or Plunder without the Roads prerequisite, are
+   the two changes a tester would try.
+3. **Milling.** If a node that is only a building is not wanted, the
+   smallest change that reads the same for every faction is a Windmill
+   that counts itself (1, plus 1 for each Farm beside it, still 8 at
+   most), which makes it equal to a Workshop beside one Farm and ahead
+   from two. The Sawmill and the Forge would stay as they are, because
+   their technologies carry a unit.
+4. **Farming, Pathfinding, Fortification, and Explosives** were bought by
+   no Goblin player in four games. Fortification and Explosives were not
+   bought by the Human pass either.
+
+### 13.9 For the passes that follow
+
+- **The Undead AI is a strong opponent for a Goblin player.** It had
+  seven cities in round 14 of `gb` and trained a unit in each. The pass
+  should look from the Undead side at Infect against cheap units (a
+  Goblin and two Bomb Chuckers rose as Zombies; a risen Zombie had 8 HP),
+  at how often a Banshee's Wail finishes several wounded units at once,
+  and at whether a Zombie that cannot attack after moving is helpless
+  against any unit that steps back and shoots (seven Zombies died to
+  bombs; Zombies hit a Bomb Chucker twice, both times one the player had
+  left beside them).
+- The first Lich of the Undead AI was seen in round 20 of `gb`, and no
+  Wight by round 21.
+- **The Dinosaur AI** took nine cities and eliminated the Martian AI in
+  round 16 of `gc`, and kept sending single Cavemen onto a village centre
+  held by one unit (four times in `gd`); each was killed there within two
+  turns.
+- **The text harness:** a `REVEALED` line lists tiles and does not say
+  that a village or a chest is among them, and the player of this pass
+  missed a village three tiles from his capital for six rounds, twice.
+  Militia fills the city's unit slots without a word, and a training
+  planned for the same turn is then refused.
+
+### 13.10 Tests
+
+`tests/unit/ruleset-v7-goblin-pass.test.ts`, "the Goblin hand pass at
+7r55": a Bomb Chucker beside a Fighter with 3 HP, two Marksmen in reach of
+it, scores its Kaboom below zero, moves to a tile two away, and then
+throws for the kill; the same Bomb Chucker after a Move still uses Kaboom.

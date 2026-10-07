@@ -1,5 +1,40 @@
 # Greedy Normal AI
 
+## The Goblin hand pass at `7r55` (`pulp_wars-w49.19`)
+
+[The Goblin hand pass](../product/RULESET_7_TUNING_GOBLIN.md#13-the-hand-pass-at-7r55)
+changed no rule (the identity stays `pulp-wars-poc-7r55`) and one thing in
+the policy of a Goblin seat.
+
+**A unit that can step back and kill with its attack does not blow itself
+up for that kill** (`goblinStepBackKillV7`, called from the Kaboom score).
+In a hand-played game a Bomb Chucker stood beside a Fighter with 3 HP,
+which it cannot throw at from the next tile, and used Kaboom for the kill,
+twice. The score allowed it: a unit the visible enemies would kill anyway
+counts a third of its value. A step back and a bomb make the same kill and
+keep the unit.
+
+An army seat's Kaboom is now declined when all of the following hold:
+
+- the blast would kill exactly one hostile unit and hit no other hostile
+  unit;
+- no attack of the unit on that hostile unit is offered from where it
+  stands (a unit with such an attack is not the case: its kill already
+  ranks above a Kaboom's);
+- the unit has not moved, may attack after a Move, and has its primary
+  action, and from an offered destination at its range the public
+  projected damage reaches the target's HP;
+- for a Bomb Chucker, the bomb's splash on own and allied units beside the
+  target would be accepted (`armyBombSplashAcceptedV7`).
+
+In practice that is a Bomb Chucker beside its victim: it is the Goblin
+unit that cannot attack a neighbour. Every other Kaboom is scored as
+before. The rule reads the viewer's `PlayerViewV7` and public previews
+only. The Move to the firing tile already has the priority of the throw
+(`armyEngagementsForV7`), so the unit steps back and throws.
+
+The research order was looked at and left: the Ogre after the Warboss.
+
 ## The ninth unit (`pulp_wars-w49.17`)
 
 **[The ninth unit](../product/RULESET_7_NINTH_UNIT.md)**

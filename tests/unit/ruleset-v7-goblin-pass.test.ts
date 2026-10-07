@@ -1281,3 +1281,62 @@ describe("the Goblin pass, correction: the Normal AI", () => {
     expect(scoreOf(beside) - scoreOf(apart)).toBeGreaterThanOrEqual(12);
   });
 });
+
+// The Goblin hand pass at `7r55` (`pulp_wars-w49.19`,
+// docs/product/RULESET_7_TUNING_GOBLIN.md section 13): no rule changed. One
+// policy correction: a unit that can step back and kill with its ordinary
+// attack does not blow itself up for that kill.
+describe("the Goblin hand pass at 7r55: the Normal AI", () => {
+  // A Bomb Chucker beside a Fighter with 3 HP, two Marksmen in reach of it
+  // (the enemy kills it next turn). The recorded case: twice in one
+  // hand-played game such a Bomb Chucker blew itself up (4 damage) for the
+  // one kill, where a step back and a bomb kill the Fighter too.
+  const beside = (
+    chucker: GoblinPieceV7["activation"] = {},
+  ): { readonly state: GameStateV7; readonly view: PlayerViewV7 } =>
+    arena(
+      ["GOBLIN", "ORIGINAL"],
+      [
+        { seat: 0, role: "MARKSMAN", at: at(5, 3), activation: chucker },
+        { seat: 1, role: "FIGHTER", at: at(5, 2), hp: 3 },
+        { seat: 1, role: "MARKSMAN", at: at(5, 0) },
+        { seat: 1, role: "MARKSMAN", at: at(7, 1) },
+      ],
+    );
+
+  it("steps a Bomb Chucker back and throws rather than blow it up for the same kill", () => {
+    const { state, view } = beside();
+    const chucker = unitAtV7(state, at(5, 3)).id;
+    const fighter = unitAtV7(state, at(5, 2)).id;
+    const kaboom: CommandV7 = { kind: "KABOOM", unitId: chucker };
+    // The blast would kill the Fighter and nothing else.
+    const blast = previewKaboomV7(view, chucker);
+    expect(blast?.totals.hostileKills).toBe(1);
+    expect(blast?.explosions[0]?.results.map((hit) => hit.unitId)).toEqual([
+      fighter,
+    ]);
+    expect(scoreCommandV7(view, kaboom).priority).toBeLessThan(0);
+    const top = unitCommands(view, chucker)[0];
+    if (top?.kind !== "MOVE") throw new Error("the Bomb Chucker does not move");
+    const end = top.path[top.path.length - 1] ?? at(-9, -9);
+    expect(Math.max(Math.abs(end.x - 5), Math.abs(end.y - 2))).toBe(2);
+    const moved = applyOkV7(state, seatIdV7(state, 0), top);
+    const throwIt: CommandV7 = {
+      kind: "ATTACK",
+      unitId: chucker,
+      targetUnitId: fighter,
+    };
+    expect(unitCommands(viewOf(moved.state), chucker)[0]).toEqual(throwIt);
+    expect(
+      queryCombatPreviewV7(viewOf(moved.state), chucker, fighter)?.defenderDies,
+    ).toBe(true);
+  });
+
+  it("still blows it up where it has moved and cannot throw", () => {
+    const { state, view } = beside({ moved: true });
+    const chucker = unitAtV7(state, at(5, 3)).id;
+    const kaboom: CommandV7 = { kind: "KABOOM", unitId: chucker };
+    expect(scoreCommandV7(view, kaboom).priority).toBeGreaterThan(0);
+    expect(unitCommands(view, chucker)[0]).toEqual(kaboom);
+  });
+});

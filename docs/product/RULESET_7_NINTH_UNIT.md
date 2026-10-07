@@ -448,7 +448,13 @@ and Raptors)? Does the Guard keep its two jobs? **Played** (bead
 Ogres only (five weak heavies)? Does Heavyweight make a Rocket Cart with
 one Ogre too reliable a kill? The Ogre is not Blast-proof: how often does
 its own side's Kaboom and bomb splash kill it, and is that a cost or a
-trap? Does the AI stand it beside the mob's target?
+trap? Does the AI stand it beside the mob's target? **Played** (bead
+`pulp_wars-w49.19`, four hand games as the Goblins, a lab, and two as the
+Humans against them; no rule changed): the answers are in
+[the Goblin pass, section 13](RULESET_7_TUNING_GOBLIN.md#13-the-hand-pass-at-7r55).
+The last question is open: in two diagnostic matches the Goblin AI seat
+reached Armoury in rounds 21 and 27 and trained one and two Ogres, and
+where they stood was not read.
 
 **Undead (Wight).** How often does a Wight actually rise (melee killers
 advance onto the Grave; a ranged kill needs a second unit to step on it)?
