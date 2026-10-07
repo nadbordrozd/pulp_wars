@@ -13,6 +13,7 @@ import {
   isMindControlledV7,
   primaryActionBlockedAfterMoveV7,
   technologyCapabilitiesV7,
+  unitCapabilitiesV7,
   unitCapacitySlotsV7,
   unitIsIceboundV7,
   unitIsMountainBornV7,
@@ -35,6 +36,7 @@ import type {
   MindControlCooldownV7,
   MindControlledStatusV7,
   ShieldStatusV7,
+  TechnologyIdV7,
   TerrainIdV7,
   UnitRoleIdV7,
   UnitStateV7,
@@ -84,15 +86,49 @@ export function shieldOfV7(
 
 /**
  * Section 5.3: one instance of `damage` taken from the Shield first. The
- * hit is capped at the Shield plus the HP.
+ * hit is capped at the Shield plus the HP. `holds` (the Martian pass's
+ * correction, `forceFieldHoldsV7`): the hit leaves at least 1 HP.
  */
 export function absorbHitV7(
   shield: number,
   hp: number,
   damage: number,
+  holds = false,
 ): { readonly shieldDamage: number; readonly hpDamage: number } {
   const shieldDamage = Math.min(shield, damage);
-  return { shieldDamage, hpDamage: Math.min(hp, damage - shieldDamage) };
+  const hpDamage = Math.min(hp, damage - shieldDamage);
+  return {
+    shieldDamage,
+    hpDamage: holds && hpDamage >= hp ? Math.max(0, hp - 1) : hpDamage,
+  };
+}
+
+/**
+ * The Martian pass, correction (`pulp_wars-w49.14`, section 13.1 of
+ * docs/product/RULESET_7_TUNING_MARTIAN.md): **the Force Field holds**. A
+ * unit at full HP whose Shield a Force Field has raised to
+ * `FORCE_FIELD_SHIELD_V7`, above its own maximum and still whole, is not
+ * killed by one attack: the attack's hit on it leaves it at 1 HP. The
+ * first hit of a turn spends the Shield, so the field holds once until the
+ * next recharge, with no entry of its own in the state. (A Mothership's
+ * own Shield of 4 is no field.)
+ */
+export function forceFieldHoldsV7(
+  lookup: ShieldLookupV7,
+  unit: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+    readonly hp: number;
+    readonly maxHp: number;
+  },
+  shield: number,
+): boolean {
+  return (
+    shield >= FORCE_FIELD_SHIELD_V7 &&
+    unit.hp >= unit.maxHp &&
+    shield > unitShieldMaximumV7(lookup, unit)
+  );
 }
 
 /**
@@ -172,6 +208,7 @@ export function isCoveredByForceFieldV7(
   roster: FactionRosterV7,
   units: readonly ForceFieldUnitV7[],
   unit: ForceFieldUnitV7,
+  ownerResearchedTechs: readonly TechnologyIdV7[],
 ): boolean {
   return units.some(
     (projector) =>
@@ -180,7 +217,12 @@ export function isCoveredByForceFieldV7(
       projector.ownerId === unit.ownerId &&
       projector.form === "LAND" &&
       chebyshev(projector.at, unit.at) === 1 &&
-      unitRoleRuleV7(roster, projector).abilities.includes("FORCE_FIELD"),
+      unitRoleRuleV7(roster, projector).abilities.includes("FORCE_FIELD") &&
+      // The Martian pass (`pulp_wars-w49.14`, 7r52): a Projector projects
+      // the field only once its owner has Force Fields (the Martian
+      // `FORTIFICATION`, read through the Projector's own tree).
+      unitCapabilitiesV7(roster, projector, ownerResearchedTechs)
+        .projectsForceField,
   );
 }
 
@@ -189,10 +231,11 @@ export function rechargedShieldV7(
   lookup: ShieldLookupV7,
   units: readonly ForceFieldUnitV7[],
   unit: ForceFieldUnitV7,
+  ownerResearchedTechs: readonly TechnologyIdV7[],
 ): number {
   const maximum = unitShieldMaximumV7(lookup, unit);
   if (maximum === 0) return 0;
-  return isCoveredByForceFieldV7(lookup, units, unit)
+  return isCoveredByForceFieldV7(lookup, units, unit, ownerResearchedTechs)
     ? Math.max(maximum, FORCE_FIELD_SHIELD_V7)
     : maximum;
 }
@@ -210,9 +253,12 @@ export function rechargeShieldsV7(
 ): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
   const updates = new Map<UnitId, number>();
   const results: { unitId: UnitId; shield: number }[] = [];
+  const researched =
+    state.players.find((candidate) => candidate.id === playerId)
+      ?.researchedTechs ?? [];
   for (const unit of [...state.units].sort((a, b) => a.id - b.id)) {
     if (unit.ownerId !== playerId || unit.hp <= 0) continue;
-    const target = rechargedShieldV7(state, state.units, unit);
+    const target = rechargedShieldV7(state, state.units, unit, researched);
     if (target === 0 || target === shieldOfV7(state.shields, unit.id)) continue;
     updates.set(unit.id, target);
     results.push({ unitId: unit.id, shield: target });
@@ -460,6 +506,11 @@ export function releaseControlledV7<U extends UnitStateV7>(
   mindControlled: readonly MindControlledStatusV7[],
   players: readonly ReleasePlayerV7[],
   events: DomainEventV7[],
+  /**
+   * The Martian pass, correction: a controlled unit its controller lets go
+   * (`DISBAND` on it), released although its Brain lives.
+   */
+  letGo: UnitId | null = null,
 ): {
   readonly units: readonly U[];
   readonly burrowed: readonly BurrowedEntryV7[];
@@ -493,7 +544,12 @@ export function releaseControlledV7<U extends UnitStateV7>(
     const unit = board.get(entry.unitId) ?? underground.get(entry.unitId);
     if (unit === undefined || unit.ownerId === entry.originalOwnerId) continue;
     const brain = board.get(entry.brainUnitId);
-    if (brain !== undefined && brain.ownerId === unit.ownerId) continue;
+    if (
+      brain !== undefined &&
+      brain.ownerId === unit.ownerId &&
+      entry.unitId !== letGo
+    )
+      continue;
     ended.add(entry.unitId);
     const original = players.find(
       (player) => player.id === entry.originalOwnerId,

@@ -424,10 +424,13 @@ describe("headless parity and the CLI flag", () => {
         // and economy rules, the Human seat's answer to Zombies): 15
         // rounds still, recomputed.
         rounds: 15,
+        // The Martian pass's correction (`pulp_wars-w49.14`: the Human
+        // seat's economy-first opening, growth at war, and Knights):
+        // recomputed, 15 rounds still.
         commandHash:
-          "234332b7a11d6bb1fa832240d1c3232de6405dedce59b06d27c9afd4339e7ef2",
+          "520b30ee77c878f7ad491876a67eb5beaa18a959fcc285451027ea86ff9cafe0",
         eventHash:
-          "cd79150b26decd6e2c8bb47d5cd1d28fa6b091e029a1908f7f56fbc2ae58d017",
+          "bd581848d41b6e21e78b71f449f9fdb8b9f085a620aeac283946c244a901355f",
         mapHash:
           "1f6ad08d476884229d6cb8a7319ea209b8667cf4e28e24cd07352ebafc3055de",
         finalPrngHash:
@@ -479,11 +482,14 @@ describe("headless parity and the CLI flag", () => {
         // Tuning 5 (`pulp_wars-w49.4`: the Human Guard open to ranged
         // attacks, Land Grant at 1 Coin a tile, the Swordsman): 14 rounds
         // (15 before), recomputed.
+        // The Martian pass (`pulp_wars-w49.14`: a Martian seat plays the
+        // army rules, and so do the Human and Goblin seats beside it; the
+        // Force Field behind Force Fields): recomputed, 14 rounds still.
         rounds: 14,
         commandHash:
-          "16273ba9aa1e144d6b521b40206dd01086c008591a624dd20feb846104febc71",
+          "45d7b13be7d49d7611ffb1233d093ea4fb02277f9c627c92cdf3ec740fa0eb56",
         eventHash:
-          "900a2f19a29d70b731ac9f8f57b5dc7dfcbc77d3993ac4b3e284da34f8558b05",
+          "a2cb57e50757cff33fafbd3be95f7b7164ea9a60152017e3a9b3b8aca00632ab",
         mapHash:
           "be112bd78cfeb3f5ae72a6b67f8f91bd45b81814c5d0cdad9abe7f31f221be5d",
         finalPrngHash:

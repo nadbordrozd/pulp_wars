@@ -190,10 +190,13 @@ describe("Martian unit dock", () => {
       document.querySelector(".v7-selection-dock .v7-identity-owner"),
     ).toBe(null);
     expect(chipText("shield")).toBeNull();
-    // A controlled unit cannot be disbanded; its Brain's link is on the
-    // board.
-    expect(document.querySelector('[data-action="command-disband"]')).toBe(
-      null,
+    // The Martian pass's correction (`pulp_wars-w49.14`): a controlled
+    // unit is not disbanded, it is released; the button says so. Its
+    // Brain's link is on the board.
+    const release = document.querySelector('[data-action="command-disband"]');
+    expect(release?.textContent).toBe("Release");
+    expect(release?.getAttribute("title")).toBe(
+      "Release · Returns the unit to its owner where it stands.",
     );
     expect(
       boardPlan(host).entries.some(

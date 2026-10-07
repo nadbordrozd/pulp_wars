@@ -339,7 +339,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // capital can train, so the two Harvest Fruit and the Hunt Game are no
       // candidates; the Swordsman's errand is the chest at (9, 9), away
       // from the enemy, before the village at (5, 8) (was 4d40a9…32be).
-      "62b18a07d9c21f5c3a6917fd991421733042d892155a6c8fcb86c23a29009811",
+      // The Martian pass's correction (`pulp_wars-w49.14`): the command
+      // is unchanged. A Human seat at war still buys the growth that leaves
+      // the Coins for any unit on offer, so the harvests and the hunt are
+      // candidates again (was 62b18a…9811).
+      "8e542b0f3cf525a6c55ad33ba9ea4ec5394f1dee1a56a7e94dbdd3b0a4cf840c",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -349,7 +353,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // candidates are scored by the assault, growth, and research rules of a
       // Human seat (was b44611…4ff5).
       // Tuning 7 (`pulp_wars-w49.10`): as above (was 8df833…16ad).
-      "59257e97e18ff2789cbd5b12d47bbea0936cc83ca1a87f320dc753eb22b5efd3",
+      // The Martian pass's correction (`pulp_wars-w49.14`): as above (was
+      // 59257e…efd3).
+      "d8d542f5b7420a15349fde84e8eeee81c3528beb595e0d0f0a9f5169d00a10dc",
     );
     const basicCommands = queryPlayerCommandsV7(basicView);
     const basicWork = new NormalPolicyWorkV7(structuredClone(basicView));
@@ -839,7 +845,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
   });
 
   it("values a legal post-Move Knight Overrun setup", () => {
-    const state = knightOverrunMoveLine();
+    // The Martian pass's correction (`pulp_wars-w49.14`): a Human seat
+    // takes the villages first for ten rounds; round 12.
+    const state = { ...knightOverrunMoveLine(), round: 12 };
     const view = viewForV7(state, state.humanPlayerId);
     const knightOverrun = ownUnit(state, "KNIGHT");
     const move = required(
@@ -1058,7 +1066,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // Tuning 8 (`pulp_wars-w49.11`): the command is Research
       // Marksmanship (it was Train Swordsman); the cause is in the pin's
       // comment (was 0802a4…cb02).
-      "e8b765d72273d33c2589e5ca101361aaef5bcbef7f70871e79b32b08017a17d1",
+      // The Martian pass's correction (`pulp_wars-w49.14`): the command is
+      // unchanged; the cause is in the pin's comment (was e8b765…17d1).
+      "f0fd0a0d03de2fc4afbc14d549c439214fe80f2b470e50ac40b09267f21263a9",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -1116,11 +1126,17 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // (training at 1215, the hunts of visible units, research held
       // behind units); was d5d6b7…9a57, and b8ab4b…15d7 with revision-12
       // ordinals.
-      "abe516a52349ee792d8febde107056ab14c3fb755a4315f25d8179fe82b0c405",
+      // The Martian pass's correction (`pulp_wars-w49.14`): the Human seat's
+      // new rules score this subset (was abe516…c405).
+      "75d6c4a6aaee9901cab3ce93ee83263e768dc2f63999331cda9e35c0d65db1f6",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
-    ).toBe("afe478d95e34329f7f99bb450012b99cc8ff2dd0ce477482f39ccdeef33907ac");
+    ).toBe(
+      // The Martian pass's correction (`pulp_wars-w49.14`): the Human seat's
+      // new rules score this subset (was afe478…07ac).
+      "b8ab4b5022177b7713636746f64e3a309f2451cb3d8dd0dfc582e96e29e215d7",
+    );
     expect(canonicalHash(sync)).toBe(canonicalHash(sliced));
     expect(sync).toEqual(sliced);
   }, 15_000);
@@ -1133,7 +1149,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r51");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r52");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

@@ -10,6 +10,7 @@ import {
   unitIsBlastProofV7,
   attackIgnoresCityWallsV7,
   attackPlaguesV7,
+  rayOverheatsV7,
   attackIsChargeV7,
   attackIsRamV7,
   attackIsTorpedoV7,
@@ -77,7 +78,13 @@ import {
   unitOwnerIsIceFolkV7,
   winterV7,
 } from "./ice-folk";
-import { absorbHitV7, pierceTileV7, rayPowerV7, shieldOfV7 } from "./martian";
+import {
+  absorbHitV7,
+  forceFieldHoldsV7,
+  pierceTileV7,
+  rayPowerV7,
+  shieldOfV7,
+} from "./martian";
 import { noRisingAtV7, riftAtV7 } from "./rift";
 import { tileAtV7 } from "./spatial-economy";
 import { tileOccupiedV7 } from "./units";
@@ -544,10 +551,12 @@ export function calculateCombatPreviewV7(
     : rawDefenderDamage;
   const defenderShield = shieldOfV7(state.shields, defender.id);
   const plated = options.ignorePlated !== true;
+  // The Martian pass, correction: a whole Force Field holds one attack.
   const defenderHit = absorbHitV7(
     defenderShield,
     defender.hp,
     armouredDamageV7(state, defender, formulaDefenderDamage, plated),
+    forceFieldHoldsV7(state, defender, defenderShield),
   );
   // The Ice Folk revision section 5.5: Shatter reads the HP the hit leaves.
   const shatters =
@@ -565,8 +574,9 @@ export function calculateCombatPreviewV7(
   /** The whole hit on the primary target: splash and Pierce derive from it. */
   const hitOnDefender = defenderHit.hpDamage + defenderShieldDamage;
   const defenderArmoured =
+    !forceFieldHoldsV7(state, defender, defenderShield) &&
     hitOnDefender <
-    Math.min(defender.hp + defenderShield, formulaDefenderDamage);
+      Math.min(defender.hp + defenderShield, formulaDefenderDamage);
   const defenderDies = damageToDefender >= defender.hp;
   // Revision 14 (V1): an UNANSWERED attacker (the Vampire) draws no
   // retaliation.
@@ -827,7 +837,15 @@ export function calculateCombatPreviewV7(
     defenderArmoured,
     attackerArmoured,
     rayPower,
-    coolingApplied: rayPower === "FULL",
+    // The Martian pass (`pulp_wars-w49.14`, 7r52): not with Heat Sinks
+    // (the Ray Gunner's ray then does not overheat).
+    coolingApplied:
+      rayPower === "FULL" &&
+      rayOverheatsV7(
+        state,
+        attacker,
+        ownerResearchedTechsV7(state, attacker.ownerId),
+      ),
     defenderShieldDamage,
     attackerShieldDamage,
     shatters,

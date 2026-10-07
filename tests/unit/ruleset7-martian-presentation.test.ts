@@ -219,7 +219,8 @@ describe("Martian texts (section 13.2)", () => {
       `Train ${label("RAIDER")} (flies, Beam Down, Tractor Beam)`,
     );
     expect(martianRoleUnlockTextV7("GUARD")).toBe(
-      `Train ${label("GUARD")} (Force Field)`,
+      // The Martian pass (7r52): the field needs the Force Fields technology.
+      `Train ${label("GUARD")} (Force Field with Force Fields)`,
     );
     expect(martianRecruitNotesV7("KNIGHT", "MARTIAN")).toContain(
       `Takes ${roleMechanicsV7("KNIGHT", "MARTIAN").capacitySlots} slots in its city.`,
@@ -234,6 +235,8 @@ describe("Martian texts (section 13.2)", () => {
       "Force Field",
       "Force Fields",
       "Heat rays",
+      // The Martian pass (7r52).
+      "Heat Sinks",
       "Pierce",
       "Ranges",
       "Disintegrator",
@@ -245,8 +248,9 @@ describe("Martian texts (section 13.2)", () => {
       "Tractor Beam",
       "Psychic Command, Strafe",
     ]);
+    // The Martian pass's correction: a whole field holds one attack.
     expect(rules.get("Force Field")).toBe(
-      `a unit that recharges next to a ${label("GUARD")} recharges to Shield ${FORCE_FIELD_SHIELD_V7}.`,
+      `with Force Fields, a unit that recharges next to a ${label("GUARD")} recharges to Shield ${FORCE_FIELD_SHIELD_V7}. At full HP with that Shield whole, one attack cannot kill it: it is left at 1 HP.`,
     );
     expect(rules.get("Mind Control")).toContain(
       `with ${MIND_CONTROL_HP_V7} HP or less within ${MIND_CONTROL_RANGE_V7} tiles`,
@@ -258,6 +262,9 @@ describe("Martian texts (section 13.2)", () => {
     // `pulp_wars-b5f.2`: the Grunt's ray pistol and the Tripod's range.
     expect(rules.get("Ranges")).toBe(
       `a ${label("FIGHTER")}'s ray pistol shoots up to two tiles away at full Attack, even after moving; a ${label("CATAPULT")} fires only at units two tiles away, never at one next to it.`,
+    );
+    expect(rules.get("Heat Sinks")).toBe(
+      `with Heat Sinks, a ${label("MARKSMAN")} does not overheat: it fires at full power every turn it does not move.`,
     );
     expect(rules.get("Heat rays")).toContain(
       `a ${label("MARKSMAN")}, ${label("CATAPULT")}, or ${label("JUGGERNAUT")} fires at full power`,

@@ -56,7 +56,7 @@ const foe = (
 /** Seat 0 Martian (the viewer) against seat 1 of `opponent`. */
 const asMartian = (
   pieces: readonly MartianPieceV7[],
-  opponent: "ORIGINAL" | "GOBLIN" | "UNDEAD" = "ORIGINAL",
+  opponent: "ORIGINAL" | "GOBLIN" | "UNDEAD" | "DINOSAUR" = "ORIGINAL",
 ): GameStateV7 => martianFieldV7(pieces, { factions: ["MARTIAN", opponent] });
 /** Seat 0 of `viewer` (the viewer) against seat 1 Martian. */
 const againstMartian = (
@@ -262,16 +262,22 @@ describe("Mind Control AI: playing controlled units", () => {
   });
 
   it("a controlled Goblin walks into a Kaboom by the Goblin rules", () => {
-    const state = asMartian(
-      [
-        own("CAPTAIN", 8, 2),
-        foe("FIGHTER", 5, 2, { controlledBy: at(8, 2) }),
-        foe("CAPTAIN", 3, 2, { hp: 3 }),
-        foe("CAPTAIN", 3, 3, { hp: 3 }),
-        foe("CAPTAIN", 3, 1, { hp: 3 }),
-      ],
-      "GOBLIN",
-    );
+    // The Martian pass (`pulp_wars-w49.14`): a Martian seat against
+    // Goblins plays the army rules, whose opening (villages first, ten
+    // rounds) keeps a capturer out of the enemy's reach; round 12.
+    const state: GameStateV7 = {
+      ...asMartian(
+        [
+          own("CAPTAIN", 8, 2),
+          foe("FIGHTER", 5, 2, { controlledBy: at(8, 2) }),
+          foe("CAPTAIN", 3, 2, { hp: 3 }),
+          foe("CAPTAIN", 3, 3, { hp: 3 }),
+          foe("CAPTAIN", 3, 1, { hp: 3 }),
+        ],
+        "GOBLIN",
+      ),
+      round: 12,
+    };
     const setups = (): number =>
       unitCandidatesV7(state, at(5, 2), "MOVE").filter(
         (item) => item.score.priority === 1177,
@@ -281,7 +287,10 @@ describe("Mind Control AI: playing controlled units", () => {
     baseline(() => expect(setups()).toBe(0));
   });
 
-  it("never disbands a controlled unit", () => {
+  // The Martian pass's correction (`pulp_wars-w49.14`): `DISBAND` on a
+  // controlled unit is offered (it is Release); the policy still never
+  // asks for it.
+  it("never releases a controlled unit", () => {
     const state = asMartian([
       own("CAPTAIN", 5, 5),
       foe("KNIGHT", 5, 6, { hp: 4, controlledBy: at(5, 5) }),
@@ -289,7 +298,7 @@ describe("Mind Control AI: playing controlled units", () => {
     const view = viewerViewV7(state);
     const knight = unitIdAtV7(state, at(5, 6));
     const disband: CommandV7 = { kind: "DISBAND", unitId: knight };
-    expect(queryPlayerCommandsV7(view)).not.toContainEqual(disband);
+    expect(queryPlayerCommandsV7(view)).toContainEqual(disband);
     expect(scoreCommandV7(view, disband).priority).toBe(-1);
     expect(
       candidatesV7(state).some((item) => item.command.kind === "DISBAND"),
@@ -318,11 +327,17 @@ describe("Mind Control AI: playing controlled units", () => {
   });
 
   it("drops the Thrall's front-row chip priority", () => {
-    const state = asMartian([
-      own("CAPTAIN", 8, 2),
-      foe("FIGHTER", 4, 4, { controlledBy: at(8, 2) }),
-      foe("FIGHTER", 3, 4, { hp: 9 }),
-    ]);
+    // (The Martian pass, `pulp_wars-w49.14`: against a Dinosaur seat, a
+    // controlled Caveman. Against a Human seat the army rules give a
+    // committed unit's hit its own priority, with or without the switch.)
+    const state = asMartian(
+      [
+        own("CAPTAIN", 8, 2),
+        foe("FIGHTER", 4, 4, { controlledBy: at(8, 2) }),
+        foe("FIGHTER", 3, 4, { hp: 9 }),
+      ],
+      "DINOSAUR",
+    );
     const chip = unitCandidatesV7(state, at(4, 4), "ATTACK")[0];
     expect(chip).toBeDefined();
     expect(chip?.score.priority).not.toBe(CONTROLLED_CHIP_PRIORITY_V7);

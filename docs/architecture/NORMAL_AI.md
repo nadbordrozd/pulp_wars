@@ -1,5 +1,150 @@
 # Greedy Normal AI
 
+## The Martian pass (`pulp_wars-w49.14`)
+
+**[The Martian faction pass](../product/RULESET_7_TUNING_MARTIAN.md#8-the-normal-ai)**
+(`pulp-wars-poc-7r52`) put the Force Field behind Force Fields, made the
+Martian Fieldcraft Heat Sinks, and gave a Martian Survey a Saucer. It also
+made `MARTIAN` an army faction (`ARMY_PLAY_FACTIONS_V7` in
+`src/ai/v7-army.ts`): in a match whose every seat is Human, Goblin,
+Undead, or Martian, every seat plays the army rules. Before, a Martian
+seat at the table switched them off for everyone. In a match with a
+Dinosaur, Ice Folk, Dwarf, or Candy seat a Martian seat plays the policy
+of [Martian play](#martian-play-pulp_wars-t6s3) and
+[Martian mobility play](#martian-mobility-play-pulp_wars-1wy4) as before.
+Every rule below is a Martian army seat's.
+
+- **Research order** (`ARMY_RESEARCH_ROLES_V7.MARTIAN`): Shield Projector,
+  Ray Gunner, Tripod, Brain, Saucer, Mothership: Drill, Hunting,
+  Marksmanship, Forestry, Sawmilling, Administration, Scouting, Raiding,
+  Chivalry from a Gathering opener. Force Fields is inserted before the
+  Tripod's technologies once the seat fields
+  `ARMY_FORCE_FIELDS_PROJECTORS_V7` (1) Projector, and Heat Sinks
+  (Fieldcraft) before the Mothership's once it fields
+  `ARMY_HEAT_SINKS_RAY_GUNNERS_V7` (2) Ray Gunners. `martianResearchV7`
+  (the older order) is not consulted by an army seat.
+- **Shares** (`ARMY_SHARES_V7.martian`, line / defender / ranged / siege /
+  breakthrough): 40 / 15 / 15 / 20 / 10; against two or more visible
+  ranged, siege, or support units 35 / 15 / 15 / 25 / 10. One Saucer for
+  every `ARMY_MARTIAN_SKIRMISHER_PER_UNITS_V7` (6) units, at most
+  `ARMY_MARTIAN_SKIRMISHER_MAXIMUM_V7` (2).
+- **The Coins for a dear unit** (`armyDearUnitFloorV7`): for the Tripod,
+  then the Mothership, as for the Undead seat's Lich and Vampire.
+- **A threatened or frontier center** adds
+  `ARMY_MARTIAN_FRONT_LINE_VALUE_V7` (200) to a Grunt's training score
+  and `ARMY_MARTIAN_FRONT_DEFENDER_VALUE_V7` (100) to a Projector's (the
+  other factions' defender has the 200): the Grunt is the body that
+  shoots what walks up. A Mothership costs
+  `ARMY_FRONT_BREAKTHROUGH_COST_V7` there, as a Goblin seat's Scrap Buggy
+  does.
+- **The opening** (`armyOpeningSeatV7`: an Undead or a Martian seat):
+  villages first, one economy technology after the first unit of the
+  order, and the best unit on a threatened center. The garrison bonus is
+  not given to a machine (a Tripod or a Mothership has no Walls) or to a
+  Projector beyond its share.
+- **Step back** (`ARMY_STEP_BACK_PRIORITY_V7`, 1175): a shooter with a
+  hand-to-hand unit beside it (the Grunt's and the Tripod's step back, a
+  Cooling ray unit's) moves to two tiles before it shoots, above a
+  committed attack from the next tile (1174) and below every kill (1180).
+  The older rule had it at 904, which a committed assault outranked.
+- **The Shield Projector** makes no attack that takes back more than it
+  deals (`martianAttackRejectedV7`), and its Move beside own shielded
+  units is worth `ARMY_ESCORT_VALUE_V7` a unit. The value of its cover
+  for other units is counted only with Force Fields.
+- **Weak links** (`armyWeakLinkV7`): a Martian unit whose HP and Shield
+  maximum together are below `ARMY_MARTIAN_STURDY_V7` (15) is a weak link
+  of a kill chain at any HP (a Knight kills it through its Shield and
+  rides on), so the spacing rules of the army keep Grunts, Ray Gunners,
+  Brains, Saucers, and Tripods from standing side by side in a chaining
+  unit's reach. A Projector and a Mothership are not weak links.
+- **The Saucer** does not approach, rally, or close in with the line
+  (`fights` is false for it); it joins an engagement or a hunt only with
+  its own kill; in the reach of visible enemies it flies to a tile where
+  it takes less (`ARMY_CARRIER_KEEP_OUT_PRIORITY_V7`, 880: below an
+  extraction at 890 and a shot on arrival at 906, above the delivery by
+  route at 865), and its Recover there waits (300). Beam Down, the pulls,
+  and the extraction are the rules of
+  [Martian mobility play](#martian-mobility-play-pulp_wars-1wy4).
+
+### The correction after three hand-played games
+
+[Section 13 of the pass](../product/RULESET_7_TUNING_MARTIAN.md#13-the-correction-after-three-hand-played-games)
+has the evidence. The rules changed with it (a whole Force Field holds
+one attack, Psychic Command every second turn, Release), and so did the
+policy.
+
+A Martian army seat:
+
+- researches Force Fields at the first unit of the order after its first
+  Projector is fielded (`role === "MARKSMAN"` in `armyResearchTargetV7`;
+  it was before the Tripod);
+- keeps the Coins for the economy technology of its opening
+  (`armyResearchFloorV7` also when the target is the technology of
+  `armyEconomyFirstV7`: the price less one turn's income);
+- trains a Shield Projector onto a contested center until one stands on
+  or beside it, and then no Ray Gunner, Brain, or Tripod while a Grunt
+  can be trained (`armyHelplessGarrisonV7`);
+- steps a unit that a visible unit with Overrun kills in one attack out
+  of that unit's reach at `ARMY_STEP_BACK_PRIORITY_V7`, and makes no Move
+  of priority `ARMY_KNIGHT_SHY_MAXIMUM_V7` (1179) or lower into it except
+  onto a village (`armyKnightShyV7`); a unit on an own center stays, and
+  a full-HP unit whose Move ends beside an own Projector, with Force
+  Fields, may enter;
+- counts a unit a Force Field holds as no weak link (`armyWeakLinkV7`);
+- flies a Saucer that has its action to a tile beside a free village no
+  own capturer is within two tiles of
+  (`ARMY_VILLAGE_FERRY_PRIORITY_V7`, 870), and beams a capturer that has
+  not acted from on or beside an own center to a tile beside such a
+  village at least `ARMY_VILLAGE_DELIVERY_GAIN_V7` (2) tiles nearer
+  (`ARMY_VILLAGE_DELIVERY_PRIORITY_V7`, 1168, just below the step onto
+  the village);
+- extracts a unit by Beam Down only to a tile within three tiles of it,
+  within two of another own land unit, or within two of an own center.
+
+A Human army seat:
+
+- is an economy seat (`armyEconomySeatV7`: the opening seats and the
+  Human seat): villages first for `ARMY_VILLAGES_FIRST_ROUNDS_V7` rounds
+  and one economy technology its land can use after the first unit of
+  its order (the Marksman) and before the second;
+- trains no role whose Defense is lower against ranged attacks (the
+  Guard) while it can train another in that city, when at least
+  `ARMY_RANGED_ENEMY_UNITS_V7` (3) hostile land units are visible and
+  more than half of them attack from two tiles or more
+  (`armyOpenToRangedUselessV7`, in the choice of the city's training).
+
+A Human and a Martian army seat (`armyCorrectionSeatV7`; an Undead and a
+Goblin seat keep the policy their own passes were played with):
+
+- keep the Coins for the economy technology of their opening (above);
+- pressed, still buy the construction that adds population in a city
+  with no hostile unit within `ARMY_RESEARCH_FLOOR_GATES_V7` tiles of its
+  center when the Coins left pay for the dearest training on offer, so
+  that the growth never decides which unit is trained
+  (`armyWarGrowthBuysV7`);
+- walk a capturer within `ARMY_RETAKE_RADIUS_V7` of a hostile center no
+  unit stands on toward it, where the visible enemies do not kill it and
+  neither the battery nor the storm rule has a Move for the unit
+  (`ARMY_EMPTY_CENTER_PRIORITY_V7`, 1160).
+
+Every army seat:
+
+- makes no routine Move (at most `ARMY_ROUTINE_MOVE_MAXIMUM_V7`; a hunt
+  and a storm have their own rules) without an attack with a unit that
+  has Overrun that ends in the enemy's reach, outside its own land, with
+  no own unit beside the tile, and takes a village with such a unit only
+  where no visible enemy can hit it.
+
+Two diagnostic matches of the first version, each run twice (the second
+after the rules the first asked for), and the two of the correction (also
+run twice, the second time on the final tree) are in
+sections [8.1](../product/RULESET_7_TUNING_MARTIAN.md#81-two-diagnostic-matches)
+and [13.8](../product/RULESET_7_TUNING_MARTIAN.md#138-two-diagnostic-matches)
+of the pass.
+Tests: `tests/unit/ruleset-v7-martian-pass.test.ts`; the older Martian AI
+tests that fix a rule an army seat no longer follows run against a
+Dinosaur seat.
+
 ## The Undead pass (`pulp_wars-w49.13`)
 
 **[The Undead faction pass](../product/RULESET_7_TUNING_UNDEAD.md#8-the-normal-ai)**
@@ -451,11 +596,12 @@ faction's own order that the seat cannot train yet
 (`ARMY_RESEARCH_ROLES_V7`), from the first turn and not only while alert.
 Each faction's signature units come first:
 
-| Faction | Units in order                                                         | Technologies from a Gathering opener                                                                                           |
-| ------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| Humans  | Marksman, Guard, Swordsman, Catapult, Knight, Captain                  | Hunting, Marksmanship, Drill, Engineering, Forestry, Sawmilling, Scouting, Raiding, Chivalry, Administration (the Goblin pass) |
-| Undead  | Zombie, Banshee, Lich, Necromancer, Vampire                            | Drill, Hunting, Marksmanship, Forestry, Sawmilling, Administration, Scouting, Raiding, Chivalry (the Undead pass)              |
-| Goblins | Bomb Chucker, Wolf Rider, Orc Brute, Rocket Cart, Warboss, Scrap Buggy | Hunting, Marksmanship, Scouting, Drill, Forestry, Sawmilling, Administration, Raiding, Chivalry (the Goblin pass)              |
+| Faction  | Units in order                                                         | Technologies from a Gathering opener                                                                                           |
+| -------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Humans   | Marksman, Guard, Swordsman, Catapult, Knight, Captain                  | Hunting, Marksmanship, Drill, Engineering, Forestry, Sawmilling, Scouting, Raiding, Chivalry, Administration (the Goblin pass) |
+| Undead   | Zombie, Banshee, Lich, Necromancer, Vampire                            | Drill, Hunting, Marksmanship, Forestry, Sawmilling, Administration, Scouting, Raiding, Chivalry (the Undead pass)              |
+| Goblins  | Bomb Chucker, Wolf Rider, Orc Brute, Rocket Cart, Warboss, Scrap Buggy | Hunting, Marksmanship, Scouting, Drill, Forestry, Sawmilling, Administration, Raiding, Chivalry (the Goblin pass)              |
+| Martians | Shield Projector, Ray Gunner, Tripod, Brain, Saucer, Mothership        | Drill, Hunting, Marksmanship, Forestry, Sawmilling, Administration, Scouting, Raiding, Chivalry (the Martian pass)             |
 
 (The first draft of this bead used one class order for all three, ranged,
 siege, breakthrough, line, defender, support, which put the Zombie ninth.)

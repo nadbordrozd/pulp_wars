@@ -777,7 +777,12 @@ export function publicUnitStatsV7(
             rayPower,
             cooling,
             pierce: !embarked && role.abilities.includes("PIERCE"),
-            forceField: !embarked && role.abilities.includes("FORCE_FIELD"),
+            // The Martian pass (`pulp_wars-w49.14`, 7r52): a Projector
+            // projects the field once its owner has Force Fields.
+            forceField:
+              !embarked &&
+              role.abilities.includes("FORCE_FIELD") &&
+              capabilities.projectsForceField,
             mindControl: role.abilities.includes("MIND_CONTROL")
               ? {
                   cooldown:

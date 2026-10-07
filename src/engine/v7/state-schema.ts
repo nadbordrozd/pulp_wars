@@ -2157,7 +2157,12 @@ function validateCrossReferences(value: CrossInput): boolean {
       unit === undefined ||
       unit.hp <= 0 ||
       faction === undefined ||
-      !effectiveRoleRuleV7(unit.role, faction).abilities.includes("HEAT_RAY") ||
+      // The Martian pass, correction: a ray unit, or a unit whose Rally
+      // cools (the Brain after its Psychic Command).
+      (!effectiveRoleRuleV7(unit.role, faction).abilities.includes(
+        "HEAT_RAY",
+      ) &&
+        !roleMechanicsV7(unit.role, faction).rallyCools) ||
       (entry.firedThisTurn && unit.ownerId !== value.activePlayerId)
     )
       return false;

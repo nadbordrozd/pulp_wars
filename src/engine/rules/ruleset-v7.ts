@@ -139,9 +139,17 @@ export type TechnologyUnlockV7 =
   | { readonly kind: "BRAIN_SUPPORT" }
   /**
    * The Martian revision: Force Fields (the Martian `FORTIFICATION`): the
-   * owner's Shields also recharge at the end of its turn.
+   * owner's Shields also recharge at the end of its turn. The Martian pass
+   * (`pulp_wars-w49.14`, 7r52): and its Shield Projectors project the Force
+   * Field (without it a Projector covers nobody).
    */
   | { readonly kind: "FORCE_FIELDS" }
+  /**
+   * The Martian pass (`pulp_wars-w49.14`, 7r52): Heat Sinks (the Martian
+   * `FIELDCRAFT`): a full-power ray of the owner's units with the
+   * `heatSink` role mechanic (the Ray Gunner) leaves the unit not Cooling.
+   */
+  | { readonly kind: "HEAT_SINKS" }
   /**
    * The Martian revision: the Disintegrator (the Martian `EXPLOSIVES`): the
    * owner's heat rays ignore the defender's fortification.
@@ -507,6 +515,20 @@ export interface RoleMechanicsV7 {
    * (the Ghoul 2), or 0.
    */
   readonly carrionBonus2: number;
+  /**
+   * The Martian pass (`pulp_wars-w49.14`, 7r52): the role's heat ray does
+   * not overheat once its owner has Heat Sinks (the Martian Ray Gunner):
+   * a full-power ray leaves it not Cooling.
+   */
+  readonly heatSink: boolean;
+  /**
+   * The Martian pass, correction (`pulp_wars-w49.14`): the role's Rally
+   * (the Martian Brain's Psychic Command) leaves the unit Cooling until
+   * the end of its owner's next turn, and a Cooling unit cannot Rally: one
+   * command every second turn. (The `cooling` list holds the entry, as for
+   * a full-power heat ray.)
+   */
+  readonly rallyCools: boolean;
   /**
    * The Dwarf revision (docs/product/RULESET_7_DWARVES.md section 2.3): a
    * construct (Clockwork Gunner, Brass Titan) is fully mechanical: not
@@ -1402,6 +1424,8 @@ const mechanics = (
           rockfallAttack2: 0,
           coldBloodBonus2: 0,
           carrionBonus2: 0,
+          heatSink: false,
+          rallyCools: false,
           construct: false,
           unflinchingAttack: false,
           repairsAsMachine: false,
@@ -2142,6 +2166,11 @@ export const MARTIAN_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
           ...(original.id === "EXPLOSIVES"
             ? [{ kind: "DISINTEGRATOR" } as const]
             : []),
+          // The Martian pass (`pulp_wars-w49.14`, 7r52): Fieldcraft (shown
+          // as Heat Sinks) keeps every Human unlock and adds `HEAT_SINKS`.
+          ...(original.id === "FIELDCRAFT"
+            ? [{ kind: "HEAT_SINKS" } as const]
+            : []),
         ],
       ),
     ),
@@ -2310,9 +2339,12 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
 export const MARTIAN_ROLE_MECHANICS_V7 = mechanics({
   FIGHTER: { buildsFieldDefense: false, shield: 2 },
   RAIDER: { shield: 2, movementMode: "FLY", advancesAfterKill: false },
-  MARKSMAN: { shield: 2 },
+  // The Martian pass (`pulp_wars-w49.14`, 7r52): with Heat Sinks the Ray
+  // Gunner's ray does not overheat.
+  MARKSMAN: { shield: 2, heatSink: true },
   GUARD: { buildsFieldDefense: false, shield: 3 },
-  CAPTAIN: { shield: 2 },
+  // The Martian pass, correction: Psychic Command every second turn.
+  CAPTAIN: { shield: 2, rallyCools: true },
   CATAPULT: { shield: 2, movementMode: "STRIDE", advancesAfterKill: false },
   KNIGHT: {
     shield: 4,
@@ -3112,8 +3144,13 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
   UNDEAD: { EXPLOSIVES: "Pestilence" },
   GOBLIN: { COMMERCE: "Plunder" },
   DINOSAUR: { FORTIFICATION: "Nesting", EXPLOSIVES: "Wallbreaker" },
-  // The Martian revision: Fortification and Explosives are renamed.
-  MARTIAN: { FORTIFICATION: "Force Fields", EXPLOSIVES: "Disintegrator" },
+  // The Martian revision: Fortification and Explosives are renamed. The
+  // Martian pass (`pulp_wars-w49.14`, 7r52): Fieldcraft is Heat Sinks.
+  MARTIAN: {
+    FORTIFICATION: "Force Fields",
+    EXPLOSIVES: "Disintegrator",
+    FIELDCRAFT: "Heat Sinks",
+  },
   // The Ice Folk revision: Fortification and Explosives are renamed.
   // The frozen sea (naval branch section 2.2): the five Naval names.
   ICE_FOLK: {
@@ -4479,6 +4516,24 @@ export function attackIsRayV7(
   );
 }
 
+/**
+ * The Martian pass (`pulp_wars-w49.14`, 7r52): whether a full-power ray by
+ * this unit leaves it Cooling. Not when its role has the `heatSink`
+ * mechanic and its controller's research grants Heat Sinks in the unit's
+ * own tree (the Martian `FIELDCRAFT`): then the Ray Gunner fires at full
+ * power every turn it does not move.
+ */
+export function rayOverheatsV7(
+  roster: FactionRosterV7,
+  unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 },
+  ownerResearchedTechs: readonly TechnologyIdV7[],
+): boolean {
+  return !(
+    unitRoleMechanicsV7(roster, unit).heatSink &&
+    unitCapabilitiesV7(roster, unit, ownerResearchedTechs).heatSinks
+  );
+}
+
 /** The role `attack2` of a ray at half power: half, rounded down. */
 export function halfPowerAttack2V7(attack2: number): number {
   return Math.floor(attack2 / 2);
@@ -4797,6 +4852,17 @@ export interface TechnologyCapabilitiesV7 {
    */
   readonly shieldsRechargeAtEndTurn: boolean;
   /**
+   * The Martian pass (`pulp_wars-w49.14`, 7r52), Force Fields: the player's
+   * Shield Projectors project the Force Field (a unit that recharges next
+   * to one recharges to `FORCE_FIELD_SHIELD_V7`).
+   */
+  readonly projectsForceField: boolean;
+  /**
+   * The Martian pass, Heat Sinks: a full-power ray of the player's units
+   * with the `heatSink` role mechanic leaves the unit not Cooling.
+   */
+  readonly heatSinks: boolean;
+  /**
    * The Martian revision, Disintegrator: the player's heat rays ignore the
    * defender's fortification.
    */
@@ -4922,6 +4988,8 @@ export function technologyCapabilitiesV7(
   let ignoresCityWalls = false;
   let plague = false;
   let shieldsRechargeAtEndTurn = false;
+  let projectsForceField = false;
+  let heatSinks = false;
   let raysIgnoreFortification = false;
   let deepWinter = false;
   let shatterThreshold = SHATTER_HP_V7;
@@ -5015,6 +5083,10 @@ export function technologyCapabilitiesV7(
         break;
       case "FORCE_FIELDS":
         shieldsRechargeAtEndTurn = true;
+        projectsForceField = true;
+        break;
+      case "HEAT_SINKS":
+        heatSinks = true;
         break;
       case "DISINTEGRATOR":
         raysIgnoreFortification = true;
@@ -5124,6 +5196,8 @@ export function technologyCapabilitiesV7(
     ignoresCityWalls,
     plague,
     shieldsRechargeAtEndTurn,
+    projectsForceField,
+    heatSinks,
     raysIgnoreFortification,
     deepWinter,
     shatterThreshold,

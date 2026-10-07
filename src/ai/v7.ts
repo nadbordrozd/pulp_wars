@@ -10,6 +10,7 @@ import {
   GROWTH_KILLS_V7,
   COLD_SNAP_RANGE_V7,
   MIND_CONTROL_HP_V7,
+  FORCE_FIELD_SHIELD_V7,
   MIND_CONTROL_RANGE_V7,
   MIND_CONTROL_LIMIT_V7,
   armouredDamageV7,
@@ -145,6 +146,12 @@ import {
   ARMY_CENTER_HOLDER_WORTH_V7,
   ARMY_LATE_RESEARCH_V7,
   ARMY_RETAKE_RADIUS_V7,
+  ARMY_KNIGHT_SHY_MAXIMUM_V7,
+  ARMY_VILLAGE_DELIVERY_PRIORITY_V7,
+  ARMY_VILLAGE_FERRY_PRIORITY_V7,
+  ARMY_VILLAGE_DELIVERY_GAIN_V7,
+  ARMY_EMPTY_CENTER_PRIORITY_V7,
+  ARMY_RANGED_ENEMY_UNITS_V7,
   ARMY_RETAKE_UNITS_V7,
   ARMY_BATTERY_PRIORITY_V7,
   ARMY_BATTERY_REACH_V7,
@@ -197,6 +204,11 @@ import {
   ARMY_BANSHEE_APPROACH_RADIUS_V7,
   ARMY_CURE_TRAINING_VALUE_V7,
   ARMY_PESTILENCE_LICHES_V7,
+  ARMY_FORCE_FIELDS_PROJECTORS_V7,
+  ARMY_MARTIAN_STURDY_V7,
+  ARMY_CARRIER_KEEP_OUT_PRIORITY_V7,
+  ARMY_STEP_BACK_PRIORITY_V7,
+  ARMY_HEAT_SINKS_RAY_GUNNERS_V7,
   ARMY_SWAP_PRIORITY_V7,
   ARMY_VILLAGES_FIRST_DANGER_V7,
   ARMY_VILLAGES_FIRST_REACH_V7,
@@ -360,6 +372,7 @@ import {
   MOTHERSHIP_PULL_RADIUS_V7,
   WASTED_FULL_RAY_COST_V7,
   CARRIER_RESCUE_MOVE_PRIORITY_V7,
+  BEAM_DOWN_EXTRACT_PRIORITY_V7,
   HEAVY_PULL_RADIUS_V7,
   SAUCER_PULL_RADIUS_V7,
   SHOOTER_CONTACT_COST_V7,
@@ -3600,6 +3613,36 @@ function armyResearchTargetV7(
       )
         chosen = toward("EXPLOSIVES");
       if (chosen !== null) break;
+      // The Martian pass (`pulp_wars-w49.14`): Force Fields (the Shield
+      // Projectors' field) before the Tripod once the seat fields a
+      // Projector, and Heat Sinks before the Mothership once it fields two
+      // Ray Gunners.
+      if (faction === "MARTIAN") {
+        const fielded = (ability: "FORCE_FIELD" | "HEAT_RAY"): number =>
+          view.units.filter(
+            (unit) =>
+              unit.ownerId === view.viewer.id &&
+              unit.form === "LAND" &&
+              unit.role ===
+                (ability === "FORCE_FIELD" ? "GUARD" : "MARKSMAN") &&
+              unitRoleRuleV7(view, unit).abilities.includes(ability),
+          ).length;
+        // The correction: before the Ray Gunner, not before the Tripod
+        // (a seat with two Projectors from round 6 owned no Force Fields
+        // in round 16, and the field is now also what a Knight's first
+        // attack does not kill through).
+        if (
+          role === "MARKSMAN" &&
+          fielded("FORCE_FIELD") >= ARMY_FORCE_FIELDS_PROJECTORS_V7
+        )
+          chosen = toward("FORTIFICATION");
+        else if (
+          role === "KNIGHT" &&
+          fielded("HEAT_RAY") >= ARMY_HEAT_SINKS_RAY_GUNNERS_V7
+        )
+          chosen = toward("FIELDCRAFT");
+      }
+      if (chosen !== null) break;
       if (
         rule.technology === null ||
         rule.cost === null ||
@@ -3742,6 +3785,46 @@ function armyUndeadSeatV7(context: PolicyContextV7): boolean {
   return context.army && context.view.viewer.faction === "UNDEAD";
 }
 
+/**
+ * The Martian pass (`pulp_wars-w49.14`): the seats whose opening takes the
+ * villages first, buys one growth technology after the first unit of its
+ * order, and garrisons a threatened center with its best unit: an Undead
+ * seat and a Martian one. (A Martian seat fought at the enemy's villages
+ * from round 7 with three Grunts, held three cities against five in round
+ * 9, and its capital stood at level 2 for thirty rounds.)
+ */
+function armyOpeningSeatV7(context: PolicyContextV7): boolean {
+  const faction = context.view.viewer.faction;
+  return context.army && (faction === "UNDEAD" || faction === "MARTIAN");
+}
+
+/**
+ * The Martian pass, correction: the seats that take the villages first and
+ * research one economy technology their land can use before their second
+ * unit technology: the opening seats and the Human seat. (A Human seat one
+ * on one stalled in four hand-played games: seven technologies in
+ * twenty-five rounds; six in twenty-seven with an income of 9 Coins from
+ * round 6 to round 20 and four cities at level 2; its first economy
+ * technology came in round 12.)
+ */
+function armyEconomySeatV7(context: PolicyContextV7): boolean {
+  return (
+    armyOpeningSeatV7(context) ||
+    (context.army && context.view.viewer.faction === "ORIGINAL")
+  );
+}
+
+/**
+ * The Martian pass, correction: the two seats its rules for the Coins of
+ * the economy technology, growth at war, and an empty hostile center are
+ * for: a Human and a Martian army seat. (An Undead and a Goblin seat keep
+ * the policy their own passes were played with.)
+ */
+function armyCorrectionSeatV7(context: PolicyContextV7): boolean {
+  const faction = context.view.viewer.faction;
+  return context.army && (faction === "ORIGINAL" || faction === "MARTIAN");
+}
+
 const ARMY_VILLAGES_FIRST_CACHE_V7 = new WeakMap<PolicyContextV7, boolean>();
 
 /**
@@ -3755,7 +3838,7 @@ function armyVillagesFirstV7(context: PolicyContextV7): boolean {
   const view = context.view;
   let result = false;
   if (
-    armyUndeadSeatV7(context) &&
+    armyEconomySeatV7(context) &&
     !context.naval.active &&
     view.round <= ARMY_VILLAGES_FIRST_ROUNDS_V7
   ) {
@@ -3840,7 +3923,7 @@ function armyVillagesFirstHoldsV7(
  * once.)
  */
 function armyEconomyFirstV7(context: PolicyContextV7): boolean {
-  if (!armyUndeadSeatV7(context)) return false;
+  if (!armyEconomySeatV7(context)) return false;
   const view = context.view;
   const faction = view.viewer.faction;
   const technologies = (ARMY_RESEARCH_ROLES_V7[faction] ?? []).flatMap(
@@ -3916,7 +3999,7 @@ function armySwapsOutV7(
   context: PolicyContextV7,
   command: Extract<CommandV7, { kind: "MOVE" | "ATTACK" }>,
 ): boolean {
-  if (command.kind !== "MOVE" || !armyUndeadSeatV7(context)) return false;
+  if (command.kind !== "MOVE" || !armyOpeningSeatV7(context)) return false;
   const view = context.view;
   const actor = context.lookup.unitsById.get(command.unitId);
   const to = command.path.at(-1);
@@ -4179,10 +4262,32 @@ function armyHelplessGarrisonV7(
   const faction = view.viewer.faction;
   // The Undead pass, correction: for an Undead seat also a unit with no
   // attack of its own (the Banshee).
-  const helpless = (rule: EffectiveRoleRuleV7): boolean =>
-    faction === "UNDEAD" ? armyHelplessRuleV7(rule) : rule.minimumRange >= 2;
-  if (!helpless(effectiveRoleRuleV7(role, faction))) return false;
   const city = context.lookup.citiesById.get(cityId);
+  // The Martian pass, correction: a Martian seat's garrison of a contested
+  // center is a Shield Projector: until one stands on or beside the
+  // center nothing else is trained there while a Projector can be, and
+  // with one there no Ray Gunner, Brain, or Tripod while a Grunt can be.
+  // (A Ray Gunner was trained onto a walled center beside open ground two
+  // rounds running and died there to a Knight without firing.)
+  const projectorNear =
+    faction === "MARTIAN" &&
+    city !== undefined &&
+    view.units.some(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.form === "LAND" &&
+        distance(unit.at, city.at) <= 1 &&
+        unitRoleRuleV7(view, unit).abilities.includes("FORCE_FIELD"),
+    );
+  const helpless = (rule: EffectiveRoleRuleV7): boolean =>
+    faction === "UNDEAD"
+      ? armyHelplessRuleV7(rule)
+      : faction === "MARTIAN"
+        ? projectorNear
+          ? armyClassV7(rule) !== "LINE" && armyClassV7(rule) !== "DEFENDER"
+          : !rule.abilities.includes("FORCE_FIELD")
+        : rule.minimumRange >= 2;
+  if (!helpless(effectiveRoleRuleV7(role, faction))) return false;
   if (city === undefined || !armyContestedCenterV7(context, city.at))
     return false;
   return context.commands.some(
@@ -4517,6 +4622,10 @@ function armyEngagementsForV7(
       const committed = armyModeV7(context, actor) === "COMMIT";
       const hunter = armyHuntsFragileV7(context, actor);
       const bomber = context.goblin && friendlyFireBomberV7(view, actor);
+      // The Martian pass (`pulp_wars-w49.14`): a Saucer finishes units, it
+      // does not trade (`martianAttackRejectedV7`): only its kill is a
+      // reason to fly in.
+      const finisher = context.martian && isSaucerForPolicyV7(view, actor);
       const found = new Map<string, ArmyEngagementV7>();
       for (const to of context.lookup.moveDestinationsByUnit.get(actor.id) ??
         []) {
@@ -4536,6 +4645,7 @@ function armyEngagementsForV7(
           );
           if (dealt <= 0) continue;
           const kills = dealt >= target.hp;
+          if (finisher && !kills) continue;
           // Tuning 7: a bomb that would splash own units is no reason to
           // move (the Bomb Chucker walked up and then did not throw). The
           // Goblin pass, correction: unless the throw itself would be
@@ -4750,6 +4860,11 @@ function armyMoveValueV7(
     // village only where no visible enemy can hit it: it stands there for
     // a turn and cannot strike back at what walks up.
     (!armySlowMeleeV7(context, actor) ||
+      visibleImmediateDamage(view, actor, to, context) <= 0) &&
+    // The Martian pass, correction: nor does a unit with Overrun (a
+    // 9-Coin Knight) sit on a village in the enemy's reach: two did, with
+    // nothing beside them, and were pulled into a Tripod's shot.
+    (!unitRoleRuleV7(view, actor).abilities.includes("OVERRUN") ||
       visibleImmediateDamage(view, actor, to, context) <= 0)
   )
     return {
@@ -4922,6 +5037,23 @@ function armyMoveValueV7(
       };
     }
   }
+  // The Martian pass, correction: a unit with Overrun does not ride ahead
+  // of its line. Its Move without an attack that ends in the enemy's reach
+  // outside its own land ends beside another own unit. (A Human seat fed
+  // thirteen Knights to a firing line one or two at a time: three of the
+  // sixteen it fielded ever attacked.)
+  if (
+    engagement === undefined &&
+    // (A hunt and a storm have their own rules and groups.)
+    priority <= ARMY_ROUTINE_MOVE_MAXIMUM_V7 &&
+    facts.abilities.includes("OVERRUN") &&
+    !same(actor.at, to) &&
+    danger > 0 &&
+    danger > visibleImmediateDamage(view, actor, actor.at, context) &&
+    !inOwnTerritoryForPolicyV7(view, view.viewer.id, to) &&
+    armyOwnNeighboursV7(context, actor, to) === 0
+  )
+    return { priority: -1, strategic: 0 };
   // Correction pass: the battery over a stormed center is answered first.
   const gun = errand ? null : armyBatteryTargetV7(context, actor);
   if (gun !== null && !same(actor.at, to)) {
@@ -4962,10 +5094,24 @@ function armyMoveValueV7(
     const stormMove = armyStormMoveV7(context, actor, to, priority);
     if (stormMove !== null) return stormMove;
   }
+  // The Martian pass, correction: toward a hostile center nobody stands
+  // on, where the battery and the storm above have no Move for the unit.
+  if (gun === null) {
+    const emptyCenter = armyEmptyCenterMoveV7(context, actor, to, danger);
+    if (emptyCenter !== null)
+      return {
+        priority: Math.max(priority, ARMY_EMPTY_CENTER_PRIORITY_V7),
+        strategic: emptyCenter - spacing,
+      };
+  }
   // Tuning 7: a Banshee fights with its Wail, from two tiles.
   const wails = facts.abilities.includes("WAIL");
+  // The Martian pass (`pulp_wars-w49.14`): a Saucer is a carrier and a
+  // puller, not a fighting unit: it does not close in, approach, or rally
+  // with the line (its own rules stage it, beam, pull, and extract).
   const fights =
-    (facts.abilities.includes("ATTACK") && facts.attack2 > 0) || wails;
+    ((facts.abilities.includes("ATTACK") && facts.attack2 > 0) || wails) &&
+    !(context.martian && isSaucerForPolicyV7(view, actor));
   const band = wails ? WAIL_THREAT_RADIUS_V7 : facts.maximumRange;
   // Tuning 7: a wounded unit beside other weak links, inside the reach of
   // a hostile unit with Overrun, steps to a tile with fewer of them when
@@ -5934,9 +6080,28 @@ const ARMY_SLOW_CENTER_RADIUS_V7 = 6;
 
 /** A weak link of a kill chain: at half HP or less, or a siege or ranged unit. */
 function armyWeakLinkV7(context: PolicyContextV7, unit: PublicUnitV7): boolean {
+  // The Martian pass, correction: a whole Force Field holds one attack
+  // (the engine's `forceFieldHoldsV7`, from the public view: full HP and
+  // a Shield of the field's 4, above the unit's own maximum).
+  if (context.martian && unit.hp >= unit.maxHp) {
+    const shield =
+      context.view.shields.find((entry) => entry.unitId === unit.id)?.shield ??
+      0;
+    if (
+      shield >= FORCE_FIELD_SHIELD_V7 &&
+      shield > unitRoleMechanicsV7(context.view, unit).shield
+    )
+      return false;
+  }
   if (unit.hp * 2 <= unit.maxHp) return true;
   const unitClass = armyClassV7(unitRoleRuleV7(context.view, unit));
-  return unitClass === "SIEGE" || unitClass === "RANGED";
+  if (unitClass === "SIEGE" || unitClass === "RANGED") return true;
+  // The Martian pass (`pulp_wars-w49.14`): every Martian unit a Knight
+  // kills through its Shield (`ARMY_MARTIAN_STURDY_V7`).
+  const shield = context.martian
+    ? unitRoleMechanicsV7(context.view, unit).shield
+    : 0;
+  return shield > 0 && unit.maxHp + shield < ARMY_MARTIAN_STURDY_V7;
 }
 
 /** The visible hostile land units that attack again after a kill (Overrun). */
@@ -6005,6 +6170,28 @@ function armyEscortValueV7(
   to: CoordV7,
 ): number {
   const view = context.view;
+  // The Martian pass (`pulp_wars-w49.14`): a Shield Projector stands beside
+  // the firing line (every own shielded unit next to it counts: a Knight
+  // kills a Grunt, a Ray Gunner, or a Brain in one attack and rides on, and
+  // the Projector ends the chain; with Force Fields it covers them too).
+  if (
+    view.viewer.faction === "MARTIAN" &&
+    unitRoleRuleV7(view, actor).abilities.includes("FORCE_FIELD")
+  ) {
+    let covered = 0;
+    for (const at of neighbors8V7(view, to))
+      for (const unit of context.threatLookup.occupantsByKey.get(
+        coordKey(at),
+      ) ?? [])
+        if (
+          unit.id !== actor.id &&
+          unit.ownerId === view.viewer.id &&
+          unit.form === "LAND" &&
+          unitRoleMechanicsV7(view, unit).shield > 0
+        )
+          covered += 1;
+    return Math.min(ARMY_ESCORT_MAXIMUM_V7, covered) * ARMY_ESCORT_VALUE_V7;
+  }
   if (
     view.viewer.faction !== "GOBLIN" ||
     armyClassV7(unitRoleRuleV7(view, actor)) !== "DEFENDER"
@@ -6535,8 +6722,16 @@ function armyResearchClockDueV7(context: PolicyContextV7): boolean {
 function armyResearchFloorV7(context: PolicyContextV7): number {
   if (context.armyResearchFloor !== undefined) return context.armyResearchFloor;
   let floor = 0;
-  if (armyWarV7(context) && armyResearchClockDueV7(context)) {
-    const target = armyResearchTargetV7(context);
+  const target = armyResearchTargetV7(context);
+  // The Martian pass, correction: also for the economy technology of
+  // `armyEconomyFirstV7` (a seat with 4 Coins and 5 a turn trained a
+  // 3-Coin unit every turn and bought its 9-Coin Forestry in round 8).
+  if (
+    (armyWarV7(context) && armyResearchClockDueV7(context)) ||
+    (target !== null &&
+      armyCorrectionSeatV7(context) &&
+      armyEconomyResearchV7(context, target.tech))
+  ) {
     if (target !== null && context.view.viewer.coins < target.cost)
       floor = Math.max(0, target.cost - armyIncomeV7(context));
   }
@@ -6562,7 +6757,11 @@ function armyResearchFloorV7(context: PolicyContextV7): number {
 function armyDearUnitFloorV7(context: PolicyContextV7, cityId: CityId): number {
   if (!context.army) return 0;
   const view = context.view;
-  if (view.viewer.faction !== "UNDEAD" || !armyAlertV7(context)) return 0;
+  // The Martian pass (`pulp_wars-w49.14`): also a Martian seat, for the
+  // Tripod and then the Mothership (its Grunts cost 3 Coins too).
+  const faction = view.viewer.faction;
+  if ((faction !== "UNDEAD" && faction !== "MARTIAN") || !armyAlertV7(context))
+    return 0;
   if (armyThreatDistanceV7(context) <= ARMY_PRESSED_RADIUS_V7) return 0;
   const city = context.lookup.citiesById.get(cityId);
   if (
@@ -6574,12 +6773,12 @@ function armyDearUnitFloorV7(context: PolicyContextV7, cityId: CityId): number {
   const counts = armyCountsForContextV7(context);
   if (counts.total < ARMY_DEAR_UNIT_ARMY_V7) return 0;
   const shares = armySharesV7(
-    "UNDEAD",
+    faction,
     counts.hostileFragile >= ARMY_FRAGILE_HOSTILES_V7,
   );
   const income = armyIncomeV7(context);
   for (const role of ["CATAPULT", "KNIGHT"] as const) {
-    const rule = effectiveRoleRuleV7(role, "UNDEAD");
+    const rule = effectiveRoleRuleV7(role, faction);
     const unitClass = armyClassV7(rule);
     if (
       rule.cost === null ||
@@ -6597,6 +6796,77 @@ function armyDearUnitFloorV7(context: PolicyContextV7, cityId: CityId): number {
       return Math.max(0, rule.cost - income);
   }
   return 0;
+}
+
+/**
+ * The Martian pass, correction (`pulp_wars-w49.14`): training `role` is
+ * pointless against the visible enemy: the role's Defense is lower against
+ * an attack from two or more tiles (the Human Guard: 1 instead of 3), at
+ * least `ARMY_RANGED_ENEMY_UNITS_V7` hostile land units are visible, more
+ * than half of them attack from two or more tiles, and the city can train
+ * another unit of the army. (A Human seat trained twelve Guards against
+ * Martians; every one died to two or three shots without touching a unit.)
+ */
+function armyOpenToRangedUselessV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "TRAIN" }>,
+  offers: readonly CommandV7[] = context.commands,
+): boolean {
+  if (!context.army) return false;
+  const view = context.view;
+  const faction = view.viewer.faction;
+  const open = (role: UnitRoleIdV7): boolean => {
+    const ranged = roleMechanicsV7(role, faction).rangedDefense2;
+    return (
+      ranged !== null && ranged < effectiveRoleRuleV7(role, faction).defense2
+    );
+  };
+  if (!open(command.role)) return false;
+  const hostiles = armyHostilesV7(context);
+  if (hostiles.length < ARMY_RANGED_ENEMY_UNITS_V7) return false;
+  const shooters = hostiles.filter(
+    (unit) => publicCombatFacts(view, unit, context.lookup).maximumRange >= 2,
+  ).length;
+  if (shooters * 2 <= hostiles.length) return false;
+  return offers.some(
+    (other) =>
+      other.kind === "TRAIN" &&
+      other.cityId === command.cityId &&
+      !open(other.role) &&
+      armyClassV7(effectiveRoleRuleV7(other.role, faction)) !== null,
+  );
+}
+
+/**
+ * The Martian pass, correction: a pressed seat still buys the construction
+ * that adds population in a city no enemy stands at the gates of, when it
+ * leaves the Coins for every unit on offer. (Pressed by a firing
+ * line two or three tiles from its cities, a Human seat built nothing for
+ * fifteen rounds: four cities at level 2 and 9 Coins a turn from round 6
+ * to round 20, three units trained a turn.)
+ */
+function armyWarGrowthBuysV7(
+  context: PolicyContextV7,
+  preview: {
+    readonly cost: number;
+    readonly populationDeltaByCity: readonly {
+      readonly cityId: CityId;
+      readonly delta: number;
+    }[];
+  },
+): boolean {
+  if (!armyCorrectionSeatV7(context)) return false;
+  const grows = preview.populationDeltaByCity.filter((item) => item.delta > 0);
+  if (grows.length === 0) return false;
+  if (grows.some((item) => armyAtTheGatesV7(context, item.cityId)))
+    return false;
+  // The dearest training on offer: the growth never decides which unit
+  // the seat can still train, so the order of the two does not matter.
+  let dearest = 0;
+  for (const command of context.commands)
+    if (command.kind === "TRAIN")
+      dearest = Math.max(dearest, trainingCostV7(context.view, command));
+  return context.view.viewer.coins - preview.cost >= dearest;
 }
 
 /** Tuning 8: a hostile land unit stands this close to the city's center. */
@@ -7159,6 +7429,45 @@ function armyVillageMoveV7(
     tile.territoryOwnerId === null &&
     !same(actor.at, to)
   );
+}
+
+/**
+ * The Martian pass, correction (`pulp_wars-w49.14`): a hostile city whose
+ * center no unit stands on, within `ARMY_RETAKE_RADIUS_V7` of a unit that
+ * captures: its Move that ends nearer to that center, where the visible
+ * enemies do not kill it, is worth ten a tile gained (and twenty more on
+ * the center). Null otherwise. (A city's garrison died and its center
+ * stood empty for a turn with two units two tiles away.)
+ */
+function armyEmptyCenterMoveV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  danger: number,
+): number | null {
+  if (
+    !armyCorrectionSeatV7(context) ||
+    same(actor.at, to) ||
+    danger >= actor.hp
+  )
+    return null;
+  const view = context.view;
+  if (!unitRoleRuleV7(view, actor).abilities.includes("CAPTURE")) return null;
+  let best: number | null = null;
+  for (const city of view.cities) {
+    if (!isHostile(view, city.ownerId)) continue;
+    const from = distance(actor.at, city.at);
+    const next = distance(to, city.at);
+    if (from > ARMY_RETAKE_RADIUS_V7 || next >= from) continue;
+    if (
+      (context.threatLookup.occupantsByKey.get(coordKey(city.at)) ?? [])
+        .length > 0
+    )
+      continue;
+    const value = 10 * (from - next) + (next === 0 ? 20 : 0);
+    if (best === null || value > best) best = value;
+  }
+  return best;
 }
 
 /** The own city count (expansion comes first below the threshold). */
@@ -8412,7 +8721,12 @@ function isPolicyCandidate(
     return false;
   // Tuning 6: no construction with an enemy at the gates while a city can
   // still train (what costs nothing is still taken).
-  if (economic.ok && economic.preview.cost > 0 && armyPressedV7(context))
+  if (
+    economic.ok &&
+    economic.preview.cost > 0 &&
+    armyPressedV7(context) &&
+    !armyWarGrowthBuysV7(context, economic.preview)
+  )
     return false;
   // Tuning 8: nor with the Coins kept for the due technology (a city
   // level is still bought).
@@ -9464,6 +9778,12 @@ function* sharedCityContextWorkV7(
               ) &&
               (!spendsReserve || threatened) &&
               !worsens &&
+              // The Martian pass, correction: no Guard against an enemy
+              // that shoots (`armyOpenToRangedUselessV7`).
+              !(
+                command.kind === "TRAIN" &&
+                armyOpenToRangedUselessV7(context, command, shared)
+              ) &&
               !eggBlocked(command)
             : (!spendsReserve ||
                 (context.naval.visibleNavalDanger &&
@@ -9497,7 +9817,26 @@ function* sharedCityContextWorkV7(
             effectiveRoleRuleV7(command.role, view.viewer.faction),
             roleMechanicsV7(command.role, view.viewer.faction),
             effectiveRoleRuleV7(command.role, view.viewer.faction).maxHp,
-          ) >= armyBesideCenterWorthV7(context, city.at)
+          ) >= armyBesideCenterWorthV7(context, city.at) &&
+          // The Martian pass (`pulp_wars-w49.14`): never a machine (a
+          // Mothership or a Tripod on a center has no Walls and is no
+          // garrison), and not a Shield Projector
+          // beyond its share of a Martian army (the Projector that stepped
+          // aside steps back on; the city trains a Grunt).
+          roleMechanicsV7(command.role, view.viewer.faction).movementMode ===
+            "GROUND" &&
+          !(
+            view.viewer.faction === "MARTIAN" &&
+            armyClassV7(
+              effectiveRoleRuleV7(command.role, view.viewer.faction),
+            ) === "DEFENDER" &&
+            armySharesV7(
+              "MARTIAN",
+              armyCounts.hostileFragile >= ARMY_FRAGILE_HOSTILES_V7,
+            ).DEFENDER *
+              (armyCounts.total + 1) <=
+              100 * armyCounts.byClass.DEFENDER
+          )
             ? ARMY_GARRISON_TRAINING_VALUE_V7
             : 0;
         const armyScore =
@@ -10041,7 +10380,9 @@ function scoreCommandWithContext(
         strategicValue = plunder.strategic;
       }
     }
-    if (view.viewer.faction === "MARTIAN") {
+    // The Martian pass (`pulp_wars-w49.14`): an army seat researches in
+    // the army's order (`ARMY_RESEARCH_ROLES_V7.MARTIAN`).
+    if (view.viewer.faction === "MARTIAN" && !context.army) {
       // The Martian revision (`pulp_wars-t6s.3`): research toward the roles.
       const plan = martianResearchV7(
         view,
@@ -10722,6 +11063,18 @@ function scoreCommandWithContext(
     immediateValue =
       actor === undefined ? 0 : Math.min(2, actor.maxHp - actor.hp) * 8;
     if (actor !== undefined && actor.hp * 2 < actor.maxHp) priority = 930;
+    // The Martian pass (`pulp_wars-w49.14`): an army seat's Saucer does
+    // not recover inside the reach of visible enemies; it flies out first
+    // (`ARMY_CARRIER_KEEP_OUT_PRIORITY_V7`).
+    if (
+      actor !== undefined &&
+      context.army &&
+      context.martian &&
+      actor.ownerId === view.viewer.id &&
+      isSaucerForPolicyV7(view, actor) &&
+      visibleImmediateDamage(view, actor, actor.at, context) > 0
+    )
+      priority = Math.min(priority, 300);
     // Revision 17: a regenerating Troll keeps fighting until a quarter HP.
     if (
       actor !== undefined &&
@@ -10797,7 +11150,7 @@ function scoreCommandWithContext(
       // The Undead pass, correction: of an Undead seat's units that can
       // step onto the center, the best garrison goes (a Skeleton stepped
       // on with a Zombie beside it).
-      if (armyUndeadSeatV7(context) && resultAt !== null)
+      if (armyOpeningSeatV7(context) && resultAt !== null)
         strategicValue += Math.min(
           ARMY_CENTER_HOLDER_VALUE_MAXIMUM_V7,
           armyDefenderWorthV7(
@@ -12184,6 +12537,15 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
           target,
           distance(firstTile, target.at),
         ) >= unit.hp
+      )
+        continue;
+      // The Martian pass (`pulp_wars-w49.14`): a Saucer flies in only for
+      // its own kill (its hit that does not kill is never made).
+      if (
+        context.army &&
+        context.martian &&
+        isSaucerForPolicyV7(view, unit) &&
+        damage < target.hp
       )
         continue;
       if (damage > 0)
@@ -15658,6 +16020,18 @@ function martianAttackRejectedV7(
   // `pulp_wars-1wy.3`: the Saucer (the Mothership carries Beam Down too).
   if (actor.ownerId === view.viewer.id && isSaucerForPolicyV7(view, actor))
     return !attackPurposeFactsV7(context, command, preview).savesCity;
+  // The Martian pass (`pulp_wars-w49.14`): an army seat's Shield Projector
+  // (Attack 1.5) makes no attack that takes back more than it deals: it
+  // holds its tile and its field (a seat's Projectors dealt 3 and took 8
+  // from Guards round after round).
+  if (
+    context.army &&
+    actor.ownerId === view.viewer.id &&
+    hasAbilityV7(view, actor, "FORCE_FIELD") &&
+    preview.damageToAttacker + preview.attackerShieldDamage >
+      preview.damageToDefender + preview.defenderShieldDamage
+  )
+    return !attackPurposeFactsV7(context, command, preview).savesCity;
   return false;
 }
 
@@ -15950,6 +16324,171 @@ function martianCarrierRescueMoveV7(
   return best;
 }
 
+/**
+ * The Martian pass, correction (`pulp_wars-w49.14`): 1 when the Move takes
+ * a Martian seat's own unit that a visible hostile unit with Overrun kills
+ * in one attack (`armyWeakLinkV7`; not one a Force Field holds) out of the
+ * reach of every such unit, -1 when it takes it into one, 0 otherwise. A
+ * unit on an own city center stays; a full-HP unit whose Move ends beside
+ * an own Shield Projector, with Force Fields, may enter (the field holds).
+ * (A hand player's line stepped back out of the Knights' reach and lost
+ * four units to thirteen Knights; the seat's own line stood in reach.)
+ */
+function armyKnightShyV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): -1 | 0 | 1 {
+  const view = context.view;
+  if (
+    !context.army ||
+    !context.martian ||
+    actor.form !== "LAND" ||
+    actor.ownerId !== view.viewer.id ||
+    policyUnitFactionV7(view, actor) !== "MARTIAN" ||
+    fliesForPolicyV7(view, actor)
+  )
+    return 0;
+  const chainers = armyChainersV7(context);
+  if (chainers.length === 0 || !armyWeakLinkV7(context, actor)) return 0;
+  const center = (at: CoordV7): boolean =>
+    context.lookup.citiesByKey.get(coordKey(at))?.ownerId === view.viewer.id;
+  if (center(actor.at)) return 0;
+  const reached = (at: CoordV7): boolean =>
+    chainers.some(
+      (unit) =>
+        context.threatenedTiles.get(unit.id)?.has(coordKey(at)) === true,
+    );
+  const here = reached(actor.at);
+  const there = reached(to);
+  if (here && !there) return 1;
+  if (here || !there || center(to)) return 0;
+  const facts = martianCacheV7(context).facts;
+  const fielded =
+    facts.forceFields &&
+    actor.hp >= actor.maxHp &&
+    facts.ownProjectors.some(
+      (unit) => unit.id !== actor.id && distance(unit.at, to) <= 1,
+    );
+  return fielded ? 0 : -1;
+}
+
+/**
+ * The Martian pass, correction: a carrier that has not used its action
+ * ends its Move beside a free village (nobody on it, no visible hostile
+ * unit within two tiles, no own capturer within two) with a free tile
+ * beside both, while an own capturer that may be beamed stands on or
+ * beside an own center three or more tiles from that village.
+ */
+function armyVillageFerryV7(
+  context: PolicyContextV7,
+  carrier: PublicUnitV7,
+  to: CoordV7,
+): boolean {
+  const view = context.view;
+  if (!primaryReadyForPolicyV7(carrier) || same(carrier.at, to)) return false;
+  const centers = view.cities
+    .filter((city) => city.ownerId === view.viewer.id)
+    .map((city) => city.at);
+  const capturers = view.units.filter(
+    (unit) =>
+      unit.ownerId === view.viewer.id &&
+      unit.form === "LAND" &&
+      !fliesForPolicyV7(view, unit) &&
+      unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"),
+  );
+  return view.board.tiles.some(
+    (tile) =>
+      tile.explored &&
+      tile.site === "VILLAGE" &&
+      tile.territoryOwnerId === null &&
+      distance(tile.at, to) === 1 &&
+      distance(tile.at, carrier.at) > 1 &&
+      !view.units.some(
+        (unit) =>
+          same(unit.at, tile.at) ||
+          (isHostile(view, unit.ownerId) && distance(unit.at, tile.at) <= 2),
+      ) &&
+      !capturers.some((unit) => distance(unit.at, tile.at) <= 2) &&
+      capturers.some(
+        (unit) =>
+          distance(unit.at, tile.at) >= 3 &&
+          centers.some((center) => distance(center, unit.at) <= 1) &&
+          // (A lone unit on a center stays: another stands beside it.)
+          (!centers.some((center) => same(center, unit.at)) ||
+            capturers.some(
+              (other) =>
+                other.id !== unit.id && distance(other.at, unit.at) <= 1,
+            )),
+      ),
+  );
+}
+
+/**
+ * The Martian pass, correction: the free village a Beam Down to `to`
+ * delivers a capturer to: explored, nobody's land, no unit on it, no
+ * visible hostile unit within two tiles, beside `to`, and at least
+ * `ARMY_VILLAGE_DELIVERY_GAIN_V7` tiles nearer than the passenger stands.
+ * (A hand player took five cities by round 8 this way; the seat had two
+ * until round 10.)
+ */
+function armyVillageDeliveryV7(
+  context: PolicyContextV7,
+  passenger: PublicUnitV7,
+  to: CoordV7,
+): number | null {
+  if (!context.army) return null;
+  const view = context.view;
+  if (
+    passenger.ownerId !== view.viewer.id ||
+    !unitRoleRuleV7(view, passenger).abilities.includes("CAPTURE") ||
+    // From a city: a unit that has not acted, on or beside an own center.
+    !primaryReadyForPolicyV7(passenger) ||
+    !view.cities.some(
+      (city) =>
+        city.ownerId === view.viewer.id && distance(city.at, passenger.at) <= 1,
+    )
+  )
+    return null;
+  // A unit on a village it is taking, or the only unit on a center, stays.
+  const under = findPublicTileV7(view, passenger.at);
+  if (
+    under?.explored === true &&
+    under.site === "VILLAGE" &&
+    under.territoryOwnerId === null
+  )
+    return null;
+  let best: number | null = null;
+  for (const tile of view.board.tiles) {
+    if (
+      !tile.explored ||
+      tile.site !== "VILLAGE" ||
+      tile.territoryOwnerId !== null ||
+      distance(tile.at, to) !== 1
+    )
+      continue;
+    const gain = distance(passenger.at, tile.at) - 1;
+    if (gain < ARMY_VILLAGE_DELIVERY_GAIN_V7) continue;
+    if (
+      view.units.some(
+        (unit) =>
+          unit.id !== passenger.id &&
+          (same(unit.at, tile.at) ||
+            (isHostile(view, unit.ownerId) &&
+              distance(unit.at, tile.at) <= 2) ||
+            // Another own capturer is already as near.
+            (unit.ownerId === view.viewer.id &&
+              unit.form === "LAND" &&
+              distance(unit.at, tile.at) <= 1 &&
+              unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"))),
+      )
+    )
+      continue;
+    if (best === null || gain > best) best = gain;
+  }
+  return best;
+}
+
 function martianBeamDownScoreV7(
   context: PolicyContextV7,
   command: Extract<CommandV7, { kind: "BEAM_DOWN" }>,
@@ -15972,17 +16511,54 @@ function martianBeamDownScoreV7(
       !fliesForPolicyV7(context.view, unit) &&
       distance(unit.at, command.to) <= 2,
   );
+  // The Martian pass, correction: a capturer to a free village.
+  const village = armyVillageDeliveryV7(context, passenger, command.to);
+  if (
+    village !== null &&
+    !cache.attackers.has(passenger.id) &&
+    visibleImmediateDamage(context.view, passenger, command.to, context) <= 0 &&
+    // Not the unit that holds a center with an enemy near.
+    !(
+      context.lookup.citiesByKey.has(coordKey(passenger.at)) &&
+      armyHostilesV7(context).some(
+        (unit) => distance(unit.at, passenger.at) <= ARMY_GARRISON_RADIUS_V7,
+      )
+    )
+  )
+    return {
+      priority: ARMY_VILLAGE_DELIVERY_PRIORITY_V7,
+      strategic: 4 * Math.min(village, 8),
+      immediate: 0,
+    };
   // `pulp_wars-1wy.4`: the group test is the delivery by route's; an
   // extraction and a shot on arrival do not need it.
   if (!joins && !mobilityPlayV7())
     return { priority: -1, strategic: 0, immediate: 0 };
-  return beamDownScoreV7(
+  const score = beamDownScoreV7(
     cache.tools,
     command,
     cache.attackers.has(passenger.id),
     cache.movers.has(passenger.id),
     joins,
   );
+  // The Martian pass, correction: an army seat's extraction sets the unit
+  // down with its own units or by an own center, not wherever the carrier
+  // happens to be (its one promoted Grunt sat out the decisive turns in a
+  // corner of the map).
+  if (
+    context.army &&
+    score.priority === BEAM_DOWN_EXTRACT_PRIORITY_V7 &&
+    !joins &&
+    // (A step out of reach, three tiles at most, is no journey.)
+    distance(passenger.at, command.to) > BEAM_DOWN_PICKUP_RANGE_V7 + 1 &&
+    !context.view.cities.some(
+      (city) =>
+        city.ownerId === context.view.viewer.id &&
+        distance(city.at, command.to) <= 2,
+    )
+  )
+    return { priority: -1, strategic: 0, immediate: 0 };
+  return score;
 }
 
 /**
@@ -16213,7 +16789,12 @@ function martianMoveValueV7(
         hostileLand.some((unit) => distance(unit.at, to) === 2) &&
         dangerThere() < actor.hp
       ) {
-        next = Math.max(next, RAY_KITE_PRIORITY_V7);
+        // The Martian pass: an army seat steps back before its committed
+        // attack from the next tile too (`ARMY_STEP_BACK_PRIORITY_V7`).
+        next = Math.max(
+          next,
+          context.army ? ARMY_STEP_BACK_PRIORITY_V7 : RAY_KITE_PRIORITY_V7,
+        );
         strategic += 6;
       }
     }
@@ -16230,8 +16811,34 @@ function martianMoveValueV7(
   ) {
     const ranged = martianRangedStepBackV7(context, actor, to, blockedHere);
     if (ranged !== null) {
-      next = Math.max(next, ranged.priority);
+      next = Math.max(
+        next,
+        context.army ? ARMY_STEP_BACK_PRIORITY_V7 : ranged.priority,
+      );
       strategic += ranged.strategic;
+    }
+  }
+  // The Martian pass, correction: out of a Knight's reach
+  // (`ARMY_KNIGHT_SHY_MAXIMUM_V7`).
+  if (
+    context.army &&
+    priority <= ARMY_KNIGHT_SHY_MAXIMUM_V7 &&
+    !same(actor.at, to) &&
+    !armyVillageMoveV7(context, actor, to)
+  ) {
+    const shy = armyKnightShyV7(context, actor, to);
+    if (shy < 0) return { priority: -1, strategic: 0 };
+    if (shy > 0 && dangerThere() <= dangerHere()) {
+      next = Math.max(next, ARMY_STEP_BACK_PRIORITY_V7);
+      strategic +=
+        8 +
+        (hostileLand.some(
+          (unit) =>
+            distance(unit.at, to) <= rule.range &&
+            distance(unit.at, to) >= rule.minimumRange,
+        )
+          ? 6
+          : 0);
     }
   }
   // Flyers: never into visible lethal reach unless it is no worse.
@@ -16250,6 +16857,42 @@ function martianMoveValueV7(
   if (saucerRescue !== null) {
     next = Math.max(next, CARRIER_RESCUE_MOVE_PRIORITY_V7);
     strategic += saucerRescue;
+  } else if (
+    // The Martian pass (`pulp_wars-w49.14`): an army seat's Saucer in the
+    // reach of visible enemies flies to a tile where it takes less, the
+    // nearer to its own units the better.
+    context.army &&
+    isSaucerForPolicyV7(view, actor) &&
+    routine &&
+    dangerHere() > 0 &&
+    dangerThere() < dangerHere() &&
+    dangerThere() < actor.hp
+  ) {
+    next = Math.max(next, ARMY_CARRIER_KEEP_OUT_PRIORITY_V7);
+    strategic +=
+      4 * (dangerHere() - dangerThere()) +
+      2 *
+        Math.min(
+          4,
+          view.units.filter(
+            (unit) =>
+              unit.id !== actor.id &&
+              unit.ownerId === view.viewer.id &&
+              unit.form === "LAND" &&
+              distance(unit.at, to) <= 2,
+          ).length,
+        );
+  } else if (
+    // The Martian pass, correction: an army seat's Saucer flies to a free
+    // village it can deliver a capturer to (`armyVillageFerryV7`).
+    context.army &&
+    isSaucerForPolicyV7(view, actor) &&
+    routine &&
+    dangerThere() <= 0 &&
+    armyVillageFerryV7(context, actor, to)
+  ) {
+    next = Math.max(next, ARMY_VILLAGE_FERRY_PRIORITY_V7);
+    strategic += 10;
   } else if (isSaucerForPolicyV7(view, actor) && routine) {
     // `pulp_wars-1wy.4`: Beam Down no longer needs an unmoved carrier, so
     // the Saucer does not wait for it (the baseline's rule).
@@ -16376,6 +17019,9 @@ function martianMoveValueV7(
     if (gain > 0 && next >= 0 && dangerThere() < actor.hp)
       next = Math.max(next, 705);
   } else if (
+    // The Martian pass (`pulp_wars-w49.14`): a Projector covers nobody
+    // until its owner has Force Fields.
+    facts.forceFields &&
     shieldMaximumForPolicyV7(view, facts, actor) > 0 &&
     facts.ownProjectors.some(
       (projector) =>

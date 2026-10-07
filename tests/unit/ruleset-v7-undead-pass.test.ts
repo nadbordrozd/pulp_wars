@@ -186,13 +186,19 @@ const ROSTER: readonly UnitRoleIdV7[] = [
 ];
 
 describe("the Undead pass: identity", () => {
-  it("is 7r51 with 7r50 a prior identity and an obsolete save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r51.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r50");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+  // The Martian pass (tests/unit/ruleset-v7-martian-pass.test.ts) took 7r52,
+  // so 7r51 is the last prior identity.
+  it("was 7r51 after 7r50, with both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r52");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r52.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r50",
+      "pulp-wars-poc-7r51",
+    ]);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r50.current",
-    );
+      "pulpWars.save.v7r51.current",
+    ]);
   });
 
   it("registers Bones, Escape, and Infect on three Undead roles and moves no number", () => {
@@ -581,7 +587,8 @@ describe("the Undead pass: Scouts", () => {
       UNDEAD: 1,
       GOBLIN: 1,
       DINOSAUR: 0,
-      MARTIAN: 0,
+      // The Martian pass, 7r52: a Martian Survey grants a Saucer.
+      MARTIAN: 1,
       ICE_FOLK: 0,
       DWARF: 0,
       CANDY: 0,
@@ -1916,11 +1923,22 @@ describe("the correction: the Undead Normal AI's economy", () => {
         ),
       ).research,
     ).toMatchObject({ tech: "SAWMILLING", unlocks: "CATAPULT" });
-    // A Human seat with its first unit keeps its own order.
+    // A Human seat with its first unit kept its own order; since the
+    // Martian pass's correction (`pulp_wars-w49.14`) it takes its economy
+    // technology too. A Goblin seat still keeps its order.
     expect(
       inspectNormalArmyV7(
         land(
           "ORIGINAL",
+          techsOf("GATHERING", "HUNTING", "MARKSMANSHIP"),
+          "FOREST",
+        ),
+      ).research?.growth,
+    ).toBe(true);
+    expect(
+      inspectNormalArmyV7(
+        land(
+          "GOBLIN",
           techsOf("GATHERING", "HUNTING", "MARKSMANSHIP"),
           "FOREST",
         ),

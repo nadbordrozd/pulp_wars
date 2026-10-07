@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 51;
+const REVISION = 52;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -1094,11 +1094,18 @@ describe("Martian technology (section 4)", () => {
           ...human.unlocks,
           { kind: "DISINTEGRATOR" },
         ]);
+      // The Martian pass (7r52): Fieldcraft is Heat Sinks.
+      else if (human.id === "FIELDCRAFT")
+        expect(martian.unlocks).toEqual([
+          ...human.unlocks,
+          { kind: "HEAT_SINKS" },
+        ]);
       else expect(martian.unlocks).toEqual(human.unlocks);
     });
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.MARTIAN).toEqual({
       FORTIFICATION: "Force Fields",
       EXPLOSIVES: "Disintegrator",
+      FIELDCRAFT: "Heat Sinks",
     });
   });
 
@@ -1184,8 +1191,10 @@ describe("Martian technology (section 4)", () => {
         tree.nodes.find((item) => item.id === tech)?.effects ?? [],
         tree.faction,
       ).flatMap((group) => group.items);
+    // The Martian pass (7r52): the Force Field itself is this technology's.
+    // Its correction: and a whole field holds one attack.
     expect(text("FORTIFICATION")).toEqual([
-      "Shields also recharge at the end of your turn",
+      "Shield Projectors raise the Shields of units next to them to 4, and at full HP one attack cannot kill such a unit; Shields also recharge at the end of your turn",
     ]);
     expect(text("EXPLOSIVES")).toContain(
       "Heat rays ignore Walls and Field Defense",
@@ -1196,7 +1205,12 @@ describe("Martian technology (section 4)", () => {
     );
     expect(technologyNameV7("EXPLOSIVES", tree.faction)).toBe("Disintegrator");
     for (const tech of TECHNOLOGY_IDS_V7)
-      if (tech !== "FORTIFICATION" && tech !== "EXPLOSIVES")
+      if (
+        tech !== "FORTIFICATION" &&
+        tech !== "EXPLOSIVES" &&
+        // The Martian pass (7r52): Fieldcraft is Heat Sinks.
+        tech !== "FIELDCRAFT"
+      )
         expect(technologyNameV7(tech, "MARTIAN")).toBe(
           technologyNameV7(tech, "ORIGINAL"),
         );

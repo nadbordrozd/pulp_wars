@@ -617,6 +617,8 @@ describe("text-mode play harness", () => {
       LAB_GOBLIN_MID: ["ORIGINAL", "Human"],
       // The Undead pass (`pulp_wars-w49.13`): the player is the Undead.
       LAB_UNDEAD_MID: ["ORIGINAL", "Human"],
+      // The Martian pass (`pulp_wars-w49.14`): the player is the Martians.
+      LAB_MARTIAN_MID: ["ORIGINAL", "Human"],
     };
     expect(Object.keys(TEXT_PLAY_LABS_V7)).toEqual(Object.keys(attackers));
     for (const lab of Object.keys(TEXT_PLAY_LABS_V7)) {
@@ -626,7 +628,9 @@ describe("text-mode play harness", () => {
           ? ["GOBLIN", "Goblin"]
           : lab === "LAB_UNDEAD_MID"
             ? ["UNDEAD", "Undead"]
-            : ["ORIGINAL", "Human"];
+            : lab === "LAB_MARTIAN_MID"
+              ? ["MARTIAN", "Martian"]
+              : ["ORIGINAL", "Human"];
       const session = path.join(root, `${lab}.json`);
       const started = ok("lab", "--session", session, lab);
       expect(started).toContain(`LAB ${lab}:`);
@@ -698,6 +702,45 @@ describe("text-mode play harness", () => {
           "2 Knights, 2 Guards and 5 Fighters at the start (and 30c on their first turn, which buys more)",
         );
         expect(ok("tech", "--session", session)).toMatch(/Pestilence/);
+      }
+      if (lab === "LAB_MARTIAN_MID") {
+        // The Martian pass: the Coins of the first turn, the Force Field
+        // and Heat Sinks behind their technologies on the unit lines.
+        expect(started).toContain("YOU PLAY THE MARTIANS");
+        expect(started).toContain("35c in hand on the first turn");
+        expect(started).toContain("YOUR TURN | coins 35 |");
+        expect(started).toContain("cities 5 | units 15");
+        expect(started).toContain(
+          "| Force Field needs Force Fields: then your units that start a turn next to it have Shield 4",
+        );
+        expect(started).toContain(
+          "| with Heat Sinks it does not overheat (no Cooling)",
+        );
+        expect(ok("help")).toContain("LAB_MARTIAN_MID: the Martians");
+        // The correction: the field's hold, the Brain's cooldown, Beam
+        // Down from any city, where the Colossus comes from, and the
+        // Martian units' own map codes.
+        expect(started).toContain(
+          "and at full HP one attack cannot kill them (1 HP left)",
+        );
+        expect(started).toContain(
+          "| Psychic Command every second turn (the Brain is Cooling in between)",
+        );
+        expect(started).toContain(
+          "| Beam Down: sets one of your units down beside itself, lifted from on or beside ANY of your city centers or from up to 2 tiles away",
+        );
+        expect(started).toContain(
+          "giant unit: a free Colossus is offered once, as a reward of this city (your first capital) at level 5 or higher",
+        );
+        expect(started).toContain(
+          "Martian units: Gr grunt Sa saucer RG ray gunner SP shield projector Br brain Tr tripod Mo mothership Co colossus",
+        );
+        expect(started).toMatch(/0Mo\|/);
+        expect(started).toMatch(/0Tr\|/);
+        expect(started).not.toMatch(/0Kn\|/);
+        const tech = ok("tech", "--session", session);
+        expect(tech).toMatch(/Force Fields/);
+        expect(tech).toMatch(/Heat Sinks/);
       }
       const ids = offeredIds(session);
       expect(

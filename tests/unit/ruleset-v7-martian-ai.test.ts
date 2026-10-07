@@ -16,6 +16,7 @@ import {
   setMartianPolicyOptionsV7,
   type MartianPolicyOptionsV7,
 } from "../../src/ai/v7-martian";
+import { ARMY_STEP_BACK_PRIORITY_V7 } from "../../src/ai/v7-army";
 import {
   queryCombatPreviewV7,
   type CommandV7,
@@ -37,6 +38,13 @@ import { withoutTechsV7 } from "../fixtures/v7-revision20";
 // docs/product/RULESET_7_MARTIANS.md section 12). Two-seat 11 x 11 field:
 // seat 0 is the viewer (capital (8, 8)), seat 1 the opponent (capital
 // (2, 8)); villages (5, 5), (8, 5), (5, 8); every other land tile is Grass.
+//
+// The Martian pass (`pulp_wars-w49.14`): a Martian seat against a Human one
+// plays the army rules (`src/ai/v7-army.ts`). Under them a capturer steps
+// onto a free village and stays there until it has captured it, so the
+// positions that put a Grunt or a Ray Gunner on or beside the village
+// (5, 5) stand on row 3 now, and a shooter's step back has the army
+// priority (`ARMY_STEP_BACK_PRIORITY_V7`).
 
 const own = (
   role: MartianPieceV7["role"],
@@ -79,21 +87,29 @@ describe("Martian Normal AI: heat rays", () => {
   });
 
   it("holds its tile while a non-ray hostile unit is three tiles away", () => {
-    const state = asMartian([own("MARKSMAN", 6, 5), foe("FIGHTER", 3, 5)]);
-    expect(unitCandidatesV7(state, at(6, 5), "MOVE")).toEqual([]);
+    const state = asMartian([own("MARKSMAN", 6, 3), foe("FIGHTER", 3, 3)]);
+    expect(unitCandidatesV7(state, at(6, 3), "MOVE")).toEqual([]);
     // Without the approaching unit it walks.
-    const free = asMartian([own("MARKSMAN", 6, 5), foe("FIGHTER", 1, 1)]);
-    expect(unitCandidatesV7(free, at(6, 5), "MOVE").length).toBeGreaterThan(0);
+    const free = asMartian([own("MARKSMAN", 6, 3), foe("FIGHTER", 1, 9)]);
+    expect(unitCandidatesV7(free, at(6, 3), "MOVE").length).toBeGreaterThan(0);
   });
 
   it("steps a Cooling ray unit out of melee reach before its half shot", () => {
     const state = asMartian([
-      own("MARKSMAN", 5, 5, { cooling: "COOLING" }),
-      foe("FIGHTER", 4, 5),
+      own("MARKSMAN", 5, 3, { cooling: "COOLING" }),
+      foe("FIGHTER", 4, 3),
     ]);
-    const best = unitCandidatesV7(state, at(5, 5))[0];
+    const best = unitCandidatesV7(state, at(5, 3))[0];
     expect(best?.command.kind).toBe("MOVE");
-    expect(best?.score.priority).toBe(RAY_KITE_PRIORITY_V7);
+    expect(best?.score.priority).toBe(ARMY_STEP_BACK_PRIORITY_V7);
+    // Against a seat that does not play the army rules: the kite priority.
+    const other = martianFieldV7(
+      [own("MARKSMAN", 5, 3, { cooling: "COOLING" }), foe("FIGHTER", 4, 3)],
+      { factions: ["MARTIAN", "DINOSAUR"] },
+    );
+    expect(unitCandidatesV7(other, at(5, 3))[0]?.score.priority).toBe(
+      RAY_KITE_PRIORITY_V7,
+    );
     const end = best === undefined ? undefined : endOf(best.command);
     expect(end === undefined ? 0 : Math.abs(end.x - 4)).toBe(2);
   });
@@ -137,20 +153,27 @@ describe("Martian Normal AI: ranged play (`pulp_wars-b5f.2`)", () => {
   };
 
   it("a Grunt next to a melee unit steps back to shoot from two tiles", () => {
-    const state = asMartian([own("FIGHTER", 5, 5), foe("FIGHTER", 4, 5)]);
-    const best = unitCandidatesV7(state, at(5, 5))[0];
+    const state = asMartian([own("FIGHTER", 5, 3), foe("FIGHTER", 4, 3)]);
+    const best = unitCandidatesV7(state, at(5, 3))[0];
     expect(best?.command.kind).toBe("MOVE");
-    expect(best?.score.priority).toBe(RANGED_STEP_BACK_PRIORITY_V7);
+    expect(best?.score.priority).toBe(ARMY_STEP_BACK_PRIORITY_V7);
     const end = best === undefined ? undefined : endOf(best.command);
     expect(
       end === undefined
         ? 0
-        : Math.max(Math.abs(end.x - 4), Math.abs(end.y - 5)),
+        : Math.max(Math.abs(end.x - 4), Math.abs(end.y - 3)),
     ).toBe(2);
+    // Against a seat that does not play the army rules: the old priority.
+    const other = martianFieldV7([own("FIGHTER", 5, 3), foe("FIGHTER", 4, 3)], {
+      factions: ["MARTIAN", "DINOSAUR"],
+    });
+    expect(unitCandidatesV7(other, at(5, 3))[0]?.score.priority).toBe(
+      RANGED_STEP_BACK_PRIORITY_V7,
+    );
     // The baseline policy shoots from where it stands (or holds).
     withOptions(LEGACY_MARTIAN_POLICY_OPTIONS_V7, () => {
       expect(
-        unitCandidatesV7(state, at(5, 5)).some(
+        unitCandidatesV7(other, at(5, 3)).some(
           (item) => item.score.priority === RANGED_STEP_BACK_PRIORITY_V7,
         ),
       ).toBe(false);
@@ -158,10 +181,13 @@ describe("Martian Normal AI: ranged play (`pulp_wars-b5f.2`)", () => {
   });
 
   it("a Grunt next to a hostile shooter that answers at range 2 stays", () => {
-    const state = asMartian([own("FIGHTER", 5, 5), foe("MARKSMAN", 4, 5)]);
+    const state = asMartian([own("FIGHTER", 5, 3), foe("MARKSMAN", 4, 3)]);
     expect(
-      unitCandidatesV7(state, at(5, 5)).some(
-        (item) => item.score.priority === RANGED_STEP_BACK_PRIORITY_V7,
+      unitCandidatesV7(state, at(5, 3)).some(
+        (item) =>
+          item.command.kind === "MOVE" &&
+          (item.score.priority === RANGED_STEP_BACK_PRIORITY_V7 ||
+            item.score.priority === ARMY_STEP_BACK_PRIORITY_V7),
       ),
     ).toBe(false);
   });
@@ -172,7 +198,9 @@ describe("Martian Normal AI: ranged play (`pulp_wars-b5f.2`)", () => {
     expect(unitCandidatesV7(state, at(5, 5), "ATTACK")).toEqual([]);
     const best = unitCandidatesV7(state, at(5, 5))[0];
     expect(best?.command.kind).toBe("MOVE");
-    expect(best?.score.priority).toBe(RANGED_STEP_BACK_PRIORITY_V7);
+    // (The army priority of the step back, which is also that of a
+    // committed ranged unit's Move to a shot.)
+    expect(best?.score.priority).toBe(ARMY_STEP_BACK_PRIORITY_V7);
     const end = best === undefined ? undefined : endOf(best.command);
     expect(
       end === undefined
@@ -335,13 +363,16 @@ describe("Martian Normal AI: production and research", () => {
 
   it("trains a Grunt, not a Projector, in a threatened city", () => {
     // Projector, Saucer, and Brain researched; no Tripod or Mothership.
+    // (Against a Dinosaur seat: the production rule of `pulp_wars-t6s.3`.
+    // Against a Human, Goblin, or Undead seat the army rules train the
+    // best garrison, tests/unit/ruleset-v7-martian-pass.test.ts.)
     const state = martianFieldV7(
       [own("FIGHTER", 9, 6), foe("FIGHTER", 6, 8), foe("FIGHTER", 6, 7)],
       {
-        factions: ["MARTIAN", "ORIGINAL"],
+        factions: ["MARTIAN", "DINOSAUR"],
         techs: {
           0: withoutTechsV7("MARTIAN", "SAWMILLING", "CHIVALRY"),
-          1: withoutTechsV7("ORIGINAL"),
+          1: withoutTechsV7("DINOSAUR"),
         },
       },
     );

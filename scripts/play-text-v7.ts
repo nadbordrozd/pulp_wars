@@ -33,6 +33,12 @@ import {
 } from "../src/ai/index";
 import { publicProjectedDamageForPolicyV7 } from "../src/ai/v7";
 import {
+  absorbHitV7,
+  forceFieldHoldsV7,
+  shieldOfV7,
+  unitShieldMaximumV7,
+} from "../src/engine/v7/martian";
+import {
   BASIC_ECONOMIC_ACTIONS_V7,
   FACTION_DISPLAY_NAMES_V7,
   FACTION_IDS_V7,
@@ -95,6 +101,10 @@ import {
   unitCapacitySlotsV7,
   unitMayActAfterMoveV7,
   unitRoleMechanicsV7,
+  BEAM_DOWN_PICKUP_RANGE_V7,
+  FORCE_FIELD_SHIELD_V7,
+  unitCapabilitiesV7,
+  unitFactionV7,
   unitRoleRuleV7,
   viewForV7,
   type BoardSizeV7,
@@ -164,6 +174,14 @@ import {
   OVERRUN_BUDGET_TEXT_V7,
 } from "../src/render/technology-unlock-text-v7";
 import { MARKET_PLACEMENT_TEXT_V7 } from "../src/render/economy-presentation-v7";
+import {
+  BRAIN_SUPPORT_UNLOCK_TEXT_V7,
+  DISINTEGRATOR_UNLOCK_TEXT_V7,
+  FORCE_FIELDS_UNLOCK_TEXT_V7,
+  FORCE_FIELD_HOLDS_V7,
+  HEAT_SINKS_UNLOCK_TEXT_V7,
+  martianCombatLinesV7,
+} from "../src/render/martian-presentation-v7";
 
 export const TEXT_PLAY_SESSION_FORMAT_V7 = "pulp-wars-text-play-session";
 export const TEXT_PLAY_SESSION_VERSION_V7 = 1;
@@ -234,7 +252,7 @@ const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; st
   new     --session S [--map dry-land] [--size 11] [--seed 1] [--factions original,undead[,...]]
           [--seat 0] [--curiosities on|off] [--overwrite]
   lab     --session S <LAB> [--overwrite]
-                                        start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead); lab alone lists them
+                                        start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead; LAB_MARTIAN_MID: the Martians); lab alone lists them
   view    --session S [--full]          public view of your seat: header, map, cities, units
   tech    --session S                   technology tree with costs and unlocks
   options --session S [--unit ID | --city ID | --tile x,y | --all]
@@ -719,6 +737,18 @@ export const GANG_UP_ONE_TEXT_V7 = "its rockets get Gang Up +1 at most";
 export const BLAST_PROOF_TEXT_V7 =
   "Blast-proof: blasts and bomb splash don't hurt it";
 export const CRASH_TEXT_V7 = "Crash: can Kaboom after attacking";
+// The Martian pass (`pulp_wars-w49.14`, 7r52): the two rules a technology
+// gates, and the ray rule they stand on.
+export const HEAT_RAY_TEXT_V7 =
+  "heat ray: half Attack after moving or while Cooling (a full shot leaves it Cooling for a turn)";
+export const HEAT_SINK_TEXT_V7 =
+  "with Heat Sinks it does not overheat (no Cooling)";
+export const FORCE_FIELD_NEEDS_NOTE_V7 =
+  "Force Field needs Force Fields: then your units that start a turn next to it have Shield 4, and at full HP one attack cannot kill them (1 HP left)";
+/** The Martian pass, correction (`pulp_wars-w49.14`). */
+export const PSYCHIC_COOLDOWN_TEXT_V7 =
+  "Psychic Command every second turn (the Brain is Cooling in between)";
+export const BEAM_DOWN_TEXT_V7 = `Beam Down: sets one of your units down beside itself, lifted from on or beside ANY of your city centers or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away (the unit may still attack, not move)`;
 
 function roleNotesV7(
   rule: EffectiveRoleRuleV7,
@@ -730,6 +760,8 @@ function roleNotesV7(
     | "blastProof"
     | "kaboomAfterAttack"
     | "carrionBonus2"
+    | "heatSink"
+    | "rallyCools"
   > | null = null,
 ): readonly string[] {
   const rangedDefense2 = mechanics?.rangedDefense2 ?? null;
@@ -759,6 +791,15 @@ function roleNotesV7(
     if (mechanics.blastProof) notes.push(BLAST_PROOF_TEXT_V7);
     if (mechanics.kaboomAfterAttack) notes.push(CRASH_TEXT_V7);
   }
+  // The Martian pass (`pulp_wars-w49.14`, 7r52).
+  if (rule.abilities.includes("HEAT_RAY")) notes.push(HEAT_RAY_TEXT_V7);
+  if (mechanics !== null && mechanics.heatSink) notes.push(HEAT_SINK_TEXT_V7);
+  if (rule.abilities.includes("FORCE_FIELD"))
+    notes.push(FORCE_FIELD_NEEDS_NOTE_V7);
+  if (mechanics !== null && mechanics.rallyCools)
+    notes.push(PSYCHIC_COOLDOWN_TEXT_V7);
+  if ((rule.abilities as readonly string[]).includes("BEAM_DOWN"))
+    notes.push(BEAM_DOWN_TEXT_V7);
   return notes;
 }
 
@@ -1277,6 +1318,16 @@ function unlockTextV7(
     // The Goblin pass: Plunder in a sentence.
     case "PLUNDER":
       return `Plunder: +${unlock.coins} Coins for each enemy unit your units or blasts kill [${unlock.kind}]`;
+    // The Martian pass (`pulp_wars-w49.14`): the Martian unlocks in the
+    // sentences of the technology card.
+    case "BRAIN_SUPPORT":
+      return `${BRAIN_SUPPORT_UNLOCK_TEXT_V7} [${unlock.kind}]`;
+    case "FORCE_FIELDS":
+      return `${FORCE_FIELDS_UNLOCK_TEXT_V7} [${unlock.kind}]`;
+    case "HEAT_SINKS":
+      return `${HEAT_SINKS_UNLOCK_TEXT_V7} [${unlock.kind}]`;
+    case "DISINTEGRATOR":
+      return `${DISINTEGRATOR_UNLOCK_TEXT_V7} [${unlock.kind}]`;
     default: {
       if (unlock.kind === "FOREST_COVER")
         return `${FOREST_COVER_UNLOCK_TEXT_V7} [${unlock.kind}]`;
@@ -1372,10 +1423,14 @@ function describeCommandV7(
               EXPLOSION_SKIP_V7,
               true,
             );
+      // The Martian pass, correction: a whole Force Field holds.
+      const holds = martianCombatLinesV7(view, preview).notes.includes(
+        FORCE_FIELD_HOLDS_V7,
+      );
       return `${head}: ${combatTextV7(preview as never, context, {
         attacker: unit?.hp ?? null,
         defender: target?.hp ?? null,
-      })}${blast === "" ? "" : ` | explosions ${blast}`}`;
+      })}${holds ? ` | ${FORCE_FIELD_HOLDS_V7}` : ""}${blast === "" ? "" : ` | explosions ${blast}`}`;
     }
     case "CAPTURE": {
       const city =
@@ -1398,7 +1453,12 @@ function describeCommandV7(
     case "WAIT":
       return "mark the unit as handled (no effect on the game)";
     case "DISBAND":
-      return "disband the unit (frees its city slot; the refund is in the result)";
+      // The Martian pass, correction: on a controlled unit it is Release.
+      return view.mindControlled.some(
+        (entry) => entry.unitId === command.unitId,
+      )
+        ? "RELEASE the mind-controlled unit: it returns to its owner where it stands (no Coins); the Brain is free for another"
+        : "disband the unit (frees its city slot; the refund is in the result)";
     case "PILLAGE":
       return unit === undefined
         ? "pillage the improvement under the unit"
@@ -1406,7 +1466,9 @@ function describeCommandV7(
     case "BUILD_FIELD_DEFENSE":
       return `build a Field Defense on this tile (3c): +${FIELD_DEFENSE_FORTIFICATION_LEVELS_V7} Defense for the unit standing here (a siege shot is made against it and then destroys it; a Breach ignores and destroys it; it never raises what the defender hits back with) | the unit keeps its move and its action`;
     case "RALLY":
-      return "rally: inspires own units in reach (bonus on their next attack)";
+      return unit !== undefined && unitRoleMechanicsV7(view, unit).rallyCools
+        ? "psychic command: inspires own units beside it (+1 Attack on their next attack); the Brain is then Cooling and cannot command next turn"
+        : "rally: inspires own units in reach (bonus on their next attack)";
     case "TEND_WOUNDED":
       return `tend wounded${generic(previewTendWoundedV7(view, command.unitId))}`;
     case "WAIL":
@@ -1512,7 +1574,7 @@ function describeCommandV7(
             ? `${MILITIA_FIGHTERS_V7[view.viewer.faction] === 1 ? "one free" : "two free"} ${effectiveRoleRuleV7("FIGHTER", view.viewer.faction).label}${MILITIA_FIGHTERS_V7[view.viewer.faction] === 1 ? "" : "s"} at the city (a reward unit may stand above the unit limit)`
             : command.reward === "SURVEY" &&
                 SURVEY_RAIDERS_V7[view.viewer.faction] === 1
-              ? `Scouts: ${scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", view.viewer.faction).label)} (${effectiveRoleRuleV7("RAIDER", view.viewer.faction).label}; it may stand above the unit limit)`
+              ? `Scouts: ${scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", view.viewer.faction).label)} (${effectiveRoleRuleV7("RAIDER", view.viewer.faction).label}; it fills a unit slot of this city, and may stand above the unit limit)`
               : (REWARD_TEXT_V7[command.reward] ?? command.reward);
       return `reward for city c${command.cityId} reaching level ${command.reachedLevel}: ${special}`;
     }
@@ -1740,12 +1802,16 @@ function eventTextV7(
     }
     default: {
       // Tuning 5: an own Scouts reward is printed under its name.
+      // The Martian pass, correction: `CITY_REWARD_QUEUED` names no
+      // player (it printed SURVEY beside the id SCOUTS); the city's owner
+      // decides.
       const scouts =
-        (event.kind === "CITY_REWARD_QUEUED" ||
-          event.kind === "CITY_REWARD_CHOSEN") &&
-        "playerId" in event &&
-        event.playerId === me &&
-        SURVEY_RAIDERS_V7[context.view.viewer.faction] === 1;
+        (event.kind === "CITY_REWARD_CHOSEN"
+          ? event.playerId === me
+          : event.kind === "CITY_REWARD_QUEUED" &&
+            context.view.cities.some(
+              (city) => city.id === event.cityId && city.ownerId === me,
+            )) && SURVEY_RAIDERS_V7[context.view.viewer.faction] === 1;
       const raw = `${event.kind} ${compactFieldsV7(event as unknown as Record<string, unknown>, context)}`;
       const text = scouts
         ? raw.replace(
@@ -2017,6 +2083,10 @@ export const TEXT_PLAY_LABS_V7: Readonly<Record<string, string>> = {
   // The Undead pass (`pulp_wars-w49.13`): the one lab played as the Undead.
   LAB_UNDEAD_MID:
     "YOU PLAY THE UNDEAD in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each); you can train every Undead unit (ten technologies) and hold 4 Skeletons, 4 Zombies, 2 Ghouls, 2 Banshees, a Necromancer, 2 Liches and a Vampire, 35c in hand on the first turn and three free unit slots (the capital is full); the Humans hold 3 Swordsmen, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters at the start (and 30c on their first turn, which buys more), a walled capital, and Forest cover; your units recover only in your own land; your Liches plague only once you research Pestilence",
+  // The Martian pass (`pulp_wars-w49.14`): the one lab played as the
+  // Martians, on land with Forest, Fertile Ground, and Ore.
+  LAB_MARTIAN_MID:
+    "YOU PLAY THE MARTIANS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Martian unit (ten technologies) and hold 5 Grunts, 2 Shield Projectors, 2 Saucers, 2 Ray Gunners, a Brain, 2 Tripods and a Mothership (15 units), 35c in hand on the first turn and three free unit slots (the capital is full; a Mothership fills two); the Humans hold 3 Swordsmen, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; your Shield Projectors raise no Shield but their own until you research Force Fields, and your Ray Gunners overheat until you research Heat Sinks",
 };
 
 function commandLabV7(args: ArgsV7): string {
@@ -2196,6 +2266,31 @@ const ROLE_CODE_V7: Readonly<Record<UnitRoleIdV7, string>> = {
   SWORDSMAN: "Sw",
 };
 
+/**
+ * The Martian pass, correction (`pulp_wars-w49.14`): a Martian unit's own
+ * map code (a Mothership read as a Human Knight, `Kn`, and a Tripod as a
+ * Catapult, `Ct`).
+ */
+const MARTIAN_ROLE_CODE_V7: Readonly<Partial<Record<UnitRoleIdV7, string>>> = {
+  FIGHTER: "Gr",
+  RAIDER: "Sa",
+  MARKSMAN: "RG",
+  GUARD: "SP",
+  CAPTAIN: "Br",
+  CATAPULT: "Tr",
+  KNIGHT: "Mo",
+  JUGGERNAUT: "Co",
+};
+const MARTIAN_LEGEND_V7 =
+  "  Martian units: Gr grunt Sa saucer RG ray gunner SP shield projector Br brain Tr tripod Mo mothership Co colossus";
+function roleCodeV7(view: PlayerViewV7, unit: PublicUnitV7): string {
+  return (
+    (unitFactionV7(view, unit) === "MARTIAN"
+      ? MARTIAN_ROLE_CODE_V7[unit.role]
+      : undefined) ?? ROLE_CODE_V7[unit.role]
+  );
+}
+
 const LEGEND_V7 = [
   "LEGEND cell = terrain feature mark owner unit (7 chars), ??????? = unexplored. There is no re-fog: an explored tile shows everything on it.",
   "  terrain: . grass  f forest  ^ mountain  ~ shallow water  = deep water  # rift",
@@ -2258,7 +2353,7 @@ function mapLinesV7(view: PlayerViewV7): readonly string[] {
       const code =
         unit === undefined
           ? "---"
-          : `${seatLabelV7(view, unit.ownerId).replace("S", "")}${unit.form === "EGG" ? "e-" : ROLE_CODE_V7[unit.role]}`;
+          : `${seatLabelV7(view, unit.ownerId).replace("S", "")}${unit.form === "EGG" ? "e-" : roleCodeV7(view, unit)}`;
       row += `${TERRAIN_GLYPH_V7[tile.terrain] ?? "?"}${feature}${mark}${owner}${code}|`;
     }
     lines.push(row);
@@ -2288,6 +2383,13 @@ function unitStatusV7(view: PlayerViewV7, unit: PublicUnitV7): string {
   if (unit.captureEligible) parts.push("can-capture-now");
   const shield = view.shields.find((entry) => entry.unitId === unit.id);
   if (shield !== undefined) parts.push(`shield ${shield.shield}`);
+  // The Martian pass: a ray unit that is Cooling (its next ray is halved).
+  if (
+    view.cooling.some(
+      (entry) => entry.unitId === unit.id && !entry.firedThisTurn,
+    )
+  )
+    parts.push("cooling");
   const egg = view.eggs.find((entry) => entry.unitId === unit.id);
   if (egg !== undefined) parts.push(`hatches in ${egg.turnsRemaining}`);
   const plague = view.plagued.find((entry) => entry.unitId === unit.id);
@@ -2453,6 +2555,37 @@ function freeMonumentLinesV7(
  * range" for those too. Under your own unit a last line gives the worst
  * case: every listed attacker in turn, each on the HP the others leave.
  */
+/**
+ * The Martian pass, correction: the Shield a unit will have when the enemy
+ * moves. Its Shield now; for the viewer's own unit with Force Fields (the
+ * recharge at the end of its turn) its maximum, or 4 beside one of its
+ * Shield Projectors.
+ */
+function shieldNextTurnV7(view: PlayerViewV7, unit: PublicUnitV7): number {
+  const now = shieldOfV7(view.shields, unit.id);
+  const maximum = unitShieldMaximumV7(view, unit);
+  if (maximum <= 0 || unit.ownerId !== view.viewer.id) return now;
+  const capabilities = unitCapabilitiesV7(
+    view,
+    unit,
+    view.viewer.researchedTechs,
+  );
+  if (!capabilities.shieldsRechargeAtEndTurn) return now;
+  const covered =
+    capabilities.projectsForceField &&
+    view.units.some(
+      (other) =>
+        other.id !== unit.id &&
+        other.ownerId === unit.ownerId &&
+        other.form === "LAND" &&
+        chebyshevV7(other.at, unit.at) <= 1 &&
+        (unitRoleRuleV7(view, other).abilities as readonly string[]).includes(
+          "FORCE_FIELD",
+        ),
+    );
+  return Math.max(now, covered ? FORCE_FIELD_SHIELD_V7 : maximum);
+}
+
 function threatEstimateLinesV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
@@ -2503,17 +2636,35 @@ function threatEstimateLinesV7(
       );
       continue;
     }
-    const damage = publicProjectedDamageForPolicyV7(
-      view,
-      attacker,
-      defender,
-      defender.at,
-      { maximumCharge: !direct },
-    );
+    // The Martian pass, correction (`pulp_wars-w49.14`): the hit is taken
+    // from the Shield the unit will have (it printed "5 (hp 8->3)" for a
+    // hit that cost 1 HP), a whole Force Field holds, and a Charge is
+    // named as what it is: the enemy's research is private (a Saucer
+    // without Raiding was credited with it).
+    const raw = (charge: boolean): number =>
+      publicProjectedDamageForPolicyV7(view, attacker, defender, defender.at, {
+        maximumCharge: charge,
+      });
+    const shield = shieldNextTurnV7(view, defender);
+    const through = (hit: number): number =>
+      absorbHitV7(
+        shield,
+        defender.hp,
+        hit,
+        forceFieldHoldsV7(view, defender, shield),
+      ).hpDamage;
+    const plain = through(raw(false));
+    const charged = direct ? plain : through(raw(true));
+    const damage = plain;
+    const chargeNote =
+      charged === plain
+        ? ""
+        : `; ${charged} with Charge, if its owner has Raiding${charged >= defender.hp ? " (KILLS)" : ""}`;
+    const shieldNote = shield > 0 ? `, after its Shield ${shield} absorbs` : "";
     rows.push(
-      `  ${unitTagV7(view, attacker)} @${xyV7(attacker.at)} on ${unitTagV7(view, defender)} @${xyV7(defender.at)}: deals about ${damage} (hp ${defender.hp}->${Math.max(0, defender.hp - damage)})${damage >= defender.hp ? " KILLS" : ""}${direct ? "" : " after moving into range"}`,
+      `  ${unitTagV7(view, attacker)} @${xyV7(attacker.at)} on ${unitTagV7(view, defender)} @${xyV7(defender.at)}: deals about ${damage} (hp ${defender.hp}->${Math.max(0, defender.hp - damage)})${damage >= defender.hp ? " KILLS" : ""}${shieldNote}${chargeNote}${direct ? "" : " after moving into range"}`,
     );
-    hits.push({ attacker, damage, direct });
+    hits.push({ attacker, damage: Math.max(plain, charged), direct });
   }
   if (pairs.length === 0) return [];
   // The worst case on an own unit: the attackers in turn, the hardest hit
@@ -2522,18 +2673,26 @@ function threatEstimateLinesV7(
   if (mine && hits.length >= 2) {
     let hp = unit.hp;
     let used = 0;
+    let shieldLeft = shieldNextTurnV7(view, unit);
     for (const hit of [...hits].sort(
       (left, right) =>
         right.damage - left.damage || left.attacker.id - right.attacker.id,
     )) {
       if (hp <= 0) break;
-      hp -= publicProjectedDamageForPolicyV7(
-        view,
-        hit.attacker,
-        { ...unit, hp },
-        unit.at,
-        { maximumCharge: !hit.direct },
+      const blow = absorbHitV7(
+        shieldLeft,
+        hp,
+        publicProjectedDamageForPolicyV7(
+          view,
+          hit.attacker,
+          { ...unit, hp },
+          unit.at,
+          { maximumCharge: !hit.direct },
+        ),
+        forceFieldHoldsV7(view, { ...unit, hp }, shieldLeft),
       );
+      shieldLeft -= blow.shieldDamage;
+      hp -= blow.hpDamage;
       used += 1;
     }
     rows.push(
@@ -2664,6 +2823,8 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
       ? LEGEND_V7
       : LEGEND_V7.filter((_line, index) => index === 0 || index === 2)),
   );
+  if (view.players.some((player) => player.faction === "MARTIAN"))
+    lines.push(MARTIAN_LEGEND_V7);
   if (!full) lines.push("  (view --full prints the whole legend)");
 
   const specials: string[] = [];
@@ -2738,8 +2899,17 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
       return `${rule.label} ${cost}c${id === undefined ? ` (${why})` : ` [${id.startsWith(`c${city.id}.egg`) ? `c${city.id}.egg.${role}.x,y` : id}]`}`;
     });
     lines.push(
-      `c${city.id} ${city.isCapital ? "CAPITAL" : "city"} @${xyV7(city.at)} L${city.level} pop ${city.population}/${city.level + 1} income +${cityIncomeV7(view, city)} slots ${slots.used}/${slots.capacity} action ${city.cityActionAvailable === true ? "ready" : "used"}${cityBesiegedV7(view, city) ? " BESIEGED" : ""}${city.landGrantUsed ? " land-grant-used" : ""}${city.rewards.length === 0 ? "" : ` rewards ${city.rewards.map((entry) => entry.reward).join(",")}`}`,
+      `c${city.id} ${city.isCapital ? "CAPITAL" : "city"} @${xyV7(city.at)} L${city.level} pop ${city.population}/${city.level + 1} income +${cityIncomeV7(view, city)} slots ${slots.used}/${slots.capacity} action ${city.cityActionAvailable === true ? "ready" : "used"}${cityBesiegedV7(view, city) ? " BESIEGED" : ""}${city.landGrantUsed ? " land-grant-used" : ""}${city.rewards.length === 0 ? "" : ` rewards ${city.rewards.map((entry) => rewardNameV7(view.viewer.faction, entry.reward)).join(",")}`}`,
     );
+    // The Martian pass, correction: where the giant unit comes from (a
+    // tester reached level 5 in another city and never found it).
+    if (
+      city.id === view.viewer.originalCapitalCityId &&
+      !city.rewards.some((entry) => entry.reward === "JUGGERNAUT")
+    )
+      lines.push(
+        `   giant unit: a free ${effectiveRoleRuleV7("JUGGERNAUT", view.viewer.faction).label} is offered once, as a reward of this city (your first capital) at level 5 or higher; no other city offers it`,
+      );
     // Tuning 5 (`pulp_wars-w49.4`): two things the numbers do not say.
     // The level term of income stops at 4, so more population past level 4
     // buys unit slots and rewards and no Coins; and a city that lost

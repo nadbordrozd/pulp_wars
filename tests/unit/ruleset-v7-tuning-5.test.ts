@@ -66,7 +66,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 5 (`pulp_wars-w49.4`, identity `pulp-wars-poc-7r51`;
+ * Tuning 5 (`pulp_wars-w49.4`, identity `pulp-wars-poc-7r52`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 12): the Normal AI's army
  * play, the Human Guard open to ranged attacks, the Swordsman, the removal
  * of Drill, the Blast Mountain's setter, the Land Grant's price, and the
@@ -148,18 +148,28 @@ const field = (
     ...(options.coins === undefined ? {} : { coins: options.coins }),
   });
 
+/**
+ * The Martian pass's correction (`pulp_wars-w49.14`): a Human seat takes
+ * the villages first for ten rounds (it walks into no enemy's reach
+ * outside its land); the fights of these tests are after them, in round 12.
+ */
+const late = (...args: Parameters<typeof field>): GameStateV7 => ({
+  ...field(...args),
+  round: 12,
+});
+
 describe("tuning 5 identity", () => {
   // Tuning 5 took 7r48; tuning 6 (tests/unit/ruleset-v7-tuning-6.test.ts)
   // took 7r49 and the Goblin pass 7r50, so 7r48 is the prior identity
   // before the last.
   it("was 7r48 after 7r47, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
-    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r52");
+    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
       "pulp-wars-poc-7r47",
       "pulp-wars-poc-7r48",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r51.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -2)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r52.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-5, -3)).toEqual([
       "pulpWars.save.v7r47.current",
       "pulpWars.save.v7r48.current",
     ]);
@@ -575,8 +585,14 @@ describe("the labs under 7r48", () => {
 });
 
 describe("Normal AI army play: who plays it", () => {
-  it("is the Human, Undead, and Goblin seats", () => {
-    expect(ARMY_PLAY_FACTIONS_V7).toEqual(["ORIGINAL", "UNDEAD", "GOBLIN"]);
+  // The Martian pass (`pulp_wars-w49.14`, 7r52): and the Martian seats.
+  it("is the Human, Undead, Goblin, and Martian seats", () => {
+    expect(ARMY_PLAY_FACTIONS_V7).toEqual([
+      "ORIGINAL",
+      "UNDEAD",
+      "GOBLIN",
+      "MARTIAN",
+    ]);
   });
 });
 
@@ -698,7 +714,12 @@ describe("Normal AI army play: units before research and buildings", () => {
       expect(
         turn.commands.find((command) => command.kind === "RESEARCH"),
         faction,
-      ).toEqual({ kind: "RESEARCH", tech: "MARKSMANSHIP" });
+        // The Martian pass's correction (`pulp_wars-w49.14`): a Martian
+        // seat that fields its Projector researches Force Fields next.
+      ).toEqual({
+        kind: "RESEARCH",
+        tech: faction === "MARTIAN" ? "FORTIFICATION" : "MARKSMANSHIP",
+      });
     }
   });
 
@@ -779,7 +800,7 @@ describe("Normal AI army play: shooting and combined kills", () => {
   });
 
   it("softens a Guard with its ranged units and finishes it with a Fighter that moves in", () => {
-    const state = field(
+    const state = late(
       [
         { seat: 0, role: "MARKSMAN", at: at(4, 2) },
         { seat: 0, role: "MARKSMAN", at: at(6, 2) },
@@ -819,7 +840,7 @@ describe("Normal AI army play: shooting and combined kills", () => {
 
   it("moves a melee unit in for an acceptable exchange and not for a bad one", () => {
     // A Fighter two tiles from a lone Fighter: 5 for 5 is acceptable.
-    const even = field(
+    const even = late(
       [
         { seat: 0, role: "FIGHTER", at: at(5, 3) },
         { seat: 0, role: "FIGHTER", at: at(8, 8) },

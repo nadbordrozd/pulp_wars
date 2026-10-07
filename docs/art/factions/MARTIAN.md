@@ -350,6 +350,15 @@ edit also turned two cube houses into dome huts).
 
 Strafe uses the existing Charge icon of the Raider.
 
+**Stand-in since the Martian pass** (`pulp_wars-w49.14`, `7r52`): the
+Martian Fieldcraft is named **Heat Sinks** (Ray Gunners do not overheat)
+and its node in the technology tree still shows the shared Fieldcraft
+icon. A Martian icon for it (a ray gun barrel with cooling fins and no
+heat lines, the opposite of `ICON:STATUS:COOLING`) is open for the art
+queue; no asset was generated in that bead. The Force Field icon is
+unchanged: the field now needs the Force Fields technology, and the
+Projector's card says so in words.
+
 ## Ability effects
 
 Five sprites in the format of the Undead effects (`effect` class, mapped to

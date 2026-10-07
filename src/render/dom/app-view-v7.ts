@@ -48,6 +48,7 @@ import {
   missionByIdV7,
   missionMatchSetupV7,
   SURVEY_RAIDERS_V7,
+  rayOverheatsV7,
   cityUnitCapacityForV7,
   distinctFactionsV7,
   effectiveRoleRuleV7,
@@ -107,6 +108,7 @@ import {
   cityBarracksV7,
   publicLandGrantPriceV7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
+  isMindControlledV7,
 } from "../../engine/index";
 import {
   CROWDED_HINT_V7,
@@ -321,12 +323,15 @@ import {
   COOLING_TOOLTIP_V7,
   DISINTEGRATOR_UNLOCK_TEXT_V7,
   FORCE_FIELDS_UNLOCK_TEXT_V7,
+  HEAT_SINKS_UNLOCK_TEXT_V7,
   MARTIAN_FIELD_DEFENSE_EXPLANATION_V7,
   MARTIAN_FROZEN_MOVED_V7,
   MARTIAN_HELP_RULES_V7,
   MIND_CONTROL_LABEL_V7,
   MIND_CONTROL_PICK_V7,
   MIND_CONTROL_TOOLTIP_V7,
+  RELEASE_LABEL_V7,
+  RELEASE_TOOLTIP_V7,
   STRAFE_LABEL_V7,
   MIND_CONTROLLED_LABEL_V7,
   MIND_CONTROLLED_NO_SLOT_V7,
@@ -3877,7 +3882,13 @@ export class Ruleset7DomAppView {
         // The Martian revision: the Shield, the ray's power now,
         // a Brain's control, a two-slot body and a machine afloat.
         if (stats.martian !== undefined)
-          for (const line of martianUnitInfoLinesV7(unit, stats.martian)) {
+          for (const line of martianUnitInfoLinesV7(
+            unit,
+            stats.martian,
+            // The Martian pass: an own Ray Gunner with Heat Sinks.
+            unit.ownerId !== view.viewer.id ||
+              rayOverheatsV7(view, unit, view.viewer.researchedTechs),
+          )) {
             const entry = el(this.#document, "p", "v7-unit-ability");
             entry.dataset.martianInfo = line.id;
             entry.append(
@@ -3897,7 +3908,7 @@ export class Ruleset7DomAppView {
             text(
               this.#document,
               "span",
-              `${controlInfo.byLine}. ${controlInfo.fateLine}. It cannot be disbanded or create units.`,
+              `${controlInfo.byLine}. ${controlInfo.fateLine}. It cannot create units; Release returns it to its owner.`,
             ),
           );
           abilities.append(entry);
@@ -5009,7 +5020,15 @@ export class Ruleset7DomAppView {
       // The Candy revision (section 15.1): a Confectioner's Tend Wounded
       // is Frosting, by the unit's kind.
       const candyLabel = candyCommandLabelV7(this.#snapshot.view, command);
+      // The Martian pass, correction: Disband on a controlled unit is
+      // Release.
+      const released =
+        command.kind === "DISBAND" &&
+        this.#snapshot.view !== null &&
+        this.#snapshot.view !== undefined &&
+        isMindControlledV7(this.#snapshot.view, command.unitId);
       const label =
+        (released ? RELEASE_LABEL_V7 : null) ??
         candyLabel ??
         (abandonedEgg === undefined
           ? commandLabel(command, this.#viewerFaction())
@@ -5025,7 +5044,7 @@ export class Ruleset7DomAppView {
           : "v7-context-action",
       );
       action.append(text(this.#document, "span", label, "v7-action-label"));
-      action.title = label;
+      action.title = released ? `${label} · ${RELEASE_TOOLTIP_V7}` : label;
       // Bead pulp_wars-621: an area support's one button helps every
       // marked unit; hovering or focusing it makes their marks prominent.
       if (command.kind === "TEND_WOUNDED" || command.kind === "RALLY")
@@ -10321,7 +10340,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r51",
+    rulesetId: "pulp-wars-poc-7r52",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -10517,6 +10536,8 @@ function effectDescription(
       return BRAIN_SUPPORT_UNLOCK_TEXT_V7;
     case "FORCE_FIELDS":
       return FORCE_FIELDS_UNLOCK_TEXT_V7;
+    case "HEAT_SINKS":
+      return HEAT_SINKS_UNLOCK_TEXT_V7;
     case "DISINTEGRATOR":
       return DISINTEGRATOR_UNLOCK_TEXT_V7;
     // The Ice Folk revision (section 4).
@@ -10740,6 +10761,7 @@ function technologyEffectGroupIdV7(
     case "PESTILENCE":
     case "BRAIN_SUPPORT":
     case "FORCE_FIELDS":
+    case "HEAT_SINKS":
     case "DISINTEGRATOR":
     case "WITCH_SUPPORT":
     case "DEEP_WINTER":
@@ -10943,7 +10965,9 @@ function rewardLabel(
           "Scouts",
           faction === "ORIGINAL"
             ? SCOUTS_REWARD_TEXT_V7
-            : scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", faction).label),
+            : // The Martian pass, correction: a tester's free Saucer
+              // filled the capital's third slot unannounced.
+              `${scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", faction).label)}${faction === "MARTIAN" ? " (uses a unit slot)" : ""}`,
         ]
       : ["Survey", "Reveal the area"];
   if (reward === "STOCKPILE") return ["Stockpile", "+4 Coins"];

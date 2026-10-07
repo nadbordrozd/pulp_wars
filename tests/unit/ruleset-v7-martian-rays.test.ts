@@ -24,8 +24,9 @@ import {
 } from "../fixtures/v7-goblin-arena";
 import {
   hasUnitAtV7,
-  martianFieldV7,
+  martianFieldV7 as martianFieldWithEveryTechnologyV7,
   shieldAtV7,
+  type MartianFieldOptionsV7,
   type MartianPieceV7,
 } from "../fixtures/v7-martian";
 import {
@@ -48,8 +49,43 @@ import {
 
 type RayRole = "MARKSMAN" | "CATAPULT" | "JUGGERNAUT";
 
-/** Every Martian technology except the Disintegrator (`EXPLOSIVES`). */
-const NO_DISINTEGRATOR = { 0: withoutTechsV7("MARTIAN", "EXPLOSIVES") };
+/**
+ * The field of these tests. The Martian pass (`pulp_wars-w49.14`, 7r52):
+ * unless a test names its technologies, a Martian seat owns every
+ * technology but Heat Sinks (`FIELDCRAFT`), with which a Ray Gunner's
+ * full-power ray leaves no Cooling
+ * (tests/unit/ruleset-v7-martian-pass.test.ts): these are the tests of the
+ * ray as every ray unit has it.
+ */
+function martianFieldV7(
+  pieces: readonly MartianPieceV7[],
+  options: MartianFieldOptionsV7 = {},
+): GameStateV7 {
+  const factions = options.factions ?? ["MARTIAN", "ORIGINAL"];
+  return martianFieldWithEveryTechnologyV7(pieces, {
+    ...options,
+    techs:
+      options.techs ??
+      Object.fromEntries(
+        factions.flatMap((faction, seat) =>
+          faction === "MARTIAN"
+            ? [[seat, withoutTechsV7("MARTIAN", "FIELDCRAFT")]]
+            : [],
+        ),
+      ),
+  });
+}
+
+/**
+ * Every Martian technology except the Disintegrator (`EXPLOSIVES`) and,
+ * since the Martian pass (`pulp_wars-w49.14`, 7r52), Heat Sinks
+ * (`FIELDCRAFT`): with Heat Sinks a Ray Gunner's full-power ray leaves no
+ * Cooling (tests/unit/ruleset-v7-martian-pass.test.ts), and these are the
+ * tests of the ray as every ray unit has it without that technology.
+ */
+const NO_DISINTEGRATOR = {
+  0: withoutTechsV7("MARTIAN", "EXPLOSIVES", "FIELDCRAFT"),
+};
 
 /**
  * The whole hit (Shield plus HP damage) of a ray fired by `role` from

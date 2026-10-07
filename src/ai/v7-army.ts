@@ -54,10 +54,10 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
  *   is visible within `ARMY_GARRISON_RADIUS_V7`, except for that step
  *   beside the center; without the Coins for a unit it does not move.
  *
- * It applies to a Human, Undead, or Goblin seat in a match whose every
- * seat is one of those three (the pairings the tuning rounds play): a
- * match with any other faction keeps the policy of that faction's own
- * pass, on both sides. It is off while the seat's naval plan is active (it
+ * It applies to a Human, Undead, Goblin, or (the Martian pass,
+ * `pulp_wars-w49.14`) Martian seat in a match whose every seat is one of
+ * those four (the pairings the tuning rounds play): a match with any other
+ * faction keeps the policy of that faction's own pass, on both sides. It is off while the seat's naval plan is active (it
  * must cross water to reach anyone) and while the opening growth harvest
  * is due. Everything is read from the public view and the public previews;
  * nothing draws from the PRNG or depends on elapsed time.
@@ -66,6 +66,7 @@ export const ARMY_PLAY_FACTIONS_V7: readonly FactionIdV7[] = Object.freeze([
   "ORIGINAL",
   "UNDEAD",
   "GOBLIN",
+  "MARTIAN",
 ]);
 
 export function armyPlayFactionV7(faction: FactionIdV7): boolean {
@@ -275,7 +276,85 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
     "CAPTAIN",
     "KNIGHT",
   ] as const),
+  // The Martian pass (`pulp_wars-w49.14`,
+  // docs/product/RULESET_7_TUNING_MARTIAN.md section 8): the Shield
+  // Projector (Drill, one technology: the one Martian unit a Knight does
+  // not kill in one attack, so it ends an Overrun chain, and the garrison),
+  // then one growth technology (economy first, as for the Undead), the Ray
+  // Gunner (the kill of a 10-HP unit from two tiles), the Tripod, the
+  // Brain, the Saucer (one comes free with Scouts), the Mothership. Force
+  // Fields is researched once a Projector is fielded and Heat Sinks once
+  // two Ray Gunners are (`armyResearchTargetV7`). (With the Saucer second
+  // a seat owned six technologies in thirty rounds, none of them toward a
+  // Tripod, and lost three Saucers for two pulls.)
+  MARTIAN: Object.freeze([
+    "GUARD",
+    "MARKSMAN",
+    "CATAPULT",
+    "CAPTAIN",
+    "RAIDER",
+    "KNIGHT",
+  ] as const),
 });
+
+/**
+ * The Martian pass: an army seat's Martian shooter next to a hostile melee
+ * unit steps back to two tiles before it shoots (the Grunt's and the
+ * Tripod's step back, a Cooling ray unit's): above a committed melee attack
+ * (1174) and with a committed ranged unit's Move to a shot (1175), below
+ * every kill (1180).
+ */
+export const ARMY_STEP_BACK_PRIORITY_V7 = 1175;
+/**
+ * The Martian pass: an army seat's Saucer that stands in the reach of
+ * visible enemies flies to a tile where it takes less: below an extraction
+ * (890) and a shot on arrival (906), above the delivery by route (865) and
+ * every routine Move. Its Recover in such a reach waits (it recovered two
+ * tiles from two Marksmen and died there).
+ */
+export const ARMY_CARRIER_KEEP_OUT_PRIORITY_V7 = 880;
+/**
+ * The Martian pass: a Martian unit whose HP and Shield maximum together are
+ * below this is a weak link of a kill chain at any HP: a Human Knight's
+ * hit (13 on a Grunt, 14 on a Ray Gunner, a Brain, a Saucer, or a Tripod)
+ * kills it through its Shield and rides on. A Shield Projector (12 and 3)
+ * and a Mothership (16 and 4) are not. (Knights rode on twenty-seven times
+ * in fourteen rounds through Martian units that stood side by side.)
+ */
+export const ARMY_MARTIAN_STURDY_V7 = 15;
+/**
+ * The Martian pass, correction (`pulp_wars-w49.14`, section 13 of
+ * docs/product/RULESET_7_TUNING_MARTIAN.md).
+ *
+ * `ARMY_KNIGHT_SHY_MAXIMUM_V7`: a Martian unit a unit with Overrun kills in
+ * one attack makes no Move of a lower priority (everything but a kill)
+ * into such a unit's reach, and steps out of it at
+ * `ARMY_STEP_BACK_PRIORITY_V7`. A unit that will stand in a Force Field at
+ * full HP is not such a unit (the field holds).
+ *
+ * `ARMY_VILLAGE_DELIVERY_PRIORITY_V7`: a Saucer's Beam Down of a unit that
+ * captures to a tile beside a free village (just below the step onto the
+ * village, 1170). `ARMY_VILLAGE_FERRY_PRIORITY_V7`: the Saucer's Move to a
+ * tile beside that village, above the delivery by route (865).
+ * `ARMY_VILLAGE_DELIVERY_GAIN_V7`: the tiles the passenger must gain.
+ *
+ * `ARMY_EMPTY_CENTER_PRIORITY_V7`: a capturer's Move toward a hostile city
+ * center no unit stands on, within `ARMY_RETAKE_RADIUS_V7`.
+ *
+ * `ARMY_RANGED_ENEMY_UNITS_V7`: with this many visible hostile land units,
+ * most of them shooting from two tiles or more, a seat trains no unit that
+ * is open to ranged attacks (the Human Guard) while it can train another.
+ */
+export const ARMY_KNIGHT_SHY_MAXIMUM_V7 = 1179;
+export const ARMY_VILLAGE_DELIVERY_PRIORITY_V7 = 1168;
+export const ARMY_VILLAGE_FERRY_PRIORITY_V7 = 870;
+export const ARMY_VILLAGE_DELIVERY_GAIN_V7 = 2;
+export const ARMY_EMPTY_CENTER_PRIORITY_V7 = 1160;
+export const ARMY_RANGED_ENEMY_UNITS_V7 = 3;
+/** A Martian seat with this many Shield Projectors researches Force Fields. */
+export const ARMY_FORCE_FIELDS_PROJECTORS_V7 = 1;
+/** A Martian seat with this many Ray Gunners researches Heat Sinks. */
+export const ARMY_HEAT_SINKS_RAY_GUNNERS_V7 = 2;
 
 /**
  * Roads: a seat with this many cities researches Roads once it can train
@@ -483,6 +562,26 @@ export const ARMY_SHARES_V7 = Object.freeze({
     SIEGE: 25,
     BREAKTHROUGH: 20,
   }),
+  // The Martian pass (`pulp_wars-w49.14`): two fifths Grunts (the line that
+  // moves and shoots), a Shield Projector for every five or six units (the
+  // field covers the eight tiles around it), a fifth Tripods, 15% Ray
+  // Gunners, a tenth Motherships (two slots each). Against two or more
+  // hostile ranged, siege, or support units: a quarter Tripods, which kill
+  // them from two tiles.
+  martian: Object.freeze({
+    LINE: 40,
+    DEFENDER: 15,
+    RANGED: 15,
+    SIEGE: 20,
+    BREAKTHROUGH: 10,
+  }),
+  martianFragile: Object.freeze({
+    LINE: 35,
+    DEFENDER: 15,
+    RANGED: 15,
+    SIEGE: 25,
+    BREAKTHROUGH: 10,
+  }),
 });
 
 /** The shares of a faction's land army (`fragile`: see above). */
@@ -496,8 +595,28 @@ export function armySharesV7(
     return fragile ? ARMY_SHARES_V7.undeadFragile : ARMY_SHARES_V7.undead;
   if (faction === "GOBLIN")
     return fragile ? ARMY_SHARES_V7.goblinFragile : ARMY_SHARES_V7.goblin;
+  if (faction === "MARTIAN")
+    return fragile ? ARMY_SHARES_V7.martianFragile : ARMY_SHARES_V7.martian;
   return fragile ? ARMY_SHARES_V7.fragile : ARMY_SHARES_V7.standard;
 }
+/**
+ * The Martian pass (`pulp_wars-w49.14`): a Martian army has one Saucer per
+ * this many units, at most two (the carriers and pullers of the line; a
+ * seat with one for every four lost three for two pulls).
+ */
+export const ARMY_MARTIAN_SKIRMISHER_PER_UNITS_V7 = 6;
+export const ARMY_MARTIAN_SKIRMISHER_MAXIMUM_V7 = 2;
+/**
+ * The Martian pass: what a threatened or frontier center adds to the
+ * training score of a Martian seat's Grunt and of its Shield Projector.
+ * The other factions' defender has the 200 and their line unit the 100: a
+ * Martian seat's body is the Grunt, which shoots what walks up, and a
+ * Projector beyond its share is 4 Coins that hit for 3 (a seat with four
+ * cities trained a Projector in thirteen of eighteen rounds and fielded
+ * three Grunts).
+ */
+export const ARMY_MARTIAN_FRONT_LINE_VALUE_V7 = 200;
+export const ARMY_MARTIAN_FRONT_DEFENDER_VALUE_V7 = 100;
 /** A Goblin army has one Wolf Rider per this many units (at most three). */
 export const ARMY_GOBLIN_SKIRMISHER_PER_UNITS_V7 = 4;
 export const ARMY_GOBLIN_SKIRMISHER_MAXIMUM_V7 = 3;
@@ -649,7 +768,13 @@ export function armyRoleScoreV7(
               ARMY_UNDEAD_SKIRMISHER_MAXIMUM_V7,
               Math.floor(counts.total / ARMY_UNDEAD_SKIRMISHER_PER_UNITS_V7),
             )
-          : Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7)) -
+          : // The Martian pass: one Saucer per six units, at most two.
+            faction === "MARTIAN"
+            ? Math.min(
+                ARMY_MARTIAN_SKIRMISHER_MAXIMUM_V7,
+                Math.floor(counts.total / ARMY_MARTIAN_SKIRMISHER_PER_UNITS_V7),
+              )
+            : Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7)) -
         have);
   else if (unitClass === "SUPPORT")
     deficit =
@@ -668,19 +793,27 @@ export function armyRoleScoreV7(
   }
   const defence = !threatened
     ? 0
-    : unitClass === "DEFENDER"
-      ? 200
-      : unitClass === "LINE"
-        ? 100
-        : unitClass === "SIEGE" || unitClass === "SUPPORT"
-          ? -200
-          : // The Goblin pass, correction: a Goblin seat trains no
-            // breakthrough unit onto a threatened or frontier center either
-            // (five of seven Scrap Buggies died on the center they were
-            // trained on). Other factions' seats are as they were.
-            unitClass === "BREAKTHROUGH" && faction === "GOBLIN"
-            ? -ARMY_FRONT_BREAKTHROUGH_COST_V7
-            : 0;
+    : // The Martian pass: Grunts are a Martian seat's bodies.
+      faction === "MARTIAN" && unitClass === "LINE"
+      ? ARMY_MARTIAN_FRONT_LINE_VALUE_V7
+      : faction === "MARTIAN" && unitClass === "DEFENDER"
+        ? ARMY_MARTIAN_FRONT_DEFENDER_VALUE_V7
+        : unitClass === "DEFENDER"
+          ? 200
+          : unitClass === "LINE"
+            ? 100
+            : unitClass === "SIEGE" || unitClass === "SUPPORT"
+              ? -200
+              : // The Goblin pass, correction: a Goblin seat trains no
+                // breakthrough unit onto a threatened or frontier center either
+                // (five of seven Scrap Buggies died on the center they were
+                // trained on). Other factions' seats are as they were.
+                // The Martian pass: nor a Martian seat a Mothership (8
+                // Coins and two unit slots of a city that needs bodies).
+                unitClass === "BREAKTHROUGH" &&
+                  (faction === "GOBLIN" || faction === "MARTIAN")
+                ? -ARMY_FRONT_BREAKTHROUGH_COST_V7
+                : 0;
   // Tuning 6 (`pulp_wars-w49.6`): a class the army is short of is bought
   // in its dearest unit the Coins reach (`ARMY_DEAR_UNIT_VALUE_V7` per
   // Coin of price), so the top units get a real share of the purchases:

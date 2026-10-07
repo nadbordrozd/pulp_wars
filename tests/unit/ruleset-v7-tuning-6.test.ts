@@ -70,7 +70,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r51`;
+ * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r52`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 13): the Normal AI breaks
  * a line with numbers, expands and grows, researches toward its army and
  * buys its dear units, and keeps its discipline; research costs 1 Coin more
@@ -179,13 +179,13 @@ describe("tuning 6 identity and the research price", () => {
   // and the Undead pass 7r51, so 7r49 is the prior identity before the
   // last.
   it("was 7r49 after 7r48, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
-    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r52");
+    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
       "pulp-wars-poc-7r48",
       "pulp-wars-poc-7r49",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r51.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3, -1)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r52.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -2)).toEqual([
       "pulpWars.save.v7r48.current",
       "pulpWars.save.v7r49.current",
     ]);
@@ -682,13 +682,24 @@ describe("expansion and growth", () => {
       viewForV7(state, seatIdV7(state, 0)),
     );
     const candidates = decision.candidates.map(({ command }) => command.kind);
-    expect(decision.command?.kind).toBe("TRAIN");
-    expect(candidates).not.toContain("HARVEST_FRUIT");
+    // The Martian pass's correction (`pulp_wars-w49.14`): a pressed Human
+    // seat still buys the growth that leaves the Coins for any unit it can
+    // train (6 Coins: a 2-Coin harvest and the 2-Coin Fighter), so the
+    // harvest is a candidate beside the training; research is not.
+    expect(candidates).toContain("TRAIN");
+    expect(candidates).toContain("HARVEST_FRUIT");
     expect(candidates).not.toContain("RESEARCH");
-    // Once the city has trained, the Coins are free again.
     const turn = policyTurn(state);
-    expect(kindsOf(turn.commands)[0]).toBe("TRAIN");
+    expect(kindsOf(turn.commands)).toContain("TRAIN");
     expect(kindsOf(turn.commands)).toContain("HARVEST_FRUIT");
+    // With 3 Coins the harvest would leave 1: the unit only, as before.
+    const poor = chooseNormalCommandV7(
+      viewForV7(orchard(at(5, 8), 3), seatIdV7(state, 0)),
+    );
+    expect(poor.command?.kind).toBe("TRAIN");
+    expect(poor.candidates.map(({ command }) => command.kind)).not.toContain(
+      "HARVEST_FRUIT",
+    );
   });
 
   it("builds a free Monument at once", () => {
@@ -819,6 +830,9 @@ describe("research toward the army", () => {
       // Buggy (it was KNIGHT, GUARD, CAPTAIN); its correction: the Orc
       // Brute third (a Human Knight's chain ends on a Brute).
       GOBLIN: ["MARKSMAN", "RAIDER", "GUARD", "CATAPULT", "CAPTAIN", "KNIGHT"],
+      // The Martian pass (`pulp_wars-w49.14`): the Shield Projector, the
+      // Ray Gunner, the Tripod, the Brain, the Saucer, the Mothership.
+      MARTIAN: ["GUARD", "MARKSMAN", "CATAPULT", "CAPTAIN", "RAIDER", "KNIGHT"],
     });
     expect(Object.keys(ARMY_RESEARCH_ROLES_V7)).toEqual([
       ...ARMY_PLAY_FACTIONS_V7,
@@ -1164,8 +1178,11 @@ describe("the dear units get bought", () => {
           [first === "CATAPULT" ? "SIEGE" : "BREAKTHROUGH"]: 1,
         },
       });
+      // The Martian pass (`pulp_wars-w49.14`): a fifth of a Martian army
+      // is Tripods and a tenth Motherships, so its second dear unit of
+      // seven is a Tripod again.
       expect(second, faction).toBe(
-        first === "CATAPULT" ? "KNIGHT" : "CATAPULT",
+        faction === "MARTIAN" || first !== "CATAPULT" ? "CATAPULT" : "KNIGHT",
       );
     }
   });

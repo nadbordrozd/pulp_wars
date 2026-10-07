@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r51.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r52");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r52.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r50 and preserves the r51 save", () => {
+  it("cleans obsolete keys through v7r51 and preserves the r52 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r50.current",
+      "pulpWars.save.v7r51.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(50);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(51);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -1745,21 +1745,24 @@ describe("ruleset-7 all-Human parity digests", () => {
       // research on a clock while at war, group sizes): the match ends in
       // round 25 (296 commands), and the same digests were recomputed.
       // Its correction pass: round 24 (284 commands), recomputed.
-      acceptedCommands: 284,
-      rounds: 24,
+      // The Martian pass's correction (`pulp_wars-w49.14`: the Human seat's
+      // economy-first opening, growth at war, no Guards against shooters,
+      // no Knight ahead of its line): round 23 (275 commands), recomputed.
+      acceptedCommands: 275,
+      rounds: 23,
       termination: "OUTCOME",
       mapHash:
         "251ae814b9c22679f8ed6b288c0a9ae2a06574b84b5b719521970f6f24a3e51c",
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "f039938634d4433ebfa1f448af1ee87fa5a25f31d4e66f1dcfc97f26c4ba2ad2",
+        "87c815e6ebc3446d772e970dd24516d8b6243285a3e8c78870bf58bb2260d153",
       eventHash:
-        "01092870c1e94f0c88dcdc221a4968ca04d16353b22f72655a403d99a089c107",
+        "21337f4e078ff3798d859154c90326f35244aefe5a599b6e1286dd70598c0b84",
       normalizedFinalStateHash:
-        "6b91eec789c90d82fcc4c8e04c3bfe6819b06f6b951695fa1661dd41f682cc62",
+        "d8241ec8e9935fd0956145097b4019ee144befe95056143a2c2d3a2cb708d3d1",
       normalizedHumanViewHash:
-        "5a168b9e44ab550286a018f6ad522cc5831149d9ad2ac4b9162eaacc846bcca6",
+        "0c4cbb04ae150d145f35d512b07930a171290cf3c0565813a714836f41daf9c2",
       normalizedHumanCommandsHash:
         "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     },

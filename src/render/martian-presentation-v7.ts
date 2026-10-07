@@ -12,6 +12,7 @@ import {
   UNIT_ROLE_IDS_V7,
   activationIsExhaustedV7,
   effectiveRoleRuleV7,
+  forceFieldHoldsV7,
   isMindControlledV7,
   primaryActionUsedV7,
   roleMechanicsV7,
@@ -120,7 +121,7 @@ export const BEAM_DOWN_LABEL_V7 = "Beam Down";
 // `pulp_wars-1wy.3`: Beam Down after a Move, with a pick-up within
 // `BEAM_DOWN_PICKUP_RANGE_V7`, by the Saucer and the Mothership; the unit
 // counts as moved.
-export const BEAM_DOWN_TOOLTIP_V7 = `Bring one of your units from a city, or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away, next to this unit. It can still attack but not move.`;
+export const BEAM_DOWN_TOOLTIP_V7 = `Bring one of your units, from on or next to any of your city centers or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away, next to this unit. It can still attack but not move.`;
 export const BEAM_DOWN_NO_PASSENGER_V7 = `No unit in one of your cities or within ${BEAM_DOWN_PICKUP_RANGE_V7} tiles can be beamed`;
 export const BEAM_DOWN_NO_TILE_V7 = "No free tile next to this unit";
 export const BEAM_DOWN_PICK_PASSENGER_V7 = "Choose the unit to beam down";
@@ -263,6 +264,20 @@ export const COOLING_LABEL_V7 = "Cooling";
 export const COOLING_TOOLTIP_V7 =
   "Cooling: its ray fires at half power until the end of its owner's next turn";
 export const LEAVES_COOLING_V7 = "Leaves it Cooling next turn";
+/**
+ * The Martian pass, correction (`pulp_wars-w49.14`): the attack preview's
+ * note when a whole Force Field keeps a full-HP unit alive, the rule in a
+ * sentence, and the Brain's cooldown.
+ */
+export const FORCE_FIELD_HOLDS_V7 = "Force Field holds: 1 HP left";
+export const FORCE_FIELD_HOLDS_RULE_V7 =
+  "At full HP with that Shield whole, one attack cannot kill it: it is left at 1 HP.";
+export const PSYCHIC_COMMAND_COOLING_V7 =
+  "Psychic Command is Cooling: ready next turn.";
+export const PSYCHIC_COMMAND_COOLDOWN_V7 = "Every second turn.";
+export const RELEASE_LABEL_V7 = "Release";
+export const RELEASE_TOOLTIP_V7 =
+  "Returns the unit to its owner where it stands.";
 export const DISINTEGRATOR_PREVIEW_V7 = "Disintegrator: ignores fortification";
 export const LAUNCH_LABEL_V7 = "Launch: crosses water as a transport";
 
@@ -353,6 +368,10 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
   const walkers = martianRolesMoving("STRIDE").map(label);
   const flyers = martianRolesMoving("FLY").map(label);
   const projector = martianRolesWith("FORCE_FIELD").map(label);
+  // The Martian pass: the roles whose ray does not overheat with Heat Sinks.
+  const heatSinks = UNIT_ROLE_IDS_V7.filter(
+    (role) => roleMechanicsV7(role, "MARTIAN").heatSink,
+  ).map(label);
   const beamers = martianRolesWith("BEAM_DOWN").map(label);
   const brains = martianRolesWith("MIND_CONTROL").map(label);
   const heavy = (role: UnitRoleIdV7): boolean =>
@@ -392,7 +411,7 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       "Force Field",
-      `a unit that recharges next to a ${joinOr(projector)} recharges to Shield ${FORCE_FIELD_SHIELD_V7}.`,
+      `with Force Fields, a unit that recharges next to a ${joinOr(projector)} recharges to Shield ${FORCE_FIELD_SHIELD_V7}. ${FORCE_FIELD_HOLDS_RULE_V7}`,
     ],
     [
       "Force Fields",
@@ -401,6 +420,10 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     [
       "Heat rays",
       `a ${joinOr(rays)} fires at full power only if it has not moved this turn and is not Cooling; a full-power shot leaves it Cooling, at half Attack, until the end of its next turn.`,
+    ],
+    [
+      "Heat Sinks",
+      `with Heat Sinks, a ${joinOr(heatSinks)} does not overheat: it fires at full power every turn it does not move.`,
     ],
     [
       "Pierce",
@@ -428,7 +451,7 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       BEAM_DOWN_LABEL_V7,
-      `a ${joinOr(beamers)} brings one of your units from a city, or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away, next to itself; the unit can still attack but not move.`,
+      `a ${joinOr(beamers)} brings one of your units, from on or next to any of your city centers or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away, next to itself; the unit can still attack but not move.`,
     ],
     [
       MIND_CONTROL_LABEL_V7,
@@ -440,7 +463,7 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       `${PSYCHIC_COMMAND_LABEL_V7}, ${STRAFE_LABEL_V7}`,
-      `a ${joinOr(brains)} gives adjacent units +1 Attack on their next attack, and a ${joinOr(strafers)} gets +1 Attack after moving two tiles.`,
+      `a ${joinOr(brains)} gives adjacent units +1 Attack on their next attack, every second turn (it is Cooling in between), and a ${joinOr(strafers)} gets +1 Attack after moving two tiles.`,
     ],
   ];
 }
@@ -492,15 +515,19 @@ export function martianAbilityDescriptionV7(
   if (faction !== "MARTIAN") return null;
   switch (ability) {
     case "RALLY":
-      return `Adjacent friendly land troops, except ${martianLabelV7("CAPTAIN")}s and ${martianLabelV7("CATAPULT")}s, get +1 Attack on their next attack this turn.`;
+      return `Adjacent friendly land troops, except ${martianLabelV7("CAPTAIN")}s and ${martianLabelV7("CATAPULT")}s, get +1 Attack on their next attack this turn. ${PSYCHIC_COMMAND_COOLDOWN_V7}`;
     case "CHARGE":
       return "With Raiding, +1 Attack on the first Attack after moving 2+ cells.";
     case "HEAT_RAY":
-      return "Fires at full power if it has not moved this turn and is not Cooling; a full-power shot leaves it Cooling, at half Attack, until the end of its next turn.";
+      return `Fires at full power if it has not moved this turn and is not Cooling; a full-power shot leaves it Cooling, at half Attack, until the end of its next turn.${
+        role !== undefined && roleMechanicsV7(role, faction).heatSink
+          ? ` ${HEAT_SINK_NOTE_V7}`
+          : ""
+      }`;
     case "PIERCE":
       return "Its ray also hits the unit directly behind the target for half the damage, friend or foe.";
     case "FORCE_FIELD":
-      return `Own units next to it recharge their Shield to ${FORCE_FIELD_SHIELD_V7}.`;
+      return `${FORCE_FIELD_NEEDS_TEXT_V7} own units next to it recharge their Shield to ${FORCE_FIELD_SHIELD_V7}. ${FORCE_FIELD_HOLDS_RULE_V7}`;
     case "BEAM_DOWN":
       return BEAM_DOWN_TOOLTIP_V7;
     case "MIND_CONTROL":
@@ -562,7 +589,10 @@ export function martianRoleUnlockTextV7(role: UnitRoleIdV7): string {
     ...(abilities.includes("STRIDE") ? ["strides"] : []),
     ...(abilities.includes("HEAT_RAY") ? ["heat ray"] : []),
     ...(abilities.includes("PIERCE") ? ["Pierce"] : []),
-    ...(abilities.includes("FORCE_FIELD") ? ["Force Field"] : []),
+    // The Martian pass: the Force Field is the Force Fields technology's.
+    ...(abilities.includes("FORCE_FIELD")
+      ? ["Force Field with Force Fields"]
+      : []),
     ...(abilities.includes("BEAM_DOWN") ? [BEAM_DOWN_LABEL_V7] : []),
     ...(abilities.includes("TRACTOR_BEAM") ? [TRACTOR_BEAM_LABEL_V7] : []),
   ];
@@ -593,6 +623,13 @@ export function martianRecruitNotesV7(
     ...(mechanics.capacitySlots > 1
       ? [`Takes ${plural(mechanics.capacitySlots, "slot")} in its city.`]
       : []),
+    // The Martian pass (`pulp_wars-w49.14`, 7r52).
+    ...(effectiveRoleRuleV7(role, faction).abilities.includes("FORCE_FIELD")
+      ? [
+          `${FORCE_FIELD_NEEDS_TEXT_V7} raises the Shields of units next to it to ${FORCE_FIELD_SHIELD_V7}; at full HP one attack cannot kill them.`,
+        ]
+      : []),
+    ...(mechanics.heatSink ? [HEAT_SINK_NOTE_V7] : []),
     ...(roleMechanicsV7(role, "ORIGINAL").buildsFieldDefense &&
     !mechanics.buildsFieldDefense
       ? [`${MARTIAN_FIELD_DEFENSE_EXPLANATION_V7}.`]
@@ -602,7 +639,7 @@ export function martianRecruitNotesV7(
 
 /** One line of Martian unit information. */
 export interface MartianUnitInfoLineV7 {
-  readonly id: "shield" | "ray" | "brain" | "slots" | "afloat";
+  readonly id: "shield" | "ray" | "command" | "brain" | "slots" | "afloat";
   readonly name: string;
   readonly description: string;
 }
@@ -616,6 +653,11 @@ export interface MartianUnitInfoLineV7 {
 export function martianUnitInfoLinesV7(
   unit: Pick<PublicUnitV7, "role" | "form">,
   mechanics: PublicMartianMechanicsV7,
+  /**
+   * The Martian pass (`pulp_wars-w49.14`): false for the viewer's own unit
+   * whose ray does not overheat (a Ray Gunner with Heat Sinks).
+   */
+  overheats = true,
 ): readonly MartianUnitInfoLineV7[] {
   const lines: MartianUnitInfoLineV7[] = [];
   if (mechanics.shieldMaximum > 0)
@@ -624,7 +666,7 @@ export function martianUnitInfoLinesV7(
       name: shieldTextV7(mechanics),
       description:
         mechanics.shield > mechanics.shieldMaximum
-          ? "Raised by a Force Field. Takes damage before HP."
+          ? "Raised by a Force Field. Takes damage before HP. At full HP one attack cannot kill it."
           : "Takes damage before HP; recharges at the start of its owner's turn.",
     });
   const ray = rayPowerTextV7(mechanics);
@@ -635,8 +677,17 @@ export function martianUnitInfoLinesV7(
       description: mechanics.cooling
         ? COOLING_TOOLTIP_V7
         : mechanics.rayPower === "FULL"
-          ? "Its next shot fires at full Attack and leaves it Cooling."
+          ? overheats
+            ? "Its next shot fires at full Attack and leaves it Cooling."
+            : "Its next shot fires at full Attack. Heat Sinks: it does not overheat."
           : "It moved this turn: its next shot fires at half Attack.",
+    });
+  // The Martian pass, correction: a Brain after its Psychic Command.
+  if (ray === null && mechanics.cooling)
+    lines.push({
+      id: "command",
+      name: "Cooling",
+      description: PSYCHIC_COMMAND_COOLING_V7,
     });
   if (mechanics.mindControl !== null) {
     const blocked = mindControlUnavailableTextV7(mechanics.mindControl);
@@ -722,6 +773,19 @@ export function martianCombatLinesV7(
   const attacker = view.units.find((unit) => unit.id === preview.attackerId);
   if (preview.defenderShieldDamage > 0)
     notes.push(`Shield absorbs ${preview.defenderShieldDamage}`);
+  // The Martian pass, correction: a whole Force Field holds one attack.
+  const defender = view.units.find((unit) => unit.id === preview.targetUnitId);
+  if (
+    defender !== undefined &&
+    !preview.defenderDies &&
+    preview.damageToDefender === defender.hp - 1 &&
+    forceFieldHoldsV7(
+      view,
+      defender,
+      view.shields.find((entry) => entry.unitId === defender.id)?.shield ?? 0,
+    )
+  )
+    notes.push(FORCE_FIELD_HOLDS_V7);
   if (preview.attackerShieldDamage > 0)
     notes.push(
       `${attacker?.ownerId === view.viewer.id ? "Your " : "Its "}Shield absorbs ${preview.attackerShieldDamage}`,
@@ -1149,8 +1213,15 @@ export function martianFieldDefenseBlockedV7(
 
 /** The Martian technology unlock texts of section 4. */
 export const BRAIN_SUPPORT_UNLOCK_TEXT_V7 = `${martianLabelV7("CAPTAIN")}s give ${PSYCHIC_COMMAND_LABEL_V7} or take ${MIND_CONTROL_LABEL_V7} of weakened enemies`;
-export const FORCE_FIELDS_UNLOCK_TEXT_V7 =
-  "Shields also recharge at the end of your turn";
+// The Martian pass (`pulp_wars-w49.14`, 7r52): the Force Field itself is
+// this technology's.
+export const FORCE_FIELDS_UNLOCK_TEXT_V7 = `${martianLabelV7("GUARD")}s raise the Shields of units next to them to ${FORCE_FIELD_SHIELD_V7}, and at full HP one attack cannot kill such a unit; Shields also recharge at the end of your turn`;
+/** The Martian pass: Heat Sinks, the Martian Fieldcraft. */
+export const HEAT_SINKS_UNLOCK_TEXT_V7 = `${martianLabelV7("MARKSMAN")}s do not overheat: full power every turn they do not move`;
+/** The Martian pass: the two rules on a unit card and a recruit note. */
+export const FORCE_FIELD_NEEDS_TEXT_V7 = "With Force Fields:";
+export const HEAT_SINK_NOTE_V7 =
+  "With Heat Sinks it does not overheat: full power every turn it does not move.";
 export const DISINTEGRATOR_UNLOCK_TEXT_V7 =
   "Heat rays ignore Walls and Field Defense";
 

@@ -33,6 +33,7 @@ import {
   terrainGivesCoverV7,
   attackIgnoresCityWallsV7,
   attackPlaguesV7,
+  rayOverheatsV7,
   attackIsChargeV7,
   canEnterTerrainV7,
   chargeRunUpAttack2V7,
@@ -183,6 +184,8 @@ import {
 import { freezeSetV7, unitFreezesRingV7, type FreezeSetV7 } from "./ice";
 import {
   absorbHitV7,
+  forceFieldHoldsV7,
+  isCoolingV7,
   beamDownCarrierReadyV7,
   beamDownDestinationLegalV7,
   beamDownPassengerLegalV7,
@@ -1088,6 +1091,11 @@ function appendPublicUnitCommandsV7(
     primaryReady &&
     unit.form === "LAND" &&
     rule.abilities.includes("RALLY") &&
+    // The Martian pass, correction: a Cooling Brain cannot command.
+    !(
+      unitRoleMechanicsV7(view, unit).rallyCools &&
+      isCoolingV7(view.cooling, unit.id)
+    ) &&
     view.units.some((target) => isRallyTargetV7(view, unit, target))
   )
     candidates.push({ kind: "RALLY", unitId: unit.id });
@@ -1166,6 +1174,9 @@ function appendPublicUnitCommandsV7(
     !view.plagued.some((entry) => entry.unitId === unit.id) &&
     !view.bitten.some((entry) => entry.unitId === unit.id)
   )
+    candidates.push({ kind: "DISBAND", unitId: unit.id });
+  // The Martian pass, correction: Disband on a controlled unit is Release.
+  if (controlled && unit.form === "LAND")
     candidates.push({ kind: "DISBAND", unitId: unit.id });
   if (
     !unit.activation.moved &&
@@ -7622,10 +7633,12 @@ function publicCombatPreviewCore(
     : rawDefenderDamage;
   // The Martian revision section 5.3: the Shield absorbs the hit first.
   const defenderShield = shieldOfV7(view.shields, target.id);
+  // The Martian pass, correction: a whole Force Field holds one attack.
   const defenderHit = absorbHitV7(
     defenderShield,
     target.hp,
     armouredDamageV7(view, target, formulaDefenderDamage),
+    forceFieldHoldsV7(view, target, defenderShield),
   );
   // The Ice Folk revision section 5.5: the viewer's own threshold (the
   // Mind Control revision: through the attacker's kind's tree).
@@ -7642,6 +7655,7 @@ function publicCombatPreviewCore(
   const defenderShieldDamage = defenderHit.shieldDamage;
   const hitOnDefender = defenderHit.hpDamage + defenderShieldDamage;
   const defenderArmoured =
+    !forceFieldHoldsV7(view, target, defenderShield) &&
     hitOnDefender < Math.min(target.hp + defenderShield, formulaDefenderDamage);
   const defenderDies = damageToDefender >= target.hp;
   // Revision 14 (V1): an UNANSWERED attacker draws no retaliation. The
@@ -7914,7 +7928,13 @@ function publicCombatPreviewCore(
     defenderArmoured,
     attackerArmoured,
     rayPower,
-    coolingApplied: rayPower === "FULL",
+    // The Martian pass (`pulp_wars-w49.14`, 7r52): not with Heat Sinks (a
+    // viewer's own Ray Gunner; another player's research is not public, so
+    // its ray is read as overheating).
+    coolingApplied:
+      rayPower === "FULL" &&
+      (attacker.ownerId !== view.viewer.id ||
+        rayOverheatsV7(view, attacker, view.viewer.researchedTechs)),
     defenderShieldDamage,
     attackerShieldDamage,
     shatters,

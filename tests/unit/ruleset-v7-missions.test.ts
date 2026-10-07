@@ -126,6 +126,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The Undead pass (`pulp_wars-w49.13`): the Undead for the hand player.
   "LAB_UNDEAD_MID@1:UNDEAD":
     "a37ad50524ce01bd7e88b4300d561063d13cb8e51087a3e9adc978ad5cf08932",
+  // The Martian pass (`pulp_wars-w49.14`): the Martians for the hand player.
+  "LAB_MARTIAN_MID@1:MARTIAN":
+    "04a23a91e93b00ec2f7dfb815d5643abe8e2c38b4ca4a26080d8031659f368e3",
 };
 
 /**
@@ -229,6 +232,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "d13ad9dd793b273e90954ebfa00f9d58ef0f1cb41f774825041c5c1151ef6df5",
   "LAB_UNDEAD_MID@1:UNDEAD":
     "1ba498c4ccc6d783141c1bed27083016627db6c434f8d91b2eeffe60f2137296",
+  "LAB_MARTIAN_MID@1:MARTIAN":
+    "04b32b4cb1d9abac2d2c4711042cf9b272ea81e82d3b4628a58e010364baab06",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {

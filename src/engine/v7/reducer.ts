@@ -186,6 +186,7 @@ import {
   beamedActivationV7,
   controlledByBrainV7,
   coolingStepV7,
+  isCoolingV7,
   mindControlCooldownStepV7,
   mindControlTargetBlockV7,
   prunedMartianV7,
@@ -3114,21 +3115,25 @@ function applyTractorBeam(
       },
     ];
     let players = state.players;
-    // An own target reveals its sight from the destination.
-    if (target.ownerId === actor) {
+    // The pulled unit reveals its sight from the destination for its owner:
+    // an own target for the actor, and (the Martian pass, `pulp_wars-w49.14`,
+    // 7r52) a hostile target for the player it belongs to, as a pushed unit
+    // does (it explores with its ordinary sight radius from the tile it is
+    // pulled to). A neutral unit has no owner to reveal for.
+    if (!isNeutralOwnerV7(target.ownerId)) {
       const pulled = requireValue(units.find((unit) => unit.id === target.id));
       const sightState = { ...state, units } as GameStateV7;
       const reveal = revealRadius(
         sightState,
-        actor,
+        target.ownerId,
         to,
         unitSightRadiusAtV7(sightState, pulled),
       );
-      players = setExplored(players, actor, reveal.explored);
+      players = setExplored(players, target.ownerId, reveal.explored);
       if (reveal.revealed.length > 0)
         events.push({
           kind: "TILES_REVEALED",
-          playerId: actor,
+          playerId: target.ownerId,
           tiles: reveal.revealed,
         });
     }
@@ -4961,6 +4966,10 @@ function applyRally(
     return rejected(original, "INTEGER_OVERFLOW");
   const result = supportCaptain(original, state, actor, unitId, "RALLY");
   if ("accepted" in result) return result;
+  // The Martian pass, correction: a Brain commands every second turn.
+  const rallyCools = unitRoleMechanicsV7(state, result.captain).rallyCools;
+  if (rallyCools && isCoolingV7(state.cooling, result.captain.id))
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   // Revision 13 Frenzy eligibility: Rally targets also need ATTACK, which
   // every Human non-support, non-siege land role has. Revision 17 WAAAGH!
   // reaches radius 2 and includes support and siege roles.
@@ -4973,6 +4982,9 @@ function applyRally(
     checked({
       ...state,
       commandIndex: nextSafe(state.commandIndex),
+      cooling: rallyCools
+        ? withFiredRayV7(state.cooling, result.captain.id)
+        : state.cooling,
       units: state.units.map((unit) =>
         unit.id === result.captain.id
           ? {
@@ -5649,6 +5661,34 @@ function applyDisband(
     return rejected(original, "UNIT_ROLE_INVALID", {
       role: actorCheck.unit.role,
     });
+  // The Martian pass, correction (`pulp_wars-w49.14`): `DISBAND` on a
+  // mind-controlled unit is **Release**: it returns to its owner where it
+  // stands (exhausted, as when its Brain is lost) and pays no Coins; with
+  // its owner out of the game it is removed. The Brain is free to take
+  // another unit once its cooldown is over. Needs no technology and no
+  // unused action. (A tester's 3-HP Swordsman blocked a Brain for six
+  // rounds.)
+  if (isMindControlledV7(state, unitId)) {
+    const events: DomainEventV7[] = [];
+    const release = releaseControlledV7(
+      state.units,
+      state.burrowed,
+      state.mindControlled,
+      state.players,
+      events,
+      unitId,
+    );
+    return accepted(
+      checked({
+        ...state,
+        commandIndex: nextSafe(state.commandIndex),
+        units: release.units,
+        burrowed: release.burrowed,
+        mindControlled: release.mindControlled,
+      }),
+      events,
+    );
+  }
   const player = requirePlayer(state, actor);
   if (!player.researchedTechs.includes("ADMINISTRATION"))
     return rejected(original, "TECH_REQUIRED", { tech: "ADMINISTRATION" });
@@ -5656,12 +5696,6 @@ function applyDisband(
   if (rule.cost === null)
     return rejected(original, "UNIT_ROLE_INVALID", {
       role: actorCheck.unit.role,
-    });
-  // The Mind Control revision section 4.1: a controlled unit never
-  // Disbands (no Coins from enslaving).
-  if (isMindControlledV7(state, unitId))
-    return rejected(original, "DISBAND_NOT_LEGAL", {
-      reason: "MIND_CONTROLLED",
     });
   if (!egg && primaryUsed(actorCheck.unit))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });

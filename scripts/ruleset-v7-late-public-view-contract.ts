@@ -112,7 +112,9 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // (`pulp_wars-w49.10`): see the comment above (was 5c5ef6…500c).
     // Tuning 8 (`pulp_wars-w49.11`): see the comment above (was
     // 6d1529…f3da).
-    "2a38fdd484004795fbee27848425559f26442374ebae2d5b332f610d05d3aae3",
+    // The Martian pass's correction (`pulp_wars-w49.14`): the growth a
+    // Human seat at war still buys (was 2a38fd…aae3).
+    "3b4bad8bab7696e5ab220dfe751e2eae15c202618acad63431e72681f0b5d678",
   command: Object.freeze({
     kind: "RESEARCH",
     tech: "MARKSMANSHIP",
@@ -123,7 +125,10 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   // play's garrison and formation rules leave fewer Moves as candidates.
   // Tuning 6: 20 (see the comment above). Tuning 7: 20 (one Move and
   // Research Marksmanship are new, two Moves are gone). Tuning 8: 20.
-  candidateCount: 20,
+  // The Martian pass's correction (`pulp_wars-w49.14`): 27. The Human
+  // seat at war still buys the growth that leaves the Coins for any unit
+  // on offer, so seven construction candidates are back.
+  candidateCount: 27,
 });
 
 /**
@@ -195,10 +200,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r51",
+    rulesetId: "pulp-wars-poc-7r52",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r51",
+      rulesetId: "pulp-wars-poc-7r52",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

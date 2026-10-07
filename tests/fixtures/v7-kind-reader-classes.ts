@@ -167,6 +167,14 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // seat's answer to Zombies (not an Undead seat's) and its cure (its own
   // Captain's rule).
   "src/ai/v7.ts::armyUndeadSeatV7": "SEAT",
+  // The Martian pass (`pulp_wars-w49.14`): the seats that open like the
+  // Undead (the viewer's own faction).
+  "src/ai/v7.ts::armyOpeningSeatV7": "SEAT",
+  // Its correction: the economy seats, the two seats of the correction's
+  // rules, and the roles the viewer's own faction trains.
+  "src/ai/v7.ts::armyEconomySeatV7": "SEAT",
+  "src/ai/v7.ts::armyCorrectionSeatV7": "SEAT",
+  "src/ai/v7.ts::armyOpenToRangedUselessV7": "SEAT",
   "src/ai/v7.ts::armyEconomyFirstV7": "SEAT",
   "src/ai/v7.ts::armyShootsBiterFirstV7": "SEAT",
   "src/ai/v7.ts::armyCureDueV7": "SEAT",
@@ -360,6 +368,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/martian-presentation-v7.ts::martianHelpRulesV7": "SEAT",
   "src/render/martian-presentation-v7.ts::martianRewardLabelV7": "SEAT",
   "src/render/martian-presentation-v7.ts::martianRoleUnlockTextV7": "SEAT",
+  // The Martian pass: the caller passes the unit's kind.
+  "src/render/martian-presentation-v7.ts::martianAbilityDescriptionV7":
+    "KIND_RESOLVED",
   "src/render/martian-presentation-v7.ts::martianRecruitNotesV7": "SEAT",
   "src/render/martian-presentation-v7.ts::mindControlPreviewLinesV7":
     "KIND_RESOLVED",

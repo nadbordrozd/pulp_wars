@@ -597,7 +597,22 @@ describe("Martian board plan", () => {
   });
 
   it("draws the shooter's note only on the focused target", () => {
-    const view = humanView(martianUiFixtureV7());
+    // The Martian pass (`pulp_wars-w49.14`, 7r52): a Ray Gunner overheats
+    // only without Heat Sinks (the fixture's seat owns every technology).
+    const fixture = martianUiFixtureV7();
+    const view = humanView({
+      ...fixture,
+      players: fixture.players.map((player) =>
+        player.id === fixture.humanPlayerId
+          ? {
+              ...player,
+              researchedTechs: player.researchedTechs.filter(
+                (tech) => tech !== "FIELDCRAFT",
+              ),
+            }
+          : player,
+      ),
+    });
     const plan = planFor(view, AT.rayGunner);
     const all = draw(plan);
     const focused = draw(plan, { previewFocus: AT.rayTarget });

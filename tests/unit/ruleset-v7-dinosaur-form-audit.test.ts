@@ -620,7 +620,9 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // The Goblin pass, correction (`pulp_wars-w49.12`): the shooters an
     // Orc Brute stands beside are land-form units (an Egg and an embarked
     // unit are escorted by nobody).
-    "src/ai/v7.ts": 35,
+    // The Martian pass's correction (`pulp_wars-w49.14`): the Knight-shy
+    // rule is a land-form unit's (`armyKnightShyV7`).
+    "src/ai/v7.ts": 36,
     // Tuning 5: the army count takes land-form units only (an Egg and an
     // embarked unit are in no fighting class).
     "src/ai/v7-army.ts": 1,

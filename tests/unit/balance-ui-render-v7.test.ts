@@ -447,7 +447,7 @@ describe("Tractor Beam aiming", () => {
       `a ${saucer} pulls a unit two tiles away one tile closer; a ${mothership} pulls a unit two or three tiles away up to two tiles closer, once a turn, and can still act.`,
     );
     expect(help.get("Beam Down")).toBe(
-      `a ${saucer} or ${mothership} brings one of your units from a city, or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away, next to itself; the unit can still attack but not move.`,
+      `a ${saucer} or ${mothership} brings one of your units, from on or next to any of your city centers or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away, next to itself; the unit can still attack but not move.`,
     );
     expect(new Map(ICE_FOLK_HELP_RULES_V7).get("Snow")).toContain(
       "Ice Folk units move at half cost from Snow to Snow and have light cover on it unless they are fortified",

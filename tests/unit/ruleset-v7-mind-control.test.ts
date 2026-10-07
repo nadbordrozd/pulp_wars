@@ -772,7 +772,10 @@ describe("Mind Control revision: faction rules under control (section 5)", () =>
     ).toContain("OVERRUN");
   });
 
-  it("is never disbanded, is promoted by its kind's rules, and captures without being re-homed", () => {
+  // The Martian pass's correction (`pulp_wars-w49.14`): `DISBAND` on a
+  // controlled unit is Release (it returns to its owner, for no Coins;
+  // tests/unit/ruleset-v7-martian-pass.test.ts).
+  it("is released, not disbanded, is promoted by its kind's rules, and captures without being re-homed", () => {
     // Control starts it not capture-eligible; a turn on the village later
     // it is (the patch stands for that).
     const state = patchUnitV7(
@@ -785,10 +788,13 @@ describe("Mind Control revision: faction rules under control (section 5)", () =>
       { captureEligible: true },
     );
     const unit = idAt(state, at(5, 5));
-    expect(rejectedV7(state, { kind: "DISBAND", unitId: unit })).toEqual({
-      code: "DISBAND_NOT_LEGAL",
-      params: { reason: "MIND_CONTROLLED" },
-    });
+    const released = playV7(state, { kind: "DISBAND", unitId: unit });
+    expect(released.events.map((event) => event.kind)).toContain(
+      "UNIT_RELEASED",
+    );
+    expect(released.events.map((event) => event.kind)).not.toContain(
+      "UNIT_DISBANDED",
+    );
     expect(previewDisbandV7(state, seatIdV7(state, 0), unit)).toBeNull();
     const promoted = playV7(state, { kind: "PROMOTE", unitId: unit });
     expect(unitAtV7(promoted.state, at(5, 5))).toMatchObject({

@@ -1646,7 +1646,10 @@ function combat(input: unknown): boolean {
     (input.rayPower === "FULL" ||
       input.rayPower === "HALF" ||
       input.rayPower === "NONE") &&
-    input.coolingApplied === (input.rayPower === "FULL") &&
+    // The Martian pass (`pulp_wars-w49.14`, 7r52): a full-power ray with
+    // Heat Sinks leaves no Cooling; nothing but a full-power ray does.
+    typeof input.coolingApplied === "boolean" &&
+    (input.coolingApplied !== true || input.rayPower === "FULL") &&
     [input.defenderShieldDamage, input.attackerShieldDamage].every(
       (item) => nn(item) && Number(item) <= SHIELD_CAP_V7,
     ) &&

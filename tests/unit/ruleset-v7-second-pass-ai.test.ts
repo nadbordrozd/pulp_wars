@@ -197,7 +197,9 @@ describe("Normal AI second pass: the siege", () => {
   ];
 
   it("moves the assault into reach of the center's defender", () => {
-    const state = field([defender, capturer, ...knights]);
+    // The Martian pass's correction (`pulp_wars-w49.14`): a Human seat
+    // takes the villages first for ten rounds; the siege is after them.
+    const state = { ...field([defender, capturer, ...knights]), round: 12 };
     const knight = unitCandidatesV7(state, at(5, 7), "MOVE")[0];
     expect(knight?.score.priority).toBe(1177);
     // The capturer next to the center is not one of the hunters.

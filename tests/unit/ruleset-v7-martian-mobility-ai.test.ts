@@ -399,7 +399,12 @@ describe("Martian mobility play: carriers and shooters", () => {
   });
 
   it("a Grunt's routine Move next to a melee unit costs 8", () => {
-    const state = asMartian([own("FIGHTER", 6, 3), foe("FIGHTER", 4, 3)]);
+    // (The Martian pass, `pulp_wars-w49.14`: against a Dinosaur seat.
+    // Against a Human one the army rules offer a Grunt with a shot no
+    // routine Move toward the enemy at all.)
+    const state = martianFieldV7([own("FIGHTER", 6, 3), foe("FIGHTER", 4, 3)], {
+      factions: ["MARTIAN", "DINOSAUR"],
+    });
     const contact = moveCandidateV7(state, at(6, 3), at(5, 4));
     const apart = moveCandidateV7(state, at(6, 3), at(6, 4));
     expect(apart?.score.strategicValue).toBe(0);

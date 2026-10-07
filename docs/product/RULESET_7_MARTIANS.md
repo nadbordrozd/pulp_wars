@@ -1,5 +1,21 @@
 # Ruleset 7: Martian faction
 
+**The Martian pass** (`pulp_wars-w49.14`, `pulp-wars-poc-7r52`,
+[its record](RULESET_7_TUNING_MARTIAN.md)) changed four rules of this
+document; the current rules win where this text differs. **The Force
+Field needs Force Fields**: a Shield Projector raises no Shield but its
+own until its owner has the technology (sections on the Force Field
+below describe it as innate). **Fieldcraft is Heat Sinks**: with it a Ray
+Gunner's full-power ray leaves it no Cooling. **A unit pulled by a
+Tractor Beam explores** for its owner from the tile it lands on. **A
+Martian city's Survey is Scouts**, with a free Saucer. A Martian seat of
+the Normal AI plays the army rules in a match of Humans, Goblins, Undead,
+and Martians. **Its correction** changed three more: **a whole Force
+Field holds one attack** (a full-HP unit is left at 1 HP), **Psychic
+Command is every second turn** (the Brain is Cooling in between), and a
+mind-controlled unit can be **released** by its controller (this document
+says it cannot be disbanded).
+
 **Status:** **folded into [Ruleset 7: current rules](RULESET_7_CURRENT.md)
 (kept as history)** by `pulp_wars-t6s.7` at `pulp-wars-poc-7r25`: the current
 rules describe the running five-faction game, with the Martians in their

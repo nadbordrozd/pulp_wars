@@ -109,7 +109,7 @@ const moveTargets = (state: GameStateV7, from: CoordV7): readonly string[] => {
 
 describe("tuning 4 keeps the unpublished identity", () => {
   it("is 7r47", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r52");
   });
 });
 
@@ -652,6 +652,8 @@ describe("the Human labs", () => {
       "LAB_GOBLIN_MID",
       // The Undead pass: the hand player as the Undead, no mirror.
       "LAB_UNDEAD_MID",
+      // The Martian pass: the hand player as the Martians, no mirror.
+      "LAB_MARTIAN_MID",
     ]);
     for (const mission of labs) {
       expect(mission, mission.id).toMatchObject({ hidden: true, mirror: true });

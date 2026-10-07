@@ -803,7 +803,11 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // seed-2 match has no Wail; seed 5 has two. With tuning 1
     // (`pulp_wars-w49.3`, 7r46) the seed-5 match has none; seed 12 had two.
     // With tuning 3 seed 12 has one; seed 3 has two.
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 3);
+    // With the Martian pass's correction (`pulp_wars-w49.14`: the Human
+    // seat's economy-first opening, its Guards, and its Knights) seed 3 has
+    // no Wail; seed 0 has two (of seeds 0-12, so do 2, 5, 6, 8, 9, 10, and
+    // 12).
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 0);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
@@ -862,7 +866,10 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // fields none in time; the three of seed 3 splash. With tuning 8
     // (`pulp_wars-w49.11`) seed 3 fields none; the five of seed 15 splash
     // (of seeds 0-15, the Liches of seeds 0, 2, 5, 6, 8, 14, and 15 do).
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 15), {
+    // With the Martian pass's correction (`pulp_wars-w49.14`: the Human
+    // seat of the Normal AI) the Liches of seed 15 never splash; those of
+    // seed 0 do (of seeds 0-14, so do 2, 6, 8, 9, and 14).
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 0), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);

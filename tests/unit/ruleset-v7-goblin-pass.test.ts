@@ -135,16 +135,17 @@ function ganged(
 }
 
 describe("the Goblin pass: identity", () => {
-  // The Undead pass (tests/unit/ruleset-v7-undead-pass.test.ts) took 7r51,
-  // so 7r50 is the last prior identity.
+  // The Undead pass took 7r51 and the Martian pass 7r52
+  // (tests/unit/ruleset-v7-martian-pass.test.ts), so 7r50 is a prior
+  // identity.
   it("was 7r50 after 7r49, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r51.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r52");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r52.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
       "pulp-wars-poc-7r49",
       "pulp-wars-poc-7r50",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3, -1)).toEqual([
       "pulpWars.save.v7r49.current",
       "pulpWars.save.v7r50.current",
     ]);
@@ -784,7 +785,8 @@ describe("the Goblin pass: Scouts", () => {
       UNDEAD: 1,
       GOBLIN: 1,
       DINOSAUR: 0,
-      MARTIAN: 0,
+      // The Martian pass, 7r52: a Martian Survey grants a Saucer.
+      MARTIAN: 1,
       ICE_FOLK: 0,
       DWARF: 0,
       CANDY: 0,

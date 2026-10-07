@@ -65,7 +65,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r51`;
+ * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r52`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 15, the Normal AI of a
  * Human, Undead, or Goblin seat). Round 7 was played by hand four times
  * (`r7a` to `r7d`); every position below is one of those games, or the
@@ -380,7 +380,7 @@ function scene(options: SceneV7): GameStateV7 {
 
 describe("tuning 8 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r52");
   });
 });
 
@@ -2158,20 +2158,25 @@ describe("correction: the defender's Catapults are answered", () => {
   it("r8a: its own Catapults move up to where they reach the player's instead of standing out of range", () => {
     // An empty enemy center, two enemy Catapults that cover it, and two
     // own Catapults that reach neither the center's garrison (there is
-    // none) nor the battery.
-    const start = bare(
-      field([
-        { seat: 0, role: "CATAPULT", at: at(6, 6) },
-        { seat: 0, role: "CATAPULT", at: at(6, 7) },
-        { seat: 0, role: "SWORDSMAN", at: at(5, 6) },
-        { seat: 0, role: "SWORDSMAN", at: at(5, 7) },
-        { seat: 0, role: "SWORDSMAN", at: at(4, 8) },
-        { seat: 0, role: "FIGHTER", at: at(8, 8) },
-        { seat: 1, role: "CATAPULT", at: at(1, 5) },
-        { seat: 1, role: "CATAPULT", at: at(2, 5) },
-        { seat: 1, role: "FIGHTER", at: at(0, 10) },
-      ]),
-    );
+    // none) nor the battery. (The Martian pass's correction,
+    // `pulp_wars-w49.14`: a Human seat takes the villages first for ten
+    // rounds; this is round 12.)
+    const start: GameStateV7 = {
+      ...bare(
+        field([
+          { seat: 0, role: "CATAPULT", at: at(6, 6) },
+          { seat: 0, role: "CATAPULT", at: at(6, 7) },
+          { seat: 0, role: "SWORDSMAN", at: at(5, 6) },
+          { seat: 0, role: "SWORDSMAN", at: at(5, 7) },
+          { seat: 0, role: "SWORDSMAN", at: at(4, 8) },
+          { seat: 0, role: "FIGHTER", at: at(8, 8) },
+          { seat: 1, role: "CATAPULT", at: at(1, 5) },
+          { seat: 1, role: "CATAPULT", at: at(2, 5) },
+          { seat: 1, role: "FIGHTER", at: at(0, 10) },
+        ]),
+      ),
+      round: 12,
+    };
     const guns = [at(6, 6), at(6, 7)].map((where) => unitAtV7(start, where).id);
     const turn = policyTurn(start);
     const nearest = (where: CoordV7): number =>

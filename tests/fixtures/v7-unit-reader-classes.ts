@@ -166,6 +166,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::armyStormV7": "BOARD",
     "src/ai/v7.ts::armyAttackValueV7": "BOARD",
     "src/ai/v7.ts::armyBesideCenterWorthV7": "BOARD",
+    // The Martian pass's correction (`pulp_wars-w49.14`): the Projector by
+    // a center, and the capturers and enemies around a free village.
+    "src/ai/v7.ts::armyHelplessGarrisonV7": "BOARD",
+    "src/ai/v7.ts::armyVillageFerryV7": "BOARD",
+    "src/ai/v7.ts::armyVillageDeliveryV7": "BOARD",
     // Tuning 8, correction pass: the hostile unit at a city's gates, the
     // own units near a weak garrison or a battery, and the units beside a
     // bomber's end tile are what stands on the board in the public view.
