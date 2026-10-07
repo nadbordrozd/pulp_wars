@@ -175,6 +175,173 @@
         "notes": "An upright grindstone with a wooden lever on a big flat millstone resting on boulders, a hide lean-to on bone poles and a basket; no metal. The flat stone is the subject's millstone, not a ground plate. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
         "reviewedAt": "2026-10-04T09:12:34.927Z"
       }
+    },
+    "lumber-camp-a": {
+      "id": "lumber-camp-a",
+      "asset": "chibi-dinosaur-lumber-camp",
+      "jobId": "0fe8de89-2255-4b3c-8a8e-b0d5482e6537",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-dinosaur",
+        "asset": "chibi-dinosaur-lumber-camp",
+        "subject": "IMPROVEMENT:DINOSAUR:LUMBER_CAMP",
+        "faction": "DINOSAUR",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23806,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: a stone-age jungle logging camp, no axe: at the back two leaning palm trees with deep green fronds and a fern; in front one felled palm trunk lying on the ground, a neat pile of brown ringed palm logs tied with a vine, and a tiny cone tent of tawny spotted hide over crossed cream tusks. Deep greens, tawny hide, cream bone, brown; no metal; dark green-brown outline. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a stone-age jungle logging camp, no axe: at the back two leaning palm trees with deep green fronds and a fern; in front one felled palm trunk lying on the ground, a neat pile of brown ringed palm logs tied with a vine, and a tiny cone tent of tawny spotted hide over crossed cream tusks. Deep greens, tawny hide, cream bone, brown; no metal; dark green-brown outline. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a stone-age jungle logging camp, no axe: at the back two leaning palm trees with deep green fronds and a fern; in front one felled palm trunk lying on the ground, a neat pile of brown ringed palm logs tied with a vine, and a tiny cone tent of tawny spotted hide over crossed cream tusks. Deep greens, tawny hide, cream bone, brown; no metal; dark green-brown outline. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:06:39.745Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dinosaur/lumber-camp-a.png",
+      "rawSheetSha256": "d5a2b94ac41150eee9775610e7deaaa16fbaee84c7fc613574305cdf70693a83",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.3424,
+          "footprintWidthShare": 0.8361,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.5542,
+          "footprintWidthShare": 0.6167,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.548,
+          "footprintWidthShare": 0.65,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2534,
+          "footprintWidthShare": 0.8302,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.367,
+          "footprintWidthShare": 0.9123,
+          "suspect": true
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.4587,
+          "footprintWidthShare": 0.5455,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4713,
+          "footprintWidthShare": 0.5082,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.422,
+          "footprintWidthShare": 0.4074,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4106,
+          "footprintWidthShare": 0.6613,
+          "suspect": true
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.3983,
+          "footprintWidthShare": 0.8167,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.418,
+          "footprintWidthShare": 0.5345,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.496,
+          "footprintWidthShare": 0.5085,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5981,
+          "footprintWidthShare": 0.4677,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.2806,
+          "footprintWidthShare": 0.64,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4251,
+          "footprintWidthShare": 0.459,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4169,
+          "footprintWidthShare": 0.7742,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-07T23:08:50.622Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: two palms and a fern of the jungle, a neat stack of brown palm logs and a small tent of tawny spotted hide over cream tusks; the biggest and clearest of the sheet, and with no axe it stays apart from the Chopping Block (the Dinosaur Sawmill: a big stone axe in a stump). The plate hint on it is a false alarm: nothing is drawn under the pieces. 4 is the same without the fern; 1, 7 and 13 are small; 5, 6 and 9 have pale yellow-green palms; 2, 10, 11, 12 and 15 have loose logs and no stack; 3 one palm; 8 no tent; 14 a plain brown tent.",
+        "reviewedAt": "2026-10-07T23:09:13.265Z"
+      }
     }
   },
   "assets": {
@@ -259,6 +426,47 @@
       },
       "notes": "An upright grindstone with a wooden lever on a big flat millstone resting on boulders, a hide lean-to on bone poles and a basket; no metal. The flat stone is the subject's millstone, not a ground plate. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
       "acceptedAt": "2026-10-04T09:12:34.927Z"
+    },
+    "chibi-dinosaur-lumber-camp": {
+      "id": "chibi-dinosaur-lumber-camp",
+      "subject": "IMPROVEMENT:DINOSAUR:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "lumber-camp-a",
+      "candidate": 0,
+      "candidateSha256": "eb38604f6146fa2a9370b56decc0a3f20026cdfc190c537c9a8c5ccdee388728",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dinosaur-lumber-camp.png",
+        "sha256": "35355ba4acabcdd4b6bba9c549b8bf4797aa8ba5fd7ebf769296393e04f8116d",
+        "pixelSha256": "7ff43e8b4cd9f122c597beef7521d0aad2d6ba63850f0bd2cd77e68248791057",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: two palms and a fern of the jungle, a neat stack of brown palm logs and a small tent of tawny spotted hide over cream tusks; the biggest and clearest of the sheet, and with no axe it stays apart from the Chopping Block (the Dinosaur Sawmill: a big stone axe in a stump). The plate hint on it is a false alarm: nothing is drawn under the pieces. 4 is the same without the fern; 1, 7 and 13 are small; 5, 6 and 9 have pale yellow-green palms; 2, 10, 11, 12 and 15 have loose logs and no stack; 3 one palm; 8 no tent; 14 a plain brown tent.",
+      "acceptedAt": "2026-10-07T23:09:13.265Z"
     }
   }
 }

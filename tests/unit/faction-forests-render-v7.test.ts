@@ -14,6 +14,7 @@ import {
   FACTION_FORESTS_ENABLED_V7,
   FACTION_FOREST_FLOOR_V7,
   FACTION_FOREST_IDS_V7,
+  FACTION_FOREST_SNOW_LADEN_V7,
   FACTION_FOREST_STRIDE_V7,
   createFactionForestArtV7,
   factionForestCellsOfV7,
@@ -63,7 +64,7 @@ describe("the faction forests switch and sets", () => {
     expect(factionForestsEnabledV7()).toBe(true);
   });
 
-  it("gives six factions a forest; Humans and Ice Folk keep the default", () => {
+  it("gives seven factions a forest; Humans keep the default", () => {
     const own: FactionIdV7[] = [
       "UNDEAD",
       "GOBLIN",
@@ -71,11 +72,14 @@ describe("the faction forests switch and sets", () => {
       "MARTIAN",
       "DWARF",
       "CANDY",
+      // The tundra forest (pulp_wars-2yc.38), last: the set numbers of
+      // the six before it are what they were.
+      "ICE_FOLK",
     ];
+    expect(FACTION_FOREST_IDS_V7.at(-1)).toBe("ICE_FOLK");
     expect([...FACTION_FOREST_IDS_V7].sort()).toEqual([...own].sort());
     for (const faction of own) expect(factionForestIdV7(faction)).toBe(faction);
     expect(factionForestIdV7("ORIGINAL")).toBeNull();
-    expect(factionForestIdV7("ICE_FOLK")).toBeNull();
     expect(factionForestIdV7(null)).toBeNull();
     expect(factionForestPlanMemberV7("FOREST", "GOBLIN")).toEqual({
       factionForest: "GOBLIN",
@@ -83,7 +87,9 @@ describe("the faction forests switch and sets", () => {
     for (const terrain of ["GRASS", "MOUNTAIN", "SHALLOW_WATER"])
       expect(factionForestPlanMemberV7(terrain, "GOBLIN")).toEqual({});
     expect(factionForestPlanMemberV7("FOREST", "ORIGINAL")).toEqual({});
-    expect(factionForestPlanMemberV7("FOREST", "ICE_FOLK")).toEqual({});
+    expect(factionForestPlanMemberV7("FOREST", "ICE_FOLK")).toEqual({
+      factionForest: "ICE_FOLK",
+    });
   });
 
   it("has a whole piece set per faction: the default set's shapes and counts, its own files", () => {
@@ -161,7 +167,15 @@ describe("the faction forests switch and sets", () => {
     expect(martian.every((entry) => entry.factionForest === "MARTIAN")).toBe(
       true,
     );
-    expect(marked("ICE_FOLK")).toEqual([]);
+    // The Ice Folk tundra forest follows the owner like every other.
+    const iceFolk = marked("ICE_FOLK");
+    expect(iceFolk.map((entry) => entry.key)).toEqual(
+      goblin.map((entry) => entry.key),
+    );
+    expect(iceFolk.every((entry) => entry.factionForest === "ICE_FOLK")).toBe(
+      true,
+    );
+    expect(marked("ORIGINAL")).toEqual([]);
   });
 });
 
@@ -348,6 +362,52 @@ describe("the faction forest art", () => {
     expect(composite.floor({ x: 4, y: 0 }, 0)).toBe(
       composite.floor({ x: 4, y: 0 }, 0),
     );
+  });
+
+  it("marks the tundra forest's rasters as snow-laden, and no other set's", () => {
+    // Bead pulp_wars-2yc.38: the tundra trees are drawn with their snow,
+    // so the board puts no snow caps on them; every other tree on Snow
+    // (a Human wood under a Blizzard) is capped as before.
+    expect(FACTION_FOREST_SNOW_LADEN_V7).toEqual(["ICE_FOLK"]);
+    const { art, base } = harness();
+    const composite = resolved(art);
+    expect(resolved(base).snowLaden).toBeUndefined();
+    const cells = factionForestCellsOfV7(
+      [forest(0, 0), forest(4, 0, "ICE_FOLK"), forest(8, 0, "DWARF")],
+      composite,
+      true,
+    );
+    const imagesAt = (key: string): CanvasImageSource[] => {
+      const cell = cells?.get(key);
+      if (cell === undefined) throw new Error(`no cell ${key}`);
+      return [
+        ...cell.bodies.flatMap((piece) =>
+          composite.body(piece.shape, piece.variant).map((part) => part.image),
+        ),
+        ...cell.bands.flatMap((band) => {
+          const image = composite.band(
+            band.piece.shape,
+            band.piece.variant,
+            band.column,
+            band.row,
+          );
+          return image === null ? [] : [image];
+        }),
+      ];
+    };
+    const tundra = imagesAt("4,0");
+    expect(tundra.length).toBeGreaterThan(1);
+    for (const image of tundra) expect(composite.snowLaden?.(image)).toBe(true);
+    for (const key of ["0,0", "8,0"])
+      for (const image of imagesAt(key))
+        expect(composite.snowLaden?.(image)).toBe(false);
+    const set = FACTION_FOREST_IDS_V7.indexOf("ICE_FOLK") + 1;
+    const clump = composite.clumps[set * FACTION_FOREST_STRIDE_V7];
+    if (clump === undefined) throw new Error("no tundra seam clump");
+    expect(composite.snowLaden?.(clump.image)).toBe(true);
+    const plain = composite.clumps[0];
+    if (plain === undefined) throw new Error("no default seam clump");
+    expect(composite.snowLaden?.(plain.image)).toBe(false);
   });
 
   it("draws every Forest as the default one in the classic look", () => {

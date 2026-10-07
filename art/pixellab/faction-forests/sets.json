@@ -119,20 +119,54 @@
       "grass": "public/assets/chibi/terrain/faction-grass/chibi-candy-grass-1.png",
       "clumps": [
         {
-          "recipe": "candy-c",
+          "recipe": "candy-h",
           "candidate": 0
         },
         {
-          "recipe": "candy-c",
+          "recipe": "candy-h",
           "candidate": 1
         },
         {
-          "recipe": "candy-d",
+          "recipe": "candy-h",
+          "candidate": 2
+        },
+        {
+          "recipe": "candy-h",
+          "candidate": 3
+        },
+        {
+          "recipe": "candy-g",
+          "candidate": 1
+        }
+      ]
+    },
+    "ICE_FOLK": {
+      "grass": "art/pixellab/faction-forests/ground/ice-folk-snow.png",
+      "ground": {
+        "from": "public/assets/chibi/terrain/chibi-grass-1.png",
+        "colour": [245, 248, 252],
+        "alpha": 0.42
+      },
+      "clumps": [
+        {
+          "recipe": "tundra-a",
           "candidate": 0
         },
         {
-          "recipe": "candy-e",
+          "recipe": "tundra-a",
+          "candidate": 2
+        },
+        {
+          "recipe": "tundra-a",
           "candidate": 3
+        },
+        {
+          "recipe": "tundra-b",
+          "candidate": 1
+        },
+        {
+          "recipe": "tundra-b",
+          "candidate": 2
         }
       ]
     }

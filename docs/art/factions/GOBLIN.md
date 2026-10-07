@@ -888,3 +888,11 @@ gave it its own art.
 - LEGACY (`?art=legacy`) and the developer option "Classic look" have no Ogre
   art: there it falls back like every faction subject, to the Human unit of
   the slot under the Goblin badge.
+
+## Forest, Lumber Camp and Sawmill (bead `pulp_wars-2yc.38`)
+
+- The forest is the scrub of bead `pulp_wars-2yc.2` (unchanged).
+- **Lumber Camp** (`chibi-goblin-lumber-camp`, `lumber-camp-a` candidate 4): a crooked half-dead scrub tree, three sawn stumps with a cleaver axe in one, and a patched sand-buff lean-to with a tin sheet and a hazard yellow patch. The candidates with neat log stacks read as the Human camp and were passed over.
+- **Sawmill** (`chibi-goblin-sawmill`, `sawmill-a` candidate 7): a ramshackle hut of patched light grey tin and grey-tan planks with a hazard yellow door and a bent chimney pipe, a toothed tin blade in a rickety bench, a heap of crooked planks and a stump. In the live lime, sand and tin of the redesign.
+
+Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, section 12](../FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38). Both buildings keep the names "Lumber camp" and "Sawmill", are drawn by the owner of the territory they stand in, and fall back to the shared pair in the Classic look and the LEGACY art set.

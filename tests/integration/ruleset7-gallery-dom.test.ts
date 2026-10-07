@@ -606,7 +606,21 @@ describe("Ruleset 7 Gallery", () => {
       "Windmill",
     ]);
     expect(cellNames(8)[3]).toBe("Chopping Block");
-    for (const row of [5, 6, 9, 10, 11, 12, 13, 14])
+    // Bead pulp_wars-2yc.38: the Lumber Camp row has one cell per faction
+    // too, each named "Lumber Camp"; so has the whole Sawmill row.
+    expect(cellNames(5)).toEqual(
+      Array.from({ length: 8 }, () => "Lumber Camp"),
+    );
+    expect(
+      cell("LUMBER_CAMP", "CANDY").querySelector("canvas")?.dataset.subject,
+    ).toBe("IMPROVEMENT:CANDY:LUMBER_CAMP");
+    expect(
+      cell("LUMBER_CAMP", "ORIGINAL").querySelector("canvas")?.dataset.subject,
+    ).toBe("IMPROVEMENT:LUMBER_CAMP");
+    expect(
+      cell("SAWMILL", "ICE_FOLK").querySelector("canvas")?.dataset.subject,
+    ).toBe("IMPROVEMENT:ICE_FOLK:SAWMILL");
+    for (const row of [6, 9, 10, 11, 12, 13, 14])
       expect(rows[row]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(1);
     const graveyard = cell("FARM", "UNDEAD");
     expect(graveyard.getAttribute("aria-label")).toBe("Graveyard, Undead");
@@ -754,8 +768,8 @@ describe("Ruleset 7 Gallery: Terrain (pulp_wars-2yc.3)", () => {
       "Snow, Ice Folk",
     );
     expect(cell("GRASS", "GOBLIN").querySelector("canvas")).not.toBeNull();
-    // Forest: every faction's own (pulp_wars-2yc.2) but the Ice Folk's,
-    // whose territory is Snow: that cell says "same" plainly.
+    // Forest: every faction's own (pulp_wars-2yc.2), the Ice Folk tundra
+    // forest included (pulp_wars-2yc.38).
     expect(
       [...(rows[1]?.querySelectorAll<HTMLElement>("td") ?? [])].map(
         (td) =>
@@ -768,11 +782,11 @@ describe("Ruleset 7 Gallery: Terrain (pulp_wars-2yc.3)", () => {
       "GOBLIN",
       "DINOSAUR",
       "MARTIAN",
-      "Same as default",
+      "ICE_FOLK",
       "DWARF",
       "CANDY",
     ]);
-    expect(rows[1]?.querySelector("td.is-same")?.textContent).toBe("=");
+    expect(rows[1]?.querySelector("td.is-same")).toBeNull();
     // Shared terrain is one cell across the row.
     for (const index of [2, 3, 5]) {
       const cells =

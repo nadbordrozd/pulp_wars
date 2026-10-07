@@ -230,6 +230,10 @@ export const GHOST_FOREST_FACTIONS_V7: ReadonlySet<string> = new Set([
   "MARTIAN",
   "DWARF",
   "CANDY",
+  // The tundra forest (pulp_wars-2yc.38). A ghost takes its faction from the
+  // territory of the explored ground beside it, not from that ground's
+  // look, so the Ice Folk Snow needs nothing more.
+  "ICE_FOLK",
 ]);
 
 const STEPS = [

@@ -1,3 +1,4 @@
+import type { FactionIdV7 } from "../engine/index";
 import type { ChibiArtAssetV7 } from "./chibi-art-v7";
 import { chibiArtUrl } from "./chibi-art-manifest";
 
@@ -25,10 +26,48 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * (territoryTerrainSubjectV7). The Forest entries reuse the body layers of
  * the shared Forest.
  *
+ * The Lumber Camps and Sawmills (bead pulp_wars-2yc.38; the user,
+ * 2026-10-07: "lumber camps should be different per faction - depending on
+ * the native forest skin. ditto for sawmills") are thirteen more masters of
+ * the same batches and of `buildings-goblin` and `buildings-candy`: a camp
+ * among the trees of the faction's forest and a mill in its materials, on
+ * the 72 x 72 canvas and the seat of the shared pair. The Dinosaur Sawmill
+ * is the Chopping Block above.
+ *
  * The list is part of the direction registry
  * (chibiDirectionArtRegistryV7), so the classic look and the LEGACY art set
  * draw the shared buildings and ground as before.
  */
+/** Every faction's Lumber Camp and Sawmill but the Dinosaur Sawmill. */
+const FOREST_BUILDINGS: readonly (readonly [
+  slug: string,
+  faction: Exclude<FactionIdV7, "ORIGINAL">,
+  improvements: readonly ("LUMBER_CAMP" | "SAWMILL")[],
+])[] = [
+  ["undead", "UNDEAD", ["LUMBER_CAMP", "SAWMILL"]],
+  ["goblin", "GOBLIN", ["LUMBER_CAMP", "SAWMILL"]],
+  ["dinosaur", "DINOSAUR", ["LUMBER_CAMP"]],
+  ["martian", "MARTIAN", ["LUMBER_CAMP", "SAWMILL"]],
+  ["ice-folk", "ICE_FOLK", ["LUMBER_CAMP", "SAWMILL"]],
+  ["dwarf", "DWARF", ["LUMBER_CAMP", "SAWMILL"]],
+  ["candy", "CANDY", ["LUMBER_CAMP", "SAWMILL"]],
+];
+
+const FOREST_BUILDING_ASSETS: readonly ChibiArtAssetV7[] =
+  FOREST_BUILDINGS.flatMap(([slug, faction, improvements]) =>
+    improvements.map((improvement): ChibiArtAssetV7 => {
+      const id = `chibi-${slug}-${improvement === "SAWMILL" ? "sawmill" : "lumber-camp"}`;
+      return {
+        id,
+        subject: `IMPROVEMENT:${faction}:${improvement}`,
+        assetClass: "BUILDING",
+        width: 72,
+        height: 72,
+        url: chibiArtUrl(`assets/chibi/buildings/${id}.png`),
+      };
+    }),
+  );
+
 export const CHIBI_FACTION_BUILDING_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
   [
     {
@@ -111,6 +150,7 @@ export const CHIBI_FACTION_BUILDING_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
       height: 72,
       url: chibiArtUrl("assets/chibi/buildings/chibi-dwarf-steam-pump.png"),
     },
+    ...FOREST_BUILDING_ASSETS,
   ];
 
 /**

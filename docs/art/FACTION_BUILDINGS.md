@@ -12,7 +12,9 @@ where production changed something (the Bone Mill), section 8 says so.
 round 6): no Farm is a seamless field any more, the Graveyard and the
 Mushroom Farm were redrawn, and the shared Sawmill was redone. Rule 3's
 "seamless `crop-rows` field" and the row looks of sections 3, 5 and 6 are
-history.
+history. **Section 12 supersedes the "same" of the Lumber Camp and the
+Sawmill** (bead `pulp_wars-2yc.38`): every faction but the Humans draws its
+own pair.
 
 The user's request (2026-10-03): some, not all, building sprites and
 descriptions become faction specific. When the Undead take a city, the
@@ -640,3 +642,126 @@ player's city, whose seven Monuments are the shared one) and
 - **Fertile Ground is a dark brown patch with a near-black outline**: it
   reads as dug earth, but it is an object lying on the Grass, not a change
   of the tile's own ground.
+
+## 12. A Lumber Camp and a Sawmill per faction (bead `pulp_wars-2yc.38`)
+
+The user, 2026-10-07: "lumber camps should be different per faction -
+depending on the native forest skin. ditto for sawmills." Purely visual: no
+rule, number, command, save, name or identity changed. This supersedes the
+"same" of the Lumber Camp and Sawmill rows of section 3.
+
+Every faction but the Humans draws its own Lumber Camp and its own Sawmill
+(the Dinosaur Sawmill is the Chopping Block of section 3, unchanged). The
+Humans keep the shared pair. **The camp is the faction's forest being cut**:
+two or three of its trees, cut logs, an axe or a stump, a small shelter.
+**The mill is a building in the faction's materials with a round saw blade
+at its front** and cut wood beside it, and no standing tree. So the pair is
+told apart at board size by trees against a house with a blade, in every
+faction. They keep the names "Lumber camp" and "Sawmill".
+
+### The art
+
+All `calm-feature` (`generate-image-v2`, 16 candidates a call, the light
+stated, seated 3 px above the bottom edge), on the 72 x 72 canvas and the
+anchor of the shared pair, no owner colour, no mask.
+
+| Asset (subject)                                                   | Shows                                                                                                                                                                | Recipe, candidate  | Sprite  |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------- |
+| `chibi-undead-lumber-camp` (`IMPROVEMENT:UNDEAD:LUMBER_CAMP`)     | two bare ashen dead trees, a stack of pale grey logs, a rusty axe in a stump, one bone                                                                               | `lumber-camp-a`, 2 | 68 x 64 |
+| `chibi-undead-sawmill` (`IMPROVEMENT:UNDEAD:SAWMILL`)             | a dark slate plank shed with a near-black roof and a violet window, a round blade of ivory bone on a bench, ashen logs                                               | `sawmill-a`, 9     | 65 x 64 |
+| `chibi-goblin-lumber-camp` (`IMPROVEMENT:GOBLIN:LUMBER_CAMP`)     | a crooked scrub tree, three sawn stumps, a cleaver axe in one, a patched sand-buff lean-to with a tin sheet and a hazard yellow patch                                | `lumber-camp-a`, 4 | 58 x 62 |
+| `chibi-goblin-sawmill` (`IMPROVEMENT:GOBLIN:SAWMILL`)             | a ramshackle hut of patched tin and grey-tan planks with a hazard yellow door and a bent pipe, a toothed tin blade in a rickety bench                                | `sawmill-a`, 7     | 61 x 60 |
+| `chibi-dinosaur-lumber-camp` (`IMPROVEMENT:DINOSAUR:LUMBER_CAMP`) | two palms and a fern, a stack of brown palm logs, a small tent of spotted hide over tusks; no axe                                                                    | `lumber-camp-a`, 0 | 61 x 61 |
+| `chibi-martian-lumber-camp` (`IMPROVEMENT:MARTIAN:LUMBER_CAMP`)   | a tall ochre fungal stalk with a teal cap and two small ones, a stack of cut stalk logs, a stump, a chrome harvester pod with a magenta cutting beam                 | `lumber-camp-b`, 0 | 61 x 62 |
+| `chibi-martian-sawmill` (`IMPROVEMENT:MARTIAN:SAWMILL`)           | a low chrome dome hut with a magenta window and an antenna, a round chrome saw disc with a glowing magenta edge in a gunmetal bench, ochre stalk logs                | `sawmill-b`, 0     | 62 x 62 |
+| `chibi-ice-folk-lumber-camp` (`IMPROVEMENT:ICE_FOLK:LUMBER_CAMP`) | two snow-capped dwarf firs, a cream hide tent on bone poles, a stack of pale birch logs, an ice-blue axe in a stump                                                  | `lumber-camp-a`, 0 | 62 x 63 |
+| `chibi-ice-folk-sawmill` (`IMPROVEMENT:ICE_FOLK:SAWMILL`)         | a pale timber cabin under a thick snow roof, a round toothed blade of ice blue on a bench, a log on a small hoist                                                    | `sawmill-a`, 3     | 62 x 59 |
+| `chibi-dwarf-lumber-camp` (`IMPROVEMENT:DWARF:LUMBER_CAMP`)       | two sturdy dark pines and a mossy grey boulder, a stack of thick pine logs in an iron band, an iron axe in a stump, a copper lantern on a post                       | `lumber-camp-a`, 1 | 62 x 60 |
+| `chibi-dwarf-sawmill` (`IMPROVEMENT:DWARF:SAWMILL`)               | a squat grey stone mill house with a muted copper roof, an iron chimney with a puff of steam, a steel blade in its front arch, a brass cog on the gable, pale planks | `sawmill-a`, 7     | 61 x 62 |
+| `chibi-candy-lumber-camp` (`IMPROVEMENT:CANDY:LUMBER_CAMP`)       | a pink-striped candy cane and two peach lollipops, a stack of striped candy logs, a little axe in a gumdrop stump, a wafer lean-to                                   | `lumber-camp-a`, 4 | 58 x 58 |
+| `chibi-candy-sawmill` (`IMPROVEMENT:CANDY:SAWMILL`)               | a gingerbread mill house with a pale pink frosting roof, a round peppermint blade in a wafer bench, a candy log, cut candy sticks                                    | `sawmill-a`, 13    | 60 x 62 |
+
+- **Batches.** The assets are in the faction's `buildings-<faction>` batch;
+  `buildings-goblin` and `buildings-candy` are new. The subject lines are
+  `IMPROVEMENT:<FACTION>:LUMBER_CAMP` and `:SAWMILL` in
+  `scripts/art/chibi/subjects/<FACTION>.json`.
+- **First sample of three**: the Undead Lumber Camp, the Ice Folk Sawmill
+  and the Candy Lumber Camp, each reviewed at 1:1 and enlarged on its
+  faction's ground before the other ten were generated.
+- **PixelLab calls: 16** (15 `generate-image-v2` creations of 16 candidates
+  each and one `edit-image-pixen`): one per piece, and three more for the
+  Martian pair.
+  Why each other candidate was passed over is in the records
+  (`scripts/art/chibi/records/batch-buildings-<faction>.json`). The common
+  failures: a mill with no blade (a shed with logs: about half of every
+  Sawmill sheet), a camp with a tent and no logs or no axe, and pieces
+  drawn small.
+- **No red.** None of the thirteen has a pixel of the owner key red (the
+  check of section 11); the Candy mill's peppermint swirl is pink.
+- **Bigger than the Human pair.** The shared Lumber Camp is 52 x 40 and the
+  shared Sawmill 51 x 48 in the same canvas; the new pieces are 58 to 68 px
+  wide. They stay inside the cell and are seated like the shared pair.
+
+### In the game
+
+- `FACTION_IMPROVEMENT_LOOKS_V7` lists `LUMBER_CAMP` and `SAWMILL` for
+  every faction but the Humans, so `factionImprovementSubjectV7` gives the
+  board, the tile dock, the build buttons, the technology cards (Forestry,
+  Sawmilling) and the Gallery the faction's subject. **Who decides the
+  look is unchanged: the owner of the territory** (rule 1). A captured
+  city's Lumber Camps and Sawmills change look in the redraw in which its
+  border and its Forest change.
+- **Names.** `FACTION_BUILDINGS` (the names and flavour lines) names only
+  the renamed buildings, so these keep "Lumber camp" and "Sawmill" and have
+  no flavour line; `matchHasFactionBuildingsV7` (the Help line about names)
+  asks that table and is unchanged for a match of Humans, Goblins and
+  Candy.
+- **Under the building.** A Forest under a Lumber Camp or a Sawmill is
+  drawn as its ground, as before (`suppressesForestCanopyV7`), so the
+  camp's own trees are the only trees of its cell.
+- **Fallbacks.** The Classic look and the LEGACY art set have no such
+  rasters and draw the shared pair, as for every faction building.
+- **Gallery.** The Lumber Camp row of the Buildings tab has one cell per
+  faction now (the Sawmill row had); a faction's own Lumber Camp stands on
+  Grass there, as on the board, the shared one on the Forest tile.
+
+### Evidence
+
+```sh
+npx vite --port 6597 --strictPort &
+CHROME_PATH=... SWITCH_GAME_URL=http://localhost:6597/ \
+  npx tsx scripts/art/look-switch-review.ts \
+  scripts/art/faction-buildings/forest-building-scenes.ts <out-dir>
+```
+
+One scene per faction
+([`forest-building-scenes.ts`](../../scripts/art/faction-buildings/forest-building-scenes.ts)):
+the Human territory with the shared pair on the left, the faction's with
+its own pair in its own forest on the right, the faction's units in the
+wood and beside it, and an Ice Folk scene whose wood runs into the fog.
+Tests: `tests/unit/chibi-faction-buildings-assets.test.ts`,
+`tests/unit/faction-buildings-render-v7.test.ts`, the Gallery tests.
+
+### Weak spots
+
+- **The Ice Folk and Goblin camps are several small pieces** standing
+  apart (a tent, a log stack, a stump), where the other camps are one
+  group; each piece is about 25 px.
+- **The Undead Sawmill is dark**: a near-black roof on dark slate walls;
+  the ivory blade and the violet window carry it on the ashen ground.
+- **The Ice Folk camp's firs have a small cap of snow**, less than the
+  tundra forest's trees, and are a darker green: it is a building, not
+  softened like the forest.
+- **The Candy camp is more saturated than the grove** round it, which is
+  softened; its cane is the grove's cane.
+- **The Dinosaur camp has no axe**, on purpose: the big stone axe is the
+  Chopping Block's.
+- **The Martian pair took three more calls.** "Red-ochre" stalks came
+  out a saturated red, 233 and 166 pixels of it the owner key red
+  (`lumber-camp-a`, `sawmill-a`); a colour edit of the mill left 115
+  (`sawmill-a-edit`). `lumber-camp-b` and `sawmill-b` give the forest's
+  ochre by hex (`#b06a48`, shade `#7f4634`) and have none. The ochre
+  stalks and logs are close to the Martian ground's own ochre; the teal
+  caps, the chrome and the outline carry the camp.
+- **The Dwarf camp is dark**: near-black pines beside the softened pines
+  of the Dwarf forest.

@@ -776,3 +776,25 @@ on Crumbs, the Crashed tint, the Rushed sparkle trail and the Home Sweet
 Home chip are code-drawn by the UI bead; the palette and the proposed
 marker sizes are in
 [`chibi-direction-candy-presentation.ts`](../../src/assets/chibi-direction-candy-presentation.ts).
+
+## Faction forests and forest buildings (bead `pulp_wars-2yc.38`)
+
+The Ice Folk tundra forest, the Candy grove in warm pastels, and a Lumber
+Camp and a Sawmill for every faction but the Humans. Records:
+[faction forests](FACTION_FORESTS.md) and
+[faction buildings, section 12](FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38).
+
+| Subjects                                                                                          | Assets                                                                                          | Class and canvas                                                             |
+| ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| the Forest of Ice Folk territory (`factionForest: "ICE_FOLK"`)                                    | `public/assets/chibi/forest/ice-folk/`: 20 pieces and 5 seam clumps (`chibi-forest-ice-folk-*`) | composed-forest piece set: the default set's shapes, canvases and anchors    |
+| the Forest of Candy territory (`factionForest: "CANDY"`)                                          | `public/assets/chibi/forest/candy/`: the 20 pieces redone, 5 seam clumps (was 4)                | the same                                                                     |
+| `IMPROVEMENT:<FACTION>:LUMBER_CAMP` for Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, Candy | `chibi-<faction>-lumber-camp`                                                                   | `BUILDING`, 72 x 72, seated 3 px, no owner colour (the shared pair's canvas) |
+| `IMPROVEMENT:<FACTION>:SAWMILL` for Undead, Goblin, Martian, Ice Folk, Dwarf, Candy               | `chibi-<faction>-sawmill` (the Dinosaur one is `chibi-dinosaur-chopping-block`, unchanged)      | the same                                                                     |
+
+13 building masters from 16 recipes in the batches `buildings-<faction>`
+(`buildings-goblin` and `buildings-candy` are new; the three extra
+recipes redid the Martian pair, whose first stalks were the owner key
+red), and two forest sets from six recipes of the run
+`art/pixellab/faction-forests/`: 22 PixelLab calls. The Human pair (`chibi-direction-lumber-camp`,
+`chibi-direction-sawmill`) is unchanged and is the fallback of every
+faction subject.

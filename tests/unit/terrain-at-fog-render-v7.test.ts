@@ -279,6 +279,21 @@ describe("the ghosts", () => {
     expect(at(2, 1)?.factionForest).toBeUndefined();
     expect(at(0, 1)?.factionForest).toBe("GOBLIN");
     expect(at(1, 0)?.factionForest).toBe("GOBLIN");
+    // The same wood round Ice Folk land is the tundra forest: a ghost reads
+    // the territory's faction, not the Snow on the ground beside it.
+    const iceFolk = terrainGhostsV7(
+      {
+        ...view([]),
+        players: full.players.map((player) =>
+          player.id === goblin.id
+            ? { ...player, faction: "ICE_FOLK" as const }
+            : player,
+        ),
+      },
+      skeleton,
+    );
+    expect(iceFolk).toHaveLength(8);
+    for (const ghost of iceFolk) expect(ghost.factionForest).toBe("ICE_FOLK");
   });
 
   it("know the factions that have a forest of their own", () => {
@@ -420,7 +435,9 @@ const CUTS: Readonly<Record<string, readonly string[]>> = {
 };
 
 describe("the cover of a half-explored range and wood", () => {
-  for (const faction of [undefined, "CANDY", "UNDEAD"] as const)
+  // ICE_FOLK: the tundra forest (pulp_wars-2yc.38) is packed with its
+  // ghosts like every faction's wood, so exploring a cell re-picks nothing.
+  for (const faction of [undefined, "CANDY", "UNDEAD", "ICE_FOLK"] as const)
     for (const [name, hidden] of Object.entries(CUTS))
       it(`is the whole map's cover: ${name}${faction === undefined ? "" : `, ${faction}`}`, () => {
         const whole = terrainBoard(RANGE, faction as FactionForestIdV7);

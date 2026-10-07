@@ -29,6 +29,28 @@
         "height": 72
       },
       "ownerColour": false
+    },
+    {
+      "id": "chibi-undead-lumber-camp",
+      "subject": "IMPROVEMENT:UNDEAD:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-undead-sawmill",
+      "subject": "IMPROVEMENT:UNDEAD:SAWMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
     }
   ],
   "recipes": [
@@ -355,6 +377,28 @@
       },
       "editInstruction": "Change only two things. The red roofs (the cone roof and the small roof over the door) become near-black charcoal slate (#2b2b31), with no red or brown left. The stone walls of the round tower become a lighter slate blue-grey (#8b92a3) with a mid-grey shade (#6a7082), clearly lighter than the roofs and sails. Keep the four ragged grey sails, the violet windows, the door, the outline and the art style exactly the same, on a transparent background.",
       "notes": "Bead pulp_wars-xdh.2: the alternative to bone-mill-edit-c, from bone-mill-edit-a, whose sails are a lighter grey than edit-b's: charcoal roofs, mid-grey sails and a light slate tower are three tones."
+    },
+    {
+      "id": "lumber-camp-a",
+      "asset": "chibi-undead-lumber-camp",
+      "endpoint": "generate-image-v2",
+      "seed": 23802,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the UNDEAD Lumber Camp: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
+    },
+    {
+      "id": "sawmill-a",
+      "asset": "chibi-undead-sawmill",
+      "endpoint": "generate-image-v2",
+      "seed": 23803,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the UNDEAD Sawmill: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
     }
   ]
 }

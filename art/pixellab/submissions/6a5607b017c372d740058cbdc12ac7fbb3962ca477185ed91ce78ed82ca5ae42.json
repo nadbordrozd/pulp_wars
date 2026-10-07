@@ -1,0 +1,36 @@
+{
+  "id": "sawmill-a-edit",
+  "jobId": "6a657e0c-ba2b-4394-a8ae-298c23e2abc9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "buildings-martian",
+    "asset": "chibi-martian-sawmill",
+    "subject": "IMPROVEMENT:MARTIAN:SAWMILL",
+    "faction": "MARTIAN",
+    "recipeClass": "calm-feature",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 23822,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: the red logs. Every log, the three stacked logs and the log on the bench, becomes a dusty orange-brown ochre (#b06a48) with a darker ochre shade (#7f4634) and pale cream round ends, with no red left. Keep the chrome dome, the magenta window, the antenna, the saw disc with its magenta edge, the gunmetal bench, the size, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: the red logs. Every log, the three stacked logs and the log on the bench, becomes a dusty orange-brown ochre (#b06a48) with a darker ochre shade (#7f4634) and pale cream round ends, with no red left. Keep the chrome dome, the magenta window, the antenna, the saw disc with its magenta edge, the gunmetal bench, the size, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: the red logs. Every log, the three stacked logs and the log on the bench, becomes a dusty orange-brown ochre (#b06a48) with a darker ochre shade (#7f4634) and pale cream round ends, with no red left. Keep the chrome dome, the magenta window, the antenna, the saw disc with its magenta edge, the gunmetal bench, the size, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: the red logs. Every log, the three stacked logs and the log on the bench, becomes a dusty orange-brown ochre (#b06a48) with a darker ochre shade (#7f4634) and pale cream round ends, with no red left. Keep the chrome dome, the magenta window, the antenna, the saw disc with its magenta edge, the gunmetal bench, the size, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "sawmill-a",
+      "candidate": 1,
+      "sha256": "90cfcd18fe602c2169c57ca3211591513180bc67f7689701abfee83d1d6cf24c"
+    }
+  }
+}

@@ -217,6 +217,78 @@
       },
       "notes": "The same, styled from undead-c-0 so the hand, the outline and the greys stay.",
       "review": "Four clumps with a hollow stump each, styled from undead-c-0. 3 (faces +3.9, a cobweb at the top) is a clump of the set. 0 and 2 measure lit from the right (-4.3, -20.7); 1 (+0.3) has dark hollows that read as faces."
+    },
+    {
+      "id": "tundra-a",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93601,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, snow patch, slab, background, buildings, people, text, green leaves",
+      "subject": "Subject: a low clump of cold tundra woodland: three stunted dwarf firs of dark blue-green needles (#3f6b62) under thick caps of white snow shaded blue-grey (#bccbdd) on the right, one thin leaning white birch with bare frosted twigs, a frosted grey-blue shrub and a grey rock with pale lichen at the foot; cold muted colours; every tree lighter on its left side; dark blue-slate outline, never black; space above the clump.",
+      "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'ice folk forest needs to be regenerated as a tundra forest instead of just modifying the default forest'). Sample: a tundra clump of snow-laden dwarf firs, a birch, a frosted shrub and a lichen rock, without a style image so the default Forest's green is not copied."
+    },
+    {
+      "id": "tundra-b",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93602,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, snow patch, slab, background, buildings, people, text, green leaves",
+      "subject": "Subject: a low clump of cold tundra woodland: two crooked stunted larches with sparse dull gold-brown needles (#a8935a) dusted with snow, one squat dwarf fir of dark blue-green needles (#3f6b62) under a thick cap of white snow shaded blue-grey (#bccbdd) on the right, a frosted grey-blue shrub and two grey rocks with pale lichen at the foot; cold muted colours; every tree lighter on its left side; dark blue-slate outline, never black; space above the clump.",
+      "notes": "Bead pulp_wars-2yc.38. Sample: the second tundra clump, stunted larches beside a dwarf fir, so a wood is not one tree repeated."
+    },
+    {
+      "id": "candy-f",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93506,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, slab, background, buildings, people, text, leaves, brown, chocolate",
+      "subject": "Subject: a low candy grove, not trees: one striped candy cane with a hooked top (cream, soft strawberry-pink stripes), two round swirl lollipops on thin cream sticks (peach and cream; pink and cream), one gumdrop tree of three stacked gumdrops, and gumdrop bushes at the foot (peach #f0b99a, pink #e39aa6, caramel #d9a56e, cream, one small mint #a9d9c2); soft warm pastels, not saturated; no brown, no chocolate; every sweet lighter on its left; dusty rose-brown outline (#8a5560), never black.",
+      "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'the candy forest is too brown. regenerate in warmer colors. the colors should be not super saturated so the forest is a background but the hues should make it look like yummy sweets'). Sample: the same sweets (canes, lollipops, gumdrops) in strawberry pink, peach, caramel and cream with a little mint, no chocolate sticks and a rose-brown outline; no style image, so the brown of candy-c is not copied."
+    },
+    {
+      "id": "candy-g",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93507,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, slab, background, buildings, people, text, leaves, brown, chocolate",
+      "subject": "Subject: a low candy grove, not trees: two big round swirl lollipops on thin cream sticks (strawberry pink and cream; peach and cream), two gumdrop trees of three stacked round gumdrops each (peach #f0b99a; pink #e39aa6), and big plain gumdrop bushes at the foot (caramel #d9a56e, cream, one small mint #a9d9c2); big calm shapes, no candy cane; soft warm pastels, not saturated; no brown, no chocolate; every sweet lighter on its left; dusty rose-brown outline (#8a5560), never black.",
+      "notes": "Bead pulp_wars-2yc.38. Sample: the calmer clump of big lollipops and gumdrop trees with no cane, in the same warm pastels."
+    },
+    {
+      "id": "candy-h",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93508,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, slab, background, buildings, people, text, leaves, brown, chocolate",
+      "subject": "Subject: a small low candy grove, two thirds of the image tall, a wide empty margin above: one short striped candy cane with a hooked top (cream, soft strawberry-pink stripes), two round swirl lollipops on short cream sticks (peach and cream; pink and cream), one gumdrop tree of three stacked gumdrops, gumdrop bushes at the foot (peach #f0b99a, pink #e39aa6, caramel #d9a56e, cream, one small mint #a9d9c2); soft warm pastels; every sweet lighter on its left; dusty rose-brown outline.",
+      "notes": "Bead pulp_wars-2yc.38. candy-f is the look, but its four clumps are 95 to 101 px tall (a clump may be 86): the same sweets asked small and low, with short sticks and a short cane."
+    },
+    {
+      "id": "candy-i",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93509,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, slab, background, buildings, people, text, leaves, brown, chocolate",
+      "subject": "Subject: a small low candy grove, two thirds of the image tall, a wide empty margin above: two short striped candy canes with hooked tops (cream with soft pink stripes; cream with peach stripes), one round pink and cream swirl lollipop on a short cream stick, two gumdrop trees of three stacked gumdrops (peach #f0b99a; pink #e39aa6), gumdrop bushes at the foot (caramel #d9a56e, cream, one small mint #a9d9c2); soft warm pastels; every sweet lighter on its left; dusty rose-brown outline.",
+      "notes": "Bead pulp_wars-2yc.38. A second small clump, two short canes and two gumdrop trees, so a grove is not one clump repeated."
     }
   ]
 }

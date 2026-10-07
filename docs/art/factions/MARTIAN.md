@@ -624,3 +624,12 @@ gave it its own art.
 - LEGACY (`?art=legacy`) and the developer option "Classic look" have no Shock
   Trooper art: there it falls back like every faction subject, to the Human
   unit of the slot under the Martian badge.
+
+## Forest, Lumber Camp and Sawmill (bead `pulp_wars-2yc.38`)
+
+- The forest is the alien growths of bead `pulp_wars-2yc.2` (unchanged).
+- **Lumber Camp** (`chibi-martian-lumber-camp`, `lumber-camp-b` candidate 0): a tall ochre fungal stalk with a teal cap and two smaller ones, a stack of cut stalk logs, a stump, and a chrome harvester pod on three gunmetal legs with a magenta cutting beam.
+- **Sawmill** (`chibi-martian-sawmill`, `sawmill-b` candidate 0): a low chrome dome hut with a round magenta window and an antenna, a round chrome saw disc with a glowing magenta edge in a gunmetal bench, an ochre stalk log on the bench and a stack of three.
+- **Ochre by hex.** Asked for "red-ochre" stalks, the generator drew a saturated red: 233 and 166 pixels of the first camp and mill were the owner key red, on unowned buildings (`lumber-camp-a`, `sawmill-a`, rejected), and one colour edit of the mill left 115. The subject lines now give the forest's ochre (`#b06a48`, shade `#7f4634`) and say "never red".
+
+Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, section 12](../FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38). Both buildings keep the names "Lumber camp" and "Sawmill", are drawn by the owner of the territory they stand in, and fall back to the shared pair in the Classic look and the LEGACY art set.

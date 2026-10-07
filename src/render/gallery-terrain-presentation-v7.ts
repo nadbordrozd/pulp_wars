@@ -272,6 +272,10 @@ export function galleryTerrainPiecesV7(
                     territoryTerrainSubjectV7("TERRAIN:GRASS", ground),
                   )
                 : { kind: "RASTER", url: grass.url, width: 80, height: 80 },
+              // The tundra forest stands on the Ice Folk Snow.
+              ...(forest === "ICE_FOLK"
+                ? [{ kind: "SNOW", variant: 0 } as const]
+                : []),
               rasterLayer(single),
             ]),
           ]),

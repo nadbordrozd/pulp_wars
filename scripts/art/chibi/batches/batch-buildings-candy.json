@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "batch": "buildings-candy",
+  "title": "Candy building looks: the Lumber Camp and the Sawmill",
+  "bead": "pulp_wars-2yc.38",
+  "faction": "CANDY",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-candy-lumber-camp",
+      "subject": "IMPROVEMENT:CANDY:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-candy-sawmill",
+      "subject": "IMPROVEMENT:CANDY:SAWMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    }
+  ],
+  "recipes": [
+    {
+      "id": "lumber-camp-a",
+      "asset": "chibi-candy-lumber-camp",
+      "endpoint": "generate-image-v2",
+      "seed": 23813,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the CANDY Lumber Camp: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
+    },
+    {
+      "id": "sawmill-a",
+      "asset": "chibi-candy-sawmill",
+      "endpoint": "generate-image-v2",
+      "seed": 23814,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the CANDY Sawmill: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
+    }
+  ]
+}

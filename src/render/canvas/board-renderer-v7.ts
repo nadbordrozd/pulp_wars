@@ -2393,7 +2393,11 @@ export function drawBoardV7(input: {
     forestSnowCells.size === 0
       ? null
       : {
-          caps: (image) => iceFolkArt?.caps(image, "SNOW") ?? null,
+          // The tundra forest carries its own snow (pulp_wars-2yc.38).
+          caps: (image) =>
+            forestArt?.snowLaden?.(image) === true
+              ? null
+              : (iceFolkArt?.caps(image, "SNOW") ?? null),
           snowAt: (x, y) => forestSnowCells.has(`${x},${y}`),
         };
   const blizzardTime =

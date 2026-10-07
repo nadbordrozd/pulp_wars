@@ -80,7 +80,8 @@ export function terrainBoard(
           at: { x, y },
           assetId: ASSET_IDS[mark] as string,
           artSubject: subject,
-          ...(faction !== undefined && mark !== "s"
+          // The Ice Folk have a forest and no grass of their own (Snow).
+          ...(faction !== undefined && faction !== "ICE_FOLK" && mark !== "s"
             ? { factionGrass: faction }
             : {}),
           ...(faction !== undefined && mark === "F"

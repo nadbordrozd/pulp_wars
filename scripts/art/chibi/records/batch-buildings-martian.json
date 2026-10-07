@@ -74,6 +74,741 @@
         "reviewedAt": "2026-10-05T12:32:18.411Z"
       }
     },
+    "lumber-camp-a": {
+      "id": "lumber-camp-a",
+      "asset": "chibi-martian-lumber-camp",
+      "jobId": "18055411-a387-4afe-96ad-f2a1a05f8b4a",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-martian",
+        "asset": "chibi-martian-lumber-camp",
+        "subject": "IMPROVEMENT:MARTIAN:LUMBER_CAMP",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23807,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/MARTIAN.json",
+            "text": "Subject: an alien harvester camp: at the back two tall red-ochre fungal stalks with rounded teal caps; in front a neat stack of cut red-ochre stalk logs showing pale round ends, one cut stalk stump, and a small silver-white chrome harvester pod on three short gunmetal legs with a glass dome and one hot magenta cutting beam pointing at the stump. Chrome, gunmetal, red-ochre, teal, a little magenta; no wood, no green; dark outline. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien harvester camp: at the back two tall red-ochre fungal stalks with rounded teal caps; in front a neat stack of cut red-ochre stalk logs showing pale round ends, one cut stalk stump, and a small silver-white chrome harvester pod on three short gunmetal legs with a glass dome and one hot magenta cutting beam pointing at the stump. Chrome, gunmetal, red-ochre, teal, a little magenta; no wood, no green; dark outline. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien harvester camp: at the back two tall red-ochre fungal stalks with rounded teal caps; in front a neat stack of cut red-ochre stalk logs showing pale round ends, one cut stalk stump, and a small silver-white chrome harvester pod on three short gunmetal legs with a glass dome and one hot magenta cutting beam pointing at the stump. Chrome, gunmetal, red-ochre, teal, a little magenta; no wood, no green; dark outline. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:09:02.918Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-martian/lumber-camp-a.png",
+      "rawSheetSha256": "7aeed37f21a19b62f863d24e73bc08c2dbaf2cef125908e95727a02d26215d9b",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7049,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3898,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.541,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6774,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6885,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7049,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7049,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7414,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7119,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3559,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5968,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7581,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5862,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6885,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.746,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:11:46.021Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The plan is right (candidate 0: two stalks with teal caps, cut logs, a stump, a chrome pod with a magenta beam), but the stalks and logs are a saturated red in all sixteen: 233 pixels of candidate 0 are the owner key red, on an unowned building. Redone as lumber-camp-b with the forest's ochre by hex.",
+        "reviewedAt": "2026-10-07T23:17:12.109Z"
+      }
+    },
+    "lumber-camp-b": {
+      "id": "lumber-camp-b",
+      "asset": "chibi-martian-lumber-camp",
+      "jobId": "7c0f3fea-b4fd-4259-ae05-4b2451a4403a",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-martian",
+        "asset": "chibi-martian-lumber-camp",
+        "subject": "IMPROVEMENT:MARTIAN:LUMBER_CAMP",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23821,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/MARTIAN.json",
+            "text": "Subject: an alien harvester camp: at the back two tall fungal stalks of dusty orange-brown ochre (#b06a48, shade #7f4634, never red) with rounded teal caps (#3f9c93); in front a neat stack of cut ochre stalk logs showing pale round ends, one cut stalk stump, and a small silver-white chrome harvester pod on three short gunmetal legs with a glass dome and one hot magenta cutting beam pointing at the stump. Chrome, gunmetal, ochre, teal, a little magenta; no wood, no green, no red. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien harvester camp: at the back two tall fungal stalks of dusty orange-brown ochre (#b06a48, shade #7f4634, never red) with rounded teal caps (#3f9c93); in front a neat stack of cut ochre stalk logs showing pale round ends, one cut stalk stump, and a small silver-white chrome harvester pod on three short gunmetal legs with a glass dome and one hot magenta cutting beam pointing at the stump. Chrome, gunmetal, ochre, teal, a little magenta; no wood, no green, no red. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien harvester camp: at the back two tall fungal stalks of dusty orange-brown ochre (#b06a48, shade #7f4634, never red) with rounded teal caps (#3f9c93); in front a neat stack of cut ochre stalk logs showing pale round ends, one cut stalk stump, and a small silver-white chrome harvester pod on three short gunmetal legs with a glass dome and one hot magenta cutting beam pointing at the stump. Chrome, gunmetal, ochre, teal, a little magenta; no wood, no green, no red. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:14:36.779Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-martian/lumber-camp-b.png",
+      "rawSheetSha256": "c4dcdc563dbdee9f40370b9866194a2956c0ed4a8c97bc88de15797eb1e45eff",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0748,
+          "footprintWidthShare": 0.5082,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1055,
+          "footprintWidthShare": 0.5167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0787,
+          "footprintWidthShare": 0.5167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.125,
+          "footprintWidthShare": 0.5172,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1521,
+          "footprintWidthShare": 0.5172,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1629,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1799,
+          "footprintWidthShare": 0.5962,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2178,
+          "footprintWidthShare": 0.5424,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0444,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0653,
+          "footprintWidthShare": 0.5263,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0813,
+          "footprintWidthShare": 0.5085,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0802,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0492,
+          "footprintWidthShare": 0.5932,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0964,
+          "footprintWidthShare": 0.5172,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0769,
+          "footprintWidthShare": 0.5667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0928,
+          "footprintWidthShare": 0.5088,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:16:14.049Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a tall ochre fungal stalk with a teal cap and two smaller ones, a stack of cut ochre stalk logs, a cut stump, and a chrome harvester pod with a glass dome on three gunmetal legs, its magenta beam on the logs; the forest's ochre and teal, no red. 3 is close (the beam hides the pod's legs); 11, 12 and 14 have a long beam that leaves the group; 1, 2, 4, 6 to 10, 13 and 15 have no beam; 5 a short one under the pod.",
+        "reviewedAt": "2026-10-07T23:16:43.314Z"
+      }
+    },
+    "sawmill-a": {
+      "id": "sawmill-a",
+      "asset": "chibi-martian-sawmill",
+      "jobId": "b33c0e75-960f-46cf-88e0-7b059c8c55d3",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-martian",
+        "asset": "chibi-martian-sawmill",
+        "subject": "IMPROVEMENT:MARTIAN:SAWMILL",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23808,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/MARTIAN.json",
+            "text": "Subject: an alien laser sawmill, no stalks standing: one low round silver-white chrome dome hut with a round hot magenta window; at its front one big round chrome saw disc with a glowing hot magenta edge standing upright in a gunmetal bench, a red-ochre stalk log lying on the bench; beside it a stack of three red-ochre logs with pale round ends and a pile of thin pale cut slabs. Chrome, gunmetal, red-ochre, magenta; no wood, no green. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien laser sawmill, no stalks standing: one low round silver-white chrome dome hut with a round hot magenta window; at its front one big round chrome saw disc with a glowing hot magenta edge standing upright in a gunmetal bench, a red-ochre stalk log lying on the bench; beside it a stack of three red-ochre logs with pale round ends and a pile of thin pale cut slabs. Chrome, gunmetal, red-ochre, magenta; no wood, no green. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien laser sawmill, no stalks standing: one low round silver-white chrome dome hut with a round hot magenta window; at its front one big round chrome saw disc with a glowing hot magenta edge standing upright in a gunmetal bench, a red-ochre stalk log lying on the bench; beside it a stack of three red-ochre logs with pale round ends and a pile of thin pale cut slabs. Chrome, gunmetal, red-ochre, magenta; no wood, no green. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:12:27.053Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-martian/sawmill-a.png",
+      "rawSheetSha256": "06db742afb83d4dbd3654ab7123453621146a1549104c5cb4f47c661d87c9dd4",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8833,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8833,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8833,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8833,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7797,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6102,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7167,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8333,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:14:38.155Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The plan is right (candidate 1: a chrome dome with a magenta window and an antenna, a magenta-edged saw disc in a gunmetal bench, three logs), but the logs are a saturated red in all sixteen: 166 pixels of candidate 1 are the owner key red, on an unowned building. sawmill-a-edit did not clear it; redone as sawmill-b.",
+        "reviewedAt": "2026-10-07T23:20:36.394Z"
+      }
+    },
+    "sawmill-a-edit": {
+      "id": "sawmill-a-edit",
+      "asset": "chibi-martian-sawmill",
+      "jobId": "6a657e0c-ba2b-4394-a8ae-298c23e2abc9",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "buildings-martian",
+        "asset": "chibi-martian-sawmill",
+        "subject": "IMPROVEMENT:MARTIAN:SAWMILL",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23822,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: the red logs. Every log, the three stacked logs and the log on the bench, becomes a dusty orange-brown ochre (#b06a48) with a darker ochre shade (#7f4634) and pale cream round ends, with no red left. Keep the chrome dome, the magenta window, the antenna, the saw disc with its magenta edge, the gunmetal bench, the size, the outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: the red logs. Every log, the three stacked logs and the log on the bench, becomes a dusty orange-brown ochre (#b06a48) with a darker ochre shade (#7f4634) and pale cream round ends, with no red left. Keep the chrome dome, the magenta window, the antenna, the saw disc with its magenta edge, the gunmetal bench, the size, the outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: the red logs. Every log, the three stacked logs and the log on the bench, becomes a dusty orange-brown ochre (#b06a48) with a darker ochre shade (#7f4634) and pale cream round ends, with no red left. Keep the chrome dome, the magenta window, the antenna, the saw disc with its magenta edge, the gunmetal bench, the size, the outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: the red logs. Every log, the three stacked logs and the log on the bench, becomes a dusty orange-brown ochre (#b06a48) with a darker ochre shade (#7f4634) and pale cream round ends, with no red left. Keep the chrome dome, the magenta window, the antenna, the saw disc with its magenta edge, the gunmetal bench, the size, the outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "sawmill-a",
+          "candidate": 1,
+          "sha256": "90cfcd18fe602c2169c57ca3211591513180bc67f7689701abfee83d1d6cf24c"
+        }
+      },
+      "submittedAt": "2026-10-07T23:15:17.562Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-martian/sawmill-a-edit.png",
+      "rawSheetSha256": "5e4f62282077ec10b510ccc5a9530b2281a64e6d6729982c1dd66bdfa9d238eb",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8833,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8833,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:15:59.815Z",
+      "usageUsd": 0.008031654967202081,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Both candidates keep the dome, the disc and the bench, but the logs stay a red-brown: 115 pixels of each are the owner key red, on an unowned building. Redone as sawmill-b with the forest's ochre by hex in the subject.",
+        "reviewedAt": "2026-10-07T23:20:36.014Z"
+      }
+    },
+    "sawmill-b": {
+      "id": "sawmill-b",
+      "asset": "chibi-martian-sawmill",
+      "jobId": "3b74f47a-5033-4f8f-aee0-559f17ef5ec1",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-martian",
+        "asset": "chibi-martian-sawmill",
+        "subject": "IMPROVEMENT:MARTIAN:SAWMILL",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23823,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/MARTIAN.json",
+            "text": "Subject: an alien laser sawmill, no stalks standing: one low round silver-white chrome dome hut with a round hot magenta window and a small antenna; at its front one big round chrome saw disc with a glowing hot magenta edge standing upright in a gunmetal bench, a stalk log lying on the bench; beside it a stack of three stalk logs with pale round ends. The logs are a dusty orange-brown ochre (#b06a48, shade #7f4634), never red. Chrome, gunmetal, ochre, magenta; no wood, no green. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien laser sawmill, no stalks standing: one low round silver-white chrome dome hut with a round hot magenta window and a small antenna; at its front one big round chrome saw disc with a glowing hot magenta edge standing upright in a gunmetal bench, a stalk log lying on the bench; beside it a stack of three stalk logs with pale round ends. The logs are a dusty orange-brown ochre (#b06a48, shade #7f4634), never red. Chrome, gunmetal, ochre, magenta; no wood, no green. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien laser sawmill, no stalks standing: one low round silver-white chrome dome hut with a round hot magenta window and a small antenna; at its front one big round chrome saw disc with a glowing hot magenta edge standing upright in a gunmetal bench, a stalk log lying on the bench; beside it a stack of three stalk logs with pale round ends. The logs are a dusty orange-brown ochre (#b06a48, shade #7f4634), never red. Chrome, gunmetal, ochre, magenta; no wood, no green. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:17:05.154Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-martian/sawmill-b.png",
+      "rawSheetSha256": "3f921b98285f3d0d1a6aeb51c46c5dda0d05e0a9e5330ad70943c6c92ecc1d86",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0129,
+          "footprintWidthShare": 0.6613,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0161,
+          "footprintWidthShare": 0.6613,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0162,
+          "footprintWidthShare": 0.6613,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0123,
+          "footprintWidthShare": 0.7581,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0227,
+          "footprintWidthShare": 0.6452,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0293,
+          "footprintWidthShare": 0.6613,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0306,
+          "footprintWidthShare": 0.871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0263,
+          "footprintWidthShare": 0.7419,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0334,
+          "footprintWidthShare": 0.629,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0355,
+          "footprintWidthShare": 0.7419,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0267,
+          "footprintWidthShare": 0.6452,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0378,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0101,
+          "footprintWidthShare": 0.6129,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0168,
+          "footprintWidthShare": 0.6129,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0127,
+          "footprintWidthShare": 0.6452,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0299,
+          "footprintWidthShare": 0.629,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:20:04.259Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a low chrome dome hut with a round magenta window and an antenna, a round chrome saw disc with a glowing magenta edge standing in a gunmetal bench at its front, an ochre stalk log on the bench and a stack of three ochre logs with pale ends; no red. The sixteen are one plan; 0 has the cleanest dome and the whole disc. 3, 7, 11, 12 and 14 have rust streaks on the dome; 12, 14 and 15 no log on the bench; 6 and 11 a box under the bench; 1, 2, 4, 5, 8 to 10 and 13 differ by the disc's size.",
+        "reviewedAt": "2026-10-07T23:20:25.774Z"
+      }
+    },
     "solar-b": {
       "id": "solar-b",
       "asset": "chibi-martian-solar-array",
@@ -274,6 +1009,88 @@
       },
       "notes": "Bead pulp_wars-2o7.2: the same candidate as a whole plot (the user: keep the hydroponic farm, fix the cropping). The three troughs with their ends as drawn, seated 3 px above the bottom: 67 x 73 in the 80 x 80 tile. Reviewed at 1:1 and x4.",
       "acceptedAt": "2026-10-05T12:32:18.411Z"
+    },
+    "chibi-martian-lumber-camp": {
+      "id": "chibi-martian-lumber-camp",
+      "subject": "IMPROVEMENT:MARTIAN:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "lumber-camp-b",
+      "candidate": 0,
+      "candidateSha256": "90885a875a5497847dbc8e03056f22fb3a32a736420c7e1b146ac7e7395709d1",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-lumber-camp.png",
+        "sha256": "82df9754f20975dec53ea36b023b2119c1d1cfcdb1c207d89cb1eb63df9e62ae",
+        "pixelSha256": "7b635edc811524ae8427aba5572c7fc0a946770e800c7fc7b64d0816776885b7",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a tall ochre fungal stalk with a teal cap and two smaller ones, a stack of cut ochre stalk logs, a cut stump, and a chrome harvester pod with a glass dome on three gunmetal legs, its magenta beam on the logs; the forest's ochre and teal, no red. 3 is close (the beam hides the pod's legs); 11, 12 and 14 have a long beam that leaves the group; 1, 2, 4, 6 to 10, 13 and 15 have no beam; 5 a short one under the pod.",
+      "acceptedAt": "2026-10-07T23:16:43.314Z"
+    },
+    "chibi-martian-sawmill": {
+      "id": "chibi-martian-sawmill",
+      "subject": "IMPROVEMENT:MARTIAN:SAWMILL",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "sawmill-b",
+      "candidate": 0,
+      "candidateSha256": "ea4e34f78401df7fb66e8d64bde8a6dd5cb6652efbbb28a036f4fd1162bc5973",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-sawmill.png",
+        "sha256": "8056eb579bf560f897603df517222f96fbc3f58990b1e4c18b7b76a4f036ca26",
+        "pixelSha256": "2592ffe0ccd910eec0b426e960d083d430d8c7356e98182920cf491b67ecaf03",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a low chrome dome hut with a round magenta window and an antenna, a round chrome saw disc with a glowing magenta edge standing in a gunmetal bench at its front, an ochre stalk log on the bench and a stack of three ochre logs with pale ends; no red. The sixteen are one plan; 0 has the cleanest dome and the whole disc. 3, 7, 11, 12 and 14 have rust streaks on the dome; 12, 14 and 15 no log on the bench; 6 and 11 a box under the bench; 1, 2, 4, 5, 8 to 10 and 13 differ by the disc's size.",
+      "acceptedAt": "2026-10-07T23:20:25.774Z"
     },
     "chibi-martian-solar-array": {
       "id": "chibi-martian-solar-array",

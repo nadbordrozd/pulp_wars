@@ -459,3 +459,11 @@ gave it its own art.
 The Triceratops is the heavy line role now (`SWORDSMAN`); its rasters, prompts
 and generation records stay under the art slot they were made for,
 `UNIT:DINOSAUR:CATAPULT` and `PORTRAIT:DINOSAUR:CATAPULT`.
+
+## Forest, Lumber Camp and Sawmill (bead `pulp_wars-2yc.38`)
+
+- The forest is the jungle of bead `pulp_wars-2yc.2` (unchanged).
+- **Lumber Camp** (`chibi-dinosaur-lumber-camp`, `lumber-camp-a` candidate 0): two palms and a fern, a stack of brown palm logs and a small tent of tawny spotted hide over cream tusks. It has no axe on purpose.
+- **Sawmill**: the Chopping Block (`chibi-dinosaur-chopping-block`), unchanged: a big stone axe in a stump. So the Dinosaur pair is palms and logs against the axe.
+
+Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, section 12](../FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38). Both buildings keep the names "Lumber camp" and "Sawmill", are drawn by the owner of the territory they stand in, and fall back to the shared pair in the Classic look and the LEGACY art set.

@@ -28,6 +28,28 @@
       },
       "ownerColour": false,
       "bottomMargin": 3
+    },
+    {
+      "id": "chibi-martian-lumber-camp",
+      "subject": "IMPROVEMENT:MARTIAN:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-martian-sawmill",
+      "subject": "IMPROVEMENT:MARTIAN:SAWMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
     }
   ],
   "recipes": [
@@ -76,6 +98,66 @@
       },
       "editInstruction": "Turn each of the three raised beds of soil into a long trough of polished silver chrome metal with a soft blue-grey shade (no brown soil left), and put a small clear pale glass dome with one white highlight over every vegetable plant. Keep the green vegetable plants, the three rows, the empty transparent gaps between them, the outline and the art style exactly the same.",
       "notes": "The Martian Farm as an edit of the accepted Farm candidate (veg-flux-a), so the beds, plants and gaps stay."
+    },
+    {
+      "id": "lumber-camp-a",
+      "asset": "chibi-martian-lumber-camp",
+      "endpoint": "generate-image-v2",
+      "seed": 23807,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the MARTIAN Lumber Camp: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
+    },
+    {
+      "id": "sawmill-a",
+      "asset": "chibi-martian-sawmill",
+      "endpoint": "generate-image-v2",
+      "seed": 23808,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the MARTIAN Sawmill: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
+    },
+    {
+      "id": "lumber-camp-b",
+      "asset": "chibi-martian-lumber-camp",
+      "endpoint": "generate-image-v2",
+      "seed": 23821,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "lumber-camp-a is the plan, but its stalks and logs are a saturated red: 233 pixels of the accepted candidate are the owner key red, on an unowned building. The subject now gives the ochre of the Martian forest by hex (#b06a48, shade #7f4634) and says never red."
+    },
+    {
+      "id": "sawmill-a-edit",
+      "asset": "chibi-martian-sawmill",
+      "endpoint": "edit-image-pixen",
+      "seed": 23822,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "sawmill-a",
+        "candidate": 1
+      },
+      "editInstruction": "Change only one thing: the red logs. Every log, the three stacked logs and the log on the bench, becomes a dusty orange-brown ochre (#b06a48) with a darker ochre shade (#7f4634) and pale cream round ends, with no red left. Keep the chrome dome, the magenta window, the antenna, the saw disc with its magenta edge, the gunmetal bench, the size, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "sawmill-a candidate 1 is the plan, but its logs are a saturated red: 166 pixels of the master are the owner key red, on an unowned building. One edit that names the logs and gives the ochre of the Martian forest by hex."
+    },
+    {
+      "id": "sawmill-b",
+      "asset": "chibi-martian-sawmill",
+      "endpoint": "generate-image-v2",
+      "seed": 23823,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "sawmill-a-edit left the logs red (115 key pixels in both candidates). As for lumber-camp-b, the subject now gives the logs the ochre of the Martian forest by hex and says never red; the plan (dome, antenna, magenta-edged disc in a gunmetal bench, three logs) is sawmill-a candidate 1."
     }
   ]
 }

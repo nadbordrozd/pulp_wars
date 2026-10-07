@@ -48,10 +48,14 @@ const BATCHES = {
   DINOSAUR: "buildings-dinosaur",
   ICE_FOLK: "buildings-ice-folk",
   DWARF: "buildings-dwarf",
+  // Bead pulp_wars-2yc.38: every faction but the Humans has a Lumber Camp
+  // and a Sawmill of its own, so the Goblins and the Candy have a batch too.
+  GOBLIN: "buildings-goblin",
+  CANDY: "buildings-candy",
 } as const;
 
 describe("faction building batches", () => {
-  it("registers exactly the accepted masters of the five batches", async () => {
+  it("registers exactly the accepted masters of the seven batches", async () => {
     const byId = new Map(
       CHIBI_FACTION_BUILDING_ART_ASSETS_V7.map((entry) => [entry.id, entry]),
     );

@@ -25,6 +25,7 @@ import {
 } from "../engine/index";
 import {
   cityArtSubjectV7,
+  factionHasImprovementLookV7,
   monumentArtSubjectV7,
   navalArtSubjectV7,
   territoryGroundV7,
@@ -509,7 +510,8 @@ export function galleryBuildingSubjectV7(
  * True when the factions differ on this building: the row then has one
  * column per faction, else one shared cell. Cities differ, and so do the
  * improvements some faction draws in a look of its own (the Farm, the
- * Windmill and the Sawmill, epic pulp_wars-xdh).
+ * Windmill and the Sawmill, epic pulp_wars-xdh; the Lumber Camp and every
+ * faction's Sawmill, bead pulp_wars-2yc.38).
  */
 export function galleryBuildingPerFactionV7(
   row: GalleryBuildingRowIdV7,
@@ -546,7 +548,9 @@ export function galleryBuildingNameV7(
 /**
  * The ground a building stands on in its cell (null: the art has its own):
  * in a faction's own cell, the ground of that faction's territory (the
- * Undead gloam Grass).
+ * Undead gloam Grass). A faction's own Lumber Camp carries the trees of its
+ * forest and stands on Grass, as on the board (the Forest under a Lumber
+ * Camp is drawn as its ground); the shared one keeps the Forest tile.
  */
 export function galleryBuildingGroundV7(
   row: GalleryBuildingRowIdV7,
@@ -555,7 +559,10 @@ export function galleryBuildingGroundV7(
   if (row === "MINE") return null;
   if (row === "PORT" || row === "SHIPYARD") return "TERRAIN:SHALLOW_WATER";
   return territoryTerrainSubjectV7(
-    row === "LUMBER_CAMP" ? "TERRAIN:FOREST" : "TERRAIN:GRASS",
+    row === "LUMBER_CAMP" &&
+      !factionHasImprovementLookV7("LUMBER_CAMP", faction)
+      ? "TERRAIN:FOREST"
+      : "TERRAIN:GRASS",
     territoryGroundV7(faction),
   );
 }

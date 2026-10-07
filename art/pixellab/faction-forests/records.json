@@ -845,5 +845,341 @@
         "sha256": "fd09aa29cddd07192dc0593412073ec7c0da37febed29726f211888117d9ed32"
       }
     ]
+  },
+  "tundra-a": {
+    "id": "tundra-a",
+    "jobId": "fe0d15c8-c02a-4392-9bcf-d709985221d9",
+    "at": "2026-10-07T22:52:30.342Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a low clump of cold tundra woodland: three stunted dwarf firs of dark blue-green needles (#3f6b62) under thick caps of white snow shaded blue-grey (#bccbdd) on the right, one thin leaning white birch with bare frosted twigs, a frosted grey-blue shrub and a grey rock with pale lichen at the foot; cold muted colours; every tree lighter on its left side; dark blue-slate outline, never black; space above the clump. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, snow patch, slab, background, buildings, people, green leaves.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93601,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a low clump of cold tundra woodland: three stunted dwarf firs of dark blue-green needles (#3f6b62) under thick caps of white snow shaded blue-grey (#bccbdd) on the right, one thin leaning white birch with bare frosted twigs, a frosted grey-blue shrub and a grey rock with pale lichen at the foot; cold muted colours; every tree lighter on its left side; dark blue-slate outline, never black; space above the clump."
+        }
+      ]
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/tundra-a-0.png",
+        "sha256": "3ef9fe4d135d63d71a60ef1ad2bed07f716012aa2fcfe608cae0b3bd0173b4e5"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/tundra-a-1.png",
+        "sha256": "3de5f72b60cde3e666c60bda3c4c31dafe90afc21368664be15487b5d36c50ff"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/tundra-a-2.png",
+        "sha256": "f5ae45ecb0f51bc0e8ba4dd481338881027af2502009521986dce6af39804d8c"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/tundra-a-3.png",
+        "sha256": "b4017d4953fc5d38f8909ca790b8430552bf846645f0e75eb04eab5c472e8f72"
+      }
+    ]
+  },
+  "tundra-b": {
+    "id": "tundra-b",
+    "jobId": "0e60a213-eda7-4a66-832f-f0bafd9cdb15",
+    "at": "2026-10-07T22:54:21.495Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a low clump of cold tundra woodland: two crooked stunted larches with sparse dull gold-brown needles (#a8935a) dusted with snow, one squat dwarf fir of dark blue-green needles (#3f6b62) under a thick cap of white snow shaded blue-grey (#bccbdd) on the right, a frosted grey-blue shrub and two grey rocks with pale lichen at the foot; cold muted colours; every tree lighter on its left side; dark blue-slate outline, never black; space above the clump. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, snow patch, slab, background, buildings, people, green leaves.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93602,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a low clump of cold tundra woodland: two crooked stunted larches with sparse dull gold-brown needles (#a8935a) dusted with snow, one squat dwarf fir of dark blue-green needles (#3f6b62) under a thick cap of white snow shaded blue-grey (#bccbdd) on the right, a frosted grey-blue shrub and two grey rocks with pale lichen at the foot; cold muted colours; every tree lighter on its left side; dark blue-slate outline, never black; space above the clump."
+        }
+      ]
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/tundra-b-0.png",
+        "sha256": "69085cb275e29bfb3c27b98dbe55c12fe7da836f7d3632b011144b6c4110ca6e"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/tundra-b-1.png",
+        "sha256": "d9a29c5a28d102de58fc4edaebd20fcac5cd3dd50e4c2c4fa4c0cc542c2ba81d"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/tundra-b-2.png",
+        "sha256": "a1ae4ea5b8ca4dffc8852a85734a1257c4adbadaeb72592944967483b9d2c815"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/tundra-b-3.png",
+        "sha256": "eb95de31d9452e9c7e2c9d237c5e8bce52545c12410f8aa1e32986b998b8d695"
+      }
+    ]
+  },
+  "candy-f": {
+    "id": "candy-f",
+    "jobId": "67746fd9-fbf0-460b-bc36-5d71f79f0e06",
+    "at": "2026-10-07T22:55:34.569Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a low candy grove, not trees: one striped candy cane with a hooked top (cream, soft strawberry-pink stripes), two round swirl lollipops on thin cream sticks (peach and cream; pink and cream), one gumdrop tree of three stacked gumdrops, and gumdrop bushes at the foot (peach #f0b99a, pink #e39aa6, caramel #d9a56e, cream, one small mint #a9d9c2); soft warm pastels, not saturated; no brown, no chocolate; every sweet lighter on its left; dusty rose-brown outline (#8a5560), never black. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, slab, background, buildings, people, leaves, brown, chocolate.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93506,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a low candy grove, not trees: one striped candy cane with a hooked top (cream, soft strawberry-pink stripes), two round swirl lollipops on thin cream sticks (peach and cream; pink and cream), one gumdrop tree of three stacked gumdrops, and gumdrop bushes at the foot (peach #f0b99a, pink #e39aa6, caramel #d9a56e, cream, one small mint #a9d9c2); soft warm pastels, not saturated; no brown, no chocolate; every sweet lighter on its left; dusty rose-brown outline (#8a5560), never black."
+        }
+      ]
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-f-0.png",
+        "sha256": "823e5e4e5943541dee051364185a682dd48053db9080c6022036bcdc4e07c370"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-f-1.png",
+        "sha256": "62c782d9830a0b9280626e052aa148fedaa3f4aeaae904e7f8b5e7a10519738e"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-f-2.png",
+        "sha256": "e9f78c7e3a517c5d314087745af8db80abf9817ab40ff757cd11d3714e1d25e5"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-f-3.png",
+        "sha256": "397dffabe5d7fb7df84249d893f06a5f3a061251217c9e7e8629267f45e08f92"
+      }
+    ]
+  },
+  "candy-g": {
+    "id": "candy-g",
+    "jobId": "52b11fbf-0a83-4c4c-9a06-0e7affc7b25b",
+    "at": "2026-10-07T22:56:21.412Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a low candy grove, not trees: two big round swirl lollipops on thin cream sticks (strawberry pink and cream; peach and cream), two gumdrop trees of three stacked round gumdrops each (peach #f0b99a; pink #e39aa6), and big plain gumdrop bushes at the foot (caramel #d9a56e, cream, one small mint #a9d9c2); big calm shapes, no candy cane; soft warm pastels, not saturated; no brown, no chocolate; every sweet lighter on its left; dusty rose-brown outline (#8a5560), never black. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, slab, background, buildings, people, leaves, brown, chocolate.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93507,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a low candy grove, not trees: two big round swirl lollipops on thin cream sticks (strawberry pink and cream; peach and cream), two gumdrop trees of three stacked round gumdrops each (peach #f0b99a; pink #e39aa6), and big plain gumdrop bushes at the foot (caramel #d9a56e, cream, one small mint #a9d9c2); big calm shapes, no candy cane; soft warm pastels, not saturated; no brown, no chocolate; every sweet lighter on its left; dusty rose-brown outline (#8a5560), never black."
+        }
+      ]
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-g-0.png",
+        "sha256": "6574d823aa5c3ca2676952b13bbedacc17a0c9d00f9397473e51b18ae5c20ec7"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-g-1.png",
+        "sha256": "00094b6ada551d33877c5bbf29cdba1ceead069b1e814409c365f70f52290ea5"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-g-2.png",
+        "sha256": "a4bf6a8b2d11f0fc77d5539041a9974e0f83b4b0aaf224a89460d14c50ffd41a"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-g-3.png",
+        "sha256": "458d30609d073d8d1a762ac908afcf558bcc225fa7b64b91d3846b2ba6c16168"
+      }
+    ]
+  },
+  "candy-h": {
+    "id": "candy-h",
+    "jobId": "bb18ac8a-d84a-444e-865f-5239858349cc",
+    "at": "2026-10-07T22:58:34.853Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a small low candy grove, two thirds of the image tall, a wide empty margin above: one short striped candy cane with a hooked top (cream, soft strawberry-pink stripes), two round swirl lollipops on short cream sticks (peach and cream; pink and cream), one gumdrop tree of three stacked gumdrops, gumdrop bushes at the foot (peach #f0b99a, pink #e39aa6, caramel #d9a56e, cream, one small mint #a9d9c2); soft warm pastels; every sweet lighter on its left; dusty rose-brown outline. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, slab, background, buildings, people, leaves, brown, chocolate.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93508,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a small low candy grove, two thirds of the image tall, a wide empty margin above: one short striped candy cane with a hooked top (cream, soft strawberry-pink stripes), two round swirl lollipops on short cream sticks (peach and cream; pink and cream), one gumdrop tree of three stacked gumdrops, gumdrop bushes at the foot (peach #f0b99a, pink #e39aa6, caramel #d9a56e, cream, one small mint #a9d9c2); soft warm pastels; every sweet lighter on its left; dusty rose-brown outline."
+        }
+      ]
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-h-0.png",
+        "sha256": "8206fc59054e141ae66c1fdb27f73cbeb02f61875b42bb1245c17de1249b9bc9"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-h-1.png",
+        "sha256": "75c5897fa6026a370d159ee0599172cfc3fa5206871c44fc1349bcf153fb5584"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-h-2.png",
+        "sha256": "d765e70a2421876adbafcb3418fa9c6833a4794ed8c82b5228fe60a1c609eb7f"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-h-3.png",
+        "sha256": "a0c5da0091c4dd1d1b4ea5dd128193bfa019838a65b8569aaf3250b77b32d884"
+      }
+    ]
+  },
+  "candy-i": {
+    "id": "candy-i",
+    "jobId": "4a28688a-5ab6-415b-8b22-51d56919d77d",
+    "at": "2026-10-07T23:00:40.131Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a small low candy grove, two thirds of the image tall, a wide empty margin above: two short striped candy canes with hooked tops (cream with soft pink stripes; cream with peach stripes), one round pink and cream swirl lollipop on a short cream stick, two gumdrop trees of three stacked gumdrops (peach #f0b99a; pink #e39aa6), gumdrop bushes at the foot (caramel #d9a56e, cream, one small mint #a9d9c2); soft warm pastels; every sweet lighter on its left; dusty rose-brown outline. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, slab, background, buildings, people, leaves, brown, chocolate.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93509,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a small low candy grove, two thirds of the image tall, a wide empty margin above: two short striped candy canes with hooked tops (cream with soft pink stripes; cream with peach stripes), one round pink and cream swirl lollipop on a short cream stick, two gumdrop trees of three stacked gumdrops (peach #f0b99a; pink #e39aa6), gumdrop bushes at the foot (caramel #d9a56e, cream, one small mint #a9d9c2); soft warm pastels; every sweet lighter on its left; dusty rose-brown outline."
+        }
+      ]
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-i-0.png",
+        "sha256": "8beb743fe836e34c44cdeea083bfb6d8cc25a431c118bdf5d14554de6c6bbf5f"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-i-1.png",
+        "sha256": "bcb298619f1d117d93d396799cb49cdf9667bcc081f1203f715d77aa26771970"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-i-2.png",
+        "sha256": "0791691775b57f4eb84a25379781edc418f418d359cdf70d1ce4a8023daed1cb"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-i-3.png",
+        "sha256": "8e1b48a3da29fd22744e40fd888900869b49a43c1b5074d6de46eaa4a1a99755"
+      }
+    ]
   }
 }

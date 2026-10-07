@@ -2,6 +2,173 @@
   "schemaVersion": 1,
   "batch": "buildings-dwarf",
   "recipes": {
+    "lumber-camp-a": {
+      "id": "lumber-camp-a",
+      "asset": "chibi-dwarf-lumber-camp",
+      "jobId": "d9418dc5-ae1d-477a-9952-383d2d1f4398",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-dwarf",
+        "asset": "chibi-dwarf-lumber-camp",
+        "subject": "IMPROVEMENT:DWARF:LUMBER_CAMP",
+        "faction": "DWARF",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23811,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DWARF.json",
+            "text": "Subject: a dwarf logging camp: at the back two sturdy dark pine trees and one mossy grey boulder; in front a big stack of thick pine logs bound with a dark iron band showing round pale ends, a stump with a big double-headed dark iron axe stuck in it, and a small copper lantern on a short iron post. Dark pine green, grey stone, dark iron, muted copper, brown bark; dark outline, never black. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a dwarf logging camp: at the back two sturdy dark pine trees and one mossy grey boulder; in front a big stack of thick pine logs bound with a dark iron band showing round pale ends, a stump with a big double-headed dark iron axe stuck in it, and a small copper lantern on a short iron post. Dark pine green, grey stone, dark iron, muted copper, brown bark; dark outline, never black. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a dwarf logging camp: at the back two sturdy dark pine trees and one mossy grey boulder; in front a big stack of thick pine logs bound with a dark iron band showing round pale ends, a stump with a big double-headed dark iron axe stuck in it, and a small copper lantern on a short iron post. Dark pine green, grey stone, dark iron, muted copper, brown bark; dark outline, never black. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:09:21.963Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dwarf/lumber-camp-a.png",
+      "rawSheetSha256": "ef4ab60ed887878ffac3022ad82b42020ee0a64e25605161a147c695dfd2fad3",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7581,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0054,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9194,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9194,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:11:59.764Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "Candidate 1 of 16: two sturdy dark pines and a mossy grey boulder, a stack of thick pine logs bound with a dark iron band, a big iron axe in a stump and a copper lantern on an iron post: the Dwarf pines and boulders with dwarf ironwork. The sixteen are one plan; 1 has the mossiest boulder and the clearest axe. 0, 2, 7, 8, 11 and 14 have a bare boulder; 15 a stump with no axe; 3 to 6, 9, 10, 12 and 13 differ by a few pixels of moss and lantern.",
+        "reviewedAt": "2026-10-07T23:12:43.831Z"
+      }
+    },
     "mushroom-flux-b": {
       "id": "mushroom-flux-b",
       "asset": "chibi-dwarf-mushroom-farm",
@@ -469,6 +636,173 @@
         "reviewedAt": "2026-10-05T12:44:23.520Z"
       }
     },
+    "sawmill-a": {
+      "id": "sawmill-a",
+      "asset": "chibi-dwarf-sawmill",
+      "jobId": "4269d077-358c-4066-9d20-bfeb76f5343e",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-dwarf",
+        "asset": "chibi-dwarf-sawmill",
+        "subject": "IMPROVEMENT:DWARF:SAWMILL",
+        "faction": "DWARF",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23812,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DWARF.json",
+            "text": "Subject: a dwarf steam sawmill, no trees: one squat mill house of warm grey stone blocks with a muted copper roof and a short dark iron chimney puffing one small white steam puff; at its front one big round steel saw blade with pointed teeth standing upright in a bench beside a brass cog wheel, a pine log lying on the bench; beside it a stack of pale planks. Grey stone, copper, brass, dark iron, pale wood; dark outline. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a dwarf steam sawmill, no trees: one squat mill house of warm grey stone blocks with a muted copper roof and a short dark iron chimney puffing one small white steam puff; at its front one big round steel saw blade with pointed teeth standing upright in a bench beside a brass cog wheel, a pine log lying on the bench; beside it a stack of pale planks. Grey stone, copper, brass, dark iron, pale wood; dark outline. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a dwarf steam sawmill, no trees: one squat mill house of warm grey stone blocks with a muted copper roof and a short dark iron chimney puffing one small white steam puff; at its front one big round steel saw blade with pointed teeth standing upright in a bench beside a brass cog wheel, a pine log lying on the bench; beside it a stack of pale planks. Grey stone, copper, brass, dark iron, pale wood; dark outline. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:12:27.065Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dwarf/sawmill-a.png",
+      "rawSheetSha256": "973c3e57bb869fa579f9987afd2259725d55e9d9503fc9ac18b4115aef5a761d",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.3114,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3163,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3051,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3562,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.31,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2956,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3007,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3141,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2606,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2874,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3387,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.331,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2874,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2559,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2541,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2695,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-07T23:14:25.808Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 7,
+        "notes": "Candidate 7 of 16: a squat mill house of warm grey stone blocks with a muted copper roof, a dark iron chimney with a puff of white steam, a steel saw blade in the arch at its front over a pine log on the bench, a brass cog on the gable and another by the bench, and a stack of pale planks; the steam and the gable cog make it the Dwarf one. The sixteen are one plan: 10 has the gable cog and a thinner steam puff; 4, 12 and 14 a shield on the gable instead; 1, 6, 9, 11 and 15 little or no steam; 0, 2, 3, 5, 8 and 13 no gable cog.",
+        "reviewedAt": "2026-10-07T23:14:50.354Z"
+      }
+    },
     "steam-pump-b": {
       "id": "steam-pump-b",
       "asset": "chibi-dwarf-steam-pump",
@@ -558,6 +892,47 @@
     }
   },
   "assets": {
+    "chibi-dwarf-lumber-camp": {
+      "id": "chibi-dwarf-lumber-camp",
+      "subject": "IMPROVEMENT:DWARF:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "lumber-camp-a",
+      "candidate": 1,
+      "candidateSha256": "7fdb293e6bbbf15c9e44594650f938776b005a41ef0b1bcb27d937cdb6fe833e",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dwarf-lumber-camp.png",
+        "sha256": "5ab4f24aca90362c0995c50476a1686efdcdf38922d4f8b21740d4159fdf9075",
+        "pixelSha256": "ad51a59e6b07f5d5e212d5850cf06ecacecc46fa1fe2181eea0165963bf5f445",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 1 of 16: two sturdy dark pines and a mossy grey boulder, a stack of thick pine logs bound with a dark iron band, a big iron axe in a stump and a copper lantern on an iron post: the Dwarf pines and boulders with dwarf ironwork. The sixteen are one plan; 1 has the mossiest boulder and the clearest axe. 0, 2, 7, 8, 11 and 14 have a bare boulder; 15 a stump with no axe; 3 to 6, 9, 10, 12 and 13 differ by a few pixels of moss and lantern.",
+      "acceptedAt": "2026-10-07T23:12:43.831Z"
+    },
     "chibi-dwarf-mushroom-farm": {
       "id": "chibi-dwarf-mushroom-farm",
       "subject": "IMPROVEMENT:DWARF:FARM",
@@ -598,6 +973,47 @@
       },
       "notes": "Bead pulp_wars-2o7.2, the Mushroom Farm redone: four big spotted mushrooms of different heights (russet and tan caps, cream stalks), button mushrooms, a small spade and a crooked post on one round bed of dark mulch; 54 x 59 in the 80 x 80 tile, ground all round. The edit rounded the square block and removed the green; the bed is still thick (it reads as a slice of tree stump) and the spade lost its steel. At 1:1 it reads as mushrooms at a glance. Both candidates are identical.",
       "acceptedAt": "2026-10-05T12:44:23.742Z"
+    },
+    "chibi-dwarf-sawmill": {
+      "id": "chibi-dwarf-sawmill",
+      "subject": "IMPROVEMENT:DWARF:SAWMILL",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "sawmill-a",
+      "candidate": 7,
+      "candidateSha256": "83cf63ca1e7303b3ef5cc0f49246d234865699d2225416e4fc6c2ce1414e42cf",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dwarf-sawmill.png",
+        "sha256": "1cb57f38d46953440fda8d68491127280283aec1edace729af9d536a402a482c",
+        "pixelSha256": "f93ac71a4b8ea59bec97b623b3faca1af1f68811423ec9846af0f5f12c7baebd",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 7 of 16: a squat mill house of warm grey stone blocks with a muted copper roof, a dark iron chimney with a puff of white steam, a steel saw blade in the arch at its front over a pine log on the bench, a brass cog on the gable and another by the bench, and a stack of pale planks; the steam and the gable cog make it the Dwarf one. The sixteen are one plan: 10 has the gable cog and a thinner steam puff; 4, 12 and 14 a shield on the gable instead; 1, 6, 9, 11 and 15 little or no steam; 0, 2, 3, 5, 8 and 13 no gable cog.",
+      "acceptedAt": "2026-10-07T23:14:50.354Z"
     },
     "chibi-dwarf-steam-pump": {
       "id": "chibi-dwarf-steam-pump",

@@ -572,3 +572,11 @@ own art.
 The Mammoth is the heavy line role now (`SWORDSMAN`); its rasters, prompts and
 generation records stay under the art slot they were made for,
 `UNIT:ICE_FOLK:GUARD` and `PORTRAIT:ICE_FOLK:GUARD`.
+
+## Forest, Lumber Camp and Sawmill (bead `pulp_wars-2yc.38`)
+
+- **The forest is a tundra forest now**: stunted dwarf firs under thick snow, leaning white birches, crooked gold-brown larches, frosted shrubs and lichen rocks (recipes `tundra-a` and `tundra-b`, five clumps). It is drawn with its snow, so the board puts no `iceFolkSnowCapsV7` caps on it (they still cap every other tree and peak on Snow); the shade under it is a cold blue-slate.
+- **Lumber Camp** (`chibi-ice-folk-lumber-camp`, `lumber-camp-a` candidate 0): two snow-capped dwarf firs, a cream hide tent on bone poles, a stack of pale birch logs and a stump with an ice-blue axe, four pieces standing apart.
+- **Sawmill** (`chibi-ice-folk-sawmill`, `sawmill-a` candidate 3): a pale timber cabin under a thick snow roof, a round toothed blade of ice blue on a timber bench, and a log on a small hoist. The ice blue is the faction's one accent.
+
+Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, section 12](../FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38). Both buildings keep the names "Lumber camp" and "Sawmill", are drawn by the owner of the territory they stand in, and fall back to the shared pair in the Classic look and the LEGACY art set.

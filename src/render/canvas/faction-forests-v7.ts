@@ -20,9 +20,12 @@ import {
  * user, 2026-10-05: "make per-faction forests the way there is per faction
  * grass." Inside a faction's territory a Forest cell is drawn with that
  * faction's own trees, and turns with the territory when a city changes
- * hands. Humans keep the default Forest. Ice Folk territory is Snow by
- * rule, and the snow caps already make its pines snow-laden, so it has no
- * set of its own.
+ * hands. Humans keep the default Forest. The Ice Folk have a tundra forest
+ * (bead pulp_wars-2yc.38; the user, 2026-10-07: "ice folk forest needs to
+ * be regenerated as a tundra forest instead of just modifying the default
+ * forest"): snow-laden dwarf firs, birches and larches over the Snow their
+ * territory is by rule. Until that bead their Forest was the default one
+ * under the snow caps the board draws on every tree over Snow.
  *
  * Everything here is presentation, in the live look of the CHIBI art set
  * only. To turn it off: set FACTION_FORESTS_ENABLED_V7 to false, or open
@@ -77,6 +80,8 @@ export const FACTION_FOREST_IDS_V7 = [
   "MARTIAN",
   "DWARF",
   "CANDY",
+  // Last, so the set numbers of the six before it stay what they were.
+  "ICE_FOLK",
 ] as const;
 
 export type FactionForestIdV7 = (typeof FACTION_FOREST_IDS_V7)[number];
@@ -98,7 +103,18 @@ export const FACTION_FOREST_FLOOR_V7: Readonly<
   MARTIAN: [78, 40, 26, 34],
   DWARF: [44, 50, 38, 34],
   CANDY: [36, 96, 84, 30],
+  // A cold blue-slate shadow on the Snow.
+  ICE_FOLK: [44, 66, 92, 30],
 };
+
+/**
+ * The forests whose trees are drawn with snow on them (the tundra forest):
+ * the board draws no snow caps over their rasters, where it caps every
+ * other tree that stands on Snow.
+ */
+export const FACTION_FOREST_SNOW_LADEN_V7: readonly FactionForestIdV7[] = [
+  "ICE_FOLK",
+];
 
 export function factionForestIdV7(
   faction: FactionIdV7 | null | undefined,
@@ -287,9 +303,17 @@ export function createFactionForestArtV7(input: {
       const art = artOf(set);
       if (art === null) return;
       filled.add(set);
-      for (const [index, clump] of art.clumps.entries())
+      for (const [index, clump] of art.clumps.entries()) {
         clumps[set * FACTION_FOREST_STRIDE_V7 + index] = clump;
+        if (ladenSet.includes(set)) laden.add(clump.image as object);
+      }
     };
+    // The tundra forest carries its own snow: its rasters are remembered
+    // so the board draws no snow caps over them.
+    const ladenSet = FACTION_FOREST_SNOW_LADEN_V7.map(
+      (id) => FACTION_FOREST_IDS_V7.indexOf(id) + 1,
+    );
+    const laden = new WeakSet<object>();
     const floors = new Map<string, CanvasImageSource | null>();
     let sets: ReadonlyMap<string, number> = new Map();
     const cellsByEntries = new WeakMap<
@@ -306,13 +330,20 @@ export function createFactionForestArtV7(input: {
       clumps,
       body(shape, variant) {
         const [set, own] = split(variant);
-        return artOf(set)?.body(shape, own) ?? [];
+        const parts = artOf(set)?.body(shape, own) ?? [];
+        if (ladenSet.includes(set))
+          for (const part of parts) laden.add(part.image as object);
+        return parts;
       },
       band(shape, variant, column, row) {
         const [set, own] = split(variant);
-        return artOf(set)?.band(shape, own, column, row) ?? null;
+        const image = artOf(set)?.band(shape, own, column, row) ?? null;
+        if (image !== null && ladenSet.includes(set))
+          laden.add(image as object);
+        return image;
       },
       glade: (ground) => base.glade(ground),
+      snowLaden: (image) => laden.has(image as object),
       floor(at, edges) {
         const set = sets.get(`${at.x},${at.y}`) ?? 0;
         const id = FACTION_FOREST_IDS_V7[set - 1];

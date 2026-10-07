@@ -307,3 +307,11 @@ it its own art.
 - LEGACY (`?art=legacy`) and the developer option "Classic look" have no Wight
   art: there it falls back like every faction subject, to the Human unit of
   the slot under the Undead badge.
+
+## Forest, Lumber Camp and Sawmill (bead `pulp_wars-2yc.38`)
+
+- The forest is the dead wood of bead `pulp_wars-2yc.14` (unchanged).
+- **Lumber Camp** (`chibi-undead-lumber-camp`, `lumber-camp-a` candidate 2): two bare ashen dead trees, a stack of pale grey logs, a rusty axe in a stump and one bone.
+- **Sawmill** (`chibi-undead-sawmill`, `sawmill-a` candidate 9): a dark slate plank shed with a near-black roof and a violet window, a round toothed blade of ivory bone on a slate bench, a stack of ashen logs. It is dark; the bone blade and the window carry it on the ashen ground.
+
+Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, section 12](../FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38). Both buildings keep the names "Lumber camp" and "Sawmill", are drawn by the owner of the territory they stand in, and fall back to the shared pair in the Classic look and the LEGACY art set.

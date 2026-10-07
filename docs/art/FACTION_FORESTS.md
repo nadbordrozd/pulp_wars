@@ -21,16 +21,16 @@ board host builds no faction art, and every Forest is drawn as before.
 
 ## The forests
 
-| Faction   | Forest                                                                                                                                                   | Clumps | Softening |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | --------- |
-| Humans    | The default Forest.                                                                                                                                      | 4      | default   |
-| Undead    | A dead wood (bead `pulp_wars-2yc.14`): thick gnarled trunks of ashen grey bark with clawed bare branches, broken stumps and a few pale cobwebs.          | 4      | calmer    |
-| Goblins   | Scrub: crooked half-dead trees with sparse olive leaves, dry twig bushes, sawn stumps.                                                                   | 4      | calmer    |
-| Dinosaurs | Jungle: leaning palms, cycads and fern fronds in deep greens.                                                                                            | 3      | default   |
-| Martians  | Alien growths: red-ochre fungal stalks with teal caps and teal bulbs at the foot.                                                                        | 3      | calmer    |
-| Dwarves   | Sturdy dark pines among mossy grey boulders.                                                                                                             | 3      | default   |
-| Candy     | A candy grove, no trees: striped candy canes, caramel and raspberry swirl lollipops, chocolate sticks and gumdrop bushes (bead `pulp_wars-2yc.13`).      | 4      | default   |
-| Ice Folk  | None of their own. Their territory is Snow by rule, and the snow caps the board already draws on every tree over Snow make the default pines snow-laden. | n/a    | n/a       |
+| Faction   | Forest                                                                                                                                                              | Clumps | Softening |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | --------- |
+| Humans    | The default Forest.                                                                                                                                                 | 4      | default   |
+| Undead    | A dead wood (bead `pulp_wars-2yc.14`): thick gnarled trunks of ashen grey bark with clawed bare branches, broken stumps and a few pale cobwebs.                     | 4      | calmer    |
+| Goblins   | Scrub: crooked half-dead trees with sparse olive leaves, dry twig bushes, sawn stumps.                                                                              | 4      | calmer    |
+| Dinosaurs | Jungle: leaning palms, cycads and fern fronds in deep greens.                                                                                                       | 3      | default   |
+| Martians  | Alien growths: red-ochre fungal stalks with teal caps and teal bulbs at the foot.                                                                                   | 3      | calmer    |
+| Dwarves   | Sturdy dark pines among mossy grey boulders.                                                                                                                        | 3      | default   |
+| Candy     | A candy grove, no trees: pink-striped candy canes, peach and pink swirl lollipops, gumdrop trees and gumdrop bushes, in warm pastels (bead `pulp_wars-2yc.38`).     | 5      | default   |
+| Ice Folk  | A tundra forest (bead `pulp_wars-2yc.38`): stunted dwarf firs under thick snow, leaning white birches, crooked gold-brown larches, frosted shrubs and lichen rocks. | 5      | default   |
 
 Each faction's forest is a whole piece set of the
 [composed forests](COMPOSED_FORESTS.md): the same twenty piece shapes (three
@@ -41,7 +41,9 @@ that a clearing keeps a single clump are the default Forest's.
 
 ### How the sets are made
 
-The clumps are PixelLab candidates: 14 calls, 4 candidates each, 21 used.
+The clumps are PixelLab candidates: 20 calls, 4 candidates each, 27 used
+(14 calls until bead `pulp_wars-2yc.38`, which added six: two for the tundra
+forest and four for the warmer candy grove).
 The recipes, the credential-free requests, the hash and the review of every
 candidate are in `art/pixellab/faction-forests/` (`recipes.json`,
 `records.json`, `raw/`), made with the style-image generator of the mountain
@@ -72,7 +74,7 @@ npm run art:faction-forests -- sheet <out.png>
   per trunk and puts the cobweb on the left: three of its clumps are used.
   `undead-e`, styled from `undead-c-0`, gave the fourth. A description is
   at most 2000 characters; a longer one is refused by PixelLab.
-- **The candy grove** (bead `pulp_wars-2yc.13`; the user, 2026-10-06: "make
+- **The first candy grove** (bead `pulp_wars-2yc.13`; the user, 2026-10-06: "make
   candy forest into candy canes and lollipops and such"). Recipes
   `candy-c`, `-d` and `-e` replace the sweet trees of `candy-a` and `-b`,
   whose candidates stay in the run but are no longer used. The palette is
@@ -80,19 +82,51 @@ npm run art:faction-forests -- sheet <out.png>
   is mint) and no pink on white. A clump of three canes was left out:
   packed, its stripes made a busy thicket. Two of the four clumps carry one
   striped cane each.
+- **The candy grove is warm pastels now** (bead `pulp_wars-2yc.38`; the
+  user, 2026-10-07: "the candy forest is too brown. regenerate in warmer
+  colors. the colors should be not super saturated so the forest is a
+  background but the hues should make it look like yummy sweets"). The
+  subject is the same (canes, lollipops, gumdrops); the chocolate sticks
+  are gone, the sticks are cream, the outline is a dusty rose-brown, and
+  the colours are strawberry pink, peach, caramel and cream with a mint
+  gumdrop here and there. `candy-f` gave the look, but its four
+  clumps are 95 to 101 px tall (a clump may be 86); `candy-h` asks the same
+  sweets "small and low, two thirds of the image tall" and its four clumps
+  (53 to 63 px) are the set, with `candy-g-1` (gumdrop trees and a peach
+  lollipop, no cane). `candy-i` is the palest of all, but the measure
+  reads three of its clumps as lit from the right (-3.4 to -16.7, pale
+  canes on the right) and the bake refuses them; its fourth has a blue
+  cane. The recipes of bead `pulp_wars-2yc.13` (`candy-c`, `-d`, `-e`)
+  stay in the run; no candidate of theirs is used now.
+- **The Ice Folk tundra forest** (bead `pulp_wars-2yc.38`; the user,
+  2026-10-07: "ice folk forest needs to be regenerated as a tundra forest
+  instead of just modifying the default forest"). Recipes `tundra-a` and
+  `tundra-b`, made without a style image so the default Forest's green is
+  not copied: all eight candidates are tundra clumps, and five are the
+  set. `tundra-a-1` is left out (88 px tall, over the 86 a clump may be)
+  and
+  `tundra-b-0` measures lit from the right (-4.0); `tundra-b-3` is two
+  bare larches, thin for a wood. Used: `tundra-a` 0, 2 and 3 (firs with a
+  birch) and `tundra-b` 1 and 2 (a larch among firs), faces -1.0 to
+  +30.3. The foliage is lifted toward the Ice Folk ground,
+  which is no master: the board washes Grass with the Snow white at 42%,
+  and the bake derives that tile into
+  `art/pixellab/faction-forests/ground/ice-folk-snow.png` (the `ground`
+  member of the set in `sets.json`; `check` re-derives it).
 - **Light.** Every recipe carries the fragment `light-south-west` (the sun
   at the bottom left, the user 2026-10-05). **Nothing is mirrored**: a
   mirrored clump is lit from the other side. The default set still stamps
   its clumps both ways; that is unchanged here.
 - **Lighting QA.** `scripts/art/lighting-qa.ts` measures every clump (left
   half minus right half of every run of paint, in luma points). The bake
-  refuses a clump lit from the right (-1.5 or less). The 21 clumps measure
-  -1.5 to +30.5: 14 from the left, 7 flat, none from the right (the Undead
-  four: +0.1, +5.5, +4.9, +3.9). On foliage
+  refuses a clump lit from the right (-1.5 or less). The 27 clumps measure
+  -1.0 to +30.5: 22 from the left, 5 flat, none from the right (the Undead
+  four: +0.1, +5.5, +4.9, +3.9; the candy five: +2.5 to +14.7; the tundra
+  five: -1.0 to +30.3). On foliage
   the measure is weak (the default clumps themselves measure -4.9 to +5.0)
-  and on sweets of two colours it reads colour as light (three of the
-  candy grove's four clumps are flat on it): five of its twelve candidates
-  were left out on it all the same.
+  and on sweets of two colours it reads colour as light: it left out
+  five of the first candy grove's twelve candidates, and `candy-f-2` and
+  three clumps of `candy-i` of the second.
 - **The bake** is the default Forest's
   ([`chibi-forest-pieces.ts`](../../scripts/art/chibi-forest-pieces.ts),
   now with a piece set as a parameter): a raw candidate is trimmed and
@@ -107,7 +141,7 @@ npm run art:faction-forests -- sheet <out.png>
   ground (default 16%), and move the outer outline 30% toward the ground,
   which the default set never does.
 
-The masters are in `public/assets/chibi/forest/<faction>/` (141 files), the
+The masters are in `public/assets/chibi/forest/<faction>/` (167 files), the
 record and runtime manifest is `src/assets/faction-forest-pieces.json`, and
 the preload inventory lists each set with its faction.
 
@@ -145,7 +179,9 @@ that has the faction sets behind the default one:
 - **Fog.** The entries of unexplored cells are never read. Where a wood
   runs into the fog its pieces are packed with the map's own Forest cells
   behind the cloud and drawn only over explored cells:
-  [TERRAIN_AT_THE_FOG.md](TERRAIN_AT_THE_FOG.md).
+  [TERRAIN_AT_THE_FOG.md](TERRAIN_AT_THE_FOG.md). The tundra forest too:
+  `GHOST_FOREST_FACTIONS_V7` names `ICE_FOLK`, and a ghost takes its
+  faction from the territory beside it, not from the Snow on the ground.
 - **A capture ripples.** The cells change one after another, each with a
   small hop: [TERRITORY_RIPPLE.md](TERRITORY_RIPPLE.md).
 
@@ -163,12 +199,19 @@ CHROME_PATH=... npx tsx scripts/art/look-switch-review.ts scripts/art/faction-fo
 Before and after pairs: for each faction, its forested territory beside the
 Human one with a wood across the border, and an eight-seat map.
 
+The scenes of bead `pulp_wars-2yc.38`
+(`scripts/art/faction-buildings/forest-building-scenes.ts`, run the same
+way) add a Lumber Camp and a Sawmill on Forest in both territories, the
+faction's units in the wood and beside it, and an Ice Folk scene whose
+tundra wood runs into the fog.
+
 ## Known limits
 
 - **A clearing is one single piece.** A Forest cell with a Treasure, a
   Grave, a curiosity, a Field Defense or a building draws a 1x1 piece of
   the faction's set (one or two clumps), not a clump chosen for it. A
-  Lumber Camp's own art still has the default pines.
+  Lumber Camp carries its faction's trees in its own art since bead
+  `pulp_wars-2yc.38` ([faction buildings, section 12](FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38)).
 - **The Undead and Goblin forests are the busiest.** Bare branches and twig
   scrub are many thin lines; even softened they are less calm than a
   canopy. The Undead trunks are thicker than the first set's twigs, but a
@@ -179,12 +222,15 @@ Human one with a wood across the border, and an eight-seat map.
   `#7f9a86`). The trees stand off the grey-green ground by that tint.
 - **The mist did not come.** The recipes ask for a wisp of mist round the
   roots; the used clumps have pale feet at most.
-- **The Candy grove is the lightest**, and its caramel is near the
-  Candy units' own toffee; the softening keeps it paler than they are.
+- **The Candy grove is the lightest**: pale pinks and peach on the mint
+  ground. Its mint gumdrops nearly vanish on that ground, and its pink is
+  the pink of the Candy cities' frosting.
 - **Fewer clumps than the default set draws from** (three or four, never
   mirrored, against four mirrored), so a large wood repeats sooner.
-- **The Ice Folk have no set.** Their forest is the default one under snow
-  caps.
+- **The tundra forest is drawn with its snow**, so the board puts no snow
+  caps on it (`FACTION_FOREST_SNOW_LADEN_V7`); a Human wood on Snow (under
+  a Blizzard) is still capped. Its firs are the size of the Dwarf pines,
+  not dwarfed; its white birches and frosted shrubs are faint on the Snow.
 - The Undead ground under their trees is the Undead terrain tile (the
   ashen ground, see [faction grass](FACTION_GRASS.md)), and the shade under
   them is the default dark green.

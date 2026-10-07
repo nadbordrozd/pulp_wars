@@ -13,8 +13,10 @@ import { FACTION_IMPROVEMENT_LOOKS_V7 } from "../assets/chibi-art-v7";
  * rules, the numbers and every rules text keep the generic building, and the
  * one flavour line ends "Counts as a Farm." so the vocabulary stays
  * learnable. The art subjects are in src/assets/chibi-ui-art-v7.ts
- * (factionImprovementSubjectV7); this table must name exactly the buildings
- * FACTION_IMPROVEMENT_LOOKS_V7 lists (a test checks it).
+ * (factionImprovementSubjectV7). Every building named here has a look in
+ * FACTION_IMPROVEMENT_LOOKS_V7, and every look but the Lumber Camps and the
+ * Sawmills of bead pulp_wars-2yc.38 is named here: those are drawn per
+ * faction and keep their names (a test checks both).
  */
 export interface FactionBuildingV7 {
   /** The faction's name of the building ("Graveyard"). */
@@ -126,12 +128,16 @@ export function territoryFactionV7(
   );
 }
 
-/** True when a seat's faction has a building look of its own. */
+/**
+ * True when a seat's faction names a building of its own (the Help line is
+ * about the names). A faction whose only looks are its Lumber Camp and
+ * Sawmill, which keep their names, does not count.
+ */
 export function matchHasFactionBuildingsV7(
   view: Pick<PlayerViewV7, "players">,
 ): boolean {
   return view.players.some(
-    (player) => FACTION_IMPROVEMENT_LOOKS_V7[player.faction] !== undefined,
+    (player) => FACTION_BUILDINGS[player.faction] !== undefined,
   );
 }
 

@@ -452,15 +452,25 @@ export type MartianArtRoleV7 = UndeadArtRoleV7;
  * docs/art/FACTION_BUILDINGS.md, section 3). Purely visual: the look follows
  * the owner of the territory the improvement stands in, and every other
  * improvement of every faction is the shared building.
+ *
+ * The Lumber Camp and the Sawmill (bead pulp_wars-2yc.38; the user,
+ * 2026-10-07: "lumber camps should be different per faction - depending on
+ * the native forest skin. ditto for sawmills") are every faction's own but
+ * the Humans': a camp among the trees of the faction's forest, a mill in its
+ * building materials. They keep the names "Lumber camp" and "Sawmill" (the
+ * Dinosaur Chopping Block was named before); FACTION_BUILDINGS of
+ * src/render/faction-buildings-v7.ts names only the renamed ones.
  */
 export const FACTION_IMPROVEMENT_LOOKS_V7: Readonly<
   Partial<Record<FactionIdV7, readonly ImprovementIdV7[]>>
 > = {
-  UNDEAD: ["FARM", "WINDMILL"],
-  DINOSAUR: ["WINDMILL", "SAWMILL"],
-  MARTIAN: ["FARM", "WINDMILL"],
-  ICE_FOLK: ["FARM"],
-  DWARF: ["FARM", "WINDMILL"],
+  UNDEAD: ["FARM", "WINDMILL", "LUMBER_CAMP", "SAWMILL"],
+  GOBLIN: ["LUMBER_CAMP", "SAWMILL"],
+  DINOSAUR: ["WINDMILL", "SAWMILL", "LUMBER_CAMP"],
+  MARTIAN: ["FARM", "WINDMILL", "LUMBER_CAMP", "SAWMILL"],
+  ICE_FOLK: ["FARM", "LUMBER_CAMP", "SAWMILL"],
+  DWARF: ["FARM", "WINDMILL", "LUMBER_CAMP", "SAWMILL"],
+  CANDY: ["LUMBER_CAMP", "SAWMILL"],
 };
 
 export type FactionImprovementSubjectV7 =

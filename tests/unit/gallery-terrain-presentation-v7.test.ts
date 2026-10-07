@@ -62,21 +62,21 @@ describe("Gallery terrain presentation", () => {
     }
   });
 
-  it("marks a faction without its own forest plainly, and slots one in where it exists", () => {
-    // Six factions have a forest of their own (pulp_wars-2yc.2); Ice Folk
-    // territory is Snow, and its pines are the default ones under caps.
-    expect(galleryTerrainCellV7("FOREST", "ICE_FOLK")).toEqual({
-      kind: "SAME",
-      row: "FOREST",
-      faction: "ICE_FOLK",
-    });
+  it("shows every faction's own forest, the tundra forest on the Snow", () => {
+    // Seven factions have a forest of their own (pulp_wars-2yc.2; the Ice
+    // Folk tundra forest since pulp_wars-2yc.38, which stands on Snow).
+    expect(FACTION_FOREST_IDS_V7).toContain("ICE_FOLK");
+    const tundra = galleryTerrainCellV7("FOREST", "ICE_FOLK");
+    expect(
+      tundra.kind === "OWN" && tundra.swatch.layers.map((layer) => layer.kind),
+    ).toEqual(["SUBJECT", "SNOW", "RASTER"]);
     for (const faction of FACTION_FOREST_IDS_V7) {
       expect(galleryTerrainCellV7("FOREST", faction).kind).toBe("OWN");
       const pieces = galleryTerrainPiecesV7("FOREST", faction);
       const set = FACTION_FOREST_ART_SETS_V7[faction];
       // A single piece on the faction's ground, then the whole set.
       expect(pieces[0]?.box.kind).toBe("TILE");
-      expect(pieces[0]?.layers).toHaveLength(2);
+      expect(pieces[0]?.layers).toHaveLength(faction === "ICE_FOLK" ? 3 : 2);
       expect(pieces.length).toBe(1 + set.pieces.length + set.clumps.length);
       const urls = pieces.flatMap(galleryTerrainRasterUrlsV7);
       for (const piece of [...set.pieces, ...set.clumps])

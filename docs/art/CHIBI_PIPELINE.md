@@ -1556,6 +1556,35 @@ snow-walled plot and the soil patch of Fertile Ground
 - **Red on an unowned piece** is caught by the owner-key check of the
   tests (the Frost Garden's holly berries); pick another candidate.
 
+### Forest buildings and two forests (bead `pulp_wars-2yc.38`)
+
+A Lumber Camp and a Sawmill for every faction but the Humans
+([what and why](FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38)),
+the Ice Folk tundra forest and the Candy grove in warm pastels
+([faction forests](FACTION_FORESTS.md)). No new pipeline piece for the
+buildings: thirteen `calm-feature` assets at 72 x 72 in the batches
+`buildings-<faction>` (`buildings-goblin` and `buildings-candy` are new).
+
+- **What `generate-image-v2` did at 72 x 72.** One call per piece was
+  enough thirteen times. A subject of "at the back two trees; in front
+  logs, an axe in a stump, a shelter" gives every part in three or four of
+  sixteen candidates; the rest drop one. A mill "with one big round saw
+  blade standing upright at its front" has the blade in about half. "Compact,
+  with an empty margin all round" keeps the piece inside the image (58 to
+  68 px of 72).
+- **A clump may be 78 x 86 px.** A forest recipe with a tall thing in it (a
+  candy cane) fills the 80 x 104 request; "small and low, two thirds of
+  the image tall, a wide empty margin above" gave 53 to 63 px.
+- **A description is at most 2000 characters** for the forest generator
+  too (`chibi-mountain-ranges.ts` does not check before the call; PixelLab
+  answers 422 and nothing is recorded): with the three fragments and the
+  class text a forest subject has about 500, its negative list about 100.
+- **A ground that is no master.** The Ice Folk ground is the Snow wash the
+  board draws over Grass. A set of `sets.json` may name a `ground`
+  (`from`, `colour`, `alpha`): `art:faction-forests -- bake` derives it
+  into the run (`ground/ice-folk-snow.png`), lifts the foliage toward it,
+  and `check` (in `art:validate`) re-derives it.
+
 ## The Candy batches (bead `pulp_wars-jdb.5`)
 
 Batches `direction-candy` and `naval-candy` hold the direction and the

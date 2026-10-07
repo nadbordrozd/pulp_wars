@@ -137,12 +137,23 @@ const lookOf = (entries: readonly BoardRenderPlanEntryV7[]) =>
 describe("faction building subjects and names", () => {
   it("returns a faction subject only for the buildings the faction draws itself", () => {
     expect(FACTION_IMPROVEMENT_LOOKS_V7).toEqual({
-      UNDEAD: ["FARM", "WINDMILL"],
-      DINOSAUR: ["WINDMILL", "SAWMILL"],
-      MARTIAN: ["FARM", "WINDMILL"],
-      ICE_FOLK: ["FARM"],
-      DWARF: ["FARM", "WINDMILL"],
+      UNDEAD: ["FARM", "WINDMILL", "LUMBER_CAMP", "SAWMILL"],
+      GOBLIN: ["LUMBER_CAMP", "SAWMILL"],
+      DINOSAUR: ["WINDMILL", "SAWMILL", "LUMBER_CAMP"],
+      MARTIAN: ["FARM", "WINDMILL", "LUMBER_CAMP", "SAWMILL"],
+      ICE_FOLK: ["FARM", "LUMBER_CAMP", "SAWMILL"],
+      DWARF: ["FARM", "WINDMILL", "LUMBER_CAMP", "SAWMILL"],
+      CANDY: ["LUMBER_CAMP", "SAWMILL"],
     });
+    // Bead pulp_wars-2yc.38: the Lumber Camp and the Sawmill are every
+    // faction's own but the Humans', who keep the shared pair.
+    for (const faction of FACTION_IDS_V7)
+      for (const improvement of ["LUMBER_CAMP", "SAWMILL"] as const)
+        expect(factionImprovementSubjectV7(improvement, faction)).toBe(
+          faction === "ORIGINAL"
+            ? `IMPROVEMENT:${improvement}`
+            : `IMPROVEMENT:${faction}:${improvement}`,
+        );
     for (const faction of FACTION_IDS_V7)
       for (const improvement of IMPROVEMENT_IDS_V7) {
         const own =
@@ -169,8 +180,11 @@ describe("faction building subjects and names", () => {
     );
   });
 
-  it("names exactly those buildings, with a flavour line that says what each counts as", () => {
+  it("names exactly the renamed buildings, with a flavour line that says what each counts as", () => {
     const named = factionBuildingsV7();
+    // Every look is named but the Lumber Camps and the Sawmills of bead
+    // pulp_wars-2yc.38, which keep their names (the Dinosaur Chopping
+    // Block was named before).
     expect(
       named.map((entry) => `${entry.faction}:${entry.improvement}`).sort(),
     ).toEqual(
@@ -178,8 +192,18 @@ describe("faction building subjects and names", () => {
         .flatMap(([faction, improvements]) =>
           improvements.map((improvement) => `${faction}:${improvement}`),
         )
+        .filter(
+          (key) =>
+            key === "DINOSAUR:SAWMILL" ||
+            !/:(?:LUMBER_CAMP|SAWMILL)$/.test(key),
+        )
         .sort(),
     );
+    for (const faction of FACTION_IDS_V7) {
+      expect(factionBuildingV7("LUMBER_CAMP", faction)).toBeNull();
+      if (faction !== "DINOSAUR")
+        expect(factionBuildingV7("SAWMILL", faction)).toBeNull();
+    }
     expect(
       Object.fromEntries(
         named.map((entry) => [
@@ -273,7 +297,8 @@ describe("the board plan follows the territory owner", () => {
     expect(lookOf(improvementEntries(own.view))).toEqual([
       ["IMPROVEMENT:UNDEAD:FARM", "Graveyard"],
       ["IMPROVEMENT:UNDEAD:WINDMILL", "Bone Mill"],
-      ["IMPROVEMENT:SAWMILL", "Sawmill"],
+      // Its own look, the shared name (pulp_wars-2yc.38).
+      ["IMPROVEMENT:UNDEAD:SAWMILL", "Sawmill"],
       ["IMPROVEMENT:FORGE", "Forge"],
     ]);
     // LEGACY draws by assetId, which no faction changes.

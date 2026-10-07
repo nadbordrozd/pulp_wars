@@ -261,6 +261,12 @@ export interface ChibiForestArtV7 {
    * a soft edge, drawn over the trees and under a resource.
    */
   glade(ground: CanvasImageSource): CanvasImageSource | null;
+  /**
+   * True for a raster this art handed out that carries its own snow (the
+   * Ice Folk tundra forest, bead pulp_wars-2yc.38): the board draws no
+   * snow caps over it. An art without the member has no such raster.
+   */
+  snowLaden?(image: CanvasImageSource): boolean;
 }
 
 /**

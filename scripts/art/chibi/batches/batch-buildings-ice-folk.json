@@ -18,6 +18,28 @@
       "ownerColour": false,
       "subjectKey": "IMPROVEMENT:ICE_FOLK:FARM/GARDEN",
       "bottomMargin": 8
+    },
+    {
+      "id": "chibi-ice-folk-lumber-camp",
+      "subject": "IMPROVEMENT:ICE_FOLK:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-ice-folk-sawmill",
+      "subject": "IMPROVEMENT:ICE_FOLK:SAWMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
     }
   ],
   "recipes": [
@@ -48,6 +70,28 @@
         "height": 80
       },
       "notes": "Bead pulp_wars-2yc.15 (the user, 2026-10-06: 'recreate the snow garden sprite. Looks just like frozen cabbage. Make it more interesting'): a snow-walled plot of ice-crystal plants, frost flowers and a berry bush, class calm-feature."
+    },
+    {
+      "id": "lumber-camp-a",
+      "asset": "chibi-ice-folk-lumber-camp",
+      "endpoint": "generate-image-v2",
+      "seed": 23809,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the ICE_FOLK Lumber Camp: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
+    },
+    {
+      "id": "sawmill-a",
+      "asset": "chibi-ice-folk-sawmill",
+      "endpoint": "generate-image-v2",
+      "seed": 23810,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the ICE_FOLK Sawmill: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
     }
   ]
 }

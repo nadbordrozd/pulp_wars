@@ -56,6 +56,13 @@ interface SetsFile {
       {
         /** The ground tile the foliage is lifted toward. */
         readonly grass: string;
+        /**
+         * A ground the board draws in code and that is no master (bead
+         * pulp_wars-2yc.38, the Ice Folk Snow: the Snow wash over Grass):
+         * `grass` is then derived by the bake as `from` under a flat wash of
+         * `colour` at `alpha`, kept in the run and checked like a master.
+         */
+        readonly ground?: GroundSpec;
         /** The set's own softening (a busy set is calmed further). */
         readonly soften?: ForestSoften;
         readonly clumps: readonly {
@@ -66,6 +73,44 @@ interface SetsFile {
       }
     >
   >;
+}
+
+interface GroundSpec {
+  readonly from: string;
+  readonly colour: readonly [number, number, number];
+  readonly alpha: number;
+}
+
+/** A derived ground tile: `from` under a flat wash. */
+async function deriveGround(root: string, spec: GroundSpec): Promise<Buffer> {
+  const source = await readRaster(await readFile(path.join(root, spec.from)));
+  const data = new Uint8Array(source.data);
+  for (let i = 0; i < data.length; i += 4)
+    for (let c = 0; c < 3; c += 1)
+      data[i + c] = Math.round(
+        (data[i + c] ?? 0) * (1 - spec.alpha) +
+          (spec.colour[c] ?? 0) * spec.alpha,
+      );
+  return sharp(Buffer.from(data.buffer), {
+    raw: { width: source.width, height: source.height, channels: 4 },
+  })
+    .png()
+    .toBuffer();
+}
+
+/** The derived grounds of the run, by file. */
+export async function factionForestGrounds(
+  root: string,
+): Promise<ReadonlyMap<string, Buffer>> {
+  const file = await readJson<SetsFile>(
+    root,
+    `${FACTION_FORESTS_RUN}/sets.json`,
+  );
+  const grounds = new Map<string, Buffer>();
+  for (const spec of Object.values(file.sets))
+    if (spec.ground !== undefined)
+      grounds.set(spec.grass, await deriveGround(root, spec.ground));
+  return grounds;
 }
 
 interface Records {
@@ -173,6 +218,18 @@ export async function factionForestProblems(root: string): Promise<string[]> {
   const problems: string[] = [];
   let derived;
   try {
+    for (const [file, bytes] of await factionForestGrounds(root)) {
+      const checkedIn = await readFile(path.join(root, file)).catch(() => null);
+      if (
+        checkedIn === null ||
+        pixelSha256(await readRaster(checkedIn)) !==
+          pixelSha256(await readRaster(bytes))
+      )
+        problems.push(
+          `faction forests: ${file} is not what its ground derives (run the bake)`,
+        );
+    }
+    if (problems.length > 0) return problems;
     derived = await deriveFactionForests(root);
   } catch (error) {
     return [
@@ -317,6 +374,11 @@ async function main(): Promise<void> {
   const root = process.cwd();
   const [command = "check", ...rest] = process.argv.slice(2);
   if (command === "bake") {
+    for (const [file, bytes] of await factionForestGrounds(root)) {
+      await mkdir(path.dirname(path.join(root, file)), { recursive: true });
+      await writeFile(path.join(root, file), bytes);
+      console.log(`wrote ${file}`);
+    }
     const { record, files } = await deriveFactionForests(root);
     for (const [file, bytes] of files) {
       await mkdir(path.dirname(path.join(root, file)), { recursive: true });

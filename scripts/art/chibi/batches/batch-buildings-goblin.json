@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "batch": "buildings-goblin",
+  "title": "Goblin building looks: the Lumber Camp and the Sawmill",
+  "bead": "pulp_wars-2yc.38",
+  "faction": "GOBLIN",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-goblin-lumber-camp",
+      "subject": "IMPROVEMENT:GOBLIN:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-goblin-sawmill",
+      "subject": "IMPROVEMENT:GOBLIN:SAWMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    }
+  ],
+  "recipes": [
+    {
+      "id": "lumber-camp-a",
+      "asset": "chibi-goblin-lumber-camp",
+      "endpoint": "generate-image-v2",
+      "seed": 23804,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the GOBLIN Lumber Camp: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
+    },
+    {
+      "id": "sawmill-a",
+      "asset": "chibi-goblin-sawmill",
+      "endpoint": "generate-image-v2",
+      "seed": 23805,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the GOBLIN Sawmill: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
+    }
+  ]
+}

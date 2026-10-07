@@ -749,3 +749,11 @@ the Marshmallow under a steel disc lettered **J** until bead
 - LEGACY (`?art=legacy`) and the developer option "Classic look" have no
   Jawbreaker art: there it falls back like every faction subject, to the Human
   unit of the slot under the Candy badge.
+
+## Forest, Lumber Camp and Sawmill (bead `pulp_wars-2yc.38`)
+
+- **The forest is a candy grove in warm pastels now** (the user: "the candy forest is too brown ... the hues should make it look like yummy sweets"): pink-striped candy canes, peach and pink swirl lollipops, gumdrop trees and gumdrop bushes in strawberry pink, peach, caramel and cream with a mint gumdrop here and there, a dusty rose-brown outline, no chocolate (recipes `candy-h` and `candy-g`, five clumps). The Chocolatier units, dark and milk chocolate, stand out against it.
+- **Lumber Camp** (`chibi-candy-lumber-camp`, `lumber-camp-a` candidate 4): a pink-striped candy cane and two peach lollipops, a stack of cut striped candy logs, a little axe in a caramel gumdrop stump and a wafer lean-to.
+- **Sawmill** (`chibi-candy-sawmill`, `sawmill-a` candidate 13): a small gingerbread mill house with a pale pink frosting roof and a cream door, a round peppermint blade with a pink swirl in a wafer bench, a candy log and a pile of cut candy sticks. The swirl is pink, not the owner key red.
+
+Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, section 12](../FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38). Both buildings keep the names "Lumber camp" and "Sawmill", are drawn by the owner of the territory they stand in, and fall back to the shared pair in the Classic look and the LEGACY art set.

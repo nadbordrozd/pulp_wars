@@ -117,7 +117,8 @@ describe("Gallery presentation", () => {
     // Faction building looks (bead pulp_wars-xdh.2): the Farm, the Windmill
     // and the Sawmill have a faction's own look, so their rows split; every
     // other improvement stays one shared cell.
-    const split = ["FARM", "WINDMILL", "SAWMILL"];
+    // Bead pulp_wars-2yc.38: the Lumber Camp splits too.
+    const split = ["FARM", "WINDMILL", "SAWMILL", "LUMBER_CAMP"];
     for (const row of GALLERY_BUILDING_ROWS_V7.slice(3))
       expect(galleryBuildingPerFactionV7(row), row).toBe(split.includes(row));
     expect(galleryBuildingSubjectV7("MINE", "DWARF")).toBe(

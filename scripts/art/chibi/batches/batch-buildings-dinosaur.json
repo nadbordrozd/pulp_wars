@@ -27,6 +27,17 @@
         "height": 72
       },
       "ownerColour": false
+    },
+    {
+      "id": "chibi-dinosaur-lumber-camp",
+      "subject": "IMPROVEMENT:DINOSAUR:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
     }
   ],
   "recipes": [
@@ -55,6 +66,17 @@
       "promptAddendum": "The stone axe in the stump is drawn large and fills most of the image, touching neither edge.",
       "negativeAddendum": "saw blade, circular saw, metal, iron, steel, gears, cogwheel, brick, plaster, roof tiles, house, water wheel",
       "notes": "Second seed of chopping-block-a."
+    },
+    {
+      "id": "lumber-camp-a",
+      "asset": "chibi-dinosaur-lumber-camp",
+      "endpoint": "generate-image-v2",
+      "seed": 23806,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the DINOSAUR Lumber Camp: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
     }
   ]
 }

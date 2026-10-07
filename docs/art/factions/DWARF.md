@@ -607,3 +607,11 @@ the Clockwork Gunner under a steel disc lettered **W** until bead
 The Steam Tank is the heavy line role now (`SWORDSMAN`); its rasters, prompts
 and generation records stay under the art slot they were made for,
 `UNIT:DWARF:KNIGHT` and `PORTRAIT:DWARF:KNIGHT`.
+
+## Forest, Lumber Camp and Sawmill (bead `pulp_wars-2yc.38`)
+
+- The forest is the dark pines among boulders of bead `pulp_wars-2yc.2` (unchanged).
+- **Lumber Camp** (`chibi-dwarf-lumber-camp`, `lumber-camp-a` candidate 1): two sturdy dark pines and a mossy grey boulder, a stack of thick pine logs in a dark iron band, a big iron axe in a stump and a copper lantern on an iron post.
+- **Sawmill** (`chibi-dwarf-sawmill`, `sawmill-a` candidate 7): a squat mill house of warm grey stone with a muted copper roof, a dark iron chimney with a puff of white steam, a steel saw blade in its front arch over a pine log, a brass cog on the gable and a stack of pale planks: the steam saw.
+
+Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, section 12](../FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38). Both buildings keep the names "Lumber camp" and "Sawmill", are drawn by the owner of the territory they stand in, and fall back to the shared pair in the Classic look and the LEGACY art set.
