@@ -338,6 +338,16 @@ import {
   fogCellsOfV7,
   type FogArtV7,
 } from "./fog-of-war-v7";
+import {
+  compositionEntriesV7,
+  fogAtOfV7,
+  type TerrainGhostV7,
+} from "./terrain-at-fog-v7";
+import {
+  TILE_HOP_KINDS_V7,
+  tileHopLiftsV7,
+  type TileHopV7,
+} from "./terrain-ripple-v7";
 import { drawStarfieldV7 } from "./starfield-v7";
 import {
   drawWaterBlendV7,
@@ -887,6 +897,14 @@ export interface BoardRenderPlanV7 {
   readonly version: 7;
   readonly entries: readonly BoardRenderPlanEntryV7[];
   readonly targets: readonly MapCommandTargetV7[];
+  /**
+   * Multi-cell terrain at the fog (bead pulp_wars-2yc.28,
+   * terrain-at-fog-v7.ts): the unexplored cells the map's skeleton has as
+   * Forest or Mountain. The board host adds them; the CHIBI art set packs
+   * its forests and massifs over the explored cells and these, and draws
+   * only the explored cells' share. Never an entry: nothing draws a ghost.
+   */
+  readonly ghosts?: readonly TerrainGhostV7[];
 }
 
 const TILE_EDGES: readonly TileEdge[] = ["NORTH", "EAST", "SOUTH", "WEST"];
@@ -1978,6 +1996,12 @@ export function drawBoardV7(input: {
   /** The fog's drift and the stars' twinkle clock in ms (0: still). */
   readonly atmosphereTimeMs?: number;
   /**
+   * The territory ripple (pulp_wars-2yc.28, terrain-ripple-v7.ts): the
+   * cells in the air this frame. The ground of each, and what is built
+   * or grows on it, is drawn stretched upward from the cell's foot.
+   */
+  readonly tileHops?: readonly TileHopV7[];
+  /**
    * The Mind Control revision: the control halo's pulse clock in ms (0, the
    * default, and reduced motion draw it static in the faction colour).
    */
@@ -2250,11 +2274,19 @@ export function drawBoardV7(input: {
     chibiArt === undefined ? null : (input.forestArt?.resolve() ?? null);
   // Faction forests (pulp_wars-2yc.2): with their art object each
   // faction's Forest is packed as a forest of its own, in the live look.
+  // Multi-cell terrain at the fog (pulp_wars-2yc.28): the cover is packed
+  // over the plan's entries and its ghosts, and drawn only where no fog is.
+  const composition =
+    chibiArt === undefined
+      ? input.plan.entries
+      : compositionEntriesV7(input.plan);
+  const ghosted = composition !== input.plan.entries;
+  const fogAt = chibiArt === undefined ? null : fogAtOfV7(input.plan.entries);
   const forestCells =
     forestArt === null
       ? null
       : (factionForestCellsOfV7(
-          input.plan.entries,
+          composition,
           forestArt,
           direction !== undefined,
         ) ?? forestCellsOf(input.plan, forestArt));
@@ -2405,8 +2437,96 @@ export function drawBoardV7(input: {
     readonly x: number;
     readonly y: number;
   }): ArtSubjectV7 | undefined => terrainSubjects.get(coordKey(at));
-  for (const pass of passes)
+  // The explored tall-terrain cells beside the fog whose trees or rock were
+  // drawn over the cloud's edge: the edge is drawn again over them, under
+  // every unit and building (pulp_wars-2yc.28).
+  const fogEdgeAgain: BoardRenderPlanEntryV7[] = [];
+  // The territory ripple (pulp_wars-2yc.28): the lift of the cells in the
+  // air, and whether the entry being drawn is lifted.
+  const tileLifts =
+    input.tileHops === undefined || input.tileHops.length === 0
+      ? null
+      : tileHopLiftsV7(input.tileHops, camera, devicePixelRatio);
+  let lifted = false;
+  const terrainFrame = { camera, devicePixelRatio, sceneAlpha, fogAt };
+  for (const pass of passes) {
+    if (pass === "FOREGROUND")
+      for (const entry of fogEdgeAgain)
+        drawFogEdgeV7(context, fogFrame, fogArt, entry, fogCells);
     for (const entry of input.plan.entries) {
+      // The territory ripple: a cell in the air is drawn a little higher.
+      if (lifted) {
+        context.restore();
+        lifted = false;
+      }
+      const hopLift =
+        tileLifts === null || !TILE_HOP_KINDS_V7.has(entry.kind)
+          ? undefined
+          : tileLifts.get(coordKey(entry.at));
+      if (hopLift !== undefined) {
+        // Stretched upward from the cell's foot, which stays where it is.
+        const cell = TILE_HEIGHT * camera.zoom;
+        const foot = camera.offsetY + entry.at.y * cell + cell / 2;
+        context.save();
+        context.translate(0, foot);
+        context.scale(1, 1 + hopLift / cell);
+        context.translate(0, -foot);
+        lifted = true;
+      }
+      if (entry.kind === "FOG" && pass === "TALL_BODY" && ghosted) {
+        // A ghost's turn: the share of its pieces, seam clumps and peaks
+        // that lies over explored cells, in the order of the whole map.
+        const at = coordKey(entry.at);
+        const ghostMountain =
+          mountainArt === null ? undefined : mountainCells?.get(at);
+        if (
+          mountainArt !== null &&
+          ghostMountain !== undefined &&
+          ghostMountain.mined === null
+        )
+          drawChibiMassifBodiesV7(
+            context,
+            terrainFrame,
+            mountainArt,
+            ghostMountain,
+            forestSnow,
+          );
+        const ghostForest =
+          forestArt === null ? undefined : forestCells?.get(at);
+        if (
+          forestArt !== null &&
+          ghostForest !== undefined &&
+          !ghostForest.clearing
+        )
+          drawChibiForestBodiesV7(
+            context,
+            terrainFrame,
+            forestArt,
+            entry.at,
+            ghostForest,
+            forestSnow,
+          );
+        continue;
+      }
+      if (entry.kind === "FOG" && pass === "FOREGROUND" && ghosted) {
+        // A band that starts over a ghost: the tree tops of its explored
+        // columns.
+        const ghostForest =
+          forestArt === null ? undefined : forestCells?.get(coordKey(entry.at));
+        if (
+          forestArt !== null &&
+          ghostForest !== undefined &&
+          !ghostForest.clearing
+        )
+          drawChibiForestBandsV7(
+            context,
+            terrainFrame,
+            forestArt,
+            ghostForest,
+            forestSnow,
+          );
+        continue;
+      }
       if (
         entry.kind === "LINK" ||
         entry.kind === "TARGET" ||
@@ -2499,7 +2619,7 @@ export function drawBoardV7(input: {
             // of the buildings.
             drawChibiMassifMinedV7(
               context,
-              { camera, devicePixelRatio, sceneAlpha },
+              terrainFrame,
               mountainArt,
               entry.at,
               mountainCell.mined,
@@ -2513,7 +2633,7 @@ export function drawBoardV7(input: {
             // every unit and building.
             drawChibiMassifBodiesV7(
               context,
-              { camera, devicePixelRatio, sceneAlpha },
+              terrainFrame,
               mountainArt,
               mountainCell,
               forestSnow,
@@ -2521,15 +2641,20 @@ export function drawBoardV7(input: {
           else
             drawChibiMassifBandV7(
               context,
-              { camera, devicePixelRatio, sceneAlpha },
+              terrainFrame,
               mountainArt,
               entry.at,
               mountainCell,
               forestSnow,
             );
+          if (
+            pass === "TALL_BODY" &&
+            fogCells?.edges.has(coordKey(entry.at)) === true
+          )
+            fogEdgeAgain.push(entry);
           continue;
         }
-        const forestFrame = { camera, devicePixelRatio, sceneAlpha };
+        const forestFrame = terrainFrame;
         if (
           forestArt !== null &&
           forestCell !== null &&
@@ -2591,9 +2716,19 @@ export function drawBoardV7(input: {
               forestSnow,
             );
           }
+          if (
+            pass === "TALL_BODY" &&
+            fogCells?.edges.has(coordKey(entry.at)) === true
+          )
+            fogEdgeAgain.push(entry);
           continue;
         }
         if (pass === "TALL_BODY") {
+          if (
+            isTallTerrainEntry(entry) &&
+            fogCells?.edges.has(coordKey(entry.at)) === true
+          )
+            fogEdgeAgain.push(entry);
           if (chibi?.kind === "READY" && layers !== undefined) {
             drawChibiTerrainV7(context, chibi, {
               centre: { x, y },
@@ -2634,6 +2769,12 @@ export function drawBoardV7(input: {
           // faction's grass over it, and Snow and the coast's sand after.
           const meadow =
             pass === "GROUND" && mountainArt !== null && mountainCell !== null;
+          // A single clump's or mountain's top rises over the cell behind
+          // it: never over an unexplored one (pulp_wars-2yc.28).
+          const overflowInFog =
+            pass !== "GROUND" &&
+            fogAt !== null &&
+            fogAt(entry.at.x, entry.at.y - 1);
           const territoryGrass = (): void => {
             const grass =
               chibiArt === undefined
@@ -2706,7 +2847,7 @@ export function drawBoardV7(input: {
                 part: "CELL",
                 image: chibi.layers.body,
               });
-          } else if (chibi.kind === "READY")
+          } else if (chibi.kind === "READY" && !overflowInFog)
             drawChibiTerrainV7(context, chibi, {
               centre: { x, y },
               camera,
@@ -2761,7 +2902,8 @@ export function drawBoardV7(input: {
           else if (
             entry.snow !== undefined &&
             chibi.kind === "READY" &&
-            chibi.layers !== undefined
+            chibi.layers !== undefined &&
+            !overflowInFog
           )
             drawChibiSnowCapsV7(
               context,
@@ -4095,6 +4237,11 @@ export function drawBoardV7(input: {
         }
       }
     }
+    if (lifted) {
+      context.restore();
+      lifted = false;
+    }
+  }
   for (const drawOverlays of deferredChibiOverlays) drawOverlays();
   for (const drawMarker of deferredGraveMarkers) drawMarker();
   for (const drawName of deferredCityNames) drawName();
@@ -6775,7 +6922,11 @@ function massifCellsOf(
 ): ReadonlyMap<string, ChibiMassifCellV7> {
   const cached = massifCellsByPlan.get(plan);
   if (cached?.art === art) return cached.cells;
-  const cells = chibiMassifCellsV7(plan.entries, art.counts, art.minedCount);
+  const cells = chibiMassifCellsV7(
+    compositionEntriesV7(plan),
+    art.counts,
+    art.minedCount,
+  );
   massifCellsByPlan.set(plan, { art, cells });
   return cells;
 }
@@ -6800,7 +6951,7 @@ function forestCellsOf(
   const cached = forestCellsByPlan.get(plan);
   if (cached?.art === art) return cached.cells;
   const cells = chibiForestCellsV7(
-    plan.entries,
+    compositionEntriesV7(plan),
     art.variants,
     art.clumps.length,
   );

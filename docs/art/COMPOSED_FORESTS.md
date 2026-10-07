@@ -90,9 +90,15 @@ each piece is a hash of its anchor cell.
   Forest cell re-picks at most that cell's block. Seam clumps and the shade
   read the four orthogonal neighbours, so the picture changes within one cell
   of the block and nowhere else.
-- **No fog leak.** The plan has terrain entries for explored cells only, so
-  an unexplored cell is never part of a piece. Exploring a cell is a local
-  edit like any other.
+- **At the fog** (bead `pulp_wars-2yc.28`,
+  [TERRAIN_AT_THE_FOG.md](TERRAIN_AT_THE_FOG.md)). The plan has terrain
+  entries for explored cells only. The board host adds the unexplored
+  cells that the map was made with as Forest (the ghosts), so a block at
+  the fog's edge is packed as it will be when it is all explored, and only
+  the explored cells' share of a piece is painted. Exploring a cell then
+  changes nothing in the cells already seen. Without ghosts
+  (`?fog-terrain=0`, a board built by hand) a block is packed from its
+  explored cells and exploring a cell is a local edit like any other.
 
 The roles of a plan's cells are computed once per plan
 (`chibiForestCellsV7`, cached in the renderer) and drawn by
@@ -128,7 +134,9 @@ npm run art:chibi-forest-pieces -- sheet <out.png>   # contact sheet, 1x and 3x
 **Geometry.** A piece canvas is `cols x 80` wide and `rows x 80 + 24` tall.
 Paint lies only over footprint cells, or in the 24 px band above the topmost
 covered cell of a column. A piece never reaches sideways out of its
-footprint, so nothing is cut at a fog edge, a coast or a building.
+footprint, so nothing is cut at a coast or a building. At the fog a piece
+is cut along the cells it shares with the fog, under the cloud's edge, and
+its band is not drawn over an unexplored cell.
 
 **The band.** In the band a column holds at most one clump, and that clump
 rises no higher than it does on its own 80 x 104 master (5 to 19 px). A piece

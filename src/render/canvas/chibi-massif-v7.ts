@@ -1,11 +1,11 @@
 import { forestHashV7 } from "./chibi-forest-packing-v7";
 import {
-  chibiForestRectV7,
+  blitShareV7,
   type ChibiForestRasterEnvironmentV7,
   type ChibiForestSnowV7,
 } from "./chibi-forest-v7";
-import { chibiMasterScale, isWholeScale } from "./chibi-geometry-v7";
 import type { CameraState } from "./geometry";
+import type { FogAtV7 } from "./terrain-at-fog-v7";
 
 /**
  * Mountains as massifs (bead pulp_wars-2o7.1, docs/art/COMPOSED_TERRAIN.md).
@@ -449,36 +449,8 @@ interface DrawFrame {
   readonly camera: CameraState;
   readonly devicePixelRatio: number;
   readonly sceneAlpha: number;
-}
-
-function blit(
-  context: CanvasRenderingContext2D,
-  frame: DrawFrame,
-  image: CanvasImageSource,
-  rect: { x: number; y: number; width: number; height: number },
-  source?: { x: number; y: number; width: number; height: number },
-): void {
-  context.save();
-  context.globalAlpha = frame.sceneAlpha;
-  // The live rule: smoothing only at a fractional device scale (zoom 0.75).
-  context.imageSmoothingEnabled = !isWholeScale(
-    chibiMasterScale(frame.camera) * frame.devicePixelRatio,
-  );
-  if (source === undefined)
-    context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
-  else
-    context.drawImage(
-      image,
-      source.x,
-      source.y,
-      source.width,
-      source.height,
-      rect.x,
-      rect.y,
-      rect.width,
-      rect.height,
-    );
-  context.restore();
+  /** Unexplored cells (bead pulp_wars-2yc.28): nothing is drawn on one. */
+  readonly fogAt?: FogAtV7 | null;
 }
 
 /**
@@ -497,33 +469,25 @@ export function drawChibiMassifBodiesV7(
     const body = art.body(piece);
     if (body === null) continue;
     const height = CELL + body.up;
-    blit(
-      context,
-      frame,
-      body.image,
-      chibiForestRectV7(frame, piece, {
-        x: 0,
-        y: -body.up,
-        width: piece.columns * CELL,
-        height,
-      }),
-    );
+    blitShareV7(context, frame, body.image, piece, {
+      x: 0,
+      y: -body.up,
+      width: piece.columns * CELL,
+      height,
+    });
     if (snow === null) continue;
     let caps: CanvasImageSource | null | undefined;
     for (let column = 0; column < piece.columns; column += 1) {
       if (!snow.snowAt(piece.x + column, piece.y)) continue;
       if (caps === undefined) caps = snow.caps(body.image);
       if (caps === null) break;
-      blit(
+      blitShareV7(
         context,
         frame,
         caps,
-        chibiForestRectV7(
-          frame,
-          { x: piece.x + column, y: piece.y },
-          { x: 0, y: -body.up, width: CELL, height },
-        ),
-        { x: column * CELL, y: 0, width: CELL, height },
+        { x: piece.x + column, y: piece.y },
+        { x: 0, y: -body.up, width: CELL, height },
+        { x: column * CELL, y: 0 },
       );
     }
   }
@@ -541,16 +505,16 @@ export function drawChibiMassifBandV7(
   if (cell.band === null) return;
   const image = art.band(cell.band.piece, cell.band.column);
   if (image === null) return;
-  const rect = chibiForestRectV7(frame, at, {
+  const rect = {
     x: 0,
     y: -MASSIF_LOW_UP_V7,
     width: CELL,
     height: MASSIF_LOW_UP_V7,
-  });
-  blit(context, frame, image, rect);
+  };
+  blitShareV7(context, frame, image, at, rect);
   if (snow === null || !snow.snowAt(at.x, at.y)) return;
   const caps = snow.caps(image);
-  if (caps !== null) blit(context, frame, caps, rect);
+  if (caps !== null) blitShareV7(context, frame, caps, at, rect);
 }
 
 /**
@@ -570,9 +534,7 @@ export function drawChibiMassifMinedV7(
   const mined = art.mined(index);
   if (mined === null) return;
   const image = tint(part === "BODY" ? mined.body : mined.band);
-  const rect = chibiForestRectV7(
-    frame,
-    at,
+  const rect =
     part === "BODY"
       ? { x: 0, y: 0, width: CELL, height: CELL }
       : {
@@ -580,10 +542,9 @@ export function drawChibiMassifMinedV7(
           y: -MASSIF_LOW_UP_V7,
           width: CELL,
           height: MASSIF_LOW_UP_V7,
-        },
-  );
-  blit(context, frame, image, rect);
+        };
+  blitShareV7(context, frame, image, at, rect);
   if (snow === null || !snow.snowAt(at.x, at.y)) return;
   const caps = snow.caps(image);
-  if (caps !== null) blit(context, frame, caps, rect);
+  if (caps !== null) blitShareV7(context, frame, caps, at, rect);
 }

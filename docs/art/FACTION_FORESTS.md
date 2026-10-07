@@ -133,7 +133,21 @@ that has the faction sets behind the default one:
   trees in the same redraw as its border. A faction's set is loaded when a
   plan first shows its Forest; until it is ready (and for good if it fails
   to load) its cells draw the default Forest.
-- **Fog.** Only explored terrain entries are read.
+- **A clearing wears the faction's trees too** (bead `pulp_wars-2yc.28`).
+  A Forest cell with a Treasure, a curiosity, a Grave, a Field Defense or
+  a building on it kept the default Forest's single clump inside every
+  faction's wood, so the wood did not change skin under whatever stood on
+  it (the user, 2026-10-07: "forests don't always switch skin straight
+  away when a new faction takes over. I think it happens when something is
+  standing on the forest like an animal"). Such a cell now draws one
+  single piece (1x1) of the faction's set, with no seam clump and no
+  glade. A clearing of the default Forest keeps the clump it always drew.
+- **Fog.** The entries of unexplored cells are never read. Where a wood
+  runs into the fog its pieces are packed with the map's own Forest cells
+  behind the cloud and drawn only over explored cells:
+  [TERRAIN_AT_THE_FOG.md](TERRAIN_AT_THE_FOG.md).
+- **A capture ripples.** The cells change one after another, each with a
+  small hop: [TERRITORY_RIPPLE.md](TERRITORY_RIPPLE.md).
 
 The Gallery's Terrain tab shows each faction's forest in the Forest row: a
 single piece on the faction's ground, then every piece and seam clump of
@@ -151,9 +165,10 @@ Human one with a wood across the border, and an eight-seat map.
 
 ## Known limits
 
-- **A clearing keeps the default clump.** A Forest cell with a Village, a
-  Treasure, a Grave, a curiosity or a Field Defense draws the single
-  default clump it always drew, also inside a faction's territory.
+- **A clearing is one single piece.** A Forest cell with a Treasure, a
+  Grave, a curiosity, a Field Defense or a building draws a 1x1 piece of
+  the faction's set (one or two clumps), not a clump chosen for it. A
+  Lumber Camp's own art still has the default pines.
 - **The Undead and Goblin forests are the busiest.** Bare branches and twig
   scrub are many thin lines; even softened they are less calm than a
   canopy. The Undead trunks are thicker than the first set's twigs, but a

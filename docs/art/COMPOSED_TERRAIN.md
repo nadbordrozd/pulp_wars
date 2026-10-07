@@ -84,10 +84,17 @@ line up with those of the next. A piece is tall when every cell above it is
 a plain Mountain. No piece takes the variant of the piece west of it or of
 the pieces above it.
 
-- **Deterministic:** the cover reads the explored Mountain cells and their
-  coordinates only, so a map always draws the same massifs.
-- **No fog leak:** only explored cells are covered, and a piece is tall
-  only over explored Mountain.
+- **Deterministic:** the cover reads Mountain cells and their coordinates
+  only, so a map always draws the same massifs.
+- **At the fog** (bead `pulp_wars-2yc.28`,
+  [TERRAIN_AT_THE_FOG.md](TERRAIN_AT_THE_FOG.md)): the cover is packed over
+  the explored Mountain cells and the unexplored cells that the map was
+  made with as Mountain (the ghosts), so it is the cover of the whole map,
+  and only the explored cells' share of a piece is painted: half a ridge,
+  a tall mountain without the peaks that would stand on the fog. Exploring
+  a cell then changes nothing in the cells already seen. Without ghosts
+  (`?fog-terrain=0`, a board built by hand) only explored cells are
+  covered, as before.
 - **Not local.** A changed cell (a Mine built, a cell explored) re-picks
   the pieces of its own run, and through the no-repeat rule it can change
   the variant of pieces east of it and in the rows south of it. The roles

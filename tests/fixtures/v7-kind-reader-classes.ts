@@ -238,6 +238,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/canvas/board-renderer-v7.ts::ownerPresentation": "SEAT",
   "src/render/canvas/faction-colours-v7.ts::playerFactionColourV7": "SEAT",
   "src/render/canvas/martian-board-plan-v7.ts::martianMachineV7": "SEAT",
+  // pulp_wars-2yc.28: the faction of the seat that owns a territory (the
+  // forest set a wood in the fog is packed with).
+  "src/render/canvas/terrain-at-fog-v7.ts::terrainGhostsV7": "SEAT",
   "src/render/dinosaur-presentation-v7.ts::matchHasDinosaurV7": "SEAT",
   "src/render/dinosaur-presentation-v7.ts::dinosaurLabel": "SEAT",
   "src/render/dinosaur-presentation-v7.ts::bigBodyRolesV7": "SEAT",

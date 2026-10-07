@@ -25,6 +25,11 @@ import { TILE_HEIGHT, TILE_WIDTH, type CameraState } from "./geometry";
  * which of its eight neighbours are unexplored: the plan has no terrain,
  * unit or city for an unexplored cell, and nothing here reads one.
  *
+ * The cloud comes in several palettes (bead pulp_wars-2yc.28; the user,
+ * 2026-10-07: "change the color of the fog of war. this one is ugly").
+ * `?fog-style=<name>` picks one of FOG_PALETTE_IDS_V7 for a look;
+ * FOG_DEFAULT_PALETTE_V7 is the one in use.
+ *
  * To turn it off: set FOG_STYLE_ENABLED_V7 to false, or open the game with
  * `?fog-style=0`. The classic look and the LEGACY art set never draw it.
  */
@@ -32,10 +37,156 @@ import { TILE_HEIGHT, TILE_WIDTH, type CameraState } from "./geometry";
 /** The master switch. False draws the fog exactly as before the bead. */
 export const FOG_STYLE_ENABLED_V7 = true;
 
-/** `?fog-style=0` (or `off`, `false`) turns it off, `=1` on. */
+/**
+ * `?fog-style=0` (or `off`, `false`) turns it off, `=1` on, and the name of
+ * a palette (`?fog-style=dusk`) draws the cloud in that palette.
+ */
 export const FOG_STYLE_PARAMETER_V7 = "fog-style";
 
-export function fogStyleEnabledV7(search?: string): boolean {
+type Rgb = readonly [number, number, number];
+
+/** The colours of a cloud bank. Its shapes are the same in every palette. */
+export interface FogPaletteV7 {
+  /** The mist between the puffs, from its darkest to its lightest. */
+  readonly mistDark: Rgb;
+  readonly mistLight: Rgb;
+  /** A puff, its lit rim (bottom left) and its shaded rim (top right). */
+  readonly puff: Rgb;
+  readonly puffLit: Rgb;
+  readonly puffShade: Rgb;
+  /** The shadow a puff casts on the mist up and to the right of it. */
+  readonly cast: Rgb;
+  /** The thin rim of the cloud's edge over explored ground. */
+  readonly rim: Rgb;
+  /** The feather of mist (or the cloud's shadow) beyond the rim. */
+  readonly shadow: Rgb;
+  /** Alpha of the feather where it starts. */
+  readonly featherAlpha: number;
+  /** The flat fill used when a canvas has no patterns. */
+  readonly flat: string;
+  /** The wisps: their colour and strongest alpha. */
+  readonly wisp: Rgb;
+  readonly wispAlpha: number;
+}
+
+/**
+ * The palettes, the one in use first. `slate` is the cloud of bead
+ * pulp_wars-2yc.17, kept for comparison.
+ */
+export const FOG_PALETTE_IDS_V7 = [
+  "dusk",
+  "cumulus",
+  "parchment",
+  "midnight",
+  "plum",
+  "slate",
+] as const;
+
+export type FogPaletteIdV7 = (typeof FOG_PALETTE_IDS_V7)[number];
+
+export const FOG_PALETTES_V7: Readonly<Record<FogPaletteIdV7, FogPaletteV7>> = {
+  // Lavender-violet dusk clouds: the night sky round the map, lifted.
+  dusk: {
+    mistDark: [90, 86, 142],
+    mistLight: [104, 100, 158],
+    puff: [130, 126, 184],
+    puffLit: [176, 170, 222],
+    puffShade: [112, 108, 166],
+    cast: [76, 72, 124],
+    rim: [208, 200, 240],
+    shadow: [54, 50, 100],
+    featherAlpha: 0.42,
+    flat: "#685f9c",
+    wisp: [216, 204, 246],
+    wispAlpha: 0.14,
+  },
+  // Pale cream cumulus with lilac shadows; it casts a shadow on the land.
+  cumulus: {
+    mistDark: [206, 200, 216],
+    mistLight: [222, 217, 226],
+    puff: [242, 238, 230],
+    puffLit: [255, 252, 244],
+    puffShade: [216, 209, 222],
+    cast: [186, 180, 204],
+    rim: [150, 142, 176],
+    shadow: [52, 48, 86],
+    featherAlpha: 0.34,
+    flat: "#dcd7e2",
+    wisp: [255, 255, 255],
+    wispAlpha: 0.22,
+  },
+  // Warm sepia: the blank of an old map, with an inked edge.
+  parchment: {
+    mistDark: [184, 156, 112],
+    mistLight: [200, 174, 128],
+    puff: [218, 196, 150],
+    puffLit: [238, 220, 178],
+    puffShade: [194, 166, 120],
+    cast: [164, 136, 96],
+    rim: [112, 84, 54],
+    shadow: [84, 60, 36],
+    featherAlpha: 0.34,
+    flat: "#c2a67a",
+    wisp: [244, 230, 194],
+    wispAlpha: 0.16,
+  },
+  // Deep teal-navy that melts into the starfield.
+  midnight: {
+    mistDark: [18, 30, 58],
+    mistLight: [24, 40, 72],
+    puff: [32, 56, 92],
+    puffLit: [54, 88, 126],
+    puffShade: [26, 44, 78],
+    cast: [13, 21, 44],
+    rim: [78, 118, 152],
+    shadow: [13, 21, 44],
+    featherAlpha: 0.5,
+    flat: "#172646",
+    wisp: [96, 152, 182],
+    wispAlpha: 0.12,
+  },
+  // A muted plum.
+  plum: {
+    mistDark: [74, 50, 82],
+    mistLight: [90, 62, 98],
+    puff: [112, 80, 118],
+    puffLit: [150, 114, 154],
+    puffShade: [96, 68, 104],
+    cast: [60, 40, 68],
+    rim: [182, 146, 184],
+    shadow: [50, 32, 58],
+    featherAlpha: 0.46,
+    flat: "#59405f",
+    wisp: [204, 174, 208],
+    wispAlpha: 0.13,
+  },
+  // The slate blue-grey of bead pulp_wars-2yc.17.
+  slate: {
+    mistDark: [38, 49, 62],
+    mistLight: [47, 60, 74],
+    puff: [58, 73, 89],
+    puffLit: [78, 96, 113],
+    puffShade: [49, 62, 77],
+    cast: [32, 42, 54],
+    rim: [96, 114, 130],
+    shadow: [38, 49, 62],
+    featherAlpha: 0.5,
+    flat: "#2c3947",
+    wisp: [150, 170, 186],
+    wispAlpha: 0.13,
+  },
+};
+
+/** The palette the game draws. */
+export const FOG_DEFAULT_PALETTE_V7: FogPaletteIdV7 = "dusk";
+
+/**
+ * What the fog is drawn as: `"OFF"` (the flat fog of before bead
+ * pulp_wars-2yc.17) or a palette of the cloud. The switch, unless the
+ * page's query string overrides it; an unknown value is the default.
+ */
+export function fogStyleV7(search?: string): FogPaletteIdV7 | "OFF" {
+  const standard = FOG_STYLE_ENABLED_V7 ? FOG_DEFAULT_PALETTE_V7 : "OFF";
   const query =
     search ??
     (globalThis as { location?: { search?: string } }).location?.search ??
@@ -46,11 +197,18 @@ export function fogStyleEnabledV7(search?: string): boolean {
   } catch {
     value = null;
   }
-  if (value === null) return FOG_STYLE_ENABLED_V7;
+  if (value === null) return standard;
   const text = value.trim().toLowerCase();
-  if (text === "0" || text === "off" || text === "false") return false;
-  if (text === "1" || text === "on" || text === "true") return true;
-  return FOG_STYLE_ENABLED_V7;
+  if (text === "0" || text === "off" || text === "false") return "OFF";
+  if (text === "1" || text === "on" || text === "true")
+    return FOG_DEFAULT_PALETTE_V7;
+  return (FOG_PALETTE_IDS_V7 as readonly string[]).includes(text)
+    ? (text as FogPaletteIdV7)
+    : standard;
+}
+
+export function fogStyleEnabledV7(search?: string): boolean {
+  return fogStyleV7(search) !== "OFF";
 }
 
 const CELL = 80;
@@ -59,38 +217,21 @@ export const FOG_PHASES_V7 = 7;
 /** The side of the cloud texture, master px. */
 export const FOG_TEXTURE_SIZE_V7 = CELL * FOG_PHASES_V7;
 
-type Rgb = readonly [number, number, number];
-
+/** The cloud's shapes and motion, and the colours of the palette in use. */
 export const FOG_STYLE_V7 = {
-  /** The mist between the puffs, from its darkest to its lightest. */
-  mistDark: [38, 49, 62],
-  mistLight: [47, 60, 74],
-  /** A puff, its lit rim (bottom left) and its shaded rim (top right). */
-  puff: [58, 73, 89],
-  puffLit: [78, 96, 113],
-  puffShade: [49, 62, 77],
-  /** The shadow a puff casts on the mist up and to the right of it. */
-  cast: [32, 42, 54],
-  /** The pale rim of the cloud's edge over explored ground. */
-  rim: [96, 114, 130],
-  /** The flat fill used when a canvas has no patterns. */
-  flat: "#2c3947",
+  ...FOG_PALETTES_V7[FOG_DEFAULT_PALETTE_V7],
   /** Puffs in the texture, and the range of a lobe's radius, px. */
   puffs: 46,
   lobeRadius: [7, 18],
-  /** The wisps: their colour, strongest alpha and drift in px a second. */
-  wisp: [150, 170, 186],
-  wispAlpha: 0.13,
+  /** The wisps' drift in px a second. */
   drift: [3.2, -0.6],
   /** The edge: mean reach of the lobes out of the fog, px, and its waves. */
   reach: 6,
   scallop: 5.5,
   waves: [1.4, 0.7],
-  /** Width of the pale rim and of the feather beyond the lobes, px. */
+  /** Width of the rim and of the feather beyond the lobes, px. */
   rimWidth: 1.2,
   feather: 8,
-  /** Alpha of the feather where it starts. */
-  featherAlpha: 0.5,
 } as const;
 
 /** The most edge layers kept (each CELL x CELL, about 26 kB). */
@@ -140,16 +281,19 @@ const mix = (a: Rgb, b: Rgb, t: number): [number, number, number] => [
   a[2] + (b[2] - a[2]) * t,
 ];
 
-let texturePixels: Uint8ClampedArray | null = null;
+const texturePixels = new Map<FogPaletteIdV7, Uint8ClampedArray>();
 
 /**
  * The cloud texture: SIZE x SIZE opaque RGBA that tiles in both directions.
- * A function of nothing but the constants above.
+ * A function of nothing but the constants above and the palette.
  */
-export function fogTexturePixelsV7(): Uint8ClampedArray {
-  if (texturePixels !== null) return texturePixels;
+export function fogTexturePixelsV7(
+  palette: FogPaletteIdV7 = FOG_DEFAULT_PALETTE_V7,
+): Uint8ClampedArray {
+  const known = texturePixels.get(palette);
+  if (known !== undefined) return known;
   const size = FOG_TEXTURE_SIZE_V7;
-  const spec = FOG_STYLE_V7;
+  const spec = { ...FOG_STYLE_V7, ...FOG_PALETTES_V7[palette] };
   // The puffs: each a few overlapping round lobes.
   const lobes: { x: number; y: number; r: number }[] = [];
   const centres: { x: number; y: number }[] = [];
@@ -247,17 +391,20 @@ export function fogTexturePixelsV7(): Uint8ClampedArray {
       pixels[at + 2] = colour[2];
       pixels[at + 3] = 255;
     }
-  texturePixels = pixels;
+  texturePixels.set(palette, pixels);
   return pixels;
 }
 
-let wispPixels: Uint8ClampedArray | null = null;
+const wispPixels = new Map<FogPaletteIdV7, Uint8ClampedArray>();
 
 /** The drifting wisps: SIZE x SIZE translucent RGBA that tiles. */
-export function fogWispPixelsV7(): Uint8ClampedArray {
-  if (wispPixels !== null) return wispPixels;
+export function fogWispPixelsV7(
+  palette: FogPaletteIdV7 = FOG_DEFAULT_PALETTE_V7,
+): Uint8ClampedArray {
+  const known = wispPixels.get(palette);
+  if (known !== undefined) return known;
   const size = FOG_TEXTURE_SIZE_V7;
-  const spec = FOG_STYLE_V7;
+  const spec = FOG_PALETTES_V7[palette];
   const pixels = new Uint8ClampedArray(size * size * 4);
   for (let y = 0; y < size; y += 1)
     for (let x = 0; x < size; x += 1) {
@@ -276,7 +423,7 @@ export function fogWispPixelsV7(): Uint8ClampedArray {
         255 * spec.wispAlpha * share * share * (3 - 2 * share),
       );
     }
-  wispPixels = pixels;
+  wispPixels.set(palette, pixels);
   return pixels;
 }
 
@@ -309,12 +456,13 @@ const NEIGHBOURS: readonly (readonly [number, number, number])[] = [
 export function fogEdgePixelsV7(
   neighbours: number,
   phase: number,
+  palette: FogPaletteIdV7 = FOG_DEFAULT_PALETTE_V7,
 ): Uint8ClampedArray {
   const pixels = new Uint8ClampedArray(CELL * CELL * 4);
   if (neighbours === 0) return pixels;
-  const spec = FOG_STYLE_V7;
+  const spec = { ...FOG_STYLE_V7, ...FOG_PALETTES_V7[palette] };
   const size = FOG_TEXTURE_SIZE_V7;
-  const texture = fogTexturePixelsV7();
+  const texture = fogTexturePixelsV7(palette);
   const originX = (phase % FOG_PHASES_V7) * CELL;
   const originY = Math.floor(phase / FOG_PHASES_V7) * CELL;
   const turn = (2 * Math.PI) / size;
@@ -359,7 +507,7 @@ export function fogEdgePixelsV7(
       } else {
         const fade = 1 - (distance - Math.max(reach, 0)) / spec.feather;
         if (fade <= 0) continue;
-        colour = spec.mistDark;
+        colour = spec.shadow;
         alpha = spec.featherAlpha * fade * fade;
       }
       pixels[at] = colour[0];
@@ -467,30 +615,40 @@ export function fogCellsOfV7(entries: readonly FogEntryV7[]): FogCellsV7 {
 // --------------------------------------------------------------------- art
 
 export interface FogArtV7 {
+  /** The palette the surfaces are painted in. */
+  readonly palette: FogPaletteIdV7;
   texture(): CanvasImageSource | null;
   wisps(): CanvasImageSource | null;
   edge(neighbours: number, phase: number): CanvasImageSource | null;
 }
 
-/** The fog's surfaces, each built on first use and kept. */
-export function createFogArtV7(environment: {
-  createSurface(
-    pixels: Uint8ClampedArray,
-    width: number,
-    height: number,
-  ): CanvasImageSource | null;
-}): FogArtV7 {
+/** The fog's surfaces in one palette, each built on first use and kept. */
+export function createFogArtV7(
+  environment: {
+    createSurface(
+      pixels: Uint8ClampedArray,
+      width: number,
+      height: number,
+    ): CanvasImageSource | null;
+  },
+  palette: FogPaletteIdV7 = FOG_DEFAULT_PALETTE_V7,
+): FogArtV7 {
   let texture: CanvasImageSource | null | undefined;
   let wisps: CanvasImageSource | null | undefined;
   const edges = new Map<number, CanvasImageSource | null>();
   const size = FOG_TEXTURE_SIZE_V7;
   return {
+    palette,
     texture() {
-      texture ??= environment.createSurface(fogTexturePixelsV7(), size, size);
+      texture ??= environment.createSurface(
+        fogTexturePixelsV7(palette),
+        size,
+        size,
+      );
       return texture;
     },
     wisps() {
-      wisps ??= environment.createSurface(fogWispPixelsV7(), size, size);
+      wisps ??= environment.createSurface(fogWispPixelsV7(palette), size, size);
       return wisps;
     },
     edge(neighbours, phase) {
@@ -503,7 +661,7 @@ export function createFogArtV7(environment: {
         return known;
       }
       const surface = environment.createSurface(
-        fogEdgePixelsV7(neighbours, phase),
+        fogEdgePixelsV7(neighbours, phase, palette),
         CELL,
         CELL,
       );
@@ -644,7 +802,7 @@ export function drawFogV7(
     const originX = camera.offsetX - (TILE_WIDTH / 2) * camera.zoom;
     const originY = camera.offsetY - (TILE_HEIGHT / 2) * camera.zoom;
     const texture = patternOf(context, art.texture());
-    if (texture === null) context.fillStyle = FOG_STYLE_V7.flat;
+    if (texture === null) context.fillStyle = FOG_PALETTES_V7[art.palette].flat;
     else {
       texture.setTransform(
         new DOMMatrix([scale, 0, 0, scale, originX, originY]),

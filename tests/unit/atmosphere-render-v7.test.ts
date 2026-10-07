@@ -11,11 +11,14 @@ import type {
 } from "../../src/render/canvas/chibi-art-resolver-v7";
 import { chibiCameraZoom } from "../../src/render/canvas/chibi-geometry-v7";
 import {
+  FOG_DEFAULT_PALETTE_V7,
   FOG_E,
   FOG_EDGE_CACHE_LIMIT_V7,
   FOG_EDGE_REACH_V7,
   FOG_N,
   FOG_NW,
+  FOG_PALETTES_V7,
+  FOG_PALETTE_IDS_V7,
   FOG_PHASES_V7,
   FOG_S,
   FOG_STYLE_ENABLED_V7,
@@ -29,6 +32,7 @@ import {
   fogDriftV7,
   fogEdgePixelsV7,
   fogStyleEnabledV7,
+  fogStyleV7,
   fogTexturePixelsV7,
   fogWispPixelsV7,
   type FogEntryV7,
@@ -326,6 +330,138 @@ describe("the fog switch", () => {
     expect(fogStyleEnabledV7("?fog-style=1")).toBe(true);
     expect(fogStyleEnabledV7("?fog-style=what")).toBe(true);
   });
+
+  it("names a palette of the cloud, and 0 still gives the old flat fog", () => {
+    // pulp_wars-2yc.28: "change the color of the fog of war".
+    expect(FOG_PALETTE_IDS_V7).toEqual([
+      "dusk",
+      "cumulus",
+      "parchment",
+      "midnight",
+      "plum",
+      "slate",
+    ]);
+    expect(FOG_DEFAULT_PALETTE_V7).toBe("dusk");
+    expect(FOG_PALETTE_IDS_V7[0]).toBe(FOG_DEFAULT_PALETTE_V7);
+    expect(fogStyleV7("")).toBe("dusk");
+    expect(fogStyleV7()).toBe("dusk");
+    expect(fogStyleV7("?fog-style=1")).toBe("dusk");
+    expect(fogStyleV7("?fog-style=on")).toBe("dusk");
+    for (const id of FOG_PALETTE_IDS_V7) {
+      expect(fogStyleV7(`?art=chibi&fog-style=${id}`)).toBe(id);
+      expect(fogStyleV7(`?fog-style=${id.toUpperCase()}`)).toBe(id);
+      expect(fogStyleEnabledV7(`?fog-style=${id}`)).toBe(true);
+    }
+    for (const off of ["0", "off", "false"])
+      expect(fogStyleV7(`?fog-style=${off}`)).toBe("OFF");
+    // An unknown name is the default, not the old fog.
+    expect(fogStyleV7("?fog-style=mauve")).toBe("dusk");
+    // The palette in use is the one FOG_STYLE_V7 carries.
+    expect(FOG_STYLE_V7.flat).toBe(FOG_PALETTES_V7.dusk.flat);
+    expect(FOG_STYLE_V7.puff).toEqual(FOG_PALETTES_V7.dusk.puff);
+  });
+});
+
+describe("the fog's palettes", () => {
+  const luma = (colour: readonly number[]): number =>
+    0.2126 * (colour[0] ?? 0) +
+    0.7152 * (colour[1] ?? 0) +
+    0.0722 * (colour[2] ?? 0);
+
+  it("are all lit from the south-west: a pale rim below left, shade above right", () => {
+    for (const id of FOG_PALETTE_IDS_V7) {
+      const palette = FOG_PALETTES_V7[id];
+      expect(luma(palette.puffLit), id).toBeGreaterThan(luma(palette.puff));
+      expect(luma(palette.puff), id).toBeGreaterThan(luma(palette.puffShade));
+      expect(luma(palette.puffShade), id).toBeGreaterThan(luma(palette.cast));
+      expect(luma(palette.mistLight), id).toBeGreaterThan(
+        luma(palette.mistDark),
+      );
+      expect(luma(palette.cast), id).toBeLessThan(luma(palette.mistDark));
+      // Low contrast inside the cloud: it never competes with the board.
+      expect(luma(palette.puffLit) - luma(palette.cast), id).toBeLessThan(110);
+      expect(palette.wispAlpha, id).toBeLessThanOrEqual(0.25);
+      expect(palette.featherAlpha, id).toBeLessThanOrEqual(0.5);
+      expect(palette.flat).toMatch(/^#[0-9a-f]{6}$/);
+    }
+  });
+
+  it("keep the cloud's edge readable: a rim that stands off the cloud, a darker feather", () => {
+    for (const id of FOG_PALETTE_IDS_V7) {
+      const palette = FOG_PALETTES_V7[id];
+      // The thin rim of the edge is clearly lighter or darker than the
+      // cloud behind it.
+      expect(
+        Math.abs(luma(palette.rim) - luma(palette.puff)),
+        id,
+      ).toBeGreaterThan(25);
+      // The feather darkens the ground beside the cloud, never lightens it.
+      expect(luma(palette.shadow), id).toBeLessThanOrEqual(
+        luma(palette.mistDark),
+      );
+    }
+  });
+
+  it("paint the same shapes in different colours", () => {
+    const size = FOG_TEXTURE_SIZE_V7;
+    const dusk = fogTexturePixelsV7("dusk");
+    expect(fogTexturePixelsV7()).toBe(dusk);
+    const inside = (
+      pixels: Uint8ClampedArray,
+      palette: (typeof FOG_PALETTES_V7)[keyof typeof FOG_PALETTES_V7],
+    ): boolean[] => {
+      const puff = palette.puff;
+      const flags: boolean[] = [];
+      for (let at = 0; at < size * size * 4; at += 4 * 37)
+        flags.push(
+          pixels[at] === puff[0] &&
+            pixels[at + 1] === puff[1] &&
+            pixels[at + 2] === puff[2],
+        );
+      return flags;
+    };
+    const shape = inside(dusk, FOG_PALETTES_V7.dusk);
+    expect(shape.filter(Boolean).length).toBeGreaterThan(100);
+    for (const id of FOG_PALETTE_IDS_V7) {
+      const pixels = fogTexturePixelsV7(id);
+      expect(fogTexturePixelsV7(id)).toBe(pixels);
+      expect(inside(pixels, FOG_PALETTES_V7[id]), id).toEqual(shape);
+      if (id !== "dusk") expect(pixels).not.toEqual(dusk);
+      for (let at = 3; at < pixels.length; at += 4 * 101)
+        expect(pixels[at]).toBe(255);
+      // The edge: the same lobes, the palette's rim and feather.
+      const edge = fogEdgePixelsV7(FOG_N | FOG_W, 3, id);
+      const base = fogEdgePixelsV7(FOG_N | FOG_W, 3, "dusk");
+      for (let at = 3; at < edge.length; at += 4)
+        if ((edge[at] ?? 0) === 255 || (base[at] ?? 0) === 255)
+          expect(edge[at]).toBe(base[at]);
+      const wisps = fogWispPixelsV7(id);
+      expect(wisps[0]).toBe(FOG_PALETTES_V7[id].wisp[0]);
+    }
+    // The old cloud is still there to compare with.
+    expect(FOG_PALETTES_V7.slate.flat).toBe("#2c3947");
+  });
+
+  it("builds its surfaces in its own palette", () => {
+    const made: Uint8ClampedArray[] = [];
+    const art = createFogArtV7(
+      {
+        createSurface: (pixels) => {
+          made.push(pixels);
+          return { pixels } as unknown as CanvasImageSource;
+        },
+      },
+      "cumulus",
+    );
+    expect(art.palette).toBe("cumulus");
+    art.texture();
+    art.wisps();
+    art.edge(FOG_N, 0);
+    expect(made[0]).toBe(fogTexturePixelsV7("cumulus"));
+    expect(made[1]).toBe(fogWispPixelsV7("cumulus"));
+    expect(made[2]).toEqual(fogEdgePixelsV7(FOG_N, 0, "cumulus"));
+    expect(createFogArtV7({ createSurface: () => null }).palette).toBe("dusk");
+  });
 });
 
 describe("the fog's shape", () => {
@@ -391,9 +527,10 @@ describe("the fog's pixels", () => {
       );
     }
     expect(faintest).toBe(255);
-    // Mist, puffs and their rims; and it stays dark (the board is brighter).
+    // Mist, puffs and their rims; and it stays calm: no part of the cloud
+    // is as bright as the Grass or the sand beside it.
     expect(colours.size).toBeGreaterThan(8);
-    for (const colour of colours) expect((colour >> 8) & 255).toBeLessThan(110);
+    for (const colour of colours) expect((colour >> 8) & 255).toBeLessThan(180);
     // The left and right columns, and the top and bottom rows, are as alike
     // as neighbouring columns and rows inside the texture.
     const step = (a: number, b: number): number =>

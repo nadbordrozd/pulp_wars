@@ -173,10 +173,16 @@ import {
 } from "./coast-sand-v7";
 import { settlementShadowEnabledV7 } from "./settlement-shadow-v7";
 import {
-  createFogArtV7,
-  fogStyleEnabledV7,
-  type FogArtV7,
-} from "./fog-of-war-v7";
+  createTerrainRippleV7,
+  terrainRippleEnabledV7,
+} from "./terrain-ripple-v7";
+import {
+  terrainAtFogEnabledV7,
+  terrainGhostsOfV7,
+  terrainSkeletonOfViewV7,
+  type TerrainSkeletonV7,
+} from "./terrain-at-fog-v7";
+import { createFogArtV7, fogStyleV7, type FogArtV7 } from "./fog-of-war-v7";
 import { starfieldEnabledV7 } from "./starfield-v7";
 import {
   createWaterBlendArtV7,
@@ -379,6 +385,25 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
    */
   #atmosphereClockMs = 0;
   #atmosphereDrawnAt: number | null = null;
+  /**
+   * Multi-cell terrain at the fog (pulp_wars-2yc.28): the map's skeleton
+   * of a view, from which a plan gets its ghosts. Null draws without them.
+   */
+  readonly #terrainSkeleton: (view: PlayerViewV7) => TerrainSkeletonV7 | null;
+  /**
+   * The territory ripple (pulp_wars-2yc.28, terrain-ripple-v7.ts): cells
+   * whose territory changed owner hop and change one after another. It
+   * runs on the atmosphere's clock and asks for frames only while a cell
+   * is still to change.
+   */
+  readonly #terrainRipple = createTerrainRippleV7<
+    BoardRenderPlanV7["entries"][number],
+    BoardRenderPlanV7
+  >();
+  readonly #terrainRippleEnabled = terrainRippleEnabledV7();
+  #terrainRippleFrame: number | null = null;
+  /** Review tooling only (pinTerrainRipple): the ripple held at a time. */
+  #pinnedTerrainRippleMs: number | null = null;
   /** The Blizzard's slow ambient redraw (a timer, not every frame). */
   #blizzardTimer: number | null = null;
   /** The unit being shattered on the board, cased in ice until it bursts. */
@@ -466,9 +491,20 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     options: {
       readonly composedForests?: boolean;
       readonly composedMountains?: boolean;
+      /**
+       * The map's skeleton of a view, in place of the one made from the
+       * match's setup: for the art reviews and the tests, whose states are
+       * built by hand (terrain-at-fog-v7.ts).
+       */
+      readonly terrainSkeleton?: (
+        view: PlayerViewV7,
+      ) => TerrainSkeletonV7 | null;
     } = {},
   ) {
     this.#document = documentRoot;
+    this.#terrainSkeleton =
+      options.terrainSkeleton ??
+      (terrainAtFogEnabledV7() ? terrainSkeletonOfViewV7 : () => null);
     this.feedback = new BoardFeedbackV7({
       now: () => this.#now(),
       draw: () => this.#draw(),
@@ -539,9 +575,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         waterBlend,
         browserChibiRasterEnvironmentV7(documentRoot),
       );
-    if (fogStyleEnabledV7())
+    const fogStyle = fogStyleV7();
+    if (fogStyle !== "OFF")
       this.#fogArt = createFogArtV7(
         browserChibiRasterEnvironmentV7(documentRoot),
+        fogStyle,
       );
     if (factionGrassEnabledV7())
       this.#factionGrassArt = createFactionGrassArtV7({
@@ -1546,7 +1584,14 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         item.interactionKey === interactionKey,
     );
     if (cached !== undefined) return cached.plan;
-    const plan = buildBoardRenderPlanV7(view, commands, interaction);
+    const built = buildBoardRenderPlanV7(view, commands, interaction);
+    // Multi-cell terrain at the fog (pulp_wars-2yc.28): the CHIBI art set
+    // packs its forests and massifs over the explored cells and the ghosts.
+    const ghosts =
+      this.#artSet() === "CHIBI"
+        ? terrainGhostsOfV7(view, this.#terrainSkeleton(view))
+        : [];
+    const plan = ghosts.length === 0 ? built : { ...built, ghosts };
     if (this.#planCache.length === 2) this.#planCache.shift();
     this.#planCache.push({ view, commands, interactionKey, plan });
     return plan;
@@ -1634,9 +1679,26 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       clear: boolean,
       sceneAlpha: number,
     ): void => {
-      const plan = this.#planFor(
+      // The territory ripple: a view newer than the last one drawn starts
+      // it; the cells still to change keep their old look in the plan.
+      const rippleNow = this.#terrainRippleNow();
+      this.#terrainRipple.observe(
         view,
-        this.#presentedView === null ? model.offeredCommands : NO_COMMANDS,
+        model.matchInstanceId,
+        rippleNow,
+        this.#terrainRippleEnabled &&
+          model.motion !== "REDUCED" &&
+          typeof this.#document.defaultView?.requestAnimationFrame ===
+            "function",
+        (prior) => this.#planFor(prior, NO_COMMANDS).entries,
+      );
+      const plan = this.#terrainRipple.plan(
+        this.#planFor(
+          view,
+          this.#presentedView === null ? model.offeredCommands : NO_COMMANDS,
+        ),
+        view,
+        this.#terrainRippleNow(),
       );
       const animated = this.#animatedUnit;
       const held = this.#heldUnits;
@@ -1709,6 +1771,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         starfield: this.#starfield,
         atmosphereTimeMs:
           model.motion === "REDUCED" ? 0 : this.#atmosphereClockMs,
+        tileHops: this.#terrainRipple.hops(this.#terrainRippleNow()),
         ...(this.#factionGrassArt === undefined
           ? {}
           : { factionGrassArt: this.#factionGrassArt }),
@@ -1733,6 +1796,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       renderView(this.#crossfade.before, true, 1 - this.#crossfade.progress);
       renderView(this.#crossfade.after, false, this.#crossfade.progress);
     } else renderView(this.#presentedView ?? model.view, true, 1);
+    this.#pumpTerrainRipple();
     if (this.#projectile !== null) {
       const from = worldToScreen(
         projectGrid(this.#projectile.from),
@@ -2727,6 +2791,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#document.defaultView?.cancelAnimationFrame(this.#animationFrame);
     this.#animationFrame = null;
     this.#cancelAmbientFrame();
+    if (this.#terrainRippleFrame !== null)
+      this.#document.defaultView?.cancelAnimationFrame(
+        this.#terrainRippleFrame,
+      );
+    this.#terrainRippleFrame = null;
+    this.#terrainRipple.reset();
     this.#resizeObserver?.disconnect();
     this.#resizeObserver = null;
     const canvas = this.#canvas;
@@ -2897,6 +2967,40 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#draw();
     });
     this.#impact = null;
+  }
+
+  /** The ripple's time: the atmosphere's clock, or the pinned time. */
+  #terrainRippleNow(): number {
+    return this.#pinnedTerrainRippleMs === null
+      ? this.#atmosphereClockMs
+      : (this.#terrainRipple.startedAtMs ?? 0) + this.#pinnedTerrainRippleMs;
+  }
+
+  /** Asks for the next frame while a cell is still to change. */
+  #pumpTerrainRipple(): void {
+    const browser = this.#document.defaultView;
+    if (
+      this.#terrainRippleFrame !== null ||
+      this.#pinnedTerrainRippleMs !== null ||
+      browser === null ||
+      typeof browser.requestAnimationFrame !== "function" ||
+      !this.#terrainRipple.active(this.#atmosphereClockMs)
+    )
+      return;
+    this.#terrainRippleFrame = browser.requestAnimationFrame(() => {
+      this.#terrainRippleFrame = null;
+      this.#draw();
+    });
+  }
+
+  /**
+   * Review tooling and tests: holds the territory ripple `elapsedMs` after
+   * its last start and redraws (null lets it run again). The game never
+   * calls it.
+   */
+  pinTerrainRipple(elapsedMs: number | null): void {
+    this.#pinnedTerrainRippleMs = elapsedMs;
+    this.#draw();
   }
 
   #animate(

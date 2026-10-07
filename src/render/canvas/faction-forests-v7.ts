@@ -1,5 +1,6 @@
 import type { ChibiForestArtSetV7 } from "../../assets/chibi-forest-pieces-manifest";
 import type { FactionIdV7 } from "../../engine/index";
+import { forestHashV7 } from "./chibi-forest-packing-v7";
 import {
   chibiForestCellsV7,
   createChibiForestArtV7,
@@ -186,6 +187,30 @@ export function factionForestCellsV7(
         continue;
       }
       sets.set(at, set);
+      if (cell.clearing && own.variants["1x1"] > 0) {
+        // A clearing (a Treasure, a curiosity, a Grave, a Field Defense, a
+        // building on the Forest) of a faction's forest wears the faction's
+        // trees too: one single piece of its set, no seam clump and no
+        // glade. Bead pulp_wars-2yc.28: it kept the default clump, so the
+        // wood did not change skin under whatever stood on it.
+        const [x = 0, y = 0] = at.split(",").map(Number);
+        const piece = {
+          shape: "1x1" as const,
+          x,
+          y,
+          variant: (forestHashV7(x, y, 7, 0x3d) % own.variants["1x1"]) + shift,
+        };
+        cells.set(at, {
+          ...cell,
+          clearing: false,
+          glade: false,
+          eastSeam: null,
+          northSeam: null,
+          bodies: [piece],
+          bands: [{ piece, column: 0, columns: 1, row: 0 }],
+        });
+        continue;
+      }
       const moved = new Map<object, ChibiForestCellV7["bodies"][number]>();
       const move = (
         piece: ChibiForestCellV7["bodies"][number],

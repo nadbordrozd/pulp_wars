@@ -24,6 +24,7 @@ import {
 } from "./chibi-terrain-fringe-v7";
 import { chibiMasterScale, isWholeScale } from "./chibi-geometry-v7";
 import { TILE_HEIGHT, TILE_WIDTH, type CameraState } from "./geometry";
+import { fogShareRectsV7, type FogAtV7 } from "./terrain-at-fog-v7";
 
 /**
  * Composed CHIBI forests (bead pulp_wars-maw.3,
@@ -493,6 +494,12 @@ interface DrawFrame {
   readonly camera: CameraState;
   readonly devicePixelRatio: number;
   readonly sceneAlpha: number;
+  /**
+   * Which cells are unexplored (bead pulp_wars-2yc.28): a piece, a seam
+   * clump or a band is drawn only over the cells that are not. Omitted,
+   * everything is drawn whole.
+   */
+  readonly fogAt?: FogAtV7 | null;
 }
 
 /**
@@ -547,6 +554,62 @@ function blit(
 }
 
 /**
+ * Draws art that may lie over several cells: `rect` is its place in master
+ * pixels from the top left of cell `origin`, and `source` the top left of
+ * that rectangle inside `image` (the whole image when omitted). Only the
+ * part over cells that are not fog is drawn (`frame.fogAt`, bead
+ * pulp_wars-2yc.28): where no cell under it is fog, that is the one whole
+ * draw it always was; otherwise the same draw inside a clip of the cells
+ * that are not fog, so the pixels it does paint are the same either way.
+ */
+export function blitShareV7(
+  context: CanvasRenderingContext2D,
+  frame: DrawFrame,
+  image: CanvasImageSource,
+  origin: { readonly x: number; readonly y: number },
+  rect: {
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
+  },
+  source?: { readonly x: number; readonly y: number },
+): void {
+  const shares = fogShareRectsV7(origin, rect, frame.fogAt);
+  if (shares !== null && shares.length === 0) return;
+  context.save();
+  if (shares !== null) {
+    context.beginPath();
+    for (const share of shares) {
+      const part = chibiForestRectV7(frame, origin, share);
+      context.rect(part.x, part.y, part.width, part.height);
+    }
+    context.clip();
+  }
+  context.globalAlpha = frame.sceneAlpha;
+  // The live rule: smoothing only at a fractional device scale (zoom 0.75).
+  context.imageSmoothingEnabled = !isWholeScale(
+    chibiMasterScale(frame.camera) * frame.devicePixelRatio,
+  );
+  const to = chibiForestRectV7(frame, origin, rect);
+  if (source === undefined)
+    context.drawImage(image, to.x, to.y, to.width, to.height);
+  else
+    context.drawImage(
+      image,
+      source.x,
+      source.y,
+      rect.width,
+      rect.height,
+      to.x,
+      to.y,
+      to.width,
+      to.height,
+    );
+  context.restore();
+}
+
+/**
  * Snow (the Ice Folk revision): the caps raster of a tree raster, and which
  * cells are Snow. Caps are drawn cell by cell, so a piece that spans a Snow
  * border is capped only over its Snow cells.
@@ -579,28 +642,14 @@ function blitCaps(
       if (!snow.snowAt(cell.x + column, cell.y + row)) continue;
       if (caps === undefined) caps = snow.caps(image);
       if (caps === null) return;
-      const rect = chibiForestRectV7(
+      blitShareV7(
+        context,
         frame,
+        caps,
         { x: cell.x + column, y: cell.y + row },
         { x: 0, y: offsetY, width: CELL, height },
+        { x: column * CELL, y: row * height },
       );
-      context.save();
-      context.globalAlpha = frame.sceneAlpha;
-      context.imageSmoothingEnabled = !isWholeScale(
-        chibiMasterScale(frame.camera) * frame.devicePixelRatio,
-      );
-      context.drawImage(
-        caps,
-        column * CELL,
-        row * height,
-        CELL,
-        height,
-        rect.x,
-        rect.y,
-        rect.width,
-        rect.height,
-      );
-      context.restore();
     }
 }
 
@@ -613,10 +662,10 @@ function blitClump(
   at: { readonly x: number; readonly y: number },
   rect: { x: number; y: number; width: number; height: number },
 ): void {
-  blit(context, frame, image, rect);
+  blitShareV7(context, frame, image, at, rect);
   if (snow === null || !snow.snowAt(at.x, at.y)) return;
   const caps = snow.caps(image);
-  if (caps !== null) blit(context, frame, caps, rect);
+  if (caps !== null) blitShareV7(context, frame, caps, at, rect);
 }
 
 /** The shade under the trees of one Forest cell (ground pass). */
@@ -653,50 +702,31 @@ export function drawChibiForestBodiesV7(
   const east = cell.eastSeam === null ? undefined : art.clumps[cell.eastSeam];
   if (east !== undefined)
     // Astride the east edge, its top at the cell's top: never above it.
-    blitClump(
-      context,
-      frame,
-      snow,
-      east.image,
-      at,
-      chibiForestRectV7(frame, at, {
-        x: CELL - Math.round(east.width / 2),
-        y: Math.max(0, CELL - SEAM_BASE_INSET - east.height),
-        width: east.width,
-        height: east.height,
-      }),
-    );
+    blitClump(context, frame, snow, east.image, at, {
+      x: CELL - Math.round(east.width / 2),
+      y: Math.max(0, CELL - SEAM_BASE_INSET - east.height),
+      width: east.width,
+      height: east.height,
+    });
   const north =
     cell.northSeam === null ? undefined : art.clumps[cell.northSeam];
   if (north !== undefined)
     // Rising 24 px into the Forest cell above, over that piece's trunks.
-    blitClump(
-      context,
-      frame,
-      snow,
-      north.image,
-      at,
-      chibiForestRectV7(frame, at, {
-        x: Math.round((CELL - north.width) / 2),
-        y: -UP,
-        width: north.width,
-        height: north.height,
-      }),
-    );
+    blitClump(context, frame, snow, north.image, at, {
+      x: Math.round((CELL - north.width) / 2),
+      y: -UP,
+      width: north.width,
+      height: north.height,
+    });
   for (const piece of cell.bodies)
     for (const part of art.body(piece.shape, piece.variant)) {
       const origin = { x: piece.x + part.x, y: piece.y + part.y };
-      blit(
-        context,
-        frame,
-        part.image,
-        chibiForestRectV7(frame, origin, {
-          x: 0,
-          y: 0,
-          width: part.columns * CELL,
-          height: part.rows * CELL,
-        }),
-      );
+      blitShareV7(context, frame, part.image, origin, {
+        x: 0,
+        y: 0,
+        width: part.columns * CELL,
+        height: part.rows * CELL,
+      });
       blitCaps(
         context,
         frame,
@@ -749,17 +779,32 @@ export function drawChibiForestBandsV7(
       x: band.piece.x + band.column,
       y: band.piece.y + band.row,
     };
-    blit(
-      context,
-      frame,
-      image,
-      chibiForestRectV7(frame, origin, {
-        x: 0,
-        y: -UP,
-        width: band.columns * CELL,
-        height: UP,
-      }),
-    );
+    // The tops of the trees of the cells under the band: a column whose
+    // own cell is unexplored shows none (pulp_wars-2yc.28).
+    const fogAt = frame.fogAt ?? null;
+    let from = 0;
+    while (from < band.columns) {
+      if (fogAt !== null && fogAt(origin.x + from, origin.y)) {
+        from += 1;
+        continue;
+      }
+      let to = from;
+      while (
+        to + 1 < band.columns &&
+        !(fogAt !== null && fogAt(origin.x + to + 1, origin.y))
+      )
+        to += 1;
+      const whole = from === 0 && to === band.columns - 1;
+      blitShareV7(
+        context,
+        frame,
+        image,
+        { x: origin.x + from, y: origin.y },
+        { x: 0, y: -UP, width: (to - from + 1) * CELL, height: UP },
+        whole ? undefined : { x: from * CELL, y: 0 },
+      );
+      from = to + 1;
+    }
     // The band belongs to the trees of the row under it.
     blitCaps(context, frame, snow, image, origin, band.columns, 1, -UP, UP);
   }

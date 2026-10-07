@@ -27,6 +27,8 @@ combine with each other and with `?coast-sand`, `?faction-grass` and
 
 `?water-blend=gradient`, `?water-blend=contour` and `?water-blend=both`
 draw the three variants of the water's edge that were tried and not chosen.
+`?fog-style=<name>` draws the cloud in another of its
+[palettes](#the-palettes).
 
 ## The edge between shallow and deep water
 
@@ -72,7 +74,8 @@ has no depth.
 ground is a bank of cloud instead of flat dark squares with a grid.
 
 - **The cloud**: every unexplored cell is filled with one continuous
-  texture, slate blue mist with round puffs. A puff has a pale rim at its
+  texture, mist with round puffs, in the colours of a
+  [palette](#the-palettes). A puff has a pale rim at its
   bottom left and a shaded rim and a short cast shadow at its top right:
   the sun is in the south-west. The texture repeats every seven cells and
   has no cell grid.
@@ -82,18 +85,48 @@ ground is a bank of cloud instead of flat dark squares with a grid.
   own ground: round lobes that reach up to about 10 px out of the fog with a thin
   pale rim, then a feather of mist 8 px wide. The empty sky round the map
   gets the same edge. It is drawn in the ground pass, after the shoreline,
-  so Roads, buildings, trees, peaks and units are on top of it and never
-  lose their outline to the fog.
+  so Roads, buildings and units are on top of it and never lose their
+  outline to the fog. Over a Forest or Mountain cell it is drawn a second
+  time after the trees and the rock (bead `pulp_wars-2yc.28`,
+  [TERRAIN_AT_THE_FOG.md](TERRAIN_AT_THE_FOG.md)), so a wood or a range
+  that runs into the fog ends under the cloud and not on a ruler line.
 
-The cloud is dark and low in contrast on purpose: explored ground is
-brighter than any part of it, so the edge of the known world is the
-strongest line on the screen.
+The cloud is low in contrast on purpose: its lightest and darkest tones
+are closer together than the tones of any terrain tile, so the edge of the
+known world, with its rim and the feather's shade on the ground, is the
+strongest line it draws.
+
+### The palettes
+
+Bead `pulp_wars-2yc.28`. The user, 2026-10-07: "change the color of the fog
+of war. this one is ugly." The cloud's shapes, light and motion are the
+same in every palette; only its colours change. `FOG_PALETTES_V7` in
+[`fog-of-war-v7.ts`](../../src/render/canvas/fog-of-war-v7.ts);
+`FOG_DEFAULT_PALETTE_V7` is the one in use.
+
+| `?fog-style=`       | What it is                                                                     | Verdict                                                                                                                                                                                                                               |
+| ------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dusk` (**in use**) | Lavender-violet dusk clouds with pale lilac rims.                              | Chosen. It is the night sky round the map lifted into cloud, so the fog and the sky read as one world; it has a colour of its own that no terrain, water or faction ground uses; and the land is still the brightest thing on screen. |
+| `cumulus`           | Pale cream cumulus with lilac shade; the edge casts a soft shadow on the land. | The runner-up, and the most storybook. At the start of a match nearly the whole map is fog, and then the brightest thing on the screen is the part with nothing in it, beside a dark interface.                                       |
+| `parchment`         | Warm sepia, the blank of an old map, with an inked edge.                       | Reads as land: it is close to the coast's sand and to the Goblin ground.                                                                                                                                                              |
+| `midnight`          | Deep teal-navy that melts into the starfield.                                  | Elegant, and the map's edge disappears; but it is dark again, which is what was called ugly.                                                                                                                                          |
+| `plum`              | A muted plum.                                                                  | Dull beside the bright board, and close to the Undead owner colour.                                                                                                                                                                   |
+| `slate`             | The slate blue-grey of bead `pulp_wars-2yc.17`.                                | The old one, kept to compare.                                                                                                                                                                                                         |
+
+`?fog-style=0` is still the flat dark fog of before bead
+`pulp_wars-2yc.17`; `?fog-style=1` and an unknown name are the palette in
+use. Every palette keeps the light in the south-west (a puff's lit rim is
+lighter than the puff, its shaded rim darker, its cast shadow darkest), a
+rim at the cloud's edge that stands off the cloud, and a feather that only
+ever darkens the ground beside it; the tests hold each palette to that.
 
 **It never shows anything hidden.** The board plan has no terrain, unit,
 city or resource for an unexplored cell, only a `FOG` entry with its place.
 The fog reads an entry's kind and place and nothing else; the texture is a
 function of board pixels; the fill is opaque; and a cell's edge depends
-only on which of its eight neighbours are unexplored.
+only on which of its eight neighbours are unexplored. (The pieces of a wood
+or a range that runs into the fog are another matter:
+[TERRAIN_AT_THE_FOG.md](TERRAIN_AT_THE_FOG.md).)
 
 **Motion.** The wisps move with a clock the board host advances only on
 frames it draws anyway, by at most 50 ms a frame. The fog never asks for a
@@ -134,7 +167,9 @@ CHROME_PATH=... SWITCH_GAME_URL=http://localhost:6751/ SWITCH_PARAMETER=fog-styl
   npx tsx scripts/art/look-switch-review.ts scripts/art/atmosphere/review-scenes.ts <out-dir>
 ```
 
-`SWITCH_PARAMETER` is `water-blend`, `fog-style` or `starfield`.
+`SWITCH_PARAMETER` is `water-blend`, `fog-style` or `starfield`. The
+palettes side by side: `npx tsx scripts/art/terrain-fog/review.ts palettes
+<out-dir>` (see [TERRAIN_AT_THE_FOG.md](TERRAIN_AT_THE_FOG.md#review)).
 `SWITCH_AFTER_VALUE=gradient` (with `water-blend`) draws a variant on the
 "after" side, and `SWITCH_FIXED_QUERY='fog-style=0&starfield=0'` holds the
 other looks off on both sides. The scenes are generated Archipelago and
