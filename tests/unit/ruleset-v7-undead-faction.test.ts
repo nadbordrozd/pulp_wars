@@ -1800,7 +1800,12 @@ describe("ruleset-7 all-Human parity digests", () => {
       // recomputed, and the map and the post-generation PRNG digests are
       // unchanged. (The seed-7 match above is unchanged: no seat of it
       // buys the root.)
-      acceptedCommands: 357,
+      // Step two of the Human pass (`pulp_wars-w49.22`: what a Human seat
+      // of the Normal AI trains in a threatened city and with Coins kept
+      // for a technology): 365 commands (357); the five digests of play
+      // below were recomputed, the map and the post-generation PRNG
+      // digests are unchanged, and so is the seed-7 match above.
+      acceptedCommands: 365,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1812,31 +1817,41 @@ describe("ruleset-7 all-Human parity digests", () => {
         // f0241a…e2f2).
         // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
         // 29fd88…71a3).
-        "2538470ce7efea9a0cb212532059a1a62f674d9ff9de8be72bc27b84e9148b8c",
+        // Step two of the Human pass (`pulp_wars-w49.22`): recomputed (was
+        // 253847…8b8c).
+        "dac6168851b4b6fe1495b56bc3affad1dc0abc9e83da965b10f3746eaa827a74",
       eventHash:
         // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
         // 6194fb…cc7c).
         // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
         // a75ebd…9f75).
-        "72340f4c4cc2c8cbabb8d353d9ad7ae2add358f409079aeaeea3469ae0812f4c",
+        // Step two of the Human pass (`pulp_wars-w49.22`): recomputed (was
+        // 72340f…2f4c).
+        "c9421318c670efc61653ce082663d3b68b27647a6e9957fe59a0978859013ede",
       normalizedFinalStateHash:
         // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
         // 1f799a…0828).
         // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
         // 9c21de…5fb4).
-        "4638a2c33ceb1902f27b381347815a584a903b064145e0fc39fdc6658c591bc5",
+        // Step two of the Human pass (`pulp_wars-w49.22`): recomputed (was
+        // 4638a2…1bc5).
+        "8a36e1e2e4951ae35e442d07ebfcae35db6ce5a9bd08085fee2c74a211d60864",
       normalizedHumanViewHash:
         // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
         // 6111b8…5070).
         // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
         // 7825d2…a1b8).
-        "800648baf00b7600b83687764a3e0289e8abd572b52ebbb9b47df875bf0e83f9",
+        // Step two of the Human pass (`pulp_wars-w49.22`): recomputed (was
+        // 800648…83f9).
+        "92c4d78c157733325e29f7d855741fd069a93583f6b35c41e73e0e4294eac25f",
       normalizedHumanCommandsHash:
         // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
         // 75cd99…98bf).
         // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
         // 881121…ae25).
-        "b7c041a9e9e7b9b8233609a9bbbca6a2e7af364b600bca09bf9d5b5770dbae40",
+        // Step two of the Human pass (`pulp_wars-w49.22`): recomputed (was
+        // b7c041…ae40).
+        "d6186d19f519841d5cd69e3f72e624fe8d8db49fa8875f73bb05eb9bfad21e5a",
     },
   ] as const;
 

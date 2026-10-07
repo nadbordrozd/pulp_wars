@@ -1157,6 +1157,41 @@ export const ARMY_SPENT_ATTACK_PRIORITY_V7 = 905;
 export const ARMY_GARRISON_TRAINING_VALUE_V7 = 5000;
 
 /**
+ * Step two of the Human pass (`pulp_wars-w49.22`,
+ * docs/product/RULESET_7_TUNING_HUMAN.md section 17): a Human army seat's
+ * garrison rule yields to a ranged unit. In a war on a small map every city
+ * of a seat is threatened and its garrison steps aside every turn, so the
+ * garrison value above decided every training: Fighters only before
+ * Fortification, then Guards only. A seat that researched Marksmanship in
+ * round 8 trained its first Marksman in round 17, with every city training
+ * a Fighter a turn against Goblins in between.
+ *
+ * The garrison value is not given while the seat fields this many line and
+ * defender units, its ranged class is below its share of the army
+ * (`armySharesV7`), and the city is offered a ranged unit that its Coins
+ * reach. The shares then choose (a ranged unit until it has its share).
+ */
+export const ARMY_GARRISON_YIELD_BODIES_V7 = 3;
+
+export function armyGarrisonYieldsToRangedV7(
+  faction: FactionIdV7,
+  counts: ArmyCountsV7,
+  offersRanged: boolean,
+): boolean {
+  if (faction !== "ORIGINAL" || !offersRanged) return false;
+  if (
+    counts.byClass.LINE + counts.byClass.DEFENDER <
+    ARMY_GARRISON_YIELD_BODIES_V7
+  )
+    return false;
+  const shares = armySharesV7(
+    faction,
+    counts.hostileFragile >= ARMY_FRAGILE_HOSTILES_V7,
+  );
+  return shares.RANGED * (counts.total + 1) > 100 * counts.byClass.RANGED;
+}
+
+/**
  * Growth in the seat's own first capital goes before the same growth
  * elsewhere (strategic value) while the capital is at this level or below,
  * or below another own city.

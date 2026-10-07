@@ -1338,7 +1338,11 @@ describe("2. research while at war", () => {
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): by round 15 (round 14
   // before). The Zombie costs the seat one technology more (the root, then
   // Fortification), and Marksmanship comes a round later.
-  it("an Undead seat on the map of the hand-played game buys a ranged-unit technology by round 15, and keeps training", () => {
+  // Step two of the Human pass (`pulp_wars-w49.22`): by round 16. The Human
+  // seat of this match fields four Marksmen in round 11 (three before) and
+  // the Undead seat buys Forestry in round 15 and Marksmanship in round 16
+  // (rounds 14 and 15 before); nothing in an Undead seat's policy changed.
+  it("an Undead seat on the map of the hand-played game buys a ranged-unit technology by round 16, and keeps training", () => {
     // `r7d`: dry land 14 x 14, seed 4, Humans against the Undead Normal
     // AI. There the Undead seat bought Gathering, Drill, and Engineering in
     // twenty-one rounds, never Hunting or Marksmanship, and its capital
@@ -1366,7 +1370,7 @@ describe("2. research while at war", () => {
     const researched: string[] = [];
     let trained = 0;
     let idleTurns = 0;
-    while (state.outcome === null && state.round <= 15) {
+    while (state.outcome === null && state.round <= 16) {
       const actor = state.turnOrder[state.activeSeatIndex];
       if (actor === undefined) throw new Error("no actor");
       let bought = 0;
@@ -1396,8 +1400,11 @@ describe("2. research while at war", () => {
     expect(researched).toContain("MARKSMANSHIP");
     expect(researched.length).toBeGreaterThanOrEqual(5);
     expect(trained).toBeGreaterThanOrEqual(8);
-    // It bought a unit or a technology in all but a few of its turns.
-    expect(idleTurns).toBeLessThanOrEqual(4);
+    // It bought a unit or a technology in all but a few of its turns (five
+    // of sixteen since step two of the Human pass: rounds 4 and 5, and
+    // rounds 12 to 14, in which it keeps its Coins for Forestry; four of
+    // fifteen before).
+    expect(idleTurns).toBeLessThanOrEqual(5);
   }, 120_000);
 });
 // APPEND-MARKER

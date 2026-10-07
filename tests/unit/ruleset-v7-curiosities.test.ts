@@ -452,13 +452,18 @@ describe("headless parity and the CLI flag", () => {
           // 520b30…afe0).
           // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
           // 1eb537…ca55).
-          "d1bedaa3da165f160472eda3471a4070d340d5ada4bcd4835bfe2e444dee64cb",
+          // Step two of the Human pass (`pulp_wars-w49.22`: what a Human
+          // seat of the Normal AI trains): recomputed (was d1beda…64cb), 17
+          // rounds still; the board and the final PRNG state are unchanged.
+          "56746dff9eb4b03d3d493d358dac29d474deb5455795e1a345ec0a4747c11226",
         eventHash:
           // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
           // bd5818…355f).
           // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
           // 1448d4…47f4).
-          "a5db4a5e20a17b03e1e044fc59ddfc8b2132d6f4f0a8680a669ee6332e89efec",
+          // Step two of the Human pass (`pulp_wars-w49.22`): recomputed (was
+          // a5db4a…efec).
+          "08f0db5cd80140145bde35f41e0ba7319991cc4efa60d2c6fce5496042547fd8",
         mapHash:
           "1f6ad08d476884229d6cb8a7319ea209b8667cf4e28e24cd07352ebafc3055de",
         finalPrngHash:

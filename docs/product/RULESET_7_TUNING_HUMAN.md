@@ -1,4 +1,4 @@
-# Ruleset 7: the Human tech tree, rounds 3 to 9
+# Ruleset 7: the Human tech tree, rounds 3 to 9 and step two
 
 **Status:** rounds 3 and 4 were implemented on `pulp-wars-poc-7r47` (bead
 `pulp_wars-w49.3`); [round 5](#12-round-5) (section 12, bead
@@ -13,7 +13,11 @@ played four times before it was published and corrected for what those
 games showed (section 15.11), and the corrected source has not been played
 yet; [round 9](#16-round-9) (section 16, bead `pulp_wars-w49.18`) is the
 first hand play of `pulp-wars-poc-7r55` (the Champion at Armoury and the
-economy rejig): five games, and no rule, number, or policy changed.
+economy rejig): five games, and no rule, number, or policy changed;
+[step two](#17-step-two) (section 17, bead `pulp_wars-w49.22`) is the hand
+play of `pulp-wars-poc-7r56` (the Industry reshuffle): six games, no rule
+or number changed, and two corrections to what a Human seat of the Normal
+AI trains.
 Round 3 (sections 1 to 10) was played by hand three times;
 [round 4](#11-round-4) (section 11) is what those games changed, and was
 played four times. Where they differ, the later section is the rule. [Tuning 1 and its round 2](RULESET_7_TUNING_1.md)
@@ -2722,3 +2726,306 @@ Seen and not changed, because none of it is a Human rule:
   Marksmanship, Leadership or Forestry, Garrison, Engineering, and
   Armoury in that order and trains Champions from the round it has
   Armoury (round 21 in the match it won); nothing breaks.
+
+## 17. Step two
+
+The second pass over the Humans on `pulp-wars-poc-7r56`
+([the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md): the Guard at
+Fortification, the Workshop at the root, which is shown as Crafting), bead
+`pulp_wars-w49.22`. Step one built the ninth unit, the economy rejig, and
+the reshuffle without playing; step two is "iterate on each faction
+including playing games manually to rejig the balance better and improve
+the AI for each faction". Four games were played by hand as the Humans, one
+as the Goblins against the Human AI, and that one again after the change.
+**No rule and no number changed, and the identity stays `7r56`.** Two
+things changed in the Normal AI of a Human seat
+([section 17.4](#174-the-human-normal-ai)). The bar was the user's: "the
+faction is not crazy op or crazy weak and that all the tech branches are
+useful and that units are differentiated from other factions by more than
+stats".
+
+### 17.1 The games
+
+All in text mode against the Normal AI.
+
+| Game | Played as | Against                   | Map                  | Route                                                                                                   | Result                                                                                                 |
+| ---- | --------- | ------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `a`  | Human     | Goblin                    | dry land 14, seed 11 | the Guard first: Gathering 1, Crafting 3, Fortification 7, Engineering 10                               | stopped in round 18, losing: 3 cities and 6 units against 5 and 15                                     |
+| `b`  | Human     | Undead                    | dry land 14, seed 3  | Wilds, then Industry: Hunting 1, Marksmanship 4, Forestry 7, Sawmilling 12, Crafting 15, Engineering 17 | stopped in round 21, an open and even war: 6 cities, 17 units, income 16 against 7 cities and 20 units |
+| `c`  | Human     | Undead, Martian, Dinosaur | lakes 16, seed 9     | Gathering 1, Scouting 3, Raiding 8                                                                      | abandoned in round 9 with 2 cities and 3 units (a corner start and two errors of the player)           |
+| `c2` | Human     | Goblin, Undead, Dinosaur  | dry land 16, seed 2  | Mobility: Hunting 1, Scouting 3, Raiding 8, Chivalry 11                                                 | stopped in round 17, ahead: 5 cities; the Goblin seat down from 3 cities and 10 units to 2 and 4       |
+| `d`  | Goblin    | Human                     | dry land 14, seed 8  | the mob: Gathering 1, Scouting 3, Hunting 7, Bomb Chuckers 11                                           | stopped in round 14, won: 7 cities and 18 units against 3 and 9                                        |
+| `d2` | Goblin    | Human                     | the same             | the same commands, against the changed Human AI                                                         | stopped in round 13, the same game with one Human unit more in rounds 9 and 12                         |
+
+The numbers after a technology are the rounds it was bought in. Seed 11 is
+the map on which a hand-played Human had lost four times in four games; it
+is five in five now.
+
+### 17.2 The questions
+
+**1. Can a Human hold a contested opening in rounds 5 to 12 without the
+Guard?** Its own land, yes. A village it has to race a Goblin seat for, no,
+and it could not with the Guard at the root either.
+
+- In `a` a village four tiles from the capital, taken in round 4 and taken
+  to level 2 with two harvests, fell in round 6: a full Fighter trained on
+  its center died in the Goblin turn after (a Wolf Rider with 8 HP dealt it
+  4, a second one with a Goblin beside the Fighter 8). The Goblin seat had
+  8 units in round 7 and 14 in round 12; the player was at the unit limit
+  (5, then 6 or 7) from round 6 with Coins left, which is why Fortification
+  was bought in round 7.
+- The capital and the two villages behind it held to round 15 behind a
+  pass two tiles wide (Mountains that only the player, with Engineering,
+  could stand on). The fights there were even: 12 Goblin units died for 8
+  of the player's. The Goblin seat came one unit at a time in rounds 7 to
+  13 and each died; from round 15 it came together, with three Bomb
+  Chuckers, and four units died in one Goblin turn.
+- The exact numbers, from the public preview on constructed positions, a
+  full attacker and a full defender, with none, one, and two Goblins beside
+  the defender (Gang Up +0, +1, +2):
+
+  | Defender                   | Wolf Rider +0 / +1 / +2 | Goblin +2 | Bomb from two tiles | The Wolf Rider takes |
+  | -------------------------- | ----------------------- | --------- | ------------------- | -------------------- |
+  | Fighter (12 HP)            | 5 / 8 / 12 (dead)       | 10        | 5                   | 5 / 4 / 0            |
+  | Fighter on a Field Defense | 3 / 6 / 9               | 7         | not computed        | 5 / 4 / 3            |
+  | Guard (17 HP)              | 4 / 7 / 10              | 8         | 6                   | 8 / 7 / 6            |
+  | Guard on a Field Defense   | 3 / 5 / 8               | 6         | not computed        | 8 / 7 / 6            |
+  | Champion (15 HP)           | 4 / 7 / 11              | 9         | 4                   | 6 / 5 / 4            |
+
+  A city center without Walls gives nothing. So in round 5 a Guard on that
+  center would have lived (4 + 7 of 17) and killed the first Wolf Rider by
+  striking back, where the Fighter died. With the Guard two technologies
+  away (12 Coins with one city, 15 to 18 with two or three) it cannot be
+  there in round 5 unless the player opens with Crafting and buys
+  Fortification before the first capture, and then it has no Scouts Raider
+  to take the village with.
+
+- **The smallest fixes inside the rulings, none of them built.** (a) Field
+  Defense for Fighters at the root, with the Guard and the Guards' Field
+  Defense staying at Fortification: a Fighter that captured a village can
+  dig in the turn after for 3 Coins and takes 3 / 6 / 9 where it takes 5 /
+  8 / 12. It gives Crafting something on the turn it is bought. It moves a
+  thing out of Fortification, which the ruling said "keeps everything it
+  has", so it is the user's call. (b) A Human Militia of two Fighters again
+  (round 3 had it, round 4 took it back): two bodies at level 3, which came
+  in rounds 7 to 12. (c) Nothing: the contested village is the Goblin
+  opening's prize, and the open question of the Goblin pass.
+- **The counterplay to a dug-in garrison** is what was seen in `a` and
+  `d`: a bomb from two tiles (6 or 7 to a Guard, 3 or 4 to every unit
+  beside it), a Kaboom (4 or 5 to everything around it, and the Field
+  Defense is gone), Gang Up +2, and Explosives (Breach).
+
+**2. Is Crafting worth opening with, and is Fortification an automatic
+second buy?** No, and no.
+
+- Bought second (`a`, round 3) Crafting did nothing for ten rounds: a
+  Workshop needs a Farm, a Lumber Camp, or a Mine beside it, and each of
+  those is another technology.
+- Bought fifth (`b`, round 15, 10 Coins) it paid in the same turn: a
+  Workshop beside two Lumber Camps is 4 Coins for +2 where the Sawmill on
+  the same tile is 5 for +2, and five Workshops were built in five cities.
+  Beside one or two feeding buildings the Workshop is the better mill; a
+  Sawmill, Windmill, or Forge is ahead from three.
+- Fortification was bought once in four games, in `a`, because every unit
+  slot was full. In `b` (Marksmen and Catapults) and `c2` (Raiders and
+  Knights) it was never the next purchase. The Human AI buys it in rounds
+  10 to 17.
+
+**3. Is the Champion still wanted at 6 Coins and Armoury?** Not bought in
+these games, and still a good unit by the numbers. In `b` Armoury was
+affordable in round 19 (24 Coins with six cities) and Catapults were
+bought, because a hand-to-hand unit that attacks a Zombie is Bitten. In
+`a` it was 15 Coins on an income of 6 with the war open. A Champion kills
+a Wolf Rider, a Bomb Chucker, a Skeleton, a Caveman, or a Raptor in one
+attack (a Fighter deals a Wolf Rider 6 of 10), takes 11 of 15 from the
+Wolf Rider with Gang Up +2 that kills a Fighter, and deals an Orc Brute 9
+and a Zombie 10. All three tier-3 units cost the same research (a tier-1,
+a tier-2, and a tier-3 technology): the Catapult is the answer to Zombies,
+the Knight to Goblins, the Champion to nothing in particular. The Human AI
+reached Armoury in round 21 or 22 of a diagnostic match and fielded three
+to five Champions in round 25.
+
+**4. The Captain.** It has a job, and the Human AI already does it; the
+hand players never bought it because Leadership is a 7-Coin technology (11
+to 17 with three to six cities) in a branch none of these routes used.
+
+- Rally gives +1 Attack to the next attack of every line, defender,
+  ranged, and breakthrough unit beside the Captain. The numbers: a Fighter
+  or a Marksman deals a full Wolf Rider 10 (a kill) where it deals 6; a
+  Marksman deals a Zombie 8 for 5 and a Bomb Chucker 8 (a kill) for 6; a
+  Knight kills a full Orc Brute (15 for 11), an Ogre (16 for 12), a Wight
+  (14 for 11), a Champion (15 for 11), and a Fighter in Forest cover (12
+  for 10); a Champion kills a full Fighter (12 for 10).
+- So a 5-Coin Captain beside three Marksmen is worth more than a fourth
+  Marksman, and beside a Knight it removes the two Goblin units that stop
+  a chain. It moves one tile, has 10 HP and Defense 1, and fills a unit
+  slot.
+- In a diagnostic match the Human AI, Bitten by Zombies, researched
+  Leadership in round 10 for the cure, trained two Captains, and rallied
+  in twelve of the next fourteen rounds.
+- Nothing was changed. What would make a hand player buy it is knowing
+  the numbers: the `options` line of Rally says which units it reaches and
+  not what +1 Attack does to their previews.
+
+**5. Pathfinding, Explosives, Roads and Commerce, Naval.**
+
+| Technology      | Seen                                                                                                                                                                                                                                      | Worth its price?                                                                                                                                                                                                            |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pathfinding     | not bought. In `c` every tile around the capital was Forest: a Raider's Charge needs a Move of two tiles and Forest ends a Move, so Raiding gave nothing. In `c2` a Raider's Escape from a Forest tile reached one tile and it died there | Only to a Mobility army on a wooded map, and there it is three technologies away in another branch (behind Marksmanship). Forest march for the Raider and the Knight at Raiding or Chivalry would put it where it is wanted |
+| Explosives      | not bought. In `d` the Human AI's capital stood behind Walls with a Fighter on a Field Defense on the center: Defense 6                                                                                                                   | Against a fortified center, yes: Breach makes that Fighter Defense 2. Against Goblins or on the defence, no                                                                                                                 |
+| Roads, Commerce | never affordable in `c2` (13, then 15 Coins for Roads on an income of 8, every Coin going to the unit that had just died). Not wanted in `b`, where Coins piled up: Lumber Camps and Workshops grew the cities for less                   | Roads was not tested. Commerce pays 1 Coin a linked city, and its Hire, the one thing that turns idle Coins into a second unit a turn, needs a Market, which is Leadership in another branch                                |
+| Naval           | `c` was the one game with water and was lost before any of it mattered                                                                                                                                                                    | Not tested                                                                                                                                                                                                                  |
+
+**6. Is Land Baron too easy?** Not on these maps. The player owned six
+cities in round 12 of `b`, on a map with nine villages on its side, and
+never the eighth; the Goblin player of `d` had seven in round 14. The
+Monument it gives is 3 population in one city of a player who is already
+ahead. Explorer came in round 6 and 7 on 14 x 14 and took a capital to
+level 3 at once.
+
+### 17.3 The branches and the units
+
+| Branch     | Bought                                                        | Verdict                                                                                                                                                                                                                                          |
+| ---------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Wilds      | Hunting (three games), the whole branch but Pathfinding (`b`) | the strongest economy and the safest army. Two hunts and a Stockpile made a village level 2 for nothing, three times; four Lumber Camps took the capital from level 2 to 4 in one turn. Two Catapults kill a full Zombie a turn from three tiles |
+| Mobility   | Scouting, Raiding, Chivalry (`c2`)                            | wins wars and builds nothing. A charging Raider kills a full Bomb Chucker or a Wolf Rider with 8 HP and dies the turn after. Three Knights made nine kills in four rounds and took a city; two of them were dead within two turns of their chain |
+| Industry   | Crafting, Fortification, Engineering (`a`, `b`)               | Engineering was the economy of `a` (two Mines took the capital to level 3, one a village to level 2 with a free Raider). The Guard held centers against Wolf Riders and died to bombs, as ruled. Crafting: question 2                            |
+| Settlement | Gathering (`a`, `c`)                                          | not played beyond the root in this pass; round 9 found it strong                                                                                                                                                                                 |
+
+No unit was the best in every game: Catapults and Marksmen in `b`, Knights
+in `c2`, Fighters and a Scouts Raider that reached five kills and a
+Promotion in `a`.
+
+**Coins.** Short in `a` (never above 14) and `c2` (spent to 5 or less
+every turn from round 8, 9 units lost and replaced), where the armies
+fought hand to hand. In `b` the army shot from two and three tiles, lost
+three units in 21 rounds, and held 10 to 24 Coins at the start of every
+turn from round 7: nothing died, so nothing needed replacing, and the
+Coins went to buildings. That is the attrition economy working as ruled,
+and it says that a ranged Human army is not short of Coins.
+
+**Seen and not changed.** A Human Militia is one Fighter (two for the
+Goblins). The forced advance took a Guard off its center and a Fighter off
+its Field Defense when they killed, and several times put a wounded unit
+in front of the enemy, where it died. A Field Defense cannot be built by a
+unit that has attacked.
+
+### 17.4 The Human Normal AI
+
+Read in `d` (the debrief of the Human seat) and in two diagnostic matches
+between Normal AIs (Humans against Undead, seed 4, and against Goblins,
+seed 11; 14 x 14, 25 rounds), each run before and after the change. They
+are not a balance measurement.
+
+**What it does well.** It spends every Coin every turn (0 to 11 left). It
+garrisons: in `d` its walled capital had a Fighter on a Field Defense on
+the center, a Guard on each side, and a Marksman behind. Against the
+Undead it fielded a mix (Fighters, Marksmen, Guards, two Captains that
+rallied, Champions from round 23), made 69 attacks, and held nine cities
+to two in round 25.
+
+**What was wrong, and is corrected.** A seat that researched Marksmanship
+as its first unit technology trained Fighters only: the first Marksman six
+rounds after the technology in `d` (rounds 3 and 9) and nine rounds after
+it against the Goblins on seed 11 (rounds 8 and 17). Two causes, both in
+the choice of what a city trains.
+
+- _The garrison rule._ Since tuning 8 a threatened city whose garrison
+  stepped aside trains "a garrison at least as good", with a value that
+  outweighs the shares of the army. On a small map at war every city is
+  threatened every turn, so every training was the garrison: Fighters
+  before Fortification, Guards after it. (The Undead pass saw the other
+  half: "the Human AI against the Undead trained Guards only".) **Now** a
+  Human seat's garrison rule yields while the army has three line or
+  defender units, is below its share of ranged units (a fifth), and the
+  city can pay for one; with an enemy within two tiles of the center it
+  still trains the body.
+- _The kept Coins._ A city chose its unit among everything on offer, and
+  the Coins kept for a due technology were checked afterwards. A city
+  whose shares wanted the 4-Coin Marksman that those Coins did not allow
+  trained nothing, with a 2-Coin Fighter on offer and a slot free. **Now**
+  a Human seat's city chooses among the units the kept Coins allow.
+
+**After the change**, the same two matches: against the Goblins the first
+Marksman in round 14 (17) and three by round 16; against the Undead four
+Marksmen by round 11 (three). In `d2` the seat had one unit more in rounds
+9 and 12. The matches end as they did (the Goblin seat holds seven cities
+to two or three on seed 11; the Human seat nine to two against the
+Undead).
+
+**Seen and left.**
+
+- _The Guard comes late against Goblins._ Fortification in round 10
+  (`d`), 14 (Undead), and 15 to 17 (seed 11), two to five rounds after the
+  root. Making its last step due at once, as for the seats whose order
+  begins with the defender, was tried and changed nothing in the match it
+  was tried in: that rule waits while an enemy stands at the gates, and
+  one did every turn.
+- _Single units fed forward._ In `d` a Fighter alone onto the village the
+  player was taking, and a Fighter and a Raider two tiles in front of
+  everything else: three losses for one kill. No one rule covers them.
+- _Research on a poor seat._ On seed 11 the seat spent 47 of about 65
+  Coins of rounds 8 to 19 on five technologies with two or three cities
+  and an income of 4 to 6.
+- _The order._ Champion before Catapult and Knight, whoever the enemy is.
+  By hand the Knight was the answer to Goblins and the Catapult to the
+  Undead.
+
+### 17.5 Open, for the user
+
+1. **The contested opening against Goblins** (question 1): fix (a), (b),
+   or leave it to the Goblin pass.
+2. **Crafting as an opening** gives nothing on the turn it is bought.
+   Fix (a) is also the answer to this.
+3. **Pathfinding** has had no buyer in the hand-played games of three
+   factions. Forest march for Raiders and Knights at Raiding or Chivalry
+   is the smallest change that puts it in front of the player who wants
+   it; it would leave the node with Replant and the Marksman's Sight.
+4. **Commerce's Hire needs a Market**, which is Leadership. A Mobility
+   player never has one.
+5. **The Human AI's order of tier-3 units** by the enemy it faces.
+
+### 17.6 For the passes that follow
+
+- **The Goblin opening** is as the Goblin pass left it. Played as the
+  Goblins in `d`: 9 units in round 6 for 9 Coins, 13 in round 9, 6 cities
+  in round 9. With two helpers a Wolf Rider killed a full Fighter and a
+  full Raider in one attack each, and a Guard with 11 HP after one bomb;
+  no Raiding and no Warboss was needed. Against a hand player the Goblin
+  AI wasted that in `a`: single Goblins walked at two Fighters four times
+  in rounds 7 to 16.
+- **The Goblin answer to a Knight** was not seen: no Orc Brute and no Ogre
+  stood in the Goblin army of `c2` by round 17, and three Knights went
+  through it.
+- **The Undead AI** held one city and three units to round 7 of `b` and
+  seven cities and 20 units in round 20, retrained a Zombie on a contested
+  center every turn with a Field Defense under it, and answered a step
+  onto that center with a bite and a Wail that killed the unit and raised
+  it as the garrison. It never attacked the player's land.
+
+### 17.7 Tests
+
+`tests/unit/ruleset-v7-human-step2.test.ts`: the identity is unchanged;
+the garrison rule yields for a Human army with three bodies below its
+share of ranged units, not with fewer bodies, not without a ranged unit on
+offer, not for another faction; a threatened capital whose garrison
+stepped aside trains a Marksman with a Wolf Rider three tiles away, a
+Fighter with it two tiles away, and a Fighter once it has its share; a
+city whose kept Coins do not allow the Marksman trains the Fighter.
+
+**Pins that moved**, each with a note at the test, because a Human seat
+of the Normal AI plays differently (no map and no PRNG digest moved):
+
+- the all-Human parity match of seed 1234 (365 commands, 357 before; the
+  five digests of play) in `tests/unit/ruleset-v7-undead-faction.test.ts`;
+  the seed-7 match is unchanged;
+- the Dry Land pin (Humans against Undead, seed 3: commands and events,
+  17 rounds still) of the curiosities parity matches; the other four are
+  unchanged;
+- the seed of three tests that need a Lich to plague or splash in
+  ordinary play (Undead against Humans, 11 x 11): seed 6, was 9 (of seeds
+  0 to 19, seeds 6 and 15 plague and 6, 10, 15, and 18 splash);
+- the Undead seat of `tests/unit/ruleset-v7-tuning-8.test.ts` on the map
+  of a hand-played game buys Marksmanship in round 16 (15) and is idle in
+  five of sixteen turns (four of fifteen): it meets four Marksmen in round
+  11 where it met three.

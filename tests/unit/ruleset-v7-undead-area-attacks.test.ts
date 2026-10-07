@@ -877,7 +877,11 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // With the Industry reshuffle (`pulp_wars-w49.21`, 7r56) seed 8
     // trains no Lich; the two of seed 9 splash (of seeds 0-19, splashes
     // also show on 6, 14, 15, 17, and 18).
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 9), {
+    // With step two of the Human pass (`pulp_wars-w49.22`: what a Human
+    // seat of the Normal AI trains) the Liches of seed 9 never splash;
+    // those of seed 6 do, twelve times (of seeds 0-19, splashes also show
+    // on 10, 15, and 18).
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 6), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);

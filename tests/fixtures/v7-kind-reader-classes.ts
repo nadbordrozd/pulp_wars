@@ -183,6 +183,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // own research order begins with its defender (the viewer's faction).
   "src/ai/v7.ts::armyDefenderResearchV7": "SEAT",
   "src/ai/v7.ts::defenderLastStepResearchV7": "SEAT",
+  // Step two of the Human pass (`pulp_wars-w49.22`): whether the seat that
+  // chooses a city's training is a Human one (the viewer's faction).
+  "src/ai/v7.ts::armyChoosesWithinFloorV7": "SEAT",
   "src/ai/v7.ts::armyShootsBiterFirstV7": "SEAT",
   "src/ai/v7.ts::armyCureDueV7": "SEAT",
   "src/ai/v7.ts::armyCureResearchV7": "SEAT",

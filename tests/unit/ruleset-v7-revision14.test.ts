@@ -1147,7 +1147,11 @@ describe("ruleset-7 revision-14 natural play and persistence", () => {
     // and the Guard behind Fortification) of seeds 0-19, seeds 6, 9, 14,
     // and 15 plague (seed 9: two Liches, 25 Plague applications, 30
     // bites); eleven of the twenty matches are over by round 22.
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 9);
+    // With step two of the Human pass (`pulp_wars-w49.22`: what a Human
+    // seat of the Normal AI trains) the Undead seat of seed 9 never
+    // plagues; of seeds 0-19, seeds 6 and 15 plague (seed 6: 8 Plague
+    // applications, 20 bites, over in round 35).
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 6);
     const match = runAiMatchV7(setup, { maxRounds: 45 });
     expect(match.errors).toEqual([]);
     expect(match.stalls).toEqual([]);

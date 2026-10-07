@@ -232,6 +232,7 @@ import {
   armyDinosaurDefenderCappedV7,
   armyPlayFactionV7,
   armyResearchDueV7,
+  armyGarrisonYieldsToRangedV7,
   armyRoleScoreV7,
   armySharesV7,
   armyUnitStrengthV7,
@@ -7185,6 +7186,36 @@ function armyResearchFloorV7(context: PolicyContextV7): number {
   return floor;
 }
 
+/**
+ * Tuning 8: the Coins kept for the due technology (`armyResearchFloorV7`)
+ * do not pay for this training. A city with an enemy at its gates trains
+ * regardless (`armyAtTheGatesV7`).
+ */
+function armyFloorHoldsTrainingV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "TRAIN" | "LAY_EGG" }>,
+): boolean {
+  return (
+    context.army &&
+    !armyAtTheGatesV7(context, command.cityId) &&
+    context.view.viewer.coins - trainingCostV7(context.view, command) <
+      armyResearchFloorV7(context)
+  );
+}
+
+/**
+ * Step two of the Human pass (`pulp_wars-w49.22`,
+ * docs/product/RULESET_7_TUNING_HUMAN.md section 17): a Human army seat
+ * chooses a city's training among the units the kept Coins allow
+ * (`armyFloorHoldsTrainingV7`). The choice was made among everything on
+ * offer and the kept Coins were checked afterwards, so a city whose shares
+ * wanted a 4-Coin Marksman that the floor did not allow trained nothing,
+ * turn after turn, with a 2-Coin Fighter on offer and a free unit slot.
+ */
+function armyChoosesWithinFloorV7(context: PolicyContextV7): boolean {
+  return context.army && context.view.viewer.faction === "ORIGINAL";
+}
+
 /** What a Field Defense costs (the reducer's `BUILD_FIELD_DEFENSE` price). */
 const ARMY_FIELD_DEFENSE_COINS_V7 = 3;
 
@@ -9122,13 +9153,7 @@ function isPolicyCandidate(
   )
     return false;
   // Tuning 8 (`pulp_wars-w49.11`): the Coins kept for the due technology.
-  if (
-    armyProductionV7(command) &&
-    context.army &&
-    !armyAtTheGatesV7(context, command.cityId) &&
-    context.view.viewer.coins - trainingCostV7(context.view, command) <
-      armyResearchFloorV7(context)
-  )
+  if (armyProductionV7(command) && armyFloorHoldsTrainingV7(context, command))
     return false;
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): nor is a Field
   // Defense built out of them (`armyFieldDefenseHeldV7`).
@@ -10100,6 +10125,7 @@ function* sharedCityContextWorkV7(
     context.army && armyAlertV7(context)
       ? armyCountsForContextV7(context)
       : null;
+  const withinFloor = armyChoosesWithinFloorV7(context);
   for (const [cityId, shared] of sharedByCity) {
     const city = citiesById.get(cityId);
     let neutral = 0;
@@ -10307,6 +10333,32 @@ function* sharedCityContextWorkV7(
     let best: SharedCityCommandV7 | null = null;
     let bestUtility = Number.NEGATIVE_INFINITY;
     let bestTie: readonly number[] = [];
+    // Step two of the Human pass (`pulp_wars-w49.22`): a Human army seat
+    // chooses among the units the kept Coins allow
+    // (`armyChoosesWithinFloorV7`), and its garrison rule yields to a
+    // ranged unit its army is short of (`armyGarrisonYieldsToRangedV7`),
+    // except with an enemy at the gates of the city, where a body is
+    // trained.
+    const floorHolds = (command: SharedCityCommandV7): boolean =>
+      withinFloor &&
+      (command.kind === "TRAIN" || command.kind === "LAY_EGG") &&
+      armyFloorHoldsTrainingV7(context, command);
+    const garrisonYields =
+      withinFloor &&
+      armyCounts !== null &&
+      !armyAtTheGatesV7(context, cityId) &&
+      armyGarrisonYieldsToRangedV7(
+        view.viewer.faction,
+        armyCounts,
+        shared.some(
+          (command) =>
+            command.kind === "TRAIN" &&
+            !floorHolds(command) &&
+            armyShareClassV7(
+              effectiveRoleRuleV7(command.role, view.viewer.faction),
+            ) === "RANGED",
+        ),
+      );
     for (const command of shared) {
       const cost = sharedTrainingCostV7(
         view,
@@ -10350,6 +10402,7 @@ function* sharedCityContextWorkV7(
               ) &&
               (!spendsReserve || threatened) &&
               !worsens &&
+              !floorHolds(command) &&
               // The Martian pass, correction: no Guard against an enemy
               // that shoots (`armyOpenToRangedUselessV7`).
               !(
@@ -10382,6 +10435,7 @@ function* sharedCityContextWorkV7(
           command.kind === "TRAIN" &&
           city !== undefined &&
           threatened &&
+          !garrisonYields &&
           !ownedAt.has(coordKey(city.at)) &&
           armyDefenderWorthV7(
             context,

@@ -148,7 +148,10 @@ describe("ruleset-7 revision-13 headless Undead telemetry", () => {
     // seed 0 never splashes; seeds 3, 6, 8, 10, 14, 15, and 18 of 0-19 do).
     // Seed 9 since the Industry reshuffle (`pulp_wars-w49.21`, 7r56: seed
     // 8 trains no Lich; seeds 6, 9, 14, 15, 17, and 18 of 0-19 splash).
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 9), {
+    // Seed 6 since step two of the Human pass (`pulp_wars-w49.22`: what a
+    // Human seat of the Normal AI trains; seed 9 no longer splashes; seeds
+    // 6, 10, 15, and 18 of 0-19 do).
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 6), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);

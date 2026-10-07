@@ -1,5 +1,81 @@
 # Greedy Normal AI
 
+## Step two of the Human pass (`pulp_wars-w49.22`)
+
+[Step two of the Human pass](../product/RULESET_7_TUNING_HUMAN.md#17-step-two)
+changed no rule (the identity stays `pulp-wars-poc-7r56`) and two things in
+what a Human seat of the army policy trains. Both are in the choice of a
+city's training (`sharedCityContextWorkV7`); no research rule, no Move, and
+no other faction's seat changed.
+
+**What was seen.** A Human seat that researched Marksmanship as its first
+unit technology in round 3 and in round 8 trained its first Marksman in
+round 9 and in round 17, and fielded Fighters only against Goblins in
+between. After Fortification the same seat trains Guards only (the Undead
+hand pass saw that from the other side).
+
+**The garrison rule yields to a ranged unit**
+(`armyGarrisonYieldsToRangedV7`, `ARMY_GARRISON_YIELD_BODIES_V7` = 3, in
+`src/ai/v7-army.ts`). Tuning 8 gave a role 5,000
+(`ARMY_GARRISON_TRAINING_VALUE_V7`) when it is trained onto the empty
+center of a threatened city and is a garrison at least as good as the best
+own unit beside that center. The value is far above the shares of the army
+(a few hundred), so it decided every training of a threatened city, and on
+a small map at war every city is threatened every turn. For a Human seat
+the value is now not given in a city when all of these hold:
+
+- the army has three or more line and defender units;
+- its ranged class is below its share (`armySharesV7`: 20 for every 100
+  units, counting the unit to be trained);
+- the city is offered a ranged unit that the kept Coins allow (below);
+- no hostile land unit stands within `ARMY_RESEARCH_FLOOR_GATES_V7` (2)
+  tiles of the center (`armyAtTheGatesV7`): there the body is trained.
+
+The shares then choose as in a city that is not threatened
+(`armyRoleScoreV7`, with its 100 for a line unit and 200 for a defender in
+a threatened city): a Marksman until the ranged class has its share, then
+the garrison again.
+
+**A city chooses among the units the kept Coins allow**
+(`armyChoosesWithinFloorV7`, `armyFloorHoldsTrainingV7`). The Coins kept
+for a due technology (`armyResearchFloorV7`) were a filter on candidates
+(`isPolicyCandidate`), applied after each city had chosen its one training
+among everything on offer. A city whose shares wanted a 4-Coin Marksman
+that the floor did not allow therefore trained nothing, with a 2-Coin
+Fighter on offer and a free unit slot. For a Human seat a training the
+floor holds is not eligible in the choice, so the city chooses the best
+unit it may pay for. The floor itself, and the city with an enemy at its
+gates that trains regardless, are unchanged; `armyFloorHoldsTrainingV7` is
+the one test both places use.
+
+**Human seats only.** The other four army seats have their own rules for
+what stands on a threatened center (a Banshee or a Lich steps off it, no
+Bomb Chucker is trained onto a contested one, a Martian seat's Projector
+beyond its share gets no garrison value) and their own kept Coins for a
+dear unit (`armyDearUnitFloorV7`); their passes were played with them.
+
+**Tried and not kept.** The shares for a seat that is not alert (it trains
+by the older value, HP against price, which is a Fighter): with only
+Fighters and Marksmen on offer the shares buy them one for one, which is
+dear for a seat that still takes villages. And the due priority of
+`armyDefenderResearchV7` for a Human seat's Fortification: it waits while
+an enemy stands at the gates, and changed nothing in the match it was
+tried in.
+
+**Two diagnostic matches**, each run before and after (14 x 14, 25
+rounds); not a balance measurement. Humans against Goblins, seed 11: the
+first Marksman in round 14 (was 17), three in round 16; Fortification in
+round 17 (was 15). Humans against Undead, seed 4: four Marksmen in round
+11 (were three), six Guards, three Captains, and five Champions among 28
+units in round 25. No error and no stall.
+
+**Pins that moved** (the play of a Human seat, not the maps): the
+all-Human parity match of seed 1234, the Dry Land pin of the curiosities
+parity matches, the seed of three natural-play tests that need a Lich to
+plague or splash (6, was 9), and the round by which the Undead seat of a
+tuning-8 test buys Marksmanship (16, was 15). The list with numbers is in
+[section 17.7](../product/RULESET_7_TUNING_HUMAN.md#177-tests).
+
 ## The Industry reshuffle (`pulp_wars-w49.21`)
 
 [The Industry reshuffle](../product/RULESET_7_INDUSTRY_RESHUFFLE.md)

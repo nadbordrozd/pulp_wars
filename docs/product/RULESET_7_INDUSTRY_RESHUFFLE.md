@@ -249,7 +249,14 @@ watching, faction by faction.
 Does the Marksman opening need the Guard sooner than round 12 to 15, where
 the AI now gets it? Does the Champion (three technologies on the other
 sub-branch) still come at a useful time when the Guard is no longer on
-the way to it?
+the way to it? **Played** (bead `pulp_wars-w49.22`, four hand games as
+the Humans and two as the Goblins against the Human AI; no rule changed):
+the answers are in
+[the Human tuning, step two](RULESET_7_TUNING_HUMAN.md#17-step-two). In
+short: the Human's own land holds without the Guard and a village it races
+a Goblin seat for does not, with or without it; Crafting gives nothing on
+the turn it is bought and pays as a later technology; Fortification is
+not an automatic second buy.
 
 **Undead.** The Zombie is the faction's identity and is two technologies
 away. With the AI's new rule the first Zombie came in round 8 (round 3 to
