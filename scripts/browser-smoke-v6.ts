@@ -95,6 +95,7 @@ const browser = await launchSmokeBrowser({
   port,
   args: [
     "--headless=new",
+    "--mute-audio",
     "--disable-gpu",
     // Partial raster reuse makes rounded/dashed borders depend on earlier
     // invalidation regions. Raster whole tiles for repeatable evidence.

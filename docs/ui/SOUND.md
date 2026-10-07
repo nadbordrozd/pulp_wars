@@ -976,6 +976,11 @@ is `PLAYED`, `COALESCED`, `DROPPED`, `UNAVAILABLE`, `MUTED`, `HIDDEN` or
 `__PULP_WARS_APP__.view.audio.log`. Tests run without WebAudio: every request
 is logged as `LOCKED` and nothing else happens.
 
+Every script under `scripts/` that launches Chrome passes `--mute-audio`, so
+browser runs make no sound on the machine; sound is verified through this
+instrumentation, never by listening
+(`tests/unit/scripts-chrome-muted.test.ts` fails on an unmuted launch).
+
 ## What has not been checked
 
 - How the sounds actually sound: character, pleasantness, whether an attack

@@ -783,6 +783,7 @@ async function captureInGame(baseUrl: string): Promise<CaptureEvidence[]> {
     chrome,
     [
       "--headless=new",
+      "--mute-audio",
       "--disable-gpu",
       "--hide-scrollbars",
       "--no-first-run",

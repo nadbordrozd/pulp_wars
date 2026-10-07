@@ -42,6 +42,7 @@ const browser = spawn(
   chrome,
   [
     "--headless=new",
+    "--mute-audio",
     "--disable-gpu",
     "--hide-scrollbars",
     "--no-first-run",

@@ -57,6 +57,7 @@ document.body.textContent = JSON.stringify({ count: vectors.length, failures });
     chrome,
     [
       "--headless",
+      "--mute-audio",
       "--no-first-run",
       "--disable-gpu",
       `--user-data-dir=${join(directory, "chrome-profile")}`,

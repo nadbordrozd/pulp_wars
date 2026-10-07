@@ -1418,6 +1418,7 @@ async function captureAll(baseUrl: string): Promise<void> {
     chrome,
     [
       "--headless=new",
+      "--mute-audio",
       "--disable-gpu",
       "--hide-scrollbars",
       "--no-first-run",

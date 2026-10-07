@@ -61,6 +61,7 @@ const browser = await launchSmokeBrowser({
   port,
   args: [
     "--headless=new",
+    "--mute-audio",
     "--disable-gpu",
     "--hide-scrollbars",
     `--remote-debugging-port=${port}`,

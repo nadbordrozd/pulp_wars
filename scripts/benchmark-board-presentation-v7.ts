@@ -46,6 +46,7 @@ const browser = await launchSmokeBrowser({
   port,
   args: [
     "--headless=new",
+    "--mute-audio",
     "--no-first-run",
     `--remote-debugging-port=${port}`,
     `--user-data-dir=${path.join(outputRoot, "chrome-profile")}`,
