@@ -262,11 +262,49 @@ Roads, that text now describes the **Classic look** developer option
   unit at full health has no bar. A garrisoned unit's bar is shorter and
   sits under its reduced sprite. The bar stays inside the cell, above the
   territory border and the selection outline.
-- **Ready cue on the ground:** a unit that can still act has a thin cream
-  ring on the ground round its feet (round its hull for a ship), in no
-  player colour; it is an ellipse, never the square cell outline of the
-  selection. The outline glow is not drawn; the dock still says **Needs
-  action** or **Handled**.
+- **Yet-to-move cue (bead `pulp_wars-2yc.29`, the user's request of
+  2026-10-07; it replaces the calm thin ring of `pulp_wars-w5j.3`).** In the
+  viewer's own turn each of its units shows one of three states
+  (`unit-turn-state-v7.ts`):
+  - **Fresh** (the engine offers it a Move): a thick cream ring on a dark
+    casing round its feet, a pool and an outer line of the viewer's colour,
+    a ripple that leaves the ring once per 1.6 s, and a small cream chevron
+    bouncing over its head.
+  - **Active** (not handled, no Move left): the thin cream ring as before.
+  - **Spent** (handled): no ring, and the sprite is dimmed (45% saturation,
+    74% brightness; a Crashed unit keeps its own droop).
+    The states follow the newest view at once and hold through an animation.
+    The cue is an ellipse at the feet and a mark over the head, never a tile
+    outline, so it is not one of the four target marks
+    ([Board targeting](BOARD_TARGETING.md)); reduced motion draws it still.
+    Outside the viewer's turn, and for an Egg, units are drawn plainly. The
+    dock still says **Needs action** or **Handled**.
+- **Feedback animations (bead `pulp_wars-2yc.29`).** Presentation only;
+  the state changes at once and no animation blocks input or the AI.
+  - **Coins.** Every Coin the viewer gains pops out of the tile that earned
+    it and flies on a parabola to the HUD counter, which counts each coin as
+    it lands and always ends on the true balance (`coin-flight-layer-v7.ts`,
+    `feedback-plan-v7.ts`). A few sprites per source, 24 on screen at most;
+    an off-screen source's coins enter from the nearest edge. The layer is
+    above the board, the dock and the HUD and below toasts and dialogs.
+  - **Population.** One icon per point (six per city at most) hops from the
+    source tile to the city; on arrival the city hops and its meter fills. A
+    level-up then shows a gold ring, and its reward dialog opens after it
+    (never more than 2.5 s after the command).
+  - **Territory click.** A click or tap on a tile inside a city's territory
+    hops that city (any player's visible city); a click that gives an order
+    does not.
+  - **Promotion.** A unit that reaches the kills hops inside a ring of
+    sparkles; from then on the Promote button's icon floats over its head on
+    a pale disc (gold rim and a bob for the viewer's unit; grey, smaller and
+    still for another player's visible unit, whose kills are public) until
+    it is promoted or dies.
+  - **Reduced motion** (the Motion setting or the system preference): no
+    flight and no hop; the counter, the meter and the marker show at once.
+    Fast animation speed halves every duration; Fast Forward and a cancelled
+    presentation finish everything at once.
+  - **Sound.** No new sound: the coin sound waits for the first coin to
+    land and the level-up sound for the ring.
 - **Cities** fly no pennant (bead `pulp_wars-b5f.4`, [section 21 of the
   visual direction](../art/VISUAL_DIRECTION_2026-10.md#21-faction-colours-and-the-pennants-retired)):
   every faction's city is its own art, so the city and the faction-coloured

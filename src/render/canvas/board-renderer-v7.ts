@@ -370,6 +370,12 @@ import {
   directedUnitShadowGeometryV7,
   type BoardDirectionRuntimeV7,
 } from "./visual-direction-v7";
+import {
+  drawPromotionMarkerV7,
+  drawReadyChevronV7,
+  promotionMarkerSizeCssPxV7,
+  type BoardFeedbackFrameV7,
+} from "./feedback-canvas-v7";
 
 export type BoardSelectionV7 =
   | { readonly kind: "TILE"; readonly at: CoordV7 }
@@ -1982,6 +1988,14 @@ export function drawBoardV7(input: {
    * unit's sprite is drawn a little fainter instead.
    */
   readonly candyDroop?: (image: CanvasImageSource) => CanvasImageSource;
+  /**
+   * The feedback animations (bead pulp_wars-2yc.29, feedback-host-v7.ts):
+   * a city's and a unit's hop, a city's meter while its population is on
+   * its way, the "yet to move" cue (ring, chevron, a spent unit's dimmed
+   * sprite) and the Promotion marker. Omitted, the frame is drawn exactly
+   * as before the bead.
+   */
+  readonly feedback?: BoardFeedbackFrameV7 | null;
 }): void {
   const { context, viewport, devicePixelRatio } = input;
   const saturationOf = (entry: BoardRenderPlanEntryV7): number => {
@@ -2359,6 +2373,13 @@ export function drawBoardV7(input: {
     if (entry.blizzard === true)
       drawBlizzardCellV7(context, entry.at, cell, blizzardTime, sceneAlpha);
   };
+  // Bead pulp_wars-2yc.29: the city on each cell, so a unit standing on a
+  // city hops with it.
+  const cityIdByCell = new Map<string, number>();
+  if (input.feedback !== undefined && input.feedback !== null)
+    for (const entry of input.plan.entries)
+      if (entry.kind === "CITY")
+        cityIdByCell.set(coordKey(entry.at), Number(entry.key.slice(5)));
   // CHIBI settlement centres (cities and villages): a unit standing on one
   // draws smaller in the cell's front-right, so the settlement stays
   // readable. A unit mid-move (fractional cell) never matches.
@@ -3056,6 +3077,28 @@ export function drawBoardV7(input: {
       // The Candy revision: the head and the foot of a unit's sprite as
       // drawn this frame, for its Rushed, Crashed and Splatted markers.
       let candyAnchor: CandyUnitAnchorV7 | null = null;
+      // Bead pulp_wars-2yc.29: this unit's turn state and Promotion marker,
+      // and the top of its head as drawn (hopping, garrisoned) for the
+      // chevron and the marker over it.
+      const feedback = input.feedback ?? null;
+      const feedbackUnitId =
+        feedback !== null && entry.kind === "UNIT"
+          ? Number(entry.key.slice(5))
+          : null;
+      const turnState =
+        feedback === null || feedbackUnitId === null
+          ? null
+          : feedback.turnState(feedbackUnitId);
+      const promotionMarker =
+        feedback === null || feedbackUnitId === null
+          ? null
+          : feedback.promotionMarker(feedbackUnitId);
+      let feedbackHead: { readonly x: number; readonly y: number } | null =
+        null;
+      const garrisonCityId =
+        feedback !== null && entry.kind === "UNIT"
+          ? cityIdByCell.get(coordKey(entry.at))
+          : undefined;
       // The Ice Folk revision: this frame of a Shatter on this unit, if any.
       const shatterCue =
         entry.kind === "UNIT" &&
@@ -3152,6 +3195,16 @@ export function drawBoardV7(input: {
               groundRect,
               camera.zoom,
               chibiReady.asset.id,
+              feedback === null
+                ? undefined
+                : turnState === null
+                  ? null
+                  : {
+                      state: turnState,
+                      pulse: feedback.pulse,
+                      ownerColour: entry.ownerColor,
+                      highContrast: input.highContrast ?? false,
+                    },
             );
           }
           // A TRY (pulp_wars-2yc.8): a city or a village on its shadow.
@@ -3161,6 +3214,11 @@ export function drawBoardV7(input: {
             input.settlementShadow === true
           )
             drawSettlementShadowV7(context, entry, rect, sceneAlpha);
+          // Bead pulp_wars-2yc.29: a city's small hop (its shadow stays).
+          if (feedback !== null && entry.kind === "CITY") {
+            const hop = feedback.cityHopCssPx(Number(entry.key.slice(5)));
+            if (hop !== 0) rect = { ...rect, y: rect.y + hop * camera.zoom };
+          }
           // The Martian revision: a flyer casts a ground shadow (over land
           // or water) and is drawn lifted above it; the ground cue stays put.
           // The Dwarf revision: the Gyrocopter flies the same way.
@@ -3213,13 +3271,22 @@ export function drawBoardV7(input: {
                 : null;
             const scale = (readiness?.scale ?? 1) * spriteScale;
             const jump =
-              input.selectionJump?.unitId === Number(entry.key.slice(5))
+              (input.selectionJump?.unitId === Number(entry.key.slice(5))
                 ? selectionJumpOffsetCssPx(
                     input.selectionJump.elapsedMs,
                     input.selectionJump.speed,
                     input.reducedMotion ?? false,
                   ) * camera.zoom
-                : 0;
+                : 0) +
+              // Bead pulp_wars-2yc.29: the hop of an earned Promotion, and
+              // a garrisoned unit hops with its city.
+              (feedback === null || feedbackUnitId === null
+                ? 0
+                : (feedback.unitHopCssPx(feedbackUnitId) +
+                    (garrisonCityId === undefined
+                      ? 0
+                      : feedback.cityHopCssPx(garrisonCityId))) *
+                  camera.zoom);
             rect = {
               x:
                 rect.x -
@@ -3280,10 +3347,14 @@ export function drawBoardV7(input: {
           // where no copy can be made it is drawn a little fainter.
           const crashed =
             entry.kind === "UNIT" && entry.candy?.crashed === true;
+          // Bead pulp_wars-2yc.29: a spent unit's sprite is dimmed the same
+          // way (a cached copy); a Crashed unit keeps its own droop.
           const drooped =
             crashed && input.candyDroop !== undefined
               ? input.candyDroop(image)
-              : image;
+              : !crashed && turnState === "SPENT" && feedback !== null
+                ? feedback.spentSprite(image)
+                : image;
           if (crashed && drooped === image)
             context.globalAlpha *= CRASHED_SPRITE_ALPHA_V7;
           if (chibiReady !== null) {
@@ -3318,6 +3389,13 @@ export function drawBoardV7(input: {
           if (entry.kind === "UNIT" && entry.martian?.controlled === true) {
             const anchor = spriteHeadAnchorV7(image);
             controlHead = {
+              x: rect.x + rect.width * (anchor?.centre ?? 0.5),
+              y: rect.y + rect.height * (anchor?.top ?? 0.12),
+            };
+          }
+          if (turnState === "FRESH" || promotionMarker !== null) {
+            const anchor = spriteHeadAnchorV7(image);
+            feedbackHead = {
               x: rect.x + rect.width * (anchor?.centre ?? 0.5),
               y: rect.y + rect.height * (anchor?.top ?? 0.12),
             };
@@ -3672,12 +3750,23 @@ export function drawBoardV7(input: {
         if (entry.kind === "CITY" && entry.cityName !== undefined) {
           const cityName = entry.cityName;
           const ownerColor = entry.ownerColor;
+          // Bead pulp_wars-2yc.29: the plate hops with its city.
+          const hopY =
+            feedback === null
+              ? 0
+              : feedback.cityHopCssPx(Number(entry.key.slice(5))) * camera.zoom;
           deferredCityNames.push(() =>
-            drawCityNameLabelV7(context, { x, y }, camera.zoom, cityName, {
-              ...(ownerColor === undefined ? {} : { ownerColor }),
-              highContrast: input.highContrast ?? false,
-              alpha: sceneAlpha,
-            }),
+            drawCityNameLabelV7(
+              context,
+              { x, y: y + hopY },
+              camera.zoom,
+              cityName,
+              {
+                ...(ownerColor === undefined ? {} : { ownerColor }),
+                highContrast: input.highContrast ?? false,
+                alpha: sceneAlpha,
+              },
+            ),
           );
         }
         if (
@@ -3688,12 +3777,17 @@ export function drawBoardV7(input: {
         )
           drawCapitalCrownV7(context, x, y, camera.zoom);
         if (entry.kind === "CITY") {
-          const width = Math.max(1, (entry.value ?? 1) + 1);
-          const positive = Math.max(0, Math.min(width, entry.population ?? 0));
-          const negative = Math.max(
-            0,
-            Math.min(width, -(entry.population ?? 0)),
-          );
+          // Bead pulp_wars-2yc.29: while population is on its way to the
+          // city its meter shows what has arrived.
+          const meter =
+            feedback === null
+              ? null
+              : feedback.cityMeter(Number(entry.key.slice(5)));
+          const meterLevel = meter?.level ?? entry.value ?? 1;
+          const meterPopulation = meter?.population ?? entry.population ?? 0;
+          const width = Math.max(1, meterLevel + 1);
+          const positive = Math.max(0, Math.min(width, meterPopulation));
+          const negative = Math.max(0, Math.min(width, -meterPopulation));
           const pipSize = 7 * camera.zoom;
           const pipStep = 9 * camera.zoom;
           const column = CHIBI_OVERLAY_FRAME_V7.populationColumn;
@@ -3917,6 +4011,63 @@ export function drawBoardV7(input: {
             radius,
             input.highContrast ?? false,
           );
+        }
+        // Bead pulp_wars-2yc.29: over the head, the marker of a unit that
+        // waits for its Promotion (the Promote button's own icon) or,
+        // without one, the chevron of a unit that can still move.
+        if (
+          entry.kind === "UNIT" &&
+          (promotionMarker !== null || turnState === "FRESH")
+        ) {
+          const head = feedbackHead ?? { x, y: y - 40 * camera.zoom };
+          // A controlled unit's halo keeps its place right over the head.
+          const top =
+            head.y -
+            (entry.martian?.controlled === true ? 16 : 3) * camera.zoom;
+          // A city's name plate lies on the top edge of the cell under it:
+          // there the marker stands beside the head, clear of the plate,
+          // and the chevron is left out (the ring still says "can move").
+          const underCity = cityIdByCell.has(
+            coordKey({ x: entry.at.x, y: entry.at.y - 1 }),
+          );
+          context.save();
+          context.globalAlpha = sceneAlpha;
+          if (promotionMarker !== null) {
+            const size =
+              promotionMarkerSizeCssPxV7(camera.zoom, promotionMarker.own) *
+              promotionMarker.scale;
+            const cell = TILE_WIDTH * camera.zoom;
+            const icon = chibiArt?.resolve({
+              subject: "ICON:ACTION:PROMOTE",
+              at: entry.at,
+              deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+            });
+            drawPromotionMarkerV7(
+              context,
+              underCity ? x - cell * 0.33 : head.x,
+              (underCity ? y - cell * 0.04 : top - size / 2) +
+                promotionMarker.bobCssPx * camera.zoom,
+              size,
+              {
+                icon:
+                  icon?.kind === "READY"
+                    ? icon.image
+                    : chibiArt === undefined
+                      ? input.images.resolve("ui-action-promote")
+                      : null,
+                own: promotionMarker.own,
+                highContrast: input.highContrast ?? false,
+              },
+            );
+          } else if (!underCity)
+            drawReadyChevronV7(
+              context,
+              head.x,
+              top + (feedback?.chevronBounceCssPx ?? 0) * camera.zoom,
+              camera.zoom,
+              { highContrast: input.highContrast ?? false },
+            );
+          context.restore();
         }
       };
       if (chibiPiece) deferredChibiOverlays.push(drawPieceOverlays);

@@ -21,6 +21,10 @@ import {
 } from "./geometry";
 import { parseHexColourV7 } from "./owner-recolour-v7";
 import {
+  drawReadyGroundCueV7,
+  type ReadyCueFrameV7,
+} from "./feedback-canvas-v7";
+import {
   unitShadowAnchorV7,
   type UnitShadowEllipseV7,
 } from "./unit-shadows-v7";
@@ -1136,6 +1140,7 @@ function drawDirectedGroundV7(
   sprite: DirectedRectV7,
   zoom: number,
   assetId: string | undefined,
+  readyCue: ReadyCueFrameV7 | null | undefined,
 ): void {
   const {
     shadow,
@@ -1145,10 +1150,21 @@ function drawDirectedGroundV7(
   // The Dwarf revision: the Gyrocopter casts its own shadow too.
   const flyer = entry.martian?.flyer === true || entry.dwarf?.flyer === true;
   const shadowed = direction.unit.base === "SHADOW" && !afloat && !flyer;
-  const ring = entry.ready === true && direction.chrome.ready !== "GLOW";
+  // Bead pulp_wars-2yc.29: with a turn state the ring follows it (FRESH is
+  // the strong pulsing cue, ACTIVE the thin ring, SPENT and no state none);
+  // without one (`undefined`) it follows the plan's `ready`, as before.
+  const cued =
+    readyCue !== undefined &&
+    readyCue !== null &&
+    readyCue.state !== "SPENT" &&
+    direction.chrome.ready !== "GLOW";
+  const ring =
+    readyCue === undefined &&
+    entry.ready === true &&
+    direction.chrome.ready !== "GLOW";
   // Nothing to draw: leave the context untouched (the baseline direction
   // draws exactly the stock frame).
-  if (!shadowed && !ring) return;
+  if (!shadowed && !ring && !cued) return;
   context.save();
   if (shadowed) {
     context.beginPath();
@@ -1184,6 +1200,8 @@ function drawDirectedGroundV7(
     context.lineWidth = 2.25 * zoom;
     context.stroke();
   }
+  if (cued && readyCue !== undefined && readyCue !== null)
+    drawReadyGroundCueV7(context, ground, zoom, readyCue);
   context.restore();
 }
 
@@ -1205,12 +1223,25 @@ export function drawDirectedUnitBaseV7(
   sprite: DirectedRectV7,
   zoom: number,
   assetId?: string,
+  /**
+   * Bead pulp_wars-2yc.29: the unit's turn state for this frame (null for
+   * a unit with none). Omitted, the ring follows the plan's `ready`.
+   */
+  readyCue?: ReadyCueFrameV7 | null,
 ): void {
   const style = direction.unit.base;
   const afloat =
     directionUnitAfloatV7(entry.artSubject) || entry.martian?.afloat === true;
   if (style === "NONE" || style === "SHADOW" || afloat) {
-    drawDirectedGroundV7(context, direction, entry, sprite, zoom, assetId);
+    drawDirectedGroundV7(
+      context,
+      direction,
+      entry,
+      sprite,
+      zoom,
+      assetId,
+      readyCue,
+    );
     return;
   }
   if (entry.ownerColor === undefined) return;

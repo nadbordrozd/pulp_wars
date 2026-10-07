@@ -574,6 +574,8 @@ import {
   soundControlsV7,
   soundTestPanelV7,
 } from "./sound-panel-v7";
+import { CoinFlightLayerV7 } from "./coin-flight-layer-v7";
+import { feedbackPlanV7 } from "../feedback-plan-v7";
 
 export {
   AT_SEA_MOVE_TEXT_V7,
@@ -835,6 +837,44 @@ const NO_CAMPAIGN_PROGRESS_V7: Ruleset7CampaignProgressV7 = Object.freeze({
  */
 type FrontPageV7 = "MENU" | "SETUP" | "CAMPAIGN" | "SETTINGS";
 
+/** The longest a level-up's reward dialog waits for its animation. */
+const REWARD_HOLD_LIMIT_MS_V7 = 2_500;
+/** How far into the level-up ring the reward dialog opens. */
+const REWARD_AFTER_LEVEL_UP_MS_V7 = 380;
+
+/** Bead pulp_wars-2yc.29: a queued boundary's held feedback animations. */
+interface FeedbackTicketsV7 {
+  readonly coins: number;
+  readonly board: number | null;
+}
+
+/** When a launch's coins land and its level-up shows, in ms from now. */
+interface FeedbackSoundLeadsV7 {
+  readonly coinMs: number | null;
+  readonly levelUpMs: number | null;
+}
+
+/**
+ * The end sounds of a boundary, with the coin sound waiting for the first
+ * coin to land and the level-up sound for the city's level-up ring. No
+ * sound is added or repeated: one coin sound however many coins fly.
+ */
+export function feedbackSoundCuesV7(
+  cues: readonly SoundCueV1[],
+  leads: FeedbackSoundLeadsV7,
+): readonly SoundCueV1[] {
+  if (leads.coinMs === null && leads.levelUpMs === null) return cues;
+  return cues.map((cue) => {
+    const lead =
+      cue.id === "economy.coin" || cue.id === "economy.treasure"
+        ? leads.coinMs
+        : cue.id === "city.levelup"
+          ? leads.levelUpMs
+          : null;
+    return lead === null ? cue : { ...cue, delayMs: cue.delayMs + lead };
+  });
+}
+
 /** The main menu's first button, focused when the menu is entered. */
 const MENU_FIRST_V7 = ".v7-main-menu button";
 
@@ -993,7 +1033,22 @@ export class Ruleset7DomAppView {
     readonly boundary: Ruleset7AcceptedBoundary;
     /** Sounds heard once the board has played the boundary. */
     readonly endSounds: readonly SoundCueV1[];
+    /** Bead pulp_wars-2yc.29: the boundary's held feedback animations. */
+    readonly feedback: FeedbackTicketsV7;
   }[] = [];
+  /**
+   * Bead pulp_wars-2yc.29: the Coins that fly to the counter
+   * (coin-flight-layer-v7.ts); the counter shows the true balance less the
+   * Coins still on their way.
+   */
+  readonly #coinFlight: CoinFlightLayerV7;
+  #feedbackMatchInstance = 0;
+  /**
+   * A level-up's reward dialog waits for the population to reach the city
+   * and for its hop and ring; a timer always ends the wait.
+   */
+  #rewardHeld = false;
+  #rewardHoldTimer: number | null = null;
   #presentationTail: Promise<void> = Promise.resolve();
   #humanDispatchPending = false;
   #humanDispatchSettling = false;
@@ -1089,6 +1144,15 @@ export class Ruleset7DomAppView {
     this.#boardHost.setPresentationStepListener?.((cue) =>
       this.#audio.playCues(soundCuesForStepV7(cue), cue.durationScale),
     );
+    this.#coinFlight = new CoinFlightLayerV7(documentRoot, {
+      coinUrl: () =>
+        this.#economyIcons("coin")?.url ??
+        ACCEPTED_ART_URLS["ui-hud-gold-coin-v7"] ??
+        null,
+      counterIcon: () => this.#root.querySelector(".v7-coins .v7-economy-icon"),
+      onBalance: (landed) => this.#showCoinBalance(landed),
+    });
+    this.#coinFlight.attach(this.#boardHost.feedback ?? null);
     this.#artSet = options.artSet ?? "LEGACY";
     this.#chibiDomEnvironment =
       this.#artSet === "CHIBI"
@@ -1165,6 +1229,8 @@ export class Ruleset7DomAppView {
     this.#root.removeEventListener("dragstart", this.#onDragStart);
     this.#root.removeEventListener("click", this.#onClickSound, true);
     this.#boardHost.setPresentationStepListener?.(null);
+    this.#coinFlight.destroy();
+    this.#releaseReward();
     if (this.#ownsAudio) this.#audio.destroy();
     this.#unsubscribe?.();
     this.#unsubscribeAcceptedBoundary?.();
@@ -1470,6 +1536,17 @@ export class Ruleset7DomAppView {
 
   #render(): void {
     if (this.#destroyed) return;
+    // Bead pulp_wars-2yc.29: another match, or no match on screen, ends
+    // the feedback animations of the last one.
+    const inMatch =
+      this.#snapshot.view !== null &&
+      (this.#snapshot.phase === "ACTIVE" ||
+        this.#snapshot.phase === "COMPLETE" ||
+        this.#snapshot.phase === "ERROR");
+    if (!inMatch || this.#feedbackMatchInstance !== this.#matchInstance) {
+      this.#feedbackMatchInstance = this.#matchInstance;
+      this.#finishFeedback();
+    }
     this.#syncMusic();
     if (
       this.#snapshot.view !== null &&
@@ -2725,7 +2802,8 @@ export class Ruleset7DomAppView {
       text(
         this.#document,
         "span",
-        String(view.viewer.coins),
+        // Coins still flying to the counter are counted as they land.
+        String(this.#coinFlight.displayed(view.viewer.coins)),
         "v7-coin-balance",
       ),
       rate,
@@ -2843,6 +2921,8 @@ export class Ruleset7DomAppView {
       nav.append(end);
     }
     nextChildren.push(hud);
+    // The coins' flight layer: over the board and the HUD, under dialogs.
+    nextChildren.push(this.#coinFlight.element);
     const zoom = el(this.#document, "div", "v7-zoom-controls");
     zoom.dataset.v7Region = "zoom";
     const zoomIn = iconButton(this.#document, "zoom-in", "Zoom in", "zoom-in");
@@ -2944,7 +3024,10 @@ export class Ruleset7DomAppView {
       !showAchievementNotice
     )
       nextChildren.push(this.#recruitHelp(this.#selectedRecruitHelp));
-    if (view.pendingChoices[0] !== undefined)
+    // Bead pulp_wars-2yc.29: a level-up's dialog waits for its animation.
+    if (view.pendingChoices[0] !== undefined && this.#rewardHeld) {
+      // Nothing yet: the population is on its way to the city.
+    } else if (view.pendingChoices[0] !== undefined)
       nextChildren.push(this.#reward(view));
     else if (showAchievementNotice)
       nextChildren.push(this.#achievementNotice());
@@ -2982,6 +3065,7 @@ export class Ruleset7DomAppView {
       if (graph !== null) graph.scrollLeft = techScroll.left;
     }
     shell.dataset.contrast = this.#highContrast ? "high" : "standard";
+    shell.dataset.motion = this.#motion.toLowerCase();
     shell.dataset.uiScale = String(this.#uiScale);
     shell.style.setProperty("--ui-scale", String(this.#uiScale));
     this.#boardHost.update(this.#boardModel(view));
@@ -6536,6 +6620,7 @@ export class Ruleset7DomAppView {
         (event.currentTarget as HTMLSelectElement).value === "REDUCED"
           ? "REDUCED"
           : "FULL";
+      if (this.#motion === "REDUCED") this.#finishFeedback();
       this.#persistSettings();
       this.#render();
     });
@@ -7654,6 +7739,7 @@ export class Ruleset7DomAppView {
     );
     if (this.#snapshot.ai.fastForward) {
       this.#presentationQueue = [];
+      this.#finishFeedback();
       this.#audio.playCues(sounds.essential);
       return;
     }
@@ -7663,6 +7749,7 @@ export class Ruleset7DomAppView {
       matchInstance: this.#matchInstance,
       boundary,
       endSounds: sounds.end,
+      feedback: this.#holdFeedback(boundary),
     });
     if (this.#presentationQueue.length > 12) {
       const latest = this.#presentationQueue.at(-1);
@@ -7681,6 +7768,7 @@ export class Ruleset7DomAppView {
       while (!this.#destroyed && this.#presentationQueue.length > 0) {
         if (this.#snapshot.ai.fastForward) {
           this.#presentationQueue = [];
+          this.#finishFeedback();
           break;
         }
         const next = this.#presentationQueue.shift();
@@ -7692,7 +7780,14 @@ export class Ruleset7DomAppView {
           next.boundary.playerEvents,
         );
         if (!this.#destroyed && next.matchInstance === this.#matchInstance)
-          this.#audio.playCues(next.endSounds);
+          // The boundary has played: its coins and population leave their
+          // tiles, and the coin and level-up sounds wait for them to land.
+          this.#audio.playCues(
+            feedbackSoundCuesV7(
+              next.endSounds,
+              this.#launchFeedback(next.feedback),
+            ),
+          );
       }
       if (this.#presentationQueue.length === 0) {
         this.#presentationActive = false;
@@ -7704,6 +7799,100 @@ export class Ruleset7DomAppView {
     this.#presentationQueue = [];
     this.#presentationActive = false;
     this.#boardHost.finishPresentations?.();
+    this.#finishFeedback();
+  }
+
+  /**
+   * Bead pulp_wars-2yc.29: an accepted boundary's Coins, population and
+   * Promotions are held (the counter and the city meters keep their old
+   * values) until the board has played it. Nothing is held without
+   * animation, so reduced motion shows every gain at once.
+   */
+  #holdFeedback(boundary: Ruleset7AcceptedBoundary): FeedbackTicketsV7 {
+    const plan = feedbackPlanV7(
+      boundary.beforeView,
+      boundary.playerEvents,
+      boundary.afterView,
+    );
+    const feedback = this.#boardHost.feedback;
+    const tickets = {
+      coins: this.#coinFlight.hold(plan.coins),
+      board: feedback?.hold(plan) ?? null,
+    };
+    if (
+      feedback?.animated() === true &&
+      boundary.afterView.pendingChoices.length > 0 &&
+      plan.population.some((gain) => gain.leveledUp)
+    )
+      // Never longer than this, whatever happens to the boundary.
+      this.#holdReward(REWARD_HOLD_LIMIT_MS_V7);
+    return tickets;
+  }
+
+  #holdReward(forMs: number): void {
+    const browser = this.#document.defaultView;
+    if (browser === null) return;
+    if (this.#rewardHoldTimer !== null)
+      browser.clearTimeout(this.#rewardHoldTimer);
+    this.#rewardHeld = true;
+    this.#rewardHoldTimer = browser.setTimeout(() => {
+      this.#rewardHoldTimer = null;
+      this.#rewardHeld = false;
+      if (!this.#destroyed) this.#render();
+    }, forMs);
+  }
+
+  #releaseReward(): boolean {
+    const held = this.#rewardHeld;
+    if (this.#rewardHoldTimer !== null)
+      this.#document.defaultView?.clearTimeout(this.#rewardHoldTimer);
+    this.#rewardHoldTimer = null;
+    this.#rewardHeld = false;
+    return held;
+  }
+
+  /** Starts a played boundary's feedback; when its sounds should be heard. */
+  #launchFeedback(tickets: FeedbackTicketsV7): FeedbackSoundLeadsV7 {
+    const coinMs = this.#coinFlight.launch(tickets.coins);
+    const board =
+      tickets.board === null
+        ? undefined
+        : this.#boardHost.feedback?.launch(tickets.board);
+    const levelUpMs = board?.levelUpMs ?? null;
+    // The reward dialog follows the level-up's hop and most of its ring.
+    if (this.#rewardHeld)
+      this.#holdReward(
+        Math.min(
+          REWARD_HOLD_LIMIT_MS_V7,
+          levelUpMs === null ? 0 : levelUpMs + REWARD_AFTER_LEVEL_UP_MS_V7,
+        ),
+      );
+    return { coinMs, levelUpMs };
+  }
+
+  /** Ends every feedback animation: the true state shows at once. */
+  #finishFeedback(): void {
+    this.#coinFlight.finish();
+    this.#boardHost.feedback?.finish();
+    if (this.#releaseReward())
+      queueMicrotask(() => {
+        if (!this.#destroyed) this.#render();
+      });
+  }
+
+  /** The counter's number, and its pulse when a coin has landed. */
+  #showCoinBalance(landed: boolean): void {
+    const view = this.#snapshot.view;
+    const balance = this.#root.querySelector<HTMLElement>(".v7-coin-balance");
+    if (view === null || balance === null) return;
+    const shown = String(this.#coinFlight.displayed(view.viewer.coins));
+    if (balance.textContent !== shown) balance.textContent = shown;
+    const pill = balance.closest<HTMLElement>(".v7-coins");
+    if (!landed || pill === null) return;
+    // Restart the pulse for each coin that lands.
+    pill.classList.remove("is-coin-landing");
+    void pill.offsetWidth;
+    pill.classList.add("is-coin-landing");
   }
   #persistSettings(): void {
     try {

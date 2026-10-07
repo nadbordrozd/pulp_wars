@@ -33,6 +33,18 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // state on which nothing is burrowed before its cue plays.
     "src/render/gallery-demo-v7.ts::buildGalleryDemoSceneV7": "BOARD",
     "src/render/gallery-demo-v7.ts::wounded": "BOARD",
+    // Bead pulp_wars-2yc.29: the feedback animations read the view's units
+    // for what the board draws: the "yet to move" cue, the Promotion marker
+    // over a unit's head, and the tile of a kill or a refund. A burrowed
+    // unit is not drawn (its mound is), takes no command, and is neither
+    // promoted nor disbanded while underground.
+    "src/render/canvas/feedback-host-v7.ts::BoardFeedbackV7.boardFrame":
+      "BOARD",
+    "src/render/canvas/feedback-host-v7.ts::BoardFeedbackV7.wantsAmbientFrames":
+      "BOARD",
+    "src/render/canvas/unit-turn-state-v7.ts::unitTurnStatesV7": "BOARD",
+    "src/render/feedback-plan-v7.ts::feedbackPlanV7": "BOARD",
+    "src/render/feedback-plan-v7.ts::promotionReadyUnitIdsV7": "BOARD",
     // Bead pulp_wars-2yc.10 (classified by pulp_wars-2yp): the boundary
     // sounds read the views' units only to ask whether a promoted unit is
     // the viewer's (`UNIT_PROMOTED`, the level-up sound). A unit is promoted

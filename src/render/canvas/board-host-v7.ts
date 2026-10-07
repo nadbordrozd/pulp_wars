@@ -202,6 +202,7 @@ import {
   CURIOSITY_RULES_V7,
   curiosityOverlayOnTileV7,
 } from "../curiosity-presentation-v7";
+import { BoardFeedbackV7, type BoardFeedbackPortV7 } from "./feedback-host-v7";
 import { cityAccessibleNameV7 } from "../city-names-presentation-v7";
 
 export interface BoardHostModelV7 {
@@ -265,6 +266,12 @@ export interface BoardHostV7 {
   setPresentationStepListener?(
     listener: ((cue: PresentationStepCueV7) => void) | null,
   ): void;
+  /**
+   * Bead pulp_wars-2yc.29: the feedback animations of this board (Coins,
+   * population, Promotions; feedback-host-v7.ts). A host without them
+   * shows every gain at once.
+   */
+  readonly feedback?: BoardFeedbackPortV7;
   destroy(): void;
 }
 
@@ -441,6 +448,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
    */
   #kaboomFramedKey: string | null = null;
   #cameraPanFrame: number | null = null;
+  /**
+   * Bead pulp_wars-2yc.29: the feedback animations. They run on this
+   * host's clock and frames and draw through `#draw`; presentations do not
+   * cancel them (`finishPresentations` leaves them alone).
+   */
+  readonly feedback: BoardFeedbackV7;
 
   /**
    * `composedForests: false` draws every Forest cell as its single clump
@@ -456,6 +469,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     } = {},
   ) {
     this.#document = documentRoot;
+    this.feedback = new BoardFeedbackV7({
+      now: () => this.#now(),
+      draw: () => this.#draw(),
+      drawSerial: () => this.#drawSerial,
+      browser: () => this.#document.defaultView,
+      camera: () => this.#camera,
+      canvasClientRect: () => this.#canvas?.getBoundingClientRect() ?? null,
+      raster: browserChibiRasterEnvironmentV7(documentRoot),
+    });
     this.#glowCache = new BoardGlowCacheV7(documentRoot);
     this.#images = createBoardImageResolverV7(documentRoot, () => {
       this.#glowCache.clear();
@@ -592,6 +614,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#observedCommandIndex = model.view.commandIndex;
     this.#modelInstance = model.matchInstanceId;
     this.#model = model;
+    this.feedback.sync(model);
     const activePlayerId = model.view.turnOrder[model.view.activeSeatIndex];
     const readinessKey = `${String(model.matchInstanceId)}:${model.view.round}:${activePlayerId ?? "none"}`;
     if (readinessKey !== this.#readinessKey) {
@@ -817,6 +840,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
 
   destroy(): void {
     this.finishPresentations();
+    this.feedback.destroy();
     this.#detach();
     this.#model = null;
     this.#planCache.length = 0;
@@ -1694,6 +1718,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // The Mind Control revision: the control halo's pulse (static for
         // reduced motion).
         controlPulseTimeMs: model.motion === "REDUCED" ? 0 : now,
+        feedback: this.feedback.boardFrame(view),
         selectionJump:
           jump === null
             ? null
@@ -1783,7 +1808,37 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       }
       context.restore();
     }
+    // Bead pulp_wars-2yc.29: population icons on their way, the sparkles
+    // of a Promotion and the ring of a level-up, over the board.
+    this.feedback.drawAbove(context, this.#camera, (kind) =>
+      this.#feedbackIcon(kind),
+    );
     this.#drawSupportOverlay();
+  }
+
+  /** The game's own population and Promote icons, or null while loading. */
+  #feedbackIcon(kind: "POPULATION" | "PROMOTE"): CanvasImageSource | null {
+    if (this.#artSet() !== "CHIBI")
+      return this.#images.resolve(
+        kind === "POPULATION" ? "ui-hud-population" : "ui-action-promote",
+      );
+    const model = this.#model;
+    const art =
+      model?.visualDirection === undefined
+        ? this.#chibiArt
+        : this.#directionRuntime(
+            model.visualDirection,
+            model.visualDirectionArt,
+          ).art;
+    const resolved = art.resolve({
+      subject:
+        kind === "POPULATION" ? "ICON:HUD:POPULATION" : "ICON:ACTION:PROMOTE",
+      at: { x: 0, y: 0 },
+      deviceScale:
+        chibiMasterScale(this.#camera) *
+        (this.#document.defaultView?.devicePixelRatio ?? 1),
+    });
+    return resolved.kind === "READY" ? resolved.image : null;
   }
 
   /**
@@ -2163,6 +2218,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#callbacks?.onCommand(target);
       return;
     }
+    // Bead pulp_wars-2yc.29: the city whose territory holds the tile hops.
+    this.feedback.territoryClick(model.view, at);
     const unit = model.view.units.find((candidate) => same(candidate.at, at));
     const city = model.view.cities.find((candidate) => same(candidate.at, at));
     const sameCycle =
@@ -2894,14 +2951,16 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       return;
     const ready =
       model.motion === "FULL" &&
-      model.view.units.some(
+      (model.view.units.some(
         (unit) =>
           unit.ownerId === model.view.viewer.id &&
           !unit.activation.handled &&
           model.offeredCommands.some(
             (command) => command.kind === "MOVE" && command.unitId === unit.id,
           ),
-      );
+      ) ||
+        // Bead pulp_wars-2yc.29: a waiting Promotion marker bobs.
+        this.feedback.wantsAmbientFrames());
     const jump = this.#selectionJump;
     const jumping =
       jump !== null &&

@@ -3188,6 +3188,14 @@ their plates.
 
 ### The ready cue
 
+> **Superseded on 2026-10-07 (bead `pulp_wars-2yc.29`).** The user asked for
+> the cue to be more prominent. A unit that can still move now has a thick
+> pulsing ring with the viewer's colour under it and a bouncing chevron over
+> its head; a unit that can act but not move keeps the thin ring described
+> here; a spent unit's sprite is dimmed. The calm, colourless ring and the
+> rejection of a pip and a bob below are the record of the earlier decision.
+> See [Screen flow](../ui/SCREEN_FLOW.md).
+
 A **thin cream ring on the ground** (`#fff6cf`, 2.25 px wide at zoom 1, on a
 4.5 px near-black casing at 55%): an ellipse 28 master px wide each side of
 a standard unit's centre and a third as tall, centred under the feet
