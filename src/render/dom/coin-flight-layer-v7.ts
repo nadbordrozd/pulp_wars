@@ -2,12 +2,14 @@ import type { CoordV7 } from "../../engine/index";
 import type { BoardFeedbackPortV7 } from "../canvas/feedback-host-v7";
 import {
   COIN_SPRITE_CAP_V7,
+  coinArcControlV7,
   coinBurstOffsetV7,
   coinEntryPointV7,
   coinFrameV7,
-  coinLandingMsV7,
+  coinLandingAfterMsV7,
   coinSpritePlanV7,
-  coinStaggerMsV7,
+  coinStartDelayMsV7,
+  type CoinBoundsV7,
   type FeedbackPointV7,
 } from "../canvas/feedback-motion-v7";
 import type { CoinGainV7 } from "../feedback-plan-v7";
@@ -47,6 +49,10 @@ interface Flight {
   readonly to: FeedbackPointV7;
   readonly startAt: number;
   readonly pop: boolean;
+  /** Which coin of its burst it is: its own arc. */
+  readonly variant: number;
+  /** The toss's control point, worked out once at the launch. */
+  readonly control: FeedbackPointV7;
   readonly value: number;
 }
 
@@ -148,36 +154,60 @@ export class CoinFlightLayerV7 {
     }
     const now = port.timeMs();
     const scale = port.durationScale();
-    const stagger = coinStaggerMsV7(plan.length) * scale;
     const layer = this.element.getBoundingClientRect();
     const frame = port.boardClientFrame();
     const perSource = new Map<number, number>();
     for (const sprite of plan)
       perSource.set(sprite.source, (perSource.get(sprite.source) ?? 0) + 1);
     const seen = new Map<number, number>();
+    const ranks = new Map<number, number>();
+    const inset = COIN_SPRITE_SIZE_CSS_PX_V7 / 2;
+    const bounds: CoinBoundsV7 = {
+      left: inset,
+      top: inset + 6,
+      right: Math.max(inset, layer.width - inset),
+      bottom: Math.max(inset, layer.height - inset),
+    };
+    for (const source of perSource.keys()) ranks.set(source, ranks.size);
     let firstLanding: number | null = null;
-    plan.forEach((sprite, index) => {
+    for (const sprite of plan) {
       const gain = gains[sprite.source];
-      if (gain === undefined) return;
+      if (gain === undefined) continue;
       const order = seen.get(sprite.source) ?? 0;
       seen.set(sprite.source, order + 1);
       const entry = coinEntryPointV7(this.#sourcePoint(port, gain.at), frame);
       const burst = coinBurstOffsetV7(order, perSource.get(sprite.source) ?? 1);
-      const startAt = now + index * stagger;
-      const landing = coinLandingMsV7(startAt, scale, !entry.offscreen) - now;
+      const rank = ranks.get(sprite.source) ?? 0;
+      const delay = coinStartDelayMsV7(rank, ranks.size, order) * scale;
+      const flight = {
+        from: { x: entry.point.x - layer.left, y: entry.point.y - layer.top },
+        // An off-screen source's coins enter side by side, without a hop.
+        burst: entry.offscreen ? { x: burst.x, y: 0 } : burst,
+        to: { x: target.x - layer.left, y: target.y - layer.top },
+        pop: !entry.offscreen,
+        variant: order + rank,
+      };
+      const control = coinArcControlV7(
+        {
+          x: flight.from.x + flight.burst.x,
+          y: flight.from.y + flight.burst.y,
+        },
+        flight.to,
+        flight.variant,
+        bounds,
+      );
+      const landing =
+        delay + coinLandingAfterMsV7({ ...flight, durationScale: scale });
       firstLanding =
         firstLanding === null ? landing : Math.min(firstLanding, landing);
       this.#flights.push({
+        ...flight,
+        control,
         element: this.#sprite(),
-        from: { x: entry.point.x - layer.left, y: entry.point.y - layer.top },
-        // An off-screen source's coins enter side by side, without a pop.
-        burst: entry.offscreen ? { x: burst.x * 0.6, y: burst.y * 0.6 } : burst,
-        to: { x: target.x - layer.left, y: target.y - layer.top },
-        startAt,
-        pop: !entry.offscreen,
+        startAt: now + delay,
         value: sprite.value,
       });
-    });
+    }
     this.frame(now);
     port.requestFrames();
     return firstLanding;
@@ -218,6 +248,8 @@ export class CoinFlightLayerV7 {
         elapsedMs,
         durationScale: scale,
         pop: flight.pop,
+        variant: flight.variant,
+        control: flight.control,
       });
       if (frame === null) {
         this.#recycle(flight.element);

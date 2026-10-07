@@ -2015,8 +2015,8 @@ export function drawBoardV7(input: {
   /**
    * The feedback animations (bead pulp_wars-2yc.29, feedback-host-v7.ts):
    * a city's and a unit's hop, a city's meter while its population is on
-   * its way, the "yet to move" cue (ring, chevron, a spent unit's dimmed
-   * sprite) and the Promotion marker. Omitted, the frame is drawn exactly
+   * its way, the "yet to move" cue (ring and chevron; a spent unit is
+   * drawn as any unit) and the Promotion marker. Omitted, the frame is drawn exactly
    * as before the bead.
    */
   readonly feedback?: BoardFeedbackFrameV7 | null;
@@ -2233,6 +2233,9 @@ export function drawBoardV7(input: {
   // City name plates are drawn after every piece and marker, each from its
   // city's draw position this frame.
   const deferredCityNames: (() => void)[] = [];
+  // Bead pulp_wars-2yc.29: Promotion markers and ready chevrons, drawn
+  // last so a city's name plate never covers one.
+  const deferredFeedbackMarks: (() => void)[] = [];
   // CHIBI draws every road casing before any road fill, so a corner join
   // and its cell's road read as one path instead of crossing outlines.
   // A Road (or a corner join) on tall terrain passes under the tree or rock
@@ -3489,14 +3492,10 @@ export function drawBoardV7(input: {
           // where no copy can be made it is drawn a little fainter.
           const crashed =
             entry.kind === "UNIT" && entry.candy?.crashed === true;
-          // Bead pulp_wars-2yc.29: a spent unit's sprite is dimmed the same
-          // way (a cached copy); a Crashed unit keeps its own droop.
           const drooped =
             crashed && input.candyDroop !== undefined
               ? input.candyDroop(image)
-              : !crashed && turnState === "SPENT" && feedback !== null
-                ? feedback.spentSprite(image)
-                : image;
+              : image;
           if (crashed && drooped === image)
             context.globalAlpha *= CRASHED_SPRITE_ALPHA_V7;
           if (chibiReady !== null) {
@@ -3535,10 +3534,13 @@ export function drawBoardV7(input: {
               y: rect.y + rect.height * (anchor?.top ?? 0.12),
             };
           }
+          // Centred on the sprite as drawn (never on the pixels of its
+          // top rows, which for a banner or a spear are off to one side),
+          // at the top of its visible pixels.
           if (turnState === "FRESH" || promotionMarker !== null) {
             const anchor = spriteHeadAnchorV7(image);
             feedbackHead = {
-              x: rect.x + rect.width * (anchor?.centre ?? 0.5),
+              x: rect.x + rect.width / 2,
               y: rect.y + rect.height * (anchor?.top ?? 0.12),
             };
           }
@@ -4154,62 +4156,52 @@ export function drawBoardV7(input: {
             input.highContrast ?? false,
           );
         }
-        // Bead pulp_wars-2yc.29: over the head, the marker of a unit that
+        // Bead pulp_wars-2yc.29: over the unit, the marker of one that
         // waits for its Promotion (the Promote button's own icon) or,
-        // without one, the chevron of a unit that can still move.
+        // without one, the chevron of a unit that can still move. Always
+        // centred on the sprite and just above its top, for every kind of
+        // unit and wherever it stands; drawn after the city name plates.
         if (
           entry.kind === "UNIT" &&
           (promotionMarker !== null || turnState === "FRESH")
         ) {
           const head = feedbackHead ?? { x, y: y - 40 * camera.zoom };
-          // A controlled unit's halo keeps its place right over the head.
-          const top =
-            head.y -
-            (entry.martian?.controlled === true ? 16 : 3) * camera.zoom;
-          // A city's name plate lies on the top edge of the cell under it:
-          // there the marker stands beside the head, clear of the plate,
-          // and the chevron is left out (the ring still says "can move").
-          const underCity = cityIdByCell.has(
-            coordKey({ x: entry.at.x, y: entry.at.y - 1 }),
-          );
-          context.save();
-          context.globalAlpha = sceneAlpha;
-          if (promotionMarker !== null) {
-            const size =
-              promotionMarkerSizeCssPxV7(camera.zoom, promotionMarker.own) *
-              promotionMarker.scale;
-            const cell = TILE_WIDTH * camera.zoom;
-            const icon = chibiArt?.resolve({
-              subject: "ICON:ACTION:PROMOTE",
-              at: entry.at,
-              deviceScale: chibiMasterScale(camera) * devicePixelRatio,
-            });
-            drawPromotionMarkerV7(
-              context,
-              underCity ? x - cell * 0.33 : head.x,
-              (underCity ? y - cell * 0.04 : top - size / 2) +
-                promotionMarker.bobCssPx * camera.zoom,
-              size,
-              {
-                icon:
-                  icon?.kind === "READY"
-                    ? icon.image
-                    : chibiArt === undefined
-                      ? input.images.resolve("ui-action-promote")
-                      : null,
-                own: promotionMarker.own,
+          const top = head.y - 2 * camera.zoom;
+          const bounce = (feedback?.chevronBounceCssPx ?? 0) * camera.zoom;
+          deferredFeedbackMarks.push(() => {
+            context.save();
+            context.globalAlpha = sceneAlpha;
+            if (promotionMarker !== null) {
+              const size =
+                promotionMarkerSizeCssPxV7(camera.zoom, promotionMarker.own) *
+                promotionMarker.scale;
+              const icon = chibiArt?.resolve({
+                subject: "ICON:ACTION:PROMOTE",
+                at: entry.at,
+                deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+              });
+              drawPromotionMarkerV7(
+                context,
+                head.x,
+                top - size / 2 + promotionMarker.bobCssPx * camera.zoom,
+                size,
+                {
+                  icon:
+                    icon?.kind === "READY"
+                      ? icon.image
+                      : chibiArt === undefined
+                        ? input.images.resolve("ui-action-promote")
+                        : null,
+                  own: promotionMarker.own,
+                  highContrast: input.highContrast ?? false,
+                },
+              );
+            } else
+              drawReadyChevronV7(context, head.x, top + bounce, camera.zoom, {
                 highContrast: input.highContrast ?? false,
-              },
-            );
-          } else if (!underCity)
-            drawReadyChevronV7(
-              context,
-              head.x,
-              top + (feedback?.chevronBounceCssPx ?? 0) * camera.zoom,
-              camera.zoom,
-              { highContrast: input.highContrast ?? false },
-            );
-          context.restore();
+              });
+            context.restore();
+          });
         }
       };
       if (chibiPiece) deferredChibiOverlays.push(drawPieceOverlays);
@@ -4245,6 +4237,7 @@ export function drawBoardV7(input: {
   for (const drawOverlays of deferredChibiOverlays) drawOverlays();
   for (const drawMarker of deferredGraveMarkers) drawMarker();
   for (const drawName of deferredCityNames) drawName();
+  for (const drawMark of deferredFeedbackMarks) drawMark();
   // The Ice Folk revision: the selected (or hovered) Witch's nine tiles.
   for (const entry of input.plan.entries)
     if (

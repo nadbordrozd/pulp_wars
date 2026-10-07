@@ -193,7 +193,6 @@ describe("the renderer and the feedback frame", () => {
       },
       pulse: 0.5,
       chevronBounceCssPx: -2,
-      spentSprite: (image) => image,
     };
     const calls: string[] = [];
     const context = new Proxy(

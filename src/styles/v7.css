@@ -1135,9 +1135,14 @@
   z-index: 16;
 }
 
+/* A soft squash as a coin settles in, then the spring back. */
 @keyframes v7-coin-land {
-  35% {
-    scale: 1.3;
+  30% {
+    scale: 1.22 0.9;
+  }
+
+  65% {
+    scale: 0.96 1.06;
   }
 }
 
@@ -1152,13 +1157,13 @@
   .v7-app-shell:not([data-motion="reduced"])
     .v7-coins.is-coin-landing
     .v7-economy-icon {
-    animation: v7-coin-land 220ms ease-out;
+    animation: v7-coin-land 280ms ease-out;
   }
 
   .v7-app-shell:not([data-motion="reduced"])
     .v7-coins.is-coin-landing
     .v7-coin-balance {
-    animation: v7-coin-count 220ms ease-out;
+    animation: v7-coin-count 280ms ease-out;
   }
 }
 

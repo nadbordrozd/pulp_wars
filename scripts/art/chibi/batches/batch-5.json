@@ -193,6 +193,7 @@
     {
       "id": "chibi-icon-action-promote",
       "subject": "ICON:ACTION:PROMOTE",
+      "subjectKey": "ICON:ACTION:PROMOTE/MEDAL",
       "assetClass": "ICON",
       "recipeClass": "icon",
       "canvas": {
@@ -511,6 +512,54 @@
         "width": 48,
         "height": 48
       }
+    },
+    {
+      "id": "icon-action-promote-b",
+      "asset": "chibi-icon-action-promote",
+      "endpoint": "create-image-pixen",
+      "seed": 5901,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "The helmet with a chevron (promote-a) did not read at the 18-24 px of the board's Promotion marker (the user, 2026-10-07: 'hard to tell what it is'); a military medal instead (bead pulp_wars-2yc.29)."
+    },
+    {
+      "id": "icon-action-promote-c",
+      "asset": "chibi-icon-action-promote",
+      "endpoint": "create-image-pixen",
+      "seed": 5902,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "The helmet with a chevron (promote-a) did not read at the 18-24 px of the board's Promotion marker (the user, 2026-10-07: 'hard to tell what it is'); a military medal instead (bead pulp_wars-2yc.29)."
+    },
+    {
+      "id": "icon-action-promote-d",
+      "asset": "chibi-icon-action-promote",
+      "endpoint": "create-image-pixen",
+      "seed": 5903,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The medal is drawn straight on and symmetrical, like a flat badge: the ribbon is a short upright rectangle, the gold disc is a perfect circle as wide as the ribbon or wider.",
+      "negativeAddendum": "helmet, soldier, person, trophy, cup, coin pile, long ribbon tails, chain, laurel wreath, tilted view",
+      "notes": "The helmet with a chevron (promote-a) did not read at the 18-24 px of the board's Promotion marker (the user, 2026-10-07: 'hard to tell what it is'); a military medal instead (bead pulp_wars-2yc.29)."
+    },
+    {
+      "id": "icon-action-promote-e",
+      "asset": "chibi-icon-action-promote",
+      "endpoint": "create-image-pixen",
+      "seed": 5904,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The medal is drawn straight on and symmetrical, like a flat badge: the ribbon is a short upright rectangle, the gold disc is a perfect circle as wide as the ribbon or wider.",
+      "negativeAddendum": "helmet, soldier, person, trophy, cup, coin pile, long ribbon tails, chain, laurel wreath, tilted view",
+      "notes": "The helmet with a chevron (promote-a) did not read at the 18-24 px of the board's Promotion marker (the user, 2026-10-07: 'hard to tell what it is'); a military medal instead (bead pulp_wars-2yc.29)."
     },
     {
       "id": "icon-action-pillage-a",

@@ -3192,7 +3192,7 @@ their plates.
 > the cue to be more prominent. A unit that can still move now has a thick
 > pulsing ring with the viewer's colour under it and a bouncing chevron over
 > its head; a unit that can act but not move keeps the thin ring described
-> here; a spent unit's sprite is dimmed. The calm, colourless ring and the
+> here; a spent unit has no cue and its default look. The calm, colourless ring and the
 > rejection of a pip and a bob below are the record of the earlier decision.
 > See [Screen flow](../ui/SCREEN_FLOW.md).
 

@@ -512,7 +512,6 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       browser: () => this.#document.defaultView,
       camera: () => this.#camera,
       canvasClientRect: () => this.#canvas?.getBoundingClientRect() ?? null,
-      raster: browserChibiRasterEnvironmentV7(documentRoot),
     });
     this.#glowCache = new BoardGlowCacheV7(documentRoot);
     this.#images = createBoardImageResolverV7(documentRoot, () => {

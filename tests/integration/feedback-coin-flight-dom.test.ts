@@ -7,8 +7,10 @@ import type {
   FeedbackLaunchV7,
 } from "../../src/render/canvas/feedback-host-v7";
 import {
-  COIN_FLIGHT_MS_V7,
   COIN_POP_MS_V7,
+  COIN_STAGGER_MS_V7,
+  coinBurstOffsetV7,
+  coinLandingAfterMsV7,
   COIN_SPRITE_CAP_V7,
 } from "../../src/render/canvas/feedback-motion-v7";
 import { CoinFlightLayerV7 } from "../../src/render/dom/coin-flight-layer-v7";
@@ -117,13 +119,16 @@ describe("coin flight layer", () => {
     const ticket = layer.hold(gains(8, 5));
     expect(layer.displayed(balance.value)).toBe(40);
     const lead = layer.launch(ticket);
-    expect(lead).toBe(COIN_POP_MS_V7 + COIN_FLIGHT_MS_V7);
+    // The first coin: its hop, then a toss of 1.0 to 1.3 s.
+    expect(lead).toBeGreaterThanOrEqual(COIN_POP_MS_V7 + 1_000);
+    expect(lead).toBeLessThanOrEqual(COIN_POP_MS_V7 + 1_300);
     expect(port.requested).toBe(1);
     // 8 Coins fly as five sprites, 5 Coins as four.
     expect(layer.activeSprites()).toBe(9);
+    expect(COIN_STAGGER_MS_V7).toBeGreaterThan(100);
     expect(layer.displayed(balance.value)).toBe(40);
     const seen = new Set<number>();
-    for (let step = 0; step < 200 && layer.activeSprites() > 0; step += 1) {
+    for (let step = 0; step < 400 && layer.activeSprites() > 0; step += 1) {
       port.advance(16);
       seen.add(shown.value);
       expect(shown.value).toBeGreaterThanOrEqual(40);
@@ -149,9 +154,9 @@ describe("coin flight layer", () => {
     const second = layer.hold(gains(10, 10, 10));
     expect(layer.displayed(balance.value)).toBe(10);
     layer.launch(first);
-    port.advance(300);
+    port.advance(600);
     layer.launch(second);
-    port.advance(350);
+    port.advance(900);
     // Spending while coins fly lowers the true balance at once.
     balance.value -= 4;
     port.advance(200);
@@ -176,7 +181,7 @@ describe("coin flight layer", () => {
     balance.value += 12;
     expect(layer.launch(layer.hold(gains(12)))).toBeNull();
     expect(layer.activeSprites()).toBe(COIN_SPRITE_CAP_V7);
-    port.advance(4_000);
+    port.advance(6_000);
     expect(layer.displayed(balance.value)).toBe(252);
     balance.value += 3;
     layer.launch(layer.hold(gains(3)));
@@ -199,7 +204,23 @@ describe("coin flight layer", () => {
     expect(sprite.style.transform).toContain(
       `translate3d(${(100 + 5 * 60 - 12).toFixed(2)}px, ${(100 + 4 * 60 - 12).toFixed(2)}px, 0)`,
     );
-    port.advance(COIN_POP_MS_V7 + COIN_FLIGHT_MS_V7 - 17);
+    // After the hop it stands straight above its tile, at the top of the hop.
+    port.advance(COIN_POP_MS_V7);
+    const hop = coinBurstOffsetV7(0, 1);
+    const hopped = /translate3d\((-?[\d.]+)px, (-?[\d.]+)px/.exec(
+      sprite.style.transform,
+    );
+    expect(Number(hopped?.[1])).toBeCloseTo(100 + 5 * 60 - 12 + hop.x, 0);
+    expect(Number(hopped?.[2])).toBeLessThan(100 + 4 * 60 - 12 - 10);
+    port.advance(
+      coinLandingAfterMsV7({
+        from: { x: 400, y: 340 },
+        burst: hop,
+        to: { x: 0, y: 0 },
+      }) -
+        COIN_POP_MS_V7 -
+        17,
+    );
     // Almost landed: close to the counter's icon, at the layer's origin.
     const match = /translate3d\((-?[\d.]+)px, (-?[\d.]+)px/.exec(
       sprite.style.transform,
@@ -225,9 +246,10 @@ describe("coin flight layer", () => {
     const balance = { value: 5 };
     const { port, layer } = layerRig(balance);
     port.scale = 0.5;
-    expect(layer.launch(layer.hold(gains(1)))).toBe(
-      (COIN_POP_MS_V7 + COIN_FLIGHT_MS_V7) / 2,
-    );
+    const fast = layer.launch(layer.hold(gains(1))) ?? 0;
+    port.scale = 1;
+    layer.finish();
+    expect(layer.launch(layer.hold(gains(1)))).toBeCloseTo(fast * 2, 6);
   });
 });
 

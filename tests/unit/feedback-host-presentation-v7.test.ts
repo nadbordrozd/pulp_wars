@@ -56,7 +56,6 @@ function rig(motion: "FULL" | "REDUCED" = "FULL") {
     }),
     camera: () => ({ offsetX: 10, offsetY: 20, zoom: 0.5 }),
     canvasClientRect: () => ({ left: 5, top: 7, width: 800, height: 600 }),
-    raster: { readPixels: () => null, createSurface: () => null },
   });
   const state = scene();
   const view = viewForV7(state, state.humanPlayerId);

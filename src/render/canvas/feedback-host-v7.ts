@@ -4,14 +4,12 @@ import {
   type FeedbackPlanV7,
 } from "../feedback-plan-v7";
 import {
-  createSpentSpriteCacheV7,
   drawGroundRingV7,
   drawPopulationIconV7,
   drawPromotionMarkerV7,
   drawSparkleBurstV7,
   promotionMarkerSizeCssPxV7,
   type BoardFeedbackFrameV7,
-  type SpentSpriteCacheV7,
 } from "./feedback-canvas-v7";
 import {
   CITY_HOP_AMPLITUDE_CSS_PX_V7,
@@ -41,7 +39,6 @@ import {
   worldToScreen,
   type CameraState,
 } from "./geometry";
-import type { ChibiRasterEnvironmentV7 } from "./chibi-art-resolver-v7";
 import { unitTurnStatesV7, type UnitTurnStateV7 } from "./unit-turn-state-v7";
 
 /** What the feedback animations need from the board host that owns them. */
@@ -65,7 +62,6 @@ export interface BoardFeedbackEnvironmentV7 {
     readonly width: number;
     readonly height: number;
   } | null;
-  raster: Pick<ChibiRasterEnvironmentV7, "readPixels" | "createSurface">;
 }
 
 /** The part of the board model the feedback animations read. */
@@ -160,7 +156,6 @@ const coordKey = (at: CoordV7): string => `${at.x},${at.y}`;
 
 export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
   readonly #env: BoardFeedbackEnvironmentV7;
-  readonly #spent: SpentSpriteCacheV7;
   #model: BoardFeedbackModelV7 | null = null;
   #turnStates: ReadonlyMap<number, UnitTurnStateV7> = new Map();
   readonly #promotionReady = new WeakMap<PlayerViewV7, ReadonlySet<number>>();
@@ -182,7 +177,6 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
 
   constructor(environment: BoardFeedbackEnvironmentV7) {
     this.#env = environment;
-    this.#spent = createSpentSpriteCacheV7(environment.raster);
   }
 
   /** The host's `update`: the model the next frames are drawn from. */
@@ -472,7 +466,6 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
       },
       pulse: feedbackPulseV7(now, reduced),
       chevronBounceCssPx: readyChevronBounceCssPxV7(now, reduced),
-      spentSprite: (image) => this.#spent.resolve(image),
     };
   }
 

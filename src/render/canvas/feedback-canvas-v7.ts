@@ -1,11 +1,9 @@
-import type { ChibiRasterEnvironmentV7 } from "./chibi-art-resolver-v7";
-import { desaturatePixelsV7 } from "./sprite-saturation-v7";
 import type { UnitTurnStateV7 } from "./unit-turn-state-v7";
 
 /**
  * Bead pulp_wars-2yc.29: the code-drawn parts of the feedback animations
  * (the ready ring and chevron, the Promotion marker, a population icon,
- * the rings and sparkles) and the dimmed copy of a spent unit's sprite.
+ * the rings and sparkles).
  * Every function draws one still frame from the numbers it is given.
  */
 const INK = "#171722";
@@ -44,8 +42,6 @@ export interface BoardFeedbackFrameV7 {
   readonly pulse: number;
   /** The ready chevron's bounce in nominal CSS px (negative is up). */
   readonly chevronBounceCssPx: number;
-  /** The dimmed copy of a spent unit's sprite. */
-  spentSprite(image: CanvasImageSource): CanvasImageSource;
 }
 
 export interface FeedbackEllipseV7 {
@@ -180,19 +176,20 @@ export function drawReadyChevronV7(
 }
 
 /**
- * The marker's diameter in CSS px at this zoom: 46 nominal px for the
- * viewer's unit (about a third of its tile), 38 for another player's, and
+ * The marker's side in CSS px at this zoom: 38 nominal px for the viewer's
+ * unit (a little under a third of its tile), 32 for another player's, and
  * never under 20 and 17.
  */
 export function promotionMarkerSizeCssPxV7(zoom: number, own: boolean): number {
-  return own ? Math.max(20, 46 * zoom) : Math.max(17, 38 * zoom);
+  return own ? Math.max(20, 38 * zoom) : Math.max(17, 32 * zoom);
 }
 
 /**
  * The marker over a unit that waits for its Promotion: the Promote button's
- * own icon on a small pale disc with a gold rim (grey for another player's
- * unit), centred on (`x`, `y`). Without the icon's raster the disc carries a
- * gold star.
+ * own icon (a military medal), centred on (`x`, `y`) in a square of `size`.
+ * The icon has its own dark outline; a soft dark halo keeps it apart from
+ * grass, snow, forest and ash alike, so it stands on no disc. Without the
+ * icon's raster a gold star on a small dark disc stands in.
  */
 export function drawPromotionMarkerV7(
   context: CanvasRenderingContext2D,
@@ -202,37 +199,38 @@ export function drawPromotionMarkerV7(
   options: {
     readonly icon: CanvasImageSource | null;
     readonly own: boolean;
-    /** Pixel art stays crisp unless the caller says the scale is uneven. */
-    readonly smoothing?: boolean;
     readonly highContrast?: boolean;
     readonly alpha?: number;
   },
 ): void {
   if (!(size > 0)) return;
-  const radius = size / 2;
-  // A pale face, so the icon's steel and its gold star both read on it.
-  const face =
-    options.highContrast === true ? "#ffffff" : options.own ? CREAM : "#dfe3ea";
-  const rim =
-    options.highContrast === true ? "#ffffff" : options.own ? GOLD : "#9aa3b2";
   context.save();
   context.globalAlpha *= Math.max(0, Math.min(1, options.alpha ?? 1));
-  context.beginPath();
-  context.arc(x, y, radius, 0, Math.PI * 2);
-  context.strokeStyle = INK;
-  context.lineWidth = Math.max(3, size * 0.2);
-  context.stroke();
-  context.fillStyle = face;
-  context.fill();
-  context.strokeStyle = rim;
-  context.lineWidth = Math.max(1.5, size * 0.1);
-  context.stroke();
   if (options.icon !== null) {
-    const inner = size * 0.98;
-    context.imageSmoothingEnabled = options.smoothing ?? true;
+    context.imageSmoothingEnabled = true;
     context.imageSmoothingQuality = "high";
-    context.drawImage(options.icon, x - inner / 2, y - inner / 2, inner, inner);
-  } else drawStarV7(context, x, y, radius * 0.62, INK);
+    context.shadowColor = options.highContrast === true ? "#000000" : INK;
+    context.shadowBlur = Math.max(2, size * 0.14);
+    // Twice: the halo of one pass is too faint on pale ground.
+    for (let pass = 0; pass < 2; pass += 1)
+      context.drawImage(options.icon, x - size / 2, y - size / 2, size, size);
+  } else {
+    const radius = size * 0.36;
+    context.beginPath();
+    context.arc(x, y, radius, 0, Math.PI * 2);
+    context.fillStyle = "#1c2030";
+    context.fill();
+    context.strokeStyle = INK;
+    context.lineWidth = Math.max(2, size * 0.1);
+    context.stroke();
+    drawStarV7(
+      context,
+      x,
+      y,
+      radius * 0.72,
+      options.highContrast === true ? "#ffffff" : GOLD,
+    );
+  }
   context.restore();
 }
 
@@ -383,87 +381,4 @@ export function drawPopulationIconV7(
     context.fillText(label, x + size * 0.42, y + size * 0.3);
   }
   context.restore();
-}
-
-/** How much colour and light a spent unit's sprite keeps. */
-export const SPENT_SPRITE_SATURATION_PERCENT_V7 = 45;
-export const SPENT_SPRITE_BRIGHTNESS_V7 = 0.74;
-
-/**
- * The pixels of a spent unit's sprite: most of the colour taken out and the
- * whole sprite darkened, alpha untouched (the silhouette and the dark
- * outline stay as they are).
- */
-export function spentSpritePixelsV7(
-  pixels: Uint8ClampedArray,
-): Uint8ClampedArray {
-  const output = desaturatePixelsV7(pixels, SPENT_SPRITE_SATURATION_PERCENT_V7);
-  for (let index = 0; index + 3 < output.length; index += 4) {
-    if (output[index + 3] === 0) continue;
-    output[index] = Math.round(
-      (output[index] ?? 0) * SPENT_SPRITE_BRIGHTNESS_V7,
-    );
-    output[index + 1] = Math.round(
-      (output[index + 1] ?? 0) * SPENT_SPRITE_BRIGHTNESS_V7,
-    );
-    output[index + 2] = Math.round(
-      (output[index + 2] ?? 0) * SPENT_SPRITE_BRIGHTNESS_V7,
-    );
-  }
-  return output;
-}
-
-export interface SpentSpriteCacheV7 {
-  /** The dimmed copy, or the sprite itself when no copy can be made. */
-  resolve(image: CanvasImageSource): CanvasImageSource;
-}
-
-/**
- * Dimmed copies of unit sprites, built once per sprite by reading its
- * pixels (no canvas filter, so every backend draws the same) and released
- * with the sprite. Drawing a frame does no pixel work once a copy exists.
- */
-export function createSpentSpriteCacheV7(
-  environment: Pick<ChibiRasterEnvironmentV7, "readPixels" | "createSurface">,
-): SpentSpriteCacheV7 {
-  const copies = new WeakMap<object, CanvasImageSource | null>();
-  return {
-    resolve(image) {
-      const cached = copies.get(image);
-      if (cached !== undefined) return cached ?? image;
-      const sized = image as {
-        readonly naturalWidth?: unknown;
-        readonly naturalHeight?: unknown;
-        readonly width?: unknown;
-        readonly height?: unknown;
-      };
-      const width =
-        typeof sized.naturalWidth === "number"
-          ? sized.naturalWidth
-          : sized.width;
-      const height =
-        typeof sized.naturalHeight === "number"
-          ? sized.naturalHeight
-          : sized.height;
-      const pixels =
-        typeof width === "number" &&
-        typeof height === "number" &&
-        width > 0 &&
-        height > 0
-          ? environment.readPixels(image, width, height)
-          : null;
-      const surface =
-        pixels === null ||
-        typeof width !== "number" ||
-        typeof height !== "number"
-          ? null
-          : environment.createSurface(
-              spentSpritePixelsV7(pixels),
-              width,
-              height,
-            );
-      copies.set(image, surface);
-      return surface ?? image;
-    },
-  };
 }

@@ -1180,10 +1180,350 @@
       "completedAt": "2026-09-29T20:00:05.979Z",
       "usageUsd": 0.008840934912363688,
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "Promote: a steel helmet with golden rank stripes and a star. Superseded by icon-action-promote-b.",
+        "reviewedAt": "2026-09-29T20:08:21.754Z"
+      }
+    },
+    "icon-action-promote-b": {
+      "id": "icon-action-promote-b",
+      "asset": "chibi-icon-action-promote",
+      "jobId": "sync-d194a378-3826-4bea-a2fa-d254350e2711",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5",
+        "asset": "chibi-icon-action-promote",
+        "subject": "ICON:ACTION:PROMOTE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5901,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: one big military medal seen flat from the front: a short wide ribbon at the top, deep crimson red with one pale cream stripe down its middle, and a big round bright gold medal disc hanging directly under the ribbon with a simple raised five-pointed star in its middle; the ribbon and the round disc are the only two shapes, each large and plain, lit from the lower left; nothing else in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big military medal seen flat from the front: a short wide ribbon at the top, deep crimson red with one pale cream stripe down its middle, and a big round bright gold medal disc hanging directly under the ribbon with a simple raised five-pointed star in its middle; the ribbon and the round disc are the only two shapes, each large and plain, lit from the lower left; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big military medal seen flat from the front: a short wide ribbon at the top, deep crimson red with one pale cream stripe down its middle, and a big round bright gold medal disc hanging directly under the ribbon with a simple raised five-pointed star in its middle; the ribbon and the round disc are the only two shapes, each large and plain, lit from the lower left; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects."
+      },
+      "submittedAt": "2026-10-07T13:15:11.494Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5/icon-action-promote-b.png",
+      "rawSheetSha256": "88ec01f9b1ac3d5e56705774f871dfaa095f66ac76943354ae443a81fd4cb289",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.297,
+          "footprintWidthShare": 0.8621,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-07T13:16:00.953Z",
+      "usageUsd": 0.009321325752470229,
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "Promote: a steel helmet with golden rank stripes and a star.",
-        "reviewedAt": "2026-09-29T20:08:21.754Z"
+        "notes": "A military medal: a wide crimson ribbon with a cream stripe and a round gold disc with a star. Checked at 1x, at 18, 22 and 24 px and at 4x on grass, snow, forest and ash: it reads as a medal at every size. The plate hint is the medal's own disc; nothing is drawn behind or under it. Replaces the helmet (promote-a), which did not read at marker size (bead pulp_wars-2yc.29, the user's correction of 2026-10-07).",
+        "reviewedAt": "2026-10-07T13:19:00.324Z"
+      }
+    },
+    "icon-action-promote-c": {
+      "id": "icon-action-promote-c",
+      "asset": "chibi-icon-action-promote",
+      "jobId": "sync-1827d8d4-9917-4a1e-bb3f-6ea545adfb31",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5",
+        "asset": "chibi-icon-action-promote",
+        "subject": "ICON:ACTION:PROMOTE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5902,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: one big military medal seen flat from the front: a short wide ribbon at the top, deep crimson red with one pale cream stripe down its middle, and a big round bright gold medal disc hanging directly under the ribbon with a simple raised five-pointed star in its middle; the ribbon and the round disc are the only two shapes, each large and plain, lit from the lower left; nothing else in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big military medal seen flat from the front: a short wide ribbon at the top, deep crimson red with one pale cream stripe down its middle, and a big round bright gold medal disc hanging directly under the ribbon with a simple raised five-pointed star in its middle; the ribbon and the round disc are the only two shapes, each large and plain, lit from the lower left; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big military medal seen flat from the front: a short wide ribbon at the top, deep crimson red with one pale cream stripe down its middle, and a big round bright gold medal disc hanging directly under the ribbon with a simple raised five-pointed star in its middle; the ribbon and the round disc are the only two shapes, each large and plain, lit from the lower left; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects."
+      },
+      "submittedAt": "2026-10-07T13:16:00.962Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5/icon-action-promote-c.png",
+      "rawSheetSha256": "24b255d33f97796ebe46be5efbebff7aa9c91962e60488b93c85c5e319f9dafd",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.3415,
+          "footprintWidthShare": 0.92,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-07T13:16:34.978Z",
+      "usageUsd": 0.008134417878256904,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Reads as a medal, but the disc is orange-brown rather than gold and the ribbon is drawn folded, so it is muddier at 18-24 px than promote-b.",
+        "reviewedAt": "2026-10-07T13:18:58.849Z"
+      }
+    },
+    "icon-action-promote-d": {
+      "id": "icon-action-promote-d",
+      "asset": "chibi-icon-action-promote",
+      "jobId": "sync-6f8e6094-f60f-413f-ad59-bf7401aacc2e",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5",
+        "asset": "chibi-icon-action-promote",
+        "subject": "ICON:ACTION:PROMOTE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5903,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: one big military medal seen flat from the front: a short wide ribbon at the top, deep crimson red with one pale cream stripe down its middle, and a big round bright gold medal disc hanging directly under the ribbon with a simple raised five-pointed star in its middle; the ribbon and the round disc are the only two shapes, each large and plain, lit from the lower left; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The medal is drawn straight on and symmetrical, like a flat badge: the ribbon is a short upright rectangle, the gold disc is a perfect circle as wide as the ribbon or wider.",
+            "negative": "helmet, soldier, person, trophy, cup, coin pile, long ribbon tails, chain, laurel wreath, tilted view"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big military medal seen flat from the front: a short wide ribbon at the top, deep crimson red with one pale cream stripe down its middle, and a big round bright gold medal disc hanging directly under the ribbon with a simple raised five-pointed star in its middle; the ribbon and the round disc are the only two shapes, each large and plain, lit from the lower left; nothing else in the image. The medal is drawn straight on and symmetrical, like a flat badge: the ribbon is a short upright rectangle, the gold disc is a perfect circle as wide as the ribbon or wider.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, helmet, soldier, person, trophy, cup, coin pile, long ribbon tails, chain, laurel wreath, tilted view",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big military medal seen flat from the front: a short wide ribbon at the top, deep crimson red with one pale cream stripe down its middle, and a big round bright gold medal disc hanging directly under the ribbon with a simple raised five-pointed star in its middle; the ribbon and the round disc are the only two shapes, each large and plain, lit from the lower left; nothing else in the image. The medal is drawn straight on and symmetrical, like a flat badge: the ribbon is a short upright rectangle, the gold disc is a perfect circle as wide as the ribbon or wider. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, helmet, soldier, person, trophy, cup, coin pile, long ribbon tails, chain, laurel wreath, tilted view."
+      },
+      "submittedAt": "2026-10-07T13:16:35.016Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5/icon-action-promote-d.png",
+      "rawSheetSha256": "c43d7f65fdc5bd5c2f1622c557726ab98706ac3e30fccbaacfaee146183aada9",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.3701,
+          "footprintWidthShare": 0.9231,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-07T13:17:04.997Z",
+      "usageUsd": 0.007825777848561605,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A clean medal, but narrow: the ribbon and disc use under half the canvas width, so it is thin at the marker's 18-24 px.",
+        "reviewedAt": "2026-10-07T13:18:59.308Z"
+      }
+    },
+    "icon-action-promote-e": {
+      "id": "icon-action-promote-e",
+      "asset": "chibi-icon-action-promote",
+      "jobId": "sync-d4b3b4ff-7345-4bbf-a14e-79e47ecfb16a",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5",
+        "asset": "chibi-icon-action-promote",
+        "subject": "ICON:ACTION:PROMOTE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5904,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: one big military medal seen flat from the front: a short wide ribbon at the top, deep crimson red with one pale cream stripe down its middle, and a big round bright gold medal disc hanging directly under the ribbon with a simple raised five-pointed star in its middle; the ribbon and the round disc are the only two shapes, each large and plain, lit from the lower left; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The medal is drawn straight on and symmetrical, like a flat badge: the ribbon is a short upright rectangle, the gold disc is a perfect circle as wide as the ribbon or wider.",
+            "negative": "helmet, soldier, person, trophy, cup, coin pile, long ribbon tails, chain, laurel wreath, tilted view"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big military medal seen flat from the front: a short wide ribbon at the top, deep crimson red with one pale cream stripe down its middle, and a big round bright gold medal disc hanging directly under the ribbon with a simple raised five-pointed star in its middle; the ribbon and the round disc are the only two shapes, each large and plain, lit from the lower left; nothing else in the image. The medal is drawn straight on and symmetrical, like a flat badge: the ribbon is a short upright rectangle, the gold disc is a perfect circle as wide as the ribbon or wider.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, helmet, soldier, person, trophy, cup, coin pile, long ribbon tails, chain, laurel wreath, tilted view",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big military medal seen flat from the front: a short wide ribbon at the top, deep crimson red with one pale cream stripe down its middle, and a big round bright gold medal disc hanging directly under the ribbon with a simple raised five-pointed star in its middle; the ribbon and the round disc are the only two shapes, each large and plain, lit from the lower left; nothing else in the image. The medal is drawn straight on and symmetrical, like a flat badge: the ribbon is a short upright rectangle, the gold disc is a perfect circle as wide as the ribbon or wider. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, helmet, soldier, person, trophy, cup, coin pile, long ribbon tails, chain, laurel wreath, tilted view."
+      },
+      "submittedAt": "2026-10-07T13:17:05.009Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5/icon-action-promote-e.png",
+      "rawSheetSha256": "1ef39c999e46d3ae677ba4275a2e690a4949507c4f37ef260252a8a023a477b1",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.3806,
+          "footprintWidthShare": 0.88,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-07T13:17:54.945Z",
+      "usageUsd": 0.009662364535861546,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A clean medal with the boldest outline, but the smallest ribbon; promote-b fills more of the canvas and reads better at 18 px.",
+        "reviewedAt": "2026-10-07T13:18:59.783Z"
       }
     },
     "icon-action-rally-a": {
@@ -4567,13 +4907,13 @@
       "subject": "ICON:ACTION:PROMOTE",
       "assetClass": "ICON",
       "status": "ACCEPTED",
-      "recipe": "icon-action-promote-a",
+      "recipe": "icon-action-promote-b",
       "candidate": 0,
-      "candidateSha256": "8813414862f3713e6fa80a6873615e7b9e4683d6fccf2dbb417e1fe22546240c",
+      "candidateSha256": "88ec01f9b1ac3d5e56705774f871dfaa095f66ac76943354ae443a81fd4cb289",
       "master": {
         "path": "public/assets/chibi/icons/chibi-icon-action-promote.png",
-        "sha256": "8813414862f3713e6fa80a6873615e7b9e4683d6fccf2dbb417e1fe22546240c",
-        "pixelSha256": "64da6546d4472923ba2d058ff174ce6473492430127a5bbfa6f31e4589782895",
+        "sha256": "88ec01f9b1ac3d5e56705774f871dfaa095f66ac76943354ae443a81fd4cb289",
+        "pixelSha256": "31da37d70e24b59b29b78de0b9124f2680ae25d5dddb97ece83ec4a39602b457",
         "width": 48,
         "height": 48
       },
@@ -4591,10 +4931,10 @@
         "down": 0
       },
       "plateCheck": {
-        "bandRows": 8,
-        "groundShare": 0.1083,
-        "footprintWidthShare": 1,
-        "suspect": false
+        "bandRows": 9,
+        "groundShare": 0.297,
+        "footprintWidthShare": 0.8621,
+        "suspect": true
       },
       "reviewChecks": {
         "native": true,
@@ -4603,8 +4943,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Promote: a steel helmet with golden rank stripes and a star.",
-      "acceptedAt": "2026-09-29T20:08:21.753Z"
+      "notes": "A military medal: a wide crimson ribbon with a cream stripe and a round gold disc with a star. Checked at 1x, at 18, 22 and 24 px and at 4x on grass, snow, forest and ash: it reads as a medal at every size. The plate hint is the medal's own disc; nothing is drawn behind or under it. Replaces the helmet (promote-a), which did not read at marker size (bead pulp_wars-2yc.29, the user's correction of 2026-10-07).",
+      "acceptedAt": "2026-10-07T13:19:00.324Z"
     },
     "chibi-icon-action-rally": {
       "id": "chibi-icon-action-rally",

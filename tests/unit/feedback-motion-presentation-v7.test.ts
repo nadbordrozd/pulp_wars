@@ -2,21 +2,27 @@ import { describe, expect, it } from "vitest";
 import {
   CITY_HOP_AMPLITUDE_CSS_PX_V7,
   CITY_HOP_MS_V7,
-  COIN_FLIGHT_MS_V7,
+  COIN_ARC_MAX_CSS_PX_V7,
+  COIN_ARC_MIN_CSS_PX_V7,
+  COIN_FLIGHT_MAX_MS_V7,
+  COIN_FLIGHT_MIN_MS_V7,
+  COIN_SOURCE_STAGGER_SPAN_MS_V7,
   COIN_POP_MS_V7,
   COIN_SPRITES_PER_SOURCE_V7,
   COIN_SPRITE_CAP_V7,
   COIN_STAGGER_MS_V7,
-  COIN_STAGGER_SPAN_MS_V7,
   POPULATION_ICONS_PER_CITY_V7,
   coinArcControlV7,
   coinBurstOffsetV7,
   coinEntryPointV7,
   coinFrameV7,
-  coinLandingMsV7,
+  coinArcHeightV7,
+  coinFlightMsV7,
+  coinLandingAfterMsV7,
+  coinPathProgressV7,
+  coinStartDelayMsV7,
   coinSpritePlanV7,
   coinSpritesForAmountV7,
-  coinStaggerMsV7,
   easeInOutCubicV7,
   feedbackPulseV7,
   heldCityMeterV7,
@@ -27,12 +33,7 @@ import {
   promotionMarkerBobCssPxV7,
   readyChevronBounceCssPxV7,
 } from "../../src/render/canvas/feedback-motion-v7";
-import {
-  SPENT_SPRITE_BRIGHTNESS_V7,
-  createSpentSpriteCacheV7,
-  promotionMarkerSizeCssPxV7,
-  spentSpritePixelsV7,
-} from "../../src/render/canvas/feedback-canvas-v7";
+import { promotionMarkerSizeCssPxV7 } from "../../src/render/canvas/feedback-canvas-v7";
 
 const sum = (values: readonly number[]): number =>
   values.reduce((total, value) => total + value, 0);
@@ -85,12 +86,18 @@ describe("coin sprites", () => {
     ).toBeGreaterThan(mixed.filter((sprite) => sprite.source === 0).length);
   });
 
-  it("spreads a launch over a bounded time", () => {
-    expect(coinStaggerMsV7(1)).toBe(0);
-    expect(coinStaggerMsV7(4)).toBe(COIN_STAGGER_MS_V7);
-    expect(coinStaggerMsV7(24) * 23).toBeLessThanOrEqual(
-      COIN_STAGGER_SPAN_MS_V7 + 1e-9,
+  it("sends the coins of a source one after another, and the sources a moment apart", () => {
+    expect(coinStartDelayMsV7(0, 1, 0)).toBe(0);
+    // One source: a stream, 125 ms apart (between 110 and 140).
+    expect(COIN_STAGGER_MS_V7).toBeGreaterThanOrEqual(110);
+    expect(COIN_STAGGER_MS_V7).toBeLessThanOrEqual(140);
+    expect(coinStartDelayMsV7(0, 1, 3)).toBe(3 * COIN_STAGGER_MS_V7);
+    // Many sources: their first coins never spread over more than the span.
+    expect(coinStartDelayMsV7(23, 24, 0)).toBeLessThanOrEqual(
+      COIN_SOURCE_STAGGER_SPAN_MS_V7 + 1e-9,
     );
+    expect(coinStartDelayMsV7(1, 3, 0)).toBe(70);
+    expect(coinStartDelayMsV7(2, 3, 1)).toBe(140 + COIN_STAGGER_MS_V7);
   });
 });
 
@@ -98,99 +105,214 @@ describe("coin flight", () => {
   const from = { x: 640, y: 520 };
   const to = { x: 34, y: 30 };
   const burst = coinBurstOffsetV7(1, 3);
+  const start = { x: from.x + burst.x, y: from.y + burst.y };
+  /** Distance of a point from the straight line start -> end, and how far along. */
+  const offLine = (
+    a: { x: number; y: number },
+    b: { x: number; y: number },
+    point: { x: number; y: number },
+  ) => {
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const length = Math.hypot(dx, dy);
+    return {
+      height: Math.abs((point.x - a.x) * dy - (point.y - a.y) * dx) / length,
+      along: ((point.x - a.x) * dx + (point.y - a.y) * dy) / (length * length),
+    };
+  };
 
-  it("eases in and out along the path", () => {
-    expect(easeInOutCubicV7(0)).toBe(0);
-    expect(easeInOutCubicV7(1)).toBe(1);
-    expect(easeInOutCubicV7(0.5)).toBeCloseTo(0.5, 12);
-    // Symmetric, slow at both ends, fastest in the middle.
-    for (const t of [0.1, 0.25, 0.4])
-      expect(easeInOutCubicV7(t) + easeInOutCubicV7(1 - t)).toBeCloseTo(1, 12);
-    const early = easeInOutCubicV7(0.1) - easeInOutCubicV7(0);
-    const middle = easeInOutCubicV7(0.55) - easeInOutCubicV7(0.45);
-    const late = easeInOutCubicV7(1) - easeInOutCubicV7(0.9);
-    expect(middle).toBeGreaterThan(early * 5);
-    expect(late).toBeCloseTo(early, 12);
-    expect(easeInOutCubicV7(-1)).toBe(0);
-    expect(easeInOutCubicV7(2)).toBe(1);
-  });
-
-  it("flies a parabola: constant second differences in the path parameter", () => {
-    const start = { x: from.x + burst.x, y: from.y + burst.y };
-    const control = coinArcControlV7(start, to);
-    const points = Array.from({ length: 11 }, (_, index) =>
-      parabolaPointV7(start, control, to, index / 10),
-    );
-    expect(points[0]).toEqual(start);
-    expect(points.at(-1)?.x).toBeCloseTo(to.x, 9);
-    expect(points.at(-1)?.y).toBeCloseTo(to.y, 9);
-    const second = (axis: "x" | "y"): number[] =>
-      points
-        .slice(2)
-        .map(
-          (point, index) =>
-            point[axis] -
-            2 * (points[index + 1]?.[axis] ?? 0) +
-            (points[index]?.[axis] ?? 0),
-        );
-    for (const axis of ["x", "y"] as const) {
-      const differences = second(axis);
-      for (const value of differences)
-        expect(value).toBeCloseTo(differences[0] ?? 0, 9);
-    }
-    // A slight arc: its top is a seventh of the distance off the chord,
-    // between 26 and 96 px, and it bends upward.
-    const mid = parabolaPointV7(start, control, to, 0.5);
-    const chord = { x: (start.x + to.x) / 2, y: (start.y + to.y) / 2 };
-    const height = Math.hypot(mid.x - chord.x, mid.y - chord.y);
+  it("is slow enough to follow: a 300 ms hop and a toss of 1.0 to 1.3 s", () => {
+    expect(COIN_POP_MS_V7).toBe(300);
+    expect(coinFlightMsV7(0)).toBe(COIN_FLIGHT_MIN_MS_V7);
+    expect(coinFlightMsV7(250)).toBe(1_000);
+    expect(coinFlightMsV7(600)).toBe(1_140);
+    expect(coinFlightMsV7(5_000)).toBe(COIN_FLIGHT_MAX_MS_V7);
+    expect(COIN_FLIGHT_MIN_MS_V7).toBe(1_000);
+    expect(COIN_FLIGHT_MAX_MS_V7).toBe(1_300);
     const distance = Math.hypot(to.x - start.x, to.y - start.y);
-    expect(height).toBeCloseTo(Math.min(96, Math.max(26, distance / 7)), 9);
-    expect(mid.y).toBeLessThan(chord.y);
+    expect(coinLandingAfterMsV7({ from, burst, to })).toBe(
+      300 + coinFlightMsV7(distance),
+    );
+    // Fast animation speed halves it; a coin from the edge has no hop.
+    expect(coinLandingAfterMsV7({ from, burst, to, durationScale: 0.5 })).toBe(
+      (300 + coinFlightMsV7(distance)) / 2,
+    );
+    expect(coinLandingAfterMsV7({ from, burst, to, pop: false })).toBe(
+      coinFlightMsV7(distance),
+    );
   });
 
-  it("pops out of its tile, then follows the eased parabola to the counter", () => {
+  it("moves steadily along the curve: gentle at both ends, never backwards", () => {
+    expect(coinPathProgressV7(0)).toBe(0);
+    expect(coinPathProgressV7(1)).toBe(1);
+    expect(coinPathProgressV7(0.5)).toBeCloseTo(0.5, 12);
+    let last = 0;
+    let fastest = 0;
+    for (let step = 1; step <= 100; step += 1) {
+      const now = coinPathProgressV7(step / 100);
+      expect(now).toBeGreaterThan(last);
+      fastest = Math.max(fastest, now - last);
+      last = now;
+    }
+    const first = coinPathProgressV7(0.01);
+    const final = 1 - coinPathProgressV7(0.99);
+    // It leaves and arrives at about a third of its mean speed (no jerk,
+    // no snap) and is never more than 1.4 times as fast as the mean.
+    expect(first).toBeGreaterThan(0.003);
+    expect(first).toBeLessThan(0.005);
+    expect(final).toBeCloseTo(first, 9);
+    expect(fastest).toBeLessThan(0.014);
+    expect(easeInOutCubicV7(0.5)).toBeCloseTo(0.5, 12);
+  });
+
+  it("is a real toss: a parabola whose top is a quarter to a third of the way high", () => {
+    for (const variant of [0, 1, 2, 3]) {
+      const control = coinArcControlV7(start, to, variant);
+      const points = Array.from({ length: 41 }, (_, index) =>
+        parabolaPointV7(start, control, to, index / 40),
+      );
+      expect(points[0]).toEqual(start);
+      expect(points.at(-1)?.x).toBeCloseTo(to.x, 9);
+      expect(points.at(-1)?.y).toBeCloseTo(to.y, 9);
+      // A parabola: constant second differences in the path parameter.
+      for (const axis of ["x", "y"] as const) {
+        const second = points
+          .slice(2)
+          .map(
+            (point, index) =>
+              point[axis] -
+              2 * (points[index + 1]?.[axis] ?? 0) +
+              (points[index]?.[axis] ?? 0),
+          );
+        for (const value of second)
+          expect(value).toBeCloseTo(second[0] ?? 0, 8);
+      }
+      const distance = Math.hypot(to.x - start.x, to.y - start.y);
+      const measured = points.map((point) => offLine(start, to, point));
+      const top = measured.reduce((best, item) =>
+        item.height > best.height ? item : best,
+      );
+      expect(top.height).toBeCloseTo(coinArcHeightV7(distance, variant), 6);
+      // This toss is 780 px long, so the 220 px cap applies: still more
+      // than a fifth of the way high.
+      expect(top.height / distance).toBeGreaterThanOrEqual(0.22);
+      expect(top.height / distance).toBeLessThanOrEqual(0.34);
+      // The top comes a little before halfway.
+      expect(top.along).toBeGreaterThan(0.4);
+      expect(top.along).toBeLessThan(0.46);
+      // It rises above both ends before it falls into the counter.
+      expect(Math.min(...points.map((point) => point.y))).toBeLessThan(
+        start.y - 400,
+      );
+    }
+  });
+
+  it("keeps the arc between 70 and 220 px and gives each coin of a burst its own", () => {
+    expect(coinArcHeightV7(100, 0)).toBe(COIN_ARC_MIN_CSS_PX_V7);
+    expect(coinArcHeightV7(3_000, 1)).toBe(COIN_ARC_MAX_CSS_PX_V7);
+    expect(coinArcHeightV7(3_000, 0)).toBe(COIN_ARC_MAX_CSS_PX_V7 * 0.8);
+    const heights = [0, 1, 2].map((variant) => coinArcHeightV7(600, variant));
+    expect(new Set(heights).size).toBe(3);
+    for (const height of heights) {
+      expect(height / 600).toBeGreaterThanOrEqual(0.25);
+      expect(height / 600).toBeLessThanOrEqual(0.34);
+    }
+    // The hops fan out sideways and stay a small hop upward.
+    const offsets = [0, 1, 2, 3, 4].map((index) => coinBurstOffsetV7(index, 5));
+    expect(new Set(offsets.map((offset) => offset.x)).size).toBe(5);
+    for (const offset of offsets) {
+      expect(offset.y).toBeLessThanOrEqual(-16);
+      expect(offset.y).toBeGreaterThanOrEqual(-24);
+      expect(Math.abs(offset.x)).toBeLessThanOrEqual(16);
+    }
+    expect(coinBurstOffsetV7(0, 1).x).toBe(0);
+  });
+
+  it("never collapses into a straight line, whatever the direction", () => {
+    const counter = { x: 40, y: 32 };
+    const sources = [
+      { x: 40, y: 700 }, // directly below the counter
+      { x: 44, y: 400 },
+      { x: 1_250, y: 40 }, // far to the right, level with it
+      { x: 1_200, y: 760 },
+      { x: 300, y: 36 },
+      { x: 10, y: 300 },
+    ];
+    for (const source of sources) {
+      const control = coinArcControlV7(source, counter);
+      const mid = parabolaPointV7(source, control, counter, 0.5);
+      const bow = offLine(source, counter, mid).height;
+      expect(bow).toBeGreaterThanOrEqual(COIN_ARC_MIN_CSS_PX_V7 - 1e-6);
+      // It bows upward, or to the right for a way that is nearly vertical.
+      const chordMid = {
+        x: (source.x + counter.x) / 2,
+        y: (source.y + counter.y) / 2,
+      };
+      expect(mid.y < chordMid.y - 1 || mid.x > chordMid.x + 1).toBe(true);
+    }
+  });
+
+  it("stays on screen: a toss under the top edge is kept lower, or bows the other way", () => {
+    const bounds = { left: 12, top: 18, right: 1268, bottom: 788 };
+    const counter = { x: 40, y: 32 };
+    for (const source of [
+      { x: 640, y: 200 },
+      { x: 1_200, y: 60 },
+      { x: 300, y: 40 },
+      { x: 900, y: 600 },
+      { x: 40, y: 700 },
+    ])
+      for (const variant of [0, 1, 2]) {
+        const control = coinArcControlV7(source, counter, variant, bounds);
+        for (let step = 0; step <= 40; step += 1) {
+          const point = parabolaPointV7(source, control, counter, step / 40);
+          // Within a pixel: the curve is checked at twelve points.
+          expect(point.y).toBeGreaterThanOrEqual(bounds.top - 1);
+          expect(point.x).toBeLessThanOrEqual(bounds.right + 1);
+        }
+        // Still a curve, never the straight line.
+        const mid = parabolaPointV7(source, control, counter, 0.5);
+        expect(offLine(source, counter, mid).height).toBeGreaterThan(8);
+      }
+    // With room to spare the bounds change nothing.
+    expect(coinArcControlV7({ x: 900, y: 600 }, counter, 1, bounds)).toEqual(
+      coinArcControlV7({ x: 900, y: 600 }, counter, 1),
+    );
+  });
+
+  it("hops up out of its tile, then is tossed from the top of the hop with no jump", () => {
     expect(coinFrameV7({ from, burst, to, elapsedMs: -1 })).toBeNull();
     const born = coinFrameV7({ from, burst, to, elapsedMs: 0 });
     expect(born).toMatchObject({ x: from.x, y: from.y, opacity: 0 });
-    const popped = coinFrameV7({ from, burst, to, elapsedMs: COIN_POP_MS_V7 });
-    expect(popped?.x).toBeCloseTo(from.x + burst.x, 9);
-    expect(popped?.y).toBeCloseTo(from.y + burst.y, 9);
-    expect(popped?.scale).toBeCloseTo(1, 9);
-    const start = { x: from.x + burst.x, y: from.y + burst.y };
-    const control = coinArcControlV7(start, to);
-    for (const progress of [0.2, 0.5, 0.8]) {
-      const frame = coinFrameV7({
-        from,
-        burst,
-        to,
-        elapsedMs: COIN_POP_MS_V7 + COIN_FLIGHT_MS_V7 * progress,
-      });
-      const expected = parabolaPointV7(
-        start,
-        control,
-        to,
-        easeInOutCubicV7(progress),
+    const total = coinLandingAfterMsV7({ from, burst, to });
+    expect(coinFrameV7({ from, burst, to, elapsedMs: total })).toBeNull();
+    // Sampled every 60 Hz frame: the coin never jumps.
+    let last = born;
+    let longest = 0;
+    let popEnd: typeof born = null;
+    for (let elapsed = 1000 / 60; elapsed < total; elapsed += 1000 / 60) {
+      const frame = coinFrameV7({ from, burst, to, elapsedMs: elapsed });
+      if (frame === null || last === null) throw new Error("gap in the flight");
+      longest = Math.max(
+        longest,
+        Math.hypot(frame.x - last.x, frame.y - last.y),
       );
-      expect(frame?.x).toBeCloseTo(expected.x, 9);
-      expect(frame?.y).toBeCloseTo(expected.y, 9);
-      expect(frame?.spin).toBeGreaterThanOrEqual(0.35);
-      expect(frame?.spin).toBeLessThanOrEqual(1);
+      if (elapsed <= COIN_POP_MS_V7) popEnd = frame;
+      expect(frame.spin).toBeGreaterThanOrEqual(0.4);
+      expect(frame.spin).toBeLessThanOrEqual(1);
+      last = frame;
     }
-    // Landed: nothing is drawn, and the landing time says so.
+    // About 16 px a frame at the fastest for this 780 px toss.
+    expect(longest).toBeLessThan(22);
+    // The hop ends at the top of the hop, full size, where the toss begins.
+    expect(popEnd?.x).toBeCloseTo(start.x, 0);
+    expect(popEnd?.y).toBeCloseTo(start.y, 0);
+    expect(popEnd?.scale).toBeGreaterThan(0.98);
+    // Just before landing it is at the counter, a little smaller.
     expect(
-      coinFrameV7({
-        from,
-        burst,
-        to,
-        elapsedMs: COIN_POP_MS_V7 + COIN_FLIGHT_MS_V7,
-      }),
-    ).toBeNull();
-    expect(coinLandingMsV7(100)).toBe(100 + COIN_POP_MS_V7 + COIN_FLIGHT_MS_V7);
-    // Fast animation speed halves it; a coin from the edge has no pop.
-    expect(coinLandingMsV7(0, 0.5)).toBe(
-      (COIN_POP_MS_V7 + COIN_FLIGHT_MS_V7) / 2,
-    );
-    expect(coinLandingMsV7(0, 1, false)).toBe(COIN_FLIGHT_MS_V7);
+      Math.hypot((last?.x ?? 0) - to.x, (last?.y ?? 0) - to.y),
+    ).toBeLessThan(8);
+    expect(last?.scale).toBeCloseTo(0.7, 1);
     expect(
       coinFrameV7({ from, burst, to, elapsedMs: 0, pop: false })?.scale,
     ).toBe(1);
@@ -297,48 +419,14 @@ describe("hops, bob and bounce", () => {
   });
 });
 
-describe("marker size and the spent sprite", () => {
+describe("marker size", () => {
   it("scales the marker with the zoom and keeps it readable", () => {
-    expect(promotionMarkerSizeCssPxV7(1, true)).toBe(46);
-    expect(promotionMarkerSizeCssPxV7(0.625, true)).toBeCloseTo(28.75, 9);
+    // 38 nominal px: about a sixth smaller than the first marker's 46.
+    expect(promotionMarkerSizeCssPxV7(1, true)).toBe(38);
+    expect(promotionMarkerSizeCssPxV7(0.625, true)).toBeCloseTo(23.75, 9);
     expect(promotionMarkerSizeCssPxV7(0.2, true)).toBe(20);
     expect(promotionMarkerSizeCssPxV7(0.625, false)).toBeLessThan(
       promotionMarkerSizeCssPxV7(0.625, true),
     );
-  });
-
-  it("dims a spent sprite's colour and light and keeps its silhouette", () => {
-    const pixels = new Uint8ClampedArray([200, 40, 40, 255, 10, 200, 30, 0]);
-    const dimmed = spentSpritePixelsV7(pixels);
-    // Opaque pixel: less saturated and darker, alpha untouched.
-    expect(dimmed[3]).toBe(255);
-    expect((dimmed[0] ?? 0) - (dimmed[1] ?? 0)).toBeLessThan(160 * 0.5);
-    expect(
-      Math.max(dimmed[0] ?? 0, dimmed[1] ?? 0, dimmed[2] ?? 0),
-    ).toBeLessThan(200 * SPENT_SPRITE_BRIGHTNESS_V7 + 1);
-    // Transparent pixel: untouched.
-    expect([...dimmed.slice(4)]).toEqual([10, 200, 30, 0]);
-    expect([...pixels]).toEqual([200, 40, 40, 255, 10, 200, 30, 0]);
-  });
-
-  it("builds a spent copy once per sprite and falls back to the sprite", () => {
-    let reads = 0;
-    const surface = { copy: true } as unknown as CanvasImageSource;
-    const cache = createSpentSpriteCacheV7({
-      readPixels: () => {
-        reads += 1;
-        return new Uint8ClampedArray([1, 2, 3, 255]);
-      },
-      createSurface: () => surface,
-    });
-    const sprite = { width: 1, height: 1 } as unknown as CanvasImageSource;
-    expect(cache.resolve(sprite)).toBe(surface);
-    expect(cache.resolve(sprite)).toBe(surface);
-    expect(reads).toBe(1);
-    const unreadable = createSpentSpriteCacheV7({
-      readPixels: () => null,
-      createSurface: () => surface,
-    });
-    expect(unreadable.resolve(sprite)).toBe(sprite);
   });
 });

@@ -271,8 +271,9 @@ Roads, that text now describes the **Classic look** developer option
     a ripple that leaves the ring once per 1.6 s, and a small cream chevron
     bouncing over its head.
   - **Active** (not handled, no Move left): the thin cream ring as before.
-  - **Spent** (handled): no ring, and the sprite is dimmed (45% saturation,
-    74% brightness; a Crashed unit keeps its own droop).
+  - **Spent** (handled): no cue at all; the unit keeps its default look.
+    (For a few hours on 2026-10-07 a spent unit's sprite was dimmed; the
+    user found that overkill and it was removed.)
     The states follow the newest view at once and hold through an animation.
     The cue is an ellipse at the feet and a mark over the head, never a tile
     outline, so it is not one of the four target marks
@@ -281,9 +282,14 @@ Roads, that text now describes the **Classic look** developer option
     dock still says **Needs action** or **Handled**.
 - **Feedback animations (bead `pulp_wars-2yc.29`).** Presentation only;
   the state changes at once and no animation blocks input or the AI.
-  - **Coins.** Every Coin the viewer gains pops out of the tile that earned
-    it and flies on a parabola to the HUD counter, which counts each coin as
-    it lands and always ends on the true balance (`coin-flight-layer-v7.ts`,
+  - **Coins.** Every Coin the viewer gains hops up out of the tile that
+    earned it (300 ms) and is tossed to the HUD counter on a parabola: 1.0
+    to 1.3 s, its top a third of the way high (70 to 220 px, 43% along),
+    bowing upward, or to the right for a way that is nearly straight up; a
+    toss that would leave the screen is kept lower. The coins of a source
+    follow one another 125 ms apart, each on its own arc. The counter counts
+    each coin as it lands, with a soft pulse, and always ends on the true
+    balance (`coin-flight-layer-v7.ts`, `feedback-motion-v7.ts`,
     `feedback-plan-v7.ts`). A few sprites per source, 24 on screen at most;
     an off-screen source's coins enter from the nearest edge. The layer is
     above the board, the dock and the HUD and below toasts and dialogs.
@@ -295,10 +301,12 @@ Roads, that text now describes the **Classic look** developer option
     hops that city (any player's visible city); a click that gives an order
     does not.
   - **Promotion.** A unit that reaches the kills hops inside a ring of
-    sparkles; from then on the Promote button's icon floats over its head on
-    a pale disc (gold rim and a bob for the viewer's unit; grey, smaller and
-    still for another player's visible unit, whose kills are public) until
-    it is promoted or dies.
+    sparkles; from then on the Promote button's icon, a military medal,
+    floats over it until it is promoted or dies: always centred on the unit
+    and just above its top, for every kind of unit and wherever it stands,
+    with no disc under it, and drawn over a city's name plate. It bobs for
+    the viewer's unit; for another player's visible unit, whose kills are
+    public, it is smaller and still.
   - **Reduced motion** (the Motion setting or the system preference): no
     flight and no hop; the counter, the meter and the marker show at once.
     Fast animation speed halves every duration; Fast Forward and a cancelled

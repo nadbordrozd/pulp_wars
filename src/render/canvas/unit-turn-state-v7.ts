@@ -8,7 +8,9 @@ import type { CommandV7, PlayerViewV7 } from "../../engine/index";
  *   handled): the bright pulsing ground ring and the bouncing chevron.
  * - `ACTIVE`: not handled, but it has no Move left (it may still attack,
  *   heal or use an ability): the thin still ring.
- * - `SPENT`: handled, nothing is left for it this turn: its sprite dims.
+ * - `SPENT`: handled, nothing is left for it this turn: no cue; it keeps
+ *   its default look (the user's correction of 2026-10-07: dimming it was
+ *   overkill).
  *
  * Outside the viewer's turn, for other players' units and for an Egg (which
  * never acts) there is no state and the unit is drawn plainly.
