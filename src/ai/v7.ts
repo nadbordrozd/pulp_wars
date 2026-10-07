@@ -8066,11 +8066,44 @@ function armyBatteryOverV7(
 }
 
 /**
+ * The Undead hand pass at `7r55` (`pulp_wars-w49.20`): for an Undead seat
+ * the hostile ranged units whose shots reach a hostile center count as its
+ * battery when no siege unit covers it. In a hand-played game an Undead
+ * seat stepped a Zombie with 10 HP onto the player's emptied center in the
+ * reach of two Marksmen, a Fighter, and a Raider (23 damage in sight), and
+ * the next turn another: four died there without a capture. A unit that
+ * shoots is never Bitten by the Zombie it kills, an Undead unit recovers
+ * only in its own land, and a Zombie does not strike on arrival, so the
+ * step buys nothing. Empty for every other seat: they storm as before.
+ */
+function armyUndeadShootersOverV7(
+  context: PolicyContextV7,
+  center: CoordV7,
+): readonly PublicUnitV7[] {
+  if (!armyUndeadSeatV7(context)) return [];
+  const view = context.view;
+  return armyHostilesV7(context).filter((unit) => {
+    if (armyClassV7(unitRoleRuleV7(view, unit)) !== "RANGED") return false;
+    const facts = publicCombatFacts(view, unit, context.lookup);
+    const range = distance(unit.at, center);
+    return (
+      facts.abilities.includes("ATTACK") &&
+      facts.attack2 > 0 &&
+      range >= 2 &&
+      range >= facts.minimumRange &&
+      range <= facts.maximumRange
+    );
+  });
+}
+
+/**
  * Correction pass: the hostile center is deadly for `actor`: a battery
  * covers it, the visible enemies kill the unit there before its next turn
  * (a capture needs the unit to start its turn on the center), and an own
  * fighting unit stands within `ARMY_BATTERY_REACH_V7` tiles of a unit of
- * the battery (so the battery can be dealt with first).
+ * the battery (so the battery can be dealt with first). For an Undead seat
+ * the ranged units that cover the center are a battery when no siege unit
+ * does (`armyUndeadShootersOverV7`).
  */
 function armyCenterDeadlyV7(
   context: PolicyContextV7,
@@ -8078,7 +8111,11 @@ function armyCenterDeadlyV7(
   center: CoordV7,
 ): boolean {
   if (!context.army || context.chokepoint !== null) return false;
-  const battery = armyBatteryOverV7(context, center);
+  const siege = armyBatteryOverV7(context, center);
+  // The Undead hand pass (`pulp_wars-w49.20`): for an Undead seat the
+  // ranged units that cover the center are a battery too.
+  const battery =
+    siege.length > 0 ? siege : armyUndeadShootersOverV7(context, center);
   if (battery.length === 0) return false;
   const view = context.view;
   if (visibleImmediateDamage(view, actor, center, context) < actor.hp)

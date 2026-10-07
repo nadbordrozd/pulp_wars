@@ -12,6 +12,14 @@ reasoning and the record, in the shape of
 [the Goblin pass](RULESET_7_TUNING_GOBLIN.md) and
 [the Human pass](RULESET_7_TUNING_HUMAN.md).
 
+**Played by hand at `pulp-wars-poc-7r55`** (bead `pulp_wars-w49.20`,
+three games as the Undead on three technology routes):
+[section 14](#14-the-hand-pass-at-7r55). No rule and no number changed;
+one correction to the Undead Normal AI. It has the answers to the Wight's
+open questions, the faction's units and branches as a player meets them
+after the economy rejig, and the evidence the user asked for on moving
+every faction's defender to Fortification.
+
 **Superseded in part by [the ninth unit](RULESET_7_NINTH_UNIT.md) (`pulp-wars-poc-7r55`, `pulp_wars-w49.17`).** The Undead have a ninth land
 unit, the **Wight** (the heavy line role, at Metallurgy; Rise Again: it
 returns once from its own Grave at 7 HP unless a unit stands on it), so
@@ -1582,3 +1590,400 @@ and buys its Captain. What they do not show: an Undead AI that is the
 Human AI's equal from round 1 ([section 12](#12-what-is-still-open)),
 and whether the Captain's cure ever matters against Knights that die the
 turn after they are Bitten.
+
+## 14. The hand pass at `7r55`
+
+The first hand play of the Undead on `pulp-wars-poc-7r55`
+([the ninth unit](RULESET_7_NINTH_UNIT.md) and
+[the economy rejig](RULESET_7_ECONOMY_REJIG.md), both built without
+playing), bead `pulp_wars-w49.20`. **No rule and no number changed, and
+the identity stays `7r55`.** One correction to the Undead Normal AI
+([section 14.8](#148-the-normal-ai-one-correction)) and three to the text
+harness ([section 14.9](#149-the-text-harness)). The bar was the user's:
+"the faction is not crazy op or crazy weak and that all the tech branches
+are useful and that units are differentiated from other factions by more
+than stats".
+
+### 14.1 The games
+
+All in text mode against the Normal AI, on Dry Land, the Undead played by
+hand.
+
+| Game | Against                  | Map         | Route                                                                                                             | Result                                                                                                 |
+| ---- | ------------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `ua` | Human                    | 14, seed 12 | Industry and the Wight: Garrison 3, Fortification 5, Engineering 8, Armoury 13, Pestilence 18, Banshees 21        | stopped in round 23, the map won and the game not finished: 9 cities and income 19 against 3 cities    |
+| `ub` | Goblin                   | 14, seed 9  | Wilds: Garrison 3, Forestry 6, Banshees 9, Liches 11, Fortification 15, Pestilence 19, Scouting 22, Leadership 25 | stopped in round 26, ahead: 7 cities against 5, income 22, 31 units against 14                         |
+| `uc` | Human, Dinosaur, Martian | 16, seed 3  | Mobility: Scouting 3, Garrison 6, Raiding 9, Vampires 13, Forestry 16                                             | stopped in round 19, level to behind: 5 cities and 12 units beside a Martian seat with 5 cities and 11 |
+
+The numbers after a technology are the rounds it was bought in. `ua` was
+played under a rule the user asked for, to judge an idea
+([section 14.7](#147-evidence-for-the-defender-at-fortification)): no
+Zombie before Fortification.
+
+### 14.2 What the earlier passes handed over
+
+**1. The Undead AI's mistakes against a Human player.** Three were named.
+
+- **A Zombie walked onto an emptied centre under a Catapult and two
+  Marksmen, two turns running.** Confirmed in the recorded game and
+  corrected: [section 14.8](#148-the-normal-ai-one-correction).
+- **No Lich fired before round 24.** The seat had none to fire: three
+  cities, an income of 4 to 8, Sawmilling in round 19 and its first Lich
+  in round 23. In a diagnostic match on the same map it trained its first
+  Lich in round 20 and fired it seven times in ten rounds. That is the
+  seat's economy, not its use of the unit, and it was left
+  ([section 14.8](#148-the-normal-ai-one-correction)).
+- **No Wight by round 21.** The order holds the Wight after the
+  Necromancer, so Armoury is the seat's ninth or tenth technology (round
+  26 in that game). It was left where it is: item 3.
+
+**2. A Zombie cannot attack after moving, so a shooter that steps back
+kites it. Is that the intended counter?** It is the counter, and it does
+not make the Zombie useless: it makes it the wrong unit for that job. In
+`ub` one Bomb Chucker walked to two tiles from the front Zombie, threw (6
+to it and 3 to each of four units beside it), and stood there for four
+turns: 15 to 18 damage a turn, and the Zombie had no answer. What answered
+it was a Ghoul (Move 2 and an attack after it: 5 and then 3, with no
+retaliation, because a Bomb Chucker cannot throw at the next tile) and a
+Lich standing one tile behind the front (it reaches three tiles). In `uc`
+two Martian Grunts and a Saucer killed a Skeleton a turn from three tiles
+and took a Zombie from 18 to 7; a Vampire and a charging Ghoul killed the
+veteran Grunt (7 + 6). In `ua` the Zombies did their own job: a Guard that
+attacked one took 5 or 6 and was Bitten, and two Guards and two Fighters
+rose. So the Zombie
+holds the tile, converts what comes to it, and needs the faction's other
+units for what does not come. That is the roster working as section 3
+says, and nothing was changed.
+
+**3. The Wight.** [Section 14.3](#143-the-wight).
+
+**4. The shared technologies nobody buys.** Each was tried or weighed as
+the Undead:
+
+| Technology              | Tried                                                                              | Worth its price?                                                                                                                                                                                                                                                                                                                 |
+| ----------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fortification           | bought in `ua` (9 Coins, round 5) and `ub` (15, round 15)                          | **No.** One Field Defense was built in two games (3 Coins, on a village centre); a Goblin's Kaboom destroyed it the turn after. The Undead war is fought in the enemy's land, where it cannot be built. It was bought as the way to Pestilence and, in `ua`, to the Zombie                                                       |
+| Pestilence (Explosives) | bought in `ua` (33 Coins, nine cities, no Lich) and `ub` (24, three Liches)        | **With Liches, yes**: about ten units plagued and 4 killed by Plague in seven rounds of `ub` (an Orc Brute and three Goblins). A plagued unit that goes home recovers 4 a turn against Plague's 2. **Without Liches, barely**: the Breach took a Wight's hit on a walled Guard from 4 to 7, and the Wight still took 7 or 8 back |
+| Farming, Bone Mills     | not bought; Gathering in `ub` showed six Fertile Ground tiles in the player's land | Not on a wooded map: a Farm is 5 Coins for 2, a Lumber Camp 3 for 1, and Forestry leads to the Lich where Farming leads to a mill. A Windmill heals the units beside it (6 HP), which is worth more to the faction with no healer than to others, and was still never the next purchase                                          |
+| Pathfinding             | not bought; `ub` and `uc` were two thirds Forest                                   | **No for a Zombie and Lich army** (every unit has Move 1 and stops on each tile anyway; a Banshee's Sight 2 adds nothing to a Wail of two tiles). **Wanted once**, in `uc`: Forest ended four planned Ghoul charges. It cost 21 Coins there, the price of Vampires                                                               |
+
+None of this is an Undead rule. Fortification and Pathfinding are weak
+nodes of the shared tree, as the Human and Goblin passes found.
+
+### 14.3 The Wight
+
+- **Wanted, and not a must.** Eight were trained in `ua` from round 14. It
+  deals a Fighter 8 and takes 4 (a Skeleton and a Zombie deal 5 or 6), a
+  Fighter behind Walls 7 for 3, and attacked by a Guard it takes 3 and
+  deals 6. Against a Guard it is a poor trade: 7 for 7 in the open, 4 for 8
+  on a walled centre, a 6-Coin unit against a 3-Coin one. It is the Undead
+  unit that moves, attacks, and takes a hit, which neither the Skeleton nor
+  the Zombie is, and it is not the best unit: nothing it did in `ua` broke
+  the Guards, and a Lich would have.
+- **How often it rises: one death in three.** Three Wights died in `ua`.
+  - The first was shot by a Marksman (6) and finished by a Fighter with 2
+    HP, which advanced onto the Grave. At each of the player's next six
+    Start Turns a Human unit stood on it: that Fighter, a second Fighter,
+    and four times a Guard. It never rose.
+  - The second took two Guards' attacks (it dealt them 6 and 5) and died to
+    a Marksman's shot. Nothing stood on the Grave. It rose at 7 HP the next
+    Start Turn, killed a Guard with 3 HP at once, advanced onto the first
+    Wight's Grave, and was shot dead there by two Marksmen.
+  - The third is that risen Wight: no second return, and a Grave was there
+    already.
+- **So the rule works as written and is narrow.** A Wight returns from a
+  shot, a splash, or a Wail, when the front moves on. Hand to hand it does
+  not: the killer advances onto the Grave. The Human AI steps a unit onto a
+  free marked Grave the same turn (twice in `ua`), which is the rule of the
+  ninth unit's AI pass doing its job.
+- **The player cannot clear the Grave by fighting for it.** A unit of the
+  player on the Grave blocks the return as an enemy does (reading 4 of the
+  ninth unit). Each time the player killed the unit on that Grave, one of
+  the player's own stood on it afterwards: the forced advance put a
+  Skeleton and the risen Wight there, and a Bitten Fighter killed there
+  rose as the player's Zombie on it, as does anything a Zombie kills. All
+  three were killed in the Human turn and a Human unit took the tile
+  again, so in this game an enemy was the blocker at every Start Turn; had
+  one of the three lived, it would have kept the Wight down itself. That
+  is a question for the user ([section 14.10](#1410-open-for-the-user)),
+  not a defect.
+- **Is "kill it hand to hand" too easy a counter?** It is easy and it is
+  fair: it is what every melee army does anyway. The return matters against
+  the armies that shoot (Marksmen and Catapults, Bomb Chuckers, Martian
+  rays), which are the armies the Undead are otherwise weakest against.
+- **The marked Grave was not shown in the text view.** `view` listed it
+  among the Graves with no mark, and a tile's description said nothing.
+  Corrected: [section 14.9](#149-the-text-harness).
+- **Its place in the AI's research order** is right where it is, after the
+  Necromancer. The Banshee and the Lich are what an Undead seat needs
+  against Guards, Goblins, and shooters; the Wight is the fifth unit of a
+  seat that already holds a line. Bought first by the hand player (`ua`,
+  three technologies and 27 Coins for Armoury with seven cities) it won
+  nothing the Zombies had not.
+- **6 Coins and Armoury are right for that.** Nothing was changed.
+
+### 14.4 The units
+
+No unit was the best in every game: Zombies and Wights in `ua` (and the
+Lich that was missing), Banshees and Liches in `ub`, Ghouls and a Vampire
+in `uc`.
+
+| Unit        | What it did                                                                                                                                                                                                                                                                                                                                                             |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Skeleton    | The opening: with one or two Ghouls it took six villages by round 10 of `ua` and four by round 8 of `ub`. It kills a Goblin in a blow. It stops being a fighter against Guards (round 15 of `ua`) and against Grunts (round 10 of `uc`), and stays the 2-Coin capturer and what Raise Dead makes. Not obsolete in the Fighter's way                                     |
+| Ghoul       | Every game had one or two free ones (Scouts, a chest); they took villages in each and an enemy city in two. With Raiding it is the unit that reaches a shooter: Charge deals a Fighter 8 and a Grunt 7 through its Shield; with Carrion on a Bitten Saucer it hit at Attack 4 and the Saucer rose. It does not come home (Defense 1)                                    |
+| Banshee     | The unit of the middle of `ub`. A Wail deals a Goblin 3 of its 6 HP, so two Wails kill what they cover and one makes three Goblins a kill for anything, a Zombie with 2 HP included. Against a Wolf Rider or a Bomb Chucker 2, a Guard 1 to 2; against Martian Shields it would do nothing and was not bought in `uc`                                                   |
+| Zombie      | The garrison and the bite, in all three games. 15 risings in `ua` and `ub`; ten were dead within one enemy turn (a risen Zombie has 10 HP; a Goblin with one helper deals it 8, two Marksmen 10). No wave formed in any game. A Saucer's Tractor Beam pulled one off its city centre                                                                                    |
+| Necromancer | One, in round 25 of `ub`: it moved a tile and raised 8 Skeletons from the Graves of the fight (5 HP each, no slot)                                                                                                                                                                                                                                                      |
+| Lich        | The strongest unit against Goblins: a shot kills a Goblin, a Bomb Chucker, or a Wolf Rider and deals the unit beside it 3 to 5. Five Liches made 16 of the 29 kills of `ub` (12 by shot or splash, 4 by Plague). It cannot move and fire, it stood on city centres (where it blocks training), and it is the unit `ua` lacked against Guards (Defense 1 against a shot) |
+| Vampire     | One, in `uc`: three attacks, two kills, no HP lost in its own turn, 3 HP healed, three tiles flown back each time. It is the Ghoul that comes home, at three times the price                                                                                                                                                                                            |
+| Wight       | [Section 14.3](#143-the-wight)                                                                                                                                                                                                                                                                                                                                          |
+| Abomination | Not seen: one city reached level 5 (`ub`, round 22) and none level 6                                                                                                                                                                                                                                                                                                    |
+
+**One best unit?** No. The Lich is the nearest: against Goblins and
+against a Human line it is the purchase of every turn a city can take one.
+What keeps it from being the whole army is in the games: it arrives with
+the third technology of its branch (21 Coins with five cities), it needs
+Zombies in front, the city it is trained in must have a free slot and an
+empty centre (the first Lich of `ub` came three rounds after its
+technology for that reason), it fires only from where it stood, and
+Shields take its splash.
+
+**The faction's weaknesses are real and its own.** Units that must stand
+together (a Zombie needs company, a Banshee a line in front) are what a
+Kaboom and a bomb's splash are for: a 1-Coin Goblin dealt 15 to 20 damage
+to three or four units, three times. Units with Move 1 and no shot are
+what Martian rays are for.
+
+### 14.5 The branches
+
+| Branch     | Bought                                                                 | Verdict                                                                                                                                                                                                                                                                                        |
+| ---------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Settlement | Gathering (`ua`, `ub`), Leadership (`ub`)                              | Useful late. Leadership paid in one action (the Necromancer's eight Skeletons) and a Market gave 2 a turn for 6. Farming and Bone Mills were never the next purchase                                                                                                                           |
+| Wilds      | Hunting (all three), Forestry (`ub`, `uc`), Banshees and Liches (`ub`) | The strongest branch. Hunting made villages level 2 for nothing in every game; Forestry and three Sawmills were the growth of `ub` (a Sawmill and a fourth Camp took a city from 0 of 4 to level 4 for 8 Coins); the Banshee and the Lich won it. Pathfinding was never bought                 |
+| Mobility   | Scouting, Raiding, Vampires (`uc`); Scouting (`ub`, round 22)          | Useful, and thin alone, as for the Goblins: it is the answer to shooters and has no growth in it before Roads. `uc` had an income of 7 to 9 from round 6 to round 17. Roads and Commerce were not bought                                                                                       |
+| Industry   | Garrison (all three), Engineering, Armoury, Fortification, Pestilence  | Garrison is bought in every game. Engineering paid as it does for everyone: a Workshop and two Mines made three villages level 2 in one turn of `ua` for 14 Coins, with 8 of Stockpile and a Scouts Ghoul back. Armoury gives a good unit; Fortification gave nothing; Pestilence needs Liches |
+
+**Every branch has something an Undead player buys.** The two weak nodes
+are the shared ones (Fortification, Pathfinding), and Bone Mills on a map
+without Farm land.
+
+### 14.6 The economy as an Undead player meets it
+
+- **Coins while the war is open: short.** `ub`: 0 to 6 after spending in
+  every round to round 21. `uc`: 0 to 3 in every round. `ua`: 0 to 6 to
+  round 12, then 17 to 39 unspent from round 14, with the map won.
+- **Do the free bodies remove the pressure? No.** `ub` had 11 risings and
+  8 raised Skeletons against 17 own units lost and 25 bought. Seven of the
+  risings were dead within one enemy turn; each took an attack or two that
+  would have gone into a unit the player paid for, which is their worth.
+  The Raise Dead came in round 25, when the war had turned. `ua` had 4
+  risings in 23 rounds and `uc` 3. The Undead player replaces units with
+  Coins like everyone else.
+- **Unit slots and the empty centre bound before Coins did**, in `ua`
+  (five of nine cities full from round 16) and `ub` (both front cities
+  full from round 11). An Undead army makes it worse for itself: a Lich or
+  a garrison Zombie stands on the centre the next unit needs.
+- **Research price.** With seven cities Armoury cost 27 Coins (nine
+  Zombies); with nine, Pestilence 33 and a tier-2 technology 23. `ua` took
+  the map with the Industry branch and would then have paid 69 Coins for
+  the three technologies to its first Lich. A player who expands fast buys
+  the wrong branch at a discount and the right one at full price.
+- **Level-2 villages are free** wherever a village has two harvests in
+  reach: two hunts (4 Coins) or a Mine (5) or a Workshop (4), and the
+  Stockpile gives 4 back. Every game did it in rounds 5 to 11.
+- **Monuments.** Explorer in rounds 7 and 9 on 14 x 14 and not by round 19
+  on 16 x 16; Land Baron in round 13 of `ua`;
+  Slayer (a Lich, seven kills) in round 19 and Muster in round 25 of `ub`.
+- **Level 6.** No city reached it. One reached level 5.
+
+### 14.7 Evidence for the defender at Fortification
+
+The user is weighing a change for every faction: the defender (Guard,
+Zombie, Orc Brute, and so on) moves from the free root of Industry to
+tier 2 on the Fortification side, away from the heavy line unit on
+Engineering and Armoury, and the root gets something else (Mines, for
+example). It was not built. `ua` was played under its rule for the Undead:
+no Zombie before Fortification.
+
+- **The opening with Skeletons only played as it does now.** Rounds 1 to 8
+  of `ua` had no fight. Five Skeletons and two Ghouls (Scouts and a chest)
+  took six villages by round 10. Nothing in those rounds wanted a Zombie:
+  it has Move 1 and no attack after a Move, so it takes a village no
+  sooner than a Skeleton and costs a Coin more. The first Zombie of the
+  two games without the rule was also trained in round 7.
+- **When the Zombie is first wanted.** Round 9 in `ua` (two Human Fighters
+  hit two Skeletons on village centres for 5 each), round 9 to 10 in `ub`
+  (the first Goblins), round 11 in `uc` (a Fighter and a Raider at a
+  captured village). A Skeleton on a centre next to a Fighter is dead in
+  two turns; a Goblin with two helpers deals it 8.
+- **Tier 2 is affordable by then.** Fortification cost 9 Coins with two
+  cities in round 5 of `ua`, two turns of income. With three or four
+  cities in rounds 6 to 8 it is 11 to 13. So the Zombie arrives when it is
+  first needed against the Normal AI. Against an opponent that attacks in
+  rounds 5 to 7 it would not, and no faction would have its defender: the
+  Goblin opening on a contested map, which the Goblin pass left as an open
+  question, gets stronger under this change.
+- **What it costs is the technology, not the rounds.** Garrison is 5
+  Coins and the faction's automatic second buy. Fortification would be the
+  automatic buy instead, at 9 to 13 Coins, in the rounds in which every
+  game had 0 to 6 Coins left after spending, and in place of Forestry or
+  Banshees, which is what `ub` bought in rounds 6 and 9. As it is today the
+  node gives an Undead player nothing else: one Field Defense in three
+  games.
+- **Does the wave still feel strong at tier 2?** The question did not
+  arise: no wave formed in any of the three games, at tier 1 or under the
+  rule. Against Guards the risings were four in 23 rounds; against Goblins
+  eleven, seven of them dead within a turn. The Undead turns that felt
+  strong were a Wail and then Zombies converting what it had wounded
+  (round 12 of `ub`: two kills, both risen; round 14: three kills), a
+  Lich's shot, and the Necromancer's eight Skeletons. A Zombie one
+  technology later would not have changed any of those.
+- **What the Undead want on the root instead.** In these games the root
+  gave Ore shown and 2 Coins of Spoils. A Mine there (5 Coins, +2) would
+  make the root what the other three are, one way to grow from the land:
+  Fruit, Game, a scout, Ore. It would have been worth a great deal in `ua`
+  (Ore under every Mountain; three villages to level 2 in one turn) and
+  nothing in `ub` and `uc` (no Ore in the player's land; two tiles), which
+  is how Gathering and Hunting already behave. Two cautions: with the
+  level-2 Stockpile a Mine is a free level from round 3 on an Ore map; and
+  Engineering would keep Mountain entry, the Workshop, and Redevelop, which
+  is thin for a tier-2 node unless the Workshop is what it is bought for.
+- **The Undead case for the move:** it gives Fortification a reason
+  (every Undead game would buy it, and Pestilence is behind it), and it
+  costs the faction about 6 Coins and one research turn in rounds 5 to 8.
+  **The case against:** the Zombie is the faction's garrison and its
+  conversion, there is no second unit that holds a centre before it, and
+  the Normal AI's Undead opening (the Zombie first, then one growth
+  technology) would have to be rebuilt.
+
+### 14.8 The Normal AI: one correction
+
+**An Undead seat does not step a unit onto a hostile centre that the
+shooters in sight kill it on.** In the recorded game (`b` of the Human
+hand pass, round 18) a Zombie with 10 HP stepped onto the player's emptied
+centre in the reach of two Marksmen, a Fighter, and a Raider: 23 damage in
+the seat's own sight. It died, and so did the next three. The rule that
+should have held it (the correction pass of tuning 8: no step onto a
+hostile centre under a battery that kills the unit there before it can
+capture) counted siege units only, and the player's Catapults stood on
+tiles the seat had not explored.
+
+For an Undead seat the hostile ranged units whose shots reach the centre
+now count as its battery when no siege unit covers it
+(`armyUndeadShootersOverV7`, read by `armyCenterDeadlyV7` in
+`src/ai/v7.ts`). The rest of the rule is as it was: the damage the
+visible enemies can deal the unit there reaches its HP, and an own
+fighting unit stands within seven tiles of one of the shooters. The same
+holds for an attack that would kill the garrison and advance onto the
+centre. A unit that lives through the enemy's turn still steps on: in the
+recorded game the full Zombie of round 19 (17 damage in sight against 18
+HP) goes as before, and dies to the Catapults it cannot see, which no
+rule on the public view can know.
+
+It is an Undead seat's rule because the reasons are Undead ones: a unit
+that shoots is never Bitten by the Zombie it kills, an Undead unit
+recovers only in its own land, and a Zombie does not strike on arrival.
+Every other seat storms as before, and tuning 8's "more of them under the
+enemy's shooters" stands for them.
+
+**Left alone.** The research order (the Wight after the Necromancer). The
+seat's slow start: in two diagnostic matches it trained two Skeletons and
+two or three Zombies in its first ten rounds, held four and five cities
+in round 11, and lost to both other AIs. That is
+[section 12](#12-what-is-still-open) again and is not one mistake.
+
+**Three diagnostic matches** between Normal AIs (14 x 14, 30 rounds),
+each run once to see that nothing breaks. They are not a balance
+measurement. All ran without an error or a stall.
+
+- **Humans first, Undead second, seed 7** (the map of the recorded game),
+  before and after the correction: the same match both times. Round 31:
+  the Human seat holds nine cities and 34 units, the Undead seat two
+  cities and six units. The Undead seat researched Garrison in round 3,
+  Hunting 4, Forestry 8, Banshees 11, Liches 16, Leadership 19, and
+  Engineering 22, trained its first Lich in round 20, fired seven shots
+  with it, wailed ten times, and had 16 risings. No Armoury by round 30.
+- **Goblins first, Undead second, seed 5** (the map of `gb` of the Goblin
+  pass): the Goblin seat eliminated the Undead seat in round 28. The
+  Undead seat had five cities in round 11, Banshees in round 15, Liches in
+  round 22, and trained no Lich.
+
+With the two of the Goblin pass, the Undead seat has lost every
+diagnostic match that was run. The Undead AI was a strong opponent for a
+hand-played Goblin in `gb`; it is the weakest of the three army AIs
+against another AI.
+
+### 14.9 The text harness
+
+- **A Wight's marked Grave is shown.** The map cell has the mark `w`
+  where a plain Grave has `x`; `view` lists the marked Graves with their
+  seat and whether a unit stands on each (`Wight's Graves (...): 6,1(S0,
+under u70(S1 Guard))`); and a tile's description names it (`WIGHT'S GRAVE
+of S1 (a Wight returns here with 7 HP at the start of S1's turn)`).
+  [Text play](../validation/TEXT_PLAY.md) had said that a tile says so, and
+  the harness printed nothing.
+- **A tile's description names a plain Grave** (`grave`).
+- **A `REVEALED` line says what is worth walking to among its tiles**
+  (`| among them: village 6,7, village 9,7`), also a chest, a city, or a
+  curiosity. Both earlier hand passes lost rounds to a village that such a
+  line had shown as a coordinate.
+
+### 14.10 Open, for the user
+
+1. **Rise Again against the player's own rules.** The forced advance and
+   a Bitten rising put the Wight's own side on its Grave
+   ([section 14.3](#143-the-wight)). If the return is meant to matter in a
+   melee fight too, the smallest change is that a unit of the Wight's own
+   seat does not block it and the Wight rises on a free tile beside the
+   Grave. As built it is a rule against shooters.
+2. **Raise Dead has no limit.** One Necromancer raised eight Skeletons in
+   one action in round 25 of `ub` (16 Coins of units at half HP, no slot).
+   It came once, late, from the Graves of fifteen rounds, and it is the
+   kind of turn the user wants to keep. It is named because it is the one
+   place where free bodies did change a game.
+3. **The risen Zombie's 10 HP**, for the third time
+   ([section 13.8](#138-open-forks-and-ideas-with-the-testers-evidence),
+   item 4): ten of fifteen risings were dead within one enemy turn,
+   against Guards, Marksmen, and Goblins alike. Conversion is not to be
+   weakened; whether it is strong enough to be "a wave" is the question.
+4. **Fortification** has no buyer among the Undead either. The move of
+   the defender ([section 14.7](#147-evidence-for-the-defender-at-fortification))
+   would give it one.
+5. **The corrected AI rule is an Undead seat's.** A Dinosaur seat sent
+   single Cavemen onto a held village centre in the Goblin pass. Whether
+   every army seat should count shooters is for the passes of those
+   factions.
+
+### 14.11 For the passes that follow
+
+- **The Martian AI is the hard opponent for an Undead player.** Two
+  Grunts and a Saucer reach three tiles and kill one 10-HP unit a turn;
+  Shields of 2, and 4 beside a Shield Projector, refill every turn, which
+  leaves the Banshee and the Lich's splash with little to do. The Martian
+  pass should look at this from the Martian side: is the Undead Wilds
+  branch dead against Martians, and are the Vampire and a charging Ghoul
+  enough of an answer at 21 and 13 Coins of research.
+- **A Saucer's Tractor Beam pulled a garrison Zombie off its city
+  centre** and two Grunts shot it. Under the change of
+  [section 14.7](#147-evidence-for-the-defender-at-fortification) that is a
+  dearer loss for every faction.
+- **The Human AI against the Undead trained Guards only**: eight of them
+  in round 23 of `ua`, with two Marksmen, rotated out of a walled centre
+  when wounded. It holds a capital that way and takes nothing back.
+- **The Goblin AI** left a Bomb Chucker with 3 HP beside a Ghoul instead
+  of stepping back, and used Kaboom five times, four of them on three or
+  more units.
+
+### 14.12 Tests
+
+`tests/unit/ruleset-v7-undead-pass.test.ts`, "the hand pass at 7r55: the
+Undead Normal AI at an emptied center": a Zombie with 10 HP and a wounded
+Skeleton beside an empty Human centre are not offered the step onto it
+with one or two Marksmen in reach of the centre and a Fighter two tiles
+away; a full Zombie under the same two Marksmen is; without a Marksman
+both are, as before; a Goblin seat's units in the same position are.
+
+`tests/scripts/play-text-v7.test.ts`: the marked Grave in `view`, on the
+map, and in a Move's description, the unit that stands on it, a plain
+Grave, and the `among them` part of a `REVEALED` line.

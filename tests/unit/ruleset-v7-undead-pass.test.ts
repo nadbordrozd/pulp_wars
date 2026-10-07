@@ -2341,3 +2341,72 @@ describe("the correction: text and events", () => {
     expect(previewAt(defence, at(5, 3), at(5, 2)).damageToAttacker).toBe(8);
   });
 });
+
+// The Undead hand pass at 7r55 (`pulp_wars-w49.20`, section 14 of
+// docs/product/RULESET_7_TUNING_UNDEAD.md): no rule and no number changed.
+// One correction to the Undead Normal AI.
+describe("the hand pass at 7r55: the Undead Normal AI at an emptied center", () => {
+  /**
+   * The hand-played game, round 18: the Human capital (2, 8) with an empty
+   * center, two Marksmen two tiles behind it and a Fighter two tiles away,
+   * and a Zombie and a wounded Skeleton of seat 0 beside the center.
+   */
+  const emptied = (
+    faction: FactionIdV7,
+    zombieHp: number,
+    marksmen: 0 | 1 | 2,
+  ): GameStateV7 => ({
+    ...field(
+      [faction, "ORIGINAL"],
+      [
+        { seat: 0, role: "GUARD", at: at(3, 9), hp: zombieHp },
+        { seat: 0, role: "FIGHTER", at: at(3, 7), hp: 6 },
+        { seat: 0, role: "FIGHTER", at: at(8, 8) },
+        ...[at(0, 7), at(0, 9)]
+          .slice(0, marksmen)
+          .map((where) => ({ seat: 1, role: "MARKSMAN" as const, at: where })),
+        { seat: 1, role: "FIGHTER", at: at(1, 6) },
+      ],
+      { coins: 0 },
+    ).state,
+    // (After the opening: the villages-first rule of the correction holds
+    // an Undead seat's units back through round 10.)
+    round: ARMY_VILLAGES_FIRST_ROUNDS_V7 + 2,
+  });
+  /** The policy offers the unit at `from` the step onto the center. */
+  const offered = (state: GameStateV7, from: CoordV7): boolean =>
+    unitCommands(viewOf(state), unitAtV7(state, from).id).some(
+      (command) =>
+        command.kind === "MOVE" && same(command.path.at(-1) ?? from, at(2, 8)),
+    );
+
+  it("steps no unit onto it that the Marksmen and the Fighter in sight kill there", () => {
+    // A Zombie with 10 HP takes 6 from each Marksman and 5 from the
+    // Fighter; the Skeleton with 6 HP 4 from each through Bones. One
+    // Marksman and the Fighter are enough.
+    for (const marksmen of [1, 2] as const) {
+      const state = emptied("UNDEAD", 10, marksmen);
+      expect(offered(state, at(3, 9))).toBe(false);
+      expect(offered(state, at(3, 7))).toBe(false);
+    }
+  });
+
+  it("still steps a Zombie onto it that lives through the enemy's turn", () => {
+    // 17 damage in sight against 18 HP: the full Zombie goes, the wounded
+    // Skeleton beside it does not.
+    const full = emptied("UNDEAD", 18, 2);
+    expect(offered(full, at(3, 9))).toBe(true);
+    expect(offered(full, at(3, 7))).toBe(false);
+    // With no shooter in sight the old rule holds: both may go, though the
+    // Fighter alone would kill the Skeleton there.
+    const unshot = emptied("UNDEAD", 10, 0);
+    expect(offered(unshot, at(3, 9))).toBe(true);
+    expect(offered(unshot, at(3, 7))).toBe(true);
+  });
+
+  it("is an Undead seat's rule: a Goblin seat storms as before", () => {
+    const state = emptied("GOBLIN", 10, 2);
+    expect(offered(state, at(3, 9))).toBe(true);
+    expect(offered(state, at(3, 7))).toBe(true);
+  });
+});

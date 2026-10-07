@@ -35,6 +35,7 @@ import { publicProjectedDamageForPolicyV7 } from "../src/ai/v7";
 import {
   MONUMENT_POPULATION_V7,
   REWARD_UNIT_LEVEL_V7,
+  WIGHT_RISE_AGAIN_HP_V7,
   isEggLaidRoleV7,
   technologyCapabilitiesV7,
 } from "../src/engine/rules/ruleset-v7";
@@ -187,6 +188,7 @@ import {
 } from "../src/render/technology-unlock-text-v7";
 import { MARKET_PLACEMENT_TEXT_V7 } from "../src/render/economy-presentation-v7";
 import { cityNameByIdV7 } from "../src/render/city-names-presentation-v7";
+import { WIGHT_GRAVE_LABEL_V7 } from "../src/render/ninth-unit-presentation-v7";
 import {
   CHARGE_DESCRIPTION_V7,
   DINOSAUR_HIRE_NOTE_V7,
@@ -1195,6 +1197,29 @@ const REWARD_TEXT_V7: Readonly<Record<string, string>> = {
   TREASURY: `+${CITY_REWARD_COINS_V7.TREASURY} Coins`,
 };
 
+/** The marked Grave of a Wight on `at` (public on an explored tile). */
+function wightGraveAtV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+): PlayerViewV7["ninthUnit"]["wightGraves"][number] | null {
+  return (
+    view.ninthUnit.wightGraves.find((entry) => sameV7(entry.at, at)) ?? null
+  );
+}
+
+/**
+ * What a Wight's marked Grave means, in a tile's description: whose Wight
+ * returns, when, and whether a unit keeps it down now.
+ */
+function wightGraveTextV7(
+  view: PlayerViewV7,
+  grave: PlayerViewV7["ninthUnit"]["wightGraves"][number],
+): string {
+  const owner = seatLabelV7(view, grave.ownerId);
+  const blocker = view.units.find((unit) => sameV7(unit.at, grave.at));
+  return `${WIGHT_GRAVE_LABEL_V7.toUpperCase()} of ${owner} (a Wight returns here with ${WIGHT_RISE_AGAIN_HP_V7} HP at the start of ${owner}'s turn${blocker === undefined ? "" : `; not while a unit stands on it: ${unitTagV7(view, blocker)} does`})`;
+}
+
 function tileBriefV7(view: PlayerViewV7, at: CoordV7): string {
   const tile = tileAtV7(view, at);
   if (tile === undefined) return "off board";
@@ -1205,6 +1230,11 @@ function tileBriefV7(view: PlayerViewV7, at: CoordV7): string {
   else if (tile.resource !== null) parts.push(tile.resource.toLowerCase());
   if (tile.road) parts.push("road");
   if (tile.fieldDefense) parts.push("field-defense");
+  // The Undead hand pass at 7r55 (`pulp_wars-w49.20`): a Grave, and the
+  // marked Grave a Wight returns from.
+  const wightGrave = wightGraveAtV7(view, at);
+  if (wightGrave !== null) parts.push(wightGraveTextV7(view, wightGrave));
+  else if (view.graves.some((grave) => sameV7(grave, at))) parts.push("grave");
   if (view.treasureChests.some((chest) => sameV7(chest, at)))
     parts.push("TREASURE");
   const curiosity = view.curiosities.find((entry) => sameV7(entry.at, at));
@@ -1826,10 +1856,27 @@ function eventTextV7(
       );
       break;
     case "TILES_REVEALED":
-      if (event.playerId === me)
+      if (event.playerId === me) {
+        // The Undead hand pass at 7r55 (`pulp_wars-w49.20`): what is worth
+        // walking to among them (two testers each missed a village that a
+        // line of coordinates had shown them).
+        const found: string[] = [];
+        for (const at of event.tiles) {
+          const tile = tileAtV7(context.view, at);
+          const site = tile?.explored === true ? tile.site : null;
+          if (site !== null) found.push(`${site.toLowerCase()} ${xyV7(at)}`);
+          if (context.view.treasureChests.some((chest) => sameV7(chest, at)))
+            found.push(`chest ${xyV7(at)}`);
+          const curiosity = context.view.curiosities.find((entry) =>
+            sameV7(entry.at, at),
+          );
+          if (curiosity !== undefined)
+            found.push(`${curiosity.kind} ${xyV7(at)}`);
+        }
         lines.push(
-          `REVEALED ${event.tiles.length} tiles: ${event.tiles.slice(0, 16).map(xyV7).join(" ")}${event.tiles.length > 16 ? " ..." : ""}`,
+          `REVEALED ${event.tiles.length} tiles: ${event.tiles.slice(0, 16).map(xyV7).join(" ")}${event.tiles.length > 16 ? " ..." : ""}${found.length === 0 ? "" : ` | among them: ${found.join(", ")}`}`,
         );
+      }
       break;
     case "UNIT_MOVED": {
       const from = context.memory.position(event.unitId);
@@ -2542,7 +2589,7 @@ const LEGEND_V7 = [
   "LEGEND cell = terrain feature mark owner unit (7 chars), ??????? = unexplored. There is no re-fog: an explored tile shows everything on it.",
   "  terrain: . grass  f forest  ^ mountain  ~ shallow water  = deep water  # rift",
   "  feature: C capital  c city  v neutral village | F farm L lumber camp M mine W windmill S sawmill G forge K workshop $ market O monument P port Y shipyard | r fruit g fertile ground a game o ore h fish p pearls * hidden resource  - none",
-  "  mark: ! treasure chest  & curiosity  d field defense  + road  x grave  i ice  m crumbs  - none | owner: seat digit of the territory, - neutral",
+  "  mark: ! treasure chest  & curiosity  d field defense  + road  x grave  w Wight's marked Grave  i ice  m crumbs  - none | owner: seat digit of the territory, - neutral",
   "  unit: seat digit (N = neutral monster) + role code Fi fighter Ra raider Mk marksman Gd guard Cp captain Ct catapult Kn knight Ch champion (the heavy) Jg juggernaut Pb patrol boat Bs battleship Sb submarine, lowercase e- = egg, --- none",
 ];
 
@@ -2585,13 +2632,15 @@ function mapLinesV7(view: PlayerViewV7): readonly string[] {
             ? "d"
             : tile.road
               ? "+"
-              : has(view.graves, at)
-                ? "x"
-                : view.ice.some((entry) => sameV7(entry.at, at))
-                  ? "i"
-                  : view.crumbs.some((entry) => sameV7(entry.at, at))
-                    ? "m"
-                    : "-";
+              : wightGraveAtV7(view, at) !== null
+                ? "w"
+                : has(view.graves, at)
+                  ? "x"
+                  : view.ice.some((entry) => sameV7(entry.at, at))
+                    ? "i"
+                    : view.crumbs.some((entry) => sameV7(entry.at, at))
+                      ? "m"
+                      : "-";
       const owner =
         tile.territoryOwnerId === null
           ? "-"
@@ -3110,6 +3159,17 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
     );
   if (view.graves.length > 0)
     specials.push(`graves: ${view.graves.map(xyV7).join(" ")}`);
+  // The Undead hand pass at 7r55 (`pulp_wars-w49.20`): the marked Graves,
+  // which the list above did not tell from the others.
+  if (view.ninthUnit.wightGraves.length > 0)
+    specials.push(
+      `Wight's Graves (a Wight returns with ${WIGHT_RISE_AGAIN_HP_V7} HP at its owner's turn start unless a unit stands there): ${view.ninthUnit.wightGraves
+        .map((entry) => {
+          const blocker = view.units.find((unit) => sameV7(unit.at, entry.at));
+          return `${xyV7(entry.at)}(${seatLabelV7(view, entry.ownerId)}${blocker === undefined ? ", free" : `, under ${unitTagV7(view, blocker)}`})`;
+        })
+        .join(" ")}`,
+    );
   if (view.crumbs.length > 0)
     specials.push(
       `crumbs: ${view.crumbs.map((entry) => `${xyV7(entry.at)}(${seatLabelV7(view, entry.ownerId)})`).join(" ")}`,

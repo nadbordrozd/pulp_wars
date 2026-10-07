@@ -140,8 +140,18 @@ call a Zombie); the unit lists give the faction's own name.
   says the target is Cracked (1 less Defense this turn); an attack on a
   Musk Ox says the attacker is Chilled; a Whirligig's unit line says how
   many of its three attacks remain, and a unit it has attacked this turn
-  is no longer offered as its target. A tile with a Wight's marked Grave
-  says so.
+  is no longer offered as its target.
+- **A Wight's marked Grave** (since the Undead hand pass, `pulp_wars-w49.20`;
+  before it the harness printed nothing for one). The map cell has the
+  mark `w` where a plain Grave has `x`. Under the map, after `graves:`,
+  `view` lists the marked ones with their seat and what stands on each:
+  `Wight's Graves (a Wight returns with 7 HP at its owner's turn start
+unless a unit stands there): 6,1(S0, under u70(S1 Guard)) 7,2(S0, free)`.
+  A tile's description (a Move line, `options --tile`) names it: `WIGHT'S
+GRAVE of S1 (a Wight returns here with 7 HP at the start of S1's turn)`,
+  and a plain Grave reads `grave`. The return itself prints as
+  `WIGHT_RISEN playerId=S0 unitId=u87(S0 Wight) at=7,2 hp=7` at the start
+  of the owner's turn.
 - **Labs.** Every Human seat that fields Champions owns Metallurgy; in the
   four labs in which you play another faction your seat owns Engineering
   and Metallurgy too (twelve technologies), so its heavy can be produced.
@@ -369,6 +379,10 @@ action used`). When no city can train, `options` still prints a `TRAIN`
   section with the reason for every city (`nothing to train: c1 no free
 slot (3/3) | c9 center occupied`), and a rejected `c1.t.fighter` names the
   same reason.
+- **A `REVEALED` line names what is worth walking to** among its tiles: a
+  village, a chest, a city, or a curiosity (`REVEALED 24 tiles: 5,7 6,7
+... | among them: village 6,7, village 9,7`). It lists at most sixteen
+  coordinates and names every find among all of them.
 - **Events** are the engine's projected events. The common ones have a short
   form (`MOVE`, `COMBAT`, `DIED`, `TRAINED`, `RESEARCHED`, `INCOME`,
   `REVEALED`, `CITY_CAPTURED`, `CITY_LEVELED_UP`; the capture of a city you

@@ -1320,6 +1320,90 @@ describe("text-mode play harness", () => {
     );
   });
 
+  // The Undead hand pass at 7r55 (`pulp_wars-w49.20`).
+  it("marks a Wight's Grave in the view, on the map, and in the tile's description, and says what a Move revealed", () => {
+    const session = newSession("wight-grave");
+    const start = sessionState(session);
+    const me = start.turnOrder[start.activeSeatIndex];
+    if (me === undefined) throw new Error("no active seat");
+    const undead = start.players.find((player) => player.faction === "UNDEAD");
+    const mine = start.units.find((unit) => unit.ownerId === me);
+    if (undead === undefined || mine === undefined)
+      throw new Error("the arena is not as expected");
+    // A free tile beside the seat's first unit: open land, no settlement.
+    const beside = viewForV7(start, me).board.tiles.find(
+      (tile) =>
+        tile.explored &&
+        tile.site === null &&
+        tile.terrain === "GRASS" &&
+        Math.max(
+          Math.abs(tile.at.x - mine.at.x),
+          Math.abs(tile.at.y - mine.at.y),
+        ) === 1,
+    );
+    if (beside === undefined) throw new Error("no open tile beside the unit");
+    const xy = `${beside.at.x},${beside.at.y}`;
+    patchState(session, (state) => ({
+      ...state,
+      graves: [beside.at],
+      ninthUnit: {
+        ...state.ninthUnit,
+        wightGraves: [{ at: beside.at, ownerId: undead.id }],
+      },
+    }));
+    const view = ok("view", "--session", session, "--full");
+    expect(view).toContain(`graves: ${xy} | Wight's Graves`);
+    expect(view).toContain(
+      `Wight's Graves (a Wight returns with 7 HP at its owner's turn start unless a unit stands there): ${xy}(S1, free)`,
+    );
+    expect(view).toContain("x grave  w Wight's marked Grave");
+    // The map cell carries the mark `w` where a plain Grave has `x`.
+    const row = view
+      .split("\n")
+      .find((line) => line.startsWith(`y${String(beside.at.y).padEnd(3)} |`));
+    expect(row?.split("|")[beside.at.x + 1]?.[2]).toBe("w");
+    // The Move onto it says so, and then a unit keeps the Wight down.
+    const move = `u${mine.id}.m.${xy}`;
+    expect(
+      ok("options", "--session", session, "--unit", `u${mine.id}`),
+    ).toContain(
+      "WIGHT'S GRAVE of S1 (a Wight returns here with 7 HP at the start of S1's turn)",
+    );
+    ok("do", "--session", session, move);
+    expect(ok("view", "--session", session)).toContain(
+      `${xy}(S1, under u${mine.id}(S0 Fighter))`,
+    );
+    // A plain Grave is still a `grave`.
+    patchState(session, (state) => ({
+      ...state,
+      ninthUnit: { ...state.ninthUnit, wightGraves: [] },
+    }));
+    const plain = ok("view", "--session", session);
+    expect(plain).toContain(`graves: ${xy}`);
+    expect(plain).not.toContain("Wight's Graves");
+
+    // A `REVEALED` line names a village, a chest, or a curiosity among its
+    // tiles; one with none of them is as short as it was.
+    const scripted = playScripted(newSession("revealed")).transcript.join("\n");
+    const revealed = scripted
+      .split("\n")
+      .filter((line) => line.trimStart().startsWith("REVEALED "));
+    expect(revealed.length).toBeGreaterThan(0);
+    const villages =
+      /neutral villages: ([\d, ]+?)(?: \||$)/m
+        .exec(scripted)?.[1]
+        ?.split(" ") ?? [];
+    for (const line of revealed) {
+      const [tiles, among = ""] = line.split(" | among them: ");
+      const listed = (tiles ?? "").split(": ")[1]?.split(" ") ?? [];
+      for (const village of villages)
+        if (listed.includes(village))
+          expect(among).toContain(`village ${village}`);
+      if (among !== "")
+        expect(among).toMatch(/^(\w+ \d+,\d+)(, \w+ \d+,\d+)*$/);
+    }
+  });
+
   it("rejects illegal and stale ids cleanly", () => {
     const session = newSession("reject");
     const before = JSON.parse(readFileSync(session, "utf8")) as Record<

@@ -1,5 +1,55 @@
 # Greedy Normal AI
 
+## The Undead hand pass at `7r55` (`pulp_wars-w49.20`)
+
+[The Undead hand pass](../product/RULESET_7_TUNING_UNDEAD.md#14-the-hand-pass-at-7r55)
+changed no rule (the identity stays `pulp-wars-poc-7r55`) and one thing in
+the policy of an Undead seat.
+
+**An Undead seat does not step a unit onto a hostile center that the
+shooters in its sight kill it on** (`armyUndeadShootersOverV7`, read by
+`armyCenterDeadlyV7`). In a hand-played game an Undead seat stepped a
+Zombie with 10 HP onto the player's emptied center in the reach of two
+Marksmen, a Fighter, and a Raider (23 damage by the seat's own estimate),
+and then three more units on the following turns. The rule of the
+correction pass of `pulp_wars-w49.11` ("nor does a unit step onto a hostile
+center under a battery that kills it there before it can capture") did not
+hold it: its battery is the hostile siege units that cover the center, and
+the player's Catapults stood on tiles the seat had not explored.
+
+For a seat whose faction is Undead, when no hostile siege unit covers the
+center, the battery is the hostile units of the `RANGED` class with an
+attack whose range (two tiles or more) reaches the center. The rest of
+`armyCenterDeadlyV7` is unchanged, so the step is declined when all of
+these hold:
+
+- a siege unit, or for an Undead seat a ranged unit, covers the center;
+- `visibleImmediateDamage` for the unit on the center reaches its HP (every
+  visible enemy counts, also the ones that fight hand to hand);
+- an own fighting unit stands within `ARMY_BATTERY_REACH_V7` tiles of a
+  unit of that battery.
+
+The two places that read the rule are the Move onto a hostile center and
+the hand-to-hand kill of a garrison that would advance the attacker onto
+it. `armyBatteryOverV7` and the battery's hunt (`armyBatteryTargetV7`) are
+unchanged: only siege units are hunted, and a Marksman is reached by the
+ordinary attack rules. A unit that lives through the enemy's turn by the
+seat's estimate still steps on, so an enemy the seat cannot see still
+catches it (in the same game a full Zombie stepped on the next turn with
+17 damage in sight and died to three unseen Catapults).
+
+It is an Undead seat's rule and not every army seat's because its reasons
+are the faction's: a unit that shoots is never Bitten by the Zombie it
+kills, an Undead unit recovers only in its own land, and a Zombie does not
+strike on arrival. The other seats keep tuning 8's rule that more units
+walk at an empty center under the enemy's shooters. It reads the viewer's
+`PlayerViewV7` and the public damage estimate only.
+
+The research order was looked at and left: the Wight after the Necromancer.
+So was the seat's opening, which is slow against another AI (two
+Skeletons and two or three Zombies trained in ten rounds in two diagnostic
+matches) and is the open item of the Undead pass, not one mistake.
+
 ## The Goblin hand pass at `7r55` (`pulp_wars-w49.19`)
 
 [The Goblin hand pass](../product/RULESET_7_TUNING_GOBLIN.md#13-the-hand-pass-at-7r55)

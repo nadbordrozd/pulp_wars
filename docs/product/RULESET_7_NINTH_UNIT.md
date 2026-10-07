@@ -462,7 +462,14 @@ Is "kill it hand to hand" too easy a counter, or the return too strong
 against ranged armies? Do Zombie, Wight, and Lich leave the Ghoul, the
 Banshee, and the Vampire with nothing to do? Is the marked Grave clear
 enough on the board? Should a Wight that dies onto an existing Grave rise
-(reading 3)?
+(reading 3)? **Played** (bead `pulp_wars-w49.20`, three hand games as the
+Undead; no rule changed): the answers are in
+[the Undead pass, section 14](RULESET_7_TUNING_UNDEAD.md#14-the-hand-pass-at-7r55).
+One Wight in three rose, the one a Marksman killed; the Ghoul, the
+Banshee, and the Vampire were each the right purchase in one game; the
+marked Grave was missing
+from the text view and is shown now. Reading 3 was met once (a risen Wight
+died on the first Wight's Grave) and reading 4 is an open question there.
 
 **Martian (Shock Trooper).** Does a body in front of the rays change how a
 Martian army fights, or is a Move-1 unit left behind by walkers and
