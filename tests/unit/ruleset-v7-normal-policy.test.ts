@@ -101,6 +101,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "./v7-martian",
       "./v7-ice-folk",
       "./v7-dwarf",
+      // pulp_wars-w49.17: the ninth unit's positional values (public view
+      // only).
+      "./v7-ninth-unit",
       // pulp_wars-jdb.4: the Candy policy (public view and previews only).
       "./v7-candy",
       // pulp_wars-737.4: map curiosities (public view and previews only).
@@ -1074,7 +1077,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // unchanged; the cause is in the pin's comment (was e8b765…17d1).
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // f0fd0a…63a9).
-      "ea7230b26216d17f63489fb7c0fd878399820d0067e42b0cc01c2414fc420f77",
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the command is
+      // unchanged; the cause is in the pin's comment (was ea7230…0f77).
+      "908c1bc49a669815701d6463ca7567f4239e1dd7c195ace5bd904590720853ba",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -1155,7 +1160,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r54");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r55");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

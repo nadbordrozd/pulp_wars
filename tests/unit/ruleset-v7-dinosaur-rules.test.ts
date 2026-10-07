@@ -105,7 +105,7 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
       ["DINOSAUR", "ORIGINAL"],
       [
         { seat: 0, role: "FIGHTER", at: { x: 4, y: 3 } },
-        { seat: 0, role: "CATAPULT", at: { x: 5, y: 3 } },
+        { seat: 0, role: "SWORDSMAN", at: { x: 5, y: 3 } },
         { seat: 0, role: "KNIGHT", at: { x: 6, y: 3 } },
         { seat: 0, role: "JUGGERNAUT", at: { x: 7, y: 3 } },
         { seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } },
@@ -137,11 +137,14 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
         { role: "MARKSMAN", slots: 1 },
         { role: "GUARD", slots: 1 },
         { role: "CAPTAIN", slots: 1 },
-        { role: "CATAPULT", slots: 2 },
+        // The ninth unit (7r55): the Stegosaurus, one slot.
+        { role: "CATAPULT", slots: 1 },
         { role: "KNIGHT", slots: 2 },
         { role: "PATROL_BOAT", slots: 1 },
         { role: "BATTLESHIP", slots: 1 },
         { role: "SUBMARINE", slots: 1 },
+        // The Triceratops, the heavy line role.
+        { role: "SWORDSMAN", slots: 2 },
       ],
     });
     const human = previewCityCapacityV7(state, humanCity.id);
@@ -1630,7 +1633,7 @@ describe("ruleset-7 Dinosaur ability parities", () => {
         { seat: 0, role: "FIGHTER", at: { x: 4, y: 3 }, hp: 5 },
         { seat: 0, role: "RAIDER", at: { x: 6, y: 3 } },
         { seat: 0, role: "CAPTAIN", at: { x: 5, y: 2 }, hp: 5 },
-        { seat: 0, role: "CATAPULT", at: { x: 5, y: 4 } },
+        { seat: 0, role: "SWORDSMAN", at: { x: 5, y: 4 } },
         { seat: 0, role: "KNIGHT", at: { x: 4, y: 4 } },
         { seat: 0, role: "GUARD", at: { x: 7, y: 3 } },
         { seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } },
@@ -1680,7 +1683,7 @@ describe("ruleset-7 Dinosaur ability parities", () => {
     const base = goblinArenaV7(
       ["DINOSAUR", "ORIGINAL"],
       [
-        { seat: 0, role: "CATAPULT", at: { x: 4, y: 7 } },
+        { seat: 0, role: "SWORDSMAN", at: { x: 4, y: 7 } },
         { seat: 1, role: "FIGHTER", at: { x: 3, y: 7 } },
         { seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } },
       ],
@@ -1729,7 +1732,7 @@ describe("ruleset-7 Dinosaur ability parities", () => {
     const weak = goblinArenaV7(
       ["DINOSAUR", "ORIGINAL"],
       [
-        { seat: 0, role: "CATAPULT", at: { x: 4, y: 3 } },
+        { seat: 0, role: "SWORDSMAN", at: { x: 4, y: 3 } },
         { seat: 1, role: "FIGHTER", at: { x: 5, y: 3 }, hp: 2 },
         { seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } },
       ],
@@ -1741,7 +1744,7 @@ describe("ruleset-7 Dinosaur ability parities", () => {
       overrunAdvance: false,
     });
     expect(unitAtV7(killed.state, { x: 5, y: 3 })).toMatchObject({
-      role: "CATAPULT",
+      role: "SWORDSMAN",
       kills: 1,
       maxHp: 24,
       hp: 24,
@@ -1753,7 +1756,7 @@ describe("ruleset-7 Dinosaur ability parities", () => {
       [
         {
           seat: 0,
-          role: "CATAPULT",
+          role: "SWORDSMAN",
           at: { x: 4, y: 3 },
           activation: { moved: true, movedPathLength: 1 },
         },
@@ -1778,7 +1781,7 @@ describe("ruleset-7 Dinosaur ability parities", () => {
     const ready = goblinArenaV7(
       ["DINOSAUR", "ORIGINAL"],
       [
-        { seat: 0, role: "CATAPULT", at: { x: 4, y: 3 } },
+        { seat: 0, role: "SWORDSMAN", at: { x: 4, y: 3 } },
         { seat: 1, role: "FIGHTER", at: { x: 7, y: 3 } },
       ],
     );
@@ -1834,7 +1837,7 @@ describe("ruleset-7 Dinosaur ability parities", () => {
       ["GUARD", true],
       ["JUGGERNAUT", true],
       ["CAPTAIN", false],
-      ["CATAPULT", false],
+      ["SWORDSMAN", false],
       ["KNIGHT", false],
     ] as const) {
       const arena = goblinArenaV7(

@@ -164,6 +164,8 @@ describe("Candy text (section 15.2)", () => {
       label("RAIDER"),
       "Home Sweet Home",
       "Peppermint Surprise",
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Jawbreaker.
+      "Rock Hard",
     ]);
     const rule = (name: string): string =>
       CANDY_HELP_RULES_V7.find(([candidate]) => candidate === name)?.[1] ?? "";

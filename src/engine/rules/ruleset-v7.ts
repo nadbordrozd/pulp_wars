@@ -613,6 +613,61 @@ export interface RoleMechanicsV7 {
    * seven trainable Candy land roles). False for every other faction.
    */
   readonly leavesCrumbs: boolean;
+  /**
+   * The ninth unit (`pulp_wars-w49.17`, 7r55,
+   * docs/product/RULESET_7_NINTH_UNIT.md): Heavyweight. How many units the
+   * role counts as when it stands next to the target of another own unit's
+   * Gang Up attack (the Goblin Ogre 2, every other role 1).
+   */
+  readonly gangUpWeight: 1 | 2;
+  /**
+   * The ninth unit: Rise Again. The HP at which a unit of the role climbs
+   * out of its own Grave, once, at its owner's next Start Turn (the Undead
+   * Wight 7), or null.
+   */
+  readonly riseAgainHp: number | null;
+  /**
+   * The ninth unit: Shock Field. The damage a unit takes for attacking a
+   * land-form unit of the role from the next tile while that unit's Shield
+   * has at least 1 point (the Martian Shock Trooper 3), or 0.
+   */
+  readonly shockFieldDamage: number;
+  /**
+   * The ninth unit: Rock Hard. In land form nothing moves the unit: no
+   * Push, Charge! shove, Knockback, Tractor Beam, or Bounce (the Candy
+   * Jawbreaker).
+   */
+  readonly immovable: boolean;
+  /**
+   * The ninth unit: Thagomizer. A unit the role's attack hits and does not
+   * kill is Cracked (1 less Defense, never below 0.5) until the end of the
+   * attacker's owner's turn (the Dinosaur Stegosaurus).
+   */
+  readonly cracksArmour: boolean;
+  /**
+   * The ninth unit: Frostbite. A unit that attacks a land-form unit of the
+   * role from the next tile and survives is Chilled (the Ice Folk Musk Ox).
+   */
+  readonly frostbite: boolean;
+  /**
+   * The ninth unit: Three Hammers. The attacks the role may make in a turn,
+   * each on a different unit, moved or not (the Dwarf Whirligig 3), or 1.
+   * Apart from `unmovedShots` (the Gunner's, which needs standing still).
+   */
+  readonly attacksPerTurn: 1 | 3;
+  /**
+   * The ninth unit: the role never gains Inspired from a Rally, whatever
+   * its tactical label (the Dinosaur Triceratops: it was excluded from War
+   * Drums as a `SIEGE` role and is a `LINE` role now; design decision 10).
+   */
+  readonly rallyExcluded: boolean;
+  /**
+   * Every attack of the role destroys a Field Defense on the target's tile
+   * (reason `CATAPULT`): the `CATAPULT` role of every faction, and (the
+   * ninth unit) the Dinosaur Triceratops, which keeps the rule in the
+   * heavy slot.
+   */
+  readonly demolishesFieldDefense: boolean;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -1066,9 +1121,9 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
         improvement: "WORKSHOP",
         formula: "DISTINCT_BASIC_TYPES",
       },
-      // Tuning 5 (`pulp_wars-w49.4`): the Human heavy line unit. The other
-      // trees drop this unlock (`SHARED_BASELINE_NODES_V7`).
-      { kind: "UNIT_ROLE", role: "SWORDSMAN" },
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the heavy line unit
+      // left this node for Metallurgy (it was the Human Swordsman's from
+      // tuning 5 to 7r54). Engineering gives no unit.
     ],
   ),
   node(
@@ -1084,6 +1139,10 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
         formula: "ADJACENT_FRIENDLY_CONTRIBUTORS",
       },
       { kind: "ARMS_INDUSTRY_DISCOUNT", coins: 1 },
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the heavy line unit of
+      // every faction (the `SWORDSMAN` role: Champion, Ogre, Wight,
+      // Triceratops, Shock Trooper, Mammoth, Steam Tank, Jawbreaker).
+      { kind: "UNIT_ROLE", role: "SWORDSMAN" },
     ],
   ),
   node(
@@ -1176,10 +1235,12 @@ export function embarkedMovementSpentV7(activation: {
  * Tuning 5 (`pulp_wars-w49.4`): the roles only the Human tree unlocks, and
  * the Human nodes without those unlocks. Every other faction's tree is
  * derived from this list, so a Human-only unit never appears in it.
+ *
+ * The ninth unit (`pulp_wars-w49.17`, 7r55): the list is empty. Every
+ * faction's tree unlocks the heavy line role (`SWORDSMAN`) at Metallurgy,
+ * so the shared nodes are the Human nodes.
  */
-export const HUMAN_ONLY_ROLES_V7: readonly UnitRoleIdV7[] = Object.freeze([
-  "SWORDSMAN",
-]);
+export const HUMAN_ONLY_ROLES_V7: readonly UnitRoleIdV7[] = Object.freeze([]);
 export const SHARED_BASELINE_NODES_V7: readonly TechnologyNodeV7[] = deepFreeze(
   ORIGINAL_BASELINE_V5_NODES.map((original) =>
     node(
@@ -1396,15 +1457,18 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     abilities: ["ATTACK", "SUBMERGED", "TORPEDO"],
   }),
   // Tuning 5 (`pulp_wars-w49.4`): the heavy line unit of the Industry
-  // branch (Engineering, tier 2). Attack 3.5 kills a Guard in two attacks
-  // and a Fighter in two; 15 HP at Defense 2.5 survives one Knight attack
-  // (11) and two Marksman shots, and falls to two Catapult shots. Move 1,
-  // no ability of its own. No other faction's tree unlocks the role.
+  // branch. Attack 3.5 kills a Guard in two attacks and a Fighter in two;
+  // 15 HP at Defense 2.5 survives one Knight attack (11) and two Marksman
+  // shots, and falls to two Catapult shots. Move 1, no ability of its own.
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): displayed as the Champion
+  // (the Swordsman before), 6 Coins (5 before), at Metallurgy (tier 3;
+  // Engineering, tier 2, before). The role ID stays `SWORDSMAN`: it is the
+  // heavy line slot of every faction.
   SWORDSMAN: role({
     role: "SWORDSMAN",
-    label: "Swordsman",
+    label: "Champion",
     tacticalRole: "LINE",
-    cost: 5,
+    cost: 6,
     maxHp: 15,
     attack2: 7,
     defense2: 5,
@@ -1412,7 +1476,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "ENGINEERING",
+    technology: "METALLURGY",
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "CAPTURE"],
   }),
@@ -1473,6 +1537,15 @@ const mechanics = (
           heavyTractorBeam: false,
           rushPerk: null,
           leavesCrumbs: false,
+          gangUpWeight: 1,
+          riseAgainHp: null,
+          shockFieldDamage: 0,
+          immovable: false,
+          cracksArmour: false,
+          frostbite: false,
+          attacksPerTurn: 1,
+          rallyExcluded: false,
+          demolishesFieldDefense: roleId === "CATAPULT",
           ...overrides[roleId],
         },
       ]),
@@ -1514,6 +1587,22 @@ export const GHOUL_CARRION_BONUS2_V7 = 2 as const;
  * Necromancer's Raise Dead reaches a Grave (1 before).
  */
 export const RAISE_DEAD_RADIUS_V7 = 2 as const;
+
+/**
+ * The ninth unit (`pulp_wars-w49.17`, 7r55): the HP at which a Wight
+ * climbs out of its own Grave (half its 14).
+ */
+export const WIGHT_RISE_AGAIN_HP_V7 = 7 as const;
+/** The ninth unit: the Ogre counts as this many units for Gang Up. */
+export const OGRE_GANG_UP_WEIGHT_V7 = 2 as const;
+/** The ninth unit: what a Shock Field deals a melee attacker. */
+export const SHOCK_FIELD_DAMAGE_V7 = 3 as const;
+/** The ninth unit: the Defense (half-points) a Cracked unit loses. */
+export const CRACKED_DEFENSE2_V7 = 2 as const;
+/** The ninth unit: the least Defense (half-points) of a Cracked unit. */
+export const CRACKED_MINIMUM_DEFENSE2_V7 = 1 as const;
+/** The ninth unit: the attacks a Whirligig may make in a turn. */
+export const WHIRLIGIG_ATTACKS_V7 = 3 as const;
 
 /**
  * Tuning 5: a land-form defender's base Defense in half-points against an
@@ -1714,9 +1803,25 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
-  // Tuning 5: the Human Swordsman's role, which this tree never unlocks;
-  // with no cost it is never trained or hired by this faction.
-  SWORDSMAN: role({ ...ORIGINAL_ROLE_RULES_V7.SWORDSMAN, cost: null }),
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Wight, the Undead
+  // heavy line unit (Metallurgy). Rise Again is the role mechanic
+  // `riseAgainHp`.
+  SWORDSMAN: role({
+    role: "SWORDSMAN",
+    label: "Wight",
+    tacticalRole: "LINE",
+    cost: 6,
+    maxHp: 14,
+    attack2: 6,
+    defense2: 5,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "METALLURGY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE"],
+  }),
 });
 
 /**
@@ -1737,6 +1842,8 @@ export const UNDEAD_ROLE_MECHANICS_V7 = mechanics({
   // not.
   JUGGERNAUT: { advancesAfterKill: false },
   BATTLESHIP: { splash: true },
+  // The ninth unit (7r55): the Wight's Rise Again.
+  SWORDSMAN: { riseAgainHp: WIGHT_RISE_AGAIN_HP_V7 },
 });
 
 export const UNDEAD_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
@@ -1907,9 +2014,25 @@ export const GOBLIN_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
-  // Tuning 5: the Human Swordsman's role, which this tree never unlocks;
-  // with no cost it is never trained or hired by this faction.
-  SWORDSMAN: role({ ...ORIGINAL_ROLE_RULES_V7.SWORDSMAN, cost: null }),
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Ogre, the Goblin
+  // heavy line unit (Metallurgy). No Kaboom, no death blast, not
+  // Blast-proof. Heavyweight is the role mechanic `gangUpWeight`.
+  SWORDSMAN: role({
+    role: "SWORDSMAN",
+    label: "Ogre",
+    tacticalRole: "LINE",
+    cost: 5,
+    maxHp: 16,
+    attack2: 5,
+    defense2: 4,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "METALLURGY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE"],
+  }),
 });
 
 /**
@@ -1949,6 +2072,8 @@ export const GOBLIN_ROLE_MECHANICS_V7 = mechanics({
   KNIGHT: { kaboomDamage: 5, deathBlastDamage: 4, kaboomAfterAttack: true },
   JUGGERNAUT: { regeneration: 4 },
   BATTLESHIP: { splash: true },
+  // The ninth unit (7r55): the Ogre's Heavyweight.
+  SWORDSMAN: { gangUpWeight: OGRE_GANG_UP_WEIGHT_V7 },
 });
 
 export const GOBLIN_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
@@ -2093,23 +2218,26 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "RALLY", "TEND_WOUNDED", "HATCH"],
   }),
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Stegosaurus, a siege
+  // dinosaur at Sawmilling (the Triceratops held this role until 7r54 and
+  // is the `SWORDSMAN` role now). Range 2–3, cannot attack after moving,
+  // never advances, no capture; the Thagomizer is the role mechanic
+  // `cracksArmour`.
   CATAPULT: role({
     role: "CATAPULT",
-    label: "Triceratops",
+    label: "Stegosaurus",
     tacticalRole: "SIEGE",
-    cost: 8,
-    // Revision 20 section 2.1: 20 HP (was 18), Move 2 (was 1), attacks
-    // after moving, and the passive Charge! (`LINEBREAKER`).
-    maxHp: 20,
-    attack2: 6,
-    defense2: 4,
-    move: 2,
-    range: 1,
-    minimumRange: 1,
+    cost: 7,
+    maxHp: 12,
+    attack2: 5,
+    defense2: 2,
+    move: 1,
+    range: 3,
+    minimumRange: 2,
     sightRadius: 1,
     technology: "SAWMILLING",
-    mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "LINEBREAKER", "GROW"],
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["ATTACK", "GROW"],
   }),
   KNIGHT: role({
     role: "KNIGHT",
@@ -2147,9 +2275,28 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
-  // Tuning 5: the Human Swordsman's role, which this tree never unlocks;
-  // with no cost it is never trained or hired by this faction.
-  SWORDSMAN: role({ ...ORIGINAL_ROLE_RULES_V7.SWORDSMAN, cost: null }),
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Triceratops is the
+  // Dinosaur heavy line unit (Metallurgy; it was the `CATAPULT` role at
+  // Sawmilling). Its numbers and rules are unchanged; the role mechanics
+  // keep it out of War Drums and keep its attacks destroying Field Defense.
+  SWORDSMAN: role({
+    role: "SWORDSMAN",
+    label: "Triceratops",
+    tacticalRole: "LINE",
+    cost: 8,
+    // Revision 20 section 2.1: 20 HP (was 18), Move 2 (was 1), attacks
+    // after moving, and the passive Charge! (`LINEBREAKER`).
+    maxHp: 20,
+    attack2: 6,
+    defense2: 4,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "METALLURGY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "LINEBREAKER", "GROW"],
+  }),
 });
 
 /**
@@ -2172,10 +2319,23 @@ export const DINOSAUR_ROLE_MECHANICS_V7 = mechanics({
   // Revision 20 section 2.1 names the Triceratops's 2 slots and hatch time 2
   // (replacing the `pulp_wars-c87.8` interim 1 and 1) and its run-up bonus;
   // section 3 names the T-Rex's hatch time 4 (was 3).
-  CATAPULT: { capacitySlots: 2, hatchTurns: 2, runUpBonus2: 2 },
+  // The ninth unit (7r55): the Stegosaurus (one slot, hatch time 2, never
+  // advances, the Thagomizer).
+  CATAPULT: { hatchTurns: 2, advancesAfterKill: false, cracksArmour: true },
   KNIGHT: { capacitySlots: 2, hatchTurns: 4 },
   JUGGERNAUT: { capacitySlots: 2 },
   BATTLESHIP: { splash: true },
+  // The ninth unit (7r55): the Triceratops in the heavy slot keeps its two
+  // slots, hatch time, and run-up, stays out of War Drums (`rallyExcluded`;
+  // it was excluded as a `SIEGE` role), and its attacks still destroy
+  // Field Defense.
+  SWORDSMAN: {
+    capacitySlots: 2,
+    hatchTurns: 2,
+    runUpBonus2: 2,
+    rallyExcluded: true,
+    demolishesFieldDefense: true,
+  },
 });
 
 export const DINOSAUR_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
@@ -2375,9 +2535,26 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
-  // Tuning 5: the Human Swordsman's role, which this tree never unlocks;
-  // with no cost it is never trained or hired by this faction.
-  SWORDSMAN: role({ ...ORIGINAL_ROLE_RULES_V7.SWORDSMAN, cost: null }),
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Shock Trooper, the
+  // Martian heavy line unit (Metallurgy) and the faction's only melee
+  // unit: range 1, an ordinary attack (no heat ray). Shock Field is the
+  // role mechanic `shockFieldDamage`.
+  SWORDSMAN: role({
+    role: "SWORDSMAN",
+    label: "Shock Trooper",
+    tacticalRole: "LINE",
+    cost: 6,
+    maxHp: 12,
+    attack2: 6,
+    defense2: 4,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "METALLURGY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE"],
+  }),
 });
 
 /**
@@ -2406,6 +2583,8 @@ export const MARTIAN_ROLE_MECHANICS_V7 = mechanics({
   },
   JUGGERNAUT: { shield: 3, movementMode: "STRIDE", capacitySlots: 2 },
   BATTLESHIP: { splash: true },
+  // The ninth unit (7r55): the Shock Trooper, Shield 3 and the Shock Field.
+  SWORDSMAN: { shield: 3, shockFieldDamage: SHOCK_FIELD_DAMAGE_V7 },
 });
 
 export const MARTIAN_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
@@ -2530,21 +2709,24 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "CAPTURE", "COLD_BLOOD", "FREEZE"],
   }),
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Musk Ox, the Ice Folk
+  // defender at Drill (the Mammoth held this role until 7r54 and is the
+  // `SWORDSMAN` role now). Frostbite is the role mechanic `frostbite`.
   GUARD: role({
     role: "GUARD",
-    label: "Mammoth",
+    label: "Musk Ox",
     tacticalRole: "DEFENDER",
-    cost: 6,
-    maxHp: 20,
-    attack2: 5,
-    defense2: 4,
+    cost: 4,
+    maxHp: 16,
+    attack2: 3,
+    defense2: 5,
     move: 1,
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
     technology: "DRILL",
-    mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "SWEEP", "TRAMPLE", "FREEZE"],
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["ATTACK", "CAPTURE", "FREEZE"],
   }),
   CAPTAIN: role({
     role: "CAPTAIN",
@@ -2620,9 +2802,25 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
-  // Tuning 5: the Human Swordsman's role, which this tree never unlocks;
-  // with no cost it is never trained or hired by this faction.
-  SWORDSMAN: role({ ...ORIGINAL_ROLE_RULES_V7.SWORDSMAN, cost: null }),
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Mammoth is the Ice
+  // Folk heavy line unit (Metallurgy; it was the `GUARD` role at Drill).
+  // Its numbers and rules are unchanged.
+  SWORDSMAN: role({
+    role: "SWORDSMAN",
+    label: "Mammoth",
+    tacticalRole: "LINE",
+    cost: 6,
+    maxHp: 20,
+    attack2: 5,
+    defense2: 4,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "METALLURGY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "SWEEP", "TRAMPLE", "FREEZE"],
+  }),
 });
 
 /**
@@ -2642,12 +2840,8 @@ export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
   },
   RAIDER: { glides: true },
   MARKSMAN: { glides: true, coldBloodBonus2: 1 },
-  GUARD: {
-    buildsFieldDefense: false,
-    glides: true,
-    sweepDamage: 2,
-    tramplesFieldDefense: true,
-  },
+  // The ninth unit (7r55): the Musk Ox (Frostbite).
+  GUARD: { buildsFieldDefense: false, glides: true, frostbite: true },
   CAPTAIN: { glides: true },
   CATAPULT: {
     advancesAfterKill: false,
@@ -2659,6 +2853,9 @@ export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
   KNIGHT: { ignoresZocStops: true },
   JUGGERNAUT: { mountainBorn: true, glides: true },
   BATTLESHIP: { splash: true },
+  // The ninth unit (7r55): the Mammoth in the heavy slot keeps Glide, Sweep,
+  // and Trample.
+  SWORDSMAN: { glides: true, sweepDamage: 2, tramplesFieldDefense: true },
 });
 
 export const ICE_FOLK_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
@@ -2806,21 +3003,26 @@ export const DWARF_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "KNOCKBACK"],
   }),
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Whirligig, a clockwork
+  // crowd-fighter at Chivalry (the Steam Tank held this role until 7r54 and
+  // is the `SWORDSMAN` role now). A construct and a machine; Three Hammers
+  // is the role mechanic `attacksPerTurn`; it never advances and does not
+  // capture.
   KNIGHT: role({
     role: "KNIGHT",
-    label: "Steam Tank",
+    label: "Whirligig",
     tacticalRole: "BREAKTHROUGH",
     cost: 9,
-    maxHp: 16,
+    maxHp: 12,
     attack2: 6,
-    defense2: 4,
-    move: 2,
+    defense2: 3,
+    move: 3,
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "PLATED"],
+    abilities: ["ATTACK", "CLOCKWORK"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -2841,9 +3043,25 @@ export const DWARF_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
-  // Tuning 5: the Human Swordsman's role, which this tree never unlocks;
-  // with no cost it is never trained or hired by this faction.
-  SWORDSMAN: role({ ...ORIGINAL_ROLE_RULES_V7.SWORDSMAN, cost: null }),
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Steam Tank is the
+  // Dwarf heavy line unit (Metallurgy; it was the `KNIGHT` role at
+  // Chivalry). Its numbers and rules are unchanged (it does not capture).
+  SWORDSMAN: role({
+    role: "SWORDSMAN",
+    label: "Steam Tank",
+    tacticalRole: "LINE",
+    cost: 9,
+    maxHp: 16,
+    attack2: 6,
+    defense2: 4,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "METALLURGY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "PLATED"],
+  }),
 });
 
 /** The Dwarf revision (section 10.2): the Steam Tank's Plated cap. */
@@ -2892,13 +3110,23 @@ export const DWARF_ROLE_MECHANICS_V7 = mechanics({
     knockback: true,
     repairsAsMachine: true,
   },
-  KNIGHT: { plated: PLATED_CAP_V7, repairsAsMachine: true },
+  // The ninth unit (7r55): the Whirligig (a construct with Three Hammers
+  // that never advances).
+  KNIGHT: {
+    construct: true,
+    unflinchingAttack: true,
+    repairsAsMachine: true,
+    advancesAfterKill: false,
+    attacksPerTurn: WHIRLIGIG_ATTACKS_V7,
+  },
   JUGGERNAUT: {
     construct: true,
     unflinchingAttack: true,
     repairsAsMachine: true,
   },
   BATTLESHIP: { splash: true },
+  // The ninth unit (7r55): the Steam Tank in the heavy slot keeps Plated.
+  SWORDSMAN: { plated: PLATED_CAP_V7, repairsAsMachine: true },
 });
 
 export const DWARF_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
@@ -3081,9 +3309,25 @@ export const CANDY_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
-  // Tuning 5: the Human Swordsman's role, which this tree never unlocks;
-  // with no cost it is never trained or hired by this faction.
-  SWORDSMAN: role({ ...ORIGINAL_ROLE_RULES_V7.SWORDSMAN, cost: null }),
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Jawbreaker, the Candy
+  // heavy line unit (Metallurgy). Rock Hard is the role mechanic
+  // `immovable`.
+  SWORDSMAN: role({
+    role: "SWORDSMAN",
+    label: "Jawbreaker",
+    tacticalRole: "LINE",
+    cost: 6,
+    maxHp: 16,
+    attack2: 6,
+    defense2: 5,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "METALLURGY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH"],
+  }),
 });
 
 /** The Candy revision (section 5.2): a Rushed unit's extra Move. */
@@ -3122,6 +3366,8 @@ export const CANDY_ROLE_MECHANICS_V7 = mechanics({
   CATAPULT: { advancesAfterKill: false, leavesCrumbs: true },
   KNIGHT: { rushPerk: "SUGAR_FRENZY", leavesCrumbs: true },
   BATTLESHIP: { splash: true },
+  // The ninth unit (7r55): the Jawbreaker is Rock Hard and leaves Crumbs.
+  SWORDSMAN: { leavesCrumbs: true, immovable: true },
 });
 
 export const CANDY_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
@@ -3187,20 +3433,57 @@ export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
  * name helper, `technologyNameV7` in src/render/goblin-presentation-v7.ts,
  * applies these overrides and otherwise keeps the sentence-case name.
  */
+/**
+ * The ninth unit (`pulp_wars-w49.17`, 7r55; design Part B of
+ * docs/product/RULESET_7_DESIGN_HEAVY_SLOT_AND_ECONOMY.md): the shared
+ * display names of the technologies whose name is not their ID in sentence
+ * case. Serialized technology IDs never change. A faction's own name
+ * (`TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7`) wins over this table.
+ */
+export const TECHNOLOGY_SHARED_DISPLAY_NAMES_V7: Readonly<
+  Partial<Record<TechnologyIdV7, string>>
+> = deepFreeze({
+  DRILL: "Garrison",
+  ADMINISTRATION: "Leadership",
+  PLANNING: "Land Grants",
+  FIELDCRAFT: "Pathfinding",
+  METALLURGY: "Armoury",
+  SHORECRAFT: "Sailing",
+  NAVAL_ENGINEERING: "Shipbuilding",
+  SEAMANSHIP: "Boarding",
+});
+
 export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
   Record<FactionIdV7, Readonly<Partial<Record<TechnologyIdV7, string>>>>
 > = deepFreeze({
   ORIGINAL: {},
-  // The Undead pass, correction: Explosives is Pestilence.
-  UNDEAD: { EXPLOSIVES: "Pestilence" },
-  GOBLIN: { COMMERCE: "Plunder" },
+  // The Undead pass, correction: Explosives is Pestilence. The ninth unit
+  // (7r55): the nodes named for their building or unit.
+  UNDEAD: {
+    EXPLOSIVES: "Pestilence",
+    MILLING: "Bone Mills",
+    MARKSMANSHIP: "Banshees",
+    SAWMILLING: "Liches",
+    CHIVALRY: "Vampires",
+  },
+  GOBLIN: {
+    COMMERCE: "Plunder",
+    MARKSMANSHIP: "Bomb Chuckers",
+    SAWMILLING: "Rocket Carts",
+    CHIVALRY: "Scrap Buggies",
+  },
   // The Dinosaur pass, correction (`pulp_wars-w49.15`, 7r53): Sawmilling is
   // Timber for a Dinosaur player, whose mill is the Chopping Block (the
-  // board, the build button, and the technology tree all name it so).
+  // board, the build button, and the technology tree all name it so). The
+  // ninth unit (7r55) keeps Timber (the design proposed "Chopping").
   DINOSAUR: {
     FORTIFICATION: "Nesting",
     EXPLOSIVES: "Wallbreaker",
     SAWMILLING: "Timber",
+    MILLING: "Grinding",
+    MARKSMANSHIP: "Spitters",
+    CHIVALRY: "T-Rex",
+    METALLURGY: "Triceratops",
   },
   // The Martian revision: Fortification and Explosives are renamed. The
   // Martian pass (`pulp_wars-w49.14`, 7r52): Fieldcraft is Heat Sinks.
@@ -3208,6 +3491,11 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
     FORTIFICATION: "Force Fields",
     EXPLOSIVES: "Disintegrator",
     FIELDCRAFT: "Heat Sinks",
+    MILLING: "Solar Arrays",
+    MARKSMANSHIP: "Ray Gunners",
+    SAWMILLING: "Tripods",
+    SCOUTING: "Saucers",
+    CHIVALRY: "Motherships",
   },
   // The Ice Folk revision: Fortification and Explosives are renamed.
   // The frozen sea (naval branch section 2.2): the five Naval names.
@@ -3219,15 +3507,53 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
     NAVAL_ENGINEERING: "Icebound",
     SEAMANSHIP: "Black Ice",
     SUBMERSIBLES: "Glacier",
+    SAWMILLING: "Boulders",
+    CHIVALRY: "Sabretooths",
+    METALLURGY: "Mammoths",
   },
   // The Dwarf revision: Fortification and Explosives are renamed.
-  DWARF: { FORTIFICATION: "Dig In", EXPLOSIVES: "Blasting Charges" },
+  DWARF: {
+    FORTIFICATION: "Dig In",
+    EXPLOSIVES: "Blasting Charges",
+    MILLING: "Steam Pumps",
+    MARKSMANSHIP: "Clockwork",
+    SAWMILLING: "Steam Cannons",
+    SCOUTING: "Gyrocopters",
+    CHIVALRY: "Whirligigs",
+    METALLURGY: "Steam Tanks",
+    RAIDING: "Dive Bombing",
+    ENGINEERING: "Mining",
+  },
   // The Candy revision: Fortification and Explosives are renamed.
   CANDY: {
     FORTIFICATION: "Home Sweet Home",
     EXPLOSIVES: "Peppermint Surprise",
+    MARKSMANSHIP: "Gumball Gunners",
+    SAWMILLING: "Pie Launchers",
+    CHIVALRY: "Chocolate Bunnies",
+    METALLURGY: "Jawbreakers",
   },
 });
+
+/**
+ * A technology's display name for a seat of `faction`: the faction's own
+ * name, else the shared display name, else the ID in sentence case. THE
+ * name of a technology on every surface (the tree, cards, tooltips, Help,
+ * the Gallery, the text harness); IDs never change.
+ */
+export function technologyDisplayNameV7(
+  tech: TechnologyIdV7,
+  faction: FactionIdV7,
+): string {
+  return (
+    TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7[faction][tech] ??
+    TECHNOLOGY_SHARED_DISPLAY_NAMES_V7[tech] ??
+    tech
+      .toLowerCase()
+      .replaceAll("_", " ")
+      .replace(/^./, (letter) => letter.toUpperCase())
+  );
+}
 
 export function factionTreeV7(faction: FactionIdV7): FactionTechnologyTreeV7 {
   const tree = Object.hasOwn(FACTION_TREES_V7, faction)
@@ -3483,7 +3809,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r54`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r55`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the
@@ -4870,7 +5196,10 @@ export function isRallyTargetV7(
   const tactical = targetRule.tacticalRole;
   return (
     (mechanics.rallyReachesSupportAndSiege ||
-      (tactical !== "SUPPORT" && tactical !== "SIEGE")) &&
+      (tactical !== "SUPPORT" &&
+        tactical !== "SIEGE" &&
+        // The ninth unit (7r55): the Triceratops, a `LINE` role now.
+        !unitRoleMechanicsV7(roster, target).rallyExcluded)) &&
     targetRule.abilities.includes("ATTACK") &&
     Math.max(
       Math.abs(captain.at.x - target.at.x),

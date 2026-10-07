@@ -205,7 +205,8 @@ describe("Revision 19 Dinosaur setup", () => {
       "ORIGINAL",
     ]);
     const own = view.units.filter((unit) => unit.ownerId === view.viewer.id);
-    expect(own).toHaveLength(11);
+    // (The ninth unit, 7r55: eleven and the Stegosaurus.)
+    expect(own).toHaveLength(12);
     expect(own.every((unit) => unit.form !== "EGG")).toBe(true);
     // The capital's cards say why they cannot be used, if they cannot.
     const cities = view.cities.filter(
@@ -251,7 +252,7 @@ describe("Revision 19 Dinosaur setup", () => {
     expect(new Set(eggReasons())).toEqual(new Set(["City action spent"]));
     // Revision 20: the Triceratops moves two tiles next to the neighbour's
     // Captain and attacks it with Charge! (no Stampede control exists).
-    const triceratops = required(own.find((unit) => unit.role === "CATAPULT"));
+    const triceratops = required(own.find((unit) => unit.role === "SWORDSMAN"));
     host.callbacks?.onSelection({ kind: "UNIT", unitId: triceratops.id });
     expect(document.querySelector(STAMPEDE_CONTROLS)).toBe(null);
     const current = () => required(app.controller.snapshot().view);
@@ -363,8 +364,9 @@ describe("Revision 19 Dinosaur city panel", () => {
       "Raptor Egg",
       "Spitter Egg",
       "Ankylosaurus Egg",
-      "Triceratops Egg",
+      "Stegosaurus Egg",
       "T-Rex Egg",
+      "Triceratops Egg",
     ]);
     expect(requiredButton("command-train").getAttribute("aria-label")).toBe(
       `Train Caveman for ${effectiveRoleRuleV7("FIGHTER", "DINOSAUR").cost} Coins`,
@@ -1015,7 +1017,7 @@ describe("Revision 19 growth, abilities and labels", () => {
       "Charge!",
       "Grows",
       "Growth",
-      ...bigBody("CATAPULT"),
+      ...bigBody("SWORDSMAN"),
     ]);
     app.destroy();
   });
@@ -1089,7 +1091,9 @@ describe("Revision 19 growth, abilities and labels", () => {
       "Nesting details",
     );
     expect(unlocks("scouting")).toContain("Raptor Egg");
-    expect(unlocks("sawmilling")).toContain("Triceratops Egg (Charge!)");
+    // (The ninth unit, 7r55: the Triceratops is at Metallurgy.)
+    expect(unlocks("metallurgy")).toContain("Triceratops Egg (Charge!)");
+    expect(unlocks("sawmilling")[0]).toContain("Stegosaurus Egg");
     // Revision 20: the Explosives slot is Wallbreaker for a Dinosaur.
     expect(
       requiredButton("tech-explosives").querySelector(".v7-tech-name")
@@ -1122,23 +1126,23 @@ describe("Revision 19 growth, abilities and labels", () => {
     );
     app.destroy();
     // Recruit help of an egg-laid role: hatch time and slots.
-    expect(recruitmentRolePresentationV7("CATAPULT", "DINOSAUR")).toMatchObject(
-      {
-        label: "Triceratops",
-        // Revision 20: it attacks after moving.
-        restrictions: [
-          "Can't capture.",
-          ...dinosaurRecruitNotesV7("CATAPULT", "DINOSAUR"),
-        ],
-      },
-    );
     expect(
-      recruitmentRolePresentationV7("CATAPULT", "DINOSAUR").abilities,
+      recruitmentRolePresentationV7("SWORDSMAN", "DINOSAUR"),
+    ).toMatchObject({
+      label: "Triceratops",
+      // Revision 20: it attacks after moving.
+      restrictions: [
+        "Can't capture.",
+        ...dinosaurRecruitNotesV7("SWORDSMAN", "DINOSAUR"),
+      ],
+    });
+    expect(
+      recruitmentRolePresentationV7("SWORDSMAN", "DINOSAUR").abilities,
     ).toEqual([
       `Charge!: ${dinosaurAbilityDescriptionV7("LINEBREAKER", "DINOSAUR")}`,
       `Grows: ${dinosaurAbilityDescriptionV7("GROW", "DINOSAUR")}`,
     ]);
-    expect(dinosaurRecruitNotesV7("CATAPULT", "DINOSAUR")[0]).toMatch(
+    expect(dinosaurRecruitNotesV7("SWORDSMAN", "DINOSAUR")[0]).toMatch(
       /^Laid as an Egg next to the city; hatches after \d+ turns?/,
     );
   });

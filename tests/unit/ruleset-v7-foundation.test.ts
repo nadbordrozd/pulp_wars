@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -126,8 +126,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96); the
-    // naval branch SHIP_BOARDED (97).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(100);
+    // naval branch SHIP_BOARDED (97). The ninth unit (`pulp_wars-w49.17`,
+    // 7r55) adds WIGHT_RISEN (101).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(101);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after

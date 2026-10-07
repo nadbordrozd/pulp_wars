@@ -108,7 +108,9 @@ export interface IceFolkMetricsV7 {
   readonly sabretoothKillsByRole: Record<UnitRoleIdV7, number>;
 }
 
-export type ChillSourceV7 = "BOLAS" | "COLD_SNAP" | "COLD_AURA" | "BLACK_ICE";
+// The ninth unit (`pulp_wars-w49.17`, 7r55): a Musk Ox's Frostbite.
+export type ChillSourceV7 =
+  "BOLAS" | "COLD_SNAP" | "COLD_AURA" | "BLACK_ICE" | "FROSTBITE";
 export type ShatterSetupV7 =
   | "CHARGE_AT_FULL_HP"
   | "SWEEP_FLANK"
@@ -124,6 +126,8 @@ const CHILL_SOURCES_V7: readonly ChillSourceV7[] = [
   "COLD_AURA",
   // The frozen sea (naval branch section 8.8).
   "BLACK_ICE",
+  // The ninth unit (7r55).
+  "FROSTBITE",
 ];
 const SHATTER_SETUPS_V7: readonly ShatterSetupV7[] = [
   "CHARGE_AT_FULL_HP",

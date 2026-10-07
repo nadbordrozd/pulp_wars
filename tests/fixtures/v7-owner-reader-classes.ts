@@ -150,4 +150,11 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/ice.ts::iceIsPermanentV7": "NEUTRAL_SAFE",
   "src/engine/v7/reducer.ts::applyFreeze": "PLAYER_ONLY",
   "src/engine/v7/state-schema.ts::iceValid": "NEUTRAL_AWARE",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55). A marked Grave belongs to
+  // the seat whose Wight died (the neutral owner's units mark none:
+  // `deathMarksWightGraveV7`), so the rising reads a seat's registration.
+  // The state check refuses a Cracked unit of the neutral owner by name
+  // and requires a marked Grave's owner to be a player.
+  "src/engine/v7/ninth-unit.ts::wightRisingRuleV7": "PLAYER_ONLY",
+  "src/engine/v7/state-schema.ts::ninthUnitValid": "NEUTRAL_AWARE",
 };

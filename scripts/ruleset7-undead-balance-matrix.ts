@@ -3030,7 +3030,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r54",
+    rulesetId: "pulp-wars-poc-7r55",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
     seed: cell.seed,
@@ -3704,7 +3704,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r54",
+          rulesetId: "pulp-wars-poc-7r55",
           parameters,
           summary,
           games: ordered.map(compactEntry),
@@ -4626,7 +4626,14 @@ function dinosaurAggregate(group: readonly MatrixEntry[]) {
     seats.length === 0 ? null : Math.round((100 * value) / seats.length) / 100;
   const researched = (tech: string) => (seat: DinosaurSeatStats) =>
     seat.researchRound[tech] !== undefined;
-  const sawmilling = researched("SAWMILLING");
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Triceratops is the
+  // heavy line role (`SWORDSMAN`) and its technology is Metallurgy. The
+  // report keys below keep their names (`seatGamesWithSawmilling` and so
+  // on) and mean "with the Triceratops's technology". The other
+  // role-keyed counters of this script (big-body turns, first Egg rounds,
+  // the Dwarf and Ice Folk blocks) were not re-audited for the moved
+  // roles: check them before a matrix is read for those factions.
+  const sawmilling = researched("METALLURGY");
   const chivalry = researched("CHIVALRY");
   const laid = (role: UnitRoleIdV7) => (seat: DinosaurSeatStats) =>
     (seat.eggsLaid[role] ?? 0) > 0;
@@ -4648,10 +4655,10 @@ function dinosaurAggregate(group: readonly MatrixEntry[]) {
   const sawmillingChargeSeats = count(
     (seat) => sawmilling(seat) && seat.charges > 0,
   );
-  const hatchedTriceratopsSeats = count(hatched("CATAPULT"));
+  const hatchedTriceratopsSeats = count(hatched("SWORDSMAN"));
   const runUpChargeSeats = count(
     (seat) =>
-      hatched("CATAPULT")(seat) &&
+      hatched("SWORDSMAN")(seat) &&
       (seat.chargesByRunUp[1] ?? 0) + (seat.chargesByRunUp[2] ?? 0) > 0,
   );
   const longSeats = count((_, entry) => entry.rounds >= 35);
@@ -4764,10 +4771,10 @@ function dinosaurAggregate(group: readonly MatrixEntry[]) {
       ),
       /** The funnel from Sawmilling to a Charge. */
       sawmillingSeatGamesWithTriceratopsEgg: count(
-        (seat) => sawmilling(seat) && laid("CATAPULT")(seat),
+        (seat) => sawmilling(seat) && laid("SWORDSMAN")(seat),
       ),
       sawmillingSeatGamesWithTriceratops: count(
-        (seat) => sawmilling(seat) && hatched("CATAPULT")(seat),
+        (seat) => sawmilling(seat) && hatched("SWORDSMAN")(seat),
       ),
       /**
        * Revision 20 section 8.2 usefulness: seat-games with a hatched
@@ -5748,8 +5755,8 @@ function dwarfAggregate(group: readonly MatrixEntry[]) {
     citiesLost: total((seat) => seat.citiesLost),
     seatGamesWithCityLost: seatGames((seat) => seat.citiesLost > 0),
     watch: {
-      winWithTank: winWhere((seat) => fielded(seat, "KNIGHT")),
-      winWithoutTank: winWhere((seat) => !fielded(seat, "KNIGHT")),
+      winWithTank: winWhere((seat) => fielded(seat, "SWORDSMAN")),
+      winWithoutTank: winWhere((seat) => !fielded(seat, "SWORDSMAN")),
       winWithTunnel: winWhere((seat) => seat.tunnels > 0),
       winWithoutTunnel: winWhere((seat) => seat.tunnels === 0),
       winWithBomb: winWhere((seat) => seat.bombRuns > 0),

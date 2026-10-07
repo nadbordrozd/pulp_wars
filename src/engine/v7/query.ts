@@ -58,7 +58,6 @@ import {
   unitMovementModeV7,
   unitRoleMechanicsV7,
   isRangedRoleRuleV7,
-  roleDefense2AtDistanceV7,
   unitRoleRuleV7,
   unitTakesCoverV7,
   cityUnitCapacityForV7,
@@ -208,6 +207,16 @@ import {
   recoveryGainV7,
   type RecoveryFactsV7,
 } from "./recovery";
+import {
+  attackCracksV7,
+  attackIsFrostbittenV7,
+  crackedDefense2V7,
+  shockFieldDamageV7,
+  targetAlreadyStruckV7,
+  unitDefense2AtDistanceV7,
+  unitIsCrackedV7,
+  unitIsImmovableV7,
+} from "./ninth-unit";
 import { noRisingAtV7, riftAtV7 } from "./rift";
 import { grownHpV7 } from "./growth";
 import { laidEggHpV7, laidEggTurnsV7, publicNestTilesV7 } from "./eggs";
@@ -952,7 +961,10 @@ function appendPublicUnitCommandsV7(
       distance >= rule.minimumRange &&
       distance <= attackRange &&
       (!torpedo || isAfloatFormV7(target.form)) &&
-      (distance <= 1 || !unitIsSubmergedV7(view, target))
+      (distance <= 1 || !unitIsSubmergedV7(view, target)) &&
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): Three Hammers, never
+      // the same unit twice in a turn.
+      !targetAlreadyStruckV7(view, unit.id, target.id)
     )
       candidates.push({
         kind: "ATTACK",
@@ -7401,7 +7413,10 @@ function publicCombatPreviewCore(
     distance > publicAttackMaximumRangeV7(view, attacker) ||
     // The frozen sea (naval branch section 8.9): an icebound ship cannot
     // attack.
-    unitIsIceboundV7(view, attacker)
+    unitIsIceboundV7(view, attacker) ||
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): Three Hammers, each attack
+    // of a Whirligig's turn is on a different unit.
+    targetAlreadyStruckV7(view, attacker.id, target.id)
   )
     return null;
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 5.2
@@ -7569,8 +7584,12 @@ function publicCombatPreviewCore(
       ? 2
       : target.form === "EGG"
         ? EGG_DEFENSE2_V7
-        : // Tuning 5: the Human Guard is open to ranged attacks.
-          roleDefense2AtDistanceV7(
+        : // Tuning 5: the Human Guard is open to ranged attacks. The ninth
+          // unit (7r55): a Cracked unit has 1 less Defense (the public
+          // `crackedThisTurn` of a visible unit).
+          unitDefense2AtDistanceV7(
+            view,
+            target,
             defenderRule,
             unitRoleMechanicsV7(view, target),
             distance,
@@ -7683,7 +7702,11 @@ function publicCombatPreviewCore(
   const retaliationFormula = retaliationDamageV7({
     attackForceNumerator,
     attackForceDenominator,
-    defense2: defenderRule.defense2,
+    // The ninth unit (7r55): a Cracked defender strikes back with 1 less
+    // Defense too.
+    defense2: unitIsCrackedV7(view, target.id)
+      ? crackedDefense2V7(defenderRule.defense2)
+      : defenderRule.defense2,
     hp: target.hp,
     maxHp: target.maxHp,
   });
@@ -7694,10 +7717,23 @@ function publicCombatPreviewCore(
     attacker.hp,
     armouredDamageV7(view, attacker, rawAttackerDamage),
   );
-  const damageToAttacker = attackerHit.hpDamage;
-  const attackerShieldDamage = attackerHit.shieldDamage;
+  // The ninth unit (7r55): the Shock Field of a Shielded Shock Trooper
+  // attacked from the next tile (Shields are public on visible units), as
+  // canonical resolution computes it.
+  const shockRaw = shockFieldDamageV7(view, target, defenderShield, distance);
+  const shockHit =
+    shockRaw > 0
+      ? absorbHitV7(
+          attackerShield - attackerHit.shieldDamage,
+          attacker.hp - attackerHit.hpDamage,
+          armouredDamageV7(view, attacker, shockRaw),
+        )
+      : { shieldDamage: 0, hpDamage: 0 };
+  const shockDamage = shockHit.hpDamage + shockHit.shieldDamage;
+  const damageToAttacker = attackerHit.hpDamage + shockHit.hpDamage;
+  const attackerShieldDamage = attackerHit.shieldDamage + shockHit.shieldDamage;
   const attackerArmoured =
-    damageToAttacker + attackerShieldDamage <
+    attackerHit.hpDamage + attackerHit.shieldDamage <
     Math.min(attacker.hp + attackerShield, rawAttackerDamage);
   const attackerDies = damageToAttacker >= attacker.hp;
   // Revision 17: the Bomb Chucker's bomb (splash target mode `ALL`) lists
@@ -7959,6 +7995,15 @@ function publicCombatPreviewCore(
     torpedo,
     iceCover,
     icebound: defenderIcebound,
+    shockDamage,
+    crackApplied: attackCracksV7(view, attacker, target, defenderDies),
+    frostbiteApplied: attackIsFrostbittenV7(
+      view,
+      attacker,
+      target,
+      distance,
+      attackerDies,
+    ),
   };
 }
 
@@ -8508,7 +8553,9 @@ function publicAttackChainV7(
   const primaryDefenseLost =
     targetTile?.explored === true &&
     targetTile.fieldDefense &&
-    (attackerUnit.role === "CATAPULT" ||
+    // The ninth unit (7r55): the role mechanic (the `CATAPULT` role of
+    // every faction, and the Triceratops in the heavy slot).
+    (unitRoleMechanicsV7(view, attackerUnit).demolishesFieldDefense ||
       // The Ice Folk revision section 7.5: Trample.
       preview.sweep ||
       (preview.inspiredApplied && distance === 1 && !preview.attackerDies) ||
@@ -8576,6 +8623,8 @@ function publicPushState(
     !survivesMelee ||
     defender.form === "EGG" ||
     isNeutralOwnerV7(defender.ownerId) ||
+    // The ninth unit (7r55): Rock Hard, nothing moves a Jawbreaker.
+    unitIsImmovableV7(view, defender) ||
     (!unitRoleRuleV7(view, attacker).abilities.includes("PUSH") &&
       !attackIsChargeV7(view, attacker))
   )
@@ -8673,7 +8722,9 @@ function publicKnockbackState(
     !survives ||
     defender.form === "EGG" ||
     defender.role === "JUGGERNAUT" ||
-    unitCapacitySlotsV7(view, defender) !== 1
+    unitCapacitySlotsV7(view, defender) !== 1 ||
+    // The ninth unit (7r55): Rock Hard.
+    unitIsImmovableV7(view, defender)
   )
     return "BLOCKED";
   const behind = knockbackDestinationV7(attacker.at, defender.at);

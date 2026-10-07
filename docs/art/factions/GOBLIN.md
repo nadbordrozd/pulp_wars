@@ -840,3 +840,30 @@ also draws both icons in its sheets.
       apart from the Human and Undead sets at zoom 0.75.
 - [x] The whole roster and its portraits pass mask QA, clear the HP bar and
       seat-badge strips (giants exempt) and replace every placeholder.
+
+## Ninth unit: the Ogre (bead `pulp_wars-w49.17`, stand-in art)
+
+Ruleset `7r55` gives every faction a ninth land unit ([what was
+built](../../product/RULESET_7_NINTH_UNIT.md)). The Goblin one with no art of
+its own is the **Ogre** (engine role `SWORDSMAN`). **It has no art yet.** No
+PixelLab call was made for it.
+
+- **Art slot.** `UNIT:GOBLIN:SWORDSMAN` and `PORTRAIT:GOBLIN:SWORDSMAN`: the
+  ninth art slot of the faction (`unitArtRoleV7` in
+  `src/assets/chibi-art-v7.ts`). No raster is registered for either subject.
+- **Stand-in.** Until an art bead registers them, both fall back to the Orc
+  Brute (`UNIT:GOBLIN:GUARD`, `PORTRAIT:GOBLIN:GUARD`) through
+  `chibiFallbackSubjectV7` (`NINTH_UNIT_STAND_INS_V7`). The board marks the
+  piece with a steel disc lettered **O** where the faction badges go
+  (`drawStandInBadgeV7`), and the Gallery shows its stand-in mark.
+- **What the art bead must make.** One board sprite and one 48 x 48 portrait
+  in this fragment's direction: A fat grey-green ogre twice a goblin's height in
+  a scrap-iron belly plate, dragging a lamp-post club, two goblins cheering on
+  its shoulders.
+- **Notes for that bead.** LARGE_UNIT is worth trying first (it is twice a
+  Goblin's height); it fills one unit slot and one tile like every other unit.
+- **When the art lands.** Register the two subjects in this faction's
+  direction manifest, delete the faction's entry from `NINTH_UNIT_STAND_INS_V7`
+  (the fallback and the letter badge go with it), regenerate the unit shadow
+  measurements, and update the stand-in assertions in
+  `tests/unit/ruleset-v7-ninth-unit.test.ts`.

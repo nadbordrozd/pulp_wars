@@ -22,6 +22,8 @@ import {
   type MartianArtRoleV7,
   navalArtRoleForV7,
   type UndeadArtRoleV7,
+  unitArtRoleV7,
+  unitArtSubjectV7,
 } from "./chibi-art-v7";
 
 /**
@@ -64,17 +66,20 @@ export function portraitSubjectV7(
       "PORTRAIT",
       navalArtRoleForV7(role as NavalRoleIdV7),
     );
-  if (faction === "UNDEAD") return `PORTRAIT:UNDEAD:${role as UndeadArtRoleV7}`;
-  if (faction === "GOBLIN") return `PORTRAIT:GOBLIN:${role as GoblinArtRoleV7}`;
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the art slot of the role
+  // (`unitArtRoleV7`: a moved unit keeps the slot its art was made for).
+  const slot = unitArtRoleV7(role, faction);
+  if (faction === "UNDEAD") return `PORTRAIT:UNDEAD:${slot as UndeadArtRoleV7}`;
+  if (faction === "GOBLIN") return `PORTRAIT:GOBLIN:${slot as GoblinArtRoleV7}`;
   if (faction === "DINOSAUR")
-    return `PORTRAIT:DINOSAUR:${role as DinosaurArtRoleV7}`;
+    return `PORTRAIT:DINOSAUR:${slot as DinosaurArtRoleV7}`;
   if (faction === "MARTIAN")
-    return `PORTRAIT:MARTIAN:${role as MartianArtRoleV7}`;
+    return `PORTRAIT:MARTIAN:${slot as MartianArtRoleV7}`;
   if (faction === "ICE_FOLK")
-    return `PORTRAIT:ICE_FOLK:${role as IceFolkArtRoleV7}`;
-  if (faction === "DWARF") return `PORTRAIT:DWARF:${role as DwarfArtRoleV7}`;
-  if (faction === "CANDY") return `PORTRAIT:CANDY:${role as CandyArtRoleV7}`;
-  return `PORTRAIT:${role}`;
+    return `PORTRAIT:ICE_FOLK:${slot as IceFolkArtRoleV7}`;
+  if (faction === "DWARF") return `PORTRAIT:DWARF:${slot as DwarfArtRoleV7}`;
+  if (faction === "CANDY") return `PORTRAIT:CANDY:${slot as CandyArtRoleV7}`;
+  return `PORTRAIT:${slot}`;
 }
 
 /** Map subject of an improvement; a Mine is drawn as its mined mountain. */
@@ -239,16 +244,15 @@ export function technologySubjectV7(
       subject.slice("PORTRAIT:".length) as UnitRoleIdV7,
       faction,
     );
-  if (subject === "UNIT:KNIGHT" || subject === "UNIT:GUARD") {
-    const role = subject.slice("UNIT:".length) as UndeadArtRoleV7;
-    if (faction === "UNDEAD") return `UNIT:UNDEAD:${role}`;
-    if (faction === "DINOSAUR") return `UNIT:DINOSAUR:${role}`;
-    if (faction === "MARTIAN") return `UNIT:MARTIAN:${role}`;
-    if (faction === "ICE_FOLK") return `UNIT:ICE_FOLK:${role}`;
-    if (faction === "DWARF") return `UNIT:DWARF:${role}`;
-    if (faction === "CANDY") return `UNIT:CANDY:${role}`;
-    return `UNIT:GOBLIN:${role}`;
-  }
+  if (subject === "UNIT:KNIGHT" || subject === "UNIT:GUARD")
+    // The ninth unit (7r55): through the art slot of the role, so a Dwarf
+    // Chivalry card shows the Whirligig and an Ice Folk Drill card the
+    // Musk Ox (their stand-in art until their own exists).
+    return unitArtSubjectV7({
+      role: subject.slice("UNIT:".length) as UndeadArtRoleV7,
+      form: "LAND",
+      faction,
+    });
   // A technology that shows a building shows the faction's own look of it
   // (epic pulp_wars-xdh): an Undead Farming card shows the Graveyard.
   if (subject.startsWith("IMPROVEMENT:"))

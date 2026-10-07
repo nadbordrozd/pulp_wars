@@ -17,6 +17,11 @@ import type { MissionDefinitionV7, MissionUnitV7 } from "./types";
  * tiles behind the line with a Guard on its center: 14 units, 63 Coins of
  * them, 12 Coins a turn.
  *
+ * Revision 3 (the ninth unit, `pulp_wars-w49.17`, `7r55`): the Swordsmen
+ * are Champions (6 Coins each: the line is 67 Coins of units and the Human
+ * attacker's army 131), trained with Metallurgy, which the player and the
+ * Human attacker own; the Goblin and Undead attackers are unchanged.
+ *
  * Revision 2 (tuning 7, `pulp_wars-w49.10`): the capital stands at (4, 7)
  * with its Land Grant used, so that the middle of the line, and both Field
  * Defenses, lie in its territory. In revision 1 it stood at (3, 7) and the
@@ -134,7 +139,13 @@ const BREAKTHROUGH_ARMIES_V7: Readonly<
   // Coins).
   // 26 units, 125 Coins of them.
   ORIGINAL: {
-    technologies: [...BREAKTHROUGH_AI_TECHNOLOGIES_V7, "ENGINEERING"],
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): the Champion is at
+    // Metallurgy.
+    technologies: [
+      ...BREAKTHROUGH_AI_TECHNOLOGIES_V7,
+      "ENGINEERING",
+      "METALLURGY",
+    ],
     columns: [
       [
         ["SWORDSMAN", 6],
@@ -227,7 +238,7 @@ function breakthroughLabV7(
   const army = BREAKTHROUGH_ARMIES_V7[faction];
   return {
     id,
-    revision: 2,
+    revision: 3,
     hidden: true,
     mirror: true,
     size: 16,
@@ -265,6 +276,9 @@ function breakthroughLabV7(
           "MARKSMANSHIP",
           "DRILL",
           "ENGINEERING",
+          // The ninth unit (7r55): the Champions of the line are at
+          // Metallurgy (revision 3).
+          "METALLURGY",
           "FORTIFICATION",
         ],
         cities: [

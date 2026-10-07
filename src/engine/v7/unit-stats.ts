@@ -22,6 +22,8 @@ import {
   unitCapabilitiesV7,
   unitFactionV7,
   unitAlphaAttack2V7,
+  NEUTRAL_KIND_V7,
+  technologyDisplayNameV7,
   unitGrowthStageV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
@@ -44,6 +46,7 @@ import {
   unitIsSplattedV7,
 } from "./candy";
 import { attackAllowanceV7, matchHasDwarvesV7, unitIsDugInV7 } from "./dwarf";
+import { crackedDefense2V7, unitIsCrackedV7 } from "./ninth-unit";
 import {
   chillOfV7,
   isBlizzardV7,
@@ -105,7 +108,10 @@ export type UnitStatModifierSourceV7 =
   | "DIG_IN"
   // The Candy revision: the Sugar Rush bonus on a Rushed unit's first attack
   // (never together with Charge or Inspired).
-  | "SUGAR_RUSH";
+  | "SUGAR_RUSH"
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): a unit Cracked by a
+  // Stegosaurus this turn has 1 less Defense (never below 0.5).
+  | "CRACKED";
 export interface PublicUnitStatValueV7 {
   readonly numerator: number;
   readonly denominator: number;
@@ -467,8 +473,15 @@ export function publicUnitStatsV7(
       unit.activation.moved
     );
   const fortificationModifiers = fortificationTerms(state, unit);
+  // The ninth unit (7r55): the Thagomizer. A Cracked unit's role Defense is
+  // 1 lower (never below 0.5) for the rest of the active seat's turn.
+  const cracked2 =
+    !embarked && unitIsCrackedV7(state, unit.id)
+      ? crackedDefense2V7(role.defense2) - role.defense2
+      : 0;
   const fortifiedDefense2 =
     (embarked ? 2 : role.defense2) +
+    cracked2 +
     fortificationModifiers.reduce(
       (sum, term) => sum + term.value.numerator * 2,
       0,
@@ -490,6 +503,23 @@ export function publicUnitStatsV7(
     ? 1
     : Math.max(role.sightRadius, capabilities.roleSightRadius[unit.role] ?? 0);
   const labelText = embarked ? "Embarked transport" : role.label;
+  // The ninth unit (7r55): Three Hammers, the attacks a Whirligig that has
+  // attacked this turn may still make (null before its first attack and
+  // for every other unit).
+  const hammersLeft =
+    unit.form === "LAND" &&
+    mechanics.attacksPerTurn > 1 &&
+    state.turnOrder[state.activeSeatIndex] === unit.ownerId &&
+    unit.activation.attacksUsed >= 1
+      ? unit.activation.recovered ||
+        unit.activation.captured ||
+        unit.activation.specialActed
+        ? 0
+        : Math.max(
+            0,
+            attackAllowanceV7(state, unit) - unit.activation.attacksUsed,
+          )
+      : null;
   const halfPower2 =
     rayPower === "HALF" ? role.attack2 - halfPowerAttack2V7(role.attack2) : 0;
   return {
@@ -656,6 +686,17 @@ export function publicUnitStatsV7(
         null,
         base(labelText, "Defense", embarked ? 2 : role.defense2, 2),
         [
+          ...(cracked2 < 0
+            ? [
+                modifier(
+                  cracked2,
+                  "CRACKED",
+                  "Cracked",
+                  "A unit hit by a Stegosaurus has 1 less Defense until the end of that turn.",
+                  2,
+                ),
+              ]
+            : []),
           ...fortificationModifiers,
           ...(terrainSource === null
             ? []
@@ -699,7 +740,9 @@ export function publicUnitStatsV7(
                 1,
                 "HIGH_GROUND",
                 "High ground",
-                "Engineering adds 1 Sight while standing on a Mountain.",
+                // The ninth unit (7r55): the node's name for the unit's
+                // kind (the Dwarf Engineering is shown as Mining).
+                `${kind === NEUTRAL_KIND_V7 ? "Engineering" : technologyDisplayNameV7("ENGINEERING", kind)} adds 1 Sight while standing on a Mountain.`,
               ),
             ]
           : [],
@@ -734,6 +777,19 @@ export function publicUnitStatsV7(
           ]
         : []),
       ...(unit.activation.escapeAvailable ? ["Escape: may move again"] : []),
+      // The ninth unit (7r55): Cracked, a Whirligig's attacks left, and a
+      // Wight that has risen once.
+      ...(cracked2 < 0 ? ["Cracked: -1 Defense this turn"] : []),
+      ...(hammersLeft === null
+        ? []
+        : [
+            hammersLeft === 0
+              ? "Three Hammers: no attack left"
+              : `Three Hammers: ${String(hammersLeft)} more ${hammersLeft === 1 ? "attack" : "attacks"}`,
+          ]),
+      ...(state.ninthUnit.risenWights.includes(unit.id)
+        ? ["Risen: will not rise again"]
+        : []),
     ],
     chill,
     submerged: unitIsSubmergedV7(state, unit),

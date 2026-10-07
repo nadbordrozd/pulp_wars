@@ -821,7 +821,8 @@ describe("text-mode play harness", () => {
         );
         expect(tech).toContain("a hired dinosaur arrives hatched");
         expect(tech).toMatch(
-          /unit Triceratops \[CATAPULT\] 8c .*laid as an Egg next to the city, hatches in 2 turns/,
+          // (The ninth unit, 7r55: the Triceratops is the heavy role.)
+          /unit Triceratops \[SWORDSMAN\] 8c .*laid as an Egg next to the city, hatches in 2 turns/,
         );
         // The Shaman can hatch the Egg on the first turn.
         expect(
@@ -833,7 +834,7 @@ describe("text-mode play harness", () => {
         // and its technology by name, and the run-up of a Triceratops's
         // Move before it is made.
         expect(started).toContain(
-          "Dinosaur units: Cv caveman Rp raptor Sp spitter Ak ankylosaurus Sh shaman Tc triceratops Tx t-rex Bo brontosaurus",
+          "Dinosaur units: Cv caveman Rp raptor Sp spitter Ak ankylosaurus Sh shaman Tc triceratops Sg stegosaurus Tx t-rex Bo brontosaurus",
         );
         expect(started).toMatch(/00Tc\|/);
         expect(started).toMatch(/0Ak\|/);
@@ -847,7 +848,7 @@ describe("text-mode play harness", () => {
         expect(tech).toContain('cmd BUILD_SAWMILL "Chopping Block"');
         const charger = state.units.find(
           (unit) =>
-            unit.role === "CATAPULT" && unit.ownerId === state.humanPlayerId,
+            unit.role === "SWORDSMAN" && unit.ownerId === state.humanPlayerId,
         );
         if (charger === undefined) throw new Error("no Triceratops");
         expect(
@@ -863,7 +864,7 @@ describe("text-mode play harness", () => {
         const later = sessionState(second);
         const runner = later.units.find(
           (unit) =>
-            unit.role === "CATAPULT" &&
+            unit.role === "SWORDSMAN" &&
             unit.ownerId === later.humanPlayerId &&
             unit.form === "LAND",
         );
@@ -931,7 +932,7 @@ describe("text-mode play harness", () => {
     expect(options).toMatch(/^t\.x,y\.build_road {2}x\d+ at /m);
     expect(options).toMatch(/^t\.x,y\.monument\.EXPLORER {2}x\d+ at /m);
     expect(options).toMatch(
-      /^c\d+\.hire\.ROLE\.\d+,\d+ {2}x8 hire on the Market at .*Knight \[KNIGHT\] 14c \| Swordsman \[SWORDSMAN\] 8c/m,
+      /^c\d+\.hire\.ROLE\.\d+,\d+ {2}x8 hire on the Market at .*Knight \[KNIGHT\] 14c \| Champion \[SWORDSMAN\] 9c/m,
     );
     // Every grouped offer is still an id the harness accepts.
     const road = /^t\.x,y\.build_road {2}x\d+ at (\d+,\d+)/m.exec(options)?.[1];
@@ -948,7 +949,9 @@ describe("text-mode play harness", () => {
     );
     // Tier 3 with six cities: 9 + 15 (also 24 as the seventeenth
     // technology under tuning 6).
-    expect(tech).toContain("T3 PLANNING | AVAILABLE 24c");
+    // (The ninth unit, 7r55: the harness prints the ID and then the name
+    // wherever the two differ.)
+    expect(tech).toContain('T3 PLANNING "Land Grants" | AVAILABLE 24c');
     expect(tech).toContain(
       "cmd BUILD_MARKET (6c; a Market pays 2 or 3 Coins every turn: 1, plus 1 for each family of buildings beside it (farms, timber, metal), 3 at most; needs one of your Farms, Lumber Camps, Mines or their mills next to it)",
     );

@@ -116,13 +116,16 @@ describe("ruleset-7 revision-20 Normal AI: no lane heuristics", () => {
   });
 
   it("plays the Triceratops as a line unit, whatever its SIEGE label", () => {
-    const triceratops = effectiveRoleRuleV7("CATAPULT", "DINOSAUR");
-    expect(triceratops.tacticalRole).toBe("SIEGE");
+    const triceratops = effectiveRoleRuleV7("SWORDSMAN", "DINOSAUR");
+    // (The ninth unit, 7r55: it is the heavy line role and labelled so.)
+    expect(triceratops.tacticalRole).toBe("LINE");
     expect(policyTacticalRoleV7(triceratops)).toBe("LINE");
     expect(policySiegeRuleV7(triceratops)).toBe(false);
     // `pulp_wars-7g3.4`: the Mammoth (Sweep) and the Boulder Yeti
     // (Boulders) are line units too.
-    for (const role of ["GUARD", "CATAPULT"] as const) {
+    // (7r55: the Mammoth is the heavy role; the Musk Ox, the new
+    // defender, keeps its DEFENDER label.)
+    for (const role of ["SWORDSMAN", "CATAPULT"] as const) {
       expect(policyTacticalRoleV7(effectiveRoleRuleV7(role, "ICE_FOLK"))).toBe(
         "LINE",
       );
@@ -134,9 +137,7 @@ describe("ruleset-7 revision-20 Normal AI: no lane heuristics", () => {
     for (const faction of FACTION_IDS_V7)
       for (const role of ["FIGHTER", "CATAPULT", "KNIGHT", "GUARD"] as const) {
         const rule = effectiveRoleRuleV7(role, faction);
-        if (faction === "DINOSAUR" && role === "CATAPULT") continue;
-        if (faction === "ICE_FOLK" && (role === "CATAPULT" || role === "GUARD"))
-          continue;
+        if (faction === "ICE_FOLK" && role === "CATAPULT") continue;
         expect(policyTacticalRoleV7(rule)).toBe(rule.tacticalRole);
         expect(policySiegeRuleV7(rule)).toBe(role === "CATAPULT");
       }
@@ -147,7 +148,7 @@ describe("ruleset-7 revision-20 Normal AI: no lane heuristics", () => {
     // The revision-19 Stampede position. Now the best command of the
     // Triceratops is a Move that ends next to the Guard.
     const state = olderFieldV7([
-      { seat: 0, role: "CATAPULT", at: at(3, 3) },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 3) },
       { seat: 1, role: "GUARD", at: at(5, 3) },
     ]);
     const best = candidates(state, at(3, 3))[0];
@@ -168,7 +169,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! run-up", () => {
     // (run-up 1) and some two (run-up 2). The exposure next to an
     // unsupported Guard is the same on every one of them.
     const state = olderFieldV7([
-      { seat: 0, role: "CATAPULT", at: at(3, 3) },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 3) },
       { seat: 1, role: "GUARD", at: at(5, 2) },
     ]);
     const guard = at(5, 2);
@@ -227,7 +228,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! run-up", () => {
     // (The older policy, against a Dwarf seat: see `olderFieldV7`.)
     // Unmoved, the Charge deals 8 to the Fighter; after one tile it kills.
     const kill = olderFieldV7([
-      { seat: 0, role: "CATAPULT", at: at(3, 3) },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 3) },
       { seat: 1, role: "FIGHTER", at: at(4, 3) },
     ]);
     const stepToKill = candidates(kill, at(3, 3))[0];
@@ -235,7 +236,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! run-up", () => {
     expect(stepToKill?.score.priority).toBe(CHARGE_RUN_UP_KILL_PRIORITY_V7);
     // Against a Guard the run-up only adds damage: just above a chip attack.
     const chip = olderFieldV7([
-      { seat: 0, role: "CATAPULT", at: at(3, 3) },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 3) },
       { seat: 1, role: "GUARD", at: at(4, 3) },
     ]);
     const all = candidates(chip, at(3, 3));
@@ -259,7 +260,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! run-up", () => {
 
   it("does not take a run-up tile inside visible lethal reach", () => {
     const state = fieldV7([
-      { seat: 0, role: "CATAPULT", at: at(3, 3), hp: 4 },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 3), hp: 4 },
       { seat: 1, role: "GUARD", at: at(6, 3) },
       { seat: 1, role: "KNIGHT", at: at(7, 3) },
       { seat: 1, role: "KNIGHT", at: at(7, 2) },
@@ -281,7 +282,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! attacks", () => {
       fieldV7([
         {
           seat: 0,
-          role: "CATAPULT",
+          role: "SWORDSMAN",
           at: at(4, 8),
           activation: { moved: true, movedPathLength: 2, handled: true },
         },
@@ -319,7 +320,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! attacks", () => {
     // (The older policy, against a Dwarf seat: see `olderFieldV7`.)
     const center = at(2, 8);
     const with_ = olderFieldV7([
-      { seat: 0, role: "CATAPULT", at: at(3, 8) },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 8) },
       { seat: 0, role: "FIGHTER", at: at(4, 8) },
       { seat: 1, role: "GUARD", at: center },
     ]);
@@ -340,7 +341,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! attacks", () => {
     // The whole turn's decision is that Charge.
     expect(chooseNormalCommandV7(view(with_)).command).toEqual(push?.command);
     const without = olderFieldV7([
-      { seat: 0, role: "CATAPULT", at: at(3, 8) },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 8) },
       { seat: 1, role: "GUARD", at: center },
     ]);
     const alone = candidates(without, at(3, 8), "ATTACK")[0];
@@ -351,7 +352,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! attacks", () => {
     // The push itself is worth CHARGE_PUSH_CENTER_VALUE_V7 over the same
     // attack on open ground.
     const open = olderFieldV7([
-      { seat: 0, role: "CATAPULT", at: at(3, 3) },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 3) },
       { seat: 1, role: "GUARD", at: at(4, 3) },
     ]);
     expect(
@@ -364,7 +365,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! attacks", () => {
     // The Guard is pushed and the Triceratops follows onto (4, 3), inside
     // the reach of three Marksmen that cannot hit it where it stands.
     const exposed = fieldV7([
-      { seat: 0, role: "CATAPULT", at: at(3, 3) },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 3) },
       { seat: 1, role: "GUARD", at: at(4, 3) },
       { seat: 1, role: "MARKSMAN", at: at(7, 2) },
       { seat: 1, role: "MARKSMAN", at: at(7, 3) },
@@ -383,13 +384,13 @@ describe("ruleset-7 revision-20 Normal AI: Charge! attacks", () => {
     expect(candidates(exposed, at(3, 3), "ATTACK")).toEqual([]);
     // Without the Marksmen the same Charge is a candidate.
     const safe = fieldV7([
-      { seat: 0, role: "CATAPULT", at: at(3, 3) },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 3) },
       { seat: 1, role: "GUARD", at: at(4, 3) },
     ]);
     expect(candidates(safe, at(3, 3), "ATTACK")).toHaveLength(1);
     // A kill worth more than the Triceratops is still taken.
     const prize = fieldV7([
-      { seat: 0, role: "CATAPULT", at: at(3, 3), hp: 8 },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 3), hp: 8 },
       { seat: 1, role: "JUGGERNAUT", at: at(4, 3), hp: 1 },
       { seat: 1, role: "MARKSMAN", at: at(7, 2) },
       { seat: 1, role: "MARKSMAN", at: at(7, 3) },
@@ -511,7 +512,7 @@ describe("ruleset-7 revision-20 Normal AI: research and production", () => {
   });
 
   it("values Wallbreaker when a visible hostile city has Walls and it owns a dinosaur to use it", () => {
-    const walled = (attacker: "KNIGHT" | "CATAPULT" | "FIGHTER") =>
+    const walled = (attacker: "KNIGHT" | "SWORDSMAN" | "FIGHTER") =>
       walledV7({
         // (The older policy, against a Dwarf seat: see `olderFieldV7`.)
         defenderFaction: "DWARF",
@@ -524,7 +525,7 @@ describe("ruleset-7 revision-20 Normal AI: research and production", () => {
     // A Triceratops already ignores Walls, and since the Dinosaur pass
     // (`pulp_wars-w49.15`) Wallbreaker is the second tile of its run-up; a
     // Caveman uses neither.
-    const withTriceratops = research(walled("CATAPULT"), "EXPLOSIVES");
+    const withTriceratops = research(walled("SWORDSMAN"), "EXPLOSIVES");
     expect(withTriceratops?.score.priority).toBe(
       WALLBREAKER_RESEARCH_PRIORITY_V7,
     );
@@ -585,7 +586,7 @@ describe("ruleset-7 revision-20 Normal AI: against Dinosaurs", () => {
       const state = fieldV7(
         [
           { seat: 0, role: "GUARD", at: at(from, 3) },
-          { seat: 1, role: "CATAPULT", at: at(3, 3) },
+          { seat: 1, role: "SWORDSMAN", at: at(3, 3) },
         ],
         { factions: ["ORIGINAL", "DINOSAUR"] },
       );
@@ -601,7 +602,7 @@ describe("ruleset-7 revision-20 Normal AI: against Dinosaurs", () => {
     const far = fieldV7(
       [
         { seat: 0, role: "GUARD", at: at(8, 3) },
-        { seat: 1, role: "CATAPULT", at: at(3, 3) },
+        { seat: 1, role: "SWORDSMAN", at: at(3, 3) },
       ],
       { factions: ["ORIGINAL", "DINOSAUR"] },
     );
@@ -618,7 +619,7 @@ describe("ruleset-7 revision-20 Normal AI: against Dinosaurs", () => {
     // The Human seat's Guard on its Walled center with Field Defense,
     // estimated from the Human seat's public view.
     const estimate = (
-      role: "CATAPULT" | "KNIGHT" | "RAIDER" | "FIGHTER",
+      role: "SWORDSMAN" | "KNIGHT" | "RAIDER" | "FIGHTER",
       attackerFaction: FactionIdV7,
     ): number => {
       const dinosaurTurn = walledV7({
@@ -646,7 +647,7 @@ describe("ruleset-7 revision-20 Normal AI: against Dinosaurs", () => {
       );
     };
     // Triceratops: no fortification at all (section 2.5: 7).
-    expect(estimate("CATAPULT", "DINOSAUR")).toBe(7);
+    expect(estimate("SWORDSMAN", "DINOSAUR")).toBe(7);
     // T-Rex and Raptor: the Walls are assumed ignored (another seat's
     // research is not public); the Field Defense level stays (section 4.2).
     expect(estimate("KNIGHT", "DINOSAUR")).toBe(9);
@@ -700,7 +701,7 @@ describe("ruleset-7 revision-20 Normal AI: determinism and bounds", () => {
   it("decides identically for equal views and offers only accepted commands", () => {
     const state = fieldDefenseV7(
       fieldV7([
-        { seat: 0, role: "CATAPULT", at: at(4, 6) },
+        { seat: 0, role: "SWORDSMAN", at: at(4, 6) },
         { seat: 0, role: "KNIGHT", at: at(5, 6), hp: 9 },
         { seat: 0, role: "RAIDER", at: at(6, 6) },
         { seat: 0, role: "CAPTAIN", at: at(6, 7) },

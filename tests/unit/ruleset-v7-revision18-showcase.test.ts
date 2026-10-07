@@ -5,6 +5,7 @@ import {
   MAP_GENERATION_REVISION_V7,
   RULESET_7_ID,
   SHOWCASE_UNIT_TEMPLATES_V7,
+  showcaseUnitRoleV7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   isNavalRoleV7,
@@ -240,8 +241,16 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         // `pulp_wars-w49.15`: and the empty hunted list (Pack Hunt).
         huntedThisTurn,
         ice,
+        // `pulp_wars-w49.17`: and the empty `ninthUnit` record.
+        ninthUnit,
         ...withoutMonsters
       } = revision19State;
+      expect(ninthUnit).toEqual({
+        wightGraves: [],
+        risenWights: [],
+        crackedThisTurn: [],
+        struckThisTurn: [],
+      });
       expect(huntedThisTurn).toEqual([]);
       expect(monsters).toEqual([]);
       // `pulp_wars-5ti.3`: and the empty ice list.
@@ -728,7 +737,8 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
         { achievement: "SLAYER", unlocked: false, spent: false },
       ]);
       // Every unit of every seat is visible to every seat.
-      expect(viewForV7(state, player.id).units).toHaveLength(33);
+      // (The ninth unit, `pulp_wars-w49.17`, 7r55: twelve units a seat.)
+      expect(viewForV7(state, player.id).units).toHaveLength(36);
     }
     expect(state.turnOrder).toEqual([1, 2, 3]);
     expect(state.activeSeatIndex).toBe(0);
@@ -796,18 +806,20 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
       "ORIGINAL",
     ];
     const state = rawShowcase(factions);
-    // Tuning 5 (`pulp_wars-w49.4`): every role but the Swordsman, which
-    // only the Humans have (`SHOWCASE_ROLE_IDS_V7`).
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): every role, the heavy
+    // line role last (`SHOWCASE_ROLE_IDS_V7`).
     expect(SHOWCASE_UNIT_TEMPLATES_V7.map((entry) => entry.role)).toEqual(
-      UNIT_ROLE_IDS_V7.filter((role) => role !== "SWORDSMAN"),
+      UNIT_ROLE_IDS_V7,
     );
-    expect(state.units).toHaveLength(44);
+    expect(state.units).toHaveLength(48);
     // IDs: capital 2s + 1 and FIGHTER 2s + 2; then North and Coast cities
     // (9–16), the 16 ledger records per seat (17–80), then ten units each.
     expect(state.populationContributions.map((entry) => entry.id)).toEqual(
       Array.from({ length: 64 }, (_, index) => 17 + index),
     );
-    expect(state.nextEntityId).toBe(121);
+    // (The four ninth units take 121 to 124, after every other unit, so no
+    // older unit has a new ID.)
+    expect(state.nextEntityId).toBe(125);
     const table = [
       ["FIGHTER", 0, 7, "LAND", "CAPITAL"],
       ["RAIDER", -1, 5, "LAND", "NORTH"],
@@ -830,8 +842,20 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
         COAST: 10 + 2 * seat,
       };
       const own = state.units.filter((unit) => unit.ownerId === player.id);
-      expect(own).toHaveLength(11);
-      table.forEach(([role, dx, y, form, home], index) => {
+      expect(own).toHaveLength(12);
+      // The ninth unit: on the Road tile south of the North center, homed
+      // there, with the last entity IDs. A faction whose heavy is a unit
+      // it already had keeps that unit on its old tile, as the heavy role,
+      // and fields its new unit here (`showcaseUnitRoleV7`).
+      expect(own[11], `${player.faction} ninth`).toMatchObject({
+        id: 121 + seat,
+        homeCityId: homes.NORTH,
+        role: showcaseUnitRoleV7("SWORDSMAN", player.faction),
+        form: "LAND",
+        at: { x: cx, y: 4 },
+      });
+      table.forEach(([templateRole, dx, y, form, home], index) => {
+        const role = showcaseUnitRoleV7(templateRole, player.faction);
         const rule = effectiveRoleRuleV7(role, player.faction);
         expect(own[index], `${player.faction} ${role}`).toEqual({
           id: index === 0 ? 2 * seat + 2 : 81 + 10 * seat + (index - 1),
@@ -869,7 +893,8 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
       const bonus = player.faction === "GOBLIN" ? 1 : 0;
       for (const [home, assigned, capacity] of [
         ["CAPITAL", player.faction === "DINOSAUR" ? 8 : 5, 7],
-        ["NORTH", 3, 6],
+        // (7r55: North also homes the ninth unit.)
+        ["NORTH", 4, 6],
         ["COAST", 3, 6],
       ] as const) {
         const city = state.cities.find((entry) => entry.id === homes[home]);
@@ -962,7 +987,7 @@ describe("ruleset-7 revision-18 Showcase play", () => {
       );
       // The frozen sea (`pulp_wars-5ti.3`): an Ice Folk seat has no ships.
       const shipless = faction === "ICE_FOLK";
-      expect(own).toHaveLength(shipless ? 8 : 11);
+      expect(own).toHaveLength(shipless ? 9 : 12);
       for (const unit of own) {
         const offered = commands.filter(
           (command) => "unitId" in command && command.unitId === unit.id,
@@ -990,9 +1015,8 @@ describe("ruleset-7 revision-18 Showcase play", () => {
         UNIT_ROLE_IDS_V7.filter(
           (role) =>
             role !== "JUGGERNAUT" &&
-            !(shipless && isNavalRoleV7(role)) &&
-            // Tuning 5: a Human seat trains the Swordsman, and only it.
-            !(role === "SWORDSMAN" && faction !== "ORIGINAL"),
+            // (The ninth unit, 7r55: every seat trains its heavy.)
+            !(shipless && isNavalRoleV7(role)),
         ).sort(),
       );
       expect(commands.at(-1)).toEqual({ kind: "END_TURN" });

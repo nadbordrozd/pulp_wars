@@ -95,6 +95,12 @@ export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;
  * (tier 2: 7 Coins and 2 for each city beyond the first), so with the
  * view's four cities Marksmanship costs 13 and its 12 Coins do not buy it.
  * (Scouting, at 8, is offered and is not the army's technology.)
+ *
+ * The ninth unit (`pulp_wars-w49.17`, 7r55): `policyDecisionHash` was
+ * d572ee…1c7e. The command (the training of the heavy line unit, the
+ * Champion, in city 16) and the candidate count are unchanged; the Champion
+ * costs 6 Coins (5) and is unlocked by Metallurgy, so the candidates that
+ * weigh its price or its chain score differently.
  */
 export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   /** `canonicalHash` of the retained fixture as read from disk. */
@@ -122,7 +128,9 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // Human seat at war still buys (was 2a38fd…aae3).
     // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
     // 3b4bad…d678).
-    "d572ee0a0d0f0d0c146ebab807569b3fe9f9bd725376d62df33d877fb53c1c7e",
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): see the comment above
+    // (was d572ee…1c7e).
+    "9c715be0ff401925ac6f3059ef8e0e19e7967bae30262b437762bf49a1892a52",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
@@ -211,10 +219,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r54",
+    rulesetId: "pulp-wars-poc-7r55",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r54",
+      rulesetId: "pulp-wars-poc-7r55",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
@@ -329,6 +337,14 @@ export function upgradeRetainedPublicViewV7(
     splattedThisTurn: [],
     tossedThisTurn: [],
     huntedThisTurn: [],
+    // The ninth unit (`pulp_wars-w49.17`): nor any Wight's Grave, risen
+    // Wight, Cracked unit, or Whirligig attack.
+    ninthUnit: {
+      wightGraves: [],
+      risenWights: [],
+      crackedThisTurn: [],
+      struckThisTurn: [],
+    },
   };
 }
 import {

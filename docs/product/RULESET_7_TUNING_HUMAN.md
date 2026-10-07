@@ -21,6 +21,20 @@ playtests that would show whether they work. The rules themselves are stated
 in [Ruleset 7: current rules](RULESET_7_CURRENT.md); this document is the
 reasoning and the record.
 
+**Superseded in part by [the ninth unit](RULESET_7_NINTH_UNIT.md) (`pulp-wars-poc-7r55`, `pulp_wars-w49.17`).** The **Swordsman** of
+[section 12.4](#124-the-swordsman) is the **Champion**, costs 6 Coins (5
+here), and is unlocked by **Metallurgy**, tier 3 (Engineering, tier 2,
+here); Engineering unlocks no unit. Every faction has a unit of the role,
+so "the Humans' own heavy unit" and "a role only the Humans have" are no
+longer true. The labs are a revision on (their Human seats own
+Metallurgy), the player of the breakthrough labs is worth 67 Coins (63
+here) against unchanged attackers, and the pinned rounds of their bounded
+runs moved for the Goblin attacker. The technologies this document calls
+Drill, Administration, Planning, Fieldcraft, Metallurgy, Shorecraft, Naval
+Engineering, and Seamanship are shown to the player as Garrison,
+Leadership, Land Grants, Pathfinding, Armoury, Sailing, Shipbuilding, and
+Boarding. The record below is unchanged.
+
 The method is the one the user set on 2026-10-05: scenario reasoning and a
 few hand-played games, never counts of AI-against-AI results. The numbers
 below come from `scripts/human-tuning-analysis-v7.ts`, which asks the

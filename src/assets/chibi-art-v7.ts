@@ -612,25 +612,131 @@ export function unitArtSubjectV7(unit: {
       "UNIT",
       navalArtRoleForV7(unit.role as NavalRoleIdV7),
     );
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the art slot of the role
+  // (a moved unit keeps the slot its art was made for).
+  const role = unitArtRoleV7(unit.role, unit.faction);
   if (unit.faction === "UNDEAD")
-    return `UNIT:UNDEAD:${unit.role as UndeadArtRoleV7}`;
+    return `UNIT:UNDEAD:${role as UndeadArtRoleV7}`;
   if (unit.faction === "GOBLIN")
-    return `UNIT:GOBLIN:${unit.role as GoblinArtRoleV7}`;
+    return `UNIT:GOBLIN:${role as GoblinArtRoleV7}`;
   if (unit.faction === "DINOSAUR")
-    return `UNIT:DINOSAUR:${unit.role as DinosaurArtRoleV7}`;
+    return `UNIT:DINOSAUR:${role as DinosaurArtRoleV7}`;
   if (unit.faction === "MARTIAN")
-    return `UNIT:MARTIAN:${unit.role as MartianArtRoleV7}`;
+    return `UNIT:MARTIAN:${role as MartianArtRoleV7}`;
   // The Ice Folk (bead pulp_wars-7g3.6): every land role has its own art.
   if (unit.faction === "ICE_FOLK")
-    return `UNIT:ICE_FOLK:${unit.role as IceFolkArtRoleV7}`;
+    return `UNIT:ICE_FOLK:${role as IceFolkArtRoleV7}`;
   // The Dwarves (bead pulp_wars-78i.6): every land role has its own art.
-  if (unit.faction === "DWARF")
-    return `UNIT:DWARF:${unit.role as DwarfArtRoleV7}`;
+  if (unit.faction === "DWARF") return `UNIT:DWARF:${role as DwarfArtRoleV7}`;
   // The Candy (art of pulp_wars-jdb.5, wired by pulp_wars-jdb.3): every
   // land role has its own art.
-  if (unit.faction === "CANDY")
-    return `UNIT:CANDY:${unit.role as CandyArtRoleV7}`;
-  return `UNIT:${unit.role}`;
+  if (unit.faction === "CANDY") return `UNIT:CANDY:${role as CandyArtRoleV7}`;
+  return `UNIT:${role}`;
+}
+
+/**
+ * The ninth unit (`pulp_wars-w49.17`, `pulp-wars-poc-7r55`): the ART SLOT
+ * of a land role under a faction. A unit's sprite and portrait are filed
+ * under `UNIT:<FACTION>:<SLOT>` and `PORTRAIT:<FACTION>:<SLOT>`, and the
+ * slot is the role ID except for the three units that changed role at
+ * 7r55, whose rasters, prompts, and generation records keep the slot they
+ * were made for:
+ *
+ * - the Dinosaur Triceratops (role `SWORDSMAN`) keeps the slot `CATAPULT`;
+ * - the Ice Folk Mammoth (role `SWORDSMAN`) keeps the slot `GUARD`;
+ * - the Dwarf Steam Tank (role `SWORDSMAN`) keeps the slot `KNIGHT`.
+ *
+ * The unit that took the vacated role gets the free slot `SWORDSMAN`, so
+ * the seven units added at 7r55 (Ogre, Wight, Shock Trooper, Jawbreaker,
+ * Stegosaurus, Musk Ox, Whirligig) are all `<FACTION>:SWORDSMAN`: the
+ * ninth art slot of every non-Human faction. Naval roles are not land art
+ * slots and are returned unchanged.
+ */
+export function unitArtRoleV7(
+  role: UnitRoleIdV7,
+  faction: FactionIdV7,
+): UnitRoleIdV7 {
+  const moved = MOVED_UNIT_ART_SLOTS_V7[faction];
+  if (moved === undefined) return role;
+  if (role === "SWORDSMAN") return moved;
+  if (role === moved) return "SWORDSMAN";
+  return role;
+}
+
+/** The art slot the moved heavy of a faction keeps (see `unitArtRoleV7`). */
+export const MOVED_UNIT_ART_SLOTS_V7: Readonly<
+  Partial<Record<FactionIdV7, UnitRoleIdV7>>
+> = Object.freeze({
+  DINOSAUR: "CATAPULT",
+  ICE_FOLK: "GUARD",
+  DWARF: "KNIGHT",
+});
+
+/**
+ * The ninth unit (`pulp_wars-w49.17`): STAND-IN ART. The seven units added
+ * at 7r55 have no art yet. Until an art bead registers the subject, each is
+ * drawn with the sprite and portrait of the nearest unit of its own
+ * faction, and the board and the Gallery mark it (a small letter badge on
+ * the board, the "stand-in" mark in the Gallery). `letter` is the badge.
+ * docs/art/factions/<FACTION>.md says what the art bead must make.
+ */
+export const NINTH_UNIT_STAND_INS_V7: Readonly<
+  Partial<
+    Record<
+      Exclude<FactionIdV7, "ORIGINAL">,
+      { readonly standIn: UnitRoleIdV7; readonly letter: string }
+    >
+  >
+> = Object.freeze({
+  // The Wight is drawn as the Skeleton.
+  UNDEAD: { standIn: "FIGHTER", letter: "W" },
+  // The Ogre is drawn as the Orc Brute.
+  GOBLIN: { standIn: "GUARD", letter: "O" },
+  // The Stegosaurus is drawn as the Ankylosaurus.
+  DINOSAUR: { standIn: "GUARD", letter: "S" },
+  // The Shock Trooper is drawn as the Grunt.
+  MARTIAN: { standIn: "FIGHTER", letter: "T" },
+  // The Musk Ox is drawn as the Mammoth (the art slot `GUARD`).
+  ICE_FOLK: { standIn: "GUARD", letter: "X" },
+  // The Whirligig is drawn as the Clockwork Gunner.
+  DWARF: { standIn: "MARKSMAN", letter: "W" },
+  // The Jawbreaker is drawn as the Marshmallow.
+  CANDY: { standIn: "GUARD", letter: "J" },
+});
+
+const NINTH_UNIT_STAND_IN_PATTERN_V7 =
+  /^(UNIT|PORTRAIT):(UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY):SWORDSMAN$/;
+
+/**
+ * The stand-in subject of a ninth-unit subject (`UNIT:GOBLIN:SWORDSMAN` is
+ * `UNIT:GOBLIN:GUARD`), or null for any other subject.
+ */
+export function ninthUnitStandInSubjectV7(
+  subject: ArtSubjectV7,
+): ArtSubjectV7 | null {
+  const match = NINTH_UNIT_STAND_IN_PATTERN_V7.exec(subject);
+  if (match === null) return null;
+  const entry =
+    NINTH_UNIT_STAND_INS_V7[match[2] as Exclude<FactionIdV7, "ORIGINAL">];
+  return entry === undefined
+    ? null
+    : (`${match[1] ?? "UNIT"}:${match[2] ?? ""}:${entry.standIn}` as ArtSubjectV7);
+}
+
+/**
+ * The letter of the stand-in badge of a unit subject drawn with stand-in
+ * art, or null for a subject that is no ninth-unit stand-in.
+ */
+export function ninthUnitStandInLetterV7(
+  subject: ArtSubjectV7 | undefined,
+): string | null {
+  if (subject === undefined) return null;
+  const match = NINTH_UNIT_STAND_IN_PATTERN_V7.exec(subject);
+  if (match === null) return null;
+  return (
+    NINTH_UNIT_STAND_INS_V7[match[2] as Exclude<FactionIdV7, "ORIGINAL">]
+      ?.letter ?? null
+  );
 }
 
 /**
@@ -683,6 +789,12 @@ export function chibiFallbackSubjectV7(
   if (subject === "UNIT:DINOSAUR:EGG") return null;
   if (subject === "UNIT:DWARF:MOUND" || subject === "UNIT:DWARF:MOUND_RIDER")
     return null;
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): STAND-IN. A new unit without
+  // art of its own is drawn as the nearest unit of its own faction until
+  // its art bead registers `UNIT:<FACTION>:SWORDSMAN` and
+  // `PORTRAIT:<FACTION>:SWORDSMAN` (the board and the Gallery mark it).
+  const standIn = ninthUnitStandInSubjectV7(subject);
+  if (standIn !== null) return standIn;
   // A Submarine riding low (bead pulp_wars-5ti.6) without its own raster
   // (the Classic look, a faction with no Submarine art) is drawn surfaced:
   // the shared Submarine in the owner's colour.

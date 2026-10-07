@@ -176,14 +176,14 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: production", () => {
     // A Triceratops Egg hatches in two turns again, so it has a delay cost
     // of 1, and it is a two-slot Egg.
     expect(FIRST_LINEBREAKER_UNIT_BIAS_V7).toBe(20);
-    expect(adjust(lay("CATAPULT"))).toBe(FIRST_LINEBREAKER_UNIT_BIAS_V7 - 1);
-    expect(adjust(lay("CATAPULT"), { ...city, freeSlots: 2 })).toBe(
+    expect(adjust(lay("SWORDSMAN"))).toBe(FIRST_LINEBREAKER_UNIT_BIAS_V7 - 1);
+    expect(adjust(lay("SWORDSMAN"), { ...city, freeSlots: 2 })).toBe(
       FIRST_LINEBREAKER_UNIT_BIAS_V7 - 1 - 4,
     );
     const withTriceratops = viewerViewV7(
-      dino([own("CATAPULT", 5, 1), foe("FIGHTER", 1, 1)], NO_NESTING),
+      dino([own("SWORDSMAN", 5, 1), foe("FIGHTER", 1, 1)], NO_NESTING),
     );
-    expect(adjust(lay("CATAPULT"), city, withTriceratops)).toBe(-1);
+    expect(adjust(lay("SWORDSMAN"), city, withTriceratops)).toBe(-1);
     // Nesting no longer shortens the delay (the Dinosaur pass's
     // correction, 7r53).
     const nesting = viewerViewV7(dino([foe("FIGHTER", 1, 1)]));
@@ -505,7 +505,7 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: signature research", () 
   // Triceratops (Sawmilling) or the T-Rex (Chivalry) goes before land
   // production (1080).
   const research = (
-    tech: "SAWMILLING" | "CHIVALRY" | "RAIDING",
+    tech: "SAWMILLING" | "METALLURGY" | "CHIVALRY" | "RAIDING",
   ): CommandV7 => ({
     kind: "RESEARCH",
     tech,
@@ -540,19 +540,19 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: signature research", () 
   it("researches toward the Triceratops first, then the T-Rex, once it owns two cities", () => {
     // (The signature research of `pulp_wars-c87.8`, against a Dwarf
     // seat: an army seat follows the army's order instead.)
-    const both = without(DW, "SAWMILLING", "CHIVALRY");
+    const both = without(DW, "METALLURGY", "CHIVALRY");
     // Both chains are one technology long: the Triceratops goes first.
-    expect(priority(both, 2, research("SAWMILLING"))).toBe(
+    expect(priority(both, 2, research("METALLURGY"))).toBe(
       SIGNATURE_RESEARCH_PRIORITY_V7,
     );
     expect(priority(both, 2, research("CHIVALRY"))).toBeLessThan(
       SIGNATURE_RESEARCH_PRIORITY_V7,
     );
     // With one city nothing is raised.
-    expect(priority(both, 1, research("SAWMILLING"))).toBeLessThan(
+    expect(priority(both, 1, research("METALLURGY"))).toBeLessThan(
       SIGNATURE_RESEARCH_PRIORITY_V7,
     );
-    // With Sawmilling known, the T-Rex is next.
+    // With Metallurgy known, the T-Rex is next.
     const tRex = without(DW, "CHIVALRY");
     expect(priority(tRex, 2, research("CHIVALRY"))).toBe(
       SIGNATURE_RESEARCH_PRIORITY_V7,
@@ -562,20 +562,20 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: signature research", () 
   it("takes the shorter chain first and raises its next technology", () => {
     // (The signature research of `pulp_wars-c87.8`, against a Dwarf
     // seat: an army seat follows the army's order instead.)
-    // The T-Rex needs Raiding and Chivalry, the Triceratops only Sawmilling.
-    const short = without(DW, "SAWMILLING", "RAIDING");
-    expect(priority(short, 2, research("SAWMILLING"))).toBe(
+    // The T-Rex needs Raiding and Chivalry, the Triceratops only Metallurgy (7r55).
+    const short = without(DW, "METALLURGY", "RAIDING");
+    expect(priority(short, 2, research("METALLURGY"))).toBe(
       SIGNATURE_RESEARCH_PRIORITY_V7,
     );
     expect(priority(short, 2, research("RAIDING"))).toBeLessThan(
       SIGNATURE_RESEARCH_PRIORITY_V7,
     );
-    // The Triceratops needs Forestry and Sawmilling, the T-Rex only Chivalry.
-    const long = without(DW, "FORESTRY", "CHIVALRY");
+    // The Triceratops needs Engineering and Metallurgy, the T-Rex only Chivalry.
+    const long = without(DW, "ENGINEERING", "CHIVALRY");
     expect(priority(long, 2, research("CHIVALRY"))).toBe(
       SIGNATURE_RESEARCH_PRIORITY_V7,
     );
-    // Sawmilling known, Raiding missing: Raiding is the next step to the T-Rex.
+    // Metallurgy known, Raiding missing: Raiding is the next step to the T-Rex.
     const raiding = without(DW, "RAIDING");
     expect(priority(raiding, 2, research("RAIDING"))).toBe(
       SIGNATURE_RESEARCH_PRIORITY_V7,
@@ -794,7 +794,7 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: estimates", () => {
 describe("ruleset-7 revision-19 Normal AI as Dinosaurs: candidates stay legal", () => {
   it("offers only commands the engine accepts in a busy Dinosaur position", () => {
     const pieces = [
-      own("CATAPULT", 1, 3),
+      own("SWORDSMAN", 1, 3),
       own("CAPTAIN", 9, 8),
       own("RAIDER", 3, 5),
       foe("GUARD", 4, 3),

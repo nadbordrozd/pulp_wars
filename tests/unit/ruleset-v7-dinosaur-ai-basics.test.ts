@@ -70,12 +70,15 @@ describe("ruleset-7 revision-19 Normal AI: Eggs", () => {
         command.kind === "LAY_EGG" ? [command.role, command.at] : null,
       ),
     ).toEqual(
-      ["RAIDER", "MARKSMAN", "GUARD", "CATAPULT", "KNIGHT"].map((role) => [
-        role,
-        // (9, 7), (9, 8), and (9, 9) are three tiles from the Fighter; the
-        // first in (y, x) order wins.
-        { x: 9, y: 7 },
-      ]),
+      // (The ninth unit, 7r55: the Stegosaurus and the Triceratops.)
+      ["RAIDER", "MARKSMAN", "GUARD", "CATAPULT", "KNIGHT", "SWORDSMAN"].map(
+        (role) => [
+          role,
+          // (9, 7), (9, 8), and (9, 9) are three tiles from the Fighter; the
+          // first in (y, x) order wins.
+          { x: 9, y: 7 },
+        ],
+      ),
     );
     // With no visible enemy it is the first nest tile.
     const calm = unexplored(state);
@@ -170,7 +173,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! benchmark", () => {
     // A Fighter two tiles away: unmoved the Triceratops cannot reach it, and
     // after a one-tile Move its Charge (Attack 4) kills it.
     const state = arena([
-      { seat: 0, role: "CATAPULT", at: { x: 3, y: 3 } },
+      { seat: 0, role: "SWORDSMAN", at: { x: 3, y: 3 } },
       { seat: 1, role: "FIGHTER", at: { x: 5, y: 3 } },
     ]);
     const view = viewForV7(state, state.humanPlayerId);
@@ -232,7 +235,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! benchmark", () => {
     // three Marksmen that cannot hit it where it stands: its 52 points for
     // 7 damage to a Guard.
     const state = fieldV7([
-      { seat: 0, role: "CATAPULT", at: { x: 3, y: 3 } },
+      { seat: 0, role: "SWORDSMAN", at: { x: 3, y: 3 } },
       { seat: 1, role: "GUARD", at: { x: 4, y: 3 } },
       { seat: 1, role: "MARKSMAN", at: { x: 7, y: 2 } },
       { seat: 1, role: "MARKSMAN", at: { x: 7, y: 3 } },
@@ -251,7 +254,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! benchmark", () => {
     ).not.toContainEqual(charge);
     // Without the Marksmen the same Charge is a candidate.
     const safe = fieldV7([
-      { seat: 0, role: "CATAPULT", at: { x: 3, y: 3 } },
+      { seat: 0, role: "SWORDSMAN", at: { x: 3, y: 3 } },
       { seat: 1, role: "GUARD", at: { x: 4, y: 3 } },
     ]);
     expect(

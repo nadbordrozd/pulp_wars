@@ -495,7 +495,9 @@ describe("the naval branch on Dry Land, in missions, and in the Showcase", () =>
   });
 
   it("gives every Showcase seat one Submarine on the Deep Water tile east of its Battleship", () => {
-    expect(SHOWCASE_UNIT_TEMPLATES_V7.at(-1)).toEqual({
+    // (The ninth unit, `pulp_wars-w49.17`, is the last template since
+    // 7r55; the Submarine is the one before it.)
+    expect(SHOWCASE_UNIT_TEMPLATES_V7.at(-2)).toEqual({
       role: "SUBMARINE",
       dx: 1,
       y: 13,

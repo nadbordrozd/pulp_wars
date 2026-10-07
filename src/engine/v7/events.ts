@@ -207,6 +207,24 @@ export interface CombatPreviewV7 {
    * retaliate (`noRetaliationReason` is `ICEBOUND` when it survives).
    */
   readonly icebound: boolean;
+  /**
+   * The ninth unit (`pulp_wars-w49.17`, 7r55): Shock Field. What the Shock
+   * Field of a Shielded Shock Trooper attacked from the next tile took from
+   * the attacker, HP and Shield together (0 without). It is included in
+   * `damageToAttacker` and `attackerShieldDamage`, with or without a
+   * retaliation, and may kill the attacker.
+   */
+  readonly shockDamage: number;
+  /**
+   * The ninth unit: the Thagomizer. The attack leaves its surviving target
+   * Cracked (1 less Defense until the end of the attacker's owner's turn).
+   */
+  readonly crackApplied: boolean;
+  /**
+   * The ninth unit: Frostbite. The surviving attacker is Chilled for having
+   * attacked a Musk Ox from the next tile.
+   */
+  readonly frostbiteApplied: boolean;
 }
 export interface CombatSplashEntryV7 {
   readonly unitId: UnitId;
@@ -756,7 +774,10 @@ export type DomainEventV7 =
       readonly sourceUnitId: UnitId | null;
       // The frozen sea (naval branch section 8.8): Black Ice at a Start
       // Turn, with no source unit.
-      readonly source: "BOLAS" | "COLD_SNAP" | "COLD_AURA" | "BLACK_ICE";
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): Frostbite, a Musk Ox
+      // (`sourceUnitId`, of `playerId`) chilled the unit that attacked it.
+      readonly source:
+        "BOLAS" | "COLD_SNAP" | "COLD_AURA" | "BLACK_ICE" | "FROSTBITE";
       readonly results: readonly {
         readonly unitId: UnitId;
         readonly sluggish: boolean;
@@ -1157,6 +1178,18 @@ export type DomainEventV7 =
       readonly unitId: UnitId;
       readonly at: CoordV7;
       readonly homeCityId: CityId | null;
+    }
+  | {
+      /**
+       * The ninth unit (`pulp_wars-w49.17`, 7r55): Rise Again. At the Start
+       * Turn of `playerId` a Wight climbed out of its own Grave on `at` as
+       * the new unit `unitId` with `hp`; the Grave is gone.
+       */
+      readonly kind: "WIGHT_RISEN";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly hp: number;
     }
   | {
       /**

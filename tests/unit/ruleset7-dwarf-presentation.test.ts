@@ -153,6 +153,8 @@ describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
       "Knockback",
       "Plated",
       "Blasting Charges",
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Whirligig.
+      "Three Hammers",
     ]);
     const rules = new Map(DWARF_HELP_RULES_V7);
     expect(rules.get("Tunnel")).toBe(
@@ -165,14 +167,14 @@ describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
       `within ${BOMB_RANGE_V7} tiles, bombs it for ${BOMB_DAMAGE_V7} (${DIVE_BOMB_DAMAGE_V7} with Dive)`,
     );
     expect(rules.get("Clockwork")).toContain(
-      `${label("MARKSMAN")}s and ${label("JUGGERNAUT")}s hit at full strength`,
+      `${label("MARKSMAN")}s, ${label("KNIGHT")}s, and ${label("JUGGERNAUT")}s hit at full strength`,
     );
     expect(rules.get("Repair")).toBe(
       `an ${label("CAPTAIN")} heals adjacent machines by ${REPAIR_MACHINE_V7} and other units by 2.`,
     );
     expect(rules.get("Assemble")).toContain(`for ${ASSEMBLE_COST_V7} Coins`);
     expect(rules.get("Plated")).toBe(
-      `no single hit takes more than ${PLATED_CAP_V7} HP from a ${label("KNIGHT")}.`,
+      `no single hit takes more than ${PLATED_CAP_V7} HP from a ${label("SWORDSMAN")}.`,
     );
   });
 
@@ -532,7 +534,7 @@ describe("Dwarf previews (section 16.1)", () => {
         reason: "TECH_REQUIRED",
         city: "Your Capital",
       }),
-    ).toBe("Needs Marksmanship");
+    ).toBe("Needs Clockwork");
   });
 });
 

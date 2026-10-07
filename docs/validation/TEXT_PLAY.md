@@ -115,6 +115,42 @@ of the feature letters under the map; `view --full` prints the whole legend
 Unit codes are mechanical roles (`Gd` is the Guard role, which the Undead
 call a Zombie); the unit lists give the faction's own name.
 
+**The ninth unit and the technology names (`pulp-wars-poc-7r55`,
+[its record](../product/RULESET_7_NINTH_UNIT.md)).**
+
+- **Technologies.** Commands, ids, and this document use the technology
+  ID (`r.DRILL`, `DRILL`). Wherever the name the player sees differs from
+  the ID, `tech`, `options`, `view`, the log, and `debrief` print the ID
+  and then the name in quotes: `DRILL "Garrison"`, `METALLURGY "Armoury"`,
+  `SAWMILLING "Liches"` for an Undead seat. Eight shared names changed
+  (Garrison, Leadership, Land Grants, Pathfinding, Armoury, Sailing,
+  Shipbuilding, Boarding) and a faction names several nodes after its own
+  building or unit.
+- **The heavy line unit** is the role `SWORDSMAN` for every faction and
+  needs `METALLURGY`. Its map code is `Ch` (the Human Champion, the
+  Swordsman until `7r55`), and a faction with its own code prints a legend
+  line: `Wi` wight, `Og` ogre, `ST` shock trooper, `Jb` jawbreaker, `Tc`
+  triceratops, `Mm` mammoth, `Tk` steam tank.
+- **Three roles have a new unit:** the Dinosaur `CATAPULT` is the
+  Stegosaurus (`Sg`), the Ice Folk `GUARD` the Musk Ox (`Ox`), and the
+  Dwarf `KNIGHT` the Whirligig (`Wh`). A Triceratops is `[SWORDSMAN]` in a
+  unit line, a Mammoth too, and a Steam Tank too.
+- **Previews.** An attack on a Shielded Shock Trooper from the next tile
+  says what the attacker takes from the Shock Field; a Stegosaurus's shot
+  says the target is Cracked (1 less Defense this turn); an attack on a
+  Musk Ox says the attacker is Chilled; a Whirligig's unit line says how
+  many of its three attacks remain, and a unit it has attacked this turn
+  is no longer offered as its target. A tile with a Wight's marked Grave
+  says so.
+- **Labs.** Every Human seat that fields Champions owns Metallurgy; in the
+  four labs in which you play another faction your seat owns Engineering
+  and Metallurgy too (twelve technologies), so its heavy can be produced.
+  The lab table below was written before `7r55`: read "Champion" for
+  "Swordsman", 17 technologies for `LAB_LATE`'s 16, 67 Coins for the
+  player's 63 in the breakthrough labs (the Goblin and Undead attackers
+  are 1.87 times that, not twice), and 80 Coins for the Human side's 77 in
+  the middle-game labs.
+
 `???????` is an unexplored tile. The game has no re-fog: once a tile is
 explored, you see every unit on it for the rest of the match. A unit on an
 unexplored tile, and a city whose center is unexplored, never appear in any
@@ -124,8 +160,8 @@ output before `debrief`.
 
 Six staged positions for the Human tuning. The first three
 ([round 4](../product/RULESET_7_TUNING_HUMAN.md#119-the-labs); `LAB_BACKLINE`
-and `LAB_LATE` are at revision 2 since
-[round 5](../product/RULESET_7_TUNING_HUMAN.md#12-round-5), with Swordsmen) are each a
+and `LAB_LATE` are at revision 3 since the ninth unit, `7r55`; revision 2
+since [round 5](../product/RULESET_7_TUNING_HUMAN.md#12-round-5), with Swordsmen) are each a
 hidden mirror mission (`src/engine/v7/missions/lab-human.ts`); the three
 breakthrough labs of
 [round 6](../product/RULESET_7_TUNING_HUMAN.md#132-the-bar-numbers-against-a-prepared-line)

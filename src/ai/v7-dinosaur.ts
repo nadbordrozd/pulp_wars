@@ -98,8 +98,10 @@ export const SIGNATURE_RESEARCH_CITIES_V7 = 2;
  * The Dinosaur signature roles, the Triceratops and the T-Rex: a tie between
  * their remaining research chains goes to the first.
  */
-export const SIGNATURE_ROLES_V7: readonly ["CATAPULT", "KNIGHT"] =
-  Object.freeze(["CATAPULT", "KNIGHT"]);
+// The ninth unit (`pulp_wars-w49.17`, 7r55): the Triceratops is the heavy
+// line role (`SWORDSMAN`); it was `CATAPULT` until 7r54.
+export const SIGNATURE_ROLES_V7: readonly ["SWORDSMAN", "KNIGHT"] =
+  Object.freeze(["SWORDSMAN", "KNIGHT"]);
 /**
  * Revision 20: a growth stage fully heals, so a growth kill is worth the HP
  * it restores (the unit's missing HP plus the stage's 4): this much per two

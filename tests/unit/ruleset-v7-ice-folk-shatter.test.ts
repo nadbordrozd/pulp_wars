@@ -182,8 +182,8 @@ describe("Shatter worked examples (section 5.6)", () => {
     const walled = walledV7({
       attackerFaction: "ICE_FOLK",
       attackers: [
-        { role: "GUARD", at: at(6, 7) },
-        { role: "GUARD", at: at(6, 8) },
+        { role: "SWORDSMAN", at: at(6, 7) },
+        { role: "SWORDSMAN", at: at(6, 8) },
         { role: "FIGHTER", at: at(6, 9) },
       ],
       // Tuning 1 (7r46): without Brittle, whose Breach ignores the Walls.
@@ -255,8 +255,8 @@ describe("Shatter worked examples (section 5.6)", () => {
   });
 
   it("Triceratops 20 HP: Mammoth 6, Yeti 5, then the Yeti would leave 3: shatters (two slots are not exempt)", () => {
-    const state = against("DINOSAUR", "CATAPULT", [
-      { seat: 0, role: "GUARD", at: at(4, 3) },
+    const state = against("DINOSAUR", "SWORDSMAN", [
+      { seat: 0, role: "SWORDSMAN", at: at(4, 3) },
       { seat: 0, role: "FIGHTER", at: at(4, 4) },
       { seat: 0, role: "FIGHTER", at: at(4, 2) },
     ]);
@@ -267,7 +267,7 @@ describe("Shatter worked examples (section 5.6)", () => {
 
   it("T-Rex 28 HP: dead on the fifth hit by plain damage; the window was never hit", () => {
     const state = against("DINOSAUR", "KNIGHT", [
-      { seat: 0, role: "GUARD", at: at(4, 3) },
+      { seat: 0, role: "SWORDSMAN", at: at(4, 3) },
       { seat: 0, role: "FIGHTER", at: at(4, 4) },
       { seat: 0, role: "FIGHTER", at: at(4, 2) },
       { seat: 0, role: "FIGHTER", at: at(5, 2) },
@@ -333,7 +333,7 @@ describe("Shatter worked examples (section 5.6)", () => {
       ["GOBLIN", "RAIDER"],
     ] as const) {
       const state = against(faction, role, [
-        { seat: 0, role: "GUARD", at: at(4, 3) },
+        { seat: 0, role: "SWORDSMAN", at: at(4, 3) },
       ]);
       expect(hits(state, [at(4, 3)])[0]?.combat, role).toMatchObject({
         shatters: true,
@@ -588,7 +588,7 @@ describe("Shatter exact points (section 5.5)", () => {
 
   it("assumeTargetChilled previews the attack as if the target were Chilled", () => {
     const state = iceFieldV7([
-      { seat: 0, role: "GUARD", at: at(4, 3) },
+      { seat: 0, role: "SWORDSMAN", at: at(4, 3) },
       { seat: 1, role: "MARKSMAN", at: at(5, 3) },
     ]);
     const view = viewForV7(state, activeIdV7(state));

@@ -190,13 +190,13 @@ describe("the Undead pass: identity", () => {
   // , the Dinosaur pass 7r53, and the economy rejig 7r54, so 7r51 is a
   // prior identity.
   it("was 7r51 after 7r50, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
       "pulp-wars-poc-7r50",
       "pulp-wars-poc-7r51",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -2)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-5, -3)).toEqual([
       "pulpWars.save.v7r50.current",
       "pulpWars.save.v7r51.current",
     ]);
@@ -747,11 +747,14 @@ describe("the Undead pass: the matrix numbers the document reasons from", () => 
 
 describe("the Undead pass: the Normal AI's army", () => {
   it("researches Zombie, Banshee, Lich, Necromancer, Vampire", () => {
+    // (The ninth unit, `pulp_wars-w49.17`, 7r55: the Wight after the
+    // Necromancer.)
     expect(ARMY_RESEARCH_ROLES_V7.UNDEAD).toEqual([
       "GUARD",
       "MARKSMAN",
       "CATAPULT",
       "CAPTAIN",
+      "SWORDSMAN",
       "KNIGHT",
     ]);
     // The other two orders are as the Goblin pass left them.
@@ -769,6 +772,7 @@ describe("the Undead pass: the Normal AI's army", () => {
       "GUARD",
       "CATAPULT",
       "CAPTAIN",
+      "SWORDSMAN",
       "KNIGHT",
     ]);
   });
@@ -1206,7 +1210,7 @@ describe("the Undead pass: LAB_UNDEAD_MID", () => {
             (effectiveRoleRuleV7(role as UnitRoleIdV7, faction).cost ?? 0),
         0,
       );
-    expect([worth(0, "UNDEAD"), worth(1, "ORIGINAL")]).toEqual([62, 77]);
+    expect([worth(0, "UNDEAD"), worth(1, "ORIGINAL")]).toEqual([62, 80]);
     const cities = (seat: number): number[] => {
       const owner = state.players.find((player) => player.seat === seat);
       return state.cities
@@ -1235,6 +1239,8 @@ describe("the Undead pass: LAB_UNDEAD_MID", () => {
       "KNIGHT",
       "MARKSMAN",
       "RAIDER",
+      // (Revision 2 of the lab, 7r55: the Wight.)
+      "SWORDSMAN",
     ]);
     // Three cities train on the first turn (the capital and one front
     // city are full).
@@ -1553,6 +1559,9 @@ describe("the correction: Plague needs Pestilence", () => {
       "FORESTRY",
       "SAWMILLING",
       "ADMINISTRATION",
+      // (The ninth unit, 7r55: the Wight's chain.)
+      "ENGINEERING",
+      "METALLURGY",
     );
     const seat = (liches: number) =>
       field(

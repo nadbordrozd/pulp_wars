@@ -81,12 +81,12 @@ import {
 // 9, and 13).
 
 describe("ruleset-7 revision-17 identity", () => {
-  it("keeps r16 among the prior identities after the r54 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
-    expect(PRIOR_RULESET_7_IDS.at(-38)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(53);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-38)).toBe(
+  it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
+    expect(PRIOR_RULESET_7_IDS.at(-39)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(54);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-39)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -507,16 +507,17 @@ describe("ruleset-7 Goblin roster", () => {
       null,
       null,
     ],
-    // Tuning 5 (`pulp_wars-w49.4`): the Human Swordsman's role, which the
-    // Goblin tree never unlocks and no Goblin seat trains (no cost).
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): the Ogre, the Goblin
+    // heavy line unit, at Metallurgy (5 Coins, 16 HP, Attack 2.5, Defense
+    // 2; no Kaboom and no death blast).
     SWORDSMAN: [
-      "Swordsman",
+      "Ogre",
       "LINE",
-      "ENGINEERING",
-      null,
-      15,
-      7,
+      "METALLURGY",
       5,
+      16,
+      5,
+      4,
       1,
       1,
       1,
@@ -764,10 +765,8 @@ describe("ruleset-7 Goblin technology", () => {
     ]);
     const goblin = technologyCapabilitiesV7(all, "GOBLIN");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
-    // (The Swordsman of tuning 5 is the Humans' alone.)
-    expect(goblin.trainableRoles).toEqual(
-      human.trainableRoles.filter((role) => role !== "SWORDSMAN"),
-    );
+    // (The ninth unit, 7r55: every faction has the heavy line role.)
+    expect(goblin.trainableRoles).toEqual(human.trainableRoles);
     expect(goblin.roleSightRadius).toEqual({ RAIDER: 2, MARKSMAN: 2 });
     expect(goblin.forestMovementFreedomRoles).toEqual(["RAIDER", "MARKSMAN"]);
     expect(technologyCapabilitiesV7(["ROADS"], "GOBLIN").plunderCoins).toBe(0);
@@ -778,37 +777,74 @@ describe("ruleset-7 Goblin technology", () => {
     // Fortification; in revision 20, Dinosaur Explosives); the UI's
     // `technologyNameV7` applies these overrides
     // (tests/unit/ruleset7-goblin-presentation.test.ts).
+    // The ninth unit (`pulp_wars-w49.17`, 7r55) added the names of the
+    // nodes that a faction knows by its building or unit; the shared
+    // names (Garrison, Leadership, ...) are a table of their own.
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7).toEqual({
       ORIGINAL: {},
-      // The Undead pass, correction (`pulp_wars-w49.13`): Pestilence.
-      UNDEAD: { EXPLOSIVES: "Pestilence" },
-      GOBLIN: { COMMERCE: "Plunder" },
-      // The Dinosaur pass, correction (`pulp_wars-w49.15`): Timber.
+      UNDEAD: {
+        EXPLOSIVES: "Pestilence",
+        MILLING: "Bone Mills",
+        MARKSMANSHIP: "Banshees",
+        SAWMILLING: "Liches",
+        CHIVALRY: "Vampires",
+      },
+      GOBLIN: {
+        COMMERCE: "Plunder",
+        MARKSMANSHIP: "Bomb Chuckers",
+        SAWMILLING: "Rocket Carts",
+        CHIVALRY: "Scrap Buggies",
+      },
       DINOSAUR: {
         FORTIFICATION: "Nesting",
         EXPLOSIVES: "Wallbreaker",
         SAWMILLING: "Timber",
+        MILLING: "Grinding",
+        MARKSMANSHIP: "Spitters",
+        CHIVALRY: "T-Rex",
+        METALLURGY: "Triceratops",
       },
-      // The Martian pass (`pulp_wars-w49.14`, 7r52): Heat Sinks.
       MARTIAN: {
         FORTIFICATION: "Force Fields",
         EXPLOSIVES: "Disintegrator",
         FIELDCRAFT: "Heat Sinks",
+        MILLING: "Solar Arrays",
+        MARKSMANSHIP: "Ray Gunners",
+        SAWMILLING: "Tripods",
+        SCOUTING: "Saucers",
+        CHIVALRY: "Motherships",
       },
       ICE_FOLK: {
         FORTIFICATION: "Deep Winter",
         EXPLOSIVES: "Brittle",
-        // The frozen sea (naval branch section 2.2).
         SHORECRAFT: "Rime",
         NAVIGATION: "Pack Ice",
         NAVAL_ENGINEERING: "Icebound",
         SEAMANSHIP: "Black Ice",
         SUBMERSIBLES: "Glacier",
+        SAWMILLING: "Boulders",
+        CHIVALRY: "Sabretooths",
+        METALLURGY: "Mammoths",
       },
-      DWARF: { FORTIFICATION: "Dig In", EXPLOSIVES: "Blasting Charges" },
+      DWARF: {
+        FORTIFICATION: "Dig In",
+        EXPLOSIVES: "Blasting Charges",
+        MILLING: "Steam Pumps",
+        MARKSMANSHIP: "Clockwork",
+        SAWMILLING: "Steam Cannons",
+        SCOUTING: "Gyrocopters",
+        CHIVALRY: "Whirligigs",
+        METALLURGY: "Steam Tanks",
+        RAIDING: "Dive Bombing",
+        ENGINEERING: "Mining",
+      },
       CANDY: {
         FORTIFICATION: "Home Sweet Home",
         EXPLOSIVES: "Peppermint Surprise",
+        MARKSMANSHIP: "Gumball Gunners",
+        SAWMILLING: "Pie Launchers",
+        CHIVALRY: "Chocolate Bunnies",
+        METALLURGY: "Jawbreakers",
       },
     });
     const state = goblinArenaV7(

@@ -119,9 +119,10 @@ describe("Ruleset 7 Showcase setup option", () => {
       factions: ["UNDEAD", "GOBLIN", "ORIGINAL"],
     });
     expect(randomSeed).not.toHaveBeenCalled();
+    // (Twelve since the ninth unit, `pulp_wars-w49.17`, 7r55.)
     expect(
       view.units.filter((unit) => unit.ownerId === view.viewer.id),
-    ).toHaveLength(11);
+    ).toHaveLength(12);
     expect(
       view.cities.filter((city) => city.ownerId === view.viewer.id),
     ).toHaveLength(3);
@@ -177,7 +178,7 @@ describe("Ruleset 7 Showcase setup option", () => {
     expect(restarted?.commandIndex).toBe(0);
     expect(
       restarted?.units.filter((unit) => unit.ownerId === restarted.viewer.id),
-    ).toHaveLength(11);
+    ).toHaveLength(12);
     next.destroy();
   });
 });

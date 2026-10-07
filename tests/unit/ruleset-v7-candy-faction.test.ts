@@ -466,6 +466,9 @@ describe("Candy roster (section 3)", () => {
       ["CAPTAIN", 3, 5],
       ["CATAPULT", 4, 5],
       ["KNIGHT", 5, 7],
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Jawbreaker, half of
+      // its 6 Coins and half of its 16 HP.
+      ["SWORDSMAN", 3, 8],
     ]);
   });
 
@@ -609,9 +612,9 @@ describe("Candy roster (section 3)", () => {
   });
 
   it("has the Candy Showcase roster: one unit per role", () => {
-    // (Every role but the Human Swordsman of tuning 5.)
+    // (Every role: the heavy line role is every faction's since 7r55.)
     expect(SHOWCASE_UNIT_TEMPLATES_V7.map((entry) => entry.role)).toEqual(
-      UNIT_ROLE_IDS_V7.filter((role) => role !== "SWORDSMAN"),
+      UNIT_ROLE_IDS_V7,
     );
     expect(TRAINABLE).toHaveLength(7);
   });
@@ -661,6 +664,11 @@ describe("Candy technology (section 4)", () => {
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.CANDY).toEqual({
       FORTIFICATION: "Home Sweet Home",
       EXPLOSIVES: "Peppermint Surprise",
+      // The ninth unit (7r55): the nodes named for their unit.
+      MARKSMANSHIP: "Gumball Gunners",
+      SAWMILLING: "Pie Launchers",
+      CHIVALRY: "Chocolate Bunnies",
+      METALLURGY: "Jawbreakers",
     });
     expect(technologyNameV7("FORTIFICATION", "CANDY")).toBe("Home Sweet Home");
     expect(technologyNameV7("EXPLOSIVES", "CANDY")).toBe("Peppermint Surprise");
@@ -697,10 +705,8 @@ describe("Candy technology (section 4)", () => {
     });
     const candy = technologyCapabilitiesV7(all, "CANDY");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
-    // (The Swordsman of tuning 5 is the Humans' alone.)
-    expect(candy.trainableRoles).toEqual(
-      human.trainableRoles.filter((role) => role !== "SWORDSMAN"),
-    );
+    // (The ninth unit, 7r55: every faction has the heavy line role.)
+    expect(candy.trainableRoles).toEqual(human.trainableRoles);
     expect(candy.commands).toEqual(
       human.commands.filter((command) => command !== "BUILD_FIELD_DEFENSE"),
     );

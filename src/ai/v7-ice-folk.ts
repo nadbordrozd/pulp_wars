@@ -118,6 +118,11 @@ export const FRONT_UNITS_PER_SLED_V7 = 3;
 export const SLED_BIAS_V7 = 6;
 /** Production: one Mammoth for this many other front units. */
 export const FRONT_UNITS_PER_MAMMOTH_V7 = 2;
+/**
+ * The ninth unit (`pulp_wars-w49.17`, 7r55): one Musk Ox per this many
+ * other front units (the cheap wall of the line; a first guess).
+ */
+export const FRONT_UNITS_PER_MUSK_OX_V7 = 3;
 export const MAMMOTH_BIAS_V7 = 6;
 /** Production: the first Witch at war with three front units, then one per eight. */
 export const WITCH_FRONT_V7 = 3;
@@ -371,6 +376,9 @@ export function iceFolkArmyCountsV7(view: PlayerViewV7): IceFolkArmyCountsV7 {
       unit.role === "GUARD" ||
       unit.role === "CATAPULT" ||
       unit.role === "KNIGHT" ||
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Mammoth is the heavy
+      // line role; the Musk Ox took the `GUARD` role.
+      unit.role === "SWORDSMAN" ||
       unit.role === "JUGGERNAUT"
     )
       front += 1;
@@ -430,10 +438,23 @@ export function iceFolkProductionAdjustmentV7(
           ? SLED_BIAS_V7
           : -SURPLUS_COST_V7;
       break;
-    case "GUARD": {
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): the Mammoth's rule moved
+    // with it to the heavy line role.
+    case "SWORDSMAN": {
       const others = front - owned;
       value +=
         owned * FRONT_UNITS_PER_MAMMOTH_V7 < Math.max(2, others)
+          ? MAMMOTH_BIAS_V7
+          : -SURPLUS_COST_V7;
+      break;
+    }
+    // The ninth unit: the Musk Ox, a cheap wall. A body under threat (as
+    // the Yeti), one per three other front units otherwise.
+    case "GUARD": {
+      if (threatened) value += THREATENED_YETI_BIAS_V7;
+      const others = front - owned;
+      value +=
+        owned * FRONT_UNITS_PER_MUSK_OX_V7 < Math.max(2, others)
           ? MAMMOTH_BIAS_V7
           : -SURPLUS_COST_V7;
       break;
@@ -574,8 +595,11 @@ export function iceFolkResearchV7(
     if (brittle !== null) return brittle;
   }
   if (ownedCities < ICE_SIGNATURE_RESEARCH_CITIES_V7) return null;
+  // The ninth unit (7r55): the Mammoth (Metallurgy, behind the Musk Ox's
+  // Drill and Engineering) with the Boulder Yeti and the Sabretooth, the
+  // shortest chain first.
   return pick(
-    ["CATAPULT", "KNIGHT"],
+    ["SWORDSMAN", "CATAPULT", "KNIGHT"],
     front >= ICE_LATE_RESEARCH_FRONT_V7
       ? ICE_RESEARCH_PRIORITY_V7
       : ICE_EARLY_RESEARCH_PRIORITY_V7,

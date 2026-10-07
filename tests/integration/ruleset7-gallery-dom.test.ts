@@ -167,7 +167,8 @@ describe("Ruleset 7 Gallery", () => {
       "BATTLESHIP",
       // The naval branch (`pulp_wars-5ti.2`).
       "SUBMARINE",
-      // Tuning 5 (`pulp_wars-w49.4`): the Human Swordsman's row.
+      // Tuning 5 (`pulp_wars-w49.4`): the heavy line unit's row (every
+      // faction's since the ninth unit, `pulp_wars-w49.17`, 7r55).
       "SWORDSMAN",
       "TRANSPORT",
       "EGG",
@@ -175,11 +176,42 @@ describe("Ruleset 7 Gallery", () => {
     // 12 rows of eight units, and one Egg; the Ice Folk have no ships and
     // no transport since the frozen sea (`pulp_wars-5ti.3`): four empty
     // cells more.
-    // (93 before tuning 5, which adds the one Swordsman, the Humans'.)
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(94);
+    // (93 before tuning 5, which added the Human Swordsman; 94 until the
+    // ninth unit, 7r55, which fills the row for the other seven factions.)
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(101);
     expect(
       document.querySelectorAll(".v7-gallery-cell-wrap.is-empty"),
-    ).toHaveLength(18);
+    ).toHaveLength(11);
+    // Nine land units for every faction, each with a name.
+    for (const faction of [
+      "ORIGINAL",
+      "UNDEAD",
+      "GOBLIN",
+      "DINOSAUR",
+      "MARTIAN",
+      "ICE_FOLK",
+      "DWARF",
+      "CANDY",
+    ])
+      expect(
+        [
+          "FIGHTER",
+          "RAIDER",
+          "MARKSMAN",
+          "GUARD",
+          "CAPTAIN",
+          "CATAPULT",
+          "KNIGHT",
+          "JUGGERNAUT",
+          "SWORDSMAN",
+        ].filter(
+          (role) =>
+            document.querySelector(
+              `.v7-gallery-cell[data-row="${role}"][data-faction="${faction}"]`,
+            ) !== null,
+        ),
+        faction,
+      ).toHaveLength(9);
     // The frozen sea (`pulp_wars-5ti.7`): the four Ice Folk cells are empty
     // on purpose and say why; the seven Egg cells keep their dash, and so
     // do the seven Swordsman cells of the other factions (tuning 5).
@@ -279,8 +311,8 @@ describe("Ruleset 7 Gallery", () => {
     );
     required<HTMLButtonElement>('[data-action="gallery-factions-all"]').click();
     required<HTMLButtonElement>('[data-action="gallery-rows-all"]').click();
-    // (93 before tuning 5, which adds the one Swordsman, the Humans'.)
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(94);
+    // (94 before the ninth unit, 7r55.)
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(101);
   });
 
   it("survives storage that throws", () => {
@@ -363,7 +395,8 @@ describe("Ruleset 7 Gallery", () => {
       "Slots 1",
     ]);
     expect(required(".v7-gallery-cost").textContent).toContain("8");
-    expect(required(".v7-gallery-tech").textContent).toContain("Sawmilling");
+    // (The ninth unit, 7r55: the Undead know Sawmilling by its unit.)
+    expect(required(".v7-gallery-tech").textContent).toContain("Liches");
     expect(
       [...dialog.querySelectorAll<HTMLElement>(".v7-gallery-ability")].map(
         (item) => item.dataset.ability,

@@ -62,6 +62,7 @@ import {
   type MatchOutcomeV7,
   type MatchSetupV7,
   type MindControlCooldownV7,
+  type NinthUnitStateV7,
   type PendingChoiceV7,
   type PlagueStatusV7,
   type PlayerStateV7,
@@ -133,6 +134,7 @@ const STATE_KEYS = [
   "mindControlCooldowns",
   "monsters",
   "nextEntityId",
+  "ninthUnit",
   "outcome",
   "pendingChoices",
   "plagued",
@@ -255,6 +257,9 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const tossedThisTurn = parseSortedUnitIds(input.tossedThisTurn);
   // The Dinosaur pass, correction: the units hunted this turn (Pack Hunt).
   const huntedThisTurn = parseSortedUnitIds(input.huntedThisTurn);
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the stored state of the new
+  // units' mechanics; the cross references are checked below.
+  const ninthUnit = parseNinthUnit(input.ninthUnit);
   const choices = parseChoices(input.pendingChoices);
   const outcome = parseOutcome(input.outcome);
   const turnOrder = parsePlayerIdSequence(input.turnOrder);
@@ -290,6 +295,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     splattedThisTurn === null ||
     tossedThisTurn === null ||
     huntedThisTurn === null ||
+    ninthUnit === null ||
     choices === null ||
     outcome === undefined ||
     turnOrder === null ||
@@ -337,6 +343,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       splattedThisTurn,
       tossedThisTurn,
       huntedThisTurn,
+      ninthUnit,
       curiosities,
       ice,
       choices,
@@ -388,6 +395,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     splattedThisTurn,
     tossedThisTurn,
     huntedThisTurn,
+    ninthUnit,
     pendingChoices: choices,
     outcome,
   };
@@ -992,8 +1000,13 @@ function parseUnit(
     (input.captureEligible && !rule.abilities.includes("CAPTURE")) ||
     // The Dwarf revision section 7.3: an unmoved Clockwork Gunner fires
     // twice.
+    // The ninth unit (7r55): or a Whirligig's Three Hammers.
     (!overrun &&
-      activation.attacksUsed > roleMechanicsV7(role, faction).unmovedShots) ||
+      activation.attacksUsed >
+        Math.max(
+          roleMechanicsV7(role, faction).unmovedShots,
+          roleMechanicsV7(role, faction).attacksPerTurn,
+        )) ||
     (activation.overrunActive &&
       (!overrun || !activation.attacked || activation.handled)) ||
     (activation.escapeAvailable &&
@@ -1535,6 +1548,125 @@ function parseCrumbs(input: unknown): readonly CrumbsV7[] | null {
   return values;
 }
 
+/**
+ * The ninth unit (`pulp_wars-w49.17`, 7r55): the shape of `ninthUnit`: the
+ * marked Graves sorted by (y, x), the two sorted unit-ID lists, and the
+ * struck pairs sorted by attacker then target.
+ */
+function parseNinthUnit(input: unknown): NinthUnitStateV7 | null {
+  if (
+    !hasExactKeysV7(input, [
+      "crackedThisTurn",
+      "risenWights",
+      "struckThisTurn",
+      "wightGraves",
+    ]) ||
+    !isDenseArrayV7(input.wightGraves) ||
+    !isDenseArrayV7(input.struckThisTurn)
+  )
+    return null;
+  const risenWights = parseSortedUnitIds(input.risenWights);
+  const crackedThisTurn = parseSortedUnitIds(input.crackedThisTurn);
+  if (risenWights === null || crackedThisTurn === null) return null;
+  const wightGraves: NinthUnitStateV7["wightGraves"][number][] = [];
+  for (const candidate of input.wightGraves) {
+    if (!hasExactKeysV7(candidate, ["at", "ownerId"])) return null;
+    const at = parseCoordV7(candidate.at);
+    const ownerId = parsePlayerIdV7(candidate.ownerId);
+    const prior = wightGraves.at(-1);
+    if (
+      at === null ||
+      ownerId === null ||
+      (prior !== undefined && compareCoordsV7(prior.at, at) >= 0)
+    )
+      return null;
+    wightGraves.push({ at, ownerId });
+  }
+  const struckThisTurn: NinthUnitStateV7["struckThisTurn"][number][] = [];
+  for (const candidate of input.struckThisTurn) {
+    if (!hasExactKeysV7(candidate, ["targetUnitId", "unitId"])) return null;
+    const unitId = parseUnitIdV7(candidate.unitId);
+    const targetUnitId = parseUnitIdV7(candidate.targetUnitId);
+    const prior = struckThisTurn.at(-1);
+    if (
+      unitId === null ||
+      targetUnitId === null ||
+      unitId === targetUnitId ||
+      (prior !== undefined &&
+        (prior.unitId > unitId ||
+          (prior.unitId === unitId && prior.targetUnitId >= targetUnitId)))
+    )
+      return null;
+    struckThisTurn.push({ unitId, targetUnitId });
+  }
+  return { wightGraves, risenWights, crackedThisTurn, struckThisTurn };
+}
+
+/**
+ * The ninth unit: the cross references of `ninthUnit`. A marked Grave lies
+ * on a Grave and belongs to an Undead seat that is in the game; a risen
+ * Wight is a unit on the board whose role rises again under its kind; a
+ * Cracked unit is a unit on the board that is not a neutral Monster; a
+ * struck pair names an attacker on the board whose role attacks more than
+ * once a turn and that has attacked at least as often as it has pairs.
+ */
+function ninthUnitValid(
+  value: CrossInput,
+  playerById: ReadonlyMap<PlayerStateV7["id"], PlayerStateV7>,
+  kindOf: (unit: UnitStateV7) => FactionIdV7 | undefined,
+): boolean {
+  const { wightGraves, risenWights, crackedThisTurn, struckThisTurn } =
+    value.ninthUnit;
+  if (
+    wightGraves.length === 0 &&
+    risenWights.length === 0 &&
+    crackedThisTurn.length === 0 &&
+    struckThisTurn.length === 0
+  )
+    return true;
+  const unitById = new Map(value.units.map((unit) => [unit.id, unit]));
+  for (const entry of wightGraves) {
+    const owner = playerById.get(entry.ownerId);
+    if (
+      owner === undefined ||
+      owner.status !== "ACTIVE" ||
+      roleMechanicsV7("SWORDSMAN", owner.faction).riseAgainHp === null ||
+      !value.graves.some((grave) => sameCoordV7(grave, entry.at))
+    )
+      return false;
+  }
+  for (const unitId of risenWights) {
+    const unit = unitById.get(unitId);
+    const kind = unit === undefined ? undefined : kindOf(unit);
+    if (
+      unit === undefined ||
+      unit.hp <= 0 ||
+      kind === undefined ||
+      roleMechanicsV7(unit.role, kind).riseAgainHp === null
+    )
+      return false;
+  }
+  for (const unitId of crackedThisTurn) {
+    const unit = unitById.get(unitId);
+    if (unit === undefined || unit.hp <= 0 || isNeutralOwnerV7(unit.ownerId))
+      return false;
+  }
+  for (const entry of struckThisTurn) {
+    const unit = unitById.get(entry.unitId);
+    const kind = unit === undefined ? undefined : kindOf(unit);
+    if (
+      unit === undefined ||
+      unit.hp <= 0 ||
+      kind === undefined ||
+      roleMechanicsV7(unit.role, kind).attacksPerTurn <= 1 ||
+      unit.activation.attacksUsed <
+        struckThisTurn.filter((item) => item.unitId === entry.unitId).length
+    )
+      return false;
+  }
+  return true;
+}
+
 function parseSortedUnitIds(input: unknown): readonly UnitId[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: UnitId[] = [];
@@ -1729,6 +1861,7 @@ interface CrossInput {
   splattedThisTurn: readonly UnitId[];
   tossedThisTurn: readonly UnitId[];
   huntedThisTurn: readonly UnitId[];
+  ninthUnit: NinthUnitStateV7;
   curiosities: readonly CuriosityV7[];
   ice: readonly IceTileV7[];
   choices: readonly PendingChoiceV7[];
@@ -2029,6 +2162,7 @@ function validateCrossReferences(value: CrossInput): boolean {
       value.setup,
     ) ||
     !candyListsValid(value, playerById, kindOf) ||
+    !ninthUnitValid(value, playerById, kindOf) ||
     !iceValid(value, playerById, kindOf) ||
     // The Dinosaur pass, correction: `huntedThisTurn` is empty in a match
     // without a Dinosaur seat, and names units on the board that do not

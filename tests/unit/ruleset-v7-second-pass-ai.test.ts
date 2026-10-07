@@ -228,7 +228,7 @@ describe("Normal AI second pass: Ice Folk, Martian abilities", () => {
     // Hostile Fighters on (5, 5) and (6, 5); from (4, 4) the Mammoth's
     // Sweep on (5, 5) hits nothing, from (5, 4) it hits (6, 5).
     const state = field(
-      [own("GUARD", 4, 4), foe("FIGHTER", 5, 5), foe("FIGHTER", 6, 5)],
+      [own("SWORDSMAN", 4, 4), foe("FIGHTER", 5, 5), foe("FIGHTER", 6, 5)],
       { factions: ["ICE_FOLK", "ORIGINAL"] },
     );
     const best = unitCandidatesV7(state, at(4, 4))[0];

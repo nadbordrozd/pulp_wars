@@ -29,6 +29,7 @@ import {
   isNavalRoleV7,
   type UnitRoleIdV7,
 } from "../engine/index";
+import { ninthUnitHelpRulesV7 } from "./ninth-unit-presentation-v7";
 
 /**
  * Presentation helpers for the Ice Folk faction (docs/product/
@@ -385,6 +386,8 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
       "Deep Winter",
       `with Deep Winter, Snow spreads ${numberWord(DEEP_WINTER_RADIUS_V7)} tiles from Ice Folk city centers, and Ice Folk units recover ${DEEP_WINTER_RECOVER_V7} in their own territory.`,
     ],
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): the Musk Ox's Frostbite.
+    ...ninthUnitHelpRulesV7("ICE_FOLK"),
   ];
 }
 
@@ -824,8 +827,9 @@ export function iceFolkBoundaryNoticeV7(
     ) {
       parts.push(
         sweeper === undefined
-          ? `${capitalized(iceFolkLabelV7("GUARD"))} trampled Field Defense`
-          : `${owner(sweeper.ownerId)} ${iceFolkLabelV7("GUARD")} trampled Field Defense`,
+          ? // The ninth unit (7r55): the Mammoth is the heavy line role.
+            `${capitalized(iceFolkLabelV7("SWORDSMAN"))} trampled Field Defense`
+          : `${owner(sweeper.ownerId)} ${iceFolkLabelV7("SWORDSMAN")} trampled Field Defense`,
       );
     }
   }

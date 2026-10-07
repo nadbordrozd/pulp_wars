@@ -102,9 +102,9 @@ interface ArenaOptions {
 
 describe("ruleset-7 revision-14 identity and roster", () => {
   it("keeps rejecting r13 after the r54 identity and cleans the r13 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-41)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-42)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
@@ -146,6 +146,7 @@ describe("ruleset-7 revision-14 identity and roster", () => {
       "pulpWars.save.v7r51.current",
       "pulpWars.save.v7r52.current",
       "pulpWars.save.v7r53.current",
+      "pulpWars.save.v7r54.current",
     ]);
     const state = arena(["UNDEAD", "ORIGINAL"], []);
     expect(
@@ -209,7 +210,10 @@ describe("ruleset-7 revision-14 identity and roster", () => {
     // The Candy revision inserts CRUMBS_LEFT after GRAVE_CREATED.
     expect(at("CRUMBS_LEFT")).toBe(at("GRAVE_CREATED") + 1);
     expect(at("BITTEN_UNIT_RISEN")).toBe(at("GRAVE_CREATED") + 2);
-    expect(at("PLAGUE_CLEARED")).toBe(at("GRAVE_CREATED") + 3);
+    // The ninth unit (`pulp_wars-w49.17`, 7r55) inserts WIGHT_RISEN after
+    // BITTEN_UNIT_RISEN.
+    expect(at("WIGHT_RISEN")).toBe(at("GRAVE_CREATED") + 3);
+    expect(at("PLAGUE_CLEARED")).toBe(at("GRAVE_CREATED") + 4);
   });
 });
 
@@ -1135,8 +1139,11 @@ describe("ruleset-7 revision-14 natural play and persistence", () => {
     // (`pulp_wars-w49.13`: a Lich plagues only with Pestilence, which the
     // Undead seat researches once it fields two Liches) seed 15 trains two
     // Liches that never plague; of seeds 0-16, seeds 0, 6, and 8 plague
-    // (seed 8: three Liches, 7 Plague applications, 23 bites).
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 8);
+    // (seed 8: three Liches, 7 Plague applications, 23 bites). With the
+    // ninth unit (`pulp_wars-w49.17`, 7r55: the Wight's two technologies
+    // in the Undead order) seed 8 never plagues; of seeds 0-23, seeds 10,
+    // 18, and 23 plague (seed 23: 6 Plague applications, 20 bites).
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 23);
     const match = runAiMatchV7(setup, { maxRounds: 45 });
     expect(match.errors).toEqual([]);
     expect(match.stalls).toEqual([]);

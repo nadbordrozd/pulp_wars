@@ -33,7 +33,6 @@ import {
   unitMovementModeV7,
   unitRoleMechanicsV7,
   isRangedRoleRuleV7,
-  roleDefense2AtDistanceV7,
   unitRoleRuleV7,
   unitTakesCoverV7,
   type EffectiveRoleRuleV7,
@@ -86,6 +85,15 @@ import {
   rayPowerV7,
   shieldOfV7,
 } from "./martian";
+import {
+  attackCracksV7,
+  attackIsFrostbittenV7,
+  crackedDefense2V7,
+  shockFieldDamageV7,
+  unitDefense2AtDistanceV7,
+  unitIsCrackedV7,
+  unitIsImmovableV7,
+} from "./ninth-unit";
 import { noRisingAtV7, riftAtV7 } from "./rift";
 import { tileAtV7 } from "./spatial-economy";
 import { tileOccupiedV7 } from "./units";
@@ -293,10 +301,18 @@ export function attackFortificationV7(
  * up to the faction maximum. The Goblin pass (`pulp_wars-w49.12`): a role
  * has its own `gangUpLimit` (the Bomb Chucker 0, the Rocket Cart 1). Own units are always visible to their owner, so
  * the public preview passes its visible units and is exact.
+ *
+ * The ninth unit (`pulp_wars-w49.17`, 7r55): Heavyweight. A helper counts
+ * as its kind's role `gangUpWeight` units in land form (the Goblin Ogre 2,
+ * so one Ogre gives the whole +2), and as 1 otherwise. A mind-controlled
+ * Ogre is its controller's unit, so it helps no Goblin seat.
  */
 export function gangUpBonusV7(
   roster: FactionRosterV7,
-  units: readonly Pick<UnitStateV7, "id" | "ownerId" | "at" | "hp">[],
+  units: readonly Pick<
+    UnitStateV7,
+    "id" | "ownerId" | "at" | "hp" | "role" | "form"
+  >[],
   attacker: Pick<UnitStateV7, "id" | "ownerId" | "form" | "role">,
   target: Pick<UnitStateV7, "id" | "at">,
 ): 0 | 1 | 2 {
@@ -306,14 +322,23 @@ export function gangUpBonusV7(
   // The Goblin pass (7r50): the role's own limit (a bomb 0, a rocket 1).
   const limit = unitRoleMechanicsV7(roster, attacker).gangUpLimit;
   if (limit === 0) return 0;
-  const helpers = units.filter(
-    (unit) =>
-      unit.hp > 0 &&
-      unit.ownerId === attacker.ownerId &&
-      unit.id !== attacker.id &&
-      unit.id !== target.id &&
-      chebyshev(unit.at, target.at) === 1,
-  ).length;
+  const helpers = units
+    .filter(
+      (unit) =>
+        unit.hp > 0 &&
+        unit.ownerId === attacker.ownerId &&
+        unit.id !== attacker.id &&
+        unit.id !== target.id &&
+        chebyshev(unit.at, target.at) === 1,
+    )
+    .reduce(
+      (sum, unit) =>
+        sum +
+        (unit.form === "LAND"
+          ? unitRoleMechanicsV7(roster, unit).gangUpWeight
+          : 1),
+      0,
+    );
   return Math.min(maximum, limit, helpers) as 0 | 1 | 2;
 }
 
@@ -542,8 +567,11 @@ export function calculateCombatPreviewV7(
       ? 2
       : defender.form === "EGG"
         ? EGG_DEFENSE2_V7
-        : // Tuning 5: the Human Guard is open to ranged attacks.
-          roleDefense2AtDistanceV7(
+        : // Tuning 5: the Human Guard is open to ranged attacks. The ninth
+          // unit (7r55): a Cracked unit has 1 less Defense.
+          unitDefense2AtDistanceV7(
+            state,
+            defender,
             defenderRule,
             unitRoleMechanicsV7(state, defender),
             distance,
@@ -585,7 +613,11 @@ export function calculateCombatPreviewV7(
   const rawAttackerDamage = retaliationDamageV7({
     attackForceNumerator,
     attackForceDenominator,
-    defense2: defenderRule.defense2,
+    // The ninth unit (7r55): a Cracked defender strikes back with 1 less
+    // Defense too.
+    defense2: unitIsCrackedV7(state, defender.id)
+      ? crackedDefense2V7(defenderRule.defense2)
+      : defenderRule.defense2,
     hp: defender.hp,
     maxHp: defender.maxHp,
   });
@@ -659,11 +691,30 @@ export function calculateCombatPreviewV7(
         armouredDamageV7(state, attacker, rawAttackerDamage, plated),
       )
     : { shieldDamage: 0, hpDamage: 0 };
-  const damageToAttacker = attackerHit.hpDamage;
-  const attackerShieldDamage = attackerHit.shieldDamage;
+  // The ninth unit (7r55): the Shock Field of a Shielded Shock Trooper
+  // attacked from the next tile. It is decided by the Shield before the
+  // hit, whatever the hit does; it follows the retaliation, is reduced by
+  // Armoured and Plated, and is taken from the attacker's Shield first.
+  const shockRaw = shockFieldDamageV7(
+    state,
+    defender,
+    defenderShield,
+    distance,
+  );
+  const shockHit =
+    shockRaw > 0
+      ? absorbHitV7(
+          attackerShield - attackerHit.shieldDamage,
+          attacker.hp - attackerHit.hpDamage,
+          armouredDamageV7(state, attacker, shockRaw, plated),
+        )
+      : { shieldDamage: 0, hpDamage: 0 };
+  const shockDamage = shockHit.hpDamage + shockHit.shieldDamage;
+  const damageToAttacker = attackerHit.hpDamage + shockHit.hpDamage;
+  const attackerShieldDamage = attackerHit.shieldDamage + shockHit.shieldDamage;
   const attackerArmoured =
     retaliates &&
-    damageToAttacker + attackerShieldDamage <
+    attackerHit.hpDamage + attackerHit.shieldDamage <
       Math.min(attacker.hp + attackerShield, rawAttackerDamage);
   const attackerDies = damageToAttacker >= attacker.hp;
   // Revision 17: splash target mode `ALL` (the Goblin Bomb Chucker's bomb)
@@ -922,6 +973,15 @@ export function calculateCombatPreviewV7(
     torpedo,
     iceCover,
     icebound: defenderIcebound,
+    shockDamage,
+    crackApplied: attackCracksV7(state, attacker, defender, defenderDies),
+    frostbiteApplied: attackIsFrostbittenV7(
+      state,
+      attacker,
+      defender,
+      distance,
+      attackerDies,
+    ),
   };
 }
 
@@ -1389,6 +1449,8 @@ export function displacementDestinationLegalV7(
   // Revision 19 section 6.2: an Egg cannot be pushed or displaced. Map
   // curiosities (section 8.6): nothing moves the neutral Monster.
   if (moved.form === "EGG" || isNeutralOwnerV7(moved.ownerId)) return false;
+  // The ninth unit (7r55): Rock Hard, nothing moves a Jawbreaker.
+  if (unitIsImmovableV7(state, moved)) return false;
   // The frozen sea (naval branch sections 8.3 and 8.9): no Push, Knockback,
   // or pull moves an icebound unit; a land-form unit may be moved onto ice
   // and a unit afloat never.
@@ -1445,7 +1507,9 @@ export function knockbackStateV7(
     !survives ||
     defender.form === "EGG" ||
     defender.role === "JUGGERNAUT" ||
-    unitCapacitySlotsV7(state, defender) !== 1
+    unitCapacitySlotsV7(state, defender) !== 1 ||
+    // The ninth unit (7r55): Rock Hard.
+    unitIsImmovableV7(state, defender)
   )
     return "BLOCKED";
   const destination = knockbackDestinationV7(attacker.at, defender.at);
@@ -1472,6 +1536,8 @@ function pushState(
   if (
     !survivesMelee ||
     defender.form === "EGG" ||
+    // The ninth unit (7r55): Rock Hard.
+    unitIsImmovableV7(state, defender) ||
     (!unitRoleRuleV7(state, attacker).abilities.includes("PUSH") &&
       !attackIsChargeV7(state, attacker))
   )

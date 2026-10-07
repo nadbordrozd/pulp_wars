@@ -94,9 +94,9 @@ describe("Candy Showcase (section 2.6)", () => {
     const { state } = created;
     const candy = seatIdV7(state, 0);
     const own = state.units.filter((unit) => unit.ownerId === candy);
-    // (Every role but the Human Swordsman of tuning 5.)
+    // (Every role: the Jawbreaker is the heavy line role since 7r55.)
     expect(own.map((unit) => unit.role).sort()).toEqual(
-      UNIT_ROLE_IDS_V7.filter((role) => role !== "SWORDSMAN").sort(),
+      [...UNIT_ROLE_IDS_V7].sort(),
     );
     for (const unit of own)
       expect([unit.hp, unit.kills], unit.role).toEqual([
@@ -116,15 +116,17 @@ describe("Candy Showcase (section 2.6)", () => {
     // Every land unit may Rush on the first turn; every offer is accepted.
     const offered = queryPlayerCommandsV7(viewForV7(state, candy));
     const rushes = offered.filter((command) => command.kind === "SUGAR_RUSH");
-    expect(rushes).toHaveLength(8);
+    expect(rushes).toHaveLength(9);
     for (const command of offered) {
       const result = applyCommandV7(state, candy, command);
       expect(result.accepted, JSON.stringify(command)).toBe(true);
     }
-    // The same board as any other faction in the seat.
+    // The same board as any other faction in the seat. (A Martian seat:
+    // since the ninth unit, 7r55, a Dwarf seat fields its Steam Tank as
+    // the heavy role on the breakthrough unit's tile.)
     const human = createPlayableGameV7({
       ...showcase,
-      factions: ["DWARF", "ORIGINAL", "UNDEAD", "GOBLIN"],
+      factions: ["MARTIAN", "ORIGINAL", "UNDEAD", "GOBLIN"],
     });
     if (!human.ok) throw new Error(human.error.code);
     expect(state.board).toEqual(human.state.board);
@@ -209,7 +211,8 @@ describe("Candy persistence (section 13)", () => {
       (command) => command.kind === "SUGAR_RUSH",
     );
     for (const command of rushes) play(command);
-    expect(state.sugarRush).toHaveLength(8);
+    // (Nine with the Jawbreaker, 7r55.)
+    expect(state.sugarRush).toHaveLength(9);
     // Save mid-Rush.
     const midSave = createSaveEnvelopeV7(
       { state, replay },

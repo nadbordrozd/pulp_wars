@@ -391,6 +391,9 @@ export function dwarfArmyCountsV7(view: PlayerViewV7): DwarfArmyCountsV7 {
       unit.role === "GUARD" ||
       unit.role === "CATAPULT" ||
       unit.role === "KNIGHT" ||
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Steam Tank is the
+      // heavy line role; the Whirligig took the `KNIGHT` role.
+      unit.role === "SWORDSMAN" ||
       unit.role === "JUGGERNAUT"
     )
       front += 1;
@@ -439,7 +442,9 @@ export function dwarfProductionAdjustmentV7(
       role === "MARKSMAN" ||
       role === "CAPTAIN" ||
       role === "CATAPULT" ||
-      role === "KNIGHT")
+      role === "KNIGHT" ||
+      // The ninth unit (7r55): the Steam Tank in the heavy slot.
+      role === "SWORDSMAN")
       ? DWARF_FIRST_OF_ROLE_BIAS_V7
       : 0;
   switch (role) {
@@ -614,8 +619,11 @@ export function dwarfResearchV7(
     if (blasting !== null) return blasting;
   }
   if (facts.ownedCities < DWARF_SIGNATURE_RESEARCH_CITIES_V7) return null;
+  // The ninth unit (7r55): the Steam Tank (Metallurgy, behind Drill and
+  // Engineering) with the Cannon and the Whirligig, the shortest chain
+  // first.
   return pick(
-    ["CATAPULT", "KNIGHT"],
+    ["SWORDSMAN", "CATAPULT", "KNIGHT"],
     facts.counts.front >= DWARF_LATE_RESEARCH_FRONT_V7
       ? DWARF_RESEARCH_PRIORITY_V7
       : DWARF_EARLY_RESEARCH_PRIORITY_V7,

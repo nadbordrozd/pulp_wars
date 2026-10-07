@@ -246,6 +246,20 @@ export const ARMY_SPLASH_SPACING_VALUE_V7 = 6;
  *   after the Guard's; in a hand-played game the Human seat had seven
  *   technologies in 25 rounds, two of them toward a Catapult it never
  *   bought, and fielded Fighters, Guards, and Marksmen).
+ *
+ * The ninth unit (`pulp_wars-w49.17`, 7r55,
+ * docs/product/RULESET_7_NINTH_UNIT.md): every faction's heavy line unit
+ * (the `SWORDSMAN` role) is at Metallurgy, two technologies behind the
+ * defender's Drill, with Engineering (Mines and Workshops: a growth
+ * technology) on the way. A first pass, not tuned:
+ *
+ * - Humans: unchanged in order (the Champion third); its chain is one
+ *   technology longer (Drill, Engineering, Metallurgy).
+ * - Goblins: the Ogre after the Warboss and before the Scrap Buggy.
+ * - Undead: the Wight after the Necromancer and before the Vampire.
+ * - Martians: the Shock Trooper after the Ray Gunner and before the Tripod.
+ * - Dinosaurs: the Triceratops second, as before, by its new chain; the
+ *   Stegosaurus (Sawmilling, the Triceratops's old chain) after the Spitter.
  */
 export const ARMY_RESEARCH_ROLES_V7: Readonly<
   Partial<Record<FactionIdV7, readonly UnitRoleIdV7[]>>
@@ -268,6 +282,8 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
     "MARKSMAN",
     "CATAPULT",
     "CAPTAIN",
+    // The ninth unit (7r55): the Wight.
+    "SWORDSMAN",
     "KNIGHT",
   ] as const),
   GOBLIN: Object.freeze([
@@ -276,6 +292,8 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
     "GUARD",
     "CATAPULT",
     "CAPTAIN",
+    // The ninth unit (7r55): the Ogre.
+    "SWORDSMAN",
     "KNIGHT",
   ] as const),
   // The Martian pass (`pulp_wars-w49.14`,
@@ -292,6 +310,9 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
   MARTIAN: Object.freeze([
     "GUARD",
     "MARKSMAN",
+    // The ninth unit (7r55): the Shock Trooper, the body in front of the
+    // rays (through Engineering, a growth technology).
+    "SWORDSMAN",
     "CATAPULT",
     "CAPTAIN",
     "RAIDER",
@@ -306,15 +327,27 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
   // with Scouts), the Spitter, the Shaman, the T-Rex. Nesting is researched
   // once an Ankylosaurus is fielded and Wallbreaker once two Triceratops
   // are (`armyResearchTargetV7`).
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Triceratops is the
+  // heavy line role now (Drill, Engineering, Metallurgy) and keeps its
+  // place in the order; the Stegosaurus (the `CATAPULT` role, at
+  // Sawmilling) comes after the Spitter.
   DINOSAUR: Object.freeze([
     "GUARD",
-    "CATAPULT",
+    "SWORDSMAN",
     "RAIDER",
     "MARKSMAN",
+    "CATAPULT",
     "CAPTAIN",
     "KNIGHT",
   ] as const),
 });
+
+/**
+ * The ninth unit (7r55): the role of a Dinosaur seat's Triceratops (the
+ * unit with Charge!), which the Nesting, Wallbreaker, and Planning rules of
+ * `armyResearchTargetV7` name. It was `CATAPULT` until 7r54.
+ */
+export const ARMY_DINOSAUR_CHARGER_ROLE_V7 = "SWORDSMAN" as const;
 
 /**
  * The Dinosaur pass (`pulp_wars-w49.15`). A Dinosaur seat with this many
@@ -705,18 +738,23 @@ export const ARMY_SHARES_V7 = Object.freeze({
   // 15% Spitters (Acid against cover and Walls), a tenth T-Rexes (14 Coins
   // and two slots each). Against two or more hostile ranged, siege, or
   // support units a quarter T-Rexes, which Rampage through them.
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Triceratops is a `LINE`
+  // role now, so the line share holds the Triceratops and the Cavemen
+  // together (the dearer unit of a short class is bought first), and the
+  // siege share is the Stegosaurus's: 40 / 25 / 15 / 10 / 10, and against
+  // fragile enemies 30 / 20 / 15 / 10 / 25. A first guess, not tuned.
   dinosaur: Object.freeze({
-    LINE: 20,
+    LINE: 40,
     DEFENDER: 25,
     RANGED: 15,
-    SIEGE: 30,
+    SIEGE: 10,
     BREAKTHROUGH: 10,
   }),
   dinosaurFragile: Object.freeze({
-    LINE: 15,
+    LINE: 30,
     DEFENDER: 20,
     RANGED: 15,
-    SIEGE: 25,
+    SIEGE: 10,
     BREAKTHROUGH: 25,
   }),
 });

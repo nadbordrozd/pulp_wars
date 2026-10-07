@@ -137,7 +137,7 @@ describe("Mountain-born (section 7.1)", () => {
       iceFieldV7(
         [
           { seat: 1, role: "JUGGERNAUT", at: at(4, 3) },
-          { seat: 0, role: "GUARD", at: at(5, 3) },
+          { seat: 0, role: "SWORDSMAN", at: at(5, 3) },
         ],
         { activeSeat: 1, techs: { 0: [...NO_ENGINEERING] } },
       ),
@@ -151,7 +151,7 @@ describe("Mountain-born (section 7.1)", () => {
         [
           {
             seat: 1,
-            role: "CATAPULT",
+            role: "SWORDSMAN",
             at: at(3, 3),
           },
           { seat: 0, role: "FIGHTER", at: at(5, 3) },
@@ -320,7 +320,7 @@ describe("Sweep and Trample (section 7.5)", () => {
     // center: hostile there too).
     const state = iceFieldV7(
       [
-        { seat: 0, role: "GUARD", at: at(4, 4) },
+        { seat: 0, role: "SWORDSMAN", at: at(4, 4) },
         { seat: 1, role: "FIGHTER", at: at(5, 4) },
         { seat: 1, role: "GUARD", at: at(5, 3) },
         { seat: 0, role: "FIGHTER", at: at(5, 5) },
@@ -343,7 +343,7 @@ describe("Sweep and Trample (section 7.5)", () => {
     // A Martian Shield absorbs the flank hit first.
     const shielded = iceFieldV7(
       [
-        { seat: 0, role: "GUARD", at: at(4, 4) },
+        { seat: 0, role: "SWORDSMAN", at: at(4, 4) },
         { seat: 1, role: "FIGHTER", at: at(5, 4) },
         { seat: 1, role: "FIGHTER", at: at(5, 3), shield: 1 },
       ],
@@ -363,7 +363,7 @@ describe("Sweep and Trample (section 7.5)", () => {
   it("a flank kill is credited, leaves a Grave, explodes, and never shatters; the Mammoth dying does not stop it", () => {
     const state = iceFieldV7(
       [
-        { seat: 0, role: "GUARD", at: at(4, 4), hp: 1 },
+        { seat: 0, role: "SWORDSMAN", at: at(4, 4), hp: 1 },
         { seat: 1, role: "JUGGERNAUT", at: at(5, 4) },
         {
           seat: 1,
@@ -400,7 +400,7 @@ describe("Sweep and Trample (section 7.5)", () => {
     // Tuning 1 (7r46): without Brittle, whose Breach would ignore the level.
     const base = iceFieldV7(
       [
-        { seat: 0, role: "GUARD", at: at(4, 7) },
+        { seat: 0, role: "SWORDSMAN", at: at(4, 7) },
         { seat: 1, role: "FIGHTER", at: at(3, 7) },
         { seat: 1, role: "FIGHTER", at: at(3, 6) },
       ],
@@ -551,7 +551,7 @@ describe("previews and offers (section 11)", () => {
         { seat: 0, role: "RAIDER", at: at(4, 3) },
         { seat: 0, role: "CAPTAIN", at: at(4, 4) },
         { seat: 0, role: "FIGHTER", at: at(3, 3) },
-        { seat: 0, role: "GUARD", at: at(3, 4) },
+        { seat: 0, role: "SWORDSMAN", at: at(3, 4) },
         { seat: 0, role: "CATAPULT", at: at(3, 5) },
         { seat: 1, role: "FIGHTER", at: at(5, 3) },
         { seat: 1, role: "FIGHTER", at: at(5, 4) },

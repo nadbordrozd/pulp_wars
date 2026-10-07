@@ -9,7 +9,10 @@ implements is
 [Part C of the heavy slot and economy design](RULESET_7_DESIGN_HEAVY_SLOT_AND_ECONOMY.md#part-c-the-economy-rejig).
 The ninth unit of every faction and the technology renames of that design
 (Parts A and B) are the next bead, `pulp_wars-w49.17`, and are not in
-this identity.
+this identity; they are [the ninth unit](RULESET_7_NINTH_UNIT.md) of
+`pulp-wars-poc-7r55`. Where this document names the Swordsman, Engineering
+as its technology, or a technology by its name of that time, the current
+rules say Champion, Metallurgy, and the display names of `7r55`.
 
 **What the user asked for** (2026-10-07):
 

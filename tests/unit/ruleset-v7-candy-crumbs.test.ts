@@ -219,7 +219,8 @@ describe("Crumbs are left by a fallen Candy unit (section 6.1)", () => {
       expect(deathLeavesCrumbsV7(state, dead("FIGHTER"), cause), cause).toBe(
         false,
       );
-    // The seven trainable land roles, never the Golem or a boat.
+    // The eight trainable land roles (the Jawbreaker since the ninth unit,
+    // 7r55), never the Golem or a boat.
     expect(
       UNIT_ROLE_IDS_V7.filter((role) =>
         deathLeavesCrumbsV7(state, dead(role), "ATTACK"),
@@ -232,6 +233,7 @@ describe("Crumbs are left by a fallen Candy unit (section 6.1)", () => {
       "CAPTAIN",
       "CATAPULT",
       "KNIGHT",
+      "SWORDSMAN",
     ]);
     // Not embarked, not on water, not on a settlement site, not owned by
     // another seat (a mind-controlled Candy unit's owner is its controller).

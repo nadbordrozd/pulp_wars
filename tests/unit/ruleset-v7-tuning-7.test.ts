@@ -50,7 +50,7 @@ import {
 } from "../../src/ai/v7-campaign";
 
 /**
- * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r54`;
+ * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r55`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 14, the Normal AI of a
  * Human, Undead, or Goblin seat): it commits against the enemy in front of
  * it and keeps committing after the line breaks, every faction's seat
@@ -194,7 +194,7 @@ const whereIs = (state: GameStateV7, id: UnitId): CoordV7 => {
 
 describe("tuning 7 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
   });
 });
 
@@ -294,7 +294,9 @@ describe("1. commit: a position is local, and numbers are numbers", () => {
     // The city's four defenders and the Swordsman two tiles north of them:
     // the chain beyond four tiles of the seed is another position.
     expect(front?.hostileIds).toHaveLength(5);
-    expect(front).toMatchObject({ mode: "COMMIT", hostile: 169, near: 258 });
+    // (The Champion costs 6 Coins since the ninth unit, 7r55: its weight
+    // is 39, was 35; three of them here, 181 for 169.)
+    expect(front).toMatchObject({ mode: "COMMIT", hostile: 181, near: 258 });
     expect(new Set(army.modes.map((entry) => entry.mode))).toEqual(
       new Set(["COMMIT"]),
     );
@@ -394,7 +396,7 @@ describe("1. commit: a position is local, and numbers are numbers", () => {
     const front = armyOf(state).positions.find(
       (position) => position.ownIds.length > 0,
     );
-    expect(front).toMatchObject({ mode: "COMMIT", hostile: 209, near: 298 });
+    expect(front).toMatchObject({ mode: "COMMIT", hostile: 230, near: 298 });
     expect(front?.ownIds).toHaveLength(14);
     expect(front?.hostileIds).toHaveLength(5);
     // The round-6 reading: ten enemy units in one position (384), and by
@@ -1569,7 +1571,8 @@ describe("7. the strategic choice", () => {
 
 describe("the defects of the round-6 hand play", () => {
   it("the staged Field Defenses of the breakthrough labs fortify the Guards on them", () => {
-    expect(LAB_BREAKTHROUGH_V7.revision).toBe(2);
+    // (Revision 3 since the ninth unit, 7r55: the player owns Metallurgy.)
+    expect(LAB_BREAKTHROUGH_V7.revision).toBe(3);
     expect(LAB_BREAKTHROUGH_CAPITAL_V7).toEqual(at(4, 7));
     for (const id of [
       "LAB_BREAKTHROUGH",
@@ -1577,7 +1580,7 @@ describe("the defects of the round-6 hand play", () => {
       "LAB_BREAKTHROUGH_UNDEAD",
     ]) {
       expect(MISSION_REGISTRY_V7.find((item) => item.id === id)?.revision).toBe(
-        2,
+        3,
       );
       const state = breakthroughLabV7(id);
       const player = state.humanPlayerId;
@@ -1665,8 +1668,9 @@ describe("the defects of the round-6 hand play", () => {
         playerId: owner,
         unitId: unit.id,
         role: "SWORDSMAN",
-        // Half the public price of the role: nothing private.
-        coinDelta: 2,
+        // Half the public price of the role: nothing private (the
+        // Champion costs 6 Coins since 7r55).
+        coinDelta: 3,
       },
     ]);
     expect(corePresentationPlanV7(viewForV7(state, observer), seen)).toEqual([

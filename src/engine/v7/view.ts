@@ -49,6 +49,7 @@ import type {
   MatchOutcomeV7,
   MatchSetupV7,
   MindControlCooldownV7,
+  NinthUnitStateV7,
   PendingChoiceV7,
   PlayerColorV7,
   PlayerStateV7,
@@ -352,6 +353,13 @@ export interface PlayerViewV7 {
    * targets a Caveman of the active seat has Pack Hunt against).
    */
   readonly huntedThisTurn: readonly UnitId[];
+  /**
+   * The ninth unit (`pulp_wars-w49.17`, 7r55): the marked Graves on tiles
+   * the viewer has explored (public like Graves, with the seat the Wight
+   * returns for), the risen Wights and Cracked units among the visible
+   * units, and the struck pairs of visible attackers.
+   */
+  readonly ninthUnit: NinthUnitStateV7;
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }
@@ -939,6 +947,24 @@ export function viewForV7(
     huntedThisTurn: state.huntedThisTurn.filter((unitId) =>
       visibleUnitIds.has(unitId),
     ),
+    // The ninth unit (7r55): see `PlayerViewV7.ninthUnit`.
+    ninthUnit: {
+      wightGraves: state.ninthUnit.wightGraves
+        .filter((entry) => explored.has(key(entry.at)))
+        .map((entry) => ({ at: entry.at, ownerId: entry.ownerId })),
+      risenWights: state.ninthUnit.risenWights.filter((unitId) =>
+        visibleUnitIds.has(unitId),
+      ),
+      crackedThisTurn: state.ninthUnit.crackedThisTurn.filter((unitId) =>
+        visibleUnitIds.has(unitId),
+      ),
+      struckThisTurn: state.ninthUnit.struckThisTurn
+        .filter((entry) => visibleUnitIds.has(entry.unitId))
+        .map((entry) => ({
+          unitId: entry.unitId,
+          targetUnitId: entry.targetUnitId,
+        })),
+    },
     pendingChoices: state.pendingChoices.filter((choice) =>
       state.cities.some(
         (city) => city.id === choice.cityId && city.ownerId === viewerId,

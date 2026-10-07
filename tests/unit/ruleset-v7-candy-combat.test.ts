@@ -515,10 +515,14 @@ describe("Bounce (section 8)", () => {
     // A T-Rex (two slots) and a Mothership (a flyer) are bounced.
     for (const [faction, role] of [
       ["DINOSAUR", "KNIGHT"],
-      ["DINOSAUR", "CATAPULT"],
+      // (The ninth unit, 7r55: the Triceratops, the Steam Tank, and the
+      // Mammoth are the heavy role of their factions.)
+      ["DINOSAUR", "SWORDSMAN"],
       ["MARTIAN", "KNIGHT"],
+      ["DWARF", "SWORDSMAN"],
       ["DWARF", "KNIGHT"],
       ["DWARF", "GUARD"],
+      ["ICE_FOLK", "SWORDSMAN"],
       ["ICE_FOLK", "GUARD"],
       ["GOBLIN", "KNIGHT"],
       ["UNDEAD", "KNIGHT"],
@@ -617,7 +621,7 @@ describe("Bounce (section 8)", () => {
   it("bounces a Triceratops back to the tile its Charge! follow started from", () => {
     const state = candyFieldV7(
       [
-        { seat: 1, role: "CATAPULT", at: at(5, 2), activation: movedV7(2) },
+        { seat: 1, role: "SWORDSMAN", at: at(5, 2), activation: movedV7(2) },
         { seat: 0, role: "GUARD", at: at(5, 3) },
       ],
       { factions: ["CANDY", "DINOSAUR"], activeSeat: 1 },

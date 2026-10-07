@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r53 and preserves the r54 save", () => {
+  it("cleans obsolete keys through v7r54 and preserves the r55 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r53.current",
+      "pulpWars.save.v7r54.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(53);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(54);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -681,19 +681,20 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         true,
         ["ATTACK", "SUBMERGED", "TORPEDO"],
       ],
-      // Tuning 5 (`pulp_wars-w49.4`): the Human Swordsman's role, which
-      // the Undead tree never unlocks and no Undead seat trains (no cost).
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Wight, the Undead
+      // heavy line unit, at Metallurgy (6 Coins, 14 HP, Attack 3, Defense
+      // 2.5).
       SWORDSMAN: [
-        "Swordsman",
-        null,
-        15,
-        7,
+        "Wight",
+        6,
+        14,
+        6,
         5,
         1,
         1,
         1,
         1,
-        "ENGINEERING",
+        "METALLURGY",
         true,
         ["ATTACK", "CAPTURE"],
       ],
@@ -775,8 +776,9 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       ["Battleship", 16, 25, 12, 8, 2, 3, 1, "ATTACK"],
       // The naval branch (`pulp_wars-5ti.2`).
       ["Submarine", 9, 12, 8, 4, 2, 1, 1, "ATTACK+SUBMERGED+TORPEDO"],
-      // Tuning 5 (`pulp_wars-w49.4`).
-      ["Swordsman", 5, 15, 7, 5, 1, 1, 1, "ATTACK+CAPTURE"],
+      // Tuning 5 (`pulp_wars-w49.4`); the Champion at 6 Coins since the
+      // ninth unit (`pulp_wars-w49.17`, 7r55).
+      ["Champion", 6, 15, 7, 5, 1, 1, 1, "ATTACK+CAPTURE"],
     ]);
   });
 
@@ -838,10 +840,9 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       SHARED_BASELINE_NODES_V7.map((node) => node.id),
       "UNDEAD",
     );
+    // (The ninth unit, 7r55: every faction has the heavy line role.)
     expect(all.trainableRoles).toEqual(
-      UNIT_ROLE_IDS_V7.filter(
-        (role) => role !== "JUGGERNAUT" && role !== "SWORDSMAN",
-      ),
+      UNIT_ROLE_IDS_V7.filter((role) => role !== "JUGGERNAUT"),
     );
     expect(all.forestMovementFreedomRoles).toEqual(["RAIDER", "MARKSMAN"]);
   });
@@ -876,6 +877,8 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       SCOUTING: "Ghoul",
       CHIVALRY: "Vampire",
       DRILL: "Zombie",
+      // The ninth unit (7r55).
+      METALLURGY: "Wight",
       SHORECRAFT: "Patrol Boat",
       NAVAL_ENGINEERING: "Battleship",
       SUBMERSIBLES: "Submarine",
@@ -887,8 +890,8 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       SCOUTING: "Raider",
       CHIVALRY: "Knight",
       DRILL: "Guard",
-      // Tuning 5 (`pulp_wars-w49.4`): the Human tree alone.
-      ENGINEERING: "Swordsman",
+      // The ninth unit (7r55): the Champion, at Metallurgy.
+      METALLURGY: "Champion",
       SHORECRAFT: "Patrol Boat",
       NAVAL_ENGINEERING: "Battleship",
       SUBMERSIBLES: "Submarine",
@@ -1924,8 +1927,18 @@ describe("ruleset-7 all-Human parity digests", () => {
           torpedo,
           iceCover,
           icebound,
+          shockDamage,
+          crackApplied,
+          frostbiteApplied,
           ...previewWithoutSplash
         } = event.preview;
+        // The ninth unit (`pulp_wars-w49.17`, 7r55): three neutral fields
+        // (no Human unit has a Shock Field, cracks, or frostbites).
+        expect([shockDamage, crackApplied, frostbiteApplied]).toEqual([
+          0,
+          false,
+          false,
+        ]);
         // The frozen sea (pulp_wars-5ti.3): two neutral fields.
         expect([iceCover, icebound]).toEqual([false, false]);
         // The naval branch (pulp_wars-5ti.2): two fields that were neutral
@@ -2136,6 +2149,18 @@ describe("ruleset-7 all-Human parity digests", () => {
               item.length === 0
             )
               return undefined;
+            // The ninth unit (`pulp_wars-w49.17`, 7r55): the empty
+            // `ninthUnit` record of state and view (an all-Human match has
+            // no Wight, Stegosaurus, or Whirligig).
+            if (key === "ninthUnit") {
+              expect(item).toEqual({
+                wightGraves: [],
+                risenWights: [],
+                crackedThisTurn: [],
+                struckThisTurn: [],
+              });
+              return undefined;
+            }
             if (key === "snow" || key === "blizzard" || key === "chill")
               winterValues += 1;
             return item;

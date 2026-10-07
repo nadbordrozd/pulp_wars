@@ -77,8 +77,8 @@ describe("the public Wail preview equals the Wail (pulp_wars-7g3.9)", () => {
     const state = iceFieldV7(
       [
         { seat: 1, role: "MARKSMAN", at: at(6, 6) },
-        { seat: 0, role: "GUARD", at: at(7, 7) },
-        { seat: 0, role: "GUARD", at: at(6, 5) },
+        { seat: 0, role: "SWORDSMAN", at: at(7, 7) },
+        { seat: 0, role: "SWORDSMAN", at: at(6, 5) },
       ],
       { factions: ["ICE_FOLK", "UNDEAD"], activeSeat: 1, techs: { 0: [] } },
     );
@@ -139,7 +139,7 @@ describe("the public Wail preview equals the Wail (pulp_wars-7g3.9)", () => {
     const visible = iceFieldV7(
       [
         { seat: 0, role: "CAPTAIN", at: at(5, 2) },
-        { seat: 0, role: "GUARD", at: at(6, 3) },
+        { seat: 0, role: "SWORDSMAN", at: at(6, 3) },
         { seat: 0, role: "FIGHTER", at: at(4, 4) },
         { seat: 0, role: "FIGHTER", at: at(7, 7) },
         { seat: 1, role: "MARKSMAN", at: at(6, 5) },

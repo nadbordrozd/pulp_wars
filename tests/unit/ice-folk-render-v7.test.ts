@@ -195,7 +195,11 @@ const drawIndexes = (
 describe("Ice Folk art wiring (ICE_FOLK.md wiring steps 1-3, 5)", () => {
   it("resolves the unit, city, portrait, technology and command subjects", () => {
     expect(
-      unitArtSubjectV7({ role: "GUARD", form: "LAND", faction: "ICE_FOLK" }),
+      unitArtSubjectV7({
+        role: "SWORDSMAN",
+        form: "LAND",
+        faction: "ICE_FOLK",
+      }),
     ).toBe("UNIT:ICE_FOLK:GUARD");
     // Since bead pulp_wars-w5j.3 boats and embarked units are the Ice
     // Folk's own naval subjects.
@@ -228,8 +232,11 @@ describe("Ice Folk art wiring (ICE_FOLK.md wiring steps 1-3, 5)", () => {
     expect(technologySubjectV7("EXPLOSIVES", "ICE_FOLK")).toBe(
       "ICON:TECH:ICE_FOLK:EXPLOSIVES",
     );
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): Drill unlocks the Musk
+    // Ox, whose art slot is the ninth one (a stand-in until its art is
+    // made); the Mammoth keeps the slot its art was made for.
     expect(technologySubjectV7("DRILL", "ICE_FOLK")).toBe(
-      "UNIT:ICE_FOLK:GUARD",
+      "UNIT:ICE_FOLK:SWORDSMAN",
     );
     expect(technologySubjectV7("FORTIFICATION", "ORIGINAL")).toBe(
       "ICON:TECH:FORTIFICATION",

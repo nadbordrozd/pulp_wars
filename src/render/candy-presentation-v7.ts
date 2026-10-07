@@ -32,6 +32,7 @@ import {
   type UnitRoleIdV7,
   cityBarracksV7,
 } from "../engine/index";
+import { ninthUnitHelpRulesV7 } from "./ninth-unit-presentation-v7";
 
 /**
  * Presentation helpers for the Candy faction (docs/product/
@@ -549,6 +550,8 @@ export function candyHelpRulesV7(): readonly (readonly [string, string])[] {
       "Peppermint Surprise",
       `an enemy that eats your Crumbs takes ${PEPPERMINT_DAMAGE_V7} damage.`,
     ],
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): the Jawbreaker's Rock Hard.
+    ...ninthUnitHelpRulesV7("CANDY"),
   ];
 }
 

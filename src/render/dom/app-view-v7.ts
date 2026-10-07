@@ -547,6 +547,7 @@ import {
   sugarRushUnavailableTextV7,
   sugarTossUnavailableTextV7,
 } from "../candy-presentation-v7";
+import { ninthUnitHelpRulesV7 } from "../ninth-unit-presentation-v7";
 import type { CandyPickV7 } from "../canvas/candy-board-plan-v7";
 import {
   AT_SEA_MOVE_TEXT_V7,
@@ -5953,6 +5954,11 @@ export class Ruleset7DomAppView {
                         `Zombie bites make your units rise as enemy Zombies when they die; ${factionNameV7(view.viewer.faction)}s can't cure bites.`,
                       ]),
                   "Your units can't strike back at a Vampire's attack.",
+                  // The ninth unit (`pulp_wars-w49.17`, 7r55): Rise Again.
+                  ...ninthUnitHelpRulesV7("UNDEAD").map(
+                    ([name, sentence]) =>
+                      `${name}: ${sentence} Stand a unit on the marked Grave to stop it.`,
+                  ),
                 ]
               : []),
           ]),
@@ -6597,7 +6603,7 @@ export class Ruleset7DomAppView {
               ? "Done! Build your monument."
               : state === "available"
                 ? `${current} / ${required}`
-                : `Needs ${title(tech ?? "")}`,
+                : `Needs ${tech === null || tech === undefined ? "" : technologyNameV7(tech, view.viewer.faction)}`,
           "v7-achievement-status",
         ),
       );
@@ -10646,7 +10652,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r54",
+    rulesetId: "pulp-wars-poc-7r55",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),

@@ -208,14 +208,21 @@ describe("ruleset-7 revision-20 section 6.3 sturdiness numbers", () => {
     expect(hp("ORIGINAL")).toEqual([12, 12, 12, 17, 10, 10, 13, 40]);
     expect(hp("UNDEAD")).toEqual([10, 10, 8, 18, 10, 10, 10, 40]);
     expect(hp("GOBLIN")).toEqual([6, 10, 8, 15, 12, 8, 10, 40]);
-    expect(hp("DINOSAUR")).toEqual([10, 12, 10, 20, 10, 20, 28, 45]);
+    // (The ninth unit, 7r55: the Dinosaur siege role is the Stegosaurus,
+    // 12 HP; the Triceratops, 20, is the heavy role, pinned in
+    // tests/unit/ruleset-v7-ninth-unit.test.ts.)
+    expect(hp("DINOSAUR")).toEqual([10, 12, 10, 20, 10, 12, 28, 45]);
     // The Ice Folk revision (`pulp_wars-7g3.3`) adds a sixth faction with its
     // own numbers (docs/product/RULESET_7_ICE_FOLK.md section 3); its coarse
     // balance (`pulp_wars-7g3.7`) gave the Yeti 9 HP.
-    expect(hp("ICE_FOLK")).toEqual([9, 10, 8, 20, 12, 12, 14, 40]);
+    // (The ninth unit, 7r55: the defender is the Musk Ox, 16; the Mammoth,
+    // 20, is the heavy role.)
+    expect(hp("ICE_FOLK")).toEqual([9, 10, 8, 16, 12, 12, 14, 40]);
     // The Dwarf revision (`pulp_wars-78i.3`) adds a seventh faction
     // (docs/product/RULESET_7_DWARVES.md section 3).
-    expect(hp("DWARF")).toEqual([12, 8, 10, 16, 10, 10, 16, 36]);
+    // (The ninth unit, 7r55: the breakthrough unit is the Whirligig, 12;
+    // the Steam Tank, 16, is the heavy role.)
+    expect(hp("DWARF")).toEqual([12, 8, 10, 16, 10, 10, 12, 36]);
     // The Candy revision (`pulp_wars-jdb.3`) adds an eighth faction
     // (docs/product/RULESET_7_CANDY.md section 3).
     expect(hp("CANDY")).toEqual([10, 10, 8, 18, 10, 10, 14, 40]);

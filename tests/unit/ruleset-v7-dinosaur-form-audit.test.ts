@@ -557,7 +557,15 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // embarked unit, and a boat must fail its state check).
     "src/engine/v7/state-schema.ts": 8,
     "src/engine/v7/dwarf-reducer.ts": 5,
-    "src/engine/v7/dwarf.ts": 1,
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): the attacks a unit has in
+    // a turn (`attackAllowanceV7`: an Egg and an embarked unit have the one
+    // attack of their transport, never a Whirligig's three).
+    "src/engine/v7/dwarf.ts": 2,
+    // The ninth unit: the Shock Field is a land-form defender's (no Martian
+    // unit is an Egg, and an embarked Shock Trooper has no field), and a
+    // Wight marks its Grave only when it dies in land form (an embarked
+    // unit leaves no Grave, and the Undead lay no Egg).
+    "src/engine/v7/ninth-unit.ts": 2,
     "src/engine/v7/wail.ts": 1,
     "src/engine/rules/ruleset-v7.ts": 2,
     // `pulp_wars-c87.5`: the own land units counted for the Shaman training
@@ -633,6 +641,12 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Tuning 5: the army count takes land-form units only (an Egg and an
     // embarked unit are in no fighting class).
     "src/ai/v7-army.ts": 1,
+    // The ninth unit (`pulp_wars-w49.17`): the five positional values (the
+    // Ogre beside a target, the Shock Trooper in front, the Whirligig's
+    // crowd, a marked Grave to stand on, an own Grave to keep off) are for
+    // a land-form mover (an Egg makes no Move, and an embarked unit keeps
+    // the naval rules).
+    "src/ai/v7-ninth-unit.ts": 5,
   };
 
   it("has no unaudited not-LAND form test in the engine or the Normal AI", () => {

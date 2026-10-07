@@ -984,7 +984,10 @@ export function tractorBeamTargetBlockV7(
     unitCapacitySlotsV7(roster, target) !== 1 ||
     // The frozen sea (naval branch section 8.9): no pull moves an icebound
     // unit.
-    unitIsIceboundV7(roster, target)
+    unitIsIceboundV7(roster, target) ||
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): Rock Hard, no pull moves
+    // a land-form Jawbreaker.
+    (target.form === "LAND" && unitRoleMechanicsV7(roster, target).immovable)
   )
     return "TARGET_IMMUNE";
   const distance = chebyshev(puller.at, target.at);

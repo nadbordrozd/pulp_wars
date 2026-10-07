@@ -33,6 +33,14 @@ import type { MissionDefinitionV7 } from "./types";
  * villages lie between the lines. The AI has no directive: it plays the
  * ordinary Normal policy.
  *
+ * Revision 2 (the ninth unit, `pulp_wars-w49.17`, `7r55`): the heavy line
+ * unit of every faction is at Metallurgy. The player's seat owns
+ * Engineering and Metallurgy as well (twelve technologies: its heavy can be
+ * produced; none stands on the board), and the Humans own Metallurgy
+ * (eleven technologies), so that their three Champions (the Swordsmen of
+ * revision 1, 6 Coins each now: 80 Coins of units) can be replaced. The
+ * numbers quoted above are revision 1's.
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  1   .Ge.....v....eG.      v: a neutral village
@@ -99,7 +107,7 @@ const MARTIAN_MID_RESOURCES_V7 = [
 
 export const LAB_MARTIAN_MID_V7: MissionDefinitionV7 = {
   id: "LAB_MARTIAN_MID",
-  revision: 1,
+  revision: 2,
   hidden: true,
   size: 16,
   seed: 20261401,
@@ -137,6 +145,10 @@ export const LAB_MARTIAN_MID_V7: MissionDefinitionV7 = {
         "RAIDING",
         "CHIVALRY",
         "DRILL",
+        // The ninth unit (`pulp_wars-w49.17`, 7r55): the heavy line unit's
+        // technologies (revision 2).
+        "ENGINEERING",
+        "METALLURGY",
       ],
       // Unit slots: 5, 4, 4, 3, 3 (a Mothership fills two).
       cities: [
@@ -189,6 +201,8 @@ export const LAB_MARTIAN_MID_V7: MissionDefinitionV7 = {
         "CHIVALRY",
         "DRILL",
         "ENGINEERING",
+        // The ninth unit (7r55): the Champion is at Metallurgy.
+        "METALLURGY",
       ],
       // Unit slots: 5, 4, 4, 3, 3.
       cities: [

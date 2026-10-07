@@ -26,6 +26,7 @@ import {
   isNavalRoleV7,
   type UnitRoleIdV7,
 } from "../engine/index";
+import { ninthUnitHelpRulesV7 } from "./ninth-unit-presentation-v7";
 import { packHuntAttack2V7 } from "../engine/v7/combat";
 import { technologyNameV7 } from "./goblin-presentation-v7";
 
@@ -229,7 +230,7 @@ export function nestingUnlockTextV7(): string {
  * Section 4.3 unlock text of Wallbreaker. The Dinosaur pass
  * (`pulp_wars-w49.15`, 7r53): the second tile of a Charge! run-up.
  */
-export const WALLBREAKER_UNLOCK_TEXT_V7 = `A ${effectiveRoleRuleV7("CATAPULT", "DINOSAUR").label}'s run-up counts ${RUN_UP_MAXIMUM_TILES_V7} tiles (up to +${chargeRunUpMaximumV7()} Attack); dinosaurs ignore City Walls`;
+export const WALLBREAKER_UNLOCK_TEXT_V7 = `A ${effectiveRoleRuleV7("SWORDSMAN", "DINOSAUR").label}'s run-up counts ${RUN_UP_MAXIMUM_TILES_V7} tiles (up to +${chargeRunUpMaximumV7()} Attack); dinosaurs ignore City Walls`;
 
 /**
  * Section 7.2 "Promote command": the Promotion's maximum HP and full heal
@@ -354,7 +355,7 @@ export function dinosaurHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       CHARGE_LABEL_V7,
-      `a ${dinosaurLabel("CATAPULT")} hits harder after it moved this turn (+${chargeRunUpBaseV7()} Attack; with Wallbreaker +${chargeRunUpBonusV7()} per tile, up to +${chargeRunUpMaximumV7()}); its attack ignores Walls and Field Defense, destroys Field Defense, and pushes a surviving defender back, taking its place.`,
+      `a ${dinosaurLabel("SWORDSMAN")} hits harder after it moved this turn (+${chargeRunUpBaseV7()} Attack; with Wallbreaker +${chargeRunUpBonusV7()} per tile, up to +${chargeRunUpMaximumV7()}); its attack ignores Walls and Field Defense, destroys Field Defense, and pushes a surviving defender back, taking its place.`,
     ],
     [
       "Acid",
@@ -378,7 +379,7 @@ export function dinosaurHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       "Wallbreaker",
-      `with Wallbreaker, a ${dinosaurLabel("CATAPULT")}'s run-up counts ${numberWord(RUN_UP_MAXIMUM_TILES_V7)} tiles, and dinosaurs ignore City Walls when they attack.`,
+      `with Wallbreaker, a ${dinosaurLabel("SWORDSMAN")}'s run-up counts ${numberWord(RUN_UP_MAXIMUM_TILES_V7)} tiles, and dinosaurs ignore City Walls when they attack.`,
     ],
     [
       "Pack Hunt",
@@ -393,6 +394,9 @@ export function dinosaurHelpRulesV7(): readonly (readonly [string, string])[] {
       "Rampage, Pounce, War Drums",
       `a ${dinosaurLabel("KNIGHT")} attacks again after a kill, a ${dinosaurLabel("RAIDER")} gets +1 Attack after moving two tiles, and a ${dinosaurLabel("CAPTAIN")} gives adjacent units +1 Attack on their next attack.`,
     ],
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): the Stegosaurus's
+    // Thagomizer.
+    ...ninthUnitHelpRulesV7("DINOSAUR"),
   ];
 }
 

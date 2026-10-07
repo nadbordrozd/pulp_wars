@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 54;
+const REVISION = 55;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -279,7 +279,8 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(100);
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): WIGHT_RISEN (101).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(101);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1
@@ -1027,6 +1028,8 @@ describe("Martian roster (section 3)", () => {
       "PATROL_BOAT",
       "BATTLESHIP",
       "SUBMARINE",
+      // The ninth unit (7r55): the Shock Trooper.
+      "SWORDSMAN",
     ]);
     // The leaderboard unit count includes controlled units.
     const view = viewForV7(state, seatIdV7(state, 1));
@@ -1106,6 +1109,12 @@ describe("Martian technology (section 4)", () => {
       FORTIFICATION: "Force Fields",
       EXPLOSIVES: "Disintegrator",
       FIELDCRAFT: "Heat Sinks",
+      // The ninth unit (7r55): the nodes named for a building or unit.
+      MILLING: "Solar Arrays",
+      MARKSMANSHIP: "Ray Gunners",
+      SAWMILLING: "Tripods",
+      SCOUTING: "Saucers",
+      CHIVALRY: "Motherships",
     });
   });
 
@@ -1143,10 +1152,8 @@ describe("Martian technology (section 4)", () => {
     // Everything else is the Human table, minus Field Defense.
     const martian = technologyCapabilitiesV7(all, "MARTIAN");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
-    // (The Swordsman of tuning 5 is the Humans' alone.)
-    expect(martian.trainableRoles).toEqual(
-      human.trainableRoles.filter((role) => role !== "SWORDSMAN"),
-    );
+    // (The ninth unit, 7r55: every faction has the heavy line role.)
+    expect(martian.trainableRoles).toEqual(human.trainableRoles);
     expect(martian.roleSightRadius).toEqual(human.roleSightRadius);
     expect(martian.commands).toEqual(
       human.commands.filter((command) => command !== "BUILD_FIELD_DEFENSE"),
@@ -1209,7 +1216,9 @@ describe("Martian technology (section 4)", () => {
         tech !== "FORTIFICATION" &&
         tech !== "EXPLOSIVES" &&
         // The Martian pass (7r52): Fieldcraft is Heat Sinks.
-        tech !== "FIELDCRAFT"
+        tech !== "FIELDCRAFT" &&
+        // The ninth unit (7r55): the nodes named for a building or unit.
+        !Object.hasOwn(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.MARTIAN, tech)
       )
         expect(technologyNameV7(tech, "MARTIAN")).toBe(
           technologyNameV7(tech, "ORIGINAL"),
@@ -1487,7 +1496,8 @@ describe("Martian Showcase (section 2.4)", () => {
           shield: roleMechanicsV7(unit.role, "MARTIAN").shield,
         })),
     );
-    expect(state.shields).toHaveLength(8);
+    // (The ninth unit, 7r55: nine, with the Shock Trooper.)
+    expect(state.shields).toHaveLength(9);
     expect([
       state.cooling,
       state.mindControlled,
@@ -1507,7 +1517,8 @@ describe("Martian Showcase (section 2.4)", () => {
         ]),
     ).toEqual([
       [7, 7],
-      [3, 6],
+      // (7r55: North also homes the Shock Trooper.)
+      [4, 6],
       [3, 6],
     ]);
     // 21: land trade pays 2 Coins (tuning 1, 7r46; 17 before) and since

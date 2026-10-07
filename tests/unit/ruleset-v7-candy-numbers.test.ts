@@ -111,7 +111,8 @@ const UNITS = {
   Vampire: ["UNDEAD", "KNIGHT"],
   "Snow Hunter": ["ICE_FOLK", "MARKSMAN"],
   "Orc Brute": ["GOBLIN", "GUARD"],
-  Mammoth: ["ICE_FOLK", "GUARD"],
+  // (The ninth unit, 7r55: the Mammoth is the Ice Folk heavy role.)
+  Mammoth: ["ICE_FOLK", "SWORDSMAN"],
   "T-Rex": ["DINOSAUR", "KNIGHT"],
   Ankylosaurus: ["DINOSAUR", "GUARD"],
   "Steam Mole": ["DWARF", "GUARD"],

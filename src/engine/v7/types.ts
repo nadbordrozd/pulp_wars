@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r54" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r55" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -65,8 +65,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r51",
   "pulp-wars-poc-7r52",
   "pulp-wars-poc-7r53",
+  "pulp-wars-poc-7r54",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r54.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r55.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -414,6 +415,9 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   // The Candy revision: a fallen Candy unit left Crumbs.
   "CRUMBS_LEFT",
   "BITTEN_UNIT_RISEN",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): a Wight climbed out of its
+  // own Grave at its owner's Start Turn.
+  "WIGHT_RISEN",
   "PLAGUE_CLEARED",
   "CITY_CAPTURED",
   "TREASURE_CAPTURED",
@@ -901,8 +905,61 @@ export interface GameStateV7 {
    * setup has no DINOSAUR seat.
    */
   readonly huntedThisTurn: readonly UnitId[];
+  /**
+   * The ninth unit (`pulp_wars-w49.17`, 7r55,
+   * docs/product/RULESET_7_NINTH_UNIT.md): the stored state of the new
+   * units' mechanics (Rise Again, the Thagomizer, Three Hammers).
+   */
+  readonly ninthUnit: NinthUnitStateV7;
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
+}
+
+/**
+ * The ninth unit (`pulp_wars-w49.17`, 7r55): the stored state of the new
+ * units' mechanics. Every list is empty in a match without the faction
+ * that makes its entries (Undead, Dinosaur, Dwarf).
+ */
+export interface NinthUnitStateV7 {
+  /**
+   * Rise Again: the Graves a Wight will climb out of, sorted by (y, x), at
+   * most one per tile, each on a tile that has a Grave. `ownerId` is the
+   * Undead seat the Wight returns for.
+   */
+  readonly wightGraves: readonly WightGraveV7[];
+  /**
+   * Rise Again: the units on the board that climbed out of a Grave (they do
+   * not rise a second time), sorted.
+   */
+  readonly risenWights: readonly UnitId[];
+  /**
+   * The Thagomizer: the units Cracked during the active seat's turn,
+   * sorted. Emptied at its End Turn.
+   */
+  readonly crackedThisTurn: readonly UnitId[];
+  /**
+   * Three Hammers: the (attacker, target) pairs of the attacks made this
+   * turn by units that may attack more than once (the Whirligig), sorted by
+   * `unitId` then `targetUnitId`. Emptied at the End Turn.
+   */
+  readonly struckThisTurn: readonly StruckEntryV7[];
+}
+export interface WightGraveV7 {
+  readonly at: CoordV7;
+  readonly ownerId: PlayerId;
+}
+export interface StruckEntryV7 {
+  readonly unitId: UnitId;
+  readonly targetUnitId: UnitId;
+}
+/** The empty ninth-unit state (a new match, a mission, a fixture). */
+export function emptyNinthUnitStateV7(): NinthUnitStateV7 {
+  return {
+    wightGraves: [],
+    risenWights: [],
+    crackedThisTurn: [],
+    struckThisTurn: [],
+  };
 }
 
 /**

@@ -188,7 +188,7 @@ describe("ruleset-7 revision-20 Nesting city slot", () => {
     expect(assignedUnitCountV7(laid.state, after.id)).toBe(4);
     // A two-slot Egg still needs two free slots.
     expect(
-      previewLayEggV7(viewForV7(researched, actor), after.id, "CATAPULT"),
+      previewLayEggV7(viewForV7(researched, actor), after.id, "SWORDSMAN"),
     ).toMatchObject({ slots: 2, unavailableReason: "CITY_CAPACITY_FULL" });
     // The opponent's capacity is untouched.
     expect(cityUnitCapacityV7(researched, cityOfV7(researched, 1))).toBe(3);
@@ -271,9 +271,10 @@ describe("ruleset-7 revision-20 Nesting city slot", () => {
           assignedUnitCountV7(state, city.id),
           cityUnitCapacityV7(state, city),
         ]);
+    // (The ninth unit, 7r55: North also homes the Stegosaurus, 4 of 7.)
     expect(slots(0)).toEqual([
       [8, 8],
-      [3, 7],
+      [4, 7],
       [3, 7],
     ]);
     // Human: level + 1 + Planning; Goblin adds Warrens; no Nesting slot.
@@ -377,7 +378,8 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
     expect(text(0, "FORTIFICATION")).toEqual([
       "Eggs have +4 HP; +1 unit slot in every city",
     ]);
-    expect(text(0, "SAWMILLING")).toContain("Triceratops Egg (Charge!)");
+    // (The ninth unit, 7r55: the Triceratops is at Metallurgy.)
+    expect(text(0, "METALLURGY")).toContain("Triceratops Egg (Charge!)");
   });
 
   /** The attack of `role` from (7, 8) (or two tiles away) on the center. */
@@ -465,7 +467,7 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
     // Moot for the Triceratops (Charge! removes every level) and for the
     // Spitter (Acid removes cover and fortification and keeps `acid`).
     for (const wallbreaker of [false, true]) {
-      expect(onWalls("CATAPULT", { wallbreaker }).combat).toMatchObject({
+      expect(onWalls("SWORDSMAN", { wallbreaker }).combat).toMatchObject({
         fortificationLevel: 0,
         fortificationIgnored: 2,
       });

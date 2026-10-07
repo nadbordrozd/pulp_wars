@@ -991,6 +991,8 @@ export function candyArmyCountsV7(view: PlayerViewV7): CandyArmyCountsV7 {
       unit.role === "MARKSMAN" ||
       unit.role === "GUARD" ||
       unit.role === "KNIGHT" ||
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Jawbreaker.
+      unit.role === "SWORDSMAN" ||
       unit.role === "JUGGERNAUT"
     )
       front += 1;
@@ -1023,7 +1025,9 @@ export function candyProductionAdjustmentV7(
       role === "MARKSMAN" ||
       role === "CAPTAIN" ||
       role === "CATAPULT" ||
-      role === "KNIGHT")
+      role === "KNIGHT" ||
+      // The ninth unit (7r55): the Jawbreaker.
+      role === "SWORDSMAN")
       ? CANDY_FIRST_OF_ROLE_BIAS_V7
       : 0;
   switch (role) {
@@ -1134,8 +1138,11 @@ export function candyResearchV7(
     if (sawmilling !== null) return sawmilling;
   }
   if (facts.ownedCities < 2) return null;
+  // The ninth unit (7r55): the Jawbreaker (Metallurgy, behind the
+  // Marshmallow's Drill and Engineering) before the Chocolate Bunny.
   return (
     role("GUARD", CANDY_EARLY_RESEARCH_PRIORITY_V7) ??
+    role("SWORDSMAN", CANDY_EARLY_RESEARCH_PRIORITY_V7) ??
     role("KNIGHT", CANDY_EARLY_RESEARCH_PRIORITY_V7) ??
     unlock("PEPPERMINT_SURPRISE", CANDY_EARLY_RESEARCH_PRIORITY_V7)
   );

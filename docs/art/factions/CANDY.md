@@ -710,3 +710,29 @@ Decided in bead `pulp_wars-jdb.5`:
 - **Every recipe but the apron edit was generated with the show's name in
   the negative list** (the stored requests keep it); no sample showed a
   likeness. New recipes use the generic wording.
+
+## Ninth unit: the Jawbreaker (bead `pulp_wars-w49.17`, stand-in art)
+
+Ruleset `7r55` gives every faction a ninth land unit ([what was
+built](../../product/RULESET_7_NINTH_UNIT.md)). The Candy one with no art of
+its own is the **Jawbreaker** (engine role `SWORDSMAN`). **It has no art
+yet.** No PixelLab call was made for it.
+
+- **Art slot.** `UNIT:CANDY:SWORDSMAN` and `PORTRAIT:CANDY:SWORDSMAN`: the
+  ninth art slot of the faction (`unitArtRoleV7` in
+  `src/assets/chibi-art-v7.ts`). No raster is registered for either subject.
+- **Stand-in.** Until an art bead registers them, both fall back to the
+  Marshmallow (`UNIT:CANDY:GUARD`, `PORTRAIT:CANDY:GUARD`) through
+  `chibiFallbackSubjectV7` (`NINTH_UNIT_STAND_INS_V7`). The board marks the
+  piece with a steel disc lettered **J** where the faction badges go
+  (`drawStandInBadgeV7`), and the Gallery shows its stand-in mark.
+- **What the art bead must make.** One board sprite and one 48 x 48 portrait
+  in this fragment's direction: A huge striped hard-candy ball with a scowling
+  face and stubby arms, swinging a rock-candy mace, a chip out of its shell.
+- **Notes for that bead.** A round, heavy silhouette (nothing moves it); it
+  must not read as a Gumball (the Gumball Gunner's shot) or as the Marshmallow.
+- **When the art lands.** Register the two subjects in this faction's
+  direction manifest, delete the faction's entry from `NINTH_UNIT_STAND_INS_V7`
+  (the fallback and the letter badge go with it), regenerate the unit shadow
+  measurements, and update the stand-in assertions in
+  `tests/unit/ruleset-v7-ninth-unit.test.ts`.

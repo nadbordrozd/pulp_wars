@@ -555,3 +555,35 @@ overlay"); each decision can be overruled:
   Dwarf ships are land units on water (the other six fleets are real naval
   units from the live registry), so they get the live look's faint ground
   shadow, which a real ship afloat does not.
+
+## Ninth unit: the Whirligig (bead `pulp_wars-w49.17`, stand-in art)
+
+Ruleset `7r55` gives every faction a ninth land unit ([what was
+built](../../product/RULESET_7_NINTH_UNIT.md)). The Dwarf one with no art of
+its own is the **Whirligig** (engine role `KNIGHT`). **It has no art yet.** No
+PixelLab call was made for it.
+
+- **Art slot.** `UNIT:DWARF:SWORDSMAN` and `PORTRAIT:DWARF:SWORDSMAN`: the
+  ninth art slot of the faction (`unitArtRoleV7` in
+  `src/assets/chibi-art-v7.ts`). No raster is registered for either subject.
+- **Stand-in.** Until an art bead registers them, both fall back to the
+  Clockwork Gunner (`UNIT:DWARF:MARKSMAN`, `PORTRAIT:DWARF:MARKSMAN`) through
+  `chibiFallbackSubjectV7` (`NINTH_UNIT_STAND_INS_V7`). The board marks the
+  piece with a steel disc lettered **W** where the faction badges go
+  (`drawStandInBadgeV7`), and the Gallery shows its stand-in mark.
+- **What the art bead must make.** One board sprite and one 48 x 48 portrait
+  in this fragment's direction: A wind-up spinning top of soot-black iron on one
+  wheel, a big copper key in its back, three hammers on chains flying out around
+  it, the green lamp on top.
+- **Notes for that bead.** A construct: the green lamp is the clockwork mark
+  it shares with the Clockwork Gunner and the Brass Titan. Three hammers, not
+  two and not four (Three Hammers is the rule).
+- **When the art lands.** Register the two subjects in this faction's
+  direction manifest, delete the faction's entry from `NINTH_UNIT_STAND_INS_V7`
+  (the fallback and the letter badge go with it), regenerate the unit shadow
+  measurements, and update the stand-in assertions in
+  `tests/unit/ruleset-v7-ninth-unit.test.ts`.
+
+The Steam Tank is the heavy line role now (`SWORDSMAN`); its rasters, prompts
+and generation records stay under the art slot they were made for,
+`UNIT:DWARF:KNIGHT` and `PORTRAIT:DWARF:KNIGHT`.

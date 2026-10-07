@@ -446,6 +446,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "at",
     "homeCityId",
   ],
+  WIGHT_RISEN: ["kind", "playerId", "unitId", "at", "hp"],
   GRAVE_CREATED: ["kind", "at"],
   PLAGUE_CLEARED: ["kind", "unitIds"],
   CITY_CAPTURED: ["kind", "cityId", "from", "to"],
@@ -1515,6 +1516,13 @@ function validPayload(
         parseCoordV7(e.at) !== null &&
         (e.homeCityId === null || id(e.homeCityId))
       );
+    case "WIGHT_RISEN":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        parseCoordV7(e.at) !== null &&
+        isPositiveSafeIntegerV7(e.hp)
+      );
     case "GRAVE_CREATED":
       return parseCoordV7(e.at) !== null;
     case "PLAGUE_CLEARED":
@@ -1604,6 +1612,9 @@ function combat(input: unknown): boolean {
       "torpedo",
       "iceCover",
       "icebound",
+      "shockDamage",
+      "crackApplied",
+      "frostbiteApplied",
     ])
   )
     return false;
@@ -1656,7 +1667,20 @@ function combat(input: unknown): boolean {
     [input.defenderShieldDamage, input.attackerShieldDamage].every(
       (item) => nn(item) && Number(item) <= SHIELD_CAP_V7,
     ) &&
-    (input.attackerShieldDamage === 0 || input.retaliation === true) &&
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): a Shock Field hits the
+    // attacker (its Shield first) with or without a retaliation, never for
+    // more than the attacker takes; a Crack needs a surviving target and
+    // Frostbite a surviving attacker.
+    nn(input.shockDamage) &&
+    Number(input.shockDamage) <=
+      Number(input.damageToAttacker) + Number(input.attackerShieldDamage) &&
+    typeof input.crackApplied === "boolean" &&
+    typeof input.frostbiteApplied === "boolean" &&
+    (input.crackApplied !== true || input.defenderDies === false) &&
+    (input.frostbiteApplied !== true || input.attackerDies === false) &&
+    (input.attackerShieldDamage === 0 ||
+      input.retaliation === true ||
+      Number(input.shockDamage) > 0) &&
     // The Ice Folk revision (section 11): a Shatter kills the defender with
     // no retaliation; a Rockfall is a ranged attack; Snow cover is a cover.
     [
@@ -1672,7 +1696,7 @@ function combat(input: unknown): boolean {
     (input.shatters !== true ||
       (input.defenderDies === true &&
         input.retaliation === false &&
-        input.attackerDies === false)) &&
+        (input.attackerDies === false || Number(input.shockDamage) > 0))) &&
     // `pulp_wars-1wy.3`: Snow cover is `SNOW_COVER_V7` (x 1.25).
     (input.snowCover !== true ||
       (input.defenseBonusNumerator === SNOW_COVER_V7.numerator &&
@@ -2115,7 +2139,9 @@ function chillSource(input: unknown): boolean {
     input === "COLD_SNAP" ||
     input === "COLD_AURA" ||
     // The frozen sea (naval branch section 8.8): Black Ice.
-    input === "BLACK_ICE"
+    input === "BLACK_ICE" ||
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): a Musk Ox's Frostbite.
+    input === "FROSTBITE"
   );
 }
 /**

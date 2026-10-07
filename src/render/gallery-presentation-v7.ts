@@ -247,6 +247,10 @@ function title(value: string): string {
 
 const ROW_LABELS: Readonly<Record<string, string>> = {
   PATROL_BOAT: "Patrol Boat",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the heavy line row, under
+  // the Human unit's name like every other role row (the role ID stays
+  // `SWORDSMAN`).
+  SWORDSMAN: "Champion",
   CITY_1: "City 1",
   CITY_2: "City 2",
   CITY_3: "City 3",
@@ -322,8 +326,9 @@ export function galleryUnitCellV7(
       !factionUnlocksRoleV7(faction, row))
   )
     return { kind: "EMPTY", row, faction, reason: "NO_SHIPS" };
-  // Tuning 5 (`pulp_wars-w49.4`): a role only the Human tree unlocks (the
-  // Swordsman) is no unit of any other faction.
+  // Tuning 5 (`pulp_wars-w49.4`): a role only the Human tree unlocks is no
+  // unit of any other faction (none since the ninth unit, 7r55: every
+  // faction has the heavy line role).
   if (
     row !== "TRANSPORT" &&
     row !== "EGG" &&

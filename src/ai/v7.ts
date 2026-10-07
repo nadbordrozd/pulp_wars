@@ -215,6 +215,7 @@ import {
   ARMY_DINOSAUR_PACK_CAVEMEN_V7,
   ARMY_DINOSAUR_PACK_REACH_V7,
   ARMY_DINOSAUR_STURDY_V7,
+  ARMY_DINOSAUR_CHARGER_ROLE_V7,
   ARMY_NESTING_DEFENDERS_V7,
   ARMY_WALLBREAKER_CHARGERS_V7,
   ARMY_CARRIER_KEEP_OUT_PRIORITY_V7,
@@ -504,6 +505,7 @@ import {
   type DwarfPolicyToolsV7,
   type PlannedDwarfCommandV7,
 } from "./v7-dwarf";
+import { ninthUnitMoveValueV7, ownWightGraveHeldV7 } from "./v7-ninth-unit";
 import {
   BOUNCE_COST_V7,
   CANDY_ROUTINE_MOVE_PRIORITY_V7,
@@ -3613,7 +3615,10 @@ function armyResearchTargetV7(
     // Planning before it put the Triceratops's technology back from round
     // 17 to round 22.)
     if (chosen === null && armyDinosaurCrowdedV7(context)) {
-      const charger = effectiveRoleRuleV7("CATAPULT", faction).technology;
+      const charger = effectiveRoleRuleV7(
+        ARMY_DINOSAUR_CHARGER_ROLE_V7,
+        faction,
+      ).technology;
       const slots =
         toward("FORTIFICATION") ??
         (charger !== null && view.viewer.researchedTechs.includes(charger)
@@ -3689,7 +3694,7 @@ function armyResearchTargetV7(
               unit.role === wanted,
           ).length;
         if (
-          role === "CATAPULT" &&
+          role === ARMY_DINOSAUR_CHARGER_ROLE_V7 &&
           fielded("GUARD") >= ARMY_NESTING_DEFENDERS_V7
         )
           chosen = toward("FORTIFICATION");
@@ -3698,8 +3703,8 @@ function armyResearchTargetV7(
         // Triceratops for fifteen rounds never came to it.
         else if (
           role !== "GUARD" &&
-          role !== "CATAPULT" &&
-          fielded("CATAPULT") >= ARMY_WALLBREAKER_CHARGERS_V7
+          role !== ARMY_DINOSAUR_CHARGER_ROLE_V7 &&
+          fielded(ARMY_DINOSAUR_CHARGER_ROLE_V7) >= ARMY_WALLBREAKER_CHARGERS_V7
         )
           chosen = toward("EXPLOSIVES");
         // Planning (a unit slot in every city) before the T-Rex, which
@@ -11458,6 +11463,23 @@ function scoreCommandWithContext(
     immediateValue = devour.heal * 8;
   }
 
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): a Raise Dead or a Devour
+  // that would consume the Grave an own Wight climbs out of is held, unless
+  // an enemy could stand on that Grave first (`ownWightGraveHeldV7`).
+  if (
+    (command.kind === "RAISE_DEAD" || command.kind === "DEVOUR") &&
+    actor !== undefined &&
+    view.ninthUnit.wightGraves.length > 0 &&
+    ownWightGraveHeldV7(
+      view,
+      command.kind === "DEVOUR"
+        ? [actor.at]
+        : raiseDeadGravesV7(view, actor.id),
+      (owner) => isHostile(view, owner),
+    )
+  )
+    priority = -1;
+
   if (command.kind === "WAIL" && actor !== undefined) {
     const wail = offeredWailSummaryV7(view, actor.id, (unit) =>
       targetStrategicValue(view, unit.id, context.lookup),
@@ -11826,6 +11848,13 @@ function scoreCommandWithContext(
       strategicValue += candy.strategic;
       objectiveValue += candy.objective;
     }
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): where an Ogre, a Shock
+    // Trooper, and a Whirligig stand, and the Grave of a Wight (0 for every
+    // other unit on a board without a marked Grave).
+    if (resultAt !== null && !autoembark)
+      strategicValue += ninthUnitMoveValueV7(view, actor, resultAt, (owner) =>
+        isHostile(view, owner),
+      );
     // pulp_wars-9s0.8: move in for a kill on a high-value unit.
     if (resultAt !== null && !autoembark) {
       const hunt = huntMoveValueV7(context, actor, resultAt, priority);

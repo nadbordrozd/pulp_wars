@@ -237,7 +237,7 @@ describe("Ice Folk Normal AI: Chill, then Shatter", () => {
 
   it("swings the Mammoth at the target with two flank units", () => {
     const state = asIce([
-      own("GUARD", 6, 2),
+      own("SWORDSMAN", 6, 2),
       foe("FIGHTER", 5, 1),
       foe("FIGHTER", 6, 1),
       foe("FIGHTER", 7, 1),

@@ -66,7 +66,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 5 (`pulp_wars-w49.4`, identity `pulp-wars-poc-7r54`;
+ * Tuning 5 (`pulp_wars-w49.4`, identity `pulp-wars-poc-7r55`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 12): the Normal AI's army
  * play, the Human Guard open to ranged attacks, the Swordsman, the removal
  * of Drill, the Blast Mountain's setter, the Land Grant's price, and the
@@ -163,13 +163,13 @@ describe("tuning 5 identity", () => {
   // took 7r49 and the Goblin pass 7r50, so 7r48 is the prior identity
   // before the last.
   it("was 7r48 after 7r47, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
-    expect(PRIOR_RULESET_7_IDS.slice(-7, -5)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
+    expect(PRIOR_RULESET_7_IDS.slice(-8, -6)).toEqual([
       "pulp-wars-poc-7r47",
       "pulp-wars-poc-7r48",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-7, -5)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-8, -6)).toEqual([
       "pulpWars.save.v7r47.current",
       "pulpWars.save.v7r48.current",
     ]);
@@ -302,54 +302,61 @@ describe("the Human Guard is open to ranged attacks", () => {
   });
 });
 
-describe("the Swordsman", () => {
-  it("is the last role, and only the Human tree unlocks it, at Engineering", () => {
+// The ninth unit (`pulp_wars-w49.17`, 7r55): the Swordsman of tuning 5 is
+// the Champion, costs 6 Coins (5), and is at Metallurgy (Engineering); the
+// role is every faction's heavy line unit. Its combat numbers are those of
+// tuning 5. tests/unit/ruleset-v7-ninth-unit.test.ts covers the slot.
+describe("the Swordsman (the Champion since 7r55)", () => {
+  it("is the last role, and every tree unlocks it, at Metallurgy", () => {
     expect(UNIT_ROLE_IDS_V7.at(-1)).toBe("SWORDSMAN");
-    expect(HUMAN_ONLY_ROLES_V7).toEqual(["SWORDSMAN"]);
+    expect(HUMAN_ONLY_ROLES_V7).toEqual([]);
     expect(effectiveRoleRuleV7("SWORDSMAN", "ORIGINAL")).toMatchObject({
-      label: "Swordsman",
+      label: "Champion",
       tacticalRole: "LINE",
-      cost: 5,
+      cost: 6,
       maxHp: 15,
       attack2: 7,
       defense2: 5,
       move: 1,
       range: 1,
-      technology: "ENGINEERING",
+      technology: "METALLURGY",
       mayUsePrimaryActionAfterMove: true,
       abilities: ["ATTACK", "CAPTURE"],
     });
     for (const faction of FACTION_IDS_V7) {
-      const human = faction === "ORIGINAL";
-      expect(factionUnlocksRoleV7(faction, "SWORDSMAN"), faction).toBe(human);
+      expect(factionUnlocksRoleV7(faction, "SWORDSMAN"), faction).toBe(true);
       expect(
         technologyCapabilitiesV7(
           TECHNOLOGY_IDS_V7,
           faction,
         ).trainableRoles.includes("SWORDSMAN"),
         faction,
-      ).toBe(human);
+      ).toBe(true);
       expect(
         factionTreeV7(faction)
           .nodes.find((node) => node.id === "ENGINEERING")
           ?.unlockedRoles.includes("SWORDSMAN"),
         faction,
-      ).toBe(human);
+      ).toBe(false);
+      expect(
+        factionTreeV7(faction)
+          .nodes.find((node) => node.id === "METALLURGY")
+          ?.unlockedRoles.includes("SWORDSMAN"),
+        faction,
+      ).toBe(true);
     }
     expect(
       technologyCapabilitiesV7(
-        TECHNOLOGY_IDS_V7.filter(
-          (tech) => tech !== "ENGINEERING" && tech !== "METALLURGY",
-        ),
+        TECHNOLOGY_IDS_V7.filter((tech) => tech !== "METALLURGY"),
         "ORIGINAL",
       ).trainableRoles,
     ).not.toContain("SWORDSMAN");
   });
 
-  it("is trained for 5 Coins with Engineering", () => {
+  it("is trained for 6 Coins with Metallurgy", () => {
     const state = field([{ seat: 1, role: "FIGHTER", at: at(2, 8) }], {
-      techs: { 0: ["DRILL", "ENGINEERING"] },
-      coins: 5,
+      techs: { 0: ["DRILL", "ENGINEERING", "METALLURGY"] },
+      coins: 6,
     });
     const capital = state.cities.find(
       (city) => city.ownerId === seatIdV7(state, 0),
@@ -375,10 +382,10 @@ describe("the Swordsman", () => {
     expect(parseGameStateV7(JSON.parse(JSON.stringify(result.state)))).toEqual(
       result.state,
     );
-    // Without Engineering the command is not offered.
+    // Without Metallurgy the command is not offered.
     const untaught = field([{ seat: 1, role: "FIGHTER", at: at(2, 8) }], {
-      techs: { 0: ["DRILL"] },
-      coins: 5,
+      techs: { 0: ["DRILL", "ENGINEERING"] },
+      coins: 6,
     });
     expect(
       queryPlayerCommandsV7(viewForV7(untaught, seatIdV7(untaught, 0))),
@@ -445,7 +452,7 @@ describe("the Swordsman", () => {
     });
   });
 
-  it("has its own sprite and portrait, and no other faction has the unit", () => {
+  it("has its own sprite and portrait, and every other faction has a unit of the role", () => {
     // Bead `pulp_wars-w49.9`: the Guard no longer stands in.
     expect(chibiFallbackSubjectV7("UNIT:SWORDSMAN")).toBeNull();
     expect(chibiFallbackSubjectV7("PORTRAIT:SWORDSMAN")).toBeNull();
@@ -456,16 +463,15 @@ describe("the Swordsman", () => {
     expect(registered).toContain("PORTRAIT:SWORDSMAN");
     expect(galleryUnitCellV7("SWORDSMAN", "ORIGINAL")).toMatchObject({
       kind: "UNIT",
-      name: "Swordsman",
+      name: "Champion",
       subject: "UNIT:SWORDSMAN",
       portrait: "PORTRAIT:SWORDSMAN",
     });
     for (const faction of FACTION_IDS_V7)
       if (faction !== "ORIGINAL")
-        expect(galleryUnitCellV7("SWORDSMAN", faction), faction).toEqual({
-          kind: "EMPTY",
-          row: "SWORDSMAN",
-          faction,
+        expect(galleryUnitCellV7("SWORDSMAN", faction), faction).toMatchObject({
+          kind: "UNIT",
+          name: effectiveRoleRuleV7("SWORDSMAN", faction).label,
         });
   });
 });
@@ -736,14 +742,15 @@ describe("Normal AI army play: units before research and buildings", () => {
         // The Martian pass's correction (`pulp_wars-w49.14`): a Martian
         // seat that fields its Projector researches Force Fields next.
         // The Dinosaur pass: a Dinosaur seat with the Ankylosaurus's
-        // technology goes on toward the Triceratops (Forestry).
+        // technology goes on toward the Triceratops (Engineering, the step
+        // to Metallurgy, since the ninth unit, 7r55; Forestry before).
       ).toEqual({
         kind: "RESEARCH",
         tech:
           faction === "MARTIAN"
             ? "FORTIFICATION"
             : faction === "DINOSAUR"
-              ? "FORESTRY"
+              ? "ENGINEERING"
               : "MARKSMANSHIP",
       });
     }

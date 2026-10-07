@@ -21,6 +21,14 @@ import type {
  * city in `LAB_LATE`). `LAB_SIEGE` is unchanged: its player can research
  * Engineering (14 Coins since tuning 6, 21 before) and train Swordsmen as a
  * fifth way in.
+ *
+ * The ninth unit (`pulp_wars-w49.17`, `7r55`): the Swordsman is the
+ * Champion (6 Coins) and is trained with Metallurgy, one technology after
+ * Engineering. `LAB_BACKLINE` and `LAB_LATE` are revision 3: both sides own
+ * Metallurgy too, so the Champions they field can be replaced (`LAB_LATE`:
+ * 17 of the 20 land technologies; Planning, Fieldcraft, and Explosives are
+ * missing). `LAB_SIEGE` is unchanged: its player reaches the Champion by
+ * Engineering and then Metallurgy.
  */
 const DRY_NAVAL_V7: readonly TechnologyIdV7[] = [
   "SHORECRAFT",
@@ -186,7 +194,7 @@ export const LAB_SIEGE_V7: MissionDefinitionV7 = {
  */
 export const LAB_BACKLINE_V7: MissionDefinitionV7 = {
   id: "LAB_BACKLINE",
-  revision: 2,
+  revision: 3,
   hidden: true,
   mirror: true,
   size: 14,
@@ -226,6 +234,9 @@ export const LAB_BACKLINE_V7: MissionDefinitionV7 = {
         "CHIVALRY",
         "DRILL",
         "ENGINEERING",
+        // The ninth unit (`pulp_wars-w49.17`, 7r55): the Champion is at
+        // Metallurgy (revision 3).
+        "METALLURGY",
         "FORTIFICATION",
       ],
       cities: [
@@ -265,6 +276,7 @@ export const LAB_BACKLINE_V7: MissionDefinitionV7 = {
         "ROADS",
         "DRILL",
         "ENGINEERING",
+        "METALLURGY",
       ],
       cities: [
         { at: { x: 11, y: 6 }, level: 4, rewards: ["SURVEY", "WALLS", "BOOM"] },
@@ -313,6 +325,9 @@ const LATE_TECHNOLOGIES_V7: readonly TechnologyIdV7[] = [
   "CHIVALRY",
   "DRILL",
   "ENGINEERING",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Champion is at
+  // Metallurgy (revision 3; seventeen technologies).
+  "METALLURGY",
   "FORTIFICATION",
 ];
 
@@ -321,7 +336,8 @@ type LateUnitV7 = readonly [UnitRoleIdV7, number, number];
 const LATE_FRONT_UNITS_V7: readonly LateUnitV7[] = [
   ["GUARD", 0, 0],
   ["FIGHTER", 1, -1],
-  // Tuning 5: Engineering is among the sixteen technologies.
+  // Tuning 5: a heavy line unit in every front city (the Champion; its
+  // Metallurgy is among the seventeen technologies since revision 3).
   ["SWORDSMAN", 1, 1],
   ["MARKSMAN", 0, -1],
   ["CATAPULT", 0, 1],
@@ -462,7 +478,7 @@ const LATE_TERRAIN_V7 = [
  */
 export const LAB_LATE_V7: MissionDefinitionV7 = {
   id: "LAB_LATE",
-  revision: 2,
+  revision: 3,
   hidden: true,
   mirror: true,
   size: 16,

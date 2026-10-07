@@ -157,8 +157,8 @@ describe("Ice Folk texts (section 13.2)", () => {
     expect(iceFolkRoleUnlockTextV7("CAPTAIN")).toBe(
       `Train ${label("CAPTAIN")} (Blizzard, Cold Snap)`,
     );
-    expect(iceFolkRoleUnlockTextV7("GUARD")).toBe(
-      `Train ${label("GUARD")} (Sweep, Trample)`,
+    expect(iceFolkRoleUnlockTextV7("SWORDSMAN")).toBe(
+      `Train ${label("SWORDSMAN")} (Sweep, Trample)`,
     );
     expect(iceFolkRoleUnlockTextV7("CATAPULT")).toBe(
       `Train ${label("CATAPULT")} (ignores Walls and Field Defense)`,
@@ -397,6 +397,8 @@ describe("Ice Folk Help (section 13.3)", () => {
       "Prowl",
       "Cold Aura",
       "Deep Winter",
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Musk Ox.
+      "Frostbite",
     ]);
     const rule = (name: string): string =>
       ICE_FOLK_HELP_RULES_V7.find(([entry]) => entry === name)?.[1] ?? "";
@@ -472,7 +474,7 @@ describe("Ice Folk log lines (section 13.2)", () => {
     ).toBe(`Your ${label("FIGHTER")} shattered a Fighter`);
     expect(
       apply(state, find(view, "ATTACK", AT.mammoth, AT.sweepTarget)).text,
-    ).toBe(`Your ${label("GUARD")} trampled Field Defense`);
+    ).toBe(`Your ${label("SWORDSMAN")} trampled Field Defense`);
   });
 
   it("logs nothing in a match without an Ice Folk seat", () => {

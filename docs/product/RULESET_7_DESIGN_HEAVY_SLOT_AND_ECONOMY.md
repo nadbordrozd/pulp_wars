@@ -5,6 +5,14 @@ implemented. It is the source for two implementation beads:
 `pulp_wars-w49.16` (the economy rejig, Part C) and `pulp_wars-w49.17` (a
 ninth unit for every faction and the renames, Parts A and B).
 
+**Parts A and B are implemented** at `pulp-wars-poc-7r55`
+(`pulp_wars-w49.17`): [the ninth unit](RULESET_7_NINTH_UNIT.md) records
+what was built, the readings chosen where this design was silent, and
+what is open. The user ruled that the Human unit is the **Champion** (this
+design proposes "Templar") and asked for a quick pass with no tuning; the
+Dinosaur Sawmilling kept its name Timber (this design proposes
+"Chopping").
+
 **Part C is implemented** at `pulp-wars-poc-7r54` (`pulp_wars-w49.16`):
 [the economy rejig](RULESET_7_ECONOMY_REJIG.md) records it. The user ruled
 for Reading A of the research price ("for now let's replace the research

@@ -139,13 +139,13 @@ describe("the Goblin pass: identity", () => {
   // pass 7r53 (tests/unit/ruleset-v7-dinosaur-pass.test.ts), and the
   // economy rejig 7r54, so 7r50 is a prior identity.
   it("was 7r50 after 7r49, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-6, -4)).toEqual([
       "pulp-wars-poc-7r49",
       "pulp-wars-poc-7r50",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-5, -3)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -4)).toEqual([
       "pulpWars.save.v7r49.current",
       "pulpWars.save.v7r50.current",
     ]);
@@ -601,12 +601,15 @@ describe("the Goblin pass: the Normal AI", () => {
   it("researches Bomb Chucker, Wolf Rider, Orc Brute, Rocket Cart, Warboss, Scrap Buggy", () => {
     // The correction pass: the Orc Brute third (it was last, and the first
     // Brute of a hand-played game came in round 20).
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): the Ogre after the
+    // Warboss.
     expect(ARMY_RESEARCH_ROLES_V7.GOBLIN).toEqual([
       "MARKSMAN",
       "RAIDER",
       "GUARD",
       "CATAPULT",
       "CAPTAIN",
+      "SWORDSMAN",
       "KNIGHT",
     ]);
     // The Human seat: the Swordsman third (it was fifth).
@@ -903,6 +906,8 @@ describe("the Goblin pass: LAB_GOBLIN_MID", () => {
       "KNIGHT",
       "MARKSMAN",
       "RAIDER",
+      // (Revision 2 of the lab, 7r55: the Ogre.)
+      "SWORDSMAN",
     ]);
     // Four cities train on the first turn (the capital is full).
     expect(
@@ -957,6 +962,8 @@ describe("the Goblin pass: unit text", () => {
       "WAAAGH!",
       "Trolls",
       "Discipline",
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Ogre.
+      "Heavyweight",
     ]);
   });
 });

@@ -34,6 +34,7 @@ import {
   isNavalRoleV7,
   type UnitRoleIdV7,
 } from "../engine/index";
+import { ninthUnitHelpRulesV7 } from "./ninth-unit-presentation-v7";
 
 /**
  * Presentation helpers for the Martian faction (docs/product/
@@ -465,6 +466,9 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
       `${PSYCHIC_COMMAND_LABEL_V7}, ${STRAFE_LABEL_V7}`,
       `a ${joinOr(brains)} gives adjacent units +1 Attack on their next attack, every second turn (it is Cooling in between), and a ${joinOr(strafers)} gets +1 Attack after moving two tiles.`,
     ],
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): the Shock Trooper's Shock
+    // Field.
+    ...ninthUnitHelpRulesV7("MARTIAN"),
   ];
 }
 

@@ -121,7 +121,7 @@ import {
   walledV7,
 } from "../fixtures/v7-revision20";
 
-// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r54`,
+// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r55`,
 // docs/product/RULESET_7_TUNING_DINOSAUR.md): Scouts for a Dinosaur city (a
 // free Raptor); a Triceratops's run-up counts one tile, two with
 // Wallbreaker; the Caveman's Pack Hunt; a Dinosaur Market hires a dinosaur
@@ -197,7 +197,7 @@ const ROSTER: readonly UnitRoleIdV7[] = [
   "MARKSMAN",
   "GUARD",
   "CAPTAIN",
-  "CATAPULT",
+  "SWORDSMAN",
   "KNIGHT",
   "JUGGERNAUT",
 ];
@@ -206,15 +206,18 @@ describe("the Dinosaur pass: identity", () => {
   // The economy rejig (tests/unit/ruleset-v7-economy-rejig.test.ts) took
   // 7r54, so 7r53 is the last prior identity.
   it("was 7r53 after 7r52, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
+    // The ninth unit (`pulp_wars-w49.17`) took 7r55, so 7r54 is prior too.
+    expect(PRIOR_RULESET_7_IDS.slice(-3)).toEqual([
       "pulp-wars-poc-7r52",
       "pulp-wars-poc-7r53",
+      "pulp-wars-poc-7r54",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3)).toEqual([
       "pulpWars.save.v7r52.current",
       "pulpWars.save.v7r53.current",
+      "pulpWars.save.v7r54.current",
     ]);
   });
 
@@ -357,7 +360,7 @@ describe("the Dinosaur pass: a run-up of one tile, two with Wallbreaker", () => 
     previewAt(
       asDinosaur(
         [
-          own("CATAPULT", 4, 3, { activation: movedV7(tiles) }),
+          own("SWORDSMAN", 4, 3, { activation: movedV7(tiles) }),
           foe(target, 5, 3),
         ],
         { techs: { 0: techs } },
@@ -401,7 +404,7 @@ describe("the Dinosaur pass: a run-up of one tile, two with Wallbreaker", () => 
   it("still ignores Walls and Field Defense without Wallbreaker", () => {
     const state = walledV7({
       defender: "GUARD",
-      attackers: [{ role: "CATAPULT", at: at(8, 7) }],
+      attackers: [{ role: "SWORDSMAN", at: at(8, 7) }],
       attackerTechs: NO_WALLBREAKER,
       fieldDefense: true,
     });
@@ -412,7 +415,7 @@ describe("the Dinosaur pass: a run-up of one tile, two with Wallbreaker", () => 
   });
 
   it("resolves as previewed, and publishes the tiles that count", () => {
-    const state = asDinosaur([own("CATAPULT", 2, 3), foe("FIGHTER", 5, 3)], {
+    const state = asDinosaur([own("SWORDSMAN", 2, 3), foe("FIGHTER", 5, 3)], {
       techs: { 0: NO_WALLBREAKER },
     });
     const actor = seatIdV7(state, 0);
@@ -432,7 +435,7 @@ describe("the Dinosaur pass: a run-up of one tile, two with Wallbreaker", () => 
     const run = attackV7(moved, at(4, 3), at(5, 3));
     expect(run.combat).toMatchObject({ runUp: 1, defenderDies: true });
     // With Wallbreaker the same Move counts two tiles.
-    const all = asDinosaur([own("CATAPULT", 2, 3), foe("FIGHTER", 5, 3)]);
+    const all = asDinosaur([own("SWORDSMAN", 2, 3), foe("FIGHTER", 5, 3)]);
     const movedAll = applyOkV7(all, seatIdV7(all, 0), {
       kind: "MOVE",
       unitId: unitAtV7(all, at(2, 3)).id,
@@ -443,7 +446,7 @@ describe("the Dinosaur pass: a run-up of one tile, two with Wallbreaker", () => 
   });
 
   it("is what the Normal AI counts: its own research for its unit, two tiles for a hostile one", () => {
-    const state = asDinosaur([own("CATAPULT", 4, 3), foe("FIGHTER", 2, 2)], {
+    const state = asDinosaur([own("SWORDSMAN", 4, 3), foe("FIGHTER", 2, 2)], {
       techs: { 0: NO_WALLBREAKER },
     });
     const view = viewOf(state);
@@ -496,7 +499,7 @@ describe("the Dinosaur pass: Pack Hunt", () => {
       "RAIDER",
       "MARKSMAN",
       "GUARD",
-      "CATAPULT",
+      "SWORDSMAN",
       "KNIGHT",
     ] as const)
       expect(hunt([own(role, 5, 4)]), role).toMatchObject({
@@ -531,7 +534,7 @@ describe("the Dinosaur pass: Pack Hunt", () => {
       previewAt(
         asDinosaur([
           own("RAIDER", 4, 3),
-          own("CATAPULT", 5, 4),
+          own("SWORDSMAN", 5, 4),
           foe("FIGHTER", 5, 3),
         ]),
         at(4, 3),
@@ -623,6 +626,8 @@ describe("the Dinosaur pass: a Market hires a dinosaur, hatched", () => {
     const state = withMarket();
     const city = state.cities.find((item) => same(item.at, at(8, 8)));
     if (city === undefined) throw new Error("no capital");
+    // The ninth unit (7r55): the Stegosaurus (`CATAPULT`) and the
+    // Triceratops (`SWORDSMAN`, the last role ID).
     expect(hires(state)).toEqual([
       "FIGHTER",
       "RAIDER",
@@ -631,9 +636,10 @@ describe("the Dinosaur pass: a Market hires a dinosaur, hatched", () => {
       "CAPTAIN",
       "CATAPULT",
       "KNIGHT",
+      "SWORDSMAN",
     ]);
     expect(
-      (["RAIDER", "MARKSMAN", "GUARD", "CATAPULT", "KNIGHT"] as const).map(
+      (["RAIDER", "MARKSMAN", "GUARD", "SWORDSMAN", "KNIGHT"] as const).map(
         (role) => publicHireCostV7(viewOf(state), city.id, role),
       ),
     ).toEqual([6, 6, 8, 12, 21]);
@@ -656,11 +662,11 @@ describe("the Dinosaur pass: a Market hires a dinosaur, hatched", () => {
       kind: "HIRE",
       cityId: city.id,
       at: MARKET,
-      role: "CATAPULT",
+      role: "SWORDSMAN",
     });
     const hired = unitAtV7(result.state, MARKET);
     expect(hired).toMatchObject({
-      role: "CATAPULT",
+      role: "SWORDSMAN",
       form: "LAND",
       hp: 20,
       maxHp: 20,
@@ -670,7 +676,7 @@ describe("the Dinosaur pass: a Market hires a dinosaur, hatched", () => {
     expect(result.state.eggs).toEqual([]);
     expect(result.events[0]).toMatchObject({
       kind: "UNIT_TRAINED",
-      role: "CATAPULT",
+      role: "SWORDSMAN",
       cost: 12,
     });
     // The city action is not used: the city still lays an Egg.
@@ -690,7 +696,7 @@ describe("the Dinosaur pass: a Market hires a dinosaur, hatched", () => {
       own("FIGHTER", 8, 7),
       own("FIGHTER", 9, 7),
     ]);
-    expect(hires(three)).toContain("CATAPULT");
+    expect(hires(three)).toContain("SWORDSMAN");
     const four = withMarket([
       own("FIGHTER", 7, 7),
       own("FIGHTER", 8, 7),
@@ -698,7 +704,7 @@ describe("the Dinosaur pass: a Market hires a dinosaur, hatched", () => {
       own("FIGHTER", 7, 9),
     ]);
     expect(hires(four)).toContain("RAIDER");
-    expect(hires(four)).not.toContain("CATAPULT");
+    expect(hires(four)).not.toContain("SWORDSMAN");
     expect(hires(four)).not.toContain("KNIGHT");
   });
 
@@ -753,7 +759,7 @@ describe("the Dinosaur pass: the matrix numbers the document reasons from", () =
       defenderDies: false,
       overrunContinues: false,
     });
-    expect(struck("KNIGHT", "CATAPULT")).toMatchObject({
+    expect(struck("KNIGHT", "SWORDSMAN")).toMatchObject({
       damageToDefender: 12,
       defenderDies: false,
     });
@@ -898,16 +904,20 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     expect(armyPlayFactionV7("DINOSAUR")).toBe(true);
     for (const faction of ["ICE_FOLK", "DWARF", "CANDY"] as const)
       expect(armyPlayFactionV7(faction), faction).toBe(false);
-    // Ankylosaurus, Triceratops, Raptor, Spitter, Shaman, T-Rex.
+    // Ankylosaurus, Triceratops, Raptor, Spitter, Stegosaurus, Shaman,
+    // T-Rex (the ninth unit, 7r55: the Triceratops is the heavy role and
+    // the Stegosaurus the siege role).
     expect(ARMY_RESEARCH_ROLES_V7.DINOSAUR).toEqual([
       "GUARD",
-      "CATAPULT",
+      "SWORDSMAN",
       "RAIDER",
       "MARKSMAN",
+      "CATAPULT",
       "CAPTAIN",
       "KNIGHT",
     ]);
-    // The other four orders are as the Martian pass left them.
+    // The Human order is as the Martian pass left it; the Martian order
+    // has the Shock Trooper after the Ray Gunner (7r55).
     expect(ARMY_RESEARCH_ROLES_V7.ORIGINAL).toEqual([
       "MARKSMAN",
       "GUARD",
@@ -919,23 +929,26 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     expect(ARMY_RESEARCH_ROLES_V7.MARTIAN).toEqual([
       "GUARD",
       "MARKSMAN",
+      "SWORDSMAN",
       "CATAPULT",
       "CAPTAIN",
       "RAIDER",
       "KNIGHT",
     ]);
+    // 7r55: the Triceratops is a line unit, so its share went to the line
+    // (30 + 20 less the Stegosaurus's 10).
     expect(armySharesV7("DINOSAUR", false)).toEqual({
-      LINE: 20,
+      LINE: 40,
       DEFENDER: 25,
       RANGED: 15,
-      SIEGE: 30,
+      SIEGE: 10,
       BREAKTHROUGH: 10,
     });
     expect(armySharesV7("DINOSAUR", true)).toEqual({
-      LINE: 15,
+      LINE: 30,
       DEFENDER: 20,
       RANGED: 15,
-      SIEGE: 25,
+      SIEGE: 10,
       BREAKTHROUGH: 25,
     });
     expect([
@@ -945,24 +958,23 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       ARMY_WALLBREAKER_CHARGERS_V7,
       ARMY_DINOSAUR_STURDY_V7,
     ]).toEqual([4, 3, 1, 2, 15]);
-    // The Triceratops fights in the line, whatever its SIEGE label, and
-    // has the siege share of the army; every other faction's siege unit
-    // keeps its class.
-    expect(armyClassV7(effectiveRoleRuleV7("CATAPULT", "DINOSAUR"))).toBe(
+    // The Triceratops fights in the line and, since 7r55, is a `LINE`
+    // role: it is counted in the line share. Every role's share class is
+    // the class it fights as.
+    expect(armyClassV7(effectiveRoleRuleV7("SWORDSMAN", "DINOSAUR"))).toBe(
       "LINE",
     );
-    expect(armyShareClassV7(effectiveRoleRuleV7("CATAPULT", "DINOSAUR"))).toBe(
-      "SIEGE",
+    expect(armyShareClassV7(effectiveRoleRuleV7("SWORDSMAN", "DINOSAUR"))).toBe(
+      "LINE",
     );
     for (const faction of ARMY_PLAY_FACTIONS_V7)
       for (const role of ROSTER) {
-        if (faction === "DINOSAUR" && role === "CATAPULT") continue;
         const rule = effectiveRoleRuleV7(role, faction);
         expect(armyShareClassV7(rule), `${faction} ${role}`).toBe(
           armyClassV7(rule),
         );
       }
-    for (const faction of ["ORIGINAL", "UNDEAD", "GOBLIN", "MARTIAN"] as const)
+    for (const faction of ARMY_PLAY_FACTIONS_V7)
       expect(
         armyClassV7(effectiveRoleRuleV7("CATAPULT", faction)),
         faction,
@@ -1012,19 +1024,24 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     // The field's land has nothing to build on, so the order alone decides.
     const order: TechnologyIdV7[] = [];
     let owned: readonly TechnologyIdV7[] = techsOf("GATHERING");
-    for (let step = 0; step < 10; step += 1) {
+    for (let step = 0; step < 12; step += 1) {
       const next = research(owned);
       if (next === null) break;
       order.push(next.tech);
       owned = techsOf(...owned, next.tech);
     }
+    // The ninth unit (7r55): the Triceratops is at Metallurgy, behind
+    // Drill and Engineering, and the Stegosaurus at Sawmilling follows the
+    // Spitter.
     expect(order).toEqual([
       "DRILL",
+      "ENGINEERING",
+      "METALLURGY",
+      "SCOUTING",
       "HUNTING",
+      "MARKSMANSHIP",
       "FORESTRY",
       "SAWMILLING",
-      "SCOUTING",
-      "MARKSMANSHIP",
       "ADMINISTRATION",
       // A unit slot in every city before the unit that fills two.
       "PLANNING",
@@ -1036,13 +1053,13 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       unlocks: "GUARD",
     });
     expect(
-      research(techsOf("GATHERING", "DRILL", "HUNTING", "FORESTRY")),
-    ).toMatchObject({ tech: "SAWMILLING", unlocks: "CATAPULT" });
+      research(techsOf("GATHERING", "DRILL", "ENGINEERING")),
+    ).toMatchObject({ tech: "METALLURGY", unlocks: "SWORDSMAN" });
   });
 
   it("researches Nesting once it fields an Ankylosaurus, and Wallbreaker with two Triceratops", () => {
     const early = techsOf("GATHERING", "DRILL");
-    expect(research(early)).toMatchObject({ tech: "HUNTING" });
+    expect(research(early)).toMatchObject({ tech: "ENGINEERING" });
     // An Egg is not a fielded unit.
     expect(research(early, [own("GUARD", 7, 7)])).toMatchObject({
       tech: "FORTIFICATION",
@@ -1050,6 +1067,8 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     const late = techsOf(
       "GATHERING",
       "DRILL",
+      "ENGINEERING",
+      "METALLURGY",
       "FORTIFICATION",
       "HUNTING",
       "FORESTRY",
@@ -1058,15 +1077,15 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       "MARKSMANSHIP",
       "ADMINISTRATION",
     );
-    expect(research(late, [own("CATAPULT", 7, 7)])).toMatchObject({
+    expect(research(late, [own("SWORDSMAN", 7, 7)])).toMatchObject({
       tech: "PLANNING",
     });
     expect(
-      research(techsOf(...late, "PLANNING"), [own("CATAPULT", 7, 7)]),
+      research(techsOf(...late, "PLANNING"), [own("SWORDSMAN", 7, 7)]),
     ).toMatchObject({ tech: "RAIDING" });
     // Wallbreaker goes before Planning.
     expect(
-      research(late, [own("CATAPULT", 7, 7), own("CATAPULT", 9, 7)]),
+      research(late, [own("SWORDSMAN", 7, 7), own("SWORDSMAN", 9, 7)]),
     ).toMatchObject({ tech: "EXPLOSIVES" });
   });
 
@@ -1085,7 +1104,10 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     ];
     const early = techsOf("GATHERING", "DRILL", "HUNTING");
     // Uncrowded (one unit), the next technology is the order's.
-    expect(research(early)).toMatchObject({ tech: "FORESTRY", growth: false });
+    expect(research(early)).toMatchObject({
+      tech: "ENGINEERING",
+      growth: false,
+    });
     expect(research(early, crowd.slice(1))).toMatchObject({
       tech: "FORTIFICATION",
       growth: true,
@@ -1094,10 +1116,10 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     // slots), and then Planning, through Administration.
     const nested = techsOf(...early, "FORTIFICATION");
     expect(research(nested, crowd.slice(1))).toMatchObject({
-      tech: "FORESTRY",
+      tech: "ENGINEERING",
       growth: false,
     });
-    const charging = techsOf(...nested, "FORESTRY", "SAWMILLING");
+    const charging = techsOf(...nested, "ENGINEERING", "METALLURGY");
     expect(research(charging, crowd.slice(1))).toMatchObject({
       tech: "ADMINISTRATION",
       growth: true,
@@ -1118,7 +1140,7 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
   });
 
   it("researches at war with the Coins left over after the dearest Egg on offer", () => {
-    // A Swordsman three tiles from the capital; Forestry (7 Coins with one
+    // A Swordsman three tiles from the capital; Engineering (7 Coins with one
     // city since the economy rejig, `pulp_wars-w49.16`; 10 as the fifth
     // technology before) is the next technology and not due; the dearest
     // production on offer is an Ankylosaurus Egg (5 Coins).
@@ -1159,7 +1181,7 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     for (const coins of [12, 30])
       expect(at_war(coins), String(coins)).toContainEqual({
         kind: "RESEARCH",
-        tech: "FORESTRY",
+        tech: "ENGINEERING",
       });
   });
 
@@ -1258,6 +1280,7 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
           "GUARD",
           "CAPTAIN",
           "CATAPULT",
+          "SWORDSMAN",
           "KNIGHT",
         ] as const
       )
@@ -1276,7 +1299,13 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     const cavemen = counts({ LINE: 4 });
     expect(order(cavemen, false)[0]).toBe("KNIGHT");
     const withRex = counts({ LINE: 4, BREAKTHROUGH: 1 });
-    expect(order(withRex, false)[0]).toBe("CATAPULT");
+    // 7r55: the Triceratops is a line unit, so four Cavemen fill the line
+    // and the Ankylosaurus comes next; an army without a line wants the
+    // Triceratops, the dearer line unit.
+    expect(order(withRex, false)[0]).toBe("GUARD");
+    expect(
+      order(counts({ DEFENDER: 3, RANGED: 2, BREAKTHROUGH: 1 }), false)[0],
+    ).toBe("SWORDSMAN");
     const withBoth = counts({ LINE: 4, BREAKTHROUGH: 1, SIEGE: 2 });
     expect(order(withBoth, false)[0]).toBe("GUARD");
     expect(order(withBoth, false).indexOf("MARKSMAN")).toBeLessThan(
@@ -1310,8 +1339,11 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     expect(armyRoleScoreV7("DINOSAUR", "KNIGHT", mixed, true)).toBe(
       armyRoleScoreV7("DINOSAUR", "KNIGHT", mixed, false) - 400,
     );
-    expect(armyRoleScoreV7("DINOSAUR", "CATAPULT", mixed, true)).toBe(
-      armyRoleScoreV7("DINOSAUR", "CATAPULT", mixed, false),
+    // (7r55: a line unit now, it is wanted there like any line unit.)
+    expect(
+      armyRoleScoreV7("DINOSAUR", "SWORDSMAN", mixed, true),
+    ).toBeGreaterThanOrEqual(
+      armyRoleScoreV7("DINOSAUR", "SWORDSMAN", mixed, false),
     );
     // A Human seat's Catapult is still kept from one.
     expect(armyRoleScoreV7("ORIGINAL", "CATAPULT", mixed, true)).toBe(
@@ -1323,7 +1355,7 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     const state = asDinosaur([own("FIGHTER", 8, 8), foe("FIGHTER", 2, 2)], {
       eggs: [
         { seat: 0, role: "GUARD", at: at(9, 7) },
-        { seat: 0, role: "CATAPULT", at: at(7, 7) },
+        { seat: 0, role: "SWORDSMAN", at: at(7, 7) },
       ],
     });
     const view = viewOf(state);
@@ -1332,7 +1364,8 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       (unit) => unit.ownerId !== view.viewer.id,
     );
     expect(counts.total).toBe(3);
-    expect(counts.byClass).toMatchObject({ LINE: 1, DEFENDER: 1, SIEGE: 1 });
+    // The Triceratops Egg is a line unit since 7r55.
+    expect(counts.byClass).toMatchObject({ LINE: 2, DEFENDER: 1, SIEGE: 0 });
   });
 
   /** A capital with a Caveman on it and a far Human unit. */
@@ -1345,6 +1378,9 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     expect(produced(capital(5))).toMatchObject([
       { kind: "LAY_EGG", role: "GUARD" },
     ]);
+    // 7r55: a lone Caveman is the whole line, so 8 Coins lay the
+    // Stegosaurus (7 Coins, the dearest unit the army is short of), not
+    // the Triceratops, which is a line unit now.
     expect(produced(capital(8))).toMatchObject([
       { kind: "LAY_EGG", role: "CATAPULT" },
     ]);
@@ -1447,9 +1483,12 @@ describe("the Dinosaur pass: the Normal AI's units", () => {
   });
 
   it("walks a Triceratops into contact as a committed unit, and steps round for the run-up that kills", () => {
-    const approach = asDinosaur([own("CATAPULT", 3, 3), foe("FIGHTER", 5, 3)], {
-      coins: 0,
-    });
+    const approach = asDinosaur(
+      [own("SWORDSMAN", 3, 3), foe("FIGHTER", 5, 3)],
+      {
+        coins: 0,
+      },
+    );
     const move = unitScored(approach, at(3, 3))[0];
     expect(move?.command.kind).toBe("MOVE");
     expect(move?.score.priority).toBe(ARMY_COMMIT_MELEE_MOVE_PRIORITY_V7);
@@ -1457,7 +1496,7 @@ describe("the Dinosaur pass: the Normal AI's units", () => {
     expect(end === undefined ? 0 : gap(end, at(5, 3))).toBe(1);
     // Beside a Fighter already: unmoved the Charge deals 8; after one tile
     // it kills. The step comes first.
-    const beside = asDinosaur([own("CATAPULT", 3, 3), foe("FIGHTER", 4, 3)], {
+    const beside = asDinosaur([own("SWORDSMAN", 3, 3), foe("FIGHTER", 4, 3)], {
       coins: 0,
     });
     expect(unitScored(beside, at(3, 3))[0]).toMatchObject({
@@ -1499,7 +1538,7 @@ describe("the Dinosaur pass: the Normal AI's units", () => {
     expect(WALLBREAKER_CHARGER_VALUE_V7).toBe(6);
     const state = (opponent: FactionIdV7) =>
       asDinosaur(
-        [own("CATAPULT", 7, 7), foe("FIGHTER", 2, 2)],
+        [own("SWORDSMAN", 7, 7), foe("FIGHTER", 2, 2)],
         { techs: { 0: NO_WALLBREAKER }, coins: 60 },
         opponent,
       );
@@ -1549,7 +1588,7 @@ describe("the Dinosaur pass: LAB_DINOSAUR_MID", () => {
       FIGHTER: 3,
       RAIDER: 2,
       MARKSMAN: 2,
-      CATAPULT: 2,
+      SWORDSMAN: 2,
     });
     // The Human side of the other labs: 17 units.
     expect(count(1)).toEqual({
@@ -1570,7 +1609,7 @@ describe("the Dinosaur pass: LAB_DINOSAUR_MID", () => {
           0,
         );
     };
-    expect([worth(0, "DINOSAUR"), worth(1, "ORIGINAL")]).toEqual([67, 77]);
+    expect([worth(0, "DINOSAUR"), worth(1, "ORIGINAL")]).toEqual([67, 80]);
     // One Big Raptor, one Big Spitter, one Big Triceratops.
     const own0 = state.units.filter(
       (unit) => unit.ownerId === state.humanPlayerId,
@@ -1581,9 +1620,9 @@ describe("the Dinosaur pass: LAB_DINOSAUR_MID", () => {
         .map((unit) => [unit.role, unit.kills, unit.hp, unit.maxHp])
         .sort(),
     ).toEqual([
-      ["CATAPULT", 1, 24, 24],
       ["MARKSMAN", 1, 14, 14],
       ["RAIDER", 1, 16, 16],
+      ["SWORDSMAN", 1, 24, 24],
     ]);
     // The T-Rex Egg: beside the capital, two turns from hatching, the
     // Shaman next to it and able to hatch it on the first turn.
@@ -1605,16 +1644,12 @@ describe("the Dinosaur pass: LAB_DINOSAUR_MID", () => {
     };
     expect(cities(0)).toEqual([4, 3, 3, 2, 2]);
     expect(cities(1)).toEqual([4, 3, 3, 2, 2]);
-    // 35 Coins in hand on the first turn; ten technologies, without
-    // Nesting, Wallbreaker, Engineering, and Farming.
+    // 35 Coins in hand on the first turn; twelve technologies (revision 2
+    // of the lab, 7r55: Engineering and Metallurgy, for the Triceratops),
+    // without Nesting, Wallbreaker, and Farming.
     expect(view.viewer.coins).toBe(35);
-    expect(view.viewer.researchedTechs).toHaveLength(10);
-    for (const tech of [
-      "FORTIFICATION",
-      "EXPLOSIVES",
-      "ENGINEERING",
-      "FARMING",
-    ] as const)
+    expect(view.viewer.researchedTechs).toHaveLength(12);
+    for (const tech of ["FORTIFICATION", "EXPLOSIVES", "FARMING"] as const)
       expect(view.viewer.researchedTechs).not.toContain(tech);
     // Three free slots: two in the capital (a Triceratops or a T-Rex Egg
     // fits there only) and one in the northern level-3 city.
@@ -1627,7 +1662,7 @@ describe("the Dinosaur pass: LAB_DINOSAUR_MID", () => {
         ),
       ).size;
     expect(
-      (["RAIDER", "MARKSMAN", "GUARD", "CATAPULT", "KNIGHT"] as const).map(
+      (["RAIDER", "MARKSMAN", "GUARD", "SWORDSMAN", "KNIGHT"] as const).map(
         laid,
       ),
     ).toEqual([2, 2, 2, 1, 1]);
@@ -1645,9 +1680,7 @@ describe("the Dinosaur pass: LAB_DINOSAUR_MID", () => {
       offered.flatMap((command) =>
         command.kind === "RESEARCH" ? [command.tech] : [],
       ),
-    ).toEqual(
-      expect.arrayContaining(["FARMING", "ENGINEERING", "FORTIFICATION"]),
-    );
+    ).toEqual(expect.arrayContaining(["FARMING", "PLANNING", "FORTIFICATION"]));
   });
 
   it("builds a mission unit's kills and an Egg only where the rules allow them", () => {
@@ -1689,7 +1722,7 @@ describe("the Dinosaur pass, correction: Nesting takes no turn off", () => {
       return [preview?.turnsToHatch, preview?.hp];
     };
     const every = (techs: readonly TechnologyIdV7[]) =>
-      (["RAIDER", "MARKSMAN", "GUARD", "CATAPULT", "KNIGHT"] as const).map(
+      (["RAIDER", "MARKSMAN", "GUARD", "SWORDSMAN", "KNIGHT"] as const).map(
         (role) => turns(techs, role),
       );
     // Raptor 1, Spitter 1, Ankylosaurus 2, Triceratops 2, T-Rex 4.
@@ -1723,7 +1756,7 @@ describe("the Dinosaur pass, correction: Nesting takes no turn off", () => {
 
   it("leaves the Shaman's Hatch as the way to speed an Egg, and says so", () => {
     const state = asDinosaur([own("CAPTAIN", 8, 7), foe("FIGHTER", 2, 2)], {
-      eggs: [{ seat: 0, role: "CATAPULT", at: at(9, 7), turnsRemaining: 2 }],
+      eggs: [{ seat: 0, role: "SWORDSMAN", at: at(9, 7), turnsRemaining: 2 }],
     });
     const shaman = unitAtV7(state, at(8, 7));
     const egg = unitAtV7(state, at(9, 7));
@@ -1734,13 +1767,13 @@ describe("the Dinosaur pass, correction: Nesting takes no turn off", () => {
     });
     expect(unitAtV7(hatched.state, at(9, 7))).toMatchObject({
       form: "LAND",
-      role: "CATAPULT",
+      role: "SWORDSMAN",
       hp: 20,
     });
     expect(HATCH_TOOLTIP_V7).toBe(
       "Uses the Shaman's action: an Egg next to it hatches now, whatever turns it had left (not on the turn it was laid). The new unit acts from your next turn.",
     );
-    expect(dinosaurRecruitNotesV7("CATAPULT", "DINOSAUR")[0]).toBe(
+    expect(dinosaurRecruitNotesV7("SWORDSMAN", "DINOSAUR")[0]).toBe(
       "Laid as an Egg next to the city; hatches after 2 turns (a Shaman can hatch it sooner).",
     );
   });
@@ -1758,7 +1791,7 @@ describe("the Dinosaur pass, correction: Tend Wounded heals a dinosaur 4", () =>
         ).toBe(null);
     const state = asDinosaur([
       own("CAPTAIN", 5, 3),
-      own("CATAPULT", 4, 3, { hp: 10 }),
+      own("SWORDSMAN", 4, 3, { hp: 10 }),
       own("FIGHTER", 6, 3, { hp: 5 }),
       own("GUARD", 5, 2, { hp: 18 }),
       foe("FIGHTER", 2, 2),
@@ -1858,7 +1891,7 @@ describe("the Dinosaur pass, correction: Pack Hunt against a hunted unit", () =>
         role,
       ).toEqual([]);
     }
-    for (const role of ["RAIDER", "GUARD", "CATAPULT", "KNIGHT"] as const) {
+    for (const role of ["RAIDER", "GUARD", "SWORDSMAN", "KNIGHT"] as const) {
       const state = asDinosaur([
         own(role, 4, 3),
         foe("GUARD", 5, 3),
@@ -1984,7 +2017,7 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
     // center too (its garrison bonus is 200).
     const army = counts({ LINE: 2, DEFENDER: 2 });
     for (const threatened of [false, true])
-      for (const role of ["FIGHTER", "MARKSMAN", "CATAPULT"] as const)
+      for (const role of ["FIGHTER", "MARKSMAN", "SWORDSMAN"] as const)
         expect(
           armyRoleScoreV7("DINOSAUR", "GUARD", army, threatened),
           `${role} ${String(threatened)}`,
@@ -2033,7 +2066,7 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
     for (let index = 0; index < 7; index += 1)
       many.push(own("GUARD", 3 + index, 1));
     for (let index = 0; index < 8; index += 1)
-      many.push(own("FIGHTER", 2 + index, 3), own("CATAPULT", 2 + index, 4));
+      many.push(own("FIGHTER", 2 + index, 3), own("SWORDSMAN", 2 + index, 4));
     for (let index = 0; index < 5; index += 1)
       many.push(own("MARKSMAN", 3 + index, 5));
     const homed = asDinosaur(
@@ -2121,7 +2154,7 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
       unitScored(
         asDinosaur(
           [
-            own("CATAPULT", 8, 8),
+            own("SWORDSMAN", 8, 8),
             own("FIGHTER", 7, 8),
             foe("FIGHTER", 6, 8),
             far,
@@ -2164,7 +2197,7 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
     const contact = (pieces: readonly GoblinPieceV7[]): boolean =>
       unitScored(
         asDinosaur([
-          own("CATAPULT", 2, 3),
+          own("SWORDSMAN", 2, 3),
           foe("FIGHTER", 5, 3),
           foe("FIGHTER", 5, 2),
           ...pieces,
@@ -2181,11 +2214,11 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
     // One Caveman is not a pack; two are, and so is a second Triceratops.
     expect(contact([own("FIGHTER", 3, 4)])).toBe(false);
     expect(contact([own("FIGHTER", 3, 4), own("FIGHTER", 3, 2)])).toBe(true);
-    expect(contact([own("CATAPULT", 2, 2)])).toBe(true);
+    expect(contact([own("SWORDSMAN", 2, 2)])).toBe(true);
     // A lone Fighter is charged without support.
     expect(
       unitScored(
-        asDinosaur([own("CATAPULT", 2, 3), foe("FIGHTER", 5, 3)]),
+        asDinosaur([own("SWORDSMAN", 2, 3), foe("FIGHTER", 5, 3)]),
         at(2, 3),
       ).some((candidate) => {
         const end = endOf(candidate.command);
@@ -2196,7 +2229,7 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
     expect(
       unitScored(
         asDinosaur([
-          own("CATAPULT", 4, 3),
+          own("SWORDSMAN", 4, 3),
           foe("FIGHTER", 5, 3),
           foe("FIGHTER", 5, 2),
         ]),
@@ -2213,7 +2246,7 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
             [
               own("FIGHTER", 8, 7),
               foe("FIGHTER", 2, 2),
-              ...[own("CATAPULT", 7, 7), own("CATAPULT", 9, 7)].slice(
+              ...[own("SWORDSMAN", 7, 7), own("SWORDSMAN", 9, 7)].slice(
                 0,
                 triceratops,
               ),
@@ -2226,9 +2259,8 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
       "GATHERING",
       "DRILL",
       "FORTIFICATION",
-      "HUNTING",
-      "FORESTRY",
-      "SAWMILLING",
+      "ENGINEERING",
+      "METALLURGY",
     );
     // Before the correction this was Scouting: Wallbreaker waited for the
     // T-Rex's step, four technologies later, and a seat never reached it.
@@ -2236,10 +2268,7 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
     expect(target(base, 1)).toBe("SCOUTING");
     // Without Nesting it researches Nesting first (Wallbreaker needs it).
     expect(
-      target(
-        techsOf("GATHERING", "DRILL", "HUNTING", "FORESTRY", "SAWMILLING"),
-        2,
-      ),
+      target(techsOf("GATHERING", "DRILL", "ENGINEERING", "METALLURGY"), 2),
     ).toBe("FORTIFICATION");
     // A war does not hold it: with a Swordsman three tiles from the
     // capital and the Coins for it and no more, it is researched. (In the
@@ -2250,7 +2279,7 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
         [
           own("FIGHTER", 8, 8),
           foe("SWORDSMAN", 5, 8),
-          ...[own("CATAPULT", 7, 7), own("CATAPULT", 9, 7)].slice(
+          ...[own("SWORDSMAN", 7, 7), own("SWORDSMAN", 9, 7)].slice(
             0,
             triceratops,
           ),
@@ -2260,7 +2289,7 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
       return scored({
         ...state,
         units: state.units.map((unit) =>
-          unit.role === "CATAPULT" ? { ...unit, homeCityId: null } : unit,
+          unit.role === "SWORDSMAN" ? { ...unit, homeCityId: null } : unit,
         ),
       }).flatMap((candidate) =>
         candidate.command.kind === "RESEARCH" ? [candidate.command.tech] : [],

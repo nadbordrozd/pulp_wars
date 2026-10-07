@@ -40,6 +40,7 @@ import {
   RULESET_7_ID,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
+  emptyNinthUnitStateV7,
   type BiomeIdV7,
   type BoardStateV7,
   type CityStateV7,
@@ -597,6 +598,7 @@ export function buildMissionStateV7(
     splattedThisTurn: [],
     tossedThisTurn: [],
     huntedThisTurn: [],
+    ninthUnit: emptyNinthUnitStateV7(),
     pendingChoices: [],
     outcome: null,
   });

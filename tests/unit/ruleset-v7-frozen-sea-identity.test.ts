@@ -72,17 +72,17 @@ const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
 // identities of tunings 5 and 6).
 describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix, then 7r46 and 7r47 for tunings 1 and 2)", () => {
   it("is 7r47 with 7r44 to 7r46 last in the gap-free prior list and their save keys obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
-    expect(PRIOR_RULESET_7_IDS.slice(-11, -7)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
+    expect(PRIOR_RULESET_7_IDS.slice(-12, -8)).toEqual([
       "pulp-wars-poc-7r43",
       "pulp-wars-poc-7r44",
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(53);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(54);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-10, -7)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-11, -8)).toEqual([
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
       "pulpWars.save.v7r46.current",
@@ -95,7 +95,7 @@ describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r54");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r55");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r44" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(
@@ -226,6 +226,10 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       NAVAL_ENGINEERING: "Icebound",
       SEAMANSHIP: "Black Ice",
       SUBMERSIBLES: "Glacier",
+      // The ninth unit (7r55): the nodes named for their unit.
+      SAWMILLING: "Boulders",
+      CHIVALRY: "Sabretooths",
+      METALLURGY: "Mammoths",
     });
   });
 
@@ -334,11 +338,8 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
           effectiveRoleRuleV7(role, faction).abilities.includes("FREEZE"),
           `${faction} ${role}`,
         ).toBe(
-          faction === "ICE_FOLK" &&
-            !isNavalRoleV7(role) &&
-            // The Human Swordsman's role (tuning 5), which the Ice Folk
-            // table only copies and never fields.
-            role !== "SWORDSMAN",
+          // (The ninth unit, 7r55: the heavy role is the Mammoth.)
+          faction === "ICE_FOLK" && !isNavalRoleV7(role),
         );
   });
 
@@ -536,7 +537,8 @@ describe("the Showcase with an Ice Folk seat (section 3.3)", () => {
     const ice = seatV7(state, 0);
     const cx = showcaseStripCenterXV7(0, 3);
     const own = state.units.filter((unit) => unit.ownerId === ice.id);
-    expect(own).toHaveLength(8);
+    // (The ninth unit, 7r55: eight and the Musk Ox.)
+    expect(own).toHaveLength(9);
     expect(own.every((unit) => unit.form === "LAND")).toBe(true);
     expect(state.ice).toEqual([
       { at: { x: cx, y: 12 }, ownerId: ice.id, turnsLeft: 5 },

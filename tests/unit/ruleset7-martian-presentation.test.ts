@@ -247,6 +247,8 @@ describe("Martian texts (section 13.2)", () => {
       "Mind Control",
       "Tractor Beam",
       "Psychic Command, Strafe",
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Shock Trooper.
+      "Shock Field",
     ]);
     // The Martian pass's correction: a whole field holds one attack.
     expect(rules.get("Force Field")).toBe(

@@ -114,8 +114,9 @@ describe("ruleset-7 technology", () => {
       ["BATTLESHIP", 16, 25, 12, 8, 2, 3, 1, "NAVAL_ENGINEERING", false],
       // The naval branch (`pulp_wars-5ti.2`).
       ["SUBMARINE", 9, 12, 8, 4, 2, 1, 1, "SUBMERSIBLES", true],
-      // Tuning 5 (`pulp_wars-w49.4`).
-      ["SWORDSMAN", 5, 15, 7, 5, 1, 1, 1, "ENGINEERING", true],
+      // Tuning 5 (`pulp_wars-w49.4`); the Champion since the ninth unit
+      // (`pulp_wars-w49.17`, 7r55): 6 Coins (5), at Metallurgy.
+      ["SWORDSMAN", 6, 15, 7, 5, 1, 1, 1, "METALLURGY", true],
     ]);
     expect(Object.isFrozen(ORIGINAL_ROLE_RULES_V7)).toBe(true);
   });

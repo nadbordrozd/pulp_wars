@@ -8,6 +8,7 @@ import {
   chibiFallbackSubjectV7,
   cityArtSubjectV7,
   moundArtSubjectV7,
+  unitArtRoleV7,
   unitArtSubjectV7,
   navalArtRoleOfSubjectV7,
   navalArtSubjectV7,
@@ -319,11 +320,17 @@ describe("Steampunk Dwarf production art (pulp_wars-78i.5)", () => {
       ).toEqual([entry.asset.id]);
     }
     // Step 2: the game resolves the Dwarf subjects.
+    // (The ninth unit, `pulp_wars-w49.17`: `role` here is the art slot;
+    // the Steam Tank is the heavy role and keeps the slot its art was made
+    // for, `UNIT:DWARF:KNIGHT`.)
     for (const [role] of UNITS) {
-      expect(unitArtSubjectV7({ role, form: "LAND", faction: "DWARF" })).toBe(
-        `UNIT:DWARF:${role}`,
+      const fielded = unitArtRoleV7(role, "DWARF");
+      expect(
+        unitArtSubjectV7({ role: fielded, form: "LAND", faction: "DWARF" }),
+      ).toBe(`UNIT:DWARF:${role}`);
+      expect(portraitSubjectV7(fielded, "DWARF")).toBe(
+        `PORTRAIT:DWARF:${role}`,
       );
-      expect(portraitSubjectV7(role, "DWARF")).toBe(`PORTRAIT:DWARF:${role}`);
     }
     expect(
       unitArtSubjectV7({ role: "FIGHTER", form: "EMBARKED", faction: "DWARF" }),

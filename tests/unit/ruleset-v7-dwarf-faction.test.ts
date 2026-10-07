@@ -26,6 +26,7 @@ import {
   REPAIR_MACHINE_V7,
   RULESET_7,
   SHOWCASE_UNIT_TEMPLATES_V7,
+  showcaseUnitRoleV7,
   STARTING_FIGHTERS_V7,
   TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7,
   TECHNOLOGY_IDS_V7,
@@ -167,7 +168,8 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(100);
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): WIGHT_RISEN (101).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(101);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     for (const order of [
@@ -599,21 +601,25 @@ const ROSTER = [
     ["ATTACK", "KNOCKBACK"],
     false,
   ],
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Whirligig is the
+  // breakthrough role the Steam Tank left (9 Coins, 12 HP, Attack 3,
+  // Defense 1.5, Move 3, a construct; it never advances). The Steam Tank
+  // is the heavy line role, asserted below the table.
   [
-    "Steam Tank",
+    "Whirligig",
     "KNIGHT",
     "CHIVALRY",
     9,
-    16,
+    12,
     6,
-    4,
-    2,
+    3,
+    3,
     1,
     1,
     1,
     true,
-    ["ATTACK", "PLATED"],
-    true,
+    ["ATTACK", "CLOCKWORK"],
+    false,
   ],
   [
     "Brass Titan",
@@ -680,15 +686,36 @@ describe("Dwarf roster (section 3)", () => {
         roleMechanicsV7(role, "DWARF"),
       );
     }
+    // The ninth unit (7r55): the Steam Tank, with the numbers it had as
+    // the breakthrough role, at Metallurgy and a `LINE` unit.
+    expect(effectiveRoleRuleV7("SWORDSMAN", "DWARF")).toEqual({
+      role: "SWORDSMAN",
+      label: "Steam Tank",
+      tacticalRole: "LINE",
+      cost: 9,
+      maxHp: 16,
+      attack2: 6,
+      defense2: 4,
+      move: 2,
+      range: 1,
+      minimumRange: 1,
+      sightRadius: 1,
+      technology: "METALLURGY",
+      mayUsePrimaryActionAfterMove: true,
+      abilities: ["ATTACK", "PLATED"],
+    });
     const mechanics = (role: UnitRoleIdV7) => roleMechanicsV7(role, "DWARF");
     const roles = (test: (role: UnitRoleIdV7) => boolean) =>
       UNIT_ROLE_IDS_V7.filter(test);
+    // (The Whirligig is a construct; the Steam Tank is not.)
     expect(roles((role) => mechanics(role).construct)).toEqual([
       "MARKSMAN",
+      "KNIGHT",
       "JUGGERNAUT",
     ]);
     expect(roles((role) => mechanics(role).unflinchingAttack)).toEqual([
       "MARKSMAN",
+      "KNIGHT",
       "JUGGERNAUT",
     ]);
     expect(roles((role) => mechanics(role).repairsAsMachine)).toEqual([
@@ -698,7 +725,9 @@ describe("Dwarf roster (section 3)", () => {
       "CATAPULT",
       "KNIGHT",
       "JUGGERNAUT",
+      "SWORDSMAN",
     ]);
+    expect(mechanics("KNIGHT").attacksPerTurn).toBe(3);
     expect(roles((role) => mechanics(role).digsIn)).toEqual([
       "FIGHTER",
       "GUARD",
@@ -709,7 +738,7 @@ describe("Dwarf roster (section 3)", () => {
     expect(roles((role) => mechanics(role).tunnelRange > 0)).toEqual(["GUARD"]);
     expect(mechanics("GUARD").tunnelRange).toBe(3);
     expect(mechanics("MARKSMAN").unmovedShots).toBe(2);
-    expect(mechanics("KNIGHT").plated).toBe(4);
+    expect(mechanics("SWORDSMAN").plated).toBe(4);
     expect(mechanics("CAPTAIN").repairMachineHeal).toBe(4);
     expect(mechanics("RAIDER").movementMode).toBe("FLY");
     expect(
@@ -830,7 +859,7 @@ describe("Dwarf roster (section 3)", () => {
         .code,
     ).toBe("UNIT_ROLE_INVALID");
     const tank = dwarfFieldV7([
-      { seat: 0, role: "KNIGHT", at: at(4, 3) },
+      { seat: 0, role: "SWORDSMAN", at: at(4, 3) },
       { seat: 1, role: "FIGHTER", at: at(5, 3), hp: 1 },
       { seat: 1, role: "FIGHTER", at: at(6, 3), hp: 1 },
     ]);
@@ -840,7 +869,7 @@ describe("Dwarf roster (section 3)", () => {
       targetUnitId: unitAtV7(tank, at(5, 3)).id,
     });
     const advanced = unitAtV7(killed.state, at(5, 3));
-    expect(advanced.role).toBe("KNIGHT");
+    expect(advanced.role).toBe("SWORDSMAN");
     expect(advanced.activation.overrunActive).toBe(false);
     expect(
       offeredV7(killed.state, "ATTACK").filter(
@@ -857,7 +886,9 @@ describe("Dwarf roster (section 3)", () => {
       ["GUARD", 2],
       ["CAPTAIN", 2],
       ["CATAPULT", 4],
+      // (7r55: the Whirligig and the Steam Tank, half of 9 each.)
       ["KNIGHT", 4],
+      ["SWORDSMAN", 4],
     ] as const) {
       const state = dwarfFieldV7([
         { seat: 0, role, at: at(4, 3) },
@@ -952,6 +983,15 @@ describe("Dwarf technology (section 4)", () => {
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.DWARF).toEqual({
       FORTIFICATION: "Dig In",
       EXPLOSIVES: "Blasting Charges",
+      // The ninth unit (7r55): the nodes named for a building or unit.
+      MILLING: "Steam Pumps",
+      MARKSMANSHIP: "Clockwork",
+      SAWMILLING: "Steam Cannons",
+      SCOUTING: "Gyrocopters",
+      RAIDING: "Dive Bombing",
+      CHIVALRY: "Whirligigs",
+      ENGINEERING: "Mining",
+      METALLURGY: "Steam Tanks",
     });
   });
 
@@ -1000,10 +1040,8 @@ describe("Dwarf technology (section 4)", () => {
     expect(some("SCOUTING", "RAIDING")).toMatchObject({ bombDamage: 6 });
     const dwarf = technologyCapabilitiesV7(all, "DWARF");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
-    // (The Swordsman of tuning 5 is the Humans' alone.)
-    expect(dwarf.trainableRoles).toEqual(
-      human.trainableRoles.filter((role) => role !== "SWORDSMAN"),
-    );
+    // (The ninth unit, 7r55: every faction has the heavy line role.)
+    expect(dwarf.trainableRoles).toEqual(human.trainableRoles);
     expect(dwarf.commands).toEqual(
       human.commands.filter((command) => command !== "BUILD_FIELD_DEFENSE"),
     );
@@ -1025,7 +1063,8 @@ describe("Dwarf technology (section 4)", () => {
     expect(role("DRILL")).toEqual(["Steam Mole"]);
     expect(role("ADMINISTRATION")).toEqual(["Engineer"]);
     expect(role("SAWMILLING")).toEqual(["Steam Cannon"]);
-    expect(role("CHIVALRY")).toEqual(["Steam Tank"]);
+    expect(role("CHIVALRY")).toEqual(["Whirligig"]);
+    expect(role("METALLURGY")).toEqual(["Steam Tank"]);
     const state = dwarfFieldV7([
       { seat: 0, role: "FIGHTER", at: at(4, 3) },
       { seat: 1, role: "FIGHTER", at: at(1, 1) },
@@ -1046,7 +1085,8 @@ describe("Dwarf technology (section 4)", () => {
     expect(technologyNameV7("FORTIFICATION", "DWARF")).toBe("Dig In");
     expect(technologyNameV7("EXPLOSIVES", "DWARF")).toBe("Blasting Charges");
     for (const tech of TECHNOLOGY_IDS_V7)
-      if (tech !== "FORTIFICATION" && tech !== "EXPLOSIVES")
+      // (The ninth unit, 7r55: the nodes named for a building or unit.)
+      if (!Object.hasOwn(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.DWARF, tech))
         expect(technologyNameV7(tech, "DWARF")).toBe(
           technologyNameV7(tech, "ORIGINAL"),
         );
@@ -1207,20 +1247,27 @@ describe("Dwarf Showcase (section 2.4)", () => {
     const reference = initial(["MARTIAN", "ORIGINAL", "UNDEAD", "GOBLIN"]);
     expect(state.board).toEqual(reference.board);
     expect(state.cities).toEqual(reference.cities);
+    const dwarfId = seatIdV7(state, 0);
+    // The ninth unit (7r55): the Steam Tank stands where it stood (the
+    // breakthrough unit's tile, as the heavy role) and the Whirligig on
+    // the ninth unit's tile (`showcaseUnitRoleV7`).
     const shape = (source: GameStateV7) =>
       source.units.map((unit) => [
         unit.id,
         unit.ownerId,
-        unit.role,
+        source !== state && unit.ownerId === dwarfId
+          ? showcaseUnitRoleV7(unit.role, "DWARF")
+          : unit.role,
         unit.form,
         unit.at,
         unit.homeCityId,
       ]);
     expect(shape(state)).toEqual(shape(reference));
-    const dwarfId = seatIdV7(state, 0);
     const own = state.units.filter((unit) => unit.ownerId === dwarfId);
     expect(own.map((unit) => unit.role)).toEqual(
-      SHOWCASE_UNIT_TEMPLATES_V7.map((entry) => entry.role),
+      SHOWCASE_UNIT_TEMPLATES_V7.map((entry) =>
+        showcaseUnitRoleV7(entry.role, "DWARF"),
+      ),
     );
     for (const unit of own)
       expect(unit.hp).toBe(effectiveRoleRuleV7(unit.role, "DWARF").maxHp);
@@ -1241,7 +1288,8 @@ describe("Dwarf Showcase (section 2.4)", () => {
         ]),
     ).toEqual([
       [5, 7],
-      [3, 6],
+      // (7r55: North also homes the Whirligig.)
+      [4, 6],
       [3, 6],
     ]);
     // 21: land trade pays 2 Coins (tuning 1, 7r46; 17 before) and since
@@ -1306,7 +1354,7 @@ describe("Dwarf public unit stats (section 14)", () => {
     const state = dwarfFieldV7([
       { seat: 0, role: "FIGHTER", at: at(8, 7) },
       { seat: 0, role: "MARKSMAN", at: at(4, 3) },
-      { seat: 0, role: "KNIGHT", at: at(6, 3) },
+      { seat: 0, role: "SWORDSMAN", at: at(6, 3) },
       { seat: 0, role: "JUGGERNAUT", at: at(6, 5) },
       { seat: 1, role: "FIGHTER", at: at(1, 1) },
     ]);

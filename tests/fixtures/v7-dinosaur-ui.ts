@@ -159,7 +159,7 @@ export function dinosaurShowcaseFixtureV7(): GameStateV7 {
   const at = DINOSAUR_SHOWCASE_V7;
   return dinosaurUiFieldV7(
     [
-      { seat: 0, role: "CATAPULT", at: at.triceratops },
+      { seat: 0, role: "SWORDSMAN", at: at.triceratops },
       { seat: 0, role: "FIGHTER", at: at.laneCaveman },
       { seat: 1, role: "JUGGERNAUT", at: at.pushTarget },
       { seat: 1, role: "FIGHTER", at: at.killTarget, hp: 1 },
@@ -219,7 +219,7 @@ export function dinosaurBlastFixtureV7(): GameStateV7 {
   const at = DINOSAUR_BLAST_V7;
   return dinosaurUiFieldV7(
     [
-      { seat: 0, role: "CATAPULT", at: at.triceratops },
+      { seat: 0, role: "SWORDSMAN", at: at.triceratops },
       { seat: 1, role: "MARKSMAN", at: at.bombChucker, hp: 1 },
       { seat: 0, role: "FIGHTER", at: at.caveman },
       { seat: 1, role: "CATAPULT", at: at.rocketCart, hp: 1 },
@@ -258,7 +258,7 @@ export function dinosaurEnemyFixtureV7(): GameStateV7 {
       { seat: 1, role: "GUARD", at: at.ankylosaurus },
       { seat: 1, role: "KNIGHT", at: at.alphaTRex },
       { seat: 1, role: "RAIDER", at: at.bigRaptor },
-      { seat: 1, role: "CATAPULT", at: at.triceratops },
+      { seat: 1, role: "SWORDSMAN", at: at.triceratops },
     ],
     {
       factions: ["ORIGINAL", "DINOSAUR"],

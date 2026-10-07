@@ -15,6 +15,16 @@ reasoning and the record, in the shape of
 [the Goblin pass](RULESET_7_TUNING_GOBLIN.md), and
 [the Human pass](RULESET_7_TUNING_HUMAN.md).
 
+**Superseded in part by [the ninth unit](RULESET_7_NINTH_UNIT.md) (`pulp-wars-poc-7r55`, `pulp_wars-w49.17`).** The Martians have a ninth land
+unit and their first melee unit, the **Shock Trooper** (the heavy line
+role, at Metallurgy; Shield 3, and while Shielded a melee attacker takes
+3), so the roster, the research order (the Shock Trooper after the Ray
+Gunner), "eight Martian land roles", and every statement that the
+Martians have no body for the front are out of date. The Human Swordsman
+this document fights is the Champion (6 Coins, at Metallurgy).
+`LAB_MARTIAN_MID` is at revision 2: your seat owns Engineering and
+Metallurgy too. The record below is unchanged.
+
 **Superseded in part by [the economy rejig](RULESET_7_ECONOMY_REJIG.md)
 (`pulp-wars-poc-7r54`, `pulp_wars-w49.16`).** Where this document gives a research price by the technologies owned (the
 tier base plus 1 Coin for each technology owned, "the nth technology

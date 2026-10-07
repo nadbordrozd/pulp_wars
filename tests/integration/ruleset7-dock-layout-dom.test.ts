@@ -282,8 +282,9 @@ describe("Ruleset 7 selection dock layout", () => {
       "Hire Captain for 8 Coins",
       "Hire Catapult for 12 Coins",
       "Hire Knight for 14 Coins",
-      // Tuning 5 (`pulp_wars-w49.4`).
-      "Hire Swordsman for 8 Coins",
+      // Tuning 5 (`pulp_wars-w49.4`); the Champion at 6 Coins since the
+      // ninth unit (`pulp_wars-w49.17`, 7r55): one and a half times is 9.
+      "Hire Champion for 9 Coins",
     ]);
     expect(hires[0]?.querySelector(".v7-action-label")?.textContent).toBe(
       "Hire Fighter",

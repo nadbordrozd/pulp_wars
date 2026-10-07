@@ -34,6 +34,16 @@ import type { MissionDefinitionV7 } from "./types";
  * The front cities are four tiles apart; two neutral villages lie between
  * the lines. The AI has no directive: it plays the ordinary Normal policy.
  *
+ * Revision 2 (the ninth unit, `pulp_wars-w49.17`, `7r55`): the heavy line
+ * unit of every faction is at Metallurgy, and the Triceratops is the
+ * Dinosaur heavy (the `SWORDSMAN` role; the two on the board keep their
+ * tiles). The player's seat owns Engineering and Metallurgy as well (twelve
+ * technologies: the Triceratops can still be laid, and Sawmilling now gives
+ * the Stegosaurus; none stands on the board), and the Humans own Metallurgy
+ * (eleven technologies), so that their three Champions (the Swordsmen of
+ * revision 1, 6 Coins each now: 80 Coins of units) can be replaced. The
+ * numbers quoted above are revision 1's.
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  1   .Ge.....v....eG.      v: a neutral village
@@ -100,7 +110,7 @@ const DINOSAUR_MID_RESOURCES_V7 = [
 
 export const LAB_DINOSAUR_MID_V7: MissionDefinitionV7 = {
   id: "LAB_DINOSAUR_MID",
-  revision: 1,
+  revision: 2,
   hidden: true,
   size: 16,
   seed: 20261501,
@@ -138,6 +148,10 @@ export const LAB_DINOSAUR_MID_V7: MissionDefinitionV7 = {
         "RAIDING",
         "CHIVALRY",
         "DRILL",
+        // The ninth unit (`pulp_wars-w49.17`, 7r55): the heavy line unit's
+        // technologies (revision 2).
+        "ENGINEERING",
+        "METALLURGY",
       ],
       // Unit slots: 5, 4, 4, 3, 3; a Triceratops and a T-Rex fill two.
       cities: [
@@ -165,13 +179,14 @@ export const LAB_DINOSAUR_MID_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 3, y: 2 }, home: 1 },
         { role: "RAIDER", at: { x: 4, y: 2 }, home: 1, kills: 1 },
         { role: "MARKSMAN", at: { x: 4, y: 3 }, home: 1 },
-        { role: "CATAPULT", at: { x: 6, y: 4 }, home: 3, kills: 1 },
+        // The ninth unit (7r55): the Triceratops is the heavy line role.
+        { role: "SWORDSMAN", at: { x: 6, y: 4 }, home: 3, kills: 1 },
         { role: "GUARD", at: { x: 6, y: 3 }, home: 3 },
         // The southern cities' (both full).
         { role: "FIGHTER", at: { x: 3, y: 13 }, home: 2 },
         { role: "RAIDER", at: { x: 4, y: 12 }, home: 2 },
         { role: "MARKSMAN", at: { x: 4, y: 11 }, home: 2, kills: 1 },
-        { role: "CATAPULT", at: { x: 6, y: 10 }, home: 4 },
+        { role: "SWORDSMAN", at: { x: 6, y: 10 }, home: 4 },
         { role: "FIGHTER", at: { x: 6, y: 11 }, home: 4 },
       ],
       reveal: { radius: 2, rects: [{ x0: 0, y0: 0, x1: 11, y1: 15 }] },
@@ -190,6 +205,8 @@ export const LAB_DINOSAUR_MID_V7: MissionDefinitionV7 = {
         "CHIVALRY",
         "DRILL",
         "ENGINEERING",
+        // The ninth unit (7r55): the Champion is at Metallurgy.
+        "METALLURGY",
       ],
       // Unit slots: 5, 4, 4, 3, 3.
       cities: [

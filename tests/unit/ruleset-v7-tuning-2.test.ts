@@ -58,10 +58,10 @@ const adjacentAttackers = (faction: FactionIdV7): readonly UnitRoleIdV7[] =>
 
 describe("tuning 2 identity", () => {
   it("is 7r47 with 7r46 last in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
-    expect(PRIOR_RULESET_7_IDS.at(-8)).toBe("pulp-wars-poc-7r46");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(53);
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
+    expect(PRIOR_RULESET_7_IDS.at(-9)).toBe("pulp-wars-poc-7r46");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(54);
   });
 });
 
@@ -175,6 +175,9 @@ describe("1: who moves after a kill", () => {
       "UNDEAD Abomination",
       "MARTIAN Saucer",
       "MARTIAN Mothership",
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): Three Hammers are all
+      // swung from one tile.
+      "DWARF Whirligig",
     ]);
   });
 });
@@ -276,7 +279,8 @@ describe("3: the Human Knight captures settlements", () => {
       "T-Rex",
       "Mothership",
       "Sabretooth",
-      "Steam Tank",
+      // (The ninth unit, 7r55: the Steam Tank is the Dwarf heavy role.)
+      "Whirligig",
       "Chocolate Bunny",
     ]);
   });

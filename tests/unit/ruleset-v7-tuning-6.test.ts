@@ -70,7 +70,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r54`;
+ * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r55`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 13): the Normal AI breaks
  * a line with numbers, expands and grows, researches toward its army and
  * buys its dear units, and keeps its discipline; research costs 1 Coin more
@@ -179,13 +179,13 @@ describe("tuning 6 identity and the research price", () => {
   // and the Undead pass 7r51, so 7r49 is the prior identity before the
   // last.
   it("was 7r49 after 7r48, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
-    expect(PRIOR_RULESET_7_IDS.slice(-6, -4)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
+    expect(PRIOR_RULESET_7_IDS.slice(-7, -5)).toEqual([
       "pulp-wars-poc-7r48",
       "pulp-wars-poc-7r49",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -4)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-7, -5)).toEqual([
       "pulpWars.save.v7r48.current",
       "pulpWars.save.v7r49.current",
     ]);
@@ -322,7 +322,8 @@ describe("the assault: when a position is attacked", () => {
           "KNIGHT",
         ] as const
       ).map((role) => strength(role)),
-    ).toEqual([20, 29, 28, 35, 42, 49]);
+      // (The Champion costs 6 Coins since the ninth unit, 7r55: 39, was 35.)
+    ).toEqual([20, 29, 28, 39, 42, 49]);
     expect(strength("FIGHTER", "GOBLIN")).toBe(10);
     // A wounded unit weighs less.
     expect(
@@ -832,21 +833,50 @@ describe("research toward the army", () => {
       ],
       // The Undead pass (`pulp_wars-w49.13`): the Lich third (it was
       // fourth, behind the Necromancer).
-      UNDEAD: ["GUARD", "MARKSMAN", "CATAPULT", "CAPTAIN", "KNIGHT"],
+      // (The ninth unit, `pulp_wars-w49.17`, 7r55: the heavy line unit of
+      // each faction joins its order: the Wight and the Ogre after the
+      // support unit, the Shock Trooper after the Ray Gunner, and the
+      // Triceratops as the heavy role with the Stegosaurus after the
+      // Spitter.)
+      UNDEAD: [
+        "GUARD",
+        "MARKSMAN",
+        "CATAPULT",
+        "CAPTAIN",
+        "SWORDSMAN",
+        "KNIGHT",
+      ],
       // The Goblin pass (`pulp_wars-w49.12`): the Warboss before the Scrap
       // Buggy (it was KNIGHT, GUARD, CAPTAIN); its correction: the Orc
       // Brute third (a Human Knight's chain ends on a Brute).
-      GOBLIN: ["MARKSMAN", "RAIDER", "GUARD", "CATAPULT", "CAPTAIN", "KNIGHT"],
+      GOBLIN: [
+        "MARKSMAN",
+        "RAIDER",
+        "GUARD",
+        "CATAPULT",
+        "CAPTAIN",
+        "SWORDSMAN",
+        "KNIGHT",
+      ],
       // The Martian pass (`pulp_wars-w49.14`): the Shield Projector, the
       // Ray Gunner, the Tripod, the Brain, the Saucer, the Mothership.
-      MARTIAN: ["GUARD", "MARKSMAN", "CATAPULT", "CAPTAIN", "RAIDER", "KNIGHT"],
+      MARTIAN: [
+        "GUARD",
+        "MARKSMAN",
+        "SWORDSMAN",
+        "CATAPULT",
+        "CAPTAIN",
+        "RAIDER",
+        "KNIGHT",
+      ],
       // The Dinosaur pass (`pulp_wars-w49.15`): the Ankylosaurus, the
       // Triceratops, the Raptor, the Spitter, the Shaman, the T-Rex.
       DINOSAUR: [
         "GUARD",
-        "CATAPULT",
+        "SWORDSMAN",
         "RAIDER",
         "MARKSMAN",
+        "CATAPULT",
         "CAPTAIN",
         "KNIGHT",
       ],
@@ -861,6 +891,8 @@ describe("research toward the army", () => {
       "MARKSMANSHIP",
       "DRILL",
       "ENGINEERING",
+      // (The ninth unit, 7r55: the Champion is at Metallurgy.)
+      "METALLURGY",
       "FORESTRY",
       "SAWMILLING",
       "SCOUTING",
@@ -880,6 +912,9 @@ describe("research toward the army", () => {
       "FORESTRY",
       "SAWMILLING",
       "ADMINISTRATION",
+      // The ninth unit (7r55): the Wight, at Metallurgy.
+      "ENGINEERING",
+      "METALLURGY",
       "SCOUTING",
       "RAIDING",
       "CHIVALRY",
@@ -896,6 +931,9 @@ describe("research toward the army", () => {
       "FORESTRY",
       "SAWMILLING",
       "ADMINISTRATION",
+      // The ninth unit (7r55): the Ogre, at Metallurgy.
+      "ENGINEERING",
+      "METALLURGY",
       "RAIDING",
       "CHIVALRY",
     ]);
@@ -1753,7 +1791,10 @@ describe("LAB_BREAKTHROUGH: numbers against a prepared line", () => {
   // The economy rejig (`pulp_wars-w49.16`, 7r54): the Goblin attacker
   // takes it in round 7 again (6): its six cities make its next
   // technology dearer, and the Coins it keeps for it train fewer units.
-  const HOLD_ROUNDS = [6, 7, 8] as const;
+  // The ninth unit (`pulp_wars-w49.17`, 7r55; revision 3 of the lab): the
+  // Goblin attacker takes it in round 6 again (its order now holds the
+  // Ogre's technologies, and the player's Champions are the same units).
+  const HOLD_ROUNDS = [6, 6, 8] as const;
 
   const value = (state: GameStateV7, owner: number): number =>
     state.units
@@ -1824,8 +1865,13 @@ describe("LAB_BREAKTHROUGH: numbers against a prepared line", () => {
       // first draft of the labs), out of reach, and three level-4
       // cities against the player's three.
       const ratio = value(state, attacker.id) / value(state, player);
-      expect(value(state, player), id).toBe(63);
-      expect(ratio, id).toBeGreaterThanOrEqual(1.95);
+      // The ninth unit (`pulp_wars-w49.17`, 7r55; revision 3 of the lab):
+      // the player's four Champions cost 6 Coins each (5), so its units
+      // are worth 67 (63) and the unchanged Goblin and Undead attackers
+      // 1.87 times that. The lab is re-staged to twice the value when the
+      // Human faction is next played by hand; nothing was tuned here.
+      expect(value(state, player), id).toBe(67);
+      expect(ratio, id).toBeGreaterThanOrEqual(1.85);
       expect(ratio, id).toBeLessThanOrEqual(2.05);
       expect(
         state.cities

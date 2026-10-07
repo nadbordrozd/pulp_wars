@@ -307,7 +307,8 @@ describe("Revision 17 Goblin DOM", () => {
     const shorecraft = requiredButton("tech-shorecraft");
     expect(shorecraft.getAttribute("aria-disabled")).toBe("true");
     expect(shorecraft.getAttribute("aria-label")).toBe(
-      "Shorecraft, unavailable in this mission",
+      // (The ninth unit, 7r55: Shorecraft is shown as Sailing.)
+      "Sailing, unavailable in this mission",
     );
     expect(requiredButton("tech-navigation").getAttribute("aria-label")).toBe(
       "Navigation, unavailable in this mission",
@@ -359,8 +360,10 @@ describe("Revision 17 Goblin DOM", () => {
     requiredButton("compact-menu").click();
     requiredButton("help").click();
     const help = requiredElement<HTMLElement>(".v7-help-goblin");
-    // Ten rules of revision 17 and the two of the Goblin pass.
-    expect(help.querySelectorAll("li")).toHaveLength(12);
+    // Ten rules of revision 17, the two of the Goblin pass, and
+    // Heavyweight (the ninth unit, `pulp_wars-w49.17`).
+    expect(help.querySelectorAll("li")).toHaveLength(13);
+    expect(help.textContent).toContain("Heavyweight");
     expect(help.textContent).toContain(
       "Crash: a Scrap Buggy can Kaboom after it has attacked.",
     );

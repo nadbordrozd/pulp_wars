@@ -12,6 +12,15 @@ reasoning and the record, in the shape of
 [the Goblin pass](RULESET_7_TUNING_GOBLIN.md) and
 [the Human pass](RULESET_7_TUNING_HUMAN.md).
 
+**Superseded in part by [the ninth unit](RULESET_7_NINTH_UNIT.md) (`pulp-wars-poc-7r55`, `pulp_wars-w49.17`).** The Undead have a ninth land
+unit, the **Wight** (the heavy line role, at Metallurgy; Rise Again: it
+returns once from its own Grave at 7 HP unless a unit stands on it), so
+the roster, the research order (the Wight after the Necromancer), and
+every statement that the Swordsman is the Humans' alone are out of date.
+The Human Swordsman this document fights is the Champion (6 Coins, at
+Metallurgy). `LAB_UNDEAD_MID` is at revision 2: your seat owns Engineering
+and Metallurgy too. The record below is unchanged.
+
 **Superseded in part by [the economy rejig](RULESET_7_ECONOMY_REJIG.md)
 (`pulp-wars-poc-7r54`, `pulp_wars-w49.16`).** Where this document gives a research price by the technologies owned (the
 tier base plus 1 Coin for each technology owned, "the nth technology

@@ -300,7 +300,7 @@ describe("Dinosaur rules (section 10.3)", () => {
     const state = walledV7({
       defenderFaction: "MARTIAN",
       defender: "GUARD",
-      attackers: [{ role: "CATAPULT", at: at(7, 8) }],
+      attackers: [{ role: "SWORDSMAN", at: at(7, 8) }],
     });
     const run = attackV7(state, at(7, 8), at(8, 8));
     expect(run.combat).toMatchObject({

@@ -251,9 +251,14 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     const trains = artList(".v7-train-action > .v7-art-frame");
     expect(trains.length).toBeGreaterThan(0);
     for (const art of trains) expect(art).toMatch(/^chibi:PORTRAIT:UNDEAD:/);
-    expect(document.querySelector(".v7-train-action .v7-undead-badge")).toBe(
-      null,
-    );
+    // The ninth unit (`pulp_wars-w49.17`): the Wight has no art yet, so
+    // its card shows the Skeleton's portrait with the faction badge that
+    // marks a stand-in; no other card has the badge.
+    const badged = [
+      ...document.querySelectorAll<HTMLElement>(".v7-train-action"),
+    ].filter((action) => action.querySelector(".v7-undead-badge") !== null);
+    expect(badged).toHaveLength(1);
+    expect(badged[0]?.textContent).toContain("Wight");
     for (const icon of document.querySelectorAll<HTMLImageElement>(
       ".v7-economy-icon",
     ))

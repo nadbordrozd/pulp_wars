@@ -630,6 +630,12 @@ export function undeadBoundaryNoticeV7(
       parts.push(
         `Plague wore off ${count} of ${possessive(after, event.playerId)} ${count === 1 ? "unit" : "units"}`,
       );
+    } else if (event.kind === "WIGHT_RISEN") {
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): Rise Again.
+      toast = true;
+      parts.push(
+        `${owned(event.playerId, labelOf(event.unitId, "Wight"))} climbed out of its Grave`,
+      );
     } else if (event.kind === "BITTEN_UNIT_RISEN") {
       toast = true;
       const victim = unitById(event.victimUnitId);

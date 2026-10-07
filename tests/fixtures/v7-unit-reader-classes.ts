@@ -618,6 +618,20 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/candy-board-plan-v7.ts::candyAttackTargetExtrasV7":
       "BOARD",
     "src/render/canvas/candy-board-plan-v7.ts::candyPickTargetsV7": "BOARD",
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): all board readers. The
+    // Normal AI's positional values read the view's units (a mound is
+    // neither a helper nor a target). A Wight that dies was on the board
+    // (a burrowed unit takes no damage), and its rising appends a unit to
+    // the board. The per-turn marks (Cracked, struck, risen) name units on
+    // the board: a Cracked unit is another seat's and cannot Tunnel before
+    // the mark ends, a struck unit is an enemy of the acting Whirligig,
+    // and no Wight or Whirligig burrows (only a Mole and its Hammerer do).
+    "src/ai/v7-ninth-unit.ts::hostileLandUnitsV7": "BOARD",
+    "src/ai/v7-ninth-unit.ts::ownLandUnitsV7": "BOARD",
+    "src/engine/v7/ninth-unit.ts::withWightGravesV7": "BOARD",
+    "src/engine/v7/ninth-unit.ts::prunedNinthUnitV7": "BOARD",
+    "src/engine/v7/reducer.ts::resolveStartTurnRiseAgainV7": "BOARD",
+    "src/engine/v7/state-schema.ts::ninthUnitValid": "BOARD",
   };
 
 /**

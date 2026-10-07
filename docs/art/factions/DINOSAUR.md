@@ -399,3 +399,35 @@ Decided in bead `pulp_wars-3tq.13` (each is described in the
     with dull tawny tents, orange feather tips and a code-drawn pennant.
 19. **Effects, previews and the growth display** are unchanged; no
     Alpha-only raster.
+
+## Ninth unit: the Stegosaurus (bead `pulp_wars-w49.17`, stand-in art)
+
+Ruleset `7r55` gives every faction a ninth land unit ([what was
+built](../../product/RULESET_7_NINTH_UNIT.md)). The Dinosaur one with no art
+of its own is the **Stegosaurus** (engine role `CATAPULT`). **It has no art
+yet.** No PixelLab call was made for it.
+
+- **Art slot.** `UNIT:DINOSAUR:SWORDSMAN` and `PORTRAIT:DINOSAUR:SWORDSMAN`:
+  the ninth art slot of the faction (`unitArtRoleV7` in
+  `src/assets/chibi-art-v7.ts`). No raster is registered for either subject.
+- **Stand-in.** Until an art bead registers them, both fall back to the
+  Ankylosaurus (`UNIT:DINOSAUR:GUARD`, `PORTRAIT:DINOSAUR:GUARD`) through
+  `chibiFallbackSubjectV7` (`NINTH_UNIT_STAND_INS_V7`). The board marks the
+  piece with a steel disc lettered **S** where the faction badges go
+  (`drawStandInBadgeV7`), and the Gallery shows its stand-in mark.
+- **What the art bead must make.** One board sprite and one 48 x 48 portrait
+  in this fragment's direction: A plated Stegosaurus caught at the top of a tail
+  swing, a boulder flying off its spiked tail.
+- **Notes for that bead.** A siege unit that shoots two or three tiles: the
+  tail and the boulder are the read. It uses the shared Egg sprite before it
+  hatches (no Egg art is needed) and grows Big and Alpha like every dinosaur
+  (the board's growth marks, no new sprite).
+- **When the art lands.** Register the two subjects in this faction's
+  direction manifest, delete the faction's entry from `NINTH_UNIT_STAND_INS_V7`
+  (the fallback and the letter badge go with it), regenerate the unit shadow
+  measurements, and update the stand-in assertions in
+  `tests/unit/ruleset-v7-ninth-unit.test.ts`.
+
+The Triceratops is the heavy line role now (`SWORDSMAN`); its rasters, prompts
+and generation records stay under the art slot they were made for,
+`UNIT:DINOSAUR:CATAPULT` and `PORTRAIT:DINOSAUR:CATAPULT`.

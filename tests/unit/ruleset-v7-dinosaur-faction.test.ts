@@ -21,6 +21,7 @@ import {
   RULESET_7,
   RULESET_7_ID,
   SHOWCASE_UNIT_TEMPLATES_V7,
+  showcaseUnitRoleV7,
   STARTING_FIGHTERS_V7,
   TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7,
   TECHNOLOGY_IDS_V7,
@@ -120,26 +121,27 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
   "GUARD",
   "CATAPULT",
   "KNIGHT",
+  "SWORDSMAN",
 ];
 
 describe("ruleset-7 revision-19 identity", () => {
-  it("keeps r18 among the gap-free prior identities after the r54 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r54");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
+  it("keeps r18 among the gap-free prior identities after the r55 identity, and the save key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r55");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 52 },
+        { length: 53 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-36)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-37)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 52 },
+        { length: 53 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -177,7 +179,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r54");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r55");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -510,23 +512,24 @@ describe("ruleset-7 Dinosaur roster", () => {
       "SUPPORT",
     ],
     [
-      // Revision 20 section 2.1: hatch 2, 2 slots, 20 HP, Move 2, attacks
-      // after moving, Charge! (`LINEBREAKER`).
-      "Triceratops",
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Stegosaurus is the
+      // siege role the Triceratops left: hatch 2, 1 slot, 12 HP, Attack
+      // 2.5, Defense 1, Move 1, range 2 to 3, never attacks after moving.
+      "Stegosaurus",
       "CATAPULT",
       "SAWMILLING",
-      8,
-      2,
-      2,
-      20,
-      6,
-      4,
+      7,
       2,
       1,
+      12,
+      5,
+      2,
       1,
+      2,
+      3,
       1,
-      true,
-      ["ATTACK", "LINEBREAKER", "GROW"],
+      false,
+      ["ATTACK", "GROW"],
       "SIEGE",
     ],
     [
@@ -622,24 +625,26 @@ describe("ruleset-7 Dinosaur roster", () => {
       ["ATTACK", "SUBMERGED", "TORPEDO"],
       "NAVAL_HUNTER",
     ],
-    // Tuning 5 (`pulp_wars-w49.4`): the Human Swordsman's role, which the
-    // Dinosaur tree never unlocks and no Dinosaur seat trains (no cost).
+    // The ninth unit (7r55): the Triceratops is the heavy line role, at
+    // Metallurgy, a `LINE` unit. Its numbers are those of revision 20
+    // section 2.1: hatch 2, 2 slots, 20 HP, Move 2, attacks after moving,
+    // Charge! (`LINEBREAKER`).
     [
-      "Swordsman",
+      "Triceratops",
       "SWORDSMAN",
-      "ENGINEERING",
-      null,
-      null,
-      1,
-      15,
-      7,
-      5,
-      1,
+      "METALLURGY",
+      8,
+      2,
+      2,
+      20,
+      6,
+      4,
+      2,
       1,
       1,
       1,
       true,
-      ["ATTACK", "CAPTURE"],
+      ["ATTACK", "LINEBREAKER", "GROW"],
       "LINE",
     ],
   ];
@@ -710,13 +715,13 @@ describe("ruleset-7 Dinosaur roster", () => {
       ["MARKSMAN", 1, 1, 0, 0, false, true, false],
       ["GUARD", 1, 2, 0, 1, false, true, false],
       ["CAPTAIN", 1, null, 0, 0, false, true, false],
-      ["CATAPULT", 2, 2, 2, 0, false, true, false],
+      ["CATAPULT", 1, 2, 0, 0, false, false, false],
       ["KNIGHT", 2, 4, 0, 0, false, true, false],
       ["JUGGERNAUT", 2, null, 0, 0, false, true, false],
       ["PATROL_BOAT", 1, null, 0, 0, false, true, false],
       ["BATTLESHIP", 1, null, 0, 0, false, true, true],
       ["SUBMARINE", 1, null, 0, 0, false, true, false],
-      ["SWORDSMAN", 1, null, 0, 0, false, true, false],
+      ["SWORDSMAN", 2, 2, 2, 0, false, true, false],
     ]);
     for (const faction of ["ORIGINAL", "UNDEAD", "GOBLIN"] as const)
       for (const role of UNIT_ROLE_IDS_V7) {
@@ -775,7 +780,9 @@ describe("ruleset-7 Dinosaur roster", () => {
       ["MARKSMAN", 2],
       ["GUARD", 2],
       ["CAPTAIN", 2],
-      ["CATAPULT", 4],
+      ["SWORDSMAN", 4],
+      // The Stegosaurus (7r55): half of 7, rounded down.
+      ["CATAPULT", 3],
       // Revision 20: half of 14.
       ["KNIGHT", 7],
     ] as const;
@@ -828,7 +835,7 @@ describe("ruleset-7 Dinosaur roster", () => {
       [
         { seat: 0, role: "FIGHTER", at: { x: 4, y: 3 } },
         { seat: 0, role: "RAIDER", at: { x: 5, y: 3 } },
-        { seat: 0, role: "CATAPULT", at: { x: 6, y: 3 } },
+        { seat: 0, role: "SWORDSMAN", at: { x: 6, y: 3 } },
         { seat: 0, role: "JUGGERNAUT", at: { x: 7, y: 3 } },
         { seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } },
       ],
@@ -853,6 +860,7 @@ describe("ruleset-7 Dinosaur roster", () => {
       "PATROL_BOAT",
       "BATTLESHIP",
       "SUBMARINE",
+      "SWORDSMAN",
     ]);
   });
 });
@@ -935,10 +943,8 @@ describe("ruleset-7 Dinosaur technology", () => {
     // Everything else is the Human table.
     const dinosaur = technologyCapabilitiesV7(all, "DINOSAUR");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
-    // (The Swordsman of tuning 5 is the Humans' alone.)
-    expect(dinosaur.trainableRoles).toEqual(
-      human.trainableRoles.filter((role) => role !== "SWORDSMAN"),
-    );
+    // (The ninth unit, 7r55: every faction has the heavy line role.)
+    expect(dinosaur.trainableRoles).toEqual(human.trainableRoles);
     expect(dinosaur.roleSightRadius).toEqual({ RAIDER: 2, MARKSMAN: 2 });
     expect(dinosaur.forestMovementFreedomRoles).toEqual(["RAIDER", "MARKSMAN"]);
     // Tuning 4: Commerce pays 1 Coin per linked city (2 since tuning 1).
@@ -955,6 +961,11 @@ describe("ruleset-7 Dinosaur technology", () => {
       EXPLOSIVES: "Wallbreaker",
       // The Dinosaur pass, correction: the technology of the Chopping Block.
       SAWMILLING: "Timber",
+      // The ninth unit (7r55): the nodes named for their building or unit.
+      MILLING: "Grinding",
+      MARKSMANSHIP: "Spitters",
+      CHIVALRY: "T-Rex",
+      METALLURGY: "Triceratops",
     });
     expect(
       FACTION_IDS_V7.map((faction) => technologyNameV7("EXPLOSIVES", faction)),
@@ -987,7 +998,9 @@ describe("ruleset-7 Dinosaur technology", () => {
       if (
         tech !== "FORTIFICATION" &&
         tech !== "EXPLOSIVES" &&
-        tech !== "SAWMILLING"
+        tech !== "SAWMILLING" &&
+        // The ninth unit (7r55): the nodes named for a building or unit.
+        !Object.hasOwn(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.DINOSAUR, tech)
       )
         expect(technologyNameV7(tech, "DINOSAUR")).toBe(
           technologyNameV7(tech, "ORIGINAL"),
@@ -1020,7 +1033,10 @@ describe("ruleset-7 Dinosaur technology", () => {
       "Blast Mountain (3 Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes 5 damage, yours too except the one that sets it; in your territory its city gains +1 population",
       "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
     ]);
-    expect(text(0, "SAWMILLING")).toContain("Triceratops Egg (Charge!)");
+    // The ninth unit (7r55): the Triceratops is at Metallurgy and the
+    // Stegosaurus at Sawmilling.
+    expect(text(0, "METALLURGY")).toContain("Triceratops Egg (Charge!)");
+    expect(text(0, "SAWMILLING")[0]).toContain("Stegosaurus Egg");
     expect(text(1, "FORTIFICATION")).toEqual([
       "Build Field Defense: +2 Defense for the unit on it; the builder keeps its move and attack",
     ]);
@@ -1484,10 +1500,15 @@ describe("ruleset-7 Dinosaur Showcase", () => {
         unit.homeCityId,
       ]),
     ).toEqual(
+      // The ninth unit (7r55): the Triceratops stands where it stood (the
+      // siege unit's tile, as the heavy role) and the Stegosaurus on the
+      // ninth unit's tile (`showcaseUnitRoleV7`).
       reference.units.map((unit) => [
         unit.id,
         unit.ownerId,
-        unit.role,
+        unit.ownerId === seatIdV7(reference, 0)
+          ? showcaseUnitRoleV7(unit.role, "DINOSAUR")
+          : unit.role,
         unit.form,
         unit.at,
         unit.homeCityId,
@@ -1496,7 +1517,9 @@ describe("ruleset-7 Dinosaur Showcase", () => {
     const dinosaurId = seatIdV7(state, 0);
     const own = state.units.filter((unit) => unit.ownerId === dinosaurId);
     expect(own.map((unit) => unit.role)).toEqual(
-      SHOWCASE_UNIT_TEMPLATES_V7.map((entry) => entry.role),
+      SHOWCASE_UNIT_TEMPLATES_V7.map((entry) =>
+        showcaseUnitRoleV7(entry.role, "DINOSAUR"),
+      ),
     );
     for (const unit of own) {
       const rule = effectiveRoleRuleV7(unit.role, "DINOSAUR");
@@ -1528,9 +1551,10 @@ describe("ruleset-7 Dinosaur Showcase", () => {
         assignedUnitCountV7(state, city.id),
         cityUnitCapacityV7(state, city),
       ]);
+    // (7r55: North also homes the Stegosaurus, 4 of 7.)
     expect(slots).toEqual([
       [8, 8],
-      [3, 7],
+      [4, 7],
       [3, 7],
     ]);
     // The other seats keep one slot per unit.
@@ -1538,7 +1562,7 @@ describe("ruleset-7 Dinosaur Showcase", () => {
       state.cities
         .filter((city) => city.ownerId === seatIdV7(state, 1))
         .map((city) => assignedUnitCountV7(state, city.id)),
-    ).toEqual([5, 3, 3]);
+    ).toEqual([5, 4, 3]);
     // The first income is the Human one (19 since land trade pays 2 Coins;
     // tuning 1, 7r46).
     // Tuning 3: 21, since the linked capital earns land trade too.
@@ -1595,7 +1619,14 @@ describe("ruleset-7 Dinosaur Showcase", () => {
             .filter((command) => command.cityId === city.id)
             .map((command) => command.role),
         ),
-      ]).toEqual(["RAIDER", "MARKSMAN", "GUARD", "CATAPULT", "KNIGHT"]);
+      ]).toEqual([
+        "RAIDER",
+        "MARKSMAN",
+        "GUARD",
+        "CATAPULT",
+        "KNIGHT",
+        "SWORDSMAN",
+      ]);
     for (const command of lays) {
       const result = applyCommandV7(state, state.humanPlayerId, command);
       expect(result.accepted).toBe(true);
@@ -1648,7 +1679,7 @@ describe("ruleset-7 revision-19 declared shapes", () => {
     const state = goblinArenaV7(
       ["DINOSAUR", "ORIGINAL"],
       [
-        { seat: 0, role: "CATAPULT", at: { x: 4, y: 3 } },
+        { seat: 0, role: "SWORDSMAN", at: { x: 4, y: 3 } },
         { seat: 0, role: "CAPTAIN", at: { x: 4, y: 5 } },
         // A third unit fills the capital's four slots (level 1, Planning,
         // Nesting; the Triceratops uses two).
@@ -1718,7 +1749,7 @@ describe("ruleset-7 revision-19 declared shapes", () => {
     const human = goblinArenaV7(
       ["ORIGINAL", "DINOSAUR"],
       [
-        { seat: 0, role: "CATAPULT", at: { x: 4, y: 3 } },
+        { seat: 0, role: "SWORDSMAN", at: { x: 4, y: 3 } },
         { seat: 0, role: "CAPTAIN", at: { x: 4, y: 5 } },
         { seat: 1, role: "FIGHTER", at: { x: 6, y: 3 } },
       ],

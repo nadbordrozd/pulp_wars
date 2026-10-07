@@ -3,6 +3,7 @@ import {
   type FactionIdV7,
   isNavalRoleV7,
   roleMechanicsV7,
+  technologyDisplayNameV7,
   type UnitRoleIdV7,
 } from "../engine/index";
 import {
@@ -36,6 +37,7 @@ import {
   iceFolkRecruitNotesV7,
 } from "./ice-folk-presentation-v7";
 import { FREEZE_RULE_V7 } from "./frozen-sea-presentation-v7";
+import { ninthUnitRecruitNotesV7 } from "./ninth-unit-presentation-v7";
 import {
   NAVAL_RAM_RULE_V7,
   SUBMERGED_RULE_V7,
@@ -131,6 +133,9 @@ export function recruitmentRolePresentationV7(
   // The Candy revision: the Rush perks, Crumbs and the Field Defense
   // restriction from the Candy registration.
   restrictions.push(...candyRecruitNotesV7(roleId, faction));
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): Heavyweight, Rise Again,
+  // Shock Field, Rock Hard, Thagomizer, Frostbite, and Three Hammers.
+  restrictions.push(...ninthUnitRecruitNotesV7(roleId, faction));
   return {
     label: role.label,
     stats: [
@@ -205,7 +210,7 @@ export function roleAbilityDescriptionV7(
     case "CAPTURE":
       return "Can take villages and enemy cities.";
     case "CHARGE":
-      return "With Raiding, +1 Attack on the first Attack after moving 2+ cells.";
+      return `With ${technologyDisplayNameV7("RAIDING", faction)}, +1 Attack on the first Attack after moving 2+ cells.`;
     case "RALLY":
       return "Inspires adjacent friendly land troops except Captains and Catapults.";
     case "TEND_WOUNDED":
@@ -220,7 +225,7 @@ export function roleAbilityDescriptionV7(
     // sentences of docs/product/RULESET_7_NAVAL_BRANCH.md section 14.2,
     // shared by every faction.
     case "RAM":
-      return `With Seamanship: ${NAVAL_RAM_RULE_V7.replace(/^A Patrol Boat/, "a Patrol Boat")}`;
+      return `With ${technologyDisplayNameV7("SEAMANSHIP", faction)}: ${NAVAL_RAM_RULE_V7.replace(/^A Patrol Boat/, "a Patrol Boat")}`;
     // The frozen sea (`pulp_wars-5ti.7`): every Ice Folk land role.
     case "FREEZE":
       return `With Rime: ${FREEZE_RULE_V7.replace(/^A unit/, "it")}`;

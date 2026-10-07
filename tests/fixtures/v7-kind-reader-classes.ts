@@ -457,6 +457,15 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/city-names-presentation-v7.ts::assignCityNamesV7": "SEAT",
   "src/render/city-names-presentation-v7.ts::cityNameSitesV7": "SEAT",
   "src/render/city-names-presentation-v7.ts::cityNameEntryV7": "SEAT",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55). The state check: a risen
+  // Wight and a Whirligig with attacks made are units of that kind
+  // (`kindOf`); a marked Grave belongs to a seat whose registration has
+  // Rise Again. The presentation: the Help sentences and the card notes of
+  // a faction's own roster (a registration's labels, no unit involved).
+  "src/engine/v7/state-schema.ts::ninthUnitValid": "KIND",
+  "src/render/ninth-unit-presentation-v7.ts::<module>": "SEAT",
+  "src/render/ninth-unit-presentation-v7.ts::ninthUnitMechanicsV7": "SEAT",
+  "src/render/ninth-unit-presentation-v7.ts::ninthUnitHelpRulesV7": "SEAT",
 };
 
 /**

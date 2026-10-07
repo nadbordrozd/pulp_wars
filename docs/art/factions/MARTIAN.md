@@ -580,3 +580,31 @@ decisions":
   gun against the round shield, not by size.
 - **The Shield Projector's dish** sits beside the helmet as a small rig of
   a mast and a rod; in the bust it overlaps the helmet glass.
+
+## Ninth unit: the Shock Trooper (bead `pulp_wars-w49.17`, stand-in art)
+
+Ruleset `7r55` gives every faction a ninth land unit ([what was
+built](../../product/RULESET_7_NINTH_UNIT.md)). The Martian one with no art of
+its own is the **Shock Trooper** (engine role `SWORDSMAN`). **It has no art
+yet.** No PixelLab call was made for it.
+
+- **Art slot.** `UNIT:MARTIAN:SWORDSMAN` and `PORTRAIT:MARTIAN:SWORDSMAN`: the
+  ninth art slot of the faction (`unitArtRoleV7` in
+  `src/assets/chibi-art-v7.ts`). No raster is registered for either subject.
+- **Stand-in.** Until an art bead registers them, both fall back to the Grunt
+  (`UNIT:MARTIAN:FIGHTER`, `PORTRAIT:MARTIAN:FIGHTER`) through
+  `chibiFallbackSubjectV7` (`NINTH_UNIT_STAND_INS_V7`). The board marks the
+  piece with a steel disc lettered **T** where the faction badges go
+  (`drawStandInBadgeV7`), and the Gallery shows its stand-in mark.
+- **What the art bead must make.** One board sprite and one 48 x 48 portrait
+  in this fragment's direction: A squat one-eyed Martian sealed in a domed
+  chrome battle-suit with one heavy pincer arm, small lightning arcs crawling
+  over the dome.
+- **Notes for that bead.** The faction's only melee unit: no ray gun in its
+  silhouette. The lightning arcs are the Shock Field; they belong to the sprite,
+  and the Shield ring is drawn by the board as for every Martian unit.
+- **When the art lands.** Register the two subjects in this faction's
+  direction manifest, delete the faction's entry from `NINTH_UNIT_STAND_INS_V7`
+  (the fallback and the letter badge go with it), regenerate the unit shadow
+  measurements, and update the stand-in assertions in
+  `tests/unit/ruleset-v7-ninth-unit.test.ts`.

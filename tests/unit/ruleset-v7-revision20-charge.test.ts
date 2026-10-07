@@ -65,7 +65,7 @@ function duel(
     [
       {
         seat: 0,
-        role: "CATAPULT",
+        role: "SWORDSMAN",
         at: at(3, 2),
         ...(options.triceratopsHp === undefined
           ? {}
@@ -90,10 +90,14 @@ function duel(
 
 describe("ruleset-7 revision-20 Triceratops stats", () => {
   it("registers every value of section 2.1", () => {
-    expect(effectiveRoleRuleV7("CATAPULT", "DINOSAUR")).toEqual({
-      role: "CATAPULT",
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): the Triceratops is the
+    // Dinosaur heavy line role (`SWORDSMAN`, a `LINE` unit at Metallurgy);
+    // it was the `CATAPULT` role (`SIEGE`, at Sawmilling) until 7r54. Every
+    // other value of section 2.1 is unchanged.
+    expect(effectiveRoleRuleV7("SWORDSMAN", "DINOSAUR")).toEqual({
+      role: "SWORDSMAN",
       label: "Triceratops",
-      tacticalRole: "SIEGE",
+      tacticalRole: "LINE",
       cost: 8,
       maxHp: 20,
       attack2: 6,
@@ -102,11 +106,11 @@ describe("ruleset-7 revision-20 Triceratops stats", () => {
       range: 1,
       minimumRange: 1,
       sightRadius: 1,
-      technology: "SAWMILLING",
+      technology: "METALLURGY",
       mayUsePrimaryActionAfterMove: true,
       abilities: ["ATTACK", "LINEBREAKER", "GROW"],
     });
-    expect(roleMechanicsV7("CATAPULT", "DINOSAUR")).toMatchObject({
+    expect(roleMechanicsV7("SWORDSMAN", "DINOSAUR")).toMatchObject({
       advancesAfterKill: true,
       capacitySlots: 2,
       hatchTurns: 2,
@@ -121,13 +125,13 @@ describe("ruleset-7 revision-20 Triceratops stats", () => {
         "MARKSMAN",
         "GUARD",
         "CAPTAIN",
-        "CATAPULT",
+        "SWORDSMAN",
         "KNIGHT",
         "JUGGERNAUT",
         "PATROL_BOAT",
         "BATTLESHIP",
       ] as const) {
-        const linebreaker = faction === "DINOSAUR" && role === "CATAPULT";
+        const linebreaker = faction === "DINOSAUR" && role === "SWORDSMAN";
         expect(
           effectiveRoleRuleV7(role, faction).abilities.includes("LINEBREAKER"),
         ).toBe(linebreaker);
@@ -165,7 +169,7 @@ describe("ruleset-7 revision-20 Triceratops stats", () => {
 
   it("attacks after a Move, once per turn, and never captures", () => {
     const state = fieldV7([
-      { seat: 0, role: "CATAPULT", at: at(2, 2) },
+      { seat: 0, role: "SWORDSMAN", at: at(2, 2) },
       { seat: 1, role: "GUARD", at: at(5, 2) },
       { seat: 1, role: "GUARD", at: at(5, 3) },
     ]);
@@ -192,14 +196,14 @@ describe("ruleset-7 revision-20 Triceratops stats", () => {
         targetUnitId: second.id,
       }),
     ).toBe("UNIT_ALREADY_ACTED");
-    expect(effectiveRoleRuleV7("CATAPULT", "DINOSAUR").abilities).not.toContain(
-      "CAPTURE",
-    );
+    expect(
+      effectiveRoleRuleV7("SWORDSMAN", "DINOSAUR").abilities,
+    ).not.toContain("CAPTURE");
   });
 
   it("threatens its ordinary move-then-melee reach and no lane tiles", () => {
     const state = fieldV7([
-      { seat: 0, role: "CATAPULT", at: at(5, 2) },
+      { seat: 0, role: "SWORDSMAN", at: at(5, 2) },
       { seat: 1, role: "FIGHTER", at: at(0, 10) },
     ]);
     const tiles = queryThreatenedTilesV7(
@@ -254,7 +258,7 @@ describe("ruleset-7 revision-20 Charge! run-up", () => {
 
   it("counts the tiles of a real Move: one, two, and over an own unit", () => {
     const near = fieldV7([
-      { seat: 0, role: "CATAPULT", at: at(2, 2) },
+      { seat: 0, role: "SWORDSMAN", at: at(2, 2) },
       { seat: 1, role: "GUARD", at: at(4, 0) },
     ]);
     // One tile: (2, 2) -> (3, 1), next to the Guard on (4, 0).
@@ -264,7 +268,7 @@ describe("ruleset-7 revision-20 Charge! run-up", () => {
       attack2: 8,
     });
     const base = fieldV7([
-      { seat: 0, role: "CATAPULT", at: at(2, 2) },
+      { seat: 0, role: "SWORDSMAN", at: at(2, 2) },
       { seat: 0, role: "FIGHTER", at: at(3, 3) },
       { seat: 1, role: "GUARD", at: at(5, 2) },
     ]);
@@ -287,7 +291,7 @@ describe("ruleset-7 revision-20 Charge! run-up", () => {
 
   it("still gives +2 after a three- or four-tile Road Move", () => {
     let state = fieldV7([
-      { seat: 0, role: "CATAPULT", at: at(1, 2) },
+      { seat: 0, role: "SWORDSMAN", at: at(1, 2) },
       { seat: 1, role: "GUARD", at: at(6, 2) },
     ]);
     for (const x of [1, 2, 3, 4, 5])
@@ -320,7 +324,7 @@ describe("ruleset-7 revision-20 Charge! run-up", () => {
     // explored: the two-tile Move stops after one tile.
     const state = unexploreV7(
       fieldV7([
-        { seat: 0, role: "CATAPULT", at: at(3, 2) },
+        { seat: 0, role: "SWORDSMAN", at: at(3, 2) },
         { seat: 1, role: "GUARD", at: at(5, 2) },
       ]),
       0,
@@ -348,7 +352,7 @@ describe("ruleset-7 revision-20 Charge! run-up", () => {
       [
         {
           seat: 0,
-          role: "CATAPULT",
+          role: "SWORDSMAN",
           at: at(3, 2),
           form: "EMBARKED",
           activation: movedV7(1),
@@ -470,7 +474,7 @@ describe("ruleset-7 revision-20 Charge! ignores fortification", () => {
       [true, 4],
     ] as const) {
       const state = walledV7({
-        attackers: [{ role: "CATAPULT", at: at(7, 8) }],
+        attackers: [{ role: "SWORDSMAN", at: at(7, 8) }],
         fieldDefense,
       });
       const guard = unitAtV7(state, at(8, 8));
@@ -493,7 +497,7 @@ describe("ruleset-7 revision-20 Charge! ignores fortification", () => {
     }
     // Field Defense alone, on an own-territory tile off the center.
     const base = fieldV7([
-      { seat: 0, role: "CATAPULT", at: at(4, 7) },
+      { seat: 0, role: "SWORDSMAN", at: at(4, 7) },
       { seat: 1, role: "GUARD", at: at(3, 7) },
     ]);
     const fortified = fieldDefenseV7(base, at(3, 7));
@@ -521,7 +525,7 @@ describe("ruleset-7 revision-20 Charge! ignores fortification", () => {
           fieldV7([
             {
               seat: 0,
-              role: "CATAPULT",
+              role: "SWORDSMAN",
               at: at(4, 7),
               activation: movedV7(2),
             },
@@ -715,7 +719,7 @@ describe("ruleset-7 revision-20 Charge! worked examples (section 2.5)", () => {
       [0, 7, 7, [5, 18]],
     ] as const) {
       let state = walledV7({
-        attackers: [{ role: "CATAPULT", at: at(7, 8) }],
+        attackers: [{ role: "SWORDSMAN", at: at(7, 8) }],
         fieldDefense: true,
       });
       if (moved > 0)
@@ -750,7 +754,7 @@ describe("ruleset-7 revision-20 Charge! worked examples (section 2.5)", () => {
         [
           {
             seat: 0,
-            role: "CATAPULT",
+            role: "SWORDSMAN",
             at: at(4, 7),
             activation: movedV7(2),
           },
@@ -788,7 +792,7 @@ describe("ruleset-7 revision-20 Charge! destroys Field Defense", () => {
       fieldV7([
         {
           seat: 0,
-          role: "CATAPULT",
+          role: "SWORDSMAN",
           at: at(4, 7),
           ...(triceratopsHp === undefined ? {} : { hp: triceratopsHp }),
         },
@@ -847,7 +851,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
   it("emits the events in the order of section 2.3", () => {
     const state = fieldDefenseV7(
       fieldV7([
-        { seat: 0, role: "CATAPULT", at: at(4, 7) },
+        { seat: 0, role: "SWORDSMAN", at: at(4, 7) },
         { seat: 1, role: "GUARD", at: at(3, 7) },
       ]),
       at(3, 7),
@@ -883,7 +887,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
   it("keeps the pushed unit's HP and statuses and clears its capture eligibility", () => {
     const base = fieldV7(
       [
-        { seat: 0, role: "CATAPULT", at: at(4, 5) },
+        { seat: 0, role: "SWORDSMAN", at: at(4, 5) },
         { seat: 1, role: "GUARD", at: at(5, 5), captureEligible: true },
         { seat: 2, role: "GUARD", at: at(0, 13) },
         { seat: 2, role: "CATAPULT", at: at(1, 13) },
@@ -921,7 +925,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
   it("does not advance when a Bitten target rises in place", () => {
     const base = fieldV7(
       [
-        { seat: 0, role: "CATAPULT", at: at(4, 5) },
+        { seat: 0, role: "SWORDSMAN", at: at(4, 5) },
         { seat: 1, role: "FIGHTER", at: at(5, 5), hp: 3 },
         { seat: 2, role: "GUARD", at: at(0, 13) },
       ],
@@ -954,7 +958,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
     const state = mountainV7(
       fieldV7(
         [
-          { seat: 0, role: "CATAPULT", at: at(3, 2) },
+          { seat: 0, role: "SWORDSMAN", at: at(3, 2) },
           { seat: 1, role: "FIGHTER", at: at(4, 2), hp: 2 },
         ],
         { techs: { 0: withoutTechsV7("DINOSAUR", "ENGINEERING") } },
@@ -968,7 +972,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
 
   it("pushes a defender off a village center and stands on it without capturing", () => {
     const state = fieldV7([
-      { seat: 0, role: "CATAPULT", at: at(4, 5) },
+      { seat: 0, role: "SWORDSMAN", at: at(4, 5) },
       { seat: 1, role: "GUARD", at: at(5, 5) },
     ]);
     expect(tileV7(state, at(5, 5)).site).toBe("VILLAGE");
@@ -988,7 +992,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
 
   it("pushes a defender off a Walled city center and besieges it", () => {
     const state = walledV7({
-      attackers: [{ role: "CATAPULT", at: at(7, 8) }],
+      attackers: [{ role: "SWORDSMAN", at: at(7, 8) }],
     });
     const run = attackV7(state, at(7, 8), at(8, 8));
     expect(run.target?.at).toEqual(at(9, 8));
@@ -1002,7 +1006,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
         "off the board",
         () =>
           fieldV7([
-            { seat: 0, role: "CATAPULT", at: at(1, 2) },
+            { seat: 0, role: "SWORDSMAN", at: at(1, 2) },
             { seat: 1, role: "GUARD", at: at(0, 2) },
           ]),
       ],
@@ -1011,7 +1015,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
         () =>
           fieldV7(
             [
-              { seat: 0, role: "CATAPULT", at: at(3, 2) },
+              { seat: 0, role: "SWORDSMAN", at: at(3, 2) },
               { seat: 1, role: "GUARD", at: at(4, 2) },
             ],
             { water: [at(5, 2)] },
@@ -1021,7 +1025,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
         "a unit",
         () =>
           fieldV7([
-            { seat: 0, role: "CATAPULT", at: at(3, 2) },
+            { seat: 0, role: "SWORDSMAN", at: at(3, 2) },
             { seat: 1, role: "GUARD", at: at(4, 2) },
             { seat: 0, role: "FIGHTER", at: at(5, 2) },
           ]),
@@ -1030,7 +1034,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
         "a settlement site",
         () =>
           fieldV7([
-            { seat: 0, role: "CATAPULT", at: at(3, 5) },
+            { seat: 0, role: "SWORDSMAN", at: at(3, 5) },
             { seat: 1, role: "GUARD", at: at(4, 5) },
           ]),
       ],
@@ -1040,7 +1044,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
           mountainV7(
             fieldV7(
               [
-                { seat: 0, role: "CATAPULT", at: at(3, 2) },
+                { seat: 0, role: "SWORDSMAN", at: at(3, 2) },
                 { seat: 1, role: "GUARD", at: at(4, 2) },
               ],
               { techs: { 1: withoutTechsV7("ORIGINAL", "ENGINEERING") } },
@@ -1051,7 +1055,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
     ];
     for (const [name, build] of blocked) {
       const state = build();
-      const triceratops = state.units.find((unit) => unit.role === "CATAPULT");
+      const triceratops = state.units.find((unit) => unit.role === "SWORDSMAN");
       const guard = state.units.find((unit) => unit.role === "GUARD");
       if (triceratops === undefined || guard === undefined)
         throw new Error("pieces missing");
@@ -1072,7 +1076,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
       goblinArenaV7(
         ["DINOSAUR", "ORIGINAL", "ORIGINAL"],
         [
-          { seat: 0, role: "CATAPULT", at: at(8, 3) },
+          { seat: 0, role: "SWORDSMAN", at: at(8, 3) },
           { seat: 1, role: "GUARD", at: at(9, 3) },
         ],
         { aiMode: "COOPERATIVE" },
@@ -1092,7 +1096,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
   it("reports an unexplored tile behind as UNKNOWN_BEHIND_FOG and does not push", () => {
     const state = unexploreV7(
       fieldV7([
-        { seat: 0, role: "CATAPULT", at: at(3, 2) },
+        { seat: 0, role: "SWORDSMAN", at: at(3, 2) },
         { seat: 1, role: "GUARD", at: at(4, 2) },
       ]),
       0,
@@ -1112,7 +1116,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
     const state = mountainV7(
       fieldV7(
         [
-          { seat: 0, role: "CATAPULT", at: at(3, 2) },
+          { seat: 0, role: "SWORDSMAN", at: at(3, 2) },
           { seat: 1, role: "GUARD", at: at(4, 2) },
         ],
         { techs: { 0: withoutTechsV7("DINOSAUR", "ENGINEERING") } },
@@ -1131,7 +1135,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
     const eggs = (triceratopsHp: number): GameStateV7 =>
       fieldV7(
         [
-          { seat: 0, role: "CATAPULT", at: at(4, 7), hp: triceratopsHp },
+          { seat: 0, role: "SWORDSMAN", at: at(4, 7), hp: triceratopsHp },
           { seat: 1, role: "FIGHTER", at: at(0, 0) },
         ],
         {
@@ -1166,7 +1170,7 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
     const afloat = (hp?: number): GameStateV7 =>
       fieldV7(
         [
-          { seat: 0, role: "CATAPULT", at: at(3, 2) },
+          { seat: 0, role: "SWORDSMAN", at: at(3, 2) },
           {
             seat: 1,
             role: "PATROL_BOAT",
@@ -1231,7 +1235,7 @@ describe("ruleset-7 revision-20 Charge! interactions (section 2.6)", () => {
   it("is infected by a Zombie whose retaliation kills it", () => {
     const state = fieldV7(
       [
-        { seat: 0, role: "CATAPULT", at: at(3, 2), hp: 1 },
+        { seat: 0, role: "SWORDSMAN", at: at(3, 2), hp: 1 },
         { seat: 1, role: "GUARD", at: at(4, 2) },
       ],
       { factions: ["DINOSAUR", "UNDEAD"] },
@@ -1253,7 +1257,7 @@ describe("ruleset-7 revision-20 Charge! interactions (section 2.6)", () => {
   it("lets a Vampire retaliate and heal, then pushes it", () => {
     const state = fieldV7(
       [
-        { seat: 0, role: "CATAPULT", at: at(3, 2), hp: 6 },
+        { seat: 0, role: "SWORDSMAN", at: at(3, 2), hp: 6 },
         { seat: 1, role: "KNIGHT", at: at(4, 2) },
       ],
       { factions: ["DINOSAUR", "UNDEAD"] },
@@ -1271,7 +1275,7 @@ describe("ruleset-7 revision-20 Charge! interactions (section 2.6)", () => {
   it("is hit by the blast of an exploding unit it kills and advances onto", () => {
     const state = fieldV7(
       [
-        { seat: 0, role: "CATAPULT", at: at(3, 2) },
+        { seat: 0, role: "SWORDSMAN", at: at(3, 2) },
         { seat: 1, role: "MARKSMAN", at: at(4, 2), hp: 3 },
       ],
       { factions: ["DINOSAUR", "GOBLIN"] },
@@ -1308,7 +1312,7 @@ describe("ruleset-7 revision-20 Charge! interactions (section 2.6)", () => {
   it("pushes a surviving exploding unit, which does not explode", () => {
     const state = fieldV7(
       [
-        { seat: 0, role: "CATAPULT", at: at(3, 2), hp: 4 },
+        { seat: 0, role: "SWORDSMAN", at: at(3, 2), hp: 4 },
         { seat: 1, role: "KNIGHT", at: at(4, 2) },
       ],
       { factions: ["DINOSAUR", "GOBLIN"] },
@@ -1322,7 +1326,7 @@ describe("ruleset-7 revision-20 Charge! interactions (section 2.6)", () => {
   it("is never Inspired by War Drums", () => {
     const state = fieldV7([
       { seat: 0, role: "CAPTAIN", at: at(3, 3) },
-      { seat: 0, role: "CATAPULT", at: at(3, 2) },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 2) },
       { seat: 0, role: "FIGHTER", at: at(2, 2) },
       { seat: 1, role: "GUARD", at: at(4, 2) },
     ]);

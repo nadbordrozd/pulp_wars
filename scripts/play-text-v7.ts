@@ -55,7 +55,9 @@ import {
   PROMOTION_HP_V7,
   RULESET_7_ID,
   SPATIAL_ECONOMIC_ACTIONS_V7,
-  TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7,
+  NEUTRAL_KIND_V7,
+  TECHNOLOGY_IDS_V7,
+  technologyDisplayNameV7,
   UNIT_ROLE_IDS_V7,
   allOwnedUnitsV7,
   allowedBoardSizesV7,
@@ -135,6 +137,7 @@ import {
   type PublicTechnologyNodeV7,
   type PublicUnitV7,
   type TechnologyUnlockV7,
+  type TechnologyIdV7,
   type UnitRoleIdV7,
   previewBlastMountainV7,
   publicHireCostV7,
@@ -880,13 +883,18 @@ function roleStatsV7(rule: EffectiveRoleRuleV7, faction?: FactionIdV7): string {
     .join("")}`;
 }
 
+/**
+ * A technology as the harness prints it: its ID, and (the ninth unit,
+ * `pulp_wars-w49.17`, 7r55) the name the faction's player reads wherever
+ * that is not the ID in sentence case: `DRILL "Garrison"`, `METALLURGY
+ * "Armoury"`, a Dinosaur `SAWMILLING "Timber"`, and plain `ROADS`.
+ */
 function techNameV7(faction: FactionIdV7, tech: string): string {
-  const override = (
-    TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7 as Readonly<
-      Record<string, Readonly<Record<string, string>> | undefined>
-    >
-  )[faction]?.[tech];
-  return override === undefined ? tech : `${tech} "${override}"`;
+  if (!(TECHNOLOGY_IDS_V7 as readonly string[]).includes(tech)) return tech;
+  const name = technologyDisplayNameV7(tech as TechnologyIdV7, faction);
+  return name.toUpperCase().replaceAll(" ", "_") === tech
+    ? tech
+    : `${tech} "${name}"`;
 }
 
 // ---------------------------------------------------------------------------
@@ -1313,7 +1321,9 @@ function combatTextV7(
     `deals ${preview.damageToDefender}${after(hp.defender, preview.damageToDefender)}${preview.defenderDies ? " KILLS" : ""}`,
     preview.retaliation
       ? `takes ${preview.damageToAttacker}${after(hp.attacker, preview.damageToAttacker)}${preview.attackerDies ? " ATTACKER DIES" : ""}`
-      : `no retaliation${preview.noRetaliationReason === null ? "" : ` (${preview.noRetaliationReason})`}`,
+      : // The ninth unit (`pulp_wars-w49.17`, 7r55): a Shock Field hits the
+        // attacker without a retaliation.
+        `no retaliation${preview.noRetaliationReason === null ? "" : ` (${preview.noRetaliationReason})`}${preview.damageToAttacker > 0 ? `, takes ${preview.damageToAttacker} from the Shock Field${after(hp.attacker, preview.damageToAttacker)}${preview.attackerDies ? " ATTACKER DIES" : ""}` : ""}`,
     `atk ${halfV7(preview.attack2)} vs def ${halfV7(preview.defense2)}${defenseBreakdownTextV7(preview, context)}${preview.defenseBonusNumerator === preview.defenseBonusDenominator ? "" : ` x${preview.defenseBonusNumerator}/${preview.defenseBonusDenominator}`}`,
   ];
   // Tuning 5 (`pulp_wars-w49.4`): Overrun has no budget, so no count is
@@ -2244,33 +2254,33 @@ function integerFlagV7(args: ArgsV7, name: string, fallback: number): number {
  * is for.
  */
 const BREAKTHROUGH_LAB_TEXT_V7 =
-  "hold a prepared line against numbers: you hold the only crossing between two lakes, eight tiles wide (Guards on two Mountains and two Field Defenses, Swordsmen in four Forests, three Marksmen and two Catapults behind, a walled capital two tiles back whose land reaches the line, 14 units, 22c in hand, every unit slot full, 12c a turn); the AI attacks with twice your units' value and three level-4 cities: 13c in its first turn, 15c in its second and 19c a turn from its third (two free Monuments, Workshops and Markets)";
+  "hold a prepared line against numbers: you hold the only crossing between two lakes, eight tiles wide (Guards on two Mountains and two Field Defenses, Champions in four Forests, three Marksmen and two Catapults behind, a walled capital two tiles back whose land reaches the line, 14 units, 22c in hand, every unit slot full, 12c a turn); the AI attacks with twice your units' value and three level-4 cities: 13c in its first turn, 15c in its second and 19c a turn from its third (two free Monuments, Workshops and Markets)";
 
 export const TEXT_PLAY_LABS_V7: Readonly<Record<string, string>> = {
   LAB_SIEGE:
-    "assault a walled level-4 capital: Guard on the center, three Guards in front (Forest cover, a Field Defense), a Marksman and two Catapults behind, a Mountain touching the screen; you have 6 units, 60c and the prerequisites of Sawmilling, Chivalry, Explosives and Fieldcraft (16c the first) and of Engineering (Swordsmen, 14c)",
+    "assault a walled level-4 capital: Guard on the center, three Guards in front (Forest cover, a Field Defense), a Marksman and two Catapults behind, a Mountain touching the screen; you have 6 units, 60c and the prerequisites of Sawmilling, Chivalry, Explosives and Pathfinding (FIELDCRAFT; 16c the first) and of Engineering (14c; Armoury, METALLURGY, after it gives Champions)",
   LAB_BACKLINE:
-    "the AI advances with four Catapults and three Marksmen behind two Guards, a Swordsman and two Fighters; you have three Knights, two Raiders, a Swordsman, two Fighters, two Marksmen, a Catapult and 40c",
+    "the AI advances with four Catapults and three Marksmen behind two Guards, a Champion and two Fighters; you have three Knights, two Raiders, a Champion, two Fighters, two Marksmen, a Catapult and 40c; both sides can train Champions (Armoury)",
   LAB_LATE:
-    "the late game: six road-linked cities a side, 16 technologies, armies at the unit limit (a Swordsman in every front city), 100c each; two of your cities have a Barracks",
+    "the late game: six road-linked cities a side, 17 technologies, armies at the unit limit (a Champion in every front city), 100c each; two of your cities have a Barracks",
   // Tuning 6 (`pulp_wars-w49.6`): the Normal AI's bar, one lab per attacker.
-  LAB_BREAKTHROUGH: `${BREAKTHROUGH_LAB_TEXT_V7}; the attacker is the Human AI (Swordsmen, Marksmen, Catapults, Knights, Raiders)`,
+  LAB_BREAKTHROUGH: `${BREAKTHROUGH_LAB_TEXT_V7}; the attacker is the Human AI (Champions, Marksmen, Catapults, Knights, Raiders)`,
   LAB_BREAKTHROUGH_GOBLIN: `${BREAKTHROUGH_LAB_TEXT_V7}; the attacker is the Goblin AI (Orc Brutes, Bomb Chuckers, Rocket Carts, Scrap Buggies, Wolf Riders)`,
   LAB_BREAKTHROUGH_UNDEAD: `${BREAKTHROUGH_LAB_TEXT_V7}; the attacker is the Undead AI (Zombies, Banshees, Liches, Vampires, Ghouls)`,
   // The Goblin pass (`pulp_wars-w49.12`): the one lab played as the Goblins.
   LAB_GOBLIN_MID:
-    "YOU PLAY THE GOBLINS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each); you can train every Goblin unit (ten technologies) and hold 6 Goblins, 4 Bomb Chuckers, 3 Wolf Riders, 3 Orc Brutes, a Warboss, 2 Rocket Carts and a Scrap Buggy, 35c in hand on the first turn and four free unit slots; the Humans hold 3 Swordsmen, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters, a walled capital, and Forest cover",
+    "YOU PLAY THE GOBLINS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each); you can train every Goblin unit (twelve technologies; the Ogre needs none more) and hold 6 Goblins, 4 Bomb Chuckers, 3 Wolf Riders, 3 Orc Brutes, a Warboss, 2 Rocket Carts and a Scrap Buggy, 35c in hand on the first turn and four free unit slots; the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters, a walled capital, and Forest cover",
   // The Undead pass (`pulp_wars-w49.13`): the one lab played as the Undead.
   LAB_UNDEAD_MID:
-    "YOU PLAY THE UNDEAD in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each); you can train every Undead unit (ten technologies) and hold 4 Skeletons, 4 Zombies, 2 Ghouls, 2 Banshees, a Necromancer, 2 Liches and a Vampire, 35c in hand on the first turn and three free unit slots (the capital is full); the Humans hold 3 Swordsmen, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters at the start (and 30c on their first turn, which buys more), a walled capital, and Forest cover; your units recover only in your own land; your Liches plague only once you research Pestilence",
+    "YOU PLAY THE UNDEAD in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each); you can train every Undead unit (twelve technologies; the Wight needs none more) and hold 4 Skeletons, 4 Zombies, 2 Ghouls, 2 Banshees, a Necromancer, 2 Liches and a Vampire, 35c in hand on the first turn and three free unit slots (the capital is full); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters at the start (and 30c on their first turn, which buys more), a walled capital, and Forest cover; your units recover only in your own land; your Liches plague only once you research Pestilence",
   // The Martian pass (`pulp_wars-w49.14`): the one lab played as the
   // Martians, on land with Forest, Fertile Ground, and Ore.
   LAB_MARTIAN_MID:
-    "YOU PLAY THE MARTIANS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Martian unit (ten technologies) and hold 5 Grunts, 2 Shield Projectors, 2 Saucers, 2 Ray Gunners, a Brain, 2 Tripods and a Mothership (15 units), 35c in hand on the first turn and three free unit slots (the capital is full; a Mothership fills two); the Humans hold 3 Swordsmen, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; your Shield Projectors raise no Shield but their own until you research Force Fields, and your Ray Gunners overheat until you research Heat Sinks",
+    "YOU PLAY THE MARTIANS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Martian unit (twelve technologies; the Shock Trooper needs none more) and hold 5 Grunts, 2 Shield Projectors, 2 Saucers, 2 Ray Gunners, a Brain, 2 Tripods and a Mothership (15 units), 35c in hand on the first turn and three free unit slots (the capital is full; a Mothership fills two); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; your Shield Projectors raise no Shield but their own until you research Force Fields, and your Ray Gunners overheat until you research Heat Sinks",
   // The Dinosaur pass (`pulp_wars-w49.15`): the one lab played as the
   // Dinosaurs, on the same land.
   LAB_DINOSAUR_MID:
-    "YOU PLAY THE DINOSAURS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can produce every Dinosaur unit (ten technologies) and hold 3 Cavemen, 2 Raptors (one Big), 2 Spitters (one Big), 2 Ankylosauruses, a Shaman, 2 Triceratops (one Big) and a T-Rex Egg beside your capital, two turns from hatching, with the Shaman next to it (12 units and the Egg), 35c in hand on the first turn and three free unit slots (two in the capital, one in the northern level-3 city; a Triceratops and a T-Rex fill two); the Humans hold 3 Swordsmen, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you own neither Nesting (one more unit slot in every city, Eggs with 10 HP) nor Wallbreaker (a Triceratops's run-up of two tiles)",
+    "YOU PLAY THE DINOSAURS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can produce every Dinosaur unit (twelve technologies; the Stegosaurus too) and hold 3 Cavemen, 2 Raptors (one Big), 2 Spitters (one Big), 2 Ankylosauruses, a Shaman, 2 Triceratops (one Big) and a T-Rex Egg beside your capital, two turns from hatching, with the Shaman next to it (12 units and the Egg), 35c in hand on the first turn and three free unit slots (two in the capital, one in the northern level-3 city; a Triceratops and a T-Rex fill two); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you own neither Nesting (one more unit slot in every city, Eggs with 10 HP) nor Wallbreaker (a Triceratops's run-up of two tiles)",
 };
 
 function commandLabV7(args: ArgsV7): string {
@@ -2447,7 +2457,10 @@ const ROLE_CODE_V7: Readonly<Record<UnitRoleIdV7, string>> = {
   PATROL_BOAT: "Pb",
   BATTLESHIP: "Bs",
   SUBMARINE: "Sb",
-  SWORDSMAN: "Sw",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Human heavy is the
+  // Champion (`Sw`, the Swordsman, until 7r54). Every other faction's heavy
+  // has its own code (`FACTION_ROLE_CODE_V7`).
+  SWORDSMAN: "Ch",
 };
 
 /**
@@ -2464,9 +2477,11 @@ const MARTIAN_ROLE_CODE_V7: Readonly<Partial<Record<UnitRoleIdV7, string>>> = {
   CATAPULT: "Tr",
   KNIGHT: "Mo",
   JUGGERNAUT: "Co",
+  // The ninth unit (7r55): the Shock Trooper.
+  SWORDSMAN: "ST",
 };
 const MARTIAN_LEGEND_V7 =
-  "  Martian units: Gr grunt Sa saucer RG ray gunner SP shield projector Br brain Tr tripod Mo mothership Co colossus";
+  "  Martian units: Gr grunt Sa saucer RG ray gunner SP shield projector Br brain Tr tripod Mo mothership Co colossus ST shock trooper";
 /**
  * The Dinosaur pass, correction (`pulp_wars-w49.15`): a Dinosaur unit's own
  * map code (a Triceratops read as a Human Catapult, `Ct`, an Ankylosaurus
@@ -2478,12 +2493,37 @@ const DINOSAUR_ROLE_CODE_V7: Readonly<Partial<Record<UnitRoleIdV7, string>>> = {
   MARKSMAN: "Sp",
   GUARD: "Ak",
   CAPTAIN: "Sh",
-  CATAPULT: "Tc",
+  // The ninth unit (7r55): the Triceratops is the heavy line role and the
+  // Stegosaurus the siege role.
+  CATAPULT: "Sg",
   KNIGHT: "Tx",
   JUGGERNAUT: "Bo",
+  SWORDSMAN: "Tc",
 };
 const DINOSAUR_LEGEND_V7 =
-  "  Dinosaur units: Cv caveman Rp raptor Sp spitter Ak ankylosaurus Sh shaman Tc triceratops Tx t-rex Bo brontosaurus";
+  "  Dinosaur units: Cv caveman Rp raptor Sp spitter Ak ankylosaurus Sh shaman Tc triceratops Sg stegosaurus Tx t-rex Bo brontosaurus";
+/**
+ * The ninth unit (`pulp_wars-w49.17`, 7r55): the map codes of the units
+ * added to (or moved inside) the rosters that otherwise print the shared
+ * role codes: a Goblin `Ch` would read as a Champion and an Ice Folk `Gd`
+ * as the Mammoth it was.
+ */
+const NINTH_UNIT_ROLE_CODE_V7: Readonly<
+  Partial<Record<FactionIdV7, Readonly<Partial<Record<UnitRoleIdV7, string>>>>>
+> = {
+  UNDEAD: { SWORDSMAN: "Wi" },
+  GOBLIN: { SWORDSMAN: "Og" },
+  ICE_FOLK: { SWORDSMAN: "Mm", GUARD: "Ox" },
+  DWARF: { SWORDSMAN: "Tk", KNIGHT: "Wh" },
+  CANDY: { SWORDSMAN: "Jb" },
+};
+const NINTH_UNIT_LEGEND_V7: Readonly<Partial<Record<FactionIdV7, string>>> = {
+  UNDEAD: "  Undead heavy: Wi wight",
+  GOBLIN: "  Goblin heavy: Og ogre",
+  ICE_FOLK: "  Ice Folk: Mm mammoth (the heavy) Ox musk ox (the defender)",
+  DWARF: "  Dwarf: Tk steam tank (the heavy) Wh whirligig",
+  CANDY: "  Candy heavy: Jb jawbreaker",
+};
 function roleCodeV7(view: PlayerViewV7, unit: PublicUnitV7): string {
   const faction = unitFactionV7(view, unit);
   return (
@@ -2491,7 +2531,10 @@ function roleCodeV7(view: PlayerViewV7, unit: PublicUnitV7): string {
       ? MARTIAN_ROLE_CODE_V7[unit.role]
       : faction === "DINOSAUR"
         ? DINOSAUR_ROLE_CODE_V7[unit.role]
-        : undefined) ?? ROLE_CODE_V7[unit.role]
+        : faction === NEUTRAL_KIND_V7
+          ? undefined
+          : NINTH_UNIT_ROLE_CODE_V7[faction]?.[unit.role]) ??
+    ROLE_CODE_V7[unit.role]
   );
 }
 
@@ -2500,7 +2543,7 @@ const LEGEND_V7 = [
   "  terrain: . grass  f forest  ^ mountain  ~ shallow water  = deep water  # rift",
   "  feature: C capital  c city  v neutral village | F farm L lumber camp M mine W windmill S sawmill G forge K workshop $ market O monument P port Y shipyard | r fruit g fertile ground a game o ore h fish p pearls * hidden resource  - none",
   "  mark: ! treasure chest  & curiosity  d field defense  + road  x grave  i ice  m crumbs  - none | owner: seat digit of the territory, - neutral",
-  "  unit: seat digit (N = neutral monster) + role code Fi fighter Ra raider Mk marksman Gd guard Cp captain Ct catapult Kn knight Jg juggernaut Pb patrol boat Bs battleship Sb submarine, lowercase e- = egg, --- none",
+  "  unit: seat digit (N = neutral monster) + role code Fi fighter Ra raider Mk marksman Gd guard Cp captain Ct catapult Kn knight Ch champion (the heavy) Jg juggernaut Pb patrol boat Bs battleship Sb submarine, lowercase e- = egg, --- none",
 ];
 
 function mapLinesV7(view: PlayerViewV7): readonly string[] {
@@ -3038,6 +3081,15 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
     lines.push(MARTIAN_LEGEND_V7);
   if (view.players.some((player) => player.faction === "DINOSAUR"))
     lines.push(DINOSAUR_LEGEND_V7);
+  // The ninth unit (7r55): the codes of the other factions' new units.
+  for (const faction of FACTION_IDS_V7) {
+    const legend = NINTH_UNIT_LEGEND_V7[faction];
+    if (
+      legend !== undefined &&
+      view.players.some((player) => player.faction === faction)
+    )
+      lines.push(legend);
+  }
   if (!full) lines.push("  (view --full prints the whole legend)");
 
   const specials: string[] = [];

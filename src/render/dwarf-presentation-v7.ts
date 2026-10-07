@@ -31,7 +31,9 @@ import {
   type TunnelPreviewV7,
   isNavalRoleV7,
   type UnitRoleIdV7,
+  technologyDisplayNameV7,
 } from "../engine/index";
+import { ninthUnitHelpRulesV7 } from "./ninth-unit-presentation-v7";
 
 /**
  * Presentation helpers for the Steampunk Dwarf faction (docs/product/
@@ -112,7 +114,9 @@ const GYROCOPTER = (): string => dwarfLabelV7("RAIDER");
 const GUNNER = (): string => dwarfLabelV7("MARKSMAN");
 const ENGINEER = (): string => dwarfLabelV7("CAPTAIN");
 const CANNON = (): string => dwarfLabelV7("CATAPULT");
-const TANK = (): string => dwarfLabelV7("KNIGHT");
+// The ninth unit (`pulp_wars-w49.17`, 7r55): the Steam Tank is the heavy
+// line role (the Whirligig took the `KNIGHT` role).
+const TANK = (): string => dwarfLabelV7("SWORDSMAN");
 
 // ------------------------------------------------------------ section 16.2
 
@@ -221,7 +225,9 @@ export function assembleCostLineV7(
 ): string {
   return `${preview.cost} Coins · slot ${preview.usedSlots + 1}/${preview.capacity}`;
 }
-export const ASSEMBLE_NEEDS_TECH_V7 = "Needs Marksmanship";
+// The ninth unit (`pulp_wars-w49.17`, 7r55): the Dwarf Marksmanship is
+// shown as Clockwork.
+export const ASSEMBLE_NEEDS_TECH_V7 = `Needs ${technologyDisplayNameV7("MARKSMANSHIP", "DWARF")}`;
 /** "{city} is full". */
 export function assembleCityFullV7(city: string): string {
   return `${city} is full`;
@@ -404,6 +410,8 @@ export function dwarfHelpRulesV7(): readonly (readonly [string, string])[] {
       "Blasting Charges",
       `eruptions deal ${BLASTING_ERUPTION_DAMAGE_V7}, and ${CANNON()} shots ignore Walls and Field Defense.`,
     ],
+    // The ninth unit (7r55): the Whirligig's Three Hammers.
+    ...ninthUnitHelpRulesV7("DWARF"),
   ];
 }
 
@@ -474,7 +482,7 @@ export function dwarfAbilityDescriptionV7(
     case "ERUPTION":
       return `When it surfaces, every enemy on the ground next to it takes ${ERUPTION_DAMAGE_V7} (${BLASTING_ERUPTION_DAMAGE_V7} with Blasting Charges), and Field Defense around it collapses.`;
     case "ASSEMBLE":
-      return `With Marksmanship, builds a ${GUNNER()} on a free tile next to it for ${ASSEMBLE_COST_V7} Coins, using a slot in its home city.`;
+      return `With ${technologyDisplayNameV7("MARKSMANSHIP", "DWARF")}, builds a ${GUNNER()} on a free tile next to it for ${ASSEMBLE_COST_V7} Coins, using a slot in its home city.`;
     case "KNOCKBACK":
       return "Its shot knocks a surviving target one tile straight back.";
     case "PLATED":

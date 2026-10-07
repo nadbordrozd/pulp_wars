@@ -25,6 +25,7 @@ import {
   type CityRewardRecordV7,
   type CityStateV7,
   type CoordV7,
+  type FactionIdV7,
   type IceTileV7,
   type ImprovementIdV7,
   type MatchSetupV7,
@@ -175,12 +176,46 @@ export const SHOWCASE_UNIT_TEMPLATES_V7: readonly {
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 3.3):
   // one Submarine on the free Deep Water tile east of the Battleship.
   { role: "SUBMARINE", dx: 1, y: 13, home: "COAST" },
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): every faction's ninth
+  // land unit, on the Road tile south of the North center. Last, so every
+  // earlier unit keeps its entity ID. It is the heavy line unit, except
+  // for a faction whose heavy is a unit it already had (see
+  // `showcaseUnitRoleV7`).
+  { role: "SWORDSMAN", dx: 0, y: 4, home: "NORTH" },
 ]);
+/**
+ * The ninth unit (7r55): the role an older unit gave up when it became its
+ * faction's heavy line unit (the Triceratops was the Dinosaur `CATAPULT`,
+ * the Mammoth the Ice Folk `GUARD`, the Steam Tank the Dwarf `KNIGHT`).
+ */
+export const SHOWCASE_MOVED_HEAVY_ROLES_V7: Readonly<
+  Partial<Record<FactionIdV7, UnitRoleIdV7>>
+> = Object.freeze({
+  DINOSAUR: "CATAPULT",
+  ICE_FOLK: "GUARD",
+  DWARF: "KNIGHT",
+});
+/**
+ * The role a faction fields on a template's tile. Every unit stands where
+ * it stood before 7r55: a moved heavy (Triceratops, Mammoth, Steam Tank)
+ * keeps its tile, home city, and entity ID, and the unit that took its old
+ * role (Stegosaurus, Musk Ox, Whirligig) stands on the ninth unit's tile.
+ */
+export function showcaseUnitRoleV7(
+  templateRole: UnitRoleIdV7,
+  faction: FactionIdV7,
+): UnitRoleIdV7 {
+  const moved = SHOWCASE_MOVED_HEAVY_ROLES_V7[faction];
+  if (moved === undefined) return templateRole;
+  if (templateRole === "SWORDSMAN") return moved;
+  if (templateRole === moved) return "SWORDSMAN";
+  return templateRole;
+}
 /**
  * Tuning 5 (`pulp_wars-w49.4`): the Showcase fields the roles every faction
  * has, so that every seat has the same units on the same tiles. A role
- * only the Human tree unlocks (the Swordsman) is not in it; the Gallery
- * shows that unit.
+ * only the Human tree unlocks is not in it (none since the ninth unit,
+ * 7r55: every faction has the heavy line role).
  */
 export const SHOWCASE_ROLE_IDS_V7: readonly UnitRoleIdV7[] = Object.freeze(
   UNIT_ROLE_IDS_V7.filter((role) => !HUMAN_ONLY_ROLES_V7.includes(role)),
@@ -451,15 +486,16 @@ export function createShowcaseEntitiesV7(
     template: (typeof SHOWCASE_UNIT_TEMPLATES_V7)[number],
   ): UnitStateV7 => {
     const player = players[seat] as PlayerStateV7;
-    const rule = effectiveRoleRuleV7(template.role, player.faction);
+    const role = showcaseUnitRoleV7(template.role, player.faction);
+    const rule = effectiveRoleRuleV7(role, player.faction);
     return {
       id,
       ownerId: player.id,
       homeCityId: (cityIds[seat] as Record<ShowcaseCityKeyV7, CityId>)[
         template.home
       ],
-      role: template.role,
-      form: isNavalRoleV7(template.role) ? "NAVAL" : "LAND",
+      role,
+      form: isNavalRoleV7(role) ? "NAVAL" : "LAND",
       at: { x: (centers[seat] as number) + template.dx, y: template.y },
       hp: rule.maxHp,
       maxHp: rule.maxHp,
@@ -486,8 +522,14 @@ export function createShowcaseEntitiesV7(
   // The seat still takes the three entity IDs, so every other unit of the
   // Showcase keeps its ID whatever the factions.
   const ice: IceTileV7[] = [];
+  // The ninth unit (7r55) is the last template and takes its entity IDs
+  // after every seat's other units (below), so that no unit that existed
+  // before it has a new ID, whatever its seat.
+  const ninthTemplate = SHOWCASE_UNIT_TEMPLATES_V7.at(
+    -1,
+  ) as (typeof SHOWCASE_UNIT_TEMPLATES_V7)[number];
   players.forEach((player, seat) => {
-    for (const template of SHOWCASE_UNIT_TEMPLATES_V7.slice(1)) {
+    for (const template of SHOWCASE_UNIT_TEMPLATES_V7.slice(1, -1)) {
       const unit = allocateUnitId(nextEntityId);
       nextEntityId = unit.nextEntityId;
       if (isNavalRoleV7(template.role) && player.faction === "ICE_FOLK") {
@@ -503,6 +545,11 @@ export function createShowcaseEntitiesV7(
       }
       units.push(unitFor(seat, unit.id, template));
     }
+  });
+  players.forEach((_, seat) => {
+    const unit = allocateUnitId(nextEntityId);
+    nextEntityId = unit.nextEntityId;
+    units.push(unitFor(seat, unit.id, ninthTemplate));
   });
   ice.sort((left, right) => left.at.y - right.at.y || left.at.x - right.at.x);
   if (

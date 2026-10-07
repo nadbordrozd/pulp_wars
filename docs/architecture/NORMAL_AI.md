@@ -1,5 +1,90 @@
 # Greedy Normal AI
 
+## The ninth unit (`pulp_wars-w49.17`)
+
+**[The ninth unit](../product/RULESET_7_NINTH_UNIT.md)**
+(`pulp-wars-poc-7r55`) gave every faction a heavy line unit at Metallurgy
+(the role `SWORDSMAN`) and moved the Triceratops, the Mammoth, and the
+Steam Tank into that role, with the Stegosaurus, the Musk Ox, and the
+Whirligig in the roles they left. The policy got a first pass so that
+nothing breaks. It was not tuned, no game was played by hand, and no
+diagnostic match was run; each faction's playtest is where it is judged.
+
+**Research (the five army seats, `ARMY_RESEARCH_ROLES_V7`).**
+
+| Seat     | Order of roles                                                                     | What changed                                                                                                  |
+| -------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Human    | Marksman, Guard, Champion, Catapult, Knight, Captain                               | the same order; the Champion's chain is Drill, Engineering, Metallurgy (it ended at Engineering)              |
+| Undead   | Zombie, Banshee, Lich, Necromancer, **Wight**, Vampire                             | the Wight after the Necromancer                                                                               |
+| Goblin   | Bomb Chucker, Wolf Rider, Orc Brute, Rocket Cart, Warboss, **Ogre**, Scrap Buggy   | the Ogre after the Warboss                                                                                    |
+| Martian  | Shield Projector, Ray Gunner, **Shock Trooper**, Tripod, Brain, Saucer, Mothership | the Shock Trooper after the Ray Gunner (the design wanted it only against a melee enemy; it is unconditional) |
+| Dinosaur | Ankylosaurus, Triceratops, Raptor, Spitter, **Stegosaurus**, Shaman, T-Rex         | the Triceratops second as before, now by Drill, Engineering, Metallurgy; the Stegosaurus after the Spitter    |
+
+The rules that named the Triceratops by its role follow it
+(`ARMY_DINOSAUR_CHARGER_ROLE_V7` is `SWORDSMAN`): Nesting once an
+Ankylosaurus is fielded, Wallbreaker with two Triceratops, and the slot
+technologies when no city has room for a unit of two slots. A seat that
+owns every unit technology of its order goes on to the late technologies
+as before (`ARMY_LATE_RESEARCH_V7`); Metallurgy is one of the four, so a
+seat that has its heavy has three left.
+
+**Purchases (the five army seats).** The heavy is a `LINE` unit: it is the
+dearer unit of the line share and is bought when the line is short and the
+Coins reach, as the Human Swordsman was. The Dinosaur shares changed with
+the labels, because the Triceratops no longer has the siege share: line
+40% (Cavemen and Triceratops), defenders 25%, ranged 15%, siege 10% (the
+Stegosaurus), breakthrough 10%; against fragile enemies 30 / 20 / 15 / 10 /
+25 (`ARMY_SHARES_V7`). `armyShareClassV7` now equals `armyClassV7` for
+every role.
+
+**The older policy (Dwarf, Ice Folk, Candy seats).** Each researches
+toward its heavy with its other tier-3 units, the shortest chain first
+(the Dinosaur signature roles of a seat that plays no army rules are the
+Triceratops, now `SWORDSMAN`, and the T-Rex), counts the heavy as a front
+unit, and gives the first one the first-of-role value. The Ice Folk seat's
+Mammoth rules (the share, the Sweep step) follow the Mammoth to its new
+role; a Musk Ox is wanted at one for three other front units
+(`FRONT_UNITS_PER_MUSK_OX_V7`) and as a body for a threatened center. A
+Dwarf seat still builds Steam Tanks (at Metallurgy) and builds Whirligigs
+(at Chivalry).
+
+**Use rules (`src/ai/v7-ninth-unit.ts`, a small positional value added to
+a Move's score; public view only).**
+
+- **Ogre** (`heavyweightMoveValueV7`): +6 for each visible hostile land
+  unit next to the destination that another own land unit stands within
+  two tiles of, two at most, so the Ogre stands where its Heavyweight
+  counts.
+- **Shock Trooper** (`shockScreenMoveValueV7`): while its Shield holds, +5
+  for each own land unit next to the destination that is farther from the
+  nearest visible hostile land unit than the destination is, two at most
+  (the Trooper stands between it and the enemy).
+- **Whirligig** (`threeHammersMoveValueV7`): +8 for each weak hostile land
+  unit next to the destination beyond the first, up to its three attacks
+  (weak: 8 HP or less, or a ranged, siege, or support unit), and −4 for
+  each healthy hostile melee unit there (it strikes back), so it goes
+  where two or three weak units stand around one tile.
+- **A Wight's marked Grave** (`wightGraveMoveValueV7`): +12 for a Move
+  that ends on a hostile seat's marked Grave (the Wight then stays down),
+  and −12 for one that ends on the seat's own. An Undead seat does not
+  Raise or Devour its own Wight's marked Grave while no visible hostile
+  land unit is within two tiles of it (`ownWightGraveHeldV7`).
+- **Stegosaurus:** the existing siege rules (it stays behind the line and
+  never attacks after moving). **Musk Ox, Jawbreaker, Champion:** the
+  generic defender and line rules.
+
+**Not built.** "Shoot the Shield off before going in" for the enemies of
+a Shock Trooper; a Jawbreaker garrison against Tractor Beams and Charge!;
+a plan for which unit a Stegosaurus cracks first; any weighing of Rise
+Again when choosing between a melee and a ranged kill.
+
+**Pins that moved.** The retained late public view's decision hash (the
+command and the candidate count are unchanged), the parity matches of
+`tests/unit/ruleset-v7-curiosities.test.ts` on Pangea, Continents, and
+Lakes, the Goblin breakthrough lab's bounded run (the capital falls in
+round 6, was 7), and the seeds of five tests that need a Lich to plague or
+splash or a Brain to take a unit in ordinary play.
+
 ## The economy rejig (`pulp_wars-w49.16`)
 
 **[The economy rejig](../product/RULESET_7_ECONOMY_REJIG.md)**

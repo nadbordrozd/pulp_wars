@@ -159,6 +159,16 @@ import {
 import { grownUnitV7 } from "./growth";
 import { recordInfectionV7 } from "./infect";
 import {
+  prunedNinthUnitV7,
+  targetAlreadyStruckV7,
+  unitAttacksPerTurnV7,
+  wightRisingRuleV7,
+  withNinthUnitTurnEndedV7,
+  withSortedUnitIdV7,
+  withStruckV7,
+  withWightGravesV7,
+} from "./ninth-unit";
+import {
   biteOfV7,
   plagueClearedEventsV7,
   prunedAfflictionsV7,
@@ -467,7 +477,12 @@ export function applyCommandV7(
   const applied = applyCommandCoreV7(stateInput, actor, input);
   if (!applied.accepted) return applied;
   // The Candy revision section 6.1: the Crumbs the command's deaths left.
-  const core = withCrumbsLeftResultV7(applied);
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): and the Graves its Wight
+  // deaths left (Rise Again), folded from the events the same way.
+  const core = withWightGravesResultV7(
+    stateInput,
+    withCrumbsLeftResultV7(applied),
+  );
   const result = revealReleasedUnitsV7(core);
   // The Mind Control revision section 5.4: every command that releases a
   // unit joins the blockade and sea-network recompute list.
@@ -529,6 +544,25 @@ function withCrumbsLeftResultV7(
   if (!result.events.some((event) => event.kind === "CRUMBS_LEFT"))
     return result;
   const state = withCrumbsLeftV7(result.state, result.events);
+  const next = accepted(checked(state), result.events);
+  if (!next.accepted) throw new RangeError("INVALID_STATE");
+  return next;
+}
+
+/**
+ * The ninth unit (`pulp_wars-w49.17`, 7r55): Rise Again. Folds the Graves
+ * the command's Wight deaths left into `ninthUnit.wightGraves`
+ * (`withWightGravesV7`); nothing reads a Grave marked earlier in the same
+ * command. Returns `result` itself when the command marked no Grave.
+ */
+function withWightGravesResultV7(
+  before: GameStateV7,
+  result: Extract<ApplyCommandResultV7, { readonly accepted: true }>,
+): Extract<ApplyCommandResultV7, { readonly accepted: true }> {
+  if (!result.events.some((event) => event.kind === "GRAVE_CREATED"))
+    return result;
+  const state = withWightGravesV7(before, result.state, result.events);
+  if (state === result.state) return result;
   const next = accepted(checked(state), result.events);
   if (!next.accepted) throw new RangeError("INVALID_STATE");
   return next;
@@ -4233,6 +4267,10 @@ function applyAttack(
   // a torpedo targets only units afloat.
   if (attackIsTorpedoV7(state, attacker) && !isAfloatFormV7(defender.form))
     return rejected(original, "ATTACK_NOT_LEGAL", { reason: "NOT_AFLOAT" });
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): Three Hammers, each attack
+  // of a Whirligig's turn is on a different unit.
+  if (targetAlreadyStruckV7(state, attacker.id, defender.id))
+    return rejected(original, "ATTACK_NOT_LEGAL", { reason: "ALREADY_STRUCK" });
   const distance = chebyshev(attacker.at, defender.at);
   // The Ice Folk revision section 7.2: a Yeti on a Mountain reaches 2. The
   // naval branch section 5.2: a submerged Submarine is attacked only from
@@ -4545,8 +4583,11 @@ function resolveAttackExchangeV7(
             : unit,
     )
     .filter((unit) => unit.hp > 0);
+  // The ninth unit (7r55): the role mechanic `demolishesFieldDefense` (the
+  // `CATAPULT` role of every faction, and the Triceratops in the heavy
+  // slot); the reason literal stays `CATAPULT`.
   const defenseReason = destinationTile?.fieldDefense
-    ? attacker.role === "CATAPULT"
+    ? unitRoleMechanicsV7(state, attacker).demolishesFieldDefense
       ? "CATAPULT"
       : // The Ice Folk revision section 7.5: Trample, whatever survives.
         attacker.form === "LAND" &&
@@ -4742,6 +4783,39 @@ function resolveAttackExchangeV7(
   const splattedThisTurn = preview.splatApplied
     ? withUnitIdV7(state.splattedThisTurn, defender.id)
     : state.splattedThisTurn;
+  // The ninth unit (7r55): the Thagomizer Cracks a surviving target for the
+  // rest of the active seat's turn; Three Hammers records the pair of an
+  // attack by a unit that may attack more than once; Frostbite Chills a
+  // surviving attacker of a Musk Ox.
+  const ninthUnit =
+    preview.crackApplied || unitAttacksPerTurnV7(state, attacker) > 1
+      ? {
+          ...state.ninthUnit,
+          crackedThisTurn: preview.crackApplied
+            ? withSortedUnitIdV7(state.ninthUnit.crackedThisTurn, defender.id)
+            : state.ninthUnit.crackedThisTurn,
+          struckThisTurn:
+            unitAttacksPerTurnV7(state, attacker) > 1
+              ? withStruckV7(state.ninthUnit.struckThisTurn, {
+                  unitId: attacker.id,
+                  targetUnitId: defender.id,
+                })
+              : state.ninthUnit.struckThisTurn,
+        }
+      : state.ninthUnit;
+  let chilled = state.chilled;
+  if (preview.frostbiteApplied) {
+    const applied = withChillAppliedV7(state.chilled, [attacker.id]);
+    chilled = applied.chilled;
+    events.push(
+      unitsChilledEventV7(
+        defender.ownerId,
+        defender.id,
+        "FROSTBITE",
+        applied.results,
+      ),
+    );
+  }
   // The Candy revision section 8: the Bounce, after the Push, the advance,
   // and the Charge! follow and before any death-blast chain. It is not a
   // Move: the attacker keeps its activation and reveals its sight.
@@ -4974,6 +5048,8 @@ function resolveAttackExchangeV7(
       shields: chain.shields,
       cooling,
       splattedThisTurn,
+      ninthUnit,
+      chilled,
       populationContributions: economy.populationContributions,
     },
     events,
@@ -6178,7 +6254,9 @@ function applyEndTurn(
     // the emptied Splat and Toss lists, after the Dwarf per-turn lists and
     // before the income preview (and any neutral turn).
     const candy = resolveCandyEndTurnV7(emptied, actor);
-    const expired = candy.state;
+    // The ninth unit (7r55): the Cracked units and the struck pairs of the
+    // turn are emptied with the other per-turn lists.
+    const expired = withNinthUnitTurnEndedV7(candy.state);
     const preview = playerIncomeV7(expired, actor);
     const nextIndex = nextActiveSeat(state);
     if (nextIndex === null) return rejected(original, "INVALID_STATE");
@@ -6234,7 +6312,17 @@ function applyEndTurn(
       );
       const next = surfacing.state;
       const plague = resolveStartTurnPlagueAndChainV7(next, nextPlayer.id);
-      const hatch = resolveStartTurnHatchV7(plague.state, nextPlayer.id);
+      const hatched = resolveStartTurnHatchV7(plague.state, nextPlayer.id);
+      // The ninth unit (7r55): Rise Again, after the hatch step and before
+      // Windmill healing.
+      const risen = resolveStartTurnRiseAgainV7(hatched.state, nextPlayer.id);
+      const hatch =
+        risen.events.length === 0 && risen.state === hatched.state
+          ? hatched
+          : {
+              state: risen.state,
+              events: [...hatched.events, ...risen.events],
+            };
       const afflicted =
         hatch.events.length === 0 && hatch.state === plague.state
           ? plague
@@ -6403,6 +6491,112 @@ function resolveNeutralTurnV7(
   };
   events.push({ kind: "NEUTRAL_TURN_ENDED", round });
   return { state: current, events };
+}
+
+/**
+ * The ninth unit (`pulp_wars-w49.17`, 7r55,
+ * docs/product/RULESET_7_NINTH_UNIT.md): Rise Again at the Start Turn of
+ * `playerId`. Each Grave marked for that seat, in (y, x) order, that no
+ * unit (and no mound) stands on becomes a Wight of the seat at
+ * `WIGHT_RISE_AGAIN_HP_V7`: a rising with no home city (it fills no unit
+ * slot), no kills, not veteran, and a fresh activation (it acts this turn,
+ * like an Egg that hatches at a Start Turn). The Grave and its mark are
+ * removed and the Wight joins `risenWights`, so it does not rise again. A
+ * Grave something stands on keeps its mark for a later Start Turn. One
+ * `WIGHT_RISEN` per Wight, then one `TILES_REVEALED` for the step.
+ */
+function resolveStartTurnRiseAgainV7(
+  state: GameStateV7,
+  playerId: PlayerId,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  const marked = state.ninthUnit.wightGraves.filter(
+    (entry) => entry.ownerId === playerId,
+  );
+  if (marked.length === 0) return { state, events: [] };
+  const rule = wightRisingRuleV7(state, playerId);
+  if (rule === null) return { state, events: [] };
+  const events: DomainEventV7[] = [];
+  const revealed: CoordV7[] = [];
+  let current = state;
+  for (const entry of marked) {
+    if (
+      !current.graves.some((grave) => same(grave, entry.at)) ||
+      tileOccupiedV7(current, entry.at)
+    )
+      continue;
+    const allocation = allocateUnitId(current.nextEntityId);
+    const wight: UnitStateV7 = {
+      id: allocation.id,
+      ownerId: playerId,
+      homeCityId: null,
+      role: "SWORDSMAN",
+      form: "LAND",
+      at: { x: entry.at.x, y: entry.at.y },
+      hp: rule.hp,
+      maxHp: rule.maxHp,
+      kills: 0,
+      veteran: false,
+      captureEligible: false,
+      activation: freshActivationV7(),
+    };
+    current = {
+      ...current,
+      nextEntityId: allocation.nextEntityId,
+      units: [...current.units, wight],
+      graves: withoutGravesV7(current.graves, [entry.at]),
+      ninthUnit: {
+        ...current.ninthUnit,
+        wightGraves: current.ninthUnit.wightGraves.filter(
+          (candidate) => !same(candidate.at, entry.at),
+        ),
+        risenWights: withSortedUnitIdV7(
+          current.ninthUnit.risenWights,
+          wight.id,
+        ),
+      },
+    };
+    events.push({
+      kind: "WIGHT_RISEN",
+      playerId,
+      unitId: wight.id,
+      at: wight.at,
+      hp: wight.hp,
+    });
+    const reveal = revealRadius(
+      current,
+      playerId,
+      wight.at,
+      unitSightRadiusAtV7(current, wight),
+    );
+    current = {
+      ...current,
+      players: setExplored(current.players, playerId, reveal.explored),
+    };
+    revealed.push(...reveal.revealed);
+  }
+  if (events.length === 0) return { state, events: [] };
+  if (revealed.length > 0)
+    events.push({
+      kind: "TILES_REVEALED",
+      playerId,
+      tiles: uniqueCoords(revealed),
+    });
+  // A unit standing on a tile can change the live economy of the city that
+  // owns it; a Raise Dead recomputes it too.
+  const economy = recomputeLiveEconomyV7(
+    current,
+    { board: current.board, cities: current.cities, units: current.units },
+    current.populationContributions,
+  );
+  events.push(...economyAndGrowth(economy.changes));
+  return {
+    state: {
+      ...current,
+      cities: economy.cities,
+      populationContributions: economy.populationContributions,
+    },
+    events,
+  };
 }
 
 /** A unit activation with nothing done yet (a Start Turn reset). */
@@ -7676,12 +7870,16 @@ function checked(state: GameStateV7): GameStateV7 {
   // the provokers no longer on it.
   // The Candy revision: drop the Rush, Splat, and Toss entries of units that
   // left the board and the Crumbs of a seat that left the game.
+  // The ninth unit (7r55): drop the marked Graves whose Grave is gone and
+  // the Cracked, struck, and risen entries of units that left the board.
   const result = parseGameStateV7(
-    prunedCandyV7(
-      prunedMonstersV7(
-        prunedDwarfV7(
-          prunedIceFolkV7(
-            prunedMartianV7(prunedEggsV7(prunedAfflictionsV7(state))),
+    prunedNinthUnitV7(
+      prunedCandyV7(
+        prunedMonstersV7(
+          prunedDwarfV7(
+            prunedIceFolkV7(
+              prunedMartianV7(prunedEggsV7(prunedAfflictionsV7(state))),
+            ),
           ),
         ),
       ),

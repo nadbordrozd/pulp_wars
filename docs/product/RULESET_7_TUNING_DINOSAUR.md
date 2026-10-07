@@ -16,6 +16,21 @@ reasoning and the record, in the shape of
 [the Goblin pass](RULESET_7_TUNING_GOBLIN.md), and
 [the Human pass](RULESET_7_TUNING_HUMAN.md).
 
+**Superseded in part by [the ninth unit](RULESET_7_NINTH_UNIT.md) (`pulp-wars-poc-7r55`, `pulp_wars-w49.17`).** The **Triceratops is the heavy
+line role** (`SWORDSMAN`, a `LINE` unit, at **Metallurgy**), not the
+`CATAPULT` role at Sawmilling; its numbers and Charge! are unchanged. The
+siege role is a new unit, the **Stegosaurus** (Sawmilling; range 2 to 3;
+its target is Cracked), so "no unit that attacks from three tiles"
+([section 5](#5-what-makes-each-unit-different) and elsewhere) is no longer true. The
+research order is Ankylosaurus, Triceratops (by Drill, Engineering,
+Metallurgy), Raptor, Spitter, Stegosaurus, Shaman, T-Rex, and the army
+shares are 40% line, 25% defenders, 15% ranged, 10% siege, 10%
+breakthrough (30% Triceratops and 20% Cavemen here). The Human Swordsman
+this document fights is the Champion (6 Coins, at Metallurgy).
+`LAB_DINOSAUR_MID` is at revision 2: your seat owns Engineering and
+Metallurgy, and its two Triceratops are the heavy role. The record below
+is unchanged.
+
 **Superseded in part by [the economy rejig](RULESET_7_ECONOMY_REJIG.md)
 (`pulp-wars-poc-7r54`, `pulp_wars-w49.16`).** Where this document gives a research price by the technologies owned (the
 tier base plus 1 Coin for each technology owned, "the nth technology

@@ -88,6 +88,43 @@ const BONE = "#efe8cf";
 const BADGE_FILL = "#231a2c";
 
 /**
+ * The ninth unit (`pulp_wars-w49.17`, 7r55; first used by tuning 5 for the
+ * Human Swordsman): the mark of a unit drawn with STAND-IN art (a new unit
+ * drawn as another unit of its faction until its art exists): the letter
+ * in a steel disc where the faction badges go, so the two units can be
+ * told apart on the board.
+ */
+export function drawStandInBadgeV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  zoom: number,
+  chibi: boolean,
+  letter: string,
+): void {
+  const frame = chibi
+    ? UNDEAD_BADGE_FRAME_V7.chibi
+    : UNDEAD_BADGE_FRAME_V7.legacy;
+  const size = frame.size * zoom;
+  const cx = x + (frame.left + frame.size / 2) * zoom;
+  const cy = y + (frame.top + frame.size / 2) * zoom;
+  context.save();
+  context.fillStyle = "#c9d2dc";
+  context.strokeStyle = "#171722";
+  context.lineWidth = Math.max(1, 1.6 * zoom);
+  context.beginPath();
+  context.arc(cx, cy, size / 2, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  context.fillStyle = "#171722";
+  context.font = `${800} ${Math.max(6, size * 0.62)}px system-ui`;
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.fillText(letter, cx, cy + size * 0.04);
+  context.restore();
+}
+
+/**
  * Grave corner marker frames, relative to the cell centre in world units
  * (128 = one cell). The marker sits in the bottom-right corner, which no
  * unit overlay uses: the seat badge and HP bar are on the left or below the
@@ -118,6 +155,11 @@ export function drawGraveCornerMarkerV7(
     /** The tile also holds a city (moves the CHIBI marker off its pips). */
     readonly besideCity: boolean;
     readonly highContrast: boolean;
+    /**
+     * The ninth unit (`pulp_wars-w49.17`, 7r55): the Grave a Wight will
+     * climb out of: a pale blue stone inside a blue ring.
+     */
+    readonly wightGrave?: boolean;
   },
 ): void {
   const frame = !options.chibi
@@ -145,7 +187,21 @@ export function drawGraveCornerMarkerV7(
   context.moveTo(left + u(0.06), base);
   context.lineTo(left + u(0.94), base);
   context.stroke();
-  context.fillStyle = options.highContrast ? "#ffffff" : "#d9dcd4";
+  if (options.wightGrave === true) {
+    // The ring first, so the stone is drawn over it.
+    context.save();
+    context.strokeStyle = options.highContrast ? "#000000" : "#7fc8ff";
+    context.lineWidth = Math.max(1, u(0.12));
+    context.beginPath();
+    context.arc(left + u(0.5), top + u(0.55), u(0.62), 0, Math.PI * 2);
+    context.stroke();
+    context.restore();
+  }
+  context.fillStyle = options.highContrast
+    ? "#ffffff"
+    : options.wightGrave === true
+      ? "#bfe6ff"
+      : "#d9dcd4";
   context.lineWidth = outline;
   context.beginPath();
   context.moveTo(stoneLeft, base);

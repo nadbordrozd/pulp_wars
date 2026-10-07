@@ -28,6 +28,7 @@ import {
   isNavalRoleV7,
   SHATTER_HP_V7,
   SHOWCASE_UNIT_TEMPLATES_V7,
+  showcaseUnitRoleV7,
   STARTING_FIGHTERS_V7,
   SWEEP_DAMAGE_V7,
   TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7,
@@ -178,7 +179,8 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(100);
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): WIGHT_RISEN (101).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(101);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(
@@ -471,20 +473,24 @@ const ROSTER = [
     ["ATTACK", "CAPTURE", "COLD_BLOOD"],
     true,
   ],
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Musk Ox is the defender
+  // the Mammoth was (4 Coins, 16 HP, Attack 1.5, Defense 2.5, never
+  // attacks after moving). The Mammoth is the heavy line role, asserted
+  // below the table.
   [
-    "Mammoth",
+    "Musk Ox",
     "GUARD",
     "DRILL",
-    6,
-    20,
-    5,
     4,
+    16,
+    3,
+    5,
     1,
     1,
     1,
     1,
-    true,
-    ["ATTACK", "CAPTURE", "SWEEP", "TRAMPLE"],
+    false,
+    ["ATTACK", "CAPTURE"],
     true,
   ],
   [
@@ -603,8 +609,31 @@ describe("Ice Folk roster (section 3)", () => {
         roleMechanicsV7(role, "ICE_FOLK"),
       );
     }
+    // The ninth unit (7r55): the Mammoth, with the numbers it had as the
+    // defender role, at Metallurgy and a `LINE` unit.
+    expect(effectiveRoleRuleV7("SWORDSMAN", "ICE_FOLK")).toEqual({
+      role: "SWORDSMAN",
+      label: "Mammoth",
+      tacticalRole: "LINE",
+      cost: 6,
+      maxHp: 20,
+      attack2: 5,
+      defense2: 4,
+      move: 1,
+      range: 1,
+      minimumRange: 1,
+      sightRadius: 1,
+      technology: "METALLURGY",
+      mayUsePrimaryActionAfterMove: true,
+      abilities: ["ATTACK", "CAPTURE", "SWEEP", "TRAMPLE", "FREEZE"],
+    });
     // The role mechanics of section 11.
     const mechanics = (role: UnitRoleIdV7) => roleMechanicsV7(role, "ICE_FOLK");
+    expect(mechanics("GUARD")).toMatchObject({
+      frostbite: true,
+      sweepDamage: 0,
+      tramplesFieldDefense: false,
+    });
     expect(
       UNIT_ROLE_IDS_V7.filter((role) => mechanics(role).mountainBorn),
     ).toEqual(["FIGHTER", "CATAPULT", "JUGGERNAUT"]);
@@ -616,11 +645,12 @@ describe("Ice Folk roster (section 3)", () => {
       "CAPTAIN",
       "CATAPULT",
       "JUGGERNAUT",
+      "SWORDSMAN",
     ]);
     expect(
       UNIT_ROLE_IDS_V7.filter((role) => mechanics(role).ignoresZocStops),
     ).toEqual(["KNIGHT"]);
-    expect(mechanics("GUARD")).toMatchObject({
+    expect(mechanics("SWORDSMAN")).toMatchObject({
       sweepDamage: SWEEP_DAMAGE_V7,
       tramplesFieldDefense: true,
     });
@@ -788,10 +818,12 @@ describe("Ice Folk roster (section 3)", () => {
       ["FIGHTER", 1],
       ["RAIDER", 1],
       ["MARKSMAN", 1],
-      ["GUARD", 3],
+      // (7r55: the Musk Ox, half of 4; the Mammoth, half of 6.)
+      ["GUARD", 2],
       ["CAPTAIN", 2],
       ["CATAPULT", 4],
       ["KNIGHT", 4],
+      ["SWORDSMAN", 3],
     ] as const) {
       const state = iceFieldV7([
         {
@@ -919,6 +951,10 @@ describe("Ice Folk technology (section 4)", () => {
       NAVAL_ENGINEERING: "Icebound",
       SEAMANSHIP: "Black Ice",
       SUBMERSIBLES: "Glacier",
+      // The ninth unit (7r55): the nodes named for their unit.
+      SAWMILLING: "Boulders",
+      CHIVALRY: "Sabretooths",
+      METALLURGY: "Mammoths",
     });
   });
 
@@ -960,11 +996,9 @@ describe("Ice Folk technology (section 4)", () => {
     const ice = technologyCapabilitiesV7(all, "ICE_FOLK");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
     // The frozen sea (naval branch section 8.11): no ship and no Board.
-    // (And not the Swordsman of tuning 5, the Humans' alone.)
+    // (The ninth unit, 7r55: every faction has the heavy line role.)
     expect(ice.trainableRoles).toEqual(
-      human.trainableRoles.filter(
-        (role) => !isNavalRoleV7(role) && role !== "SWORDSMAN",
-      ),
+      human.trainableRoles.filter((role) => !isNavalRoleV7(role)),
     );
     expect(ice.commands).toEqual(
       human.commands.filter(
@@ -987,7 +1021,8 @@ describe("Ice Folk technology (section 4)", () => {
       ).map((id) => effectiveRoleRuleV7(id, "ICE_FOLK").label);
     expect(role("SCOUTING")).toEqual(["Sled"]);
     expect(role("MARKSMANSHIP")).toEqual(["Snow Hunter"]);
-    expect(role("DRILL")).toEqual(["Mammoth"]);
+    expect(role("DRILL")).toEqual(["Musk Ox"]);
+    expect(role("METALLURGY")).toEqual(["Mammoth"]);
     expect(role("ADMINISTRATION")).toEqual(["Ice Witch"]);
     expect(role("SAWMILLING")).toEqual(["Boulder Yeti"]);
     expect(role("CHIVALRY")).toEqual(["Sabretooth"]);
@@ -1023,7 +1058,9 @@ describe("Ice Folk technology (section 4)", () => {
         tech !== "FORTIFICATION" &&
         tech !== "EXPLOSIVES" &&
         SHARED_BASELINE_NODES_V7.find((node) => node.id === tech)?.branch !==
-          "NAVAL"
+          "NAVAL" &&
+        // The ninth unit (7r55): the nodes named for their unit.
+        !Object.hasOwn(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.ICE_FOLK, tech)
       )
         expect(technologyNameV7(tech, "ICE_FOLK")).toBe(
           technologyNameV7(tech, "ORIGINAL"),
@@ -1183,16 +1220,21 @@ describe("Ice Folk Showcase (section 2.4)", () => {
     const reference = create(["ORIGINAL", "ORIGINAL", "UNDEAD", "GOBLIN"]);
     expect(state.board).toEqual(reference.board);
     expect(state.cities).toEqual(reference.cities);
+    const iceId = seatIdV7(state, 0);
+    // The ninth unit (7r55): the Mammoth stands where it stood (the
+    // defender's tile, as the heavy role) and the Musk Ox on the ninth
+    // unit's tile (`showcaseUnitRoleV7`).
     const shape = (source: GameStateV7) =>
       source.units.map((unit) => [
         unit.id,
         unit.ownerId,
-        unit.role,
+        source !== state && unit.ownerId === iceId
+          ? showcaseUnitRoleV7(unit.role, "ICE_FOLK")
+          : unit.role,
         unit.form,
         unit.at,
         unit.homeCityId,
       ]);
-    const iceId = seatIdV7(state, 0);
     // The frozen sea (naval branch section 3.3): an Ice Folk seat has no
     // ship; the IDs of its three boats stay unused.
     expect(shape(state)).toEqual(
@@ -1202,9 +1244,9 @@ describe("Ice Folk Showcase (section 2.4)", () => {
     );
     const own = state.units.filter((unit) => unit.ownerId === iceId);
     expect(own.map((unit) => unit.role)).toEqual(
-      SHOWCASE_UNIT_TEMPLATES_V7.map((entry) => entry.role).filter(
-        (role) => !isNavalRoleV7(role),
-      ),
+      SHOWCASE_UNIT_TEMPLATES_V7.map((entry) => entry.role)
+        .filter((role) => !isNavalRoleV7(role))
+        .map((role) => showcaseUnitRoleV7(role, "ICE_FOLK")),
     );
     for (const unit of own)
       expect(unit.hp).toBe(effectiveRoleRuleV7(unit.role, "ICE_FOLK").maxHp);
@@ -1225,7 +1267,8 @@ describe("Ice Folk Showcase (section 2.4)", () => {
         ]),
     ).toEqual([
       [5, 7],
-      [3, 6],
+      // (7r55: North also homes the Musk Ox.)
+      [4, 6],
       [0, 6],
     ]);
     // 21: land trade pays 2 Coins (tuning 1, 7r46; 17 before) and since
@@ -1278,7 +1321,7 @@ describe("Ice Folk public unit stats (section 11)", () => {
       { seat: 0, role: "FIGHTER", at: at(8, 7) },
       { seat: 0, role: "CATAPULT", at: at(4, 3) },
       { seat: 0, role: "CAPTAIN", at: at(6, 3) },
-      { seat: 0, role: "GUARD", at: at(6, 5) },
+      { seat: 0, role: "SWORDSMAN", at: at(6, 5) },
       {
         seat: 1,
         role: "FIGHTER",

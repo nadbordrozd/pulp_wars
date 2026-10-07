@@ -43,12 +43,10 @@ describe("Gallery presentation", () => {
       for (const role of UNIT_ROLE_IDS_V7) {
         const cell = galleryUnitCellV7(role, faction);
         // The frozen sea: the Ice Folk have no ships (an empty cell).
-        // Tuning 5 (`pulp_wars-w49.4`): only the Humans have a Swordsman.
+        // The ninth unit (`pulp_wars-w49.17`, 7r55): every faction has
+        // a heavy line unit.
         expect(cell.kind).toBe(
-          (faction === "ICE_FOLK" && isNavalRoleV7(role)) ||
-            (role === "SWORDSMAN" && faction !== "ORIGINAL")
-            ? "EMPTY"
-            : "UNIT",
+          faction === "ICE_FOLK" && isNavalRoleV7(role) ? "EMPTY" : "UNIT",
         );
         if (cell.kind !== "UNIT") continue;
         expect(cell.name).toBe(effectiveRoleRuleV7(role, faction).label);
@@ -84,7 +82,8 @@ describe("Gallery presentation", () => {
       roleName: "Catapult",
       tacticalRole: "Siege",
       cost: effectiveRoleRuleV7("CATAPULT", "UNDEAD").cost,
-      technology: { id: "SAWMILLING", name: "Sawmilling" },
+      // (The ninth unit, 7r55: the Undead know the node by its unit.)
+      technology: { id: "SAWMILLING", name: "Liches" },
     });
     expect(details.stats.slice(0, recruit.stats.length)).toEqual(recruit.stats);
     expect(details.stats.at(-1)).toEqual({ label: "Slots", value: "1" });

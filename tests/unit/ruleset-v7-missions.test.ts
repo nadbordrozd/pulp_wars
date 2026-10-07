@@ -105,34 +105,43 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "LAB_SIEGE@1:ORIGINAL":
     "4dfd821eba726c3103d795c00fb6b02b8048e7904e1d216f4d26d9917a122466",
   // Tuning 5 (`pulp_wars-w49.4`): revision 2 of both, with Swordsmen.
-  "LAB_BACKLINE@2:ORIGINAL":
-    "2975321dbfb42083e68681f31ed09217232c4856c4b43d5feef85acd5ce1aef2",
-  "LAB_LATE@2:ORIGINAL":
-    "9aec749baf81daae59ec354bc9d322dfe1e91c4dcf00406ad02c106e3881b1ca",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
+  "LAB_BACKLINE@3:ORIGINAL":
+    "602f19fe94b37d9ef70c2744b767c9a0d1519b77a08402b4d606d81c6024fb8b",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
+  "LAB_LATE@3:ORIGINAL":
+    "4958183f0bda43d018200e40a4a83d21f1e1dfbc8d958f4c672e29a5d10f5d3f",
   // Tuning 6 (`pulp_wars-w49.6`): numbers against a prepared line, one
   // fixture per attacking faction (the player is Human in each).
   // Tuning 7 (`pulp_wars-w49.10`): revision 2 of the three. The capital
   // stands two tiles behind the line and holds a Land Grant, so the two
   // Field Defenses of the line are in its territory and count.
-  "LAB_BREAKTHROUGH@2:ORIGINAL":
-    "2f9bac4d4865c1810dcf20d2abe844be8d1f6b9922114517ac5dde65012c748d",
-  "LAB_BREAKTHROUGH_GOBLIN@2:ORIGINAL":
-    "c0f256f786b4ec308bde2d44874ea94710ba8510988ab19216061ae72307a9de",
-  "LAB_BREAKTHROUGH_UNDEAD@2:ORIGINAL":
-    "d3376b5a40c702a7b6fd64f955c17e7e14c73579d9dcaf1e7539e8641319e9dd",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
+  "LAB_BREAKTHROUGH@3:ORIGINAL":
+    "8e9a809fbe66330550648acc7f3fa39c26090b8aea14f0827a6c2fada73eea7c",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
+  "LAB_BREAKTHROUGH_GOBLIN@3:ORIGINAL":
+    "72dd5ba0e5bfc29a504717e1d8c30286eaaa4237af09718d30b5b13b17e776e8",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
+  "LAB_BREAKTHROUGH_UNDEAD@3:ORIGINAL":
+    "5bddd44fe0b8c2ebbce7ff38da08089092ce94ffcb0147904c18893f373f18d3",
   // The Goblin pass (`pulp_wars-w49.12`): the Goblins for the hand player.
-  "LAB_GOBLIN_MID@1:GOBLIN":
-    "8ddcd6ec959703dfa7bed33a8d3c8c3a9e33b4edea20b1f18a70d61c240fdb11",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
+  "LAB_GOBLIN_MID@2:GOBLIN":
+    "c7cd29b120fc9d433f85b7a25af5c7c0af30a7cd5cf1781352eca724efee3c2d",
   // The Undead pass (`pulp_wars-w49.13`): the Undead for the hand player.
-  "LAB_UNDEAD_MID@1:UNDEAD":
-    "a37ad50524ce01bd7e88b4300d561063d13cb8e51087a3e9adc978ad5cf08932",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
+  "LAB_UNDEAD_MID@2:UNDEAD":
+    "fe08eadba4c3ca7ec4753800bff53676c4985f272b344fb61006b5e93d781db1",
   // The Martian pass (`pulp_wars-w49.14`): the Martians for the hand player.
-  "LAB_MARTIAN_MID@1:MARTIAN":
-    "04a23a91e93b00ec2f7dfb815d5643abe8e2c38b4ca4a26080d8031659f368e3",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
+  "LAB_MARTIAN_MID@2:MARTIAN":
+    "92aceae8fa4606f651a0d2d28fdb14d86491189e5c0ed1a9265fe807d23f6239",
   // The Dinosaur pass (`pulp_wars-w49.15`): the Dinosaurs for the hand
   // player.
-  "LAB_DINOSAUR_MID@1:DINOSAUR":
-    "687863d94d235da92c1d9c6bc8b96148cb031bb9b3312696cafad98647318fe4",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
+  "LAB_DINOSAUR_MID@2:DINOSAUR":
+    "0c913df4978132c8accf991ab623b88a78824ca42aef5cbb2008bdb097149f11",
 };
 
 /**
@@ -165,8 +174,17 @@ function missionStateHash(state: GameStateV7): string {
     // `huntedThisTurn` list, empty in every initial state and left out too.
     huntedThisTurn,
     ice,
+    // The ninth unit (`pulp_wars-w49.17`, 7r55) added the `ninthUnit`
+    // record, empty in every initial state and left out too.
+    ninthUnit,
     ...rest
   } = state;
+  expect(ninthUnit).toEqual({
+    wightGraves: [],
+    risenWights: [],
+    crackedThisTurn: [],
+    struckThisTurn: [],
+  });
   expect(huntedThisTurn).toEqual([]);
   expect([monsters, beamedThisTurn, tractorUsedThisTurn]).toEqual([[], [], []]);
   // The frozen sea (`pulp_wars-5ti.3`) added the `ice` list, empty in every
@@ -225,25 +243,34 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // curiosities; their digests here are the same reduction of the state.
   "LAB_SIEGE@1:ORIGINAL":
     "08e89649ece323a8d5284cc1895331f236d702a507a8c68df6ff443175b539ed",
-  "LAB_BACKLINE@2:ORIGINAL":
-    "bf278fe987b22356a48b8a199331a3435878bc5072ec31f85691371d6be31277",
-  "LAB_LATE@2:ORIGINAL":
-    "67247565f08469287eeae5e2a66f4b4a3a9f270e9d2d1d08bc1d595cb68e0643",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
+  "LAB_BACKLINE@3:ORIGINAL":
+    "73afbd09c53742575b1ac451ffacc198eaa5d33708c9d824de2d74ee03d01929",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
+  "LAB_LATE@3:ORIGINAL":
+    "1077f06138cc445c505ced579e7a197082076fbacf1ebdc4429a01cf799bfa1e",
   // The breakthrough labs of tuning 6: the same reduction of the state.
-  "LAB_BREAKTHROUGH@2:ORIGINAL":
-    "f453717878a59b126db1e4638ada40a53b6093a24194bdd3055ede187aaedcea",
-  "LAB_BREAKTHROUGH_GOBLIN@2:ORIGINAL":
-    "657e665330c9d34e9b9dbd15722d44bbe5c57596a6c727cbb51c9b890f9abd04",
-  "LAB_BREAKTHROUGH_UNDEAD@2:ORIGINAL":
-    "b60fca0d1b6571f3ae2621c400e1af71d030b5dfea5f6b846845d7c3aedc3719",
-  "LAB_GOBLIN_MID@1:GOBLIN":
-    "d13ad9dd793b273e90954ebfa00f9d58ef0f1cb41f774825041c5c1151ef6df5",
-  "LAB_UNDEAD_MID@1:UNDEAD":
-    "1ba498c4ccc6d783141c1bed27083016627db6c434f8d91b2eeffe60f2137296",
-  "LAB_MARTIAN_MID@1:MARTIAN":
-    "04b32b4cb1d9abac2d2c4711042cf9b272ea81e82d3b4628a58e010364baab06",
-  "LAB_DINOSAUR_MID@1:DINOSAUR":
-    "434875dfb87a94d47d7f6831962be5d9d922e7ead78a5c5d768900c91a45a0e2",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
+  "LAB_BREAKTHROUGH@3:ORIGINAL":
+    "cb1e8715c4b1f10a3df7bab0f09bae6ad8cfa76a15d52655d98645a053e37ebb",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
+  "LAB_BREAKTHROUGH_GOBLIN@3:ORIGINAL":
+    "5a6d978c1de9eaca891e65720b9cd120e989c92b2091c24d7237c0eac9be7317",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
+  "LAB_BREAKTHROUGH_UNDEAD@3:ORIGINAL":
+    "35d3b8ad373cb8f10ff975e940910d2d918cfdc1fdee28b7f2e4f279d1461da4",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
+  "LAB_GOBLIN_MID@2:GOBLIN":
+    "156aa24b4ee2382f4c540bfc6f557914ef56be62cabe9d55529899d6519640f6",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
+  "LAB_UNDEAD_MID@2:UNDEAD":
+    "355b6bbece4d5eb6410be6f63f0422468c73e7b5e3e427f9715c3e7dd1c7eada",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
+  "LAB_MARTIAN_MID@2:MARTIAN":
+    "67982fb7b156593ed57d9a44fb3ccee02645e2397ad85c67c510d0d65859e771",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
+  "LAB_DINOSAUR_MID@2:DINOSAUR":
+    "6d09cf4e9c1516172fac519826cf34392109e1a28bce19256ca619d9d36f0085",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {
@@ -258,8 +285,15 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
     tossedThisTurn,
     huntedThisTurn,
     ice,
+    ninthUnit,
     ...rest
   } = state;
+  expect(ninthUnit).toEqual({
+    wightGraves: [],
+    risenWights: [],
+    crackedThisTurn: [],
+    struckThisTurn: [],
+  });
   expect(huntedThisTurn).toEqual([]);
   const { curiosities: option, ...setup } = state.setup;
   expect([curiosities, monsters, option]).toEqual([[], [], false]);

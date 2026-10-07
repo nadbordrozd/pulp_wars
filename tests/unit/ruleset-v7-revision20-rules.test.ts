@@ -91,16 +91,16 @@ class MemoryStorage {
 // save keys are obsolete, and the scripts perform no Stampede.
 describe("ruleset-7 revision-20 identity", () => {
   it("keeps 7r19 and 7r20 as prior identities after the later bumps", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r55");
     expect(RULESET_7.version).toBe(7);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r54.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-35, -33)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r55.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-36, -34)).toEqual([
       "pulp-wars-poc-7r19",
       "pulp-wars-poc-7r20",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-35, -33)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-36, -34)).toEqual([
       "pulpWars.save.v7r19.current",
       "pulpWars.save.v7r20.current",
     ]);
@@ -142,7 +142,7 @@ describe("ruleset-7 revision-20 identity", () => {
       const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
       const created = createPlayableGameV7(setup);
       if (!created.ok) throw new Error(created.error.code);
-      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r54");
+      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r55");
       const oldSetup = { ...setup, rulesetId: oldId };
       expect(parseMatchSetupV7(setup)).not.toBeNull();
       expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -241,12 +241,13 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(100);
+    // The ninth unit (7r55): WIGHT_RISEN (101).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(101);
   });
 
   it("fails to parse a STAMPEDE command, like any unknown kind", () => {
     const state = fieldV7([
-      { seat: 0, role: "CATAPULT", at: at(3, 2) },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 2) },
       { seat: 1, role: "GUARD", at: at(5, 2) },
     ]);
     const stampede = {
@@ -280,7 +281,7 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
   it("offers a Triceratops ordinary attacks before and after its Move and never STAMPEDE", () => {
     // A target two tiles away in a straight line: the revision-19 lane.
     const state = fieldV7([
-      { seat: 0, role: "CATAPULT", at: at(3, 2) },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 2) },
       { seat: 1, role: "GUARD", at: at(5, 2) },
       { seat: 1, role: "GUARD", at: at(3, 1) },
     ]);
@@ -296,7 +297,7 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     expect(kinds(state)).toContain("MOVE");
     expect(new Set(kinds(state)).has("STAMPEDE" as never)).toBe(false);
     const far = fieldV7([
-      { seat: 0, role: "CATAPULT", at: at(3, 2) },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 2) },
       { seat: 1, role: "GUARD", at: at(5, 2) },
     ]);
     expect(
@@ -362,7 +363,7 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     // A combat preview carries `runUp` and `fortificationIgnored` instead of
     // `stampede`, and an event with `stampede` or the old reason is refused.
     const state = fieldV7([
-      { seat: 0, role: "CATAPULT", at: at(3, 2) },
+      { seat: 0, role: "SWORDSMAN", at: at(3, 2) },
       { seat: 1, role: "GUARD", at: at(4, 2) },
     ]);
     const run = attackV7(state, at(3, 2), at(4, 2));
@@ -469,7 +470,7 @@ describe("ruleset-7 revision-20 T-Rex", () => {
     // A Triceratops Egg never has more turns left than its hatch time (2).
     expect(() =>
       withEggsV7(base, [
-        { seat: 0, role: "CATAPULT", at: at(7, 7), turnsRemaining: 3 },
+        { seat: 0, role: "SWORDSMAN", at: at(7, 7), turnsRemaining: 3 },
       ]),
     ).toThrow();
     const laid = {
@@ -540,10 +541,12 @@ describe("ruleset-7 revision-20 role registrations (section 6.1)", () => {
     expect(hp("ORIGINAL")).toEqual([
       12, 12, 12, 17, 10, 10, 13, 40, 10, 25, 12, 15,
     ]);
+    // The ninth unit (7r55): the last role is the Wight (14) and the Ogre
+    // (16).
     expect(hp("UNDEAD")).toEqual([
-      10, 10, 8, 18, 10, 10, 10, 40, 10, 25, 12, 15,
+      10, 10, 8, 18, 10, 10, 10, 40, 10, 25, 12, 14,
     ]);
-    expect(hp("GOBLIN")).toEqual([6, 10, 8, 15, 12, 8, 10, 40, 10, 25, 12, 15]);
+    expect(hp("GOBLIN")).toEqual([6, 10, 8, 15, 12, 8, 10, 40, 10, 25, 12, 16]);
   });
 });
 

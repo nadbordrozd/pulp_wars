@@ -868,8 +868,11 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // (of seeds 0-15, the Liches of seeds 0, 2, 5, 6, 8, 14, and 15 do).
     // With the Martian pass's correction (`pulp_wars-w49.14`: the Human
     // seat of the Normal AI) the Liches of seed 15 never splash; those of
-    // seed 0 do (of seeds 0-14, so do 2, 6, 8, 9, and 14).
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 0), {
+    // seed 0 do (of seeds 0-14, so do 2, 6, 8, 9, and 14). With the ninth
+    // unit (`pulp_wars-w49.17`, 7r55: the Wight's technologies in the
+    // Undead order) the Lich of seed 0 never splashes; that of seed 8
+    // does, eight times (of seeds 0-19, so do 3, 6, 10, 14, 15, and 18).
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 8), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);

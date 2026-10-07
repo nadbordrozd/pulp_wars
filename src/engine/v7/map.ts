@@ -54,6 +54,7 @@ import {
   RESOURCE_IDS_V7,
   RULESET_7_ID,
   TERRAIN_IDS_V7,
+  emptyNinthUnitStateV7,
   type MonsterStateV7,
   type AiCountV7,
   type BiomeIdV7,
@@ -3939,6 +3940,7 @@ function initialMapStateFromV7(
     splattedThisTurn: [],
     tossedThisTurn: [],
     huntedThisTurn: [],
+    ninthUnit: emptyNinthUnitStateV7(),
     pendingChoices: [],
     outcome: null,
   });
@@ -4005,6 +4007,7 @@ function showcaseInitialStateV7(
     splattedThisTurn: [],
     tossedThisTurn: [],
     huntedThisTurn: [],
+    ninthUnit: emptyNinthUnitStateV7(),
     pendingChoices: [],
     outcome: null,
   });

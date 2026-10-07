@@ -238,10 +238,21 @@ function normalizedInitialState(state: GameStateV7): string {
     // The frozen sea (`pulp_wars-5ti.3`) adds the `ice` list, empty in every
     // generated initial state.
     ice: _ice,
+    // The ninth unit (`pulp_wars-w49.17`, 7r55) adds the `ninthUnit`
+    // record, empty in every initial state.
+    ninthUnit: _ninthUnit,
     rulesetId: _rulesetId,
     setup,
     ...rest
   } = state;
+  if (
+    _ninthUnit.wightGraves.length +
+      _ninthUnit.risenWights.length +
+      _ninthUnit.crackedThisTurn.length +
+      _ninthUnit.struckThisTurn.length !==
+    0
+  )
+    throw new Error("a ninth-unit fact in an initial state");
   if (_rush.length + _crumbs.length + _splatted.length + _tossed.length !== 0)
     throw new Error("a Candy fact in an initial state");
   if (_hunted.length !== 0)
@@ -467,13 +478,13 @@ describe("headless parity and the CLI flag", () => {
         // recomputed for every pin of this list, 13 rounds here.
         rounds: 13,
         commandHash:
-          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
-          // 2c07c1…2995).
-          "b030da1d505f0a0089005690803b3e426a0c864933d4b58fcce1dd3212ffaf4c",
+          // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
+          // b030da…af4c).
+          "4bc5040fcad4095b43991b265d4fb23f95c6bcd68be7eccd1f01051535a06f14",
         eventHash:
-          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
-          // 1cc9b0…3c1c).
-          "6f55cd615f6a6afec376bcb39150e094e60b6145cb55d71467425c8969796484",
+          // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
+          // 6f55cd…6484).
+          "3d8b8f683880e419626dbf6c557c4da946815fb04ade8b5d2a7ff4ee68d91845",
         mapHash:
           "5b286bbe8cdb2f8a339cd7a74ba219bc2b57a4322370548442b3c8f26bef4ad9",
         finalPrngHash:
@@ -487,15 +498,16 @@ describe("headless parity and the CLI flag", () => {
         factions: ["ICE_FOLK", "DWARF"],
         seed: 5,
         // Tuning 6: 20 rounds (22 before). The economy rejig: 19.
-        rounds: 19,
+        // The ninth unit (7r55): 18 rounds (19 before).
+        rounds: 18,
         commandHash:
-          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
-          // effa4b…d032).
-          "9f171d75e120fce8f7dffe1d0ba474c3046b59b41e6d01f803a9a79664a9eba6",
+          // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
+          // 9f171d…eba6).
+          "fd31d23a7e3f6ccd73ece607ef9f85e93c20fee7effa1eba4b527470eff95e68",
         eventHash:
-          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
-          // fd26a3…a5dc).
-          "b0de91953e880268fe95f6d9eebd7fa8c6cd49f575d903f6b22703ad9a58c9cf",
+          // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
+          // b0de91…c9cf).
+          "1dfe18122e60abe3fcfe9ef446e97816a333dce7a509c2416c3446b221808d4d",
         mapHash:
           "2cbf36a1c5d03e70dd785be13a1ed7d5dd04fecdd54925baa1b483261d71c9be",
         finalPrngHash:
@@ -533,13 +545,13 @@ describe("headless parity and the CLI flag", () => {
         // Tuning 6: 10 rounds (11 before). The economy rejig: 11.
         rounds: 11,
         commandHash:
-          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
-          // aa8328…9bd8).
-          "85af21c6f2b103ab8cadf424b9ff6a9e79af2704bfdafaa2948abf9cb0937e03",
+          // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
+          // 85af21…7e03).
+          "b331e25f7f6715e4d4a69b0f912e33531308369e2ba298bac9d7de051d0e17ee",
         eventHash:
-          // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
-          // 818aa9…9f48).
-          "263a856e6f75939ab7543a001764b37528c5e072e84513ca6da06295e732a9e5",
+          // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
+          // 263a85…a9e5).
+          "19d010c77dbc137bf56b28b098db836d6e7d90160e4e546752eefe8a0ce589f2",
         mapHash:
           "70ff339440ce86f231bca6b2be56c748891436934f614f6ef66fa53933f3d5ab",
         finalPrngHash:
@@ -576,8 +588,17 @@ describe("headless parity and the CLI flag", () => {
           torpedo,
           iceCover,
           icebound,
+          shockDamage,
+          crackApplied,
+          frostbiteApplied,
           ...preview
         } = event.preview;
+        // The ninth unit (`pulp_wars-w49.17`, 7r55) adds three more.
+        expect([shockDamage, crackApplied, frostbiteApplied]).toEqual([
+          0,
+          false,
+          false,
+        ]);
         // The naval branch (`pulp_wars-5ti.2`, 7r43) adds two more, neutral
         // while no seat holds Seamanship or Submersibles.
         expect([ram, torpedo]).toEqual([false, false]);

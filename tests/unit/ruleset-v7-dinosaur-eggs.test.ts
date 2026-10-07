@@ -70,8 +70,11 @@ const EGG_LAID_ROLES = [
   "RAIDER",
   "MARKSMAN",
   "GUARD",
+  // The ninth unit (7r55): the Stegosaurus (`CATAPULT`) and the
+  // Triceratops (`SWORDSMAN`, the last role ID).
   "CATAPULT",
   "KNIGHT",
+  "SWORDSMAN",
 ] as const satisfies readonly UnitRoleIdV7[];
 
 const kinds = (events: readonly DomainEventV7[]): readonly string[] =>
@@ -642,7 +645,8 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
       ["RAIDER", 3],
       ["MARKSMAN", 3],
       ["GUARD", 4],
-      ["CATAPULT", 7],
+      ["CATAPULT", 6],
+      ["SWORDSMAN", 7],
       ["KNIGHT", 13],
     ] as const) {
       const command = lay(forged, role, NEST);
@@ -729,7 +733,7 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
       nestTiles: nestTilesV7(base, city),
       unavailableReason: null,
     });
-    expect(preview(base, "CATAPULT")).toMatchObject({
+    expect(preview(base, "SWORDSMAN")).toMatchObject({
       cost: 8,
       slots: 2,
       turnsToHatch: 2,
@@ -970,7 +974,7 @@ describe("ruleset-7 revision-19 Egg unit", () => {
         { seat: 0, role: "CAPTAIN", at: { x: 6, y: 6 } },
         { seat: 1, role: "FIGHTER", at: { x: 6, y: 7 } },
       ],
-      [{ seat: 0, role: "CATAPULT", at: NEST, hp: 3 }],
+      [{ seat: 0, role: "SWORDSMAN", at: NEST, hp: 3 }],
     );
     const actor = state.humanPlayerId;
     const egg = unitAtV7(state, NEST);
@@ -1469,7 +1473,7 @@ describe("ruleset-7 revision-19 hatching", () => {
       ["GUARD", 2, 20],
       // Revision 20: the Triceratops hatches in 2 turns with 20 HP and the
       // T-Rex in 4.
-      ["CATAPULT", 2, 20],
+      ["SWORDSMAN", 2, 20],
       ["KNIGHT", 4, 28],
     ] as const) {
       const start = dino([], [], { techs: { 0: without("FORTIFICATION") } });
@@ -1998,7 +2002,7 @@ describe("ruleset-7 revision-19 Nesting", () => {
       ["RAIDER", 1, 1],
       ["MARKSMAN", 1, 1],
       ["GUARD", 2, 2],
-      ["CATAPULT", 2, 2],
+      ["SWORDSMAN", 2, 2],
       ["KNIGHT", 4, 4],
     ] as const) {
       for (const [techs, hp, turns] of [
@@ -2621,7 +2625,7 @@ describe("ruleset-7 revision-19 Abandon Egg (Disband)", () => {
       ["RAIDER", 2],
       ["MARKSMAN", 2],
       ["GUARD", 2],
-      ["CATAPULT", 4],
+      ["SWORDSMAN", 4],
       ["KNIGHT", 7],
     ] as const) {
       const start = dino([], [], { coins: 20 });
@@ -2826,7 +2830,7 @@ describe("ruleset-7 revision-19 Showcase with a Dinosaur seat", () => {
     });
     if (!created.ok) throw new Error(created.error.code);
     expect(created.state.eggs).toEqual([]);
-    expect(created.state.units).toHaveLength(22);
+    expect(created.state.units).toHaveLength(24);
     expect(
       created.state.units.every(
         (unit) => unit.form === "LAND" || unit.form === "NAVAL",

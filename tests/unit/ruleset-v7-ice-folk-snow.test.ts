@@ -351,8 +351,8 @@ describe("Snow cover (section 6.2, 2)", () => {
     const state = iceFieldV7(
       [
         { seat: 1, role: "MARKSMAN", at: at(7, 5) },
-        { seat: 0, role: "GUARD", at: at(7, 6) },
-        { seat: 0, role: "GUARD", at: at(6, 4) },
+        { seat: 0, role: "SWORDSMAN", at: at(7, 6) },
+        { seat: 0, role: "SWORDSMAN", at: at(6, 4) },
       ],
       {
         factions: ["ICE_FOLK", "UNDEAD"],

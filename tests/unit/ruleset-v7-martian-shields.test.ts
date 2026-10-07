@@ -139,7 +139,7 @@ describe("Martian Shields: absorption (section 5.3)", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "KNIGHT", at: at(5, 3), form: "EMBARKED" },
-        { seat: 1, role: "CATAPULT", at: at(5, 5), hp: 1 },
+        { seat: 1, role: "SWORDSMAN", at: at(5, 5), hp: 1 },
       ],
       {
         factions: ["MARTIAN", "DINOSAUR"],
@@ -165,7 +165,7 @@ describe("Martian Shields: absorption (section 5.3)", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "KNIGHT", at: at(5, 2) },
-        { seat: 1, role: "CATAPULT", at: at(5, 5) },
+        { seat: 1, role: "SWORDSMAN", at: at(5, 5) },
       ],
       { factions: ["MARTIAN", "DINOSAUR"], activeSeat: 1 },
     );

@@ -47,13 +47,15 @@ export async function probeGalleryV7(
   // (the Submarine since pulp_wars-5ti.2)
   // units and the one Egg, whose row is empty for the seven other factions;
   // the Ice Folk have no ships and no transport (pulp_wars-5ti.3): four
-  // more empty cells. Tuning 5 (`pulp_wars-w49.4`): the Swordsman's row,
-  // a unit for the Humans and an empty cell for the seven other factions.
+  // more empty cells. Tuning 5 (`pulp_wars-w49.4`): the Swordsman's row.
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): that row is the heavy line
+  // unit of every faction, so its seven empty cells are units (101 cells
+  // and 11 empty ones; 94 and 18 before).
   if (
     table.factions.join() !==
       "ORIGINAL,UNDEAD,GOBLIN,DINOSAUR,MARTIAN,ICE_FOLK,DWARF,CANDY" ||
-    table.cells !== 94 ||
-    table.empty !== 18 ||
+    table.cells !== 101 ||
+    table.empty !== 11 ||
     table.overflow > 0
   )
     throw new Error(`Gallery table is incomplete: ${JSON.stringify(table)}`);

@@ -9,6 +9,15 @@ in [Ruleset 7: current rules](RULESET_7_CURRENT.md); this document is the
 reasoning and the record, in the shape of
 [the Human pass](RULESET_7_TUNING_HUMAN.md).
 
+**Superseded in part by [the ninth unit](RULESET_7_NINTH_UNIT.md) (`pulp-wars-poc-7r55`, `pulp_wars-w49.17`).** The Goblins have a ninth land
+unit, the **Ogre** (the heavy line role, at Metallurgy; Heavyweight: it
+counts as two helpers for Gang Up), so the roster, the research order
+(the Ogre after the Warboss), and every statement that the Swordsman is
+the Humans' alone are out of date. The Human Swordsman this document
+fights is the Champion (6 Coins, at Metallurgy). `LAB_GOBLIN_MID` is at
+revision 2: your seat owns Engineering and Metallurgy too. The record
+below is unchanged.
+
 **Superseded in part by [the economy rejig](RULESET_7_ECONOMY_REJIG.md)
 (`pulp-wars-poc-7r54`, `pulp_wars-w49.16`).** Where this document gives a research price by the technologies owned (the
 tier base plus 1 Coin for each technology owned, "the nth technology

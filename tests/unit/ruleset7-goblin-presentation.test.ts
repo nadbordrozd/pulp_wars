@@ -318,6 +318,8 @@ describe("Revision 17 Goblin presentation text", () => {
       "WAAAGH!",
       "Trolls",
       "Discipline",
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Ogre.
+      "Heavyweight",
     ]);
   });
 
@@ -390,13 +392,21 @@ describe("Revision 17 Goblin presentation text", () => {
 
   it("names technologies and Goblin art by the viewer's faction", () => {
     expect(technologyNameV7("COMMERCE", "GOBLIN")).toBe("Plunder");
-    // Other names keep their revision-16 sentence case for every viewer.
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): the shared names
+    // (Shipbuilding for Naval Engineering) and a faction's own (Chivalry is
+    // the Vampires' and the Scrap Buggies' node); a name with neither is
+    // the ID in sentence case.
     for (const faction of ["ORIGINAL", "UNDEAD", "GOBLIN"] as const) {
       expect(technologyNameV7("NAVAL_ENGINEERING", faction)).toBe(
-        "Naval engineering",
+        "Shipbuilding",
       );
-      expect(technologyNameV7("CHIVALRY", faction)).toBe("Chivalry");
+      expect(technologyNameV7("NAVIGATION", faction)).toBe("Navigation");
     }
+    expect(
+      (["ORIGINAL", "UNDEAD", "GOBLIN"] as const).map((faction) =>
+        technologyNameV7("CHIVALRY", faction),
+      ),
+    ).toEqual(["Chivalry", "Vampires", "Scrap Buggies"]);
     expect(technologyNameV7("COMMERCE", "ORIGINAL")).toBe("Commerce");
     expect(technologyNameV7("COMMERCE", "UNDEAD")).toBe("Commerce");
     // Goblin land roles have their own portraits (pulp_wars-0ao.8).

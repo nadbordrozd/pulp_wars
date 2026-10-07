@@ -205,7 +205,7 @@ describe("ruleset-7 revision-19 Normal AI against Dinosaurs: growth", () => {
   it("discounts a Move into the lethal reach of a nearly grown unit", () => {
     // A full-HP Fighter three tiles down a Triceratops's row dies to the
     // Stampede, which would make that Triceratops Big.
-    const state = older([own("FIGHTER", 6, 2), foe("CATAPULT", 2, 3)]);
+    const state = older([own("FIGHTER", 6, 2), foe("SWORDSMAN", 2, 3)]);
     expect(
       moveCandidateV7(state, { x: 6, y: 2 }, { x: 5, y: 3 })?.score
         .strategicValue,

@@ -220,8 +220,8 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
     expect(dinosaurAbilityNameV7("OVERRUN", "ORIGINAL")).toBe(null);
     // The run-up per tile and its maximum are the Triceratops's registry
     // values (revision 20 section 7.2 "Unit info (Triceratops)").
-    expect(chargeRunUpBonusV7()).toBe(mechanics("CATAPULT").runUpBonus2 / 2);
-    expect(chargeRunUpMaximumV7()).toBe(mechanics("CATAPULT").runUpBonus2);
+    expect(chargeRunUpBonusV7()).toBe(mechanics("SWORDSMAN").runUpBonus2 / 2);
+    expect(chargeRunUpMaximumV7()).toBe(mechanics("SWORDSMAN").runUpBonus2);
     // The Dinosaur pass (`pulp_wars-w49.15`, 7r53): one tile counts, two
     // with Wallbreaker.
     expect(CHARGE_DESCRIPTION_V7).toBe(
@@ -397,6 +397,8 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
       "Tend Wounded",
       "Wild",
       "Rampage, Pounce, War Drums",
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Stegosaurus.
+      "Thagomizer",
     ]);
     const rule = (name: string): string =>
       DINOSAUR_HELP_RULES_V7.find(([candidate]) => candidate === name)?.[1] ??
@@ -513,7 +515,7 @@ describe("Revision 20 Charge! attack preview text (section 7.2)", () => {
     // Unmoved: no run-up line; the Push stays.
     const still = humanView(
       dinosaurUiFieldV7([
-        { seat: 0, role: "CATAPULT", at: { x: 4, y: 2 } },
+        { seat: 0, role: "SWORDSMAN", at: { x: 4, y: 2 } },
         { seat: 1, role: "JUGGERNAUT", at: { x: 5, y: 2 } },
       ]),
     );
@@ -537,7 +539,7 @@ describe("Revision 20 Charge! attack preview text (section 7.2)", () => {
     // A unit behind the target blocks the Push: nothing moves.
     const blocked = humanView(
       dinosaurUiFieldV7([
-        { seat: 0, role: "CATAPULT", at: { x: 6, y: 2 } },
+        { seat: 0, role: "SWORDSMAN", at: { x: 6, y: 2 } },
         { seat: 1, role: "JUGGERNAUT", at: { x: 7, y: 2 } },
         { seat: 1, role: "FIGHTER", at: { x: 8, y: 2 } },
       ]),
@@ -552,7 +554,7 @@ describe("Revision 20 Charge! attack preview text (section 7.2)", () => {
     const fortified = humanView(
       withTileV7(
         dinosaurUiFieldV7([
-          { seat: 0, role: "CATAPULT", at: { x: 4, y: 7 } },
+          { seat: 0, role: "SWORDSMAN", at: { x: 4, y: 7 } },
           { seat: 1, role: "GUARD", at: { x: 3, y: 7 } },
         ]),
         { x: 3, y: 7 },
@@ -603,7 +605,7 @@ describe("Revision 20 Charge! attack preview text (section 7.2)", () => {
     ).toEqual(["Wallbreaker: ignores City Walls"]);
     // A Triceratops on the same Walls ignores fortification through Charge!.
     const triceratops = walledV7({
-      attackers: [{ role: "CATAPULT", at: { x: 7, y: 8 } }],
+      attackers: [{ role: "SWORDSMAN", at: { x: 7, y: 8 } }],
     });
     expect(
       charge(viewForV7(triceratops, actor), { x: 7, y: 8 }, { x: 8, y: 8 })
@@ -838,7 +840,7 @@ describe("Revision 19 presentation steps", () => {
     // Unmoved next to its target: a lunge and no thrown rock, the slide of
     // the pushed Guard, and the follow.
     const adjacent = dinosaurUiFieldV7([
-      { seat: 0, role: "CATAPULT", at: { x: 4, y: 2 } },
+      { seat: 0, role: "SWORDSMAN", at: { x: 4, y: 2 } },
       { seat: 1, role: "GUARD", at: { x: 5, y: 2 } },
     ]);
     const adjacentView = humanView(adjacent);

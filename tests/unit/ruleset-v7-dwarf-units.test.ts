@@ -374,7 +374,8 @@ describe("Dig In (section 8)", () => {
   });
 
   it("sets moved on a Hammerer's and a Mole's advance only", () => {
-    for (const role of ["FIGHTER", "GUARD", "KNIGHT"] as const) {
+    // (The ninth unit, 7r55: the Steam Tank is the heavy role.)
+    for (const role of ["FIGHTER", "GUARD", "SWORDSMAN"] as const) {
       const state = dwarfFieldV7([
         { seat: 0, role, at: at(5, 2) },
         { seat: 1, role: "FIGHTER", at: at(5, 3), hp: 1 },
@@ -382,7 +383,9 @@ describe("Dig In (section 8)", () => {
       ]);
       const killed = attackV7(state, at(5, 2), at(5, 3));
       expect(killed.attacker?.at, role).toEqual(at(5, 3));
-      expect(killed.attacker?.activation.moved, role).toBe(role !== "KNIGHT");
+      expect(killed.attacker?.activation.moved, role).toBe(
+        role !== "SWORDSMAN",
+      );
     }
   });
 });
@@ -650,7 +653,7 @@ describe("the Steam Tank's Plated (section 10.2)", () => {
   it("caps every hit on it at 4 and reports platedApplied", () => {
     const state = enemyTurn(
       dwarfFieldV7([
-        { seat: 0, role: "KNIGHT", at: at(5, 3) },
+        { seat: 0, role: "SWORDSMAN", at: at(5, 3) },
         { seat: 1, role: "CATAPULT", at: at(3, 3) },
         ENEMY,
       ]),

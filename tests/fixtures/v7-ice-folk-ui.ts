@@ -151,7 +151,7 @@ export function iceFolkUiFixtureV7(
       { seat: 0, role: "RAIDER", at: at.sled },
       { seat: 0, role: "FIGHTER", at: at.bolasPartner },
       { seat: 0, role: "CAPTAIN", at: at.witch },
-      { seat: 0, role: "GUARD", at: at.mammoth },
+      { seat: 0, role: "SWORDSMAN", at: at.mammoth },
       { seat: 0, role: "FIGHTER", at: at.yeti },
       { seat: 0, role: "CATAPULT", at: at.boulderYeti },
       { seat: 0, role: "MARKSMAN", at: at.hunter },

@@ -398,10 +398,13 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // pass's correction (`pulp_wars-w49.13`: a Lich plagues only with
     // Pestilence, which the Undead seat researches once it fields two
     // Liches): seed 6 trains one Lich that never plagues; of seeds 0-15,
-    // seeds 0 and 9 plague (seed 0: two Liches, 13 applications).
+    // seeds 0 and 9 plague (seed 0: two Liches, 13 applications). The
+    // ninth unit (`pulp_wars-w49.17`, 7r55: the Wight's technologies in
+    // the Undead order): the two Liches of seed 0 never plague; of seeds
+    // 0-19, seeds 8 and 13 plague (seed 8: four Liches, 7 applications).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 0,
+      seed: 8,
       width: 11,
       height: 11,
       aiCount: 1,

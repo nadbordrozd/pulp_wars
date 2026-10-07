@@ -243,3 +243,16 @@ This guides the subject lines; it is not sent to PixelLab.
 Building-specific notes (Windmill, Sawmill, Forge, Workshop, Market, Port,
 Shipyard, Farm, Lumber Camp, Mine, Monument) are set in the batch beads and
 the asset inventory. Each needs a unique silhouette at zoom 0.75.
+
+## Ninth unit: the Champion (bead `pulp_wars-w49.17`)
+
+Ruleset `7r55` renames the Human heavy line unit: the Swordsman is the
+**Champion** (the user's choice; the engine role stays `SWORDSMAN`). **Its art
+is unchanged**: the sprite and portrait of bead `pulp_wars-w49.9` above, under
+the same subjects (`UNIT:SWORDSMAN`, `PORTRAIT:SWORDSMAN`) and asset IDs. The
+user left a redraw open ("we could regenerate the art to make him look more
+championy although the current one is cool"): it is an optional art bead, not
+a stand-in. If it is made, the read to aim for is a champion of the host
+rather than a rank-and-file knight: the same great helm, plate, crimson tabard
+and greatsword, with one mark of standing (a plume, a laurel on the helm, or a
+trimmed cloak) and no shield.

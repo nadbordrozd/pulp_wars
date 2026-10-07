@@ -451,8 +451,10 @@ describe("technology cards and Help", () => {
       const { app } = rig(state);
       requiredButton("tech").click();
       const seamanship = requiredButton("tech-seamanship");
+      // (The ninth unit, `pulp_wars-w49.17`, 7r55: Seamanship is shown as
+      // Boarding.)
       expect(seamanship.querySelector(".v7-tech-name")?.textContent).toBe(
-        "Seamanship",
+        "Boarding",
       );
       seamanship.click();
       const lines = (): string[] =>

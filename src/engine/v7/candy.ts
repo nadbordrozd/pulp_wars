@@ -326,7 +326,7 @@ export function unitBouncesV7(
  */
 export function attackIsBouncedV7(
   roster: FactionRosterV7,
-  attacker: Pick<CandyUnitFactsV7, "role">,
+  attacker: CandyUnitFactsV7,
   defender: CandyUnitFactsV7,
   facts: {
     readonly distance: number;
@@ -339,6 +339,12 @@ export function attackIsBouncedV7(
     !facts.attackerDies &&
     !facts.defenderDies &&
     attacker.role !== "JUGGERNAUT" &&
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): Rock Hard, a Jawbreaker
+    // is never bounced.
+    !(
+      attacker.form === "LAND" &&
+      unitRoleMechanicsV7(roster, attacker).immovable
+    ) &&
     unitBouncesV7(roster, defender)
   );
 }

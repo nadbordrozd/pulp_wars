@@ -3223,7 +3223,11 @@ function unitName(
   const faction = unitFactionV7(view, unit);
   if (faction === "MARTIAN" || faction === "ICE_FOLK" || faction === "DWARF")
     return `${faction === "MARTIAN" ? "Martian" : faction === "ICE_FOLK" ? "Ice Folk" : "Dwarf"} ${unitRoleRuleV7(view, unit).label}`;
-  return title(unit.role);
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the heavy line role by its
+  // unit's name (the Human Champion, the Candy Jawbreaker), not its role ID.
+  return unit.role === "SWORDSMAN"
+    ? unitRoleRuleV7(view, unit).label
+    : title(unit.role);
 }
 const NO_HELD_UNITS: ReadonlyMap<number, CoordV7> = new Map();
 /**

@@ -65,7 +65,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r54`;
+ * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r55`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 15, the Normal AI of a
  * Human, Undead, or Goblin seat). Round 7 was played by hand four times
  * (`r7a` to `r7d`); every position below is one of those games, or the
@@ -102,6 +102,9 @@ const BASIC: readonly TechnologyIdV7[] = [
   "MARKSMANSHIP",
   "DRILL",
   "ENGINEERING",
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Champion's technology
+  // (the seats of this file field Swordsmen, the Champions of today).
+  "METALLURGY",
 ];
 
 /** Technologies in the order a state lists them. */
@@ -380,7 +383,7 @@ function scene(options: SceneV7): GameStateV7 {
 
 describe("tuning 8 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r55");
   });
 });
 
@@ -1107,8 +1110,12 @@ describe("2. research while at war", () => {
     const spent = policyTurn(full);
     expect(kindsOf(spent.commands)).not.toContain("TRAIN");
     expect(researchOf(spent.commands).length).toBeGreaterThan(0);
-    for (const tech of researchOf(spent.commands))
-      expect(ARMY_LATE_RESEARCH_V7).toContain(tech);
+    // (The ninth unit, 7r55: Metallurgy, one of the four, is the
+    // Champion's technology and already owned, so the first three bought
+    // are the other three; the Coins left after them are spent as in
+    // peace.)
+    const late = ARMY_LATE_RESEARCH_V7.filter((tech) => !BASIC.includes(tech));
+    expect(researchOf(spent.commands).slice(0, late.length)).toEqual(late);
   });
 
   /**
@@ -1177,16 +1184,19 @@ describe("2. research while at war", () => {
     // The economy rejig (`pulp_wars-w49.16`): with one city the 40 Coins
     // also buy Raiding and Chivalry (7 and 9; they were 12 and 15 as the
     // eighth and ninth technologies).
+    // (The ninth unit, 7r55: Metallurgy, the Champion's technology,
+    // follows Engineering, and the Coins end at Raiding.)
     expect(researchOf(turn.commands)).toEqual([
       "ENGINEERING",
+      "METALLURGY",
       "SCOUTING",
       "RAIDING",
-      "CHIVALRY",
     ]);
     const second = policyTurn(withRound(nextRound(turn.state), 14, 20));
-    // (With Chivalry bought in the first turn again, a Knight; it was a
-    // Marksman while the 40 Coins stopped at Scouting.)
-    expect(trainedOf(second.commands)).toEqual(["KNIGHT"]);
+    // (With Chivalry bought in the first turn, a Knight; a Marksman while
+    // the 40 Coins stop short of Chivalry, as they do again since the
+    // ninth unit, 7r55: Metallurgy is bought before the Knight's chain.)
+    expect(trainedOf(second.commands)).toEqual(["MARKSMAN"]);
     // Six units against three, the same Coins: the Catapult first, and
     // the technology only with what is left.
     const ordinary = policyTurn(rich(6, cost + 7));

@@ -1027,10 +1027,12 @@ export function corePresentationPlanV7(
       }
       // The Mind Control revision: an attack looks like its kind's.
       const attackerFaction = kindOf(before, attacker);
-      // Revision 19: the Triceratops (a Dinosaur CATAPULT role) is a melee
-      // unit; it charges instead of throwing a rock.
-      const triceratops =
-        attacker.role === "CATAPULT" && attackerFaction === "DINOSAUR";
+      // Revision 19: the Triceratops was a Dinosaur CATAPULT role that
+      // charged instead of throwing a rock. The ninth unit
+      // (`pulp_wars-w49.17`, 7r55): it is the heavy line role now (a plain
+      // melee lunge) and the Dinosaur CATAPULT role is the Stegosaurus,
+      // which does lob a boulder, so no siege role is melee any more.
+      const triceratops = false;
       const ranged =
         !triceratops &&
         (attacker.role === "MARKSMAN" ||
@@ -1462,6 +1464,17 @@ export function corePresentationPlanV7(
           effect: "BITTEN",
           actor: { unitId: event.unitId, at: event.at },
           recipients: [],
+          durationMs: 320,
+        });
+    } else if (event.kind === "WIGHT_RISEN") {
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): Rise Again, the bone
+      // hands of a Raise Dead on the Wight's own Grave.
+      if (explored.has(`${event.at.x},${event.at.y}`))
+        steps.push({
+          kind: "SUPPORT",
+          effect: "RAISE",
+          actor: { unitId: event.unitId, at: event.at },
+          recipients: [{ unitId: event.unitId, at: event.at }],
           durationMs: 320,
         });
     } else if (event.kind === "GRAVE_CREATED") {

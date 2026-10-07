@@ -78,6 +78,7 @@ import {
   drawPreviewTextStackV7,
   type PreviewTextBoxV7,
   drawGraveCornerMarkerV7,
+  drawStandInBadgeV7,
   drawUndeadBadgeV7,
   type AbilityPreviewStyleV7,
   type AfflictionSubjectV7,
@@ -173,7 +174,10 @@ import {
   drawSlideArrowV7,
 } from "./frozen-sea-canvas-v7";
 import { frozenSeaCombatNotesV7 } from "../frozen-sea-presentation-v7";
-import { seaIceArtSubjectV7 } from "../../assets/chibi-art-v7";
+import {
+  ninthUnitStandInLetterV7,
+  seaIceArtSubjectV7,
+} from "../../assets/chibi-art-v7";
 import {
   addDwarfPickEntriesV7,
   dwarfAttackTargetExtrasV7,
@@ -264,6 +268,11 @@ import {
 import { selectionJumpOffsetCssPx } from "./selection-jump-presentation";
 import { RULESET7_TACTICAL_UI_SYMBOL_BY_ID } from "../../assets/ruleset7-tactical-ui-symbols";
 import { tacticalAttachmentsV7 } from "../tactical-presentation-v7";
+import {
+  CHAMPION_LABEL_V7,
+  WIGHT_GRAVE_LABEL_V7,
+  ninthUnitCombatNotesV7,
+} from "../ninth-unit-presentation-v7";
 import type {
   ArtSetV7,
   ArtSubjectV7,
@@ -785,6 +794,8 @@ export interface BoardRenderPlanEntryV7 {
   readonly pulse?: boolean;
   readonly linkTo?: CoordV7;
   readonly attachmentSlot?: number;
+  /** GRAVE only (the ninth unit, 7r55): a Wight will climb out of it. */
+  readonly wightGrave?: boolean;
   readonly edge?: TileEdge;
   readonly targetEdges?: readonly TileEdge[];
   readonly boundaryStyle?: "OWNER" | "CITY";
@@ -1169,16 +1180,25 @@ export function buildBoardRenderPlanV7(
   // Grave never hides it. On a city tile the marker moves clear of the
   // CHIBI population column (attachment slot 1).
   const cityCells = new Set(view.cities.map((city) => coordKey(city.at)));
-  for (const at of view.graves)
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Grave a Wight will climb
+  // out of is marked (a pale blue stone), so a player knows which Grave to
+  // stand on.
+  const wightGraveCells = new Set(
+    view.ninthUnit.wightGraves.map((entry) => coordKey(entry.at)),
+  );
+  for (const at of view.graves) {
+    const wightGrave = wightGraveCells.has(coordKey(at));
     entries.push({
       key: `grave:${at.x},${at.y}`,
       kind: "GRAVE",
       layer: 5.5,
       at,
       artSubject: "GRAVE",
-      label: "Grave",
+      label: wightGrave ? WIGHT_GRAVE_LABEL_V7 : "Grave",
       attachmentSlot: cityCells.has(coordKey(at)) ? 1 : 0,
+      ...(wightGrave ? { wightGrave: true } : {}),
     });
+  }
   const plaguedIds = new Set(view.plagued.map((entry) => entry.unitId));
   const bittenIds = new Set(view.bitten.map((entry) => entry.unitId));
   const eggTurns = new Map(
@@ -1222,6 +1242,10 @@ export function buildBoardRenderPlanV7(
     const martian = martianMatch ? martianUnitMarkersV7(view, unit) : undefined;
     // Revision 19: an Egg is "{Unit} Egg".
     const factionLabel = factionUnit ? unitDisplayNameV7(view, unit) : null;
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): a Human unit is named by
+    // its role ID, except the heavy line role, which is the Champion.
+    const heavyOrRoleTitle =
+      unit.role === "SWORDSMAN" ? CHAMPION_LABEL_V7 : title(unit.role);
     const afflictions: AfflictionIdV7[] = [];
     if (plaguedIds.has(unit.id)) afflictions.push("PLAGUE");
     if (bittenIds.has(unit.id)) afflictions.push("BITTEN");
@@ -1264,10 +1288,10 @@ export function buildBoardRenderPlanV7(
       label: monster
         ? SPIDER_LABEL_V7
         : unit.form === "EMBARKED" && machine
-          ? `${factionLabel ?? title(unit.role)} afloat`
+          ? `${factionLabel ?? heavyOrRoleTitle} afloat`
           : unit.form === "EMBARKED"
-            ? `Embarked Transport · ${factionLabel ?? title(unit.role)} passenger`
-            : (factionLabel ?? title(unit.role)),
+            ? `Embarked Transport · ${factionLabel ?? heavyOrRoleTitle} passenger`
+            : (factionLabel ?? heavyOrRoleTitle),
       ready:
         unit.ownerId === view.viewer.id &&
         !unit.activation.handled &&
@@ -3116,6 +3140,7 @@ export function drawBoardV7(input: {
             chibi,
             besideCity: slot > 0,
             highContrast: input.highContrast ?? false,
+            wightGrave: entry.wightGrave === true,
           }),
         );
         continue;
@@ -3207,6 +3232,8 @@ export function drawBoardV7(input: {
       // An Undead or Goblin unit shown with its own faction raster needs no
       // badge.
       let factionArt = false;
+      // The ninth unit (7r55): the letter of a unit drawn with stand-in art.
+      let standInLetter: string | null = null;
       // Revision 19: this frame's cue on this unit's sprite, if any.
       const unitPulse =
         entry.kind === "UNIT" &&
@@ -3258,6 +3285,14 @@ export function drawBoardV7(input: {
         factionArt = resolved?.factionArt ?? false;
         const chibiReady = chibi?.kind === "READY" ? chibi : null;
         chibiPiece = chibi !== null && chibi.kind !== "MISSING";
+        // The ninth unit (`pulp_wars-w49.17`, 7r55): a new unit drawn with
+        // the art of another unit of its own faction is in its faction's
+        // art (no faction badge) and wears the stand-in letter badge.
+        standInLetter =
+          entry.kind === "UNIT" && chibiPiece && !factionArt
+            ? ninthUnitStandInLetterV7(entry.artSubject)
+            : null;
+        if (standInLetter !== null) factionArt = true;
         // Buildings and cities take their desaturated copy (pulp_wars-x6c);
         // every other piece, and 100 percent, keeps its own raster.
         const image = atSaturation(
@@ -3690,6 +3725,15 @@ export function drawBoardV7(input: {
             y + (badge.top + 14) * camera.zoom,
           );
         }
+        if (standInLetter !== null)
+          drawStandInBadgeV7(
+            context,
+            x,
+            y,
+            camera.zoom,
+            chibiPiece,
+            standInLetter,
+          );
         if (entry.kind === "UNIT" && entry.faction === "UNDEAD" && !factionArt)
           drawUndeadBadgeV7(context, x, y, camera.zoom, chibiPiece);
         if (entry.kind === "UNIT" && entry.faction === "GOBLIN" && !factionArt)
@@ -6270,6 +6314,9 @@ function commandMapTargets(
         ...(preview === null ? [] : frozenSeaCombatNotesV7(preview)),
         // Tuning 1 (7r46): Breach (Explosives) ignores fortification.
         ...(preview === null ? [] : breachCombatNotesV7(preview)),
+        // The ninth unit (`pulp_wars-w49.17`, 7r55): the Shock Field, the
+        // Thagomizer's Crack, and Frostbite.
+        ...(preview === null ? [] : ninthUnitCombatNotesV7(preview)),
         // Tuning 2 (7r47): whether a kill moves the attacker.
         ...advanceNotes,
       ].filter((part): part is string => part !== null);

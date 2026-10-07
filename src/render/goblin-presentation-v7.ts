@@ -1,5 +1,5 @@
 import {
-  TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7,
+  technologyDisplayNameV7,
   arePlayersHostileV7,
   blastAreaV7,
   effectiveRoleRuleV7,
@@ -18,6 +18,7 @@ import {
   isNavalRoleV7,
   type UnitRoleIdV7,
 } from "../engine/index";
+import { ninthUnitHelpRulesV7 } from "./ninth-unit-presentation-v7";
 
 /**
  * Presentation helpers for revision 17 Goblins (spec section 11). Every
@@ -106,6 +107,8 @@ export const GOBLIN_HELP_RULES_V7: readonly (readonly [string, string])[] = [
     "Discipline",
     "only Orc Brutes can build Field Defense, and no Goblin unit can heal others.",
   ],
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the Ogre's Heavyweight.
+  ...ninthUnitHelpRulesV7("GOBLIN"),
 ];
 
 /**
@@ -117,13 +120,10 @@ export function technologyNameV7(
   tech: TechnologyIdV7,
   faction: FactionIdV7,
 ): string {
-  return (
-    TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7[faction][tech] ??
-    tech
-      .toLowerCase()
-      .replaceAll("_", " ")
-      .replace(/^./, (letter) => letter.toUpperCase())
-  );
+  // The ninth unit (`pulp_wars-w49.17`, 7r55): the faction's own name, else
+  // the shared display name (Drill is Garrison, Metallurgy is Armoury, ...),
+  // else the ID in sentence case: the engine's one name table.
+  return technologyDisplayNameV7(tech, faction);
 }
 
 /** Goblin ability names; Human and Undead names are unchanged. */

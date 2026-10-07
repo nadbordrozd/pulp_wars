@@ -525,3 +525,33 @@ Decided in bead `pulp_wars-7g3.5` under the user's delegation:
   overlay and the Blizzard are shown in a board mock (approximate plates,
   Roads and borders). Since `pulp_wars-7g3.6` the renderer draws them; its
   evidence is the Ice Folk UI review (`npm run review:ruleset7-ice-folk-ui`).
+
+## Ninth unit: the Musk Ox (bead `pulp_wars-w49.17`, stand-in art)
+
+Ruleset `7r55` gives every faction a ninth land unit ([what was
+built](../../product/RULESET_7_NINTH_UNIT.md)). The Ice Folk one with no art
+of its own is the **Musk Ox** (engine role `GUARD`). **It has no art yet.** No
+PixelLab call was made for it.
+
+- **Art slot.** `UNIT:ICE_FOLK:SWORDSMAN` and `PORTRAIT:ICE_FOLK:SWORDSMAN`:
+  the ninth art slot of the faction (`unitArtRoleV7` in
+  `src/assets/chibi-art-v7.ts`). No raster is registered for either subject.
+- **Stand-in.** Until an art bead registers them, both fall back to the
+  Mammoth (`UNIT:ICE_FOLK:GUARD`, `PORTRAIT:ICE_FOLK:GUARD`) through
+  `chibiFallbackSubjectV7` (`NINTH_UNIT_STAND_INS_V7`). The board marks the
+  piece with a steel disc lettered **X** where the faction badges go
+  (`drawStandInBadgeV7`), and the Gallery shows its stand-in mark.
+- **What the art bead must make.** One board sprite and one 48 x 48 portrait
+  in this fragment's direction: A low, shaggy cream-furred ox with frost-rimed
+  horns, head down, breath steaming.
+- **Notes for that bead.** A cheap wall: lower and wider than a Yeti, much
+  smaller than the Mammoth (STANDARD_UNIT). The frost on the horns is Frostbite.
+- **When the art lands.** Register the two subjects in this faction's
+  direction manifest, delete the faction's entry from `NINTH_UNIT_STAND_INS_V7`
+  (the fallback and the letter badge go with it), regenerate the unit shadow
+  measurements, and update the stand-in assertions in
+  `tests/unit/ruleset-v7-ninth-unit.test.ts`.
+
+The Mammoth is the heavy line role now (`SWORDSMAN`); its rasters, prompts and
+generation records stay under the art slot they were made for,
+`UNIT:ICE_FOLK:GUARD` and `PORTRAIT:ICE_FOLK:GUARD`.
