@@ -227,11 +227,11 @@ try {
       await delay(400);
       evidence[`${suffix}Help`] = await evaluate(
         connection,
-        `Array.from(document.querySelectorAll('.v7-help-dinosaur li')).map((node) => node.textContent)`,
+        `Array.from(document.querySelectorAll('.v7-help h3')).map((node) => node.textContent)`,
       );
       await evaluate(
         connection,
-        `document.querySelector('.v7-help-dinosaur')?.previousElementSibling?.scrollIntoView({ block: 'start' })`,
+        `document.querySelector('.v7-help')?.scrollIntoView({ block: 'start' })`,
       );
       await delay(200);
       await capture(connection, `help-dinosaur-${suffix}.png`);

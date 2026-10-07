@@ -48,7 +48,6 @@ import {
   missionByIdV7,
   missionMatchSetupV7,
   SURVEY_RAIDERS_V7,
-  rayOverheatsV7,
   cityUnitCapacityForV7,
   distinctFactionsV7,
   effectiveRoleRuleV7,
@@ -135,11 +134,9 @@ import {
   CURIOSITY_RULES_V7,
   NEUTRAL_LABEL_V7,
   curiosityBoundaryNoticeV7,
-  curiosityHelpRulesV7,
   curiosityIconSubjectV7,
   curiosityOverlayOnTileV7,
   isMonsterUnitV7,
-  matchOffersCuriositiesV7,
   monsterInfoLinesV7,
 } from "../curiosity-presentation-v7";
 import {
@@ -209,10 +206,8 @@ import {
   tileImprovementSubjectV7,
 } from "../../assets/chibi-ui-art-v7";
 import {
-  FACTION_BUILDINGS_HELP_V7,
   factionBuildCommandV7,
   factionBuildingV7,
-  matchHasFactionBuildingsV7,
   territoryFactionV7,
 } from "../faction-buildings-v7";
 import {
@@ -234,7 +229,6 @@ import {
   RESTLESS_EXPLANATION_V7,
   devourPreviewDescriptionV7,
   disbandBlockedByAfflictionV7,
-  factionCanCureAfflictionsV7,
   factionNameV7,
   matchHasUndeadV7,
   raiseDeadPreviewDescriptionV7,
@@ -268,11 +262,9 @@ import {
 } from "../blocked-actions-v7";
 import {
   GOBLIN_FIELD_DEFENSE_EXPLANATION_V7,
-  GOBLIN_HELP_RULES_V7,
   goblinBoundaryNoticeV7,
   goblinCommandLabelV7,
   goblinFieldDefenseBlockedV7,
-  goblinUnitInfoLinesV7,
   kaboomPreviewTextV7,
   kaboomTooltipV7,
   matchHasGoblinV7,
@@ -281,7 +273,6 @@ import {
 } from "../goblin-presentation-v7";
 import {
   ACHIEVEMENT_GOALS_V7,
-  ACHIEVEMENT_HELP_TIP_V7,
   achievementNameV7,
   achievementProgressCountsV7,
   listedAchievementIdsV7,
@@ -290,7 +281,6 @@ import {
   ABANDON_EGG_LABEL_V7,
   CHARGE_LABEL_V7,
   DINOSAUR_FIELD_DEFENSE_EXPLANATION_V7,
-  DINOSAUR_HELP_RULES_V7,
   DINOSAUR_HIRE_NOTE_V7,
   HATCH_LABEL_V7,
   HATCH_NEW_EGG_V7,
@@ -299,7 +289,6 @@ import {
   LAY_EGG_LABEL_V7,
   LAY_EGG_PROMPT_V7,
   PROMOTE_TOOLTIP_V7,
-  PROMOTION_HELP_TIP_V7,
   WALLBREAKER_UNLOCK_TEXT_V7,
   nestingUnlockTextV7,
   abandonEggTooltipV7,
@@ -308,7 +297,6 @@ import {
   dinosaurCommandLabelV7,
   dinosaurFieldDefenseBlockedV7,
   dinosaurRewardLabelV7,
-  dinosaurUnitInfoLinesV7,
   eggCountdownTextV7,
   eggInfoTextV7,
   eggLaidRolesV7,
@@ -340,7 +328,6 @@ import {
   HEAT_SINKS_UNLOCK_TEXT_V7,
   MARTIAN_FIELD_DEFENSE_EXPLANATION_V7,
   MARTIAN_FROZEN_MOVED_V7,
-  MARTIAN_HELP_RULES_V7,
   MIND_CONTROL_LABEL_V7,
   MIND_CONTROL_PICK_V7,
   MIND_CONTROL_TOOLTIP_V7,
@@ -363,7 +350,6 @@ import {
   martianSlotCapacityTooltipV7,
   martianStatsV7,
   martianTurnChipsV7,
-  martianUnitInfoLinesV7,
   martianUnitNameV7,
   matchHasMartianV7,
   mindControlUnavailableTextV7,
@@ -393,7 +379,6 @@ import {
   FROZEN_MOVED_V7,
   GLIDE_MOVE_LABEL_V7,
   ICE_FOLK_FIELD_DEFENSE_EXPLANATION_V7,
-  ICE_FOLK_HELP_RULES_V7,
   SNOW_LABEL_V7,
   WITCH_SUPPORT_UNLOCK_TEXT_V7,
   chillChipV7,
@@ -405,7 +390,6 @@ import {
   iceFolkFieldDefenseBlockedV7,
   iceFolkRewardLabelV7,
   iceFolkRoleUnlockTextV7,
-  iceFolkUnitInfoLinesV7,
   boulderThrowTextV7,
   snowChipTooltipV7,
   matchHasIceFolkSeatV7,
@@ -422,7 +406,6 @@ import {
   BOARD_TOOLTIP_V7,
   BOARD_UNLOCK_V7,
   HARBOURS_LABEL_V7,
-  NAVAL_HELP_RULES_V7,
   NAVAL_RAM_UNLOCK_V7,
   SHORECRAFT_EMBARK_NOTE_V7,
   SUBMARINE_UNLOCK_NOTE_V7,
@@ -449,8 +432,6 @@ import {
   ICEBOUND_UNLOCK_V7,
   ICE_COVER_LABEL_V7,
   ICE_COVER_TOOLTIP_V7,
-  ICE_FOR_SHIPS_HELP_V7,
-  ICE_HELP_RULES_V7,
   ICE_NO_SHIPS_NOTE_V7,
   ICE_SEA_DOG_GOAL_V7,
   ON_ICE_LABEL_V7,
@@ -487,7 +468,6 @@ import {
   DIG_IN_UNLOCK_TEXT_V7,
   DIVE_UNLOCK_TEXT_V7,
   DWARF_FIELD_DEFENSE_EXPLANATION_V7,
-  DWARF_HELP_RULES_V7,
   DWARF_SLOT_TOOLTIP_V7,
   ENGINEER_SUPPORT_UNLOCK_TEXT_V7,
   REPAIR_CHIP_V7,
@@ -517,7 +497,6 @@ import {
   dwarfLabelV7,
   dwarfRewardLabelV7,
   dwarfRoleUnlockTextV7,
-  dwarfUnitInfoLinesV7,
   gunnerShotsTextV7,
   matchHasDwarfSeatV7,
   moundAtV7,
@@ -536,7 +515,6 @@ import {
 import type { DwarfPickV7 } from "../canvas/dwarf-board-plan-v7";
 import {
   CANDY_FIELD_DEFENSE_EXPLANATION_V7,
-  CANDY_HELP_RULES_V7,
   CONFECTIONER_SUPPORT_UNLOCK_TEXT_V7,
   FROSTING_TOOLTIP_V7,
   HOME_SWEET_HOME_UNLOCK_TEXT_V7,
@@ -552,26 +530,44 @@ import {
   candyCommandNameV7,
   candyFieldDefenseBlockedV7,
   candyRoleUnlockTextV7,
-  candyUnitInfoLinesV7,
   crumbsTileLinesV7,
   matchHasCandySeatV7,
   rebakeUnavailableTextV7,
   sugarRushUnavailableTextV7,
   sugarTossUnavailableTextV7,
 } from "../candy-presentation-v7";
-import { ninthUnitHelpRulesV7 } from "../ninth-unit-presentation-v7";
+import { HELP_KEYS_V7, HELP_SECTIONS_V7 } from "../help-text-v7";
+import {
+  FIRST_STEPS_STORAGE_KEY_V7,
+  NEW_FIRST_STEPS_PROGRESS_V7,
+  bumpFirstStepV7,
+  chooseFirstStepV7,
+  firstStepLiveV7,
+  firstStepsActiveV7,
+  noteFirstStepCommandV7,
+  parseFirstStepsProgressV7,
+  retireFirstStepV7,
+  serializeFirstStepsProgressV7,
+  setFirstStepsEnabledV7,
+  type FirstStepCueV7,
+  type FirstStepsProgressV7,
+} from "../first-steps-v7";
+import {
+  SPIDER_GLOSSARY_IDS_V7,
+  glossaryEntryV7,
+  roleGlossaryV7,
+  statusGlossaryV7,
+} from "../unit-glossary-v7";
+import {
+  glossaryListV7,
+  glossaryTermsV7,
+  type GlossaryLineV7,
+} from "./unit-glossary-dom-v7";
 import type { CandyPickV7 } from "../canvas/candy-board-plan-v7";
+import { recruitmentRolePresentationV7 } from "../role-presentation-v7";
 import {
-  AT_SEA_MOVE_TEXT_V7,
-  recruitmentRolePresentationV7,
-  roleAbilityDescriptionV7,
-  roleAbilityNameV7,
-} from "../role-presentation-v7";
-import {
-  ECONOMY_REJIG_HELP_TIP_V7,
   economicFormulaV7,
   researchPriceRuleTextV7,
-  rewardGiantHelpTipV7,
   rewardGiantOfferTextV7,
 } from "../economy-presentation-v7";
 import {
@@ -620,9 +616,6 @@ const AI_MODE_LABELS: Readonly<Record<string, string>> = {
   RIVAL: "Free-for-all",
   COOPERATIVE: "AIs allied",
 };
-/** Help: the player limit, one player per faction (map scale section 6.1). */
-const PLAYER_LIMIT_HELP_TIP_V7 = (): string =>
-  `A game holds up to ${maxSeatCountV7()} players, each a different faction.`;
 /** Map scale section 6.4: what "AIs allied" means, as the Mode tooltip. */
 const AI_MODE_HINT_V7 = "AIs allied: every opponent is allied against you.";
 const MAP_TYPE_LABELS: Readonly<Record<string, string>> = {
@@ -857,6 +850,16 @@ const NO_CAMPAIGN_PROGRESS_V7: Ruleset7CampaignProgressV7 = Object.freeze({
  */
 type FrontPageV7 = "MENU" | "SETUP" | "CAMPAIGN" | "SETTINGS";
 
+/**
+ * The unit dialog (bead pulp_wars-2yc.39): status chips that an ability
+ * line of the same unit already explains.
+ */
+const STATUS_COVERED_BY_ABILITY_V7: Readonly<Record<string, string>> = {
+  slots: "BIG_BODY",
+  blizzard: "BLIZZARD",
+};
+/** First steps: how long the "out of moves" line stays up by itself. */
+const FIRST_STEP_OUT_OF_MOVES_MS_V7 = 6_000;
 /** The longest a level-up's reward dialog waits for its animation. */
 const REWARD_HOLD_LIMIT_MS_V7 = 2_500;
 /** How far into the level-up ring the reward dialog opens. */
@@ -1075,6 +1078,17 @@ export class Ruleset7DomAppView {
   #motion: "FULL" | "REDUCED";
   #animationSpeed: "NORMAL" | "FAST" = "NORMAL";
   #highContrast = false;
+  /**
+   * First steps (bead pulp_wars-2yc.39): what this browser profile has
+   * learnt (never part of a save), the cue of the current render, the own
+   * unit whose command is being watched for "out of moves", the unit whose
+   * "out of moves" line is up, and the timer that takes that line down.
+   */
+  #firstSteps: FirstStepsProgressV7 = NEW_FIRST_STEPS_PROGRESS_V7;
+  #firstStepCue: FirstStepCueV7 | null = null;
+  #firstStepWatchUnitId: number | null = null;
+  #firstStepOutOfMovesUnitId: number | null = null;
+  #firstStepTimer: number | null = null;
   #uiScale: 1 | 1.25 | 1.5 | 2 = 1;
   /** Developer experiment (pulp_wars-x6c); presentation only. */
   #boardSaturation: BoardSaturationV7 = DEFAULT_BOARD_SATURATION_V7;
@@ -1219,6 +1233,13 @@ export class Ruleset7DomAppView {
     } catch {
       // Restricted storage must not prevent the public UI from mounting.
     }
+    try {
+      this.#firstSteps = parseFirstStepsProgressV7(
+        this.#settingsStorage?.getItem(FIRST_STEPS_STORAGE_KEY_V7),
+      );
+    } catch {
+      // Without storage the coach starts over on every visit.
+    }
     this.#boardSaturation = loadBoardSaturationV7(this.#settingsStorage);
     this.#classicLook = loadBoardClassicLookV7(this.#settingsStorage);
     this.#classicLookWanted = this.#classicLook;
@@ -1255,6 +1276,7 @@ export class Ruleset7DomAppView {
     this.#root.removeEventListener("click", this.#onClickSound, true);
     this.#boardHost.setPresentationStepListener?.(null);
     this.#coinFlight.destroy();
+    this.#clearFirstStepOutOfMoves();
     this.#releaseReward();
     if (this.#ownsAudio) this.#audio.destroy();
     this.#unsubscribe?.();
@@ -1350,6 +1372,7 @@ export class Ruleset7DomAppView {
       return;
     if (event.key === "Escape") {
       event.preventDefault();
+      this.#clearFirstStepOutOfMoves();
       this.#boardHost.resetInspectionCycle?.();
       if (this.#screen !== "MATCH") this.#screen = "MATCH";
       else if (this.#kaboomArmedUnitId !== null) {
@@ -2771,6 +2794,7 @@ export class Ruleset7DomAppView {
         onSelection: (selection) => {
           if (selection !== null) this.#audio.play("ui.select");
           this.#selection = selection;
+          this.#clearFirstStepOutOfMoves();
           this.#kaboomArmedUnitId = null;
           this.#kaboomHoverUnitId = null;
           this.#areaSupportHover = null;
@@ -2806,6 +2830,9 @@ export class Ruleset7DomAppView {
     const activeId = view.turnOrder[view.activeSeatIndex];
     const active = view.players.find((player) => player.id === activeId);
     const humanTurn = active?.controller === "HUMAN";
+    // First steps (bead pulp_wars-2yc.39): the one cue of this render.
+    const firstStep = this.#chooseFirstStep(view);
+    this.#firstStepCue = firstStep;
     const hud = el(this.#document, "header", "v7-match-hud");
     hud.dataset.v7Region = "hud";
     const projectedIncome = view.cities
@@ -2869,6 +2896,8 @@ export class Ruleset7DomAppView {
       this.#open("TECH", "tech");
     };
     tech.disabled = blocked;
+    if (firstStep?.button === "TECH")
+      tech.dataset.firstStep = firstStep.buttonMotion.toLowerCase();
     const compactMenu = iconButton(
       this.#document,
       "menu",
@@ -2943,9 +2972,12 @@ export class Ruleset7DomAppView {
       }
       end.onclick = () => void this.#dispatch(endTurn);
       end.disabled = this.#localBusy() || blocked;
+      if (firstStep?.button === "END_TURN")
+        end.dataset.firstStep = firstStep.buttonMotion.toLowerCase();
       nav.append(end);
     }
     nextChildren.push(hud);
+    if (firstStep !== null) nextChildren.push(this.#firstStepLine(firstStep));
     // The coins' flight layer: over the board and the HUD, under dialogs.
     nextChildren.push(this.#coinFlight.element);
     const zoom = el(this.#document, "div", "v7-zoom-controls");
@@ -3118,8 +3150,121 @@ export class Ruleset7DomAppView {
       });
   }
 
+  /** The board takes the player's input now. */
+  #boardInteractive(view: PlayerViewV7): boolean {
+    return (
+      this.#screen === "MATCH" &&
+      view.turnOrder[view.activeSeatIndex] === view.humanPlayerId &&
+      !this.#snapshot.transitioning &&
+      !this.#presentationActive &&
+      this.#achievementNotices.length === 0 &&
+      view.pendingChoices.length === 0
+    );
+  }
+
+  /**
+   * First steps (bead pulp_wars-2yc.39): the cue to show now. A unit whose
+   * command the player just gave is checked first: when it has no Move
+   * left, its "out of moves" line goes up for a few seconds (the first two
+   * times only).
+   */
+  #chooseFirstStep(view: PlayerViewV7): FirstStepCueV7 | null {
+    if (
+      this.#snapshot.phase !== "ACTIVE" ||
+      !firstStepsActiveV7(this.#firstSteps)
+    )
+      return null;
+    const commands = this.#snapshot.offeredCommands;
+    const interactive =
+      this.#boardInteractive(view) &&
+      this.#selectedRecruitHelp === null &&
+      this.#selectedUnitHelpId === null &&
+      !this.#snapshot.ai.active;
+    const watched = this.#firstStepWatchUnitId;
+    if (watched !== null && interactive && commands.length > 0) {
+      this.#firstStepWatchUnitId = null;
+      const unit = view.units.find(
+        (candidate) =>
+          candidate.id === watched && candidate.ownerId === view.viewer.id,
+      );
+      if (
+        unit !== undefined &&
+        firstStepLiveV7(this.#firstSteps, "UNIT_DONE") &&
+        !commands.some(
+          (command) => command.kind === "MOVE" && command.unitId === watched,
+        )
+      ) {
+        this.#firstSteps = bumpFirstStepV7(this.#firstSteps, "UNIT_DONE");
+        this.#persistFirstSteps();
+        this.#firstStepOutOfMovesUnitId = watched;
+        const browser = this.#document.defaultView;
+        if (browser !== null && typeof browser.setTimeout === "function")
+          this.#firstStepTimer = browser.setTimeout(() => {
+            this.#firstStepTimer = null;
+            if (this.#destroyed || this.#firstStepOutOfMovesUnitId === null)
+              return;
+            this.#firstStepOutOfMovesUnitId = null;
+            this.#render();
+          }, FIRST_STEP_OUT_OF_MOVES_MS_V7);
+      }
+    }
+    return chooseFirstStepV7({
+      view,
+      commands,
+      selection: this.#selection,
+      progress: this.#firstSteps,
+      interactive,
+      motion: this.#motion,
+      outOfMovesUnitId: this.#firstStepOutOfMovesUnitId,
+    });
+  }
+
+  /** The coach's one line, with its small dismiss. It takes no other click. */
+  #firstStepLine(cue: FirstStepCueV7): HTMLElement {
+    const line = el(this.#document, "p", "v7-first-step");
+    line.dataset.v7Region = "first-step";
+    line.dataset.firstStep = cue.step.toLowerCase();
+    line.setAttribute("role", "status");
+    const dismiss = iconButton(
+      this.#document,
+      "close",
+      "Dismiss hint",
+      "first-step-dismiss",
+    );
+    dismiss.classList.add("v7-first-step-dismiss");
+    dismiss.onclick = () => {
+      if (cue.step === "UNIT_DONE") this.#clearFirstStepOutOfMoves();
+      this.#firstSteps = retireFirstStepV7(this.#firstSteps, cue.step);
+      this.#persistFirstSteps();
+      this.#render();
+      this.#queueBoardFocus();
+    };
+    line.append(
+      text(this.#document, "span", cue.line, "v7-first-step-text"),
+      dismiss,
+    );
+    return line;
+  }
+
+  #clearFirstStepOutOfMoves(): void {
+    this.#firstStepOutOfMovesUnitId = null;
+    if (this.#firstStepTimer !== null)
+      this.#document.defaultView?.clearTimeout(this.#firstStepTimer);
+    this.#firstStepTimer = null;
+  }
+
+  #persistFirstSteps(): void {
+    try {
+      this.#settingsStorage?.setItem(
+        FIRST_STEPS_STORAGE_KEY_V7,
+        serializeFirstStepsProgressV7(this.#firstSteps),
+      );
+    } catch {
+      // The coach then starts over on the next visit; nothing to report.
+    }
+  }
+
   #boardModel(view: PlayerViewV7): Parameters<BoardHostV7["update"]>[0] {
-    const activeId = view.turnOrder[view.activeSeatIndex];
     const selectedUnitId =
       this.#selection?.kind === "UNIT" ? this.#selection.unitId : null;
     const kaboomUnitId = this.#kaboomArmedUnitId ?? this.#kaboomHoverUnitId;
@@ -3127,13 +3272,8 @@ export class Ruleset7DomAppView {
       matchInstanceId: this.#matchInstance,
       view,
       offeredCommands: this.#snapshot.offeredCommands,
-      interactive:
-        this.#screen === "MATCH" &&
-        activeId === view.humanPlayerId &&
-        !this.#snapshot.transitioning &&
-        !this.#presentationActive &&
-        this.#achievementNotices.length === 0 &&
-        view.pendingChoices.length === 0,
+      interactive: this.#boardInteractive(view),
+      firstStepMarker: this.#firstStepCue?.marker ?? null,
       motion: this.#motion,
       animationSpeed: this.#animationSpeed,
       presentationPaused: this.#screen === "SETTINGS",
@@ -3214,6 +3354,7 @@ export class Ruleset7DomAppView {
     close.classList.add("close-button");
     close.onclick = () => {
       this.#selection = null;
+      this.#clearFirstStepOutOfMoves();
       this.#layEggPick = null;
       this.#martianPick = null;
       this.#iceFolkPick = null;
@@ -3358,6 +3499,8 @@ export class Ruleset7DomAppView {
         this.#render();
       };
       identityColumn?.append(unitHelp);
+      // The "?" dialog's own lines (bead pulp_wars-2yc.39): the Egg's
+      // countdown. Abilities and statuses are the unit glossary's.
       const unitDetails = el(this.#document, "div", "v7-unit-help-details");
       if (egg && eggTurns !== null)
         unitDetails.append(
@@ -3368,60 +3511,7 @@ export class Ruleset7DomAppView {
             "v7-egg-info",
           ),
         );
-      if (unit.form === "EMBARKED" && machine)
-        unitDetails.append(
-          text(
-            this.#document,
-            "p",
-            "Afloat: crossing water as a transport. It cannot attack or use abilities until it lands on a highlighted shore tile.",
-            "v7-transport-passenger",
-          ),
-          text(this.#document, "p", AT_SEA_MOVE_TEXT_V7, "v7-transport-move"),
-        );
-      else if (unit.form === "EMBARKED")
-        unitDetails.append(
-          text(
-            this.#document,
-            "p",
-            unitRoleRuleV7(view, unit).abilities.includes("CAPTURE")
-              ? "Carrying troops. Pick a highlighted shore tile to land."
-              : "Carrying troops that can't capture. Pick a highlighted shore tile to land.",
-            "v7-transport-passenger",
-          ),
-          text(this.#document, "p", AT_SEA_MOVE_TEXT_V7, "v7-transport-move"),
-        );
-      if (unit.role === "KNIGHT" && unit.activation.overrunActive) {
-        const state = el(this.#document, "section", "v7-tactical-state");
-        state.dataset.tacticalState = "overrun";
-        state.append(
-          text(
-            this.#document,
-            "strong",
-            // Revision 17: Overrun is labelled Ram for Scrap Buggies;
-            // revision 19: Rampage for a T-Rex.
-            unitFaction === "GOBLIN"
-              ? "Ram: attack again"
-              : unitFaction === "DINOSAUR"
-                ? "Rampage: attack again"
-                : "Overrun: attack again",
-          ),
-        );
-        unitDetails.append(state);
-      }
-      if (unit.activation.escapeAvailable) {
-        const state = el(this.#document, "section", "v7-tactical-state");
-        state.dataset.tacticalState = "escape";
-        state.append(text(this.#document, "strong", "Escape: may move again"));
-        unitDetails.append(state);
-      }
       if (restlessOutsideTerritoryV7(view, unit)) {
-        const state = el(this.#document, "section", "v7-tactical-state");
-        state.dataset.tacticalState = "restless";
-        state.append(
-          text(this.#document, "strong", "Restless: no recovery here"),
-          text(this.#document, "span", RESTLESS_EXPLANATION_V7),
-        );
-        unitDetails.append(state);
         const cue = text(this.#document, "span", "Restless", "v7-chip");
         cue.dataset.unitStatus = "restless";
         cue.setAttribute("aria-label", RESTLESS_EXPLANATION_V7);
@@ -3445,10 +3535,6 @@ export class Ruleset7DomAppView {
         cue.setAttribute("aria-label", explanation);
         cue.title = explanation;
         identityColumn?.append(cue);
-        const state = el(this.#document, "section", "v7-tactical-state");
-        state.dataset.tacticalState = "idle-recovery";
-        state.append(text(this.#document, "strong", explanation));
-        unitDetails.append(state);
       }
       if (view.graves.some((grave) => same(grave, unit.at))) {
         const grave = text(this.#document, "span", "On a Grave", "v7-chip");
@@ -3474,13 +3560,6 @@ export class Ruleset7DomAppView {
           text(this.#document, "span", affliction.chip),
         );
         identityColumn?.append(cue);
-        const state = el(this.#document, "section", "v7-tactical-state");
-        state.dataset.tacticalState = affliction.id.toLowerCase();
-        state.append(
-          text(this.#document, "strong", affliction.chip),
-          text(this.#document, "span", affliction.explanation),
-        );
-        unitDetails.append(state);
       }
       const stats = view.unitStats.find((entry) => entry.unitId === unit.id);
       // Revision 19: the Egg's countdown, capacity slots, and the growth
@@ -3737,12 +3816,6 @@ export class Ruleset7DomAppView {
                 : "It moved this turn: no Planted bonus",
             );
         }
-        if (frozenAfterMoveV7(view, unit)) {
-          const state = el(this.#document, "section", "v7-tactical-state");
-          state.dataset.tacticalState = "frozen";
-          state.append(text(this.#document, "strong", FROZEN_MOVED_V7));
-          unitDetails.append(state);
-        }
       }
       // The Candy revision (section 15.2): Rushed (by its perk, a Gummy
       // Bear's Sugar Frenzy with its continuations as pips), Home Sweet
@@ -3840,18 +3913,12 @@ export class Ruleset7DomAppView {
         if (
           stats?.surfacedThisTurn === true &&
           unitRoleRuleV7(view, unit).abilities.includes("RIDES_TUNNEL")
-        ) {
+        )
           dwarfChip("Just surfaced", "surfaced", RIDER_SURFACED_V7);
-          const state = el(this.#document, "section", "v7-tactical-state");
-          state.dataset.tacticalState = "surfaced";
-          state.append(text(this.#document, "strong", RIDER_SURFACED_V7));
-          unitDetails.append(state);
-        }
       }
       if (stats !== undefined) {
         if (stats.statuses.length > 0) {
           const cues = el(this.#document, "div", "v7-unit-status-cues");
-          const statuses = el(this.#document, "div", "v7-unit-statuses");
           for (const status of stats.statuses) {
             const short = status.startsWith("Tended")
               ? "Tended"
@@ -3861,12 +3928,8 @@ export class Ruleset7DomAppView {
             cue.dataset.unitStatus = statusId;
             cue.setAttribute("aria-label", `${short} status`);
             cues.append(cue);
-            const chip = text(this.#document, "span", status, "v7-chip");
-            chip.dataset.unitStatus = statusId;
-            statuses.append(chip);
           }
           identityColumn?.append(cues);
-          unitDetails.append(statuses);
         }
         const rows = el(this.#document, "dl", "v7-unit-stats");
         for (const stat of stats.stats) {
@@ -3950,188 +4013,6 @@ export class Ruleset7DomAppView {
           rows.append(row);
         }
         dock.append(rows);
-        const abilities = el(this.#document, "div", "v7-abilities");
-        for (const ability of stats.abilities) {
-          const description =
-            ability === "TEND_WOUNDED" && matchHasUndeadV7(view)
-              ? TEND_CURES_DESCRIPTION
-              : roleAbilityDescriptionV7(
-                  ability,
-                  stats.minimumRange,
-                  stats.maximumRange,
-                  unitFaction,
-                  cureCaptainPhraseV7(view),
-                  unit.role,
-                );
-          if (description === null) continue;
-          const entry = el(this.#document, "p", "v7-unit-ability");
-          // Revision 20: the Charge! line carries the former Stampede icon.
-          if (ability === "LINEBREAKER") {
-            entry.dataset.ability = "charge";
-            entry.append(
-              this.#chibiArt("ICON:ACTION:STAMPEDE", CHIBI_DOM_BOXES_V7.action)
-                ?.element ??
-                uiIconV7(
-                  this.#document,
-                  "stampede",
-                  "v7-ui-icon v7-command-icon",
-                ),
-            );
-          }
-          // The naval branch art (bead pulp_wars-5ti.6): the Bow Ram and
-          // Torpedo lines carry their icons in the same slot, when the art
-          // set has them (LEGACY keeps the plain line).
-          if (ability === "RAM" || ability === "TORPEDO") {
-            const icon = this.#chibiArt(
-              `ICON:ACTION:${ability}`,
-              CHIBI_DOM_BOXES_V7.action,
-            )?.element;
-            if (icon !== undefined) {
-              entry.dataset.ability = ability.toLowerCase();
-              entry.append(icon);
-            }
-          }
-          entry.append(
-            text(
-              this.#document,
-              "strong",
-              roleAbilityNameV7(ability, unitFaction),
-            ),
-            text(this.#document, "span", description),
-          );
-          abilities.append(entry);
-        }
-        // Revision 17: Kaboom and death-blast damage, bombs, regeneration,
-        // Gang Up and the Field Defense restriction from `stats.goblin`.
-        if (stats.goblin !== undefined && unit.form !== "EMBARKED") {
-          const mechanics = unitRoleMechanicsV7(view, unit);
-          for (const line of goblinUnitInfoLinesV7(
-            unit.role,
-            stats.goblin,
-            mechanics.splash && mechanics.splashTargets === "ALL",
-          )) {
-            const entry = el(this.#document, "p", "v7-unit-ability");
-            entry.dataset.goblinInfo = line.id;
-            entry.append(
-              text(this.#document, "strong", line.name),
-              text(this.#document, "span", line.description),
-            );
-            abilities.append(entry);
-          }
-        }
-        // Revision 19: growth, a two-slot body and the Field Defense
-        // restriction from `stats.dinosaur`.
-        if (stats.dinosaur !== undefined)
-          for (const line of dinosaurUnitInfoLinesV7(
-            unit.role,
-            stats.dinosaur,
-          )) {
-            const entry = el(this.#document, "p", "v7-unit-ability");
-            entry.dataset.dinosaurInfo = line.id;
-            entry.append(
-              text(this.#document, "strong", line.name),
-              text(this.#document, "span", line.description),
-            );
-            abilities.append(entry);
-          }
-        // The Martian revision: the Shield, the ray's power now,
-        // a Brain's control, a two-slot body and a machine afloat.
-        if (stats.martian !== undefined)
-          for (const line of martianUnitInfoLinesV7(
-            unit,
-            stats.martian,
-            // The Martian pass: an own Ray Gunner with Heat Sinks.
-            unit.ownerId !== view.viewer.id ||
-              rayOverheatsV7(view, unit, view.viewer.researchedTechs),
-          )) {
-            const entry = el(this.#document, "p", "v7-unit-ability");
-            entry.dataset.martianInfo = line.id;
-            entry.append(
-              text(this.#document, "strong", line.name),
-              text(this.#document, "span", line.description),
-            );
-            abilities.append(entry);
-          }
-        // The Mind Control revision (section 9): who controls it and what
-        // happens when the Brain is lost.
-        const controlInfo = mindControlledInfoV7(view, unit);
-        if (controlInfo !== null) {
-          const entry = el(this.#document, "p", "v7-unit-ability");
-          entry.dataset.martianInfo = "controlled";
-          entry.append(
-            text(this.#document, "strong", MIND_CONTROLLED_LABEL_V7),
-            text(
-              this.#document,
-              "span",
-              `${controlInfo.byLine}. ${controlInfo.fateLine}. It cannot create units; Release returns it to its owner.`,
-            ),
-          );
-          abilities.append(entry);
-        }
-        // The Ice Folk revision: the Chill (any owner), the Shatter
-        // threshold, Snow or the Blizzard, Rockfall and the Boulder throw.
-        if (matchHasIceFolkSeatV7(view))
-          for (const line of iceFolkUnitInfoLinesV7(view, unit, stats)) {
-            const entry = el(this.#document, "p", "v7-unit-ability");
-            entry.dataset.iceFolkInfo = line.id;
-            entry.append(
-              text(this.#document, "strong", line.name),
-              text(this.#document, "span", line.description),
-            );
-            abilities.append(entry);
-          }
-        // The Candy revision: Rushed, Crashed and Splatted (any owner), and
-        // what a Candy unit's Crumbs cost to Re-bake.
-        if (matchHasCandySeatV7(view))
-          for (const line of candyUnitInfoLinesV7(view, unit)) {
-            const entry = el(this.#document, "p", "v7-unit-ability");
-            entry.dataset.candyInfo = line.id;
-            entry.append(
-              text(this.#document, "strong", line.name),
-              text(this.#document, "span", line.description),
-            );
-            abilities.append(entry);
-          }
-        // The Dwarf revision: Dig In, clockwork, the Gunner's shots,
-        // Plated, the rider's brake, the bomb and the eruption.
-        if (matchHasDwarfSeatV7(view))
-          for (const line of dwarfUnitInfoLinesV7(view, unit, stats)) {
-            const entry = el(this.#document, "p", "v7-unit-ability");
-            entry.dataset.dwarfInfo = line.id;
-            entry.append(
-              text(this.#document, "strong", line.name),
-              text(this.#document, "span", line.description),
-            );
-            abilities.append(entry);
-          }
-        if (
-          undeadUnit &&
-          unit.role === "CATAPULT" &&
-          unitRoleMechanicsV7(view, unit).splash
-        ) {
-          const entry = el(this.#document, "p", "v7-unit-ability");
-          entry.append(
-            text(this.#document, "strong", "Splash"),
-            text(
-              this.#document,
-              "span",
-              "Shots also hit enemies next to the target for half damage.",
-            ),
-          );
-          abilities.append(entry);
-        }
-        // Map curiosities: the Spider's one sentence, its regeneration, its
-        // bounty and whom it will attack.
-        for (const line of monsterLines) {
-          const entry = el(this.#document, "p", "v7-unit-ability");
-          entry.dataset.curiosityInfo = line.id;
-          entry.append(
-            text(this.#document, "strong", line.name),
-            text(this.#document, "span", line.description),
-          );
-          abilities.append(entry);
-        }
-        if (abilities.childElementCount > 0) unitDetails.append(abilities);
       }
       // An Egg is exhausted at all times; it is not dimmed as "done".
       if (unit.activation.handled && unit.ownerId === view.viewer.id && !egg) {
@@ -4467,7 +4348,47 @@ export class Ruleset7DomAppView {
             node.replaceWith(text(this.#document, "span", node.textContent));
           modal.append(statCopy);
         }
+        // The unit glossary (bead pulp_wars-2yc.39): what the unit can do,
+        // then what its chips mean right now, one plain sentence each.
+        const lines: readonly GlossaryLineV7[] = monster
+          ? [
+              ...SPIDER_GLOSSARY_IDS_V7.map(glossaryEntryV7),
+              // Whom it will attack after this round stays a live line.
+              ...monsterLines
+                .filter((line) => line.id === "provoked" || line.id === "calm")
+                .map((line) => ({
+                  id: line.id,
+                  name: line.name,
+                  text: line.description,
+                })),
+            ]
+          : egg
+            ? [glossaryEntryV7("EGG")]
+            : unit.form === "EMBARKED"
+              ? [glossaryEntryV7(machine ? "STATUS_AFLOAT" : "AT_SEA")]
+              : roleGlossaryV7(unit.role, unitFaction);
+        if (lines.length > 0)
+          unitDetails.append(
+            glossaryListV7(this.#document, lines, (line, entry) =>
+              this.#abilityLineIcon(line.id, entry),
+            ),
+          );
+        const statusLines = this.#statusGlossaryLines(dock, lines);
+        if (statusLines.length > 0) {
+          const now = el(this.#document, "div", "v7-unit-status-notes");
+          for (const line of statusLines) {
+            const state = el(this.#document, "section", "v7-tactical-state");
+            state.dataset.tacticalState = line.id;
+            state.append(
+              text(this.#document, "strong", line.name),
+              text(this.#document, "span", line.text),
+            );
+            now.append(state);
+          }
+          unitDetails.append(now);
+        }
         modal.append(unitDetails);
+        if (!egg && !monster) modal.append(glossaryTermsV7(this.#document));
         this.#unitHelpModal = modal;
       }
     } else if (selection.kind === "CITY") {
@@ -6063,108 +5984,42 @@ export class Ruleset7DomAppView {
     return overlay;
   }
 
+  /**
+   * Help (bead pulp_wars-2yc.39): the short "How to play" of
+   * `help-text-v7.ts`, the same in every match. What a unit does is in its
+   * "?" and in the Gallery, not here.
+   */
   #help(): HTMLElement {
     const section = el(this.#document, "div", "v7-info-screen v7-help");
-    const tips = this.#document.createElement("ul");
-    tips.className = "v7-help-tips";
-    const view = this.#snapshot.view;
-    const undeadViewer = view?.viewer.faction === "UNDEAD";
-    for (const tip of [
-      // Bead pulp_wars-9im: every target is picked on the map; the legend
-      // under these tips shows the four marks.
-      "Select a unit, then pick a highlighted target on the map.",
-      OWN_UNIT_PASS_THROUGH_TEXT_V7,
-      ROAD_MOVEMENT_TEXT_V7,
-      // Revision 19: a Dinosaur city also lays Eggs.
-      view?.viewer.faction === "DINOSAUR"
-        ? "Select your city to train units and lay Eggs."
-        : "Select your city to train units.",
-      "Select a tile in your land to harvest or build.",
-      "Spend coins on technology to unlock more. Your first technology is free.",
-      "Fruit is visible from the start; Gathering reveals Fertile Ground.",
-      ...(view !== null && undeadViewer
-        ? undeadHelpTipsV7(view)
-        : [
-            // Revision 17: Goblin Wolf Riders have no Escape; revision 19:
-            // neither have Dinosaur Raptors, nor Martian Saucers, nor Ice
-            // Folk Sleds.
-            ...(view?.viewer.faction === "GOBLIN" ||
-            view?.viewer.faction === "DINOSAUR" ||
-            view?.viewer.faction === "MARTIAN" ||
-            view?.viewer.faction === "ICE_FOLK" ||
-            view?.viewer.faction === "DWARF"
-              ? []
-              : ["A Raider that survives an attack may move again (Escape)."]),
-            ...(view !== null && matchHasUndeadV7(view)
-              ? [
-                  "Units that fall in battle on land leave Graves. Undead raise or devour them, and Zombie kills rise as Zombies.",
-                  // pulp_wars-0ao.16: only a Captain's Tend cures; Goblins
-                  // (no Tend Wounded) have no cure.
-                  ...(factionCanCureAfflictionsV7(view.viewer.faction)
-                    ? [
-                        "Lich shots plague your units for 3 turns: −2 HP each turn, spreading to neighbours on the first. Killing the Lich or a Captain's Tend ends it sooner.",
-                        "Zombie bites make your units rise as enemy Zombies when they die; a Captain's Tend cures bites.",
-                      ]
-                    : [
-                        `Lich shots plague your units for 3 turns: −2 HP each turn, spreading to neighbours on the first. ${factionNameV7(view.viewer.faction)}s can't cure it; only killing the Lich ends it sooner.`,
-                        `Zombie bites make your units rise as enemy Zombies when they die; ${factionNameV7(view.viewer.faction)}s can't cure bites.`,
-                      ]),
-                  "Your units can't strike back at a Vampire's attack.",
-                  // The ninth unit (`pulp_wars-w49.17`, 7r55): Rise Again.
-                  ...ninthUnitHelpRulesV7("UNDEAD").map(
-                    ([name, sentence]) =>
-                      `${name}: ${sentence} Stand a unit on the marked Grave to stop it.`,
-                  ),
-                ]
-              : []),
-          ]),
-      // Revision 20: a Promotion fully heals (every faction).
-      PROMOTION_HELP_TIP_V7,
-      // Revision 21: what achievements are for.
-      ACHIEVEMENT_HELP_TIP_V7,
-      // The economy rejig (`pulp_wars-w49.16`, 7r54): shared mills, the
-      // research price, and the giant.
-      ECONOMY_REJIG_HELP_TIP_V7,
-      ...(view === null
-        ? []
-        : [
-            rewardGiantHelpTipV7(
-              effectiveRoleRuleV7("JUGGERNAUT", view.viewer.faction).label,
-            ),
-          ]),
-      "Capture every enemy city to win.",
-      // Map scale (bead pulp_wars-ykw.5): the player limit.
-      PLAYER_LIMIT_HELP_TIP_V7(),
-      "Move a land unit onto your port to put it to sea.",
-      // Faction building looks (epic pulp_wars-xdh), in a match with a
-      // faction that has one.
-      ...(view !== null && matchHasFactionBuildingsV7(view)
-        ? [FACTION_BUILDINGS_HELP_V7]
-        : []),
-      // The Rift (bead pulp_wars-9s0.5), once the viewer has seen one.
-      ...(view !== null &&
-      view.board.tiles.some((tile) => tile.explored && tile.terrain === "RIFT")
-        ? [RIFT_HELP_TIP_V7]
-        : []),
-      ...(view !== null && view.setup.mapType !== "DRY_LAND"
-        ? [
-            AT_SEA_MOVE_TEXT_V7,
-            "Shallow Water: water that shares an edge with land. Water touching land only at a corner is Deep Water.",
-          ]
-        : []),
-    ])
-      tips.append(text(this.#document, "li", tip));
+    section.append(text(this.#document, "h2", "How to play"));
+    for (const part of HELP_SECTIONS_V7) {
+      const block = el(this.#document, "section", "v7-help-section");
+      block.dataset.helpSection = part.id;
+      const heading = el(this.#document, "h3", "v7-help-heading");
+      heading.append(
+        part.icon === "coin" || part.icon === "population"
+          ? economyIcon(this.#document, part.icon)
+          : uiIconV7(this.#document, part.icon),
+        text(this.#document, "span", part.title),
+      );
+      const lines = this.#document.createElement("ul");
+      lines.className = "v7-help-tips";
+      for (const line of part.lines) {
+        const item = this.#document.createElement("li");
+        item.textContent = line;
+        lines.append(item);
+      }
+      block.append(heading, lines);
+      // Bead pulp_wars-9im: the four marks a target is picked by.
+      if (part.id === "turn") {
+        const legend = targetLegendV7(this.#document);
+        legend.title = TARGET_HIGHLIGHT_HELP_TIP_V7;
+        block.append(legend);
+      }
+      section.append(block);
+    }
     const keys = el(this.#document, "dl", "v7-help-keys");
-    for (const [key, action] of [
-      ["Arrows", "Move cursor"],
-      ["Enter", "Select"],
-      ["Tab", "Next target"],
-      ["Esc", "Deselect"],
-      ["E", "End turn"],
-      ["T", "Technology"],
-      ["G", "Leaderboard"],
-      ["+ / −", "Zoom"],
-    ] as const) {
+    for (const [key, action] of HELP_KEYS_V7) {
       const row = el(this.#document, "div", "v7-help-key");
       row.append(
         text(this.#document, "dt", key),
@@ -6172,133 +6027,10 @@ export class Ruleset7DomAppView {
       );
       keys.append(row);
     }
-    const legend = targetLegendV7(this.#document);
-    legend.title = TARGET_HIGHLIGHT_HELP_TIP_V7;
-    section.append(text(this.#document, "h2", "How to play"), tips, legend);
-    // Revision 17 (section 11.3): one sentence per Goblin rule, for every
-    // viewer of a match with a Goblin seat.
-    if (view !== null && matchHasGoblinV7(view)) {
-      const rules = this.#document.createElement("ul");
-      rules.className = "v7-help-tips v7-help-goblin";
-      for (const [name, sentence] of GOBLIN_HELP_RULES_V7) {
-        const item = el(this.#document, "li", "v7-help-rule");
-        item.append(text(this.#document, "strong", `${name}:`), ` ${sentence}`);
-        rules.append(item);
-      }
-      section.append(text(this.#document, "h3", "Goblins"), rules);
-    }
-    // Revision 19 (section 12.3): one sentence per Dinosaur rule, for every
-    // viewer of a match with a Dinosaur seat.
-    if (view !== null && matchHasDinosaurV7(view)) {
-      const rules = this.#document.createElement("ul");
-      rules.className = "v7-help-tips v7-help-goblin v7-help-dinosaur";
-      for (const [name, sentence] of DINOSAUR_HELP_RULES_V7) {
-        const item = el(this.#document, "li", "v7-help-rule");
-        item.append(text(this.#document, "strong", `${name}:`), ` ${sentence}`);
-        rules.append(item);
-      }
-      section.append(text(this.#document, "h3", "Dinosaurs"), rules);
-    }
-    // The Martian revision (section 13.3): one sentence per Martian rule,
-    // for every viewer of a match with a Martian seat.
-    if (view !== null && matchHasMartianV7(view)) {
-      const rules = this.#document.createElement("ul");
-      rules.className = "v7-help-tips v7-help-goblin v7-help-martian";
-      for (const [name, sentence] of MARTIAN_HELP_RULES_V7) {
-        const item = el(this.#document, "li", "v7-help-rule");
-        item.append(text(this.#document, "strong", `${name}:`), ` ${sentence}`);
-        rules.append(item);
-      }
-      section.append(text(this.#document, "h3", "Martians"), rules);
-    }
-    // The Ice Folk revision (section 13.3): one sentence per Ice Folk rule,
-    // for every viewer of a match with an Ice Folk seat.
-    if (view !== null && matchHasIceFolkSeatV7(view)) {
-      const rules = this.#document.createElement("ul");
-      rules.className = "v7-help-tips v7-help-goblin v7-help-ice-folk";
-      for (const [name, sentence] of ICE_FOLK_HELP_RULES_V7) {
-        const item = el(this.#document, "li", "v7-help-rule");
-        item.append(text(this.#document, "strong", `${name}:`), ` ${sentence}`);
-        rules.append(item);
-      }
-      section.append(text(this.#document, "h3", "Ice Folk"), rules);
-    }
-    // The Dwarf revision (section 16.3): one sentence per Dwarf rule, for
-    // every viewer of a match with a Dwarf seat.
-    if (view !== null && matchHasDwarfSeatV7(view)) {
-      const rules = this.#document.createElement("ul");
-      rules.className = "v7-help-tips v7-help-goblin v7-help-dwarf";
-      for (const [name, sentence] of DWARF_HELP_RULES_V7) {
-        const item = el(this.#document, "li", "v7-help-rule");
-        item.append(text(this.#document, "strong", `${name}:`), ` ${sentence}`);
-        rules.append(item);
-      }
-      section.append(text(this.#document, "h3", "Dwarves"), rules);
-    }
-    // The Candy revision (section 15.3): one sentence per Candy rule, for
-    // every viewer of a match with a Candy seat.
-    if (view !== null && matchHasCandySeatV7(view)) {
-      const rules = this.#document.createElement("ul");
-      rules.className = "v7-help-tips v7-help-goblin v7-help-candy";
-      for (const [name, sentence] of CANDY_HELP_RULES_V7) {
-        const item = el(this.#document, "li", "v7-help-rule");
-        item.append(text(this.#document, "strong", `${name}:`), ` ${sentence}`);
-        rules.append(item);
-      }
-      section.append(text(this.#document, "h3", "Candy"), rules);
-    }
-    // The naval branch interface (section 14.2): one sentence per naval
-    // rule, in a match whose Naval branch can be researched.
-    if (
-      view !== null &&
-      view.setup.mapType !== "DRY_LAND" &&
-      !forbiddenTechnologiesV7(view.setup).has("SEAMANSHIP")
-    ) {
-      // The frozen sea: the Ice Folk have no ships, so their list is "On
-      // the ice"; every other faction's "At sea" gains one line on ice in a
-      // match with an Ice Folk seat.
-      const onTheIce = view.viewer.faction === "ICE_FOLK";
-      const rules = this.#document.createElement("ul");
-      rules.className = `v7-help-tips v7-help-goblin ${onTheIce ? "v7-help-ice" : "v7-help-naval"}`;
-      for (const [name, sentence] of onTheIce
-        ? ICE_HELP_RULES_V7
-        : [
-            ...NAVAL_HELP_RULES_V7,
-            ...(matchHasIceFolkSeatV7(view) ? [ICE_FOR_SHIPS_HELP_V7] : []),
-          ]) {
-        const item = el(this.#document, "li", "v7-help-rule");
-        item.append(text(this.#document, "strong", `${name}:`), ` ${sentence}`);
-        rules.append(item);
-      }
-      section.append(
-        text(this.#document, "h3", onTheIce ? "On the ice" : "At sea"),
-        rules,
-      );
-    }
-    // Map curiosities (section 12.1): the four sentences, the bounty and
-    // the setup option, each with its legend icon, in a match that was
-    // launched with the option on.
-    if (view !== null && matchOffersCuriositiesV7(view)) {
-      const rules = this.#document.createElement("ul");
-      rules.className = "v7-help-tips v7-help-goblin v7-help-curiosities";
-      for (const rule of curiosityHelpRulesV7()) {
-        const item = el(this.#document, "li", "v7-help-rule");
-        const body = el(this.#document, "span", "v7-help-rule-text");
-        body.append(
-          text(this.#document, "strong", `${rule.name}:`),
-          ` ${rule.rule}`,
-        );
-        item.append(
-          rule.icon === null
-            ? el(this.#document, "span", "v7-curiosity-icon")
-            : this.#curiosityIcon(rule.icon),
-          body,
-        );
-        rules.append(item);
-      }
-      section.append(text(this.#document, "h3", "Curiosities"), rules);
-    }
-    section.append(text(this.#document, "h3", "Keyboard"), keys);
+    const keyboard = this.#document.createElement("details");
+    keyboard.className = "v7-help-keyboard";
+    keyboard.append(text(this.#document, "summary", "Keyboard"), keys);
+    section.append(keyboard);
     return section;
   }
 
@@ -6582,13 +6314,15 @@ export class Ruleset7DomAppView {
       stats.append(row);
     }
     modal.append(stats);
-    const notes = [...presentation.abilities, ...presentation.restrictions];
-    if (notes.length > 0) {
-      const list = this.#document.createElement("ul");
-      list.className = "v7-recruit-help-notes";
-      for (const note of notes) list.append(text(this.#document, "li", note));
+    // The unit glossary (bead pulp_wars-2yc.39): the same plain lines as the
+    // unit "?" dialog and the Gallery.
+    const lines = roleGlossaryV7(role, faction);
+    if (lines.length > 0) {
+      const list = glossaryListV7(this.#document, lines);
+      list.classList.add("v7-recruit-help-notes");
       modal.append(list);
     }
+    modal.append(glossaryTermsV7(this.#document));
     return modal;
   }
 
@@ -6872,6 +6606,23 @@ export class Ruleset7DomAppView {
       this.#persistSettings();
       this.#render();
     };
+    // First steps (bead pulp_wars-2yc.39): off silences the coach; on
+    // starts it again from nothing.
+    const hints = button(
+      this.#document,
+      this.#firstSteps.enabled ? "Hints: on" : "Hints: off",
+      "hints",
+      "v7-toggle",
+    );
+    hints.setAttribute("aria-pressed", String(this.#firstSteps.enabled));
+    hints.title = "First-steps hints for new players";
+    hints.onclick = () => {
+      this.#clearFirstStepOutOfMoves();
+      this.#firstStepWatchUnitId = null;
+      this.#firstSteps = setFirstStepsEnabledV7(!this.#firstSteps.enabled);
+      this.#persistFirstSteps();
+      this.#render();
+    };
     // Music and Sound: an icon toggle and a volume slider each
     // (docs/ui/SOUND.md).
     const sound = soundControlsV7(this.#document, this.#audio, {
@@ -6879,7 +6630,7 @@ export class Ruleset7DomAppView {
         this.#error = "Settings could not be saved.";
       },
     });
-    display.append(motion, speed, scale, contrast, sound);
+    display.append(motion, speed, scale, contrast, hints, sound);
     return display;
   }
 
@@ -7683,6 +7434,16 @@ export class Ruleset7DomAppView {
     this.#freezeHoverUnitId = null;
     let restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
+    // First steps: a unit that could still move before this command is
+    // watched, to say so when the command leaves it without a Move.
+    this.#clearFirstStepOutOfMoves();
+    const commandUnitId = "unitId" in command ? command.unitId : null;
+    const couldMove =
+      commandUnitId !== null &&
+      this.#snapshot.offeredCommands.some(
+        (candidate) =>
+          candidate.kind === "MOVE" && candidate.unitId === commandUnitId,
+      );
     this.#presentationActive = true;
     this.#humanDispatchPending = true;
     let result: Awaited<ReturnType<Ruleset7ControllerPortV7["dispatch"]>>;
@@ -7700,6 +7461,14 @@ export class Ruleset7DomAppView {
       return false;
     }
     this.#error = "";
+    if (this.#firstSteps.enabled) {
+      const progress = noteFirstStepCommandV7(this.#firstSteps, command);
+      if (progress !== this.#firstSteps) {
+        this.#firstSteps = progress;
+        this.#persistFirstSteps();
+      }
+      this.#firstStepWatchUnitId = couldMove ? commandUnitId : null;
+    }
     const notice = boundaryNoticeV7(
       result.playerEvents.events,
       result.beforeView,
@@ -8183,6 +7952,82 @@ export class Ruleset7DomAppView {
     this.#pendingFocusAction =
       role === null ? null : `train-help-${role.toLowerCase()}`;
     this.#render();
+  }
+
+  /**
+   * The icon the game already has for an ability line of the unit dialog:
+   * Charge! carries the former Stampede icon (revision 20), and Bow Ram
+   * and Torpedo theirs when the art set has them (bead pulp_wars-5ti.6;
+   * LEGACY keeps the plain line).
+   */
+  #abilityLineIcon(glossaryId: string, entry: HTMLElement): void {
+    if (glossaryId === "CHARGE_BANG") {
+      entry.dataset.ability = "charge";
+      entry.prepend(
+        this.#chibiArt("ICON:ACTION:STAMPEDE", CHIBI_DOM_BOXES_V7.action)
+          ?.element ??
+          uiIconV7(this.#document, "stampede", "v7-ui-icon v7-command-icon"),
+      );
+      return;
+    }
+    const naval =
+      glossaryId === "BOW_RAM"
+        ? "RAM"
+        : glossaryId === "TORPEDO"
+          ? "TORPEDO"
+          : null;
+    if (naval === null) return;
+    const icon = this.#chibiArt(
+      `ICON:ACTION:${naval}`,
+      CHIBI_DOM_BOXES_V7.action,
+    )?.element;
+    if (icon === undefined) return;
+    entry.dataset.ability = naval.toLowerCase();
+    entry.prepend(icon);
+  }
+
+  /**
+   * The status chips of a unit dock, each with the glossary's sentence
+   * (bead pulp_wars-2yc.39): the chip's own words as the name, so a live
+   * value ("Shield 1/3", "2 turns") is kept. A status the abilities above
+   * already explain is not repeated; a chip the glossary does not know
+   * keeps its own tooltip.
+   */
+  #statusGlossaryLines(
+    dock: HTMLElement,
+    explained: readonly GlossaryLineV7[],
+  ): readonly GlossaryLineV7[] {
+    const seen = new Set(explained.map((line) => line.id));
+    const lines: GlossaryLineV7[] = [];
+    for (const chip of dock.querySelectorAll<HTMLElement>(
+      "[data-unit-status]",
+    )) {
+      const status = chip.dataset.unitStatus ?? "";
+      const entry = statusGlossaryV7(
+        status === "chill" && chip.dataset.chill !== undefined
+          ? `chill-${chip.dataset.chill}`
+          : status,
+      );
+      const label = (chip.textContent ?? "").trim();
+      const id = entry?.id ?? status;
+      // A two-slot body is already explained by its Big body line, and an
+      // Ice Witch's own Blizzard by her ability.
+      const coveredBy = STATUS_COVERED_BY_ABILITY_V7[status];
+      if (seen.has(id) || (coveredBy !== undefined && seen.has(coveredBy)))
+        continue;
+      seen.add(id);
+      if (entry === null) {
+        if (chip.title !== "")
+          lines.push({ id: status, name: label, text: chip.title });
+        continue;
+      }
+      lines.push({
+        id: status,
+        name: label !== "" && label.length <= 24 ? label : entry.name,
+        text: entry.text,
+      });
+    }
+    return lines;
   }
 
   #closeUnitHelp(): void {
@@ -10439,6 +10284,9 @@ function reconcileMatchChildren(
       key === "region:hud" ||
       key === "region:zoom" ||
       key === "region:toast" ||
+      // The coach's line is a status: kept in place, so an unchanged line
+      // is not announced again on every redraw.
+      key === "region:first-step" ||
       key === "region:overlay-settings" ||
       key === "action:fast-forward";
     const resolved =
@@ -11920,36 +11768,6 @@ function playerTitle(view: PlayerViewV7, seat: number): string {
     ? `${playerName(seat)} (${factionNameV7(player.faction)})`
     : playerName(seat);
 }
-
-/**
- * Undead viewer Help. pulp_wars-0ao.16: the Plague and bite tips name a
- * Captain's cure only when a seat can Tend (Human); with a Goblin seat too it
- * is a Human Captain, and with no Human seat nobody can cure them.
- */
-function undeadHelpTipsV7(view: PlayerViewV7): readonly string[] {
-  const captain = cureCaptainPhraseV7(view);
-  const curable = captain !== null;
-  return [
-    "Units that fall in battle on land leave Graves.",
-    "A Necromancer raises Skeletons from adjacent Graves; a Ghoul devours the Grave it stands on to heal.",
-    "A Banshee can't attack; it Wails at every visible living enemy within 2 tiles.",
-    "Zombie kills rise as your Zombies, Vampires heal from damage they deal, and Lich shots splash.",
-    "Restless: your units recover only inside your territory.",
-    `A Lich's shots plague living units for 3 turns: −2 HP each turn, spreading to neighbours on the first. ${
-      curable
-        ? `It ends sooner if the Lich dies or ${captain} tends them.`
-        : "It ends sooner only if the Lich dies."
-    }`,
-    `Zombies bite living land units; a bitten unit that dies rises as the biter's Zombie${
-      curable ? ` unless ${captain} tends it first.` : "."
-    }`,
-    "Enemies can't strike back at a Vampire's attack.",
-  ];
-}
-
-/** Revision 14 Tend Wounded text, shown in Undead matches only. */
-const TEND_CURES_DESCRIPTION =
-  "Heals nearby wounded troops by 2 and cures their Plague and bites.";
 
 const FACTION_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
   RAISE_DEAD: "grave",

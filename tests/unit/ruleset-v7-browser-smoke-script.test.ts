@@ -286,10 +286,10 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     expect(charge).toBeGreaterThan(launch);
     expect(probe).toContain("unit.activation.movedPathLength === 2");
-    // The Dinosaur pass (7r53): the card states the run-up with and
-    // without Wallbreaker, the ignored fortification, and the push.
+    // The unit glossary (bead pulp_wars-2yc.39): the card states Charge!
+    // in one plain sentence; the run-up's amounts are on the board preview.
     expect(probe).toContain(
-      String.raw`Attack after moving this turn \(with Wallbreaker \+[\d.]+ per tile, up to \+[\d.]+\)\. Ignores Walls and Field Defense, destroys Field Defense, and pushes back\.`,
+      `"Charge!Hits harder after moving. Ignores Walls and Field Defense, and shoves the target back."`,
     );
     expect(probe).toContain(
       String.raw`/Charge \+[\d.]+\./.exec(chargePreview)`,
@@ -620,6 +620,16 @@ describe("Ruleset 7 browser smoke script", () => {
       `.v7-gallery-cell[data-row="CATAPULT"][data-faction="UNDEAD"]`,
     );
     expect(probe).toContain("dataset.demoState === 'done'");
+    // The Terrain tab: since the Ice Folk tundra forest (pulp_wars-2yc.38)
+    // every shown faction has its own Forest, so no cell is "same as
+    // default"; sea ice is the Ice Folk's alone and six cells say "None".
+    expect(probe).toContain("terrain.forest.length !== 7");
+    expect(probe).toContain('!terrain.forest.includes("ICE_FOLK")');
+    expect(probe).toContain("terrain.same !== 0");
+    expect(probe).toContain('terrain.ice.join() !== "ICE_FOLK"');
+    expect(probe).toContain("terrain.none !== 6");
+    expect(probe).toContain("terrain.shared < 2");
+    expect(probe).not.toContain("terrain.same === 0");
     expect(probe).toContain("await driver.pressEscape()");
     expect(probe).toContain(`pointerClick('[data-action="gallery-back"]')`);
     for (const name of ["gallery-units.png", "gallery-detail.png"])

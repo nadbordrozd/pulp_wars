@@ -38,13 +38,12 @@ import {
   goblinShowcaseFixtureV7,
 } from "../fixtures/v7-goblin-ui";
 import { goblinArenaV7 } from "../fixtures/v7-goblin-arena";
+import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
 
 const AT = GOBLIN_SHOWCASE_V7;
 // Blast damages from the Goblin registry (tuned by `pulp_wars-0ao.7`), so
 // the expected text follows future tuning.
 const KABOOM = GOBLIN_ROLE_MECHANICS_V7.FIGHTER.kaboomDamage ?? 0;
-const CHUCKER_KABOOM = GOBLIN_ROLE_MECHANICS_V7.MARKSMAN.kaboomDamage ?? 0;
-const CHUCKER_BLAST = GOBLIN_ROLE_MECHANICS_V7.MARKSMAN.deathBlastDamage ?? 0;
 const CART_BLAST = GOBLIN_ROLE_MECHANICS_V7.CATAPULT.deathBlastDamage ?? 0;
 const kaboomText = (damage: number) =>
   `Blow up: ${damage} damage to every other unit in the 3×3 square, yours too. This unit dies.`;
@@ -227,32 +226,37 @@ describe("Revision 17 Goblin DOM", () => {
     selectUnitAt(controller, host, AT.warboss);
     expect(actionLabels()).toEqual(["WAAAGH!", "Disband", "Wait"]);
     requiredButton("unit-help").click();
-    expect(requiredElement(".v7-unit-help-dialog").textContent ?? "").toContain(
-      "WAAAGH!Every other unit of yours on land within 2 tiles gets +1 Attack on its next attack this turn.",
-    );
+    // The unit glossary (bead pulp_wars-2yc.39): plain sentences, and the
+    // blast's amount stays on the Kaboom! preview.
+    const glossaryLines = (): (string | null)[] =>
+      [
+        ...document.querySelectorAll<HTMLElement>(
+          ".v7-unit-help-dialog .v7-unit-ability",
+        ),
+      ].map((entry) => entry.textContent);
+    expect(glossaryLines()).toEqual([
+      "WAAAGH!Every friendly unit within 2 tiles hits harder on its next attack this turn.",
+      "Can't captureCannot take villages or cities.",
+      "Gang UpHits harder for each of your other units next to its target.",
+    ]);
     requiredButton("close-unit-help").click();
 
     selectUnitAt(controller, host, AT.bombChucker);
     requiredButton("unit-help").click();
-    expect(
-      [
-        ...document.querySelectorAll<HTMLElement>(
-          ".v7-unit-help-dialog [data-goblin-info]",
-        ),
-      ].map((entry) => entry.textContent),
-    ).toEqual([
-      `Kaboom ${CHUCKER_KABOOM}${kaboomText(CHUCKER_KABOOM)}`,
-      `Explodes on death (${CHUCKER_BLAST})However it dies, it deals ${CHUCKER_BLAST} damage to every other unit in the 3×3 square, yours too.`,
-      "BombsIts bomb also hits every unit next to the target, yours included.",
-      // The Goblin pass (7r50): a bomb gets no Gang Up.
-      "No Gang UpIts bombs get no Gang Up.",
+    // The Goblin pass (7r50): a bomb gets no Gang Up, so it has no such line.
+    expect(glossaryLines()).toEqual([
+      "CaptureTakes a village or an enemy city when it starts your turn standing on its centre.",
+      "Kaboom!Blows itself up, hurting every unit next to it, yours too.",
+      "Long shotShoots over a distance only: it cannot hit a unit on the next tile.",
+      "BombsIts bomb also hurts every unit next to the target, yours too.",
+      "Explodes on deathHowever it dies, it blows up and hurts every unit next to it, yours too.",
     ]);
     requiredButton("close-unit-help").click();
 
     selectUnitAt(controller, host, AT.troll);
     requiredButton("unit-help").click();
-    expect(requiredElement(".v7-unit-help-dialog").textContent ?? "").toContain(
-      "Regenerates 4 HP each turn",
+    expect(glossaryLines()).toContain(
+      "RegenerateHeals itself at the start of every turn, wherever it stands.",
     );
     requiredButton("close-unit-help").click();
     app.destroy();
@@ -287,9 +291,10 @@ describe("Revision 17 Goblin DOM", () => {
       document.querySelector('[data-unit-status="ram"]')?.textContent,
     ).toBe("Ram");
     requiredButton("unit-help").click();
+    // The chip explains itself in the dialog (the unit glossary).
     expect(
-      document.querySelector('[data-tactical-state="overrun"]')?.textContent,
-    ).toBe("Ram: attack again");
+      document.querySelector('[data-tactical-state="ram"]')?.textContent,
+    ).toBe("RamIt just killed: it may attack again.");
     fortifyApp.destroy();
   });
 
@@ -359,23 +364,17 @@ describe("Revision 17 Goblin DOM", () => {
 
     requiredButton("compact-menu").click();
     requiredButton("help").click();
-    const help = requiredElement<HTMLElement>(".v7-help-goblin");
-    // Ten rules of revision 17, the two of the Goblin pass, and
-    // Heavyweight (the ninth unit, `pulp_wars-w49.17`).
-    expect(help.querySelectorAll("li")).toHaveLength(13);
-    expect(help.textContent).toContain("Heavyweight");
-    expect(help.textContent).toContain(
-      "Crash: a Scrap Buggy can Kaboom after it has attacked.",
-    );
-    expect(help.textContent).toContain(
-      "Orc Brutes: are Blast-proof: blasts and bomb splash don't hurt them.",
-    );
-    expect(help.textContent).toContain(
-      "Kaboom: any goblin-crewed unit can blow itself up, dealing its blast damage to every other unit in the 3×3 square around it, yours included.",
-    );
+    // Bead pulp_wars-2yc.39: Help is the short "How to play" of every
+    // match, with no Goblin section; the Goblin rules are on each unit's "?".
+    expect(document.querySelector(".v7-help-goblin")).toBe(null);
     expect(
-      requiredElement<HTMLElement>(".v7-help-tips").textContent,
-    ).not.toContain("(Escape)");
+      [...document.querySelectorAll(".v7-help h3")].map(
+        (heading) => heading.textContent,
+      ),
+    ).toEqual(HELP_SECTIONS_V7.map((section) => section.title));
+    expect(requiredElement<HTMLElement>(".v7-help").textContent).not.toContain(
+      "(Escape)",
+    );
     requiredButton("close-overlay").click();
     requiredButton("compact-menu").click();
     requiredButton("leaderboard").click();
@@ -416,10 +415,15 @@ describe("Revision 17 Goblin DOM", () => {
     );
   });
 
-  it("names Plague and bite cures in Help only for viewers who have them", () => {
-    // pulp_wars-0ao.16: only a Human Captain's Tend Wounded cures Plague and
-    // bites. Seat 0 is the viewer.
-    const helpTips = (factions: readonly FactionIdV7[]): string => {
+  it("explains Plague and bites on the afflicted unit, and never in Help", () => {
+    // Bead pulp_wars-2yc.39: Help is the same short text for every viewer.
+    // pulp_wars-0ao.16 still holds where the chip is: its tooltip names a
+    // cure only for a viewer who has one (ruleset7-undead-dom.test.ts).
+    for (const factions of [
+      ["GOBLIN", "UNDEAD"],
+      ["ORIGINAL", "UNDEAD", "GOBLIN"],
+      ["UNDEAD", "GOBLIN"],
+    ] as const satisfies readonly (readonly FactionIdV7[])[]) {
       document.body.innerHTML = '<div id="app"></div>';
       const controller = new FixtureController(
         goblinArenaV7(factions, [
@@ -429,44 +433,11 @@ describe("Revision 17 Goblin DOM", () => {
       const app = mount(controller, new RecordingBoardHost());
       requiredButton("compact-menu").click();
       requiredButton("help").click();
-      const tips = [
-        ...requiredElement<HTMLElement>(".v7-help-tips").querySelectorAll("li"),
-      ].map((item) => item.textContent ?? "");
+      const help = requiredElement<HTMLElement>(".v7-help").textContent ?? "";
+      expect(help).not.toMatch(/Lich|Zombie|Plague|bite/i);
+      expect(help).toContain("Tap ? on a unit");
       app.destroy();
-      return tips.join("\n");
-    };
-
-    const goblin = helpTips(["GOBLIN", "UNDEAD"]);
-    expect(goblin).toContain(
-      "Lich shots plague your units for 3 turns: −2 HP each turn, spreading to neighbours on the first. Goblins can't cure it; only killing the Lich ends it sooner.",
-    );
-    expect(goblin).toContain(
-      "Zombie bites make your units rise as enemy Zombies when they die; Goblins can't cure bites.",
-    );
-    expect(goblin).not.toMatch(/Captain|Tend/);
-
-    const human = helpTips(["ORIGINAL", "UNDEAD", "GOBLIN"]);
-    expect(human).toContain(
-      "Killing the Lich or a Captain's Tend ends it sooner.",
-    );
-    expect(human).toContain("a Captain's Tend cures bites.");
-
-    const undeadVsGoblin = helpTips(["UNDEAD", "GOBLIN"]);
-    expect(undeadVsGoblin).toContain(
-      "A Lich's shots plague living units for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner only if the Lich dies.",
-    );
-    expect(undeadVsGoblin).toContain(
-      "Zombies bite living land units; a bitten unit that dies rises as the biter's Zombie.",
-    );
-    expect(undeadVsGoblin).not.toMatch(/Captain|tends/);
-
-    const undeadAll = helpTips(["UNDEAD", "ORIGINAL", "GOBLIN"]);
-    expect(undeadAll).toContain(
-      "It ends sooner if the Lich dies or a Human Captain tends them.",
-    );
-    expect(undeadAll).toContain(
-      "rises as the biter's Zombie unless a Human Captain tends it first.",
-    );
+    }
   });
 
   it("warns a Human attacker about the death-blast chain in the board model", () => {

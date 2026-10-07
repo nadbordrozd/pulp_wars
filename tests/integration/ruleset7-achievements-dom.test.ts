@@ -465,14 +465,13 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
     source.destroy();
   });
 
-  it("explains achievements in Help", async () => {
+  it("keeps achievements out of the short Help; the Achievements screen explains them", async () => {
+    // Bead pulp_wars-2yc.39: Help is the short "How to play" of every match.
     const { app, source } = await mount(pangea(2106));
     openMenuItem("help");
-    expect(
-      [...document.querySelectorAll(".v7-help-tips li")].map(
-        (node) => node.textContent,
-      ),
-    ).toContain(ACHIEVEMENT_HELP_TIP_V7);
+    const help = document.querySelector(".v7-help")?.textContent ?? "";
+    expect(help).toContain("Capture every enemy city.");
+    expect(help).not.toContain(ACHIEVEMENT_HELP_TIP_V7);
     app.destroy();
     source.destroy();
   });

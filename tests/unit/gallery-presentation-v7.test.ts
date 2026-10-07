@@ -26,6 +26,7 @@ import {
   galleryDemoCuesV7,
 } from "../../src/render/gallery-demo-v7";
 import { recruitmentRolePresentationV7 } from "../../src/render/role-presentation-v7";
+import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
 
 /** The Gallery's pure model (bead pulp_wars-ic8). */
 describe("Gallery presentation", () => {
@@ -71,7 +72,7 @@ describe("Gallery presentation", () => {
       );
   });
 
-  it("reuses the recruit texts for a unit's details", () => {
+  it("reuses the recruit stats and the unit glossary for a unit's details", () => {
     const cell = galleryUnitCellV7("CATAPULT", "UNDEAD");
     if (cell.kind !== "UNIT") throw new Error("missing Lich");
     const details = galleryUnitDetailsV7(cell);
@@ -87,12 +88,25 @@ describe("Gallery presentation", () => {
     });
     expect(details.stats.slice(0, recruit.stats.length)).toEqual(recruit.stats);
     expect(details.stats.at(-1)).toEqual({ label: "Slots", value: "1" });
-    expect(details.notes).toEqual(recruit.restrictions);
-    expect(
-      details.abilities.map(
-        (ability) => `${ability.name}: ${ability.description}`,
-      ),
-    ).toEqual(recruit.abilities);
+    // Bead pulp_wars-2yc.39: abilities and traits are the unit glossary's
+    // plain lines; there is no second list of notes.
+    expect(details.notes).toEqual([]);
+    expect(details.abilities).toEqual(
+      roleGlossaryV7("CATAPULT", "UNDEAD").map((entry) => ({
+        id: entry.id,
+        name: entry.name,
+        description: entry.text,
+      })),
+    );
+    expect(details.abilities.map((ability) => ability.name)).toEqual([
+      "Plague",
+      "Long shot",
+      "Slow to strike",
+      "Can't capture",
+      "Splash",
+      "Wrecker",
+      "Restless",
+    ]);
     const juggernaut = galleryUnitCellV7("JUGGERNAUT", "ORIGINAL");
     if (juggernaut.kind !== "UNIT") throw new Error("missing Juggernaut");
     expect(galleryUnitDetailsV7(juggernaut)).toMatchObject({

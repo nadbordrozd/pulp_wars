@@ -237,12 +237,12 @@ try {
       await click(connection, '[data-action="help"]');
       await evaluate(
         connection,
-        `document.querySelector('.v7-help-curiosities')?.scrollIntoView({ block: 'center' })`,
+        `document.querySelector('.v7-help')?.scrollIntoView({ block: 'center' })`,
       );
       await delay(300);
       evidence[`${suffix}Help`] = await evaluate(
         connection,
-        `Array.from(document.querySelectorAll('.v7-help-curiosities li')).map((node) => node.textContent)`,
+        `Array.from(document.querySelectorAll('.v7-help h3')).map((node) => node.textContent)`,
       );
       await capture(connection, `help-${suffix}.png`);
     }

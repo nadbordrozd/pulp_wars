@@ -43,12 +43,12 @@ import {
   factionImprovementSubjectV7,
   portraitSubjectV7,
 } from "../assets/chibi-ui-art-v7";
+import { recruitmentRolePresentationV7 } from "./role-presentation-v7";
 import {
-  AT_SEA_MOVE_TEXT_V7,
-  recruitmentRolePresentationV7,
-  roleAbilityDescriptionV7,
-  roleAbilityNameV7,
-} from "./role-presentation-v7";
+  glossaryEntryV7,
+  roleGlossaryV7,
+  type GlossaryIdV7,
+} from "./unit-glossary-v7";
 import { economicFormulaV7 } from "./economy-presentation-v7";
 import { factionNameV7 } from "./undead-presentation-v7";
 import { technologyNameV7 } from "./goblin-presentation-v7";
@@ -405,7 +405,12 @@ export interface GalleryUnitDetailsV7 {
   } | null;
 }
 
-/** The detail texts of a unit cell (Help and recruit texts reused). */
+function glossaryAbility(id: GlossaryIdV7): GalleryAbilityV7 {
+  const entry = glossaryEntryV7(id);
+  return { id: entry.id, name: entry.name, description: entry.text };
+}
+
+/** The detail texts of a unit cell (the unit glossary's sentences). */
 export function galleryUnitDetailsV7(
   cell: Extract<GalleryUnitCellV7, { readonly kind: "UNIT" }>,
 ): GalleryUnitDetailsV7 {
@@ -424,8 +429,8 @@ export function galleryUnitDetailsV7(
             { label: "HP", value: String(EGG_HP_V7) },
             { label: "Defense", value: String(EGG_DEFENSE2_V7 / 2) },
           ],
-          abilities: [],
-          notes: ["Hatches into the unit inside. Cannot move or fight."],
+          abilities: [glossaryAbility("EGG")],
+          notes: [],
           technology: null,
         }
       : {
@@ -436,8 +441,8 @@ export function galleryUnitDetailsV7(
           cost: null,
           costNote: "Any land unit at sea",
           stats: [],
-          abilities: [],
-          notes: [AT_SEA_MOVE_TEXT_V7],
+          abilities: [glossaryAbility("AT_SEA")],
+          notes: [],
           technology: null,
         };
   const role = cell.role;
@@ -452,26 +457,14 @@ export function galleryUnitDetailsV7(
     cost: rule.cost,
     costNote: rule.cost === null ? "City reward" : null,
     stats: [...presentation.stats, { label: "Slots", value: String(slots) }],
-    abilities: rule.abilities.flatMap((ability) => {
-      const description = roleAbilityDescriptionV7(
-        ability,
-        rule.minimumRange,
-        rule.range,
-        cell.faction,
-        "a Captain",
-        role,
-      );
-      return description === null
-        ? []
-        : [
-            {
-              id: ability,
-              name: roleAbilityNameV7(ability, cell.faction),
-              description,
-            },
-          ];
-    }),
-    notes: presentation.restrictions,
+    // The unit glossary (bead pulp_wars-2yc.39): every ability and trait of
+    // the role in one plain sentence; no second list of notes.
+    abilities: roleGlossaryV7(role, cell.faction).map((entry) => ({
+      id: entry.id,
+      name: entry.name,
+      description: entry.text,
+    })),
+    notes: [],
     technology:
       rule.technology === null
         ? null

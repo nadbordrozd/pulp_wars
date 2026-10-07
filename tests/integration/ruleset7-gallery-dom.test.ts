@@ -9,6 +9,7 @@ import type {
 import { FACTION_IDS_V7, type PlayerViewV7 } from "../../src/engine/index";
 import { GALLERY_FILTERS_STORAGE_KEY_V7 } from "../../src/render/gallery-presentation-v7";
 import { SETTINGS_STORAGE_KEY } from "../../src/persistence/index";
+import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
 
 /**
  * The Gallery (bead pulp_wars-ic8, docs/ui/SCREEN_FLOW.md "Gallery"): the
@@ -401,7 +402,31 @@ describe("Ruleset 7 Gallery", () => {
       [...dialog.querySelectorAll<HTMLElement>(".v7-gallery-ability")].map(
         (item) => item.dataset.ability,
       ),
-    ).toEqual(["ATTACK", "PLAGUE"]);
+      // The unit glossary (bead pulp_wars-2yc.39): every ability and trait
+      // of the Lich, each with its one plain sentence, and no second list.
+    ).toEqual([
+      "PLAGUE",
+      "LONG_SHOT",
+      "SLOW_TO_STRIKE",
+      "NO_CAPTURE",
+      "SPLASH",
+      "WRECKER",
+      "RESTLESS",
+    ]);
+    expect(
+      [...dialog.querySelectorAll<HTMLElement>(".v7-gallery-ability")].map(
+        (item) => [
+          item.querySelector("strong")?.textContent,
+          item.querySelector("span")?.textContent,
+        ],
+      ),
+    ).toEqual(
+      roleGlossaryV7("CATAPULT", "UNDEAD").map((entry) => [
+        entry.name,
+        entry.text,
+      ]),
+    );
+    expect(dialog.querySelector(".v7-gallery-notes")).toBeNull();
     expect(dialog.textContent).not.toMatch(/\d+\s*,\s*\d+/);
     // Along the row: the next faction's Catapult role.
     expect(
@@ -414,7 +439,9 @@ describe("Ruleset 7 Gallery", () => {
       "Rocket Cart",
     );
     dialog = required(".v7-gallery-detail");
-    expect(required(".v7-gallery-notes").textContent).toContain("Kaboom");
+    expect(
+      required('.v7-gallery-ability[data-ability="KABOOM"]').textContent,
+    ).toBe("Kaboom!Blows itself up, hurting every unit next to it, yours too.");
     // Down the column: the Goblin Knight; arrow keys step too.
     key(dialog, "ArrowDown");
     expect(required("#v7-gallery-detail-title").textContent).toBe(
@@ -515,7 +542,9 @@ describe("Ruleset 7 Gallery", () => {
     cell("TRANSPORT", "MARTIAN").click();
     expect(document.querySelector(".v7-gallery-demo")).toBeNull();
     expect(required(".v7-gallery-detail").dataset.preview).toBe("false");
-    expect(required(".v7-gallery-notes").textContent).toContain("At sea");
+    expect(required(".v7-gallery-ability").textContent).toBe(
+      "At seaA land unit crossing water. It cannot fight until it lands on a shore.",
+    );
     // Down from the Martian transport: no Martian Egg, so no next unit.
     expect(
       required('[data-action="gallery-next-row"]').hasAttribute("disabled"),

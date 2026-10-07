@@ -176,6 +176,63 @@ export function drawReadyChevronV7(
   context.restore();
 }
 
+/** Newsstand yellow and ink (`--pw-yellow`, `--pw-ink` of v7.css). */
+const FIRST_STEP_YELLOW = "#ffcf3a";
+const FIRST_STEP_INK = "#1a1410";
+
+/** The first-steps marker's width in CSS px at this zoom, never under 26. */
+export function firstStepMarkerWidthCssPxV7(zoom: number): number {
+  return Math.max(26, 46 * zoom);
+}
+
+/**
+ * First steps (bead pulp_wars-2yc.39): the marker that points at the next
+ * useful thing, a fat yellow arrow with an ink keyline and a hard offset
+ * shadow (the Newsstand recipe), pointing down at `tipY`. Its hop is the
+ * caller's; in reduced motion it is drawn still. It is an arrow in the
+ * air, never a tile outline, so it is no Move, Attack, Help or Place mark.
+ */
+export function drawFirstStepMarkerV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  tipY: number,
+  zoom: number,
+  options: { readonly highContrast?: boolean } = {},
+): void {
+  const width = firstStepMarkerWidthCssPxV7(zoom);
+  const half = width / 2;
+  const head = width * 0.62;
+  const shaft = width * 0.5;
+  const shaftHalf = width * 0.2;
+  const path = (dx: number, dy: number): void => {
+    context.beginPath();
+    context.moveTo(x + dx, tipY + dy);
+    context.lineTo(x + dx + half, tipY + dy - head);
+    context.lineTo(x + dx + shaftHalf, tipY + dy - head);
+    context.lineTo(x + dx + shaftHalf, tipY + dy - head - shaft);
+    context.lineTo(x + dx - shaftHalf, tipY + dy - head - shaft);
+    context.lineTo(x + dx - shaftHalf, tipY + dy - head);
+    context.lineTo(x + dx - half, tipY + dy - head);
+    context.closePath();
+  };
+  const ink = options.highContrast === true ? "#000000" : FIRST_STEP_INK;
+  const offset = Math.max(2, width * 0.09);
+  context.save();
+  context.lineJoin = "round";
+  // The hard shadow, then the plate with its keyline.
+  path(offset, offset);
+  context.fillStyle = ink;
+  context.fill();
+  path(0, 0);
+  context.fillStyle =
+    options.highContrast === true ? "#ffffff" : FIRST_STEP_YELLOW;
+  context.fill();
+  context.strokeStyle = ink;
+  context.lineWidth = Math.max(2, width * 0.085);
+  context.stroke();
+  context.restore();
+}
+
 /**
  * The marker's side in CSS px at this zoom: 38 nominal px for the viewer's
  * unit (a little under a third of its tile), 32 for another player's, and

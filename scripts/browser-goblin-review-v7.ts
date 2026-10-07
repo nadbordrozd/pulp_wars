@@ -267,7 +267,7 @@ try {
         await delay(400);
         evidence[`${suffix}Help`] = await evaluate(
           connection,
-          `Array.from(document.querySelectorAll('.v7-help-goblin li')).map((node) => node.textContent)`,
+          `Array.from(document.querySelectorAll('.v7-help h3')).map((node) => node.textContent)`,
         );
         await capture(connection, `help-goblin-${suffix}.png`);
       }

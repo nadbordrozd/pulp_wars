@@ -133,20 +133,36 @@ export async function probeGalleryV7(
   await driver.waitForExpression(
     `document.querySelector('.v7-gallery-table')?.getAttribute('aria-label') === 'Terrain' && [...document.querySelectorAll('.v7-gallery-swatch-tile')].every((tile) => tile.dataset.state === 'ready')`,
   );
+  // Since the Ice Folk tundra forest (bead pulp_wars-2yc.38) every shown
+  // faction has a Forest of its own, so no cell says "same as default" any
+  // more. What the table still tells apart: a faction's own look (Grass and
+  // Forest, one cell each), terrain every faction shares (one cell across
+  // the row), and terrain a faction has none of (sea ice: only the Ice
+  // Folk's cell is drawn, the six others say "None").
   const terrain = await driver.evaluate<{
     readonly rows: readonly string[];
     readonly grass: readonly string[];
+    readonly forest: readonly string[];
+    readonly ice: readonly string[];
+    readonly none: number;
     readonly same: number;
+    readonly shared: number;
     readonly overflow: number;
   }>(
-    `({ rows: [...document.querySelectorAll('.v7-gallery-table tbody tr')].map((row) => row.dataset.row), grass: [...document.querySelectorAll('.v7-gallery-cell[data-row="GRASS"]')].map((cell) => cell.dataset.faction), same: document.querySelectorAll('.v7-gallery-cell-wrap.is-same').length, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth })`,
+    `(() => { const factions = (row) => [...document.querySelectorAll('.v7-gallery-cell[data-row="' + row + '"]')].map((cell) => cell.dataset.faction); return { rows: [...document.querySelectorAll('.v7-gallery-table tbody tr')].map((row) => row.dataset.row), grass: factions('GRASS'), forest: factions('FOREST'), ice: factions('ICE'), none: document.querySelectorAll('.v7-gallery-table tr[data-row="ICE"] .v7-gallery-cell-wrap[data-terrain-look="none"]').length, same: document.querySelectorAll('.v7-gallery-cell-wrap.is-same').length, shared: document.querySelectorAll('.v7-gallery-cell-wrap.is-shared').length, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth }; })()`,
   );
   if (
     terrain.rows[0] !== "GRASS" ||
     !terrain.rows.includes("FOREST") ||
     terrain.grass.length !== 7 ||
     terrain.grass.includes("GOBLIN") ||
-    terrain.same === 0 ||
+    terrain.forest.length !== 7 ||
+    !terrain.forest.includes("ICE_FOLK") ||
+    terrain.forest.includes("GOBLIN") ||
+    terrain.same !== 0 ||
+    terrain.ice.join() !== "ICE_FOLK" ||
+    terrain.none !== 6 ||
+    terrain.shared < 2 ||
     terrain.overflow > 0
   )
     throw new Error(

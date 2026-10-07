@@ -65,6 +65,7 @@ import {
   dwarfVictimFixtureV7,
 } from "../fixtures/v7-dwarf-ui";
 import { martianUiFixtureV7 } from "../fixtures/v7-martian-ui";
+import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
 
 // Every Dwarf text and number expected below is read from the registry,
 // the engine constants or a public preview of the same view: the balance
@@ -620,29 +621,30 @@ describe("Dwarf abilities through the dock and the board", () => {
 });
 
 describe("Dwarf Help and technology", () => {
-  it("lists the Dwarf rules for every viewer of a match with a Dwarf seat", () => {
-    for (const fixture of [dwarfUiFixtureV7, dwarfVictimFixtureV7]) {
+  it("has the same short Help with and without a Dwarf seat, with no Dwarf section", () => {
+    // Bead pulp_wars-2yc.39: Help is high level; what a Dwarf unit does is
+    // in its "?" and in the Gallery.
+    for (const fixture of [
+      dwarfUiFixtureV7,
+      dwarfVictimFixtureV7,
+      martianUiFixtureV7,
+    ]) {
       document.body.innerHTML = '<div id="app"></div>';
       const controller = new FixtureController(fixture());
       const app = mount(controller, new RecordingBoardHost());
       requiredButton("compact-menu").click();
       requiredButton("help").click();
       expect(
-        [...document.querySelectorAll(".v7-help-dwarf li")].map(
+        [...document.querySelectorAll(".v7-help h3")].map(
           (node) => node.textContent,
         ),
-      ).toEqual(
-        DWARF_HELP_RULES_V7.map(([name, sentence]) => `${name}: ${sentence}`),
-      );
+      ).toEqual(HELP_SECTIONS_V7.map((section) => section.title));
+      expect(document.querySelector(".v7-help-dwarf")).toBe(null);
+      const help = document.querySelector(".v7-help")?.textContent ?? "";
+      for (const [name] of DWARF_HELP_RULES_V7)
+        expect(help).not.toContain(`${name}:`);
       app.destroy();
     }
-    document.body.innerHTML = '<div id="app"></div>';
-    const martian = new FixtureController(martianUiFixtureV7());
-    const app = mount(martian, new RecordingBoardHost());
-    requiredButton("compact-menu").click();
-    requiredButton("help").click();
-    expect(document.querySelector(".v7-help-dwarf")).toBe(null);
-    app.destroy();
   });
 
   it("names Dig In, Blasting Charges and the Dwarf units in the technology tree", () => {

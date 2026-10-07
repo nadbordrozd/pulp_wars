@@ -228,25 +228,24 @@ describe("Ruleset 7 faction buildings in the interface", () => {
     expect(document.querySelector("[data-faction-building]")).toBeNull();
     required<HTMLButtonElement>('[data-action="compact-menu"]').click();
     required<HTMLButtonElement>('[data-action="help"]').click();
-    expect(required(".v7-help-tips").textContent).not.toContain(
+    expect(required(".v7-help").textContent).not.toContain(
       FACTION_BUILDINGS_HELP_V7,
     );
     app.destroy();
   });
 
-  it("mentions it once in the Help of a match that has such a faction", () => {
+  it("keeps it out of the short Help; the building's own tooltip says what it counts as", () => {
+    // Bead pulp_wars-2yc.39: Help has no faction lines. A faction's building
+    // still says "Counts as a Farm." where the player meets it.
     const data = fixture("ORIGINAL", "UNDEAD");
     const { app } = open(data);
     required<HTMLButtonElement>('[data-action="compact-menu"]').click();
     required<HTMLButtonElement>('[data-action="help"]').click();
-    const tips = [...document.querySelectorAll(".v7-help-tips li")].map(
-      (node) => node.textContent,
+    expect(required(".v7-help").textContent).toContain(
+      "Capture every enemy city.",
     );
-    expect(
-      tips.filter((tip) => tip === FACTION_BUILDINGS_HELP_V7),
-    ).toHaveLength(1);
-    expect(FACTION_BUILDINGS_HELP_V7).toBe(
-      "Some buildings look and are named differently in a faction's territory (an Undead Farm is a Graveyard). They work the same.",
+    expect(required(".v7-help").textContent).not.toContain(
+      FACTION_BUILDINGS_HELP_V7,
     );
     app.destroy();
   });

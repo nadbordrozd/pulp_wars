@@ -233,11 +233,12 @@ describe("Ruleset 7 curiosities in the dock, Help and the notices", () => {
         .querySelector<HTMLButtonElement>('[data-action="unit-help"]')
         ?.click();
       const dialog = document.querySelector('[data-v7-region="unit-help"]');
+      // The unit glossary's three lines, then whom it will attack.
       expect(
-        [...(dialog?.querySelectorAll("[data-curiosity-info]") ?? [])].map(
-          (line) => (line as HTMLElement).dataset.curiosityInfo,
+        [...(dialog?.querySelectorAll(".v7-unit-ability") ?? [])].map(
+          (line) => (line as HTMLElement).dataset.glossary,
         ),
-      ).toEqual(["neutral", "regeneration", "bounty", "provoked"]);
+      ).toEqual(["SPIDER", "SPIDER_REGENERATES", "SPIDER_BOUNTY", "provoked"]);
       expect(dialog?.textContent).toContain(
         "Will attack your Fighter after this round.",
       );
@@ -266,29 +267,25 @@ describe("Ruleset 7 curiosities in the dock, Help and the notices", () => {
     app.destroy();
   });
 
-  it("explains the curiosities in Help only in a match with the option on", () => {
-    const app = mount(curiositiesUiFixtureV7());
-    document
-      .querySelector<HTMLButtonElement>('[data-action="compact-menu"]')
-      ?.click();
-    document.querySelector<HTMLButtonElement>('[data-action="help"]')?.click();
-    const rules = [...document.querySelectorAll(".v7-help-curiosities li")].map(
-      (item) => item.textContent ?? "",
-    );
-    expect(rules).toHaveLength(6);
-    expect(rules[0]).toContain("Giant Spider:");
-    expect(rules[1]).toContain("heals 12 HP");
-    expect(rules[4]).toContain("10 Coins");
-    for (const rule of rules) expect(COORDINATE.test(rule)).toBe(false);
-    app.destroy();
-    document.body.innerHTML = '<div id="app"></div>';
-    const off = mount(curiositiesOffFixtureV7());
-    document
-      .querySelector<HTMLButtonElement>('[data-action="compact-menu"]')
-      ?.click();
-    document.querySelector<HTMLButtonElement>('[data-action="help"]')?.click();
-    expect(document.querySelector(".v7-help-curiosities")).toBeNull();
-    off.destroy();
+  it("keeps the curiosities out of the short Help, with the option on or off", () => {
+    // Bead pulp_wars-2yc.39: a curiosity explains itself in its tile's dock
+    // and in the Gallery; Help is the same short text in every match.
+    for (const fixture of [curiositiesUiFixtureV7, curiositiesOffFixtureV7]) {
+      document.body.innerHTML = '<div id="app"></div>';
+      const app = mount(fixture());
+      document
+        .querySelector<HTMLButtonElement>('[data-action="compact-menu"]')
+        ?.click();
+      document
+        .querySelector<HTMLButtonElement>('[data-action="help"]')
+        ?.click();
+      const help = document.querySelector(".v7-help")?.textContent ?? "";
+      expect(help).toContain("Capture every enemy city.");
+      expect(document.querySelector(".v7-help-curiosities")).toBeNull();
+      expect(help).not.toContain("Giant Spider");
+      expect(COORDINATE.test(help)).toBe(false);
+      app.destroy();
+    }
   });
 
   it("logs a Shrine claim and the neutral turn, and passes the plan to the board", async () => {

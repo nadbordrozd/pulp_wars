@@ -280,6 +280,93 @@ the city trains more than it can pay for.
   the engine's own offer, which the AI and the text harness read, is
   unchanged.
 
+### Beginner guidance (bead `pulp_wars-2yc.39`)
+
+Three things for a new player: a light coach for the first turns, a short
+Help, and one plain sentence for everything a unit can do. This section
+replaces every earlier statement in this document about what Help lists
+(the per-faction, naval, ice, curiosity, achievement, building and
+player-limit lines of the overlays below) and about the ability and status
+texts of the unit information dialog, the recruit help and the Gallery's
+unit detail.
+
+#### First steps
+
+`src/render/first-steps-v7.ts` chooses at most one cue from the viewer's
+public view, the commands the engine offers it, and this browser profile's
+record. A cue is one line of at most eight words, with either one marker on
+the board or one HUD button pointed at; never a dialog, and nothing of it
+takes a click except its small dismiss.
+
+| Step      | When                                                                              | Board or HUD                    | Line                                                                                                                                                              |
+| --------- | --------------------------------------------------------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Capture   | an own unit is offered Capture                                                    | marker over the unit            | "Tap this unit to capture here"; selected: "Press Capture to take this place"                                                                                     |
+| Train     | an own city is offered a Train or an Egg (affordable, a free slot, a free centre) | marker over the city            | "Tap your city to train a unit"; selected: "Pick a unit to train"                                                                                                 |
+| Move      | an own unit is offered a Move                                                     | the unit's own ring and chevron | "Tap a ringed unit to move it"; selected: "Pick a highlighted tile to move"                                                                                       |
+| Unit done | the player's command left a unit without a Move                                   | none                            | "No bright ring: this unit has moved" (about six seconds)                                                                                                         |
+| Research  | a technology is affordable                                                        | the Tech button                 | "Your first technology is free", "You can afford a new technology", or "Research Gathering to harvest your fruit" when it unlocks a resource in the player's land |
+| Resource  | a harvest or a farm, lumber camp or mine is offered in the player's land          | marker over the tile            | "Tap the fruit to harvest it" and the like; selected: "Press the action below to use it"                                                                          |
+| End turn  | End turn is offered and nothing else useful is                                    | the End turn button             | "All done: end your turn"                                                                                                                                         |
+
+- **Order.** A unit's "out of moves" line first, while it is up; then
+  what the selection can do (a selected unit's Capture or Move, a selected
+  city's Train list, a selected tile's action); then the first step of the
+  table that applies. So with nothing selected a first turn reads: move,
+  train, research, harvest, end turn.
+- **The line** is a yellow plate under the HUD's left corner
+  (`[data-v7-region="first-step"]`, `role="status"`), with a close button
+  ("Dismiss hint"). The plate itself ignores the pointer.
+- **The marker** is a yellow arrow with an ink keyline and a hard shadow,
+  drawn by the feedback layer over the city, tile or unit
+  (`drawFirstStepMarkerV7`). It hops once about every second in full
+  motion. With Motion set to Reduced it is drawn still and the HUD button
+  has a still yellow ring instead of a pulse. It is drawn only while the
+  board takes the player's input: never during AI turns, a presentation, or
+  behind a dialog or the technology screen.
+- **Retiring.** A step retires when the player has done its thing twice
+  (Capture once, End turn three times; the "out of moves" line after it
+  has been shown twice), or at once when its line is dismissed. The whole
+  coach is off when Train, Move, Research, Resource and End turn have
+  retired, or after twelve of the player's turns. Nothing stays on the
+  board afterwards: the yet-to-move ring is the lasting cue.
+- **The record** is per browser profile, not per save
+  (`pulpWars.ruleset7.firstSteps.v1`, outside the shared settings
+  envelope; a missing or malformed value is a new profile with Hints on).
+- **Settings** has a **Hints** toggle ("Hints: on" / "Hints: off") beside
+  High contrast, in a match and on the front screens. Off silences the
+  coach; on starts it again with nothing learnt.
+- A cue names no tile coordinate and no hidden fact: every step is read
+  from an offered command, so it never suggests an action a mission
+  forbids.
+
+#### Help
+
+Help is "How to play" (`src/render/help-text-v7.ts`): eight sections of a
+few short lines each, an icon and a heading per section, the four target
+marks under "Your turn", and the keys folded under "Keyboard". It is the
+same in every match and for every faction, under 400 words. It has no
+faction section, no cost or damage formula, no table and no coordinate; its
+last line sends the player to a unit's `?` and to the Gallery. The full
+rules stay in `docs/product/RULESET_7_CURRENT.md`.
+
+#### Unit glossary
+
+`src/render/unit-glossary-v7.ts` holds one entry (a name and one or two
+plain sentences, at most 160 characters, no formula, at most one small
+number) for every ability and trait of every faction's units and ships,
+the Egg, the transport and the Giant Spider, every status chip of the unit
+dock, and the terms of a unit card.
+
+- **The unit `?` dialog** lists the unit's abilities and traits, then one
+  line per status chip the unit wears now (the chip's own words as the
+  name, so "Plague · 3 turns" keeps its count), then a closed "What the
+  numbers mean" with Health, Attack, Defense, Movement, Range, Sight,
+  Cover, Fortified, Hitting back, Veteran and Slots.
+- **The recruit `?` dialog** and **the Gallery's unit detail** list the
+  same abilities and traits; the Gallery has no second list of notes.
+- The dock itself is unchanged: its chips keep their tooltips, which may
+  be exact where the dialog is plain.
+
 ## Current CHIBI board look (visual direction, October 2026)
 
 This overlay applies to the CHIBI art set of the current Ruleset 7 route
@@ -1689,7 +1776,8 @@ the screens it opens (new game, campaign, Settings, save recovery). Ruleset
   **Start new game** when it replaces a saved game, which stays untouched
   until then. While the menu is shown the form is already built and kept
   hidden, so opening it is instant.
-- **Settings.** Motion, Animation speed, UI size, High contrast and the
+- **Settings.** Motion, Animation speed, UI size, High contrast, Hints
+  (bead `pulp_wars-2yc.39`) and the
   sound toggle and volume, the same controls as a match's Settings; the
   front screens follow UI size and contrast too. The match-only actions
   (Restart, Delete save, the map seed, developer tools) stay in a match's

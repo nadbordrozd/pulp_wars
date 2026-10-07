@@ -240,10 +240,17 @@ describe("Revision 13 Undead DOM", () => {
     ).toBe("Raise Dead · 3 Skeletons rise from adjacent Graves at 5 HP");
     requiredButton("unit-help").click();
     const help = requiredElement<HTMLElement>(".v7-unit-help-dialog");
-    expect(help.textContent).toContain("Frenzy");
-    expect(help.textContent).toContain(
-      "Raises a 5 HP Skeleton from every free Grave within 2 tiles. They fill no unit slot.",
-    );
+    // The unit glossary's lines (bead pulp_wars-2yc.39).
+    expect(
+      [...help.querySelectorAll<HTMLElement>(".v7-unit-ability")].map(
+        (line) => line.textContent,
+      ),
+    ).toEqual([
+      "FrenzyFriendly units next to it hit harder on their next attack this turn.",
+      "Raise DeadRaises a Skeleton from every free Grave within 2 tiles.",
+      "Can't captureCannot take villages or cities.",
+      "RestlessHeals only inside your own borders.",
+    ]);
     expect(help.textContent).not.toContain("Rally");
     requiredButton("close-unit-help").click();
 
@@ -264,7 +271,7 @@ describe("Revision 13 Undead DOM", () => {
     requiredButton("unit-help").click();
     expect(
       document.querySelector('[data-tactical-state="restless"]')?.textContent,
-    ).toContain("Restless: no recovery here");
+    ).toBe("RestlessIt is outside your borders, so it will not heal here.");
     requiredButton("close-unit-help").click();
     const recover = requiredButton("restless-recover");
     expect(recover.getAttribute("aria-disabled")).toBe("true");
@@ -319,10 +326,15 @@ describe("Revision 13 Undead DOM", () => {
     requiredButton("train-help-marksman").click();
     const recruit = requiredElement<HTMLElement>(".v7-recruit-help");
     expect(recruit.querySelector("h2")?.textContent).toBe("Banshee");
-    expect(recruit.textContent).toContain("Can't attack. Wails instead.");
-    expect(recruit.textContent).toContain(
-      "Restless: recovers only in your territory.",
-    );
+    expect(
+      [...recruit.querySelectorAll<HTMLElement>(".v7-unit-ability")].map(
+        (line) => line.textContent,
+      ),
+    ).toEqual([
+      "CaptureTakes a village or an enemy city when it starts your turn standing on its centre.",
+      "WailHurts every living enemy within 2 tiles at once. It has no ordinary attack.",
+      "RestlessHeals only inside your own borders.",
+    ]);
     requiredButton("close-recruit-help").click();
 
     requiredButton("tech").click();
@@ -336,14 +348,10 @@ describe("Revision 13 Undead DOM", () => {
 
     requiredButton("compact-menu").click();
     requiredButton("help").click();
-    const helpText =
-      requiredElement<HTMLElement>(".v7-help-tips").textContent ?? "";
-    expect(helpText).toContain(
-      "Units that fall in battle on land leave Graves.",
-    );
-    expect(helpText).not.toContain("Raider");
-    // Revision 16: the Shallow Water sentence is naval-only (Dry Land arena).
-    expect(helpText).not.toContain("Shallow Water");
+    // Bead pulp_wars-2yc.39: Help is the same short text for every faction.
+    const helpText = requiredElement<HTMLElement>(".v7-help").textContent ?? "";
+    expect(helpText).toContain("Capture every enemy city.");
+    expect(helpText).not.toMatch(/Grave|Zombie|Lich|Raider|Shallow Water/);
     requiredButton("close-overlay").click();
 
     requiredButton("compact-menu").click();
@@ -414,9 +422,13 @@ describe("Revision 13 Undead DOM", () => {
     disband.click();
     expect(controller.accepted).toEqual([]);
     requiredButton("unit-help").click();
+    // In the dialog the chip explains itself in the unit glossary's plain
+    // words (bead pulp_wars-2yc.39); the exact rule stays its tooltip.
     expect(
       document.querySelector('[data-tactical-state="plague"]')?.textContent,
-    ).toBe(`Plague · 3 turns${plague}`);
+    ).toBe(
+      "Plague · 3 turnsLoses health every turn and can pass the Plague to its neighbours. A healer's Tend cures it.",
+    );
     requiredButton("close-unit-help").click();
 
     selectUnitAt(controller, host, at.bittenArcher);
@@ -453,7 +465,7 @@ describe("Revision 13 Undead DOM", () => {
     expect(
       requiredElement<HTMLElement>(".v7-unit-help-dialog").textContent,
     ).toContain(
-      "With Pestilence: living units its attacks hit are plagued for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if this Lich dies or a Captain tends them.",
+      "PlagueUnits it hits catch the Plague: they lose health every turn and can pass it on. Unlocked by a technology.",
     );
     requiredButton("close-unit-help").click();
     selectUnitAt(controller, host, at.captain);
@@ -461,7 +473,7 @@ describe("Revision 13 Undead DOM", () => {
     expect(
       requiredElement<HTMLElement>(".v7-unit-help-dialog").textContent,
     ).toContain(
-      "Heals nearby wounded troops by 2 and cures their Plague and bites.",
+      "TendHeals the wounded friendly units next to it and cures their ailments.",
     );
     requiredButton("close-unit-help").click();
     const tend = requiredButton("command-tend_wounded");
@@ -485,14 +497,11 @@ describe("Revision 13 Undead DOM", () => {
     host.callbacks?.onSelection(null);
     requiredButton("compact-menu").click();
     requiredButton("help").click();
-    const helpText =
-      requiredElement<HTMLElement>(".v7-help-tips").textContent ?? "";
-    expect(helpText).toContain(
-      "Lich shots plague your units for 3 turns: −2 HP each turn, spreading to neighbours on the first. Killing the Lich or a Captain's Tend ends it sooner.",
-    );
-    expect(helpText).toContain(
-      "Your units can't strike back at a Vampire's attack.",
-    );
+    // Bead pulp_wars-2yc.39: Help has no Undead lines; the chips and each
+    // unit's "?" explain Plague, bites and the Vampire.
+    const helpText = requiredElement<HTMLElement>(".v7-help").textContent ?? "";
+    expect(helpText).toContain("Capture every enemy city.");
+    expect(helpText).not.toMatch(/Lich|Vampire|Plague/);
     app.destroy();
   });
 
@@ -525,11 +534,8 @@ describe("Revision 13 Undead DOM", () => {
     host.callbacks?.onSelection(null);
     requiredButton("compact-menu").click();
     requiredButton("help").click();
-    const helpText =
-      requiredElement<HTMLElement>(".v7-help-tips").textContent ?? "";
-    expect(helpText).toContain(
-      "A Raider that survives an attack may move again (Escape).",
-    );
+    const helpText = requiredElement<HTMLElement>(".v7-help").textContent ?? "";
+    expect(helpText).toContain("Capture every enemy city.");
     expect(helpText).not.toContain("Grave");
     requiredButton("close-overlay").click();
     requiredButton("compact-menu").click();

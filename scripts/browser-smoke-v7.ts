@@ -1722,12 +1722,11 @@ async function probeDinosaurMatch(connection: Connection): Promise<string> {
     connection,
     `({ text: document.querySelector('.v7-unit-ability[data-ability="charge"]')?.textContent ?? '', stampedeControls: document.querySelectorAll('[data-action*="stampede"], .v7-stampede-legend, [data-v7-stampede]').length })`,
   );
-  // The Dinosaur pass (`pulp_wars-w49.15`, 7r53): the run-up is +1 after
-  // any Move, and per tile up to +2 only with Wallbreaker.
+  // The unit glossary (bead pulp_wars-2yc.39): one plain sentence, with no
+  // number (the run-up's amounts are on the Attack row when they apply).
   if (
-    !/^Charge!\+[\d.]+ Attack after moving this turn \(with Wallbreaker \+[\d.]+ per tile, up to \+[\d.]+\)\. Ignores Walls and Field Defense, destroys Field Defense, and pushes back\.$/.test(
-      chargeAbility.text,
-    ) ||
+    chargeAbility.text !==
+      "Charge!Hits harder after moving. Ignores Walls and Field Defense, and shoves the target back." ||
     chargeAbility.stampedeControls !== 0
   )
     throw new Error(

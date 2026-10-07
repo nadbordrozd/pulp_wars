@@ -56,6 +56,8 @@ import {
   iceFolkVictimFixtureV7,
 } from "../fixtures/v7-ice-folk-ui";
 import { martianUiFixtureV7 } from "../fixtures/v7-martian-ui";
+import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
+import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
 
 // Every Ice Folk text and number expected below is read from the registry,
 // the engine constants or a public preview of the same view: the balance
@@ -153,10 +155,28 @@ describe("Ice Folk unit dock", () => {
     ).toBe("Ice Folk");
     selectUnitAt(controller, host, AT.witch);
     expect(chipText("blizzard")).toBe("Blizzard");
+    // Her "?" lists the unit glossary's lines (bead pulp_wars-2yc.39); her
+    // own Blizzard is said once, as her ability.
     requiredButton("unit-help").click();
     expect(
-      requiredElement('[data-ice-folk-info="threshold"] strong').textContent,
-    ).toBe(`Shatters at ${stats.shatterThreshold} HP or less`);
+      [
+        ...document.querySelectorAll<HTMLElement>(
+          ".v7-unit-help-dialog .v7-unit-ability",
+        ),
+      ].map((entry) => entry.textContent),
+    ).toEqual(
+      roleGlossaryV7("CAPTAIN", "ICE_FOLK").map(
+        (entry) => `${entry.name}${entry.text}`,
+      ),
+    );
+    expect(
+      roleGlossaryV7("CAPTAIN", "ICE_FOLK").map((entry) => entry.name),
+    ).toEqual(["Blizzard", "Cold Snap", "Freeze", "Can't capture", "Glide"]);
+    expect(
+      document.querySelector(
+        '.v7-unit-help-dialog [data-tactical-state="blizzard"]',
+      ),
+    ).toBeNull();
     app.destroy();
   });
 
@@ -168,10 +188,10 @@ describe("Ice Folk unit dock", () => {
     const act = requiredButton("ice-folk-frozen");
     expect(act.getAttribute("aria-disabled")).toBe("true");
     expect(act.title).toBe(FROZEN_MOVED_V7);
-    // The unit information says it too.
+    // The unit information explains its Frozen chip in plain words.
     requiredButton("unit-help").click();
-    expect(requiredElement('[data-tactical-state="frozen"]').textContent).toBe(
-      FROZEN_MOVED_V7,
+    expect(requiredElement('[data-tactical-state="chill"]').textContent).toBe(
+      "FrozenChilled and slowed: this turn it may move or act, not both.",
     );
     // The engine offers it no primary action.
     expect(
@@ -409,32 +429,30 @@ describe("Ice Folk abilities", () => {
 });
 
 describe("Ice Folk Help and technology", () => {
-  it("lists the Ice Folk rules for every viewer of a match with an Ice Folk seat", () => {
-    for (const fixture of [iceFolkUiFixtureV7, iceFolkVictimFixtureV7]) {
+  it("has the same short Help with and without an Ice Folk seat, with no Ice Folk section", () => {
+    // Bead pulp_wars-2yc.39: Help is high level; what an Ice Folk unit does
+    // is in its "?" and in the Gallery.
+    for (const fixture of [
+      iceFolkUiFixtureV7,
+      iceFolkVictimFixtureV7,
+      martianUiFixtureV7,
+    ]) {
       document.body.innerHTML = '<div id="app"></div>';
       const controller = new FixtureController(fixture());
       const app = mount(controller, new RecordingBoardHost());
       requiredButton("compact-menu").click();
       requiredButton("help").click();
       expect(
-        [...document.querySelectorAll(".v7-help-ice-folk li")].map(
+        [...document.querySelectorAll(".v7-help h3")].map(
           (node) => node.textContent,
         ),
-      ).toEqual(
-        ICE_FOLK_HELP_RULES_V7.map(
-          ([name, sentence]) => `${name}: ${sentence}`,
-        ),
-      );
+      ).toEqual(HELP_SECTIONS_V7.map((section) => section.title));
+      expect(document.querySelector(".v7-help-ice-folk")).toBe(null);
+      const help = document.querySelector(".v7-help")?.textContent ?? "";
+      for (const [name] of ICE_FOLK_HELP_RULES_V7)
+        expect(help).not.toContain(`${name}:`);
       app.destroy();
     }
-    // A match without an Ice Folk seat has no Ice Folk Help.
-    document.body.innerHTML = '<div id="app"></div>';
-    const martian = new FixtureController(martianUiFixtureV7());
-    const app = mount(martian, new RecordingBoardHost());
-    requiredButton("compact-menu").click();
-    requiredButton("help").click();
-    expect(document.querySelector(".v7-help-ice-folk")).toBe(null);
-    app.destroy();
   });
 
   it("names Deep Winter, Brittle and the Ice Folk units in the technology tree", () => {

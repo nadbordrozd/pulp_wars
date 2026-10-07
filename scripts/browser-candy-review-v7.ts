@@ -238,11 +238,11 @@ async function menuTour(
   await delay(400);
   evidence[`${size}-help`] = await evaluate(
     connection,
-    `Array.from(document.querySelectorAll('.v7-help-candy li')).map((node) => node.textContent)`,
+    `Array.from(document.querySelectorAll('.v7-help h3')).map((node) => node.textContent)`,
   );
   await evaluate(
     connection,
-    `document.querySelector('.v7-help-candy')?.scrollIntoView({ block: 'center' })`,
+    `document.querySelector('.v7-help')?.scrollIntoView({ block: 'center' })`,
   );
   await delay(200);
   await capture(connection, `help-candy-${size}.png`);

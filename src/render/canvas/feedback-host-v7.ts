@@ -3,7 +3,9 @@ import {
   promotionReadyUnitIdsV7,
   type FeedbackPlanV7,
 } from "../feedback-plan-v7";
+import type { FirstStepMarkerV7 } from "../first-steps-v7";
 import {
+  drawFirstStepMarkerV7,
   drawGroundRingV7,
   drawPopulationIconV7,
   drawPromotionMarkerV7,
@@ -25,6 +27,7 @@ import {
   PROMOTION_MARKER_POP_MS_V7,
   easeOutBackV7,
   feedbackPulseV7,
+  firstStepHopCssPxV7,
   heldCityMeterV7,
   hopOffsetCssPxV7,
   populationHopFrameV7,
@@ -73,7 +76,18 @@ export interface BoardFeedbackModelV7 {
   readonly motion: "FULL" | "REDUCED";
   readonly animationSpeed: "NORMAL" | "FAST";
   readonly presentationPaused: boolean;
+  readonly highContrast?: boolean;
+  /**
+   * First steps (bead pulp_wars-2yc.39): the marker that points at the next
+   * useful thing, or null. Omitted draws none.
+   */
+  readonly firstStepMarker?: FirstStepMarkerV7 | null;
 }
+
+/** How far over its tile's centre a first-steps marker points, in tiles. */
+const FIRST_STEP_MARKER_LIFT: Readonly<
+  Record<FirstStepMarkerV7["kind"], number>
+> = { CITY: 0.56, UNIT: 0.62, TILE: 0.3 };
 
 /** When the cues of a launch happen, in real ms from the launch. */
 export interface FeedbackLaunchV7 {
@@ -406,6 +420,8 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
     const model = this.#model;
     if (model === null || model.motion !== "FULL" || !model.interactive)
       return false;
+    // First steps: a hopping marker keeps the loop running too.
+    if (model.firstStepMarker?.motion === "HOP") return true;
     const ready = this.#readyIds(model.view);
     if (ready.size === 0) return false;
     return model.view.units.some(
@@ -479,11 +495,12 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
     camera: CameraState,
     icon: (kind: "POPULATION" | "PROMOTE") => CanvasImageSource | null,
   ): void {
-    if (this.#flights.length === 0 && this.#bursts.length === 0) return;
     const now = this.timeMs();
-    const scale = this.durationScale();
     const tile = TILE_WIDTH * camera.zoom;
     const centre = (at: CoordV7) => worldToScreen(projectGrid(at), camera);
+    this.#drawFirstStepMarker(context, camera, now);
+    if (this.#flights.length === 0 && this.#bursts.length === 0) return;
+    const scale = this.durationScale();
     for (const burst of this.#bursts) {
       const progress = (now - burst.startAt) / burst.durationMs;
       if (progress <= 0 || progress >= 1) continue;
@@ -554,6 +571,50 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
         { icon: icon("POPULATION"), value: flight.value },
       );
     }
+  }
+
+  /**
+   * First steps: the marker over the city, tile or unit the coach points
+   * at. It hops while the player may act (full motion) and stands still in
+   * reduced motion; nothing is drawn while the board takes no input.
+   */
+  #drawFirstStepMarker(
+    context: CanvasRenderingContext2D,
+    camera: CameraState,
+    now: number,
+  ): void {
+    const frame = this.firstStepMarkerFrame(now);
+    if (frame === null) return;
+    const at = worldToScreen(projectGrid(frame.at), camera);
+    const tile = TILE_WIDTH * camera.zoom;
+    drawFirstStepMarkerV7(
+      context,
+      at.x,
+      at.y -
+        tile * FIRST_STEP_MARKER_LIFT[frame.kind] +
+        frame.hopCssPx * camera.zoom,
+      camera.zoom,
+      { highContrast: this.#model?.highContrast ?? false },
+    );
+  }
+
+  /** The first-steps marker of this frame, or null (tests read it too). */
+  firstStepMarkerFrame(now: number = this.timeMs()): {
+    readonly kind: FirstStepMarkerV7["kind"];
+    readonly at: CoordV7;
+    readonly hopCssPx: number;
+  } | null {
+    const model = this.#model;
+    const marker = model?.firstStepMarker ?? null;
+    if (model === null || marker === null || !model.interactive) return null;
+    return {
+      kind: marker.kind,
+      at: marker.at,
+      hopCssPx: firstStepHopCssPxV7(
+        now,
+        marker.motion !== "HOP" || model.motion === "REDUCED",
+      ),
+    };
   }
 
   /** Review tooling and tests: what is in the air right now. */

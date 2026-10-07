@@ -438,13 +438,18 @@ describe("Ruleset 7 interface with eight players", () => {
     app.destroy();
   });
 
-  it("names the player limit in Help", () => {
+  it("keeps the same short Help with eight players", () => {
+    // Bead pulp_wars-2yc.39: the player limit is what the setup form shows;
+    // Help is the short "How to play" of every match.
     const app = mount(new StaticController(snapshotOf(openingView())));
     if (document.querySelector('[data-action="help"]') === null)
       required<HTMLButtonElement>('[data-action="compact-menu"]').click();
     required<HTMLButtonElement>('[data-action="help"]').click();
     expect(required(".v7-help").textContent).toContain(
-      `A game holds up to ${SEATS} players, each a different faction.`,
+      "Capture every enemy city.",
+    );
+    expect(required(".v7-help").textContent).not.toContain(
+      `A game holds up to ${SEATS} players`,
     );
     app.destroy();
   });

@@ -692,19 +692,27 @@ describe("Gallery: the balance round's cues and details", () => {
   });
 
   it("describes each puller's own Tractor Beam and the Ice Folk Glide", () => {
+    // The unit glossary (bead pulp_wars-2yc.39): each puller has the line
+    // of its own beam, in plain words.
     const abilityOf = (role: "RAIDER" | "KNIGHT"): string | undefined => {
       const cell = galleryUnitCellV7(role, "MARTIAN");
       if (cell?.kind !== "UNIT") throw new Error("no cell");
       return galleryUnitDetailsV7(cell).abilities.find(
-        (ability) => ability.id === "TRACTOR_BEAM",
+        (ability) => ability.name === "Tractor Beam",
       )?.description;
     };
-    expect(abilityOf("RAIDER")).toBe(tractorBeamTooltipV7(false));
-    expect(abilityOf("KNIGHT")).toBe(tractorBeamTooltipV7(true));
+    expect(abilityOf("RAIDER")).toBe(
+      "Pulls a unit 2 tiles away one tile closer. That is its action for the turn.",
+    );
+    expect(abilityOf("KNIGHT")).toBe(
+      "Pulls a distant unit closer, once a turn. It can still move and attack afterwards.",
+    );
     const yeti = galleryUnitCellV7("FIGHTER", "ICE_FOLK");
     if (yeti?.kind !== "UNIT") throw new Error("no cell");
-    expect(galleryUnitDetailsV7(yeti).notes).toContain(
-      "Moves at half cost from Snow to Snow.",
-    );
+    expect(
+      galleryUnitDetailsV7(yeti).abilities.map(
+        (ability) => `${ability.name}: ${ability.description}`,
+      ),
+    ).toContain("Glide: Moves faster from snow to snow.");
   });
 });

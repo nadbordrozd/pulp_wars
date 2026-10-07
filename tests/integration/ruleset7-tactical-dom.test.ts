@@ -96,8 +96,11 @@ describe("Ruleset 7 tactical DOM controls", () => {
       ),
     );
     expect(details.querySelector('[data-tactical-state="overrun"]')).toBeNull();
-    expect(details.textContent).toContain(
-      "After a kill, advances and can attack another adjacent enemy.",
+    expect(
+      details.querySelector('.v7-unit-ability[data-glossary="OVERRUN"]')
+        ?.textContent,
+    ).toBe(
+      "OverrunAfter a kill it takes the tile and may attack again, for as long as it keeps killing.",
     );
 
     const firstShot = required(
@@ -113,11 +116,13 @@ describe("Ruleset 7 tactical DOM controls", () => {
       () =>
         document
           .querySelector(".v7-unit-help-dialog")
-          ?.textContent?.includes("Overrun: attack again") === true,
+          ?.textContent?.includes("It just killed: it may attack again.") ===
+        true,
     );
+    // The chip explains itself in the dialog (the unit glossary).
     expect(
       document.querySelector('[data-tactical-state="overrun"]')?.textContent,
-    ).toBe("Overrun: attack again");
+    ).toBe("OverrunIt just killed: it may attack again.");
     expect(
       document.querySelector(
         '.v7-unit-status-cues [data-unit-status="overrun"]',
@@ -152,7 +157,7 @@ describe("Ruleset 7 revision-12 DOM controls", () => {
     host.callbacks?.onSelection({ kind: "UNIT", unitId: raider.id });
     requiredButton("unit-help").click();
     expect(document.body.textContent).toContain(
-      "EscapeMay move again after attacking",
+      "EscapeAfter attacking it may move once more, if it survived.",
     );
     const attack = required(
       controller
@@ -168,7 +173,7 @@ describe("Ruleset 7 revision-12 DOM controls", () => {
     );
     expect(
       document.querySelector('[data-tactical-state="escape"]')?.textContent,
-    ).toBe("Escape: may move again");
+    ).toBe("EscapeIt may move once more this turn.");
     expect(
       document.querySelector('.v7-unit-status-cues [data-unit-status="escape"]')
         ?.textContent,

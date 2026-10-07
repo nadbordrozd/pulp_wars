@@ -595,6 +595,31 @@ export function promotionMarkerBobCssPxV7(
   );
 }
 
+/**
+ * First steps (bead pulp_wars-2yc.39): the marker over a city, tile or unit
+ * hops once per loop and rests in between, like a finger tapping.
+ */
+export const FIRST_STEP_HOP_PERIOD_MS_V7 = 1_100;
+export const FIRST_STEP_HOP_MS_V7 = 460;
+export const FIRST_STEP_HOP_AMPLITUDE_CSS_PX_V7 = 13;
+
+/** The marker's hop in nominal CSS px (negative is up); 0 when still. */
+export function firstStepHopCssPxV7(
+  timeMs: number,
+  reducedMotion: boolean,
+): number {
+  if (reducedMotion) return 0;
+  const phase =
+    ((timeMs % FIRST_STEP_HOP_PERIOD_MS_V7) + FIRST_STEP_HOP_PERIOD_MS_V7) %
+    FIRST_STEP_HOP_PERIOD_MS_V7;
+  return hopOffsetCssPxV7(
+    phase,
+    FIRST_STEP_HOP_MS_V7,
+    FIRST_STEP_HOP_AMPLITUDE_CSS_PX_V7,
+    false,
+  );
+}
+
 /** The chevron's bounce in nominal CSS px (negative is up). */
 export function readyChevronBounceCssPxV7(
   elapsedMs: number,

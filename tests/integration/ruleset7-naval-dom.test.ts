@@ -487,19 +487,17 @@ describe("technology cards and Help", () => {
       app.destroy();
     });
 
-  it("Help lists the naval rules", () => {
+  it("Help has no naval list; a ship's own '?' explains it", () => {
+    // Bead pulp_wars-2yc.39: Help is the short "How to play" of every
+    // match; Bow Ram, Submerged and Torpedo are unit glossary lines.
     const { app } = rig(navalBoardingUiFixtureV7());
     requiredButton("compact-menu").click();
     requiredButton("help").click();
-    const rules = [
-      ...requiredElement<HTMLElement>(".v7-help-naval").querySelectorAll(
-        ".v7-help-rule",
-      ),
-    ].map((item) => item.textContent ?? "");
-    expect(rules).toEqual(
-      NAVAL_HELP_RULES_V7.map(([name, sentence]) => `${name}: ${sentence}`),
-    );
-    for (const rule of rules) expect(rule).not.toMatch(COORDINATE);
+    expect(document.querySelector(".v7-help-naval")).toBeNull();
+    const help = requiredElement<HTMLElement>(".v7-help").textContent ?? "";
+    for (const [name] of NAVAL_HELP_RULES_V7)
+      expect(help).not.toContain(`${name}:`);
+    expect(help).not.toMatch(COORDINATE);
     app.destroy();
   });
 

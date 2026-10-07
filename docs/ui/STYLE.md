@@ -79,6 +79,10 @@ colour written outside the token block.
   price `--pw-loss` on `--pw-red-fill`.
 - **Technology**: available is a yellow plate with the art on a cream square;
   owned is `--pw-teal-fill` with a teal rule; locked is `--pw-surface-2`.
+- **Hint** (the first-steps line, bead `pulp_wars-2yc.39`): `--pw-yellow`
+  with ink text, a `--pw-line-w-sm` ink border and `--pw-shadow-sm`. The HUD
+  button a hint points at has a `--pw-yellow` outline; the marker on the
+  Canvas is the same yellow arrow with an ink keyline and a hard shadow.
 - **Over the board**: a dialog or the technology screen sits on `--pw-scrim`.
   The dock is `--pw-dock`, a tone under the panels, so the wide plate under
   the board does not glare.

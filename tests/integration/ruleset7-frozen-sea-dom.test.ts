@@ -20,7 +20,6 @@ import {
   SLIDE_MOVE_LABEL_V7,
   SLIP_MOVE_LABEL_V7,
 } from "../../src/render/frozen-sea-presentation-v7";
-import { NAVAL_HELP_RULES_V7 } from "../../src/render/naval-presentation-v7";
 import {
   boardPlan,
   required,
@@ -373,20 +372,15 @@ describe("moving on ice", () => {
         '.v7-selection-dock [data-landing-marker="slip"]',
       ).textContent,
     ).toBe(SLIP_MOVE_LABEL_V7);
-    // Its ships' Help says what ice is.
+    // Help stays the short "How to play" (bead pulp_wars-2yc.39): the
+    // legend above is where the ice explains itself.
     requiredButton("compact-menu").click();
     requiredButton("help").click();
-    const rules = [
-      ...requiredElement<HTMLElement>(".v7-help-naval").querySelectorAll(
-        ".v7-help-rule",
-      ),
-    ].map((item) => item.textContent ?? "");
-    expect(rules).toEqual(
-      [...NAVAL_HELP_RULES_V7, ICE_FOR_SHIPS_HELP_V7].map(
-        ([name, sentence]) => `${name}: ${sentence}`,
-      ),
-    );
+    expect(document.querySelector(".v7-help-naval")).toBeNull();
     expect(document.querySelector(".v7-help-ice")).toBeNull();
+    expect(requiredElement<HTMLElement>(".v7-help").textContent).not.toContain(
+      ICE_FOR_SHIPS_HELP_V7[1],
+    );
     app.destroy();
   });
 });
@@ -546,24 +540,22 @@ describe("Ice Folk technology cards, Help, achievements and Gallery", () => {
     app.destroy();
   });
 
-  it("Help has 'On the ice' for the Ice Folk, and their Sea Dog holds the ice", () => {
+  it("Help has no 'On the ice' list for the Ice Folk, and their Sea Dog holds the ice", () => {
+    // Bead pulp_wars-2yc.39: Help is the same short text for every faction;
+    // Freeze is explained on the unit's "?" (the unit glossary).
     const { app } = rig(frozenFreezeUiFixtureV7());
     requiredButton("compact-menu").click();
     requiredButton("help").click();
-    const rules = [
-      ...requiredElement<HTMLElement>(".v7-help-ice").querySelectorAll(
-        ".v7-help-rule",
-      ),
-    ].map((item) => item.textContent ?? "");
-    expect(rules).toEqual(
-      ICE_HELP_RULES_V7.map(([name, sentence]) => `${name}: ${sentence}`),
-    );
+    expect(document.querySelector(".v7-help-ice")).toBeNull();
     expect(document.querySelector(".v7-help-naval")).toBeNull();
+    const help = requiredElement<HTMLElement>(".v7-help").textContent ?? "";
+    for (const [name] of ICE_HELP_RULES_V7)
+      expect(help).not.toContain(`${name}:`);
     expect(
       [...document.querySelectorAll("h3")].map(
         (heading) => heading.textContent,
       ),
-    ).toContain("On the ice");
+    ).not.toContain("On the ice");
     requiredButton("close-overlay").click();
     requiredButton("compact-menu").click();
     requiredButton("achievements").click();

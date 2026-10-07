@@ -63,6 +63,7 @@ import {
   candyVictimFixtureV7,
 } from "../fixtures/v7-candy-ui";
 import { martianUiFixtureV7 } from "../fixtures/v7-martian-ui";
+import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
 
 // Every Candy text and number expected below is read from the registry,
 // the engine constants or a public preview of the same view: the balance
@@ -458,20 +459,24 @@ describe("Candy abilities through the dock and the board", () => {
 });
 
 describe("Candy Help and technology", () => {
-  it("lists the Candy rules for every viewer of a match with a Candy seat", () => {
+  it("has the same short Help in a match with a Candy seat, with no Candy section", () => {
+    // Bead pulp_wars-2yc.39: Help is high level; what a Candy unit does is
+    // in its "?" and in the Gallery.
     for (const fixture of [candyUiFixtureV7, candyVictimFixtureV7]) {
       document.body.innerHTML = '<div id="app"></div>';
       const controller = new FixtureController(fixture());
       const app = mount(controller, new RecordingBoardHost());
       requiredButton("compact-menu").click();
       requiredButton("help").click();
-      const rules = [...document.querySelectorAll(".v7-help-candy li")].map(
-        (node) => node.textContent,
-      );
-      expect(rules).toEqual(
-        CANDY_HELP_RULES_V7.map(([name, sentence]) => `${name}: ${sentence}`),
-      );
-      for (const rule of rules) expect(rule).not.toMatch(COORDINATE);
+      expect(
+        [...document.querySelectorAll(".v7-help h3")].map(
+          (node) => node.textContent,
+        ),
+      ).toEqual(HELP_SECTIONS_V7.map((section) => section.title));
+      const help = document.querySelector(".v7-help")?.textContent ?? "";
+      for (const [name] of CANDY_HELP_RULES_V7)
+        expect(help).not.toContain(`${name}:`);
+      expect(help).not.toMatch(COORDINATE);
       app.destroy();
     }
     document.body.innerHTML = '<div id="app"></div>';

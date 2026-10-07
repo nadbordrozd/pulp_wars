@@ -209,6 +209,7 @@ import {
   curiosityOverlayOnTileV7,
 } from "../curiosity-presentation-v7";
 import { BoardFeedbackV7, type BoardFeedbackPortV7 } from "./feedback-host-v7";
+import type { FirstStepMarkerV7 } from "../first-steps-v7";
 import { cityAccessibleNameV7 } from "../city-names-presentation-v7";
 
 export interface BoardHostModelV7 {
@@ -244,6 +245,11 @@ export interface BoardHostModelV7 {
    * bead pulp_wars-ic8, which no one steers). Omitted draws it as before.
    */
   readonly showCursor?: boolean;
+  /**
+   * First steps (bead pulp_wars-2yc.39): the marker the coach points at a
+   * city, tile or unit with. Omitted or null draws none.
+   */
+  readonly firstStepMarker?: FirstStepMarkerV7 | null;
 }
 
 export interface BoardHostCallbacksV7 {
@@ -652,6 +658,22 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#modelInstance = model.matchInstanceId;
     this.#model = model;
     this.feedback.sync(model);
+    // First steps: what the coach's marker points at, for review tooling
+    // and tests (never a coordinate).
+    const firstStep = this.feedback.firstStepMarkerFrame();
+    const marked = this.#canvas;
+    if (marked !== null) {
+      if (firstStep === null) {
+        delete marked.dataset.firstStepMarker;
+        delete marked.dataset.firstStepMotion;
+      } else {
+        marked.dataset.firstStepMarker = firstStep.kind.toLowerCase();
+        marked.dataset.firstStepMotion =
+          model.firstStepMarker?.motion === "HOP" && model.motion === "FULL"
+            ? "hop"
+            : "still";
+      }
+    }
     const activePlayerId = model.view.turnOrder[model.view.activeSeatIndex];
     const readinessKey = `${String(model.matchInstanceId)}:${model.view.round}:${activePlayerId ?? "none"}`;
     if (readinessKey !== this.#readinessKey) {

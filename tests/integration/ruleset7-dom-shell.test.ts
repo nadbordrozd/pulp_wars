@@ -30,6 +30,8 @@ import {
 import { createTacticalSymbolV7 } from "../../src/render/dom/tactical-symbol-v7";
 // pulp_wars-w5j.1: the browser launches only distinct factions.
 import { browserSetupV7 } from "../fixtures/v7-builders";
+import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
+import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
@@ -436,10 +438,15 @@ describe("Ruleset 7 DOM shell", () => {
     if (wait === undefined) throw new Error("WAIT missing");
     expect((await app.controller.dispatch(wait)).accepted).toBe(true);
     const commandIndex = app.controller.snapshot().view?.commandIndex;
-    // Revision 16 terrain help on a naval (default Continents) match.
+    // Help is the short "How to play" (bead pulp_wars-2yc.39).
     openMenuItem("help");
-    expect(document.querySelector(".v7-help-tips")?.textContent).toContain(
-      "Shallow Water: water that shares an edge with land. Water touching land only at a corner is Deep Water.",
+    expect(
+      [...document.querySelectorAll(".v7-help h3")].map(
+        (heading) => heading.textContent,
+      ),
+    ).toEqual(HELP_SECTIONS_V7.map((section) => section.title));
+    expect(document.querySelector(".v7-help")?.textContent).not.toContain(
+      "Shallow Water:",
     );
     requiredButton('[data-action="close-overlay"]').click();
 
@@ -704,13 +711,31 @@ describe("Ruleset 7 DOM shell", () => {
     ).toBe(RULESET7_UNIT_ART_IDS.KNIGHT);
     expect(modal.textContent).toContain("HP13");
     expect(modal.textContent).toContain("Range1");
-    expect(modal.textContent).toContain(
-      "After a kill, advances and can attack another adjacent enemy.",
+    // The unit glossary's lines (bead pulp_wars-2yc.39). Tuning 2 (7r47):
+    // the Human Knight captures.
+    expect(
+      [...modal.querySelectorAll<HTMLElement>(".v7-unit-ability")].map(
+        (line) => [
+          line.dataset.glossary,
+          line.querySelector("strong")?.textContent,
+          line.querySelector("span")?.textContent,
+        ],
+      ),
+    ).toEqual(
+      roleGlossaryV7("KNIGHT", "ORIGINAL").map((entry) => [
+        entry.id,
+        entry.name,
+        entry.text,
+      ]),
     );
-    // Tuning 2 (7r47): the Human Knight captures.
-    expect(modal.textContent).not.toContain("Can't capture.");
-    expect(modal.textContent).toContain(
-      "Capture: Can take villages and enemy cities.",
+    expect(
+      roleGlossaryV7("KNIGHT", "ORIGINAL").map((entry) => entry.id),
+    ).toEqual(["CAPTURE", "OVERRUN"]);
+    // The terms of the card are folded away until asked for.
+    const terms = modal.querySelector<HTMLDetailsElement>(".v7-glossary-terms");
+    expect(terms?.open).toBe(false);
+    expect(terms?.querySelector("summary")?.textContent).toBe(
+      "What the numbers mean",
     );
     expect(modal.textContent).not.toContain("Needs action");
     expect(dispatch).not.toHaveBeenCalled();

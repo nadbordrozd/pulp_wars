@@ -70,6 +70,7 @@ import {
   martianFrozenFixtureV7,
 } from "../fixtures/v7-ice-folk-ui";
 import { goblinShowcaseFixtureV7 } from "../fixtures/v7-goblin-ui";
+import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
 
 // Every Martian number expected below is read from the registry or from a
 // public preview of the same view: the balance bead (`pulp_wars-t6s.5`) may
@@ -546,15 +547,19 @@ describe("Martian mobility UI", () => {
     expect(heavy.querySelector(".v7-action-tag")?.textContent).toBe(
       TRACTOR_FREE_TAG_V7,
     );
-    // Unit information describes the unit's own beam.
+    // Unit information describes the unit's own beam, in the unit
+    // glossary's plain words (bead pulp_wars-2yc.39).
     requiredButton("unit-help").click();
     expect(
-      [...document.querySelectorAll(".v7-unit-ability")].some(
-        (entry) =>
-          entry.querySelector("span")?.textContent ===
-          tractorBeamTooltipV7(true),
-      ),
-    ).toBe(true);
+      document.querySelector(
+        '.v7-unit-ability[data-glossary="TRACTOR_BEAM_HEAVY"] span',
+      )?.textContent,
+    ).toBe(
+      "Pulls a distant unit closer, once a turn. It can still move and attack afterwards.",
+    );
+    expect(
+      document.querySelector('.v7-unit-ability[data-glossary="TRACTOR_BEAM"]'),
+    ).toBeNull();
     app.destroy();
   });
 
@@ -716,38 +721,28 @@ describe("Martian mobility UI", () => {
 });
 
 describe("Martian Help and technology", () => {
-  it("lists the Martian rules for every viewer of a match with a Martian seat", () => {
-    const rules = () =>
-      [...document.querySelectorAll(".v7-help-martian li")].map(
-        (item) => item.textContent,
+  it("has the same short Help with and without a Martian seat, with no Martian section", () => {
+    // Bead pulp_wars-2yc.39: Help is high level; what a Martian unit does
+    // is in its "?" and in the Gallery.
+    for (const fixture of [martianUiFixtureV7, goblinShowcaseFixtureV7]) {
+      document.body.innerHTML = '<div id="app"></div>';
+      const app = mount(
+        new FixtureController(fixture()),
+        new RecordingBoardHost(),
       );
-    const app = mount(
-      new FixtureController(martianUiFixtureV7()),
-      new RecordingBoardHost(),
-    );
-    requiredButton("compact-menu").click();
-    requiredButton("help").click();
-    expect(rules()).toEqual(
-      MARTIAN_HELP_RULES_V7.map(([name, sentence]) => `${name}: ${sentence}`),
-    );
-    // A Saucer has no Escape, so a Martian viewer is not told of it.
-    expect(
-      [...document.querySelectorAll(".v7-help-tips li")].some(
-        (item) =>
-          item.textContent ===
-          "A Raider that survives an attack may move again (Escape).",
-      ),
-    ).toBe(false);
-    app.destroy();
-    document.body.innerHTML = '<div id="app"></div>';
-    const goblin = mount(
-      new FixtureController(goblinShowcaseFixtureV7()),
-      new RecordingBoardHost(),
-    );
-    requiredButton("compact-menu").click();
-    requiredButton("help").click();
-    expect(document.querySelector(".v7-help-martian")).toBe(null);
-    goblin.destroy();
+      requiredButton("compact-menu").click();
+      requiredButton("help").click();
+      expect(
+        [...document.querySelectorAll(".v7-help h3")].map(
+          (item) => item.textContent,
+        ),
+      ).toEqual(HELP_SECTIONS_V7.map((section) => section.title));
+      expect(document.querySelector(".v7-help-martian")).toBe(null);
+      const help = document.querySelector(".v7-help")?.textContent ?? "";
+      for (const [name] of MARTIAN_HELP_RULES_V7)
+        expect(help).not.toContain(`${name}:`);
+      app.destroy();
+    }
   });
 
   it("names Force Fields, the Disintegrator and the Martian units in the technology tree", () => {

@@ -42,7 +42,6 @@ import {
 } from "../../src/render/dom/app-view-v7";
 import {
   DINOSAUR_HELP_RULES_V7,
-  PROMOTION_HELP_TIP_V7,
   WALLBREAKER_UNLOCK_TEXT_V7,
   dinosaurAbilityDescriptionV7,
   dinosaurRecruitNotesV7,
@@ -52,7 +51,6 @@ import {
   eggLaidRolesV7,
   eggRefundV7,
   growthChipTextV7,
-  growthInfoTextV7,
   layEggRowTextV7,
   layEggUnavailableTextV7,
   nestingEggHpBonusV7,
@@ -62,6 +60,8 @@ import {
   turnsTextV7,
 } from "../../src/render/dinosaur-presentation-v7";
 import { goblinAttackPreviewTextV7 } from "../../src/render/goblin-presentation-v7";
+import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
+import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
 import { rewardStateV7 } from "../fixtures/v7-dinosaur-arena";
 import {
   DINOSAUR_BLAST_V7,
@@ -950,28 +950,39 @@ describe("Revision 19 growth, abilities and labels", () => {
           ".v7-unit-help-dialog .v7-unit-ability",
         ),
       ].map((entry) => [
-        entry.dataset.dinosaurInfo ?? null,
+        entry.dataset.glossary,
         entry.querySelector("strong")?.textContent,
         entry.querySelector("span")?.textContent,
       ]),
+      // The unit glossary (bead pulp_wars-2yc.39): plain sentences, no
+      // numbers; the amounts are on the chips and the stat rows.
+    ).toEqual(
+      roleGlossaryV7("KNIGHT", "DINOSAUR").map((entry) => [
+        entry.id,
+        entry.name,
+        entry.text,
+      ]),
+    );
+    expect(
+      roleGlossaryV7("KNIGHT", "DINOSAUR").map((entry) => entry.name),
     ).toEqual([
-      [
-        null,
-        "Rampage",
-        "After a kill, advances and can attack another adjacent enemy.",
-      ],
-      [null, "Grows", dinosaurAbilityDescriptionV7("GROW", "DINOSAUR")],
-      ["growth", "Alpha", growthInfoTextV7(null)],
-      ...(roleSlots("KNIGHT") > 1
-        ? [
-            [
-              "slots",
-              "Big body",
-              `Takes ${slotsTextV7(roleSlots("KNIGHT"))} in its city.`,
-            ],
-          ]
-        : []),
+      "Rampage",
+      "Grows",
+      "Can't capture",
+      "Egg-laid",
+      ...bigBody("KNIGHT"),
     ]);
+    // Its chips explain themselves under the abilities.
+    expect(
+      [
+        ...document.querySelectorAll<HTMLElement>(
+          ".v7-unit-help-dialog .v7-unit-status-notes [data-tactical-state]",
+        ),
+      ].map((entry) => [
+        entry.dataset.tacticalState,
+        entry.querySelector("strong")?.textContent,
+      ]),
+    ).toEqual([["growth", "Alpha"]]);
     requiredButton("close-unit-help").click();
     selectUnitAt(controller, host, AT.bigRaptor);
     expect(chips()).toEqual([
@@ -1001,22 +1012,29 @@ describe("Revision 19 growth, abilities and labels", () => {
       "Capture",
       "Acid",
       "Grows",
-      "Growth",
+      "Ranged",
+      "Egg-laid",
       ...bigBody("MARKSMAN"),
     ]);
     expect(abilityNames(AT.ankylosaurus)).toEqual([
       "Capture",
       "Armoured",
       "Grows",
-      "Growth",
+      "Slow to strike",
+      "Egg-laid",
       ...bigBody("GUARD"),
-      "Wild",
     ]);
-    expect(abilityNames(AT.shaman)).toEqual(["War Drums", "Tend", "Hatch"]);
+    expect(abilityNames(AT.shaman)).toEqual([
+      "War Drums",
+      "Tend",
+      "Hatch",
+      "Can't capture",
+    ]);
     expect(abilityNames(AT.triceratops)).toEqual([
       "Charge!",
       "Grows",
-      "Growth",
+      "Can't capture",
+      "Egg-laid",
       ...bigBody("SWORDSMAN"),
     ]);
     app.destroy();
@@ -1173,18 +1191,14 @@ describe("Revision 19 growth, abilities and labels", () => {
 });
 
 describe("Revision 19 Help", () => {
-  it("lists the Dinosaur rules for every viewer of a match with a Dinosaur seat", () => {
-    const rules = () =>
-      [...document.querySelectorAll(".v7-help-dinosaur li")].map(
-        (item) => item.textContent,
-      );
-    const expected = DINOSAUR_HELP_RULES_V7.map(
-      ([name, sentence]) => `${name}: ${sentence}`,
-    );
-    for (const [fixture, laysEggs] of [
-      [dinosaurShowcaseFixtureV7, true],
-      [dinosaurEnemyFixtureV7, false],
-    ] as const) {
+  it("has the same short Help with and without a Dinosaur seat, with no Dinosaur section", () => {
+    // Bead pulp_wars-2yc.39: Help is high level; what a Dinosaur does is in
+    // its "?" and in the Gallery.
+    for (const fixture of [
+      dinosaurShowcaseFixtureV7,
+      dinosaurEnemyFixtureV7,
+      goblinShowcaseFixtureV7,
+    ]) {
       document.body.innerHTML = '<div id="app"></div>';
       const app = mount(
         new FixtureController(fixture()),
@@ -1192,38 +1206,21 @@ describe("Revision 19 Help", () => {
       );
       requiredButton("compact-menu").click();
       requiredButton("help").click();
-      expect(rules()).toEqual(expected);
       expect(
         [...document.querySelectorAll(".v7-help h3")].map(
           (heading) => heading.textContent,
         ),
-      ).toEqual(["Dinosaurs", "Keyboard"]);
-      const tips = [...document.querySelectorAll(".v7-help-tips li")].map(
-        (item) => item.textContent,
+      ).toEqual(HELP_SECTIONS_V7.map((section) => section.title));
+      expect(document.querySelector(".v7-help-dinosaur")).toBe(null);
+      const help = requiredElement(".v7-help").textContent ?? "";
+      for (const [name] of DINOSAUR_HELP_RULES_V7)
+        expect(help).not.toContain(`${name}:`);
+      // A Promotion is one short line of Fighting.
+      expect(help).toContain(
+        "Three kills earn a promotion: more health and a full heal.",
       );
-      expect(
-        tips.includes("Select your city to train units and lay Eggs."),
-      ).toBe(laysEggs);
-      // Revision 20: every viewer is told that a Promotion fully heals.
-      expect(tips).toContain(PROMOTION_HELP_TIP_V7);
-      // A Raptor has no Escape, so a Dinosaur viewer is not told of it.
-      expect(
-        tips.includes(
-          "A Raider that survives an attack may move again (Escape).",
-        ),
-      ).toBe(!laysEggs);
       app.destroy();
     }
-    document.body.innerHTML = '<div id="app"></div>';
-    const goblin = mount(
-      new FixtureController(goblinShowcaseFixtureV7()),
-      new RecordingBoardHost(),
-    );
-    requiredButton("compact-menu").click();
-    requiredButton("help").click();
-    expect(rules()).toEqual([]);
-    expect(document.querySelector(".v7-help-dinosaur")).toBe(null);
-    goblin.destroy();
   });
 });
 
