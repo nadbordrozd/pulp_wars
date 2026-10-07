@@ -255,6 +255,18 @@ import {
   type TileResearchPromptV7,
 } from "../research-prompt-v7";
 import {
+  OUTSIDE_BORDERS_LABEL_V7,
+  OUTSIDE_BORDERS_TOOLTIP_V7,
+  UNIT_DONE_LABEL_V7,
+  UNIT_DONE_TOOLTIP_V7,
+  coinRichViewV7,
+  dockCommandsV7,
+  needCoinsTextV7,
+  slotsBlockedTextV7,
+  unaffordableCommandsV7,
+  type BlockedReasonV7,
+} from "../blocked-actions-v7";
+import {
   GOBLIN_FIELD_DEFENSE_EXPLANATION_V7,
   GOBLIN_HELP_RULES_V7,
   goblinBoundaryNoticeV7,
@@ -1097,6 +1109,11 @@ export class Ruleset7DomAppView {
   /** A front-screen control to focus after the next front render. */
   #frontFocus: string | null = null;
   #pendingFocusAction: string | null = null;
+  /**
+   * Which control of `#pendingFocusAction` takes the focus when several
+   * share the action (the train cards of a city): its place among them.
+   */
+  #pendingFocusOrdinal = 0;
   #matchShell: HTMLElement | null = null;
   #matchRoot: HTMLElement | null = null;
   #boardContainer: HTMLElement | null = null;
@@ -3079,13 +3096,16 @@ export class Ruleset7DomAppView {
     this.#boardHost.update(this.#boardModel(view));
     this.#syncModalIsolation(main);
     const focusAction = this.#pendingFocusAction;
+    const focusOrdinal = this.#pendingFocusOrdinal;
     this.#pendingFocusAction = null;
+    this.#pendingFocusOrdinal = 0;
     if (focusAction !== null)
       queueMicrotask(() => {
         if (this.#destroyed) return;
-        main
-          .querySelector<HTMLButtonElement>(`[data-action="${focusAction}"]`)
-          ?.focus();
+        const targets = main.querySelectorAll<HTMLButtonElement>(
+          `[data-action="${focusAction}"]`,
+        );
+        (targets[focusOrdinal] ?? targets[0])?.focus();
       });
     else if (techFocusAction !== null && this.#screen === "TECH")
       queueMicrotask(() => {
@@ -4114,8 +4134,26 @@ export class Ruleset7DomAppView {
         if (abilities.childElementCount > 0) unitDetails.append(abilities);
       }
       // An Egg is exhausted at all times; it is not dimmed as "done".
-      if (unit.activation.handled && unit.ownerId === view.viewer.id && !egg)
+      if (unit.activation.handled && unit.ownerId === view.viewer.id && !egg) {
         dock.dataset.handled = "true";
+        // Bead pulp_wars-2yc.36: why the unit has no orders left, on the
+        // viewer's own turn.
+        if (this.#snapshot.offeredCommands.length > 0) {
+          const done = text(
+            this.#document,
+            "span",
+            UNIT_DONE_LABEL_V7,
+            "v7-chip v7-done-chip",
+          );
+          done.dataset.unitStatus = "done";
+          done.title = UNIT_DONE_TOOLTIP_V7;
+          done.setAttribute(
+            "aria-label",
+            `${UNIT_DONE_LABEL_V7}. ${UNIT_DONE_TOOLTIP_V7}`,
+          );
+          identityColumn?.append(done);
+        }
+      }
       const legend = this.#landingLegend(view, unit.id);
       if (legend !== null) dock.append(legend);
       const launchLegend = this.#launchLegend(view, unit.id);
@@ -4679,8 +4717,17 @@ export class Ruleset7DomAppView {
         }
         // Tuning 4 (`pulp_wars-w49.3`): a Land Grant the player cannot pay
         // for yet still shows its price.
+        // Bead pulp_wars-2yc.36: when only the Coins are missing the Land
+        // Grant has its own blocked button, and this line stays away.
         const grantPrice = publicLandGrantPriceV7(view, city.id);
-        if (grantPrice !== null && view.viewer.coins < grantPrice.cost) {
+        if (
+          grantPrice !== null &&
+          view.viewer.coins < grantPrice.cost &&
+          !unaffordableCommandsV7(view).some(
+            (command) =>
+              command.kind === "LAND_GRANT" && command.cityId === city.id,
+          )
+        ) {
           const dear = text(
             this.#document,
             "p",
@@ -5010,6 +5057,29 @@ export class Ruleset7DomAppView {
           );
           details.append(info);
         }
+        // Bead pulp_wars-2yc.36: a resource the viewer sees on land that is
+        // not its own has no action; one chip says why.
+        if (
+          tile.improvement === null &&
+          tile.resource !== null &&
+          tile.resource !== "UNKNOWN_RESOURCE" &&
+          tile.territoryOwnerId !== view.viewer.id &&
+          this.#snapshot.offeredCommands.length > 0
+        ) {
+          const outside = text(
+            this.#document,
+            "p",
+            OUTSIDE_BORDERS_LABEL_V7,
+            "v7-chip",
+          );
+          outside.dataset.disabledReason = "outside-borders";
+          outside.title = OUTSIDE_BORDERS_TOOLTIP_V7;
+          outside.setAttribute(
+            "aria-label",
+            `${OUTSIDE_BORDERS_LABEL_V7}. ${OUTSIDE_BORDERS_TOOLTIP_V7}`,
+          );
+          details.append(outside);
+        }
         if (
           tile.improvement !== null &&
           tile.resource !== null &&
@@ -5165,10 +5235,23 @@ export class Ruleset7DomAppView {
 
   #commandButtons(predicate: (command: CommandV7) => boolean): HTMLElement {
     const actions = el(this.#document, "div", "v7-context-actions");
-    for (const command of this.#snapshot.offeredCommands.filter(
+    // Bead pulp_wars-2yc.36: an action the viewer could take but for Coins,
+    // and a unit its city could train but for a free slot, keep their
+    // button, which cannot be pressed and says why.
+    for (const { command, blocked } of dockCommandsV7(
+      this.#snapshot.view,
+      this.#snapshot.offeredCommands,
+    ).filter(
       (candidate) =>
-        predicate(candidate) && !NON_BUTTON_COMMANDS.has(candidate.kind),
+        predicate(candidate.command) &&
+        !NON_BUTTON_COMMANDS.has(candidate.command.kind),
     )) {
+      // A blocked action is priced and previewed with no shortage of Coins.
+      const previewView =
+        blocked === null || this.#snapshot.view === null
+          ? this.#snapshot.view
+          : coinRichViewV7(this.#snapshot.view);
+      let price: number | null = null;
       // Revision 19: Disband on an own Egg is "Abandon Egg".
       const abandonedEgg =
         command.kind === "DISBAND"
@@ -5282,12 +5365,13 @@ export class Ruleset7DomAppView {
           ),
         );
       if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL") {
-        const view = this.#snapshot.view;
+        const view = previewView;
         const rule = effectiveRoleRuleV7(command.role, this.#viewerFaction());
         const cost =
           view === null
             ? (rule.cost ?? 0)
             : trainingCostForViewV7(view, command);
+        price = cost;
         action.setAttribute(
           "aria-label",
           `Train ${rule.label} for ${cost} Coins`,
@@ -5323,11 +5407,12 @@ export class Ruleset7DomAppView {
         }
       } else if (command.kind === "HIRE") {
         // Tuning 3 (`pulp_wars-w49.3`): the Market's hire, at its price.
-        const view = this.#snapshot.view;
+        const view = previewView;
         const cost =
           view === null
             ? null
             : publicHireCostV7(view, command.cityId, command.role);
+        price = cost;
         action.dataset.role = command.role.toLowerCase();
         action.title = hireUnlockTextV7(
           this.#viewerFaction() === "DINOSAUR" ? DINOSAUR_HIRE_NOTE_V7 : null,
@@ -5361,13 +5446,15 @@ export class Ruleset7DomAppView {
           `Build Field Defense for 3 Coins · fortification level ${resultingLevel}`,
         );
         action.append(economyChips(this.#document, { cost: 3 }));
+        price = 3;
       } else if (command.kind === "LAND_GRANT") {
         // Tuning 5 (7r48): 1 Coin per explored neutral tile.
         const grant =
-          this.#snapshot.view === null
+          previewView === null
             ? null
-            : queryLandGrantPreviewV7(this.#snapshot.view, command.cityId);
+            : queryLandGrantPreviewV7(previewView, command.cityId);
         const cost = grant?.cost ?? LAND_GRANT_MINIMUM_COST_V7;
+        price = cost;
         action.setAttribute(
           "aria-label",
           `Land grant for ${cost} Coins${grant === null ? "" : ` · claims ${grant.tiles.length} ${grant.tiles.length === 1 ? "tile" : "tiles"}`}`,
@@ -5445,9 +5532,10 @@ export class Ruleset7DomAppView {
           );
         }
       } else {
-        const view = this.#snapshot.view;
+        const view = previewView;
         const preview = view === null ? null : previewEconomicV7(view, command);
         if (preview?.ok) {
+          price = preview.preview.cost;
           action.setAttribute(
             "aria-label",
             `${commandLabel(command, this.#viewerFaction())} · ${economicPreviewLabelV7(preview.preview)}`,
@@ -5545,11 +5633,13 @@ export class Ruleset7DomAppView {
           }
         }
       }
-      action.disabled = this.#localBusy();
-      action.onclick =
-        command.kind === "KABOOM"
-          ? () => this.#toggleKaboom(command.unitId)
-          : () => void this.#dispatch(command);
+      if (blocked === null) {
+        action.disabled = this.#localBusy();
+        action.onclick =
+          command.kind === "KABOOM"
+            ? () => this.#toggleKaboom(command.unitId)
+            : () => void this.#dispatch(command);
+      } else this.#blockAction(action, command, blocked, price);
       if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL") {
         const card = el(this.#document, "div", "v7-train-card");
         const help = button(
@@ -5574,6 +5664,72 @@ export class Ruleset7DomAppView {
       } else actions.append(action);
     }
     return actions;
+  }
+
+  /**
+   * Bead pulp_wars-2yc.36: turns a command button into its blocked state.
+   * The icon, name and price stay; the price is in the loss colour when
+   * Coins are what is missing, a full city says so in two words. The
+   * button stays focusable (aria-disabled), its reason is its tooltip, the
+   * end of its accessible name and, when pressed, a toast.
+   */
+  #blockAction(
+    action: HTMLButtonElement,
+    command: CommandV7,
+    blocked: BlockedReasonV7,
+    price: number | null,
+  ): void {
+    const view = this.#snapshot.view;
+    const coins = view?.viewer.coins ?? 0;
+    let reason: string;
+    if (blocked === "COINS") {
+      const shortfall = Math.max(1, (price ?? coins + 1) - coins);
+      reason = needCoinsTextV7(shortfall);
+      action.dataset.shortfall = String(shortfall);
+      action
+        .querySelector(".v7-economy-chip.is-cost")
+        ?.classList.add("is-short");
+    } else {
+      reason = slotsBlockedTextV7(
+        view !== null && "role" in command
+          ? seatRoleMechanicsV7(view, view.viewer.id, command.role)
+              .capacitySlots
+          : 1,
+      );
+      action.append(text(this.#document, "span", reason, "v7-blocked-reason"));
+    }
+    action.classList.add("is-blocked");
+    action.setAttribute("aria-disabled", "true");
+    action.dataset.disabledReason = blocked.toLowerCase();
+    action.setAttribute(
+      "aria-label",
+      `${action.getAttribute("aria-label") ?? action.textContent}. Unavailable: ${reason}`,
+    );
+    action.removeAttribute("aria-description");
+    action.title = reason;
+    // A tap (no hover on touch) shows the reason as a toast.
+    action.onclick = (event) => {
+      // The pressed control is the event's own (the dock is rebuilt on
+      // every render): it keeps the focus, whichever card it is.
+      const pressed =
+        event.currentTarget instanceof HTMLElement
+          ? event.currentTarget
+          : action;
+      const name = pressed.dataset.action ?? null;
+      const peers =
+        name === null
+          ? []
+          : [
+              ...this.#root.querySelectorAll<HTMLElement>(
+                `[data-action="${name}"]`,
+              ),
+            ];
+      this.#notice = `${reason}.`;
+      this.#showToast(`${reason}.`);
+      this.#pendingFocusAction = name;
+      this.#pendingFocusOrdinal = Math.max(0, peers.indexOf(pressed));
+      this.#render();
+    };
   }
 
   #appendCommandArea(
@@ -8367,6 +8523,14 @@ export class Ruleset7DomAppView {
         ).toLowerCase();
         const why = text(this.#document, "span", reason, "v7-egg-reason");
         action.append(why);
+        // Bead pulp_wars-2yc.36: the price it cannot pay is in the loss
+        // colour, as on every unaffordable action.
+        if (preview.unavailableReason === "INSUFFICIENT_COINS") {
+          action.dataset.shortfall = String(preview.cost - view.viewer.coins);
+          action
+            .querySelector(".v7-economy-chip.is-cost")
+            ?.classList.add("is-short");
+        }
       }
       const help = button(
         this.#document,

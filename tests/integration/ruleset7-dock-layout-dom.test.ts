@@ -327,7 +327,8 @@ describe("Ruleset 7 selection dock layout", () => {
     ).toBeNull();
     app.destroy();
 
-    // 5 Coins: the Land Grant is not offered, and the panel says its price.
+    // 5 Coins: the Land Grant is not offered; its button stays, blocked,
+    // with its price and what is missing (bead pulp_wars-2yc.36).
     document.body.innerHTML = '<div id="app"></div>';
     const poor: GameStateV7 = {
       ...withBarracks,
@@ -344,13 +345,22 @@ describe("Ruleset 7 selection dock layout", () => {
     );
     poorHost.callbacks?.onSelection({ kind: "CITY", cityId: capital.id });
     expect(
-      requiredElement<HTMLElement>(
-        '.v7-city-stats > [data-disabled-reason="land-grant-coins"]',
-      ).textContent,
-    ).toBe("Land grant: 16 Coins for 16 tiles. Not enough Coins");
-    expect(
-      document.querySelector('[data-action="command-land_grant"]'),
+      document.querySelector('[data-disabled-reason="land-grant-coins"]'),
     ).toBeNull();
+    const grant = requiredElement<HTMLButtonElement>(
+      '[data-action="command-land_grant"]',
+    );
+    expect(grant.getAttribute("aria-disabled")).toBe("true");
+    expect(grant.disabled).toBe(false);
+    expect(grant.dataset.disabledReason).toBe("coins");
+    expect(grant.dataset.shortfall).toBe("11");
+    expect(grant.title).toBe("Need 11 more Coins");
+    expect(grant.getAttribute("aria-label")).toBe(
+      "Land grant for 16 Coins · claims 16 tiles. Unavailable: Need 11 more Coins",
+    );
+    expect(grant.querySelector(".v7-economy-chip.is-short")?.textContent).toBe(
+      "16",
+    );
     poorApp.destroy();
 
     // An Ore Mountain next to an own unit.

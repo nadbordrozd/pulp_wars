@@ -73,7 +73,10 @@ colour written outside the token block.
   status of a faction or an effect uses that hue's ink on its fill.
 - **Unavailable but explained** (a locked technology, a disabled action):
   a plain plate and `--pw-text-2`, or `opacity: var(--pw-dim)`. Never an
-  opacity that takes text under 4.5:1.
+  opacity that takes text under 4.5:1. A dock action the player cannot
+  pay for (`.is-blocked`, bead `pulp_wars-2yc.36`) is `--pw-surface-2` with
+  a soft rule and no shadow, its art greyed, its name `--pw-text-2` and its
+  price `--pw-loss` on `--pw-red-fill`.
 - **Technology**: available is a yellow plate with the art on a cream square;
   owned is `--pw-teal-fill` with a teal rule; locked is `--pw-surface-2`.
 - **Over the board**: a dialog or the technology screen sits on `--pw-scrim`.

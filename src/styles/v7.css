@@ -2178,6 +2178,49 @@
   border-color: var(--pw-accent);
 }
 
+/*
+ * Blocked action (bead pulp_wars-2yc.36): the viewer could take it but for
+ * Coins, or the city is full. The dimmed plate with no shadow reads as "not
+ * pressable"; the art is washed out and the name is secondary ink, all over
+ * 4.5:1. The price it cannot pay is in the loss colour on its fill.
+ */
+.v7-context-action.is-blocked,
+.v7-train-action.is-blocked,
+.v7-context-action.is-blocked:hover,
+.v7-train-action.is-blocked:hover {
+  border-color: var(--pw-line-soft);
+  background: var(--pw-surface-2);
+  color: var(--pw-text-2);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* High contrast has no soft rule: a dashed edge sets the plate apart. */
+.v7-app-shell[data-contrast="high"] .v7-context-action.is-blocked,
+.v7-app-shell[data-contrast="high"] .v7-train-action.is-blocked {
+  border-style: dashed;
+}
+
+.is-blocked > .v7-art-frame,
+.is-blocked > .v7-tactical-symbol,
+.is-blocked > .v7-egg-art {
+  filter: grayscale(1);
+  opacity: var(--pw-dim);
+}
+
+.v7-economy-chip.is-short {
+  background: var(--pw-red-fill);
+  color: var(--pw-loss);
+}
+
+.v7-blocked-reason {
+  color: var(--pw-text);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
+  line-height: 1.15;
+  text-align: center;
+}
+
 .v7-train-card {
   position: relative;
   display: grid;

@@ -233,6 +233,53 @@ its action would be.
   and the faction's public technology tree; the interface restates no
   rule.
 
+### Blocked actions (bead `pulp_wars-2yc.36`)
+
+An action the player could take now but for one thing is not left out of
+the dock: its control stays where it would be, cannot be pressed, and says
+what is missing. A new player sees that the Fruit can be harvested and that
+the city trains more than it can pay for.
+
+- **Short of Coins.** Every dock action with a price: a harvest (Fruit,
+  Game, Fish, Pearls), a building (Farm, Mine, Lumber Camp, Windmill,
+  Sawmill, Forge, Workshop, Market, Port, Shipyard), Replant, Clear for
+  farming, a Road, a Blast, a Land Grant, a unit's Fortify, a Market's hire,
+  a ship at a Port and every unit a city trains. The button keeps its icon,
+  name and effects; the price is in the loss colour on its pale fill and
+  nothing else is written on it. Its tooltip is `Need 2 more Coins`; its
+  accessible name is the open button's name followed by
+  `. Unavailable: Need 2 more Coins`.
+- **City full.** A unit the city could train or hire now but for a free
+  slot keeps its card with the words `City full` (`Needs 2 free slots` for
+  a unit that takes two). The price is not marked: it is not what is
+  missing.
+- **The control** is a dimmed plate with no shadow and washed-out art
+  (`.is-blocked`, [STYLE.md](STYLE.md) "Unavailable but explained"). It is
+  `aria-disabled`, never `disabled`, so it takes the focus and a screen
+  reader reads its reason. Pressing it sends no command and shows the
+  reason as a toast (there is no hover on a touch screen). The `?` of a
+  blocked train card still opens the unit's page.
+- **Order.** Blocked actions stand where the engine would list them, so a
+  button does not move when the player can pay for it; the cards of a full
+  city follow the open ones.
+- **What is not added.** A unit whose technology is missing has no card
+  (the technology screen shows it). A resource that needs a technology
+  keeps its one [research prompt](#research-prompts-bead-pulp_wars-gl1).
+  A city whose action is spent, whose center is occupied or which is
+  besieged keeps its one line in the city's stats and shows no cards. A
+  Lay Egg card, Assemble and Re-bake keep their own reasons; an Egg the
+  player cannot pay for has its price in the loss colour too. Nothing is
+  blocked outside the player's turn.
+- **Two chips.** An own unit with nothing left to do this turn says
+  `Done this turn`. A resource the player sees on land that is not theirs
+  says `Outside your borders`.
+- The lists come from the engine's public command query, asked again on a
+  copy of the player's own view with no shortage of Coins, and once more
+  with room in every city of theirs (`src/render/blocked-actions-v7.ts`).
+  The interface restates no rule and reads nothing the player cannot see;
+  the engine's own offer, which the AI and the text harness read, is
+  unchanged.
+
 ## Current CHIBI board look (visual direction, October 2026)
 
 This overlay applies to the CHIBI art set of the current Ruleset 7 route
