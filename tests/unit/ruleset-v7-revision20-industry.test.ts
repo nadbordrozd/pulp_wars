@@ -296,7 +296,11 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
       { kind: "COMMAND", command: "BLAST_MOUNTAIN" },
       { kind: "MELEE_FIELD_DEMOLITION" },
     ]);
-    expect(explosives(UNDEAD_BASELINE_V1_NODES)).toEqual(human);
+    // The Undead pass, correction (`pulp_wars-w49.13`): Pestilence.
+    expect(explosives(UNDEAD_BASELINE_V1_NODES)).toEqual([
+      ...human,
+      { kind: "PESTILENCE" },
+    ]);
     expect(explosives(GOBLIN_BASELINE_V1_NODES)).toEqual(human);
     expect(explosives(DINOSAUR_BASELINE_V1_NODES)).toEqual([
       ...human,
@@ -335,7 +339,8 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
       FACTION_IDS_V7.map((faction) => technologyNameV7("EXPLOSIVES", faction)),
     ).toEqual([
       "Explosives",
-      "Explosives",
+      // The Undead pass, correction (`pulp_wars-w49.13`).
+      "Pestilence",
       "Explosives",
       "Wallbreaker",
       "Disintegrator",

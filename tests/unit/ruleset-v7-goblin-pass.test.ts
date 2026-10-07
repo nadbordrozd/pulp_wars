@@ -135,13 +135,19 @@ function ganged(
 }
 
 describe("the Goblin pass: identity", () => {
-  it("is 7r50 with 7r49 a prior identity and an obsolete save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r50.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r49");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+  // The Undead pass (tests/unit/ruleset-v7-undead-pass.test.ts) took 7r51,
+  // so 7r50 is the last prior identity.
+  it("was 7r50 after 7r49, with both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r51.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r49",
+      "pulp-wars-poc-7r50",
+    ]);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r49.current",
-    );
+      "pulpWars.save.v7r50.current",
+    ]);
   });
 
   it("registers the three rules on three Goblin roles and nowhere else", () => {
@@ -772,9 +778,10 @@ describe("the Goblin pass: the Normal AI", () => {
 
 describe("the Goblin pass: Scouts", () => {
   it("gives a Goblin city's Survey a free Wolf Rider, like the Humans' Raider", () => {
+    // (The Undead pass, 7r51: an Undead Survey grants a Ghoul.)
     expect(SURVEY_RAIDERS_V7).toEqual({
       ORIGINAL: 1,
-      UNDEAD: 0,
+      UNDEAD: 1,
       GOBLIN: 1,
       DINOSAUR: 0,
       MARTIAN: 0,

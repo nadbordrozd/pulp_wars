@@ -7,7 +7,8 @@ import {
 } from "../engine/index";
 import {
   RAIDER_SLIPS_TEXT_V7,
-  openToRangedTextV7,
+  carrionTextV7,
+  rangedDefenseTextV7,
 } from "./technology-unlock-text-v7";
 import {
   undeadAbilityDescriptionV7,
@@ -88,9 +89,13 @@ export function recruitmentRolePresentationV7(
   )
     restrictions.push(`${RAIDER_SLIPS_TEXT_V7}.`);
   // Tuning 5 (`pulp_wars-w49.4`): the Human Guard is open to ranged attacks.
+  // The Undead pass (`pulp_wars-w49.13`, 7r51): the Skeleton has Bones.
   const rangedDefense2 = roleMechanicsV7(roleId, faction).rangedDefense2;
   if (rangedDefense2 !== null && !ship)
-    restrictions.push(`${openToRangedTextV7(rangedDefense2)}.`);
+    restrictions.push(`${rangedDefenseTextV7(rangedDefense2, role.defense2)}.`);
+  // The Undead pass, correction: the Ghoul's Carrion.
+  const carrionBonus2 = roleMechanicsV7(roleId, faction).carrionBonus2;
+  if (carrionBonus2 > 0) restrictions.push(`${carrionTextV7(carrionBonus2)}.`);
   if (ship) restrictions.push("Built at ports. Heals only near your ports.");
   if (roleId === "BATTLESHIP")
     restrictions.push(

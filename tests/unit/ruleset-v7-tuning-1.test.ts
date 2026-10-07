@@ -114,13 +114,13 @@ describe("tuning 1 identity", () => {
   // Tuning 1 took 7r46; tuning 2 (tests/unit/ruleset-v7-tuning-2.test.ts)
   // took 7r47, so 7r46 is the last prior identity.
   it("was 7r46, after 7r45 in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r50.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r51.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-6, -4)).toEqual([
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(49);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(50);
   });
 });
 
@@ -341,11 +341,14 @@ describe("C: the Catapult and the Knight", () => {
         { factions: ["ORIGINAL", faction] },
       );
       const run = attackV7(state, at(4, 8), at(2, 8));
+      // The Undead pass (`pulp_wars-w49.13`, 7r51): a Skeleton has Bones
+      // (Defense 3 against a shot), so the Catapult deals it 7.
+      const dealt = faction === "UNDEAD" ? 7 : 8;
       expect(run.combat.fortificationLevel).toBe(0);
-      expect(run.combat.damageToDefender).toBe(8);
+      expect(run.combat.damageToDefender).toBe(dealt);
       expect(run.combat.defenderDies).toBe(false);
       expect(run.combat.retaliation).toBe(false);
-      expect(run.target?.hp).toBe(rule("FIGHTER", faction).maxHp - 8);
+      expect(run.target?.hp).toBe(rule("FIGHTER", faction).maxHp - dealt);
     },
   );
 

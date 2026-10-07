@@ -128,7 +128,9 @@ describe("ruleset-7 revision-14 Normal AI: Undead use Plague and Bitten", () => 
     expect(
       scoreCommandV7(view, attackCommand(zombie, fresh)).strategicValue -
         scoreCommandV7(view, attackCommand(zombie, bitten)).strategicValue,
-    ).toBe(BITE_VALUE_V7 + Math.floor(guardValue / 5));
+      // The Undead pass (`pulp_wars-w49.13`): and 4 a Coin of the Guard's
+      // price (3) for the new bite (`ARMY_ZOMBIE_BITE_VALUE_V7`).
+    ).toBe(BITE_VALUE_V7 + Math.floor(guardValue / 5) + 4 * 3);
   });
 
   it("does not raise Skeletons that visible enemies kill next turn", () => {
@@ -392,10 +394,14 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // applications, 38 rounds). The Goblin pass, correction
     // (`pulp_wars-w49.12`: the Human seat researches the Swordsman third):
     // seed 2 trains two Liches that never plague; of seeds 0-6 only seed 6
-    // trains one and plagues (three applications, 40 rounds).
+    // trains one and plagues (three applications, 40 rounds). The Undead
+    // pass's correction (`pulp_wars-w49.13`: a Lich plagues only with
+    // Pestilence, which the Undead seat researches once it fields two
+    // Liches): seed 6 trains one Lich that never plagues; of seeds 0-15,
+    // seeds 0 and 9 plague (seed 0: two Liches, 13 applications).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 6,
+      seed: 0,
       width: 11,
       height: 11,
       aiCount: 1,

@@ -7,6 +7,7 @@ import {
 import {
   RULESET_7_ID,
   TECHNOLOGY_IDS_V7,
+  applyCommandV7,
   createPlayableGameV7,
   effectiveRoleRuleV7,
   queryCombatPreviewV7,
@@ -104,6 +105,9 @@ describe("vkq.21 Normal AI: Battleship splash in unit safety", () => {
   });
 });
 
+// The Undead pass (`pulp_wars-w49.13`, 7r51): a Vampire has Escape, so a
+// strike it would not survive on the spot is made where a tile within its
+// Move leaves it alive, and it flies there afterwards.
 describe("vkq.21 Normal AI: Vampires attack only when they survive", () => {
   // Vampire (3, 2) beside a Human Guard (4, 2); a Human Catapult on (6, 2)
   // covers (3, 2) at range 3.
@@ -111,7 +115,7 @@ describe("vkq.21 Normal AI: Vampires attack only when they survive", () => {
   const guardAt = { x: 4, y: 2 };
   const catapultAt = { x: 6, y: 2 };
 
-  it("does not chip a defender from inside visible lethal reach", () => {
+  it("chips a defender from inside visible lethal reach, and flies out of it", () => {
     const state = arena(
       ["UNDEAD", "ORIGINAL"],
       [
@@ -124,11 +128,30 @@ describe("vkq.21 Normal AI: Vampires attack only when they survive", () => {
     const vampire = unitAt(state, vampireAt);
     const guard = unitAt(state, guardAt);
     const attack = attackCommand(vampire, guard);
-    expect(queryCombatPreviewV7(view, vampire.id, guard.id)?.defenderDies).toBe(
-      false,
-    );
+    expect(queryCombatPreviewV7(view, vampire.id, guard.id)).toMatchObject({
+      defenderDies: false,
+      escapeAvailable: true,
+    });
     expect(queryPlayerCommandsV7(view)).toContainEqual(attack);
-    expect(candidateCommands(view)).not.toContainEqual(attack);
+    // Before 7r51 (no Escape) this strike was no candidate: the Catapult
+    // kills the Vampire where it stands.
+    expect(candidateCommands(view)).toContainEqual(attack);
+    const struck = applyCommandV7(
+      state,
+      required(state.turnOrder[state.activeSeatIndex]),
+      attack,
+    );
+    if (!struck.accepted) throw new Error(struck.error.code);
+    const after = viewFor(struck.state);
+    const flight = candidateCommands(after).find(
+      (command) => "unitId" in command && command.unitId === vampire.id,
+    );
+    if (flight?.kind !== "MOVE") throw new Error("the Vampire stays");
+    // Out of the Catapult's range of 3.
+    const end = required(flight.path.at(-1));
+    expect(
+      Math.max(Math.abs(end.x - catapultAt.x), Math.abs(end.y - catapultAt.y)),
+    ).toBeGreaterThan(3);
   });
 
   it("still chips when the Vampire survives the visible reply", () => {
@@ -284,6 +307,8 @@ describe("vkq.21 Normal AI: Liches and Vampires stay ashore", () => {
     // 6, 18, and 25 embark a unit out of a chest, as seed 4 did).
     // With tuning 8 and its correction pass (`pulp_wars-w49.11`) seed 20
     // embarks three (two Zombies and a Skeleton).
+    // With the Undead pass (`pulp_wars-w49.13`, 7r51) seed 20 embarks two
+    // Zombies and a Skeleton again.
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",

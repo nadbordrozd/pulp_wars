@@ -77,6 +77,51 @@ export const RAIDER_SLIPS_TEXT_V7 =
 export function openToRangedTextV7(rangedDefense2: number): string {
   return `Open to ranged: Defense ${rangedDefense2 / 2} against attacks from 2 or more tiles`;
 }
+/**
+ * The Undead pass (`pulp_wars-w49.13`, 7r51): Bones, the Skeleton's rule:
+ * a Defense against attacks from two or more tiles above its own.
+ */
+export function bonesTextV7(rangedDefense2: number): string {
+  return `Bones: Defense ${rangedDefense2 / 2} against attacks from 2 or more tiles`;
+}
+/**
+ * A role's Defense against attacks from two or more tiles, as its rule
+ * reads: Open to ranged when it is below the role's Defense (the Human
+ * Guard), Bones when it is above (the Undead Skeleton).
+ */
+export function rangedDefenseTextV7(
+  rangedDefense2: number,
+  defense2: number,
+): string {
+  return rangedDefense2 > defense2
+    ? bonesTextV7(rangedDefense2)
+    : openToRangedTextV7(rangedDefense2);
+}
+/** The Undead pass: the short word of the same rule on a combat line. */
+export function rangedDefenseWordV7(
+  rangedDefense2: number,
+  defense2: number,
+): string {
+  return rangedDefense2 > defense2 ? "bones" : "open to ranged";
+}
+/**
+ * The Undead pass, correction (`pulp_wars-w49.13`): Carrion, the Ghoul's
+ * rule, with its bonus in half-points.
+ */
+export function carrionTextV7(carrionBonus2: number): string {
+  return `Carrion: +${carrionBonus2 / 2} Attack against a Bitten or Plagued unit`;
+}
+/** The Undead pass, correction: a Lich plagues only with Pestilence. */
+export const PLAGUE_NEEDS_TEXT_V7 = "Plague needs Pestilence";
+/**
+ * The Undead pass, correction: why a unit with a low Attack strikes back
+ * hard (a Guard deals a Skeleton 3 attacking and 8 striking back), with the
+ * Defense in half-points. For the unit line of a role whose Defense is
+ * above its Attack.
+ */
+export function strikesBackTextV7(defense2: number): string {
+  return `strikes back with its Defense ${defense2 / 2}, not its Attack`;
+}
 /** Tuning 5: when a Charge applies, on the unit line of a charging unit. */
 export const CHARGE_CONDITION_TEXT_V7 =
   "Charge: +1 Attack after a move of 2 tiles (needs Raiding)";

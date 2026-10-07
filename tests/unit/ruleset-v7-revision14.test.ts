@@ -101,10 +101,10 @@ interface ArenaOptions {
 }
 
 describe("ruleset-7 revision-14 identity and roster", () => {
-  it("keeps rejecting r13 after the r50 identity and cleans the r13 through r49 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r50.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-37)).toEqual([
+  it("keeps rejecting r13 after the r51 identity and cleans the r13 through r50 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r51.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-38)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
@@ -142,6 +142,7 @@ describe("ruleset-7 revision-14 identity and roster", () => {
       "pulpWars.save.v7r47.current",
       "pulpWars.save.v7r48.current",
       "pulpWars.save.v7r49.current",
+      "pulpWars.save.v7r50.current",
     ]);
     const state = arena(["UNDEAD", "ORIGINAL"], []);
     expect(
@@ -161,10 +162,12 @@ describe("ruleset-7 revision-14 identity and roster", () => {
       "INFECT",
       "BITE",
     ]);
+    // The Undead pass (`pulp_wars-w49.13`, 7r51): and Escape.
     expect(effectiveRoleRuleV7("KNIGHT", "UNDEAD").abilities).toEqual([
       "ATTACK",
       "LIFESTEAL",
       "UNANSWERED",
+      "ESCAPE",
     ]);
     for (const role of [
       "FIGHTER",
@@ -634,12 +637,12 @@ describe("ruleset-7 revision-14 Bitten", () => {
         victimUnitId: victim.id,
         unitId: risingId,
         at: victim.at,
-        homeCityId: zombie.homeCityId,
+        homeCityId: null,
       },
     ]);
     expect(unitById(result.state, risingId)).toMatchObject({
       ownerId: zombie.ownerId,
-      homeCityId: zombie.homeCityId,
+      homeCityId: null,
       role: "GUARD",
       form: "LAND",
       at: victim.at,
@@ -1125,8 +1128,12 @@ describe("ruleset-7 revision-14 natural play and persistence", () => {
     // bites. With tuning 8 (`pulp_wars-w49.11`: research on a clock while
     // at war) seed 3 is over in round 29 without a Lich; seed 15 has 19
     // Plague applications and 43 bites (of seeds 0-15, seeds 0, 2, 5, 6,
-    // 8, 14, and 15 plague).
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 15);
+    // 8, 14, and 15 plague). With the Undead pass's correction
+    // (`pulp_wars-w49.13`: a Lich plagues only with Pestilence, which the
+    // Undead seat researches once it fields two Liches) seed 15 trains two
+    // Liches that never plague; of seeds 0-16, seeds 0, 6, and 8 plague
+    // (seed 8: three Liches, 7 Plague applications, 23 bites).
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 8);
     const match = runAiMatchV7(setup, { maxRounds: 45 });
     expect(match.errors).toEqual([]);
     expect(match.stalls).toEqual([]);

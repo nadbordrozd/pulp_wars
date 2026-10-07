@@ -32,6 +32,7 @@ import {
   coverBonusV7,
   terrainGivesCoverV7,
   attackIgnoresCityWallsV7,
+  attackPlaguesV7,
   attackIsChargeV7,
   canEnterTerrainV7,
   chargeRunUpAttack2V7,
@@ -7448,6 +7449,12 @@ function publicCombatPreviewCore(
   const plantedApplied = attack.modifiers.some(
     (modifier) => modifier.source === "PLANTED",
   );
+  // The Undead pass, correction (`pulp_wars-w49.13`): Carrion.
+  const carrionApplied =
+    attackerLand &&
+    attackerMechanics0.carrionBonus2 > 0 &&
+    (view.bitten.some((entry) => entry.unitId === target.id) ||
+      view.plagued.some((entry) => entry.unitId === target.id));
   const chargeApplied =
     attackerRule.abilities.includes("CHARGE") &&
     view.viewer.researchedTechs.includes("RAIDING") &&
@@ -7478,7 +7485,8 @@ function publicCombatPreviewCore(
     (rockfallApplied
       ? attackerMechanics0.rockfallAttack2 - attackerRule.attack2
       : 0) +
-    (coldBloodApplied ? attackerMechanics0.coldBloodBonus2 : 0);
+    (coldBloodApplied ? attackerMechanics0.coldBloodBonus2 : 0) +
+    (carrionApplied ? attackerMechanics0.carrionBonus2 : 0);
   // The Martian revision section 6.1: the halving of a half-power ray is
   // already in the public Attack total (the `HALF_POWER` modifier).
   const rayPower = rayPowerV7(
@@ -7757,6 +7765,12 @@ function publicCombatPreviewCore(
     attacker,
     defender: target,
     attackerRule,
+    attackerPlagues: attackPlaguesV7(
+      view,
+      attacker,
+      attackerRule,
+      view.viewer.researchedTechs,
+    ),
     defenderRule,
     damageToDefender,
     damageToAttacker,

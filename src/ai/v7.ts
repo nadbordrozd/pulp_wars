@@ -188,12 +188,26 @@ import {
   ARMY_TOPUP_TRAINING_PRIORITY_V7,
   ARMY_UNDUE_RESEARCH_PRIORITY_V7,
   ARMY_VILLAGE_PRIORITY_V7,
+  ARMY_DEAR_UNIT_ARMY_V7,
+  ARMY_FRAGILE_HOSTILES_V7,
+  ARMY_REWARD_UNIT_COST_V7,
+  ARMY_ZOMBIE_BITE_VALUE_V7,
+  ARMY_ECONOMY_FORESTRY_WEIGHT_V7,
+  ARMY_BANSHEE_APPROACH_PRIORITY_V7,
+  ARMY_BANSHEE_APPROACH_RADIUS_V7,
+  ARMY_CURE_TRAINING_VALUE_V7,
+  ARMY_PESTILENCE_LICHES_V7,
+  ARMY_SWAP_PRIORITY_V7,
+  ARMY_VILLAGES_FIRST_DANGER_V7,
+  ARMY_VILLAGES_FIRST_REACH_V7,
+  ARMY_VILLAGES_FIRST_ROUNDS_V7,
   armyAssaultModeV7,
   armyClassV7,
   armyCountsV7,
   armyPlayFactionV7,
   armyResearchDueV7,
   armyRoleScoreV7,
+  armySharesV7,
   armyUnitStrengthV7,
   type ArmyAssaultModeV7,
   type ArmyCountsV7,
@@ -2047,6 +2061,8 @@ function* tacticalPlanWorkV7(
             shoots: (unit: PublicUnitV7) =>
               publicCombatFacts(view, unit, context.lookup).maximumRange > 1,
             expanding: armyExpandingV7(context),
+            // The Undead pass, correction: villages first.
+            villagesFirst: armyVillagesFirstV7(context),
             // Correction pass: a seat with an active naval plan, or with
             // Shorecraft (it expands by sea), keeps the scouting it had:
             // its free units are for the Port.
@@ -3560,6 +3576,12 @@ function armyResearchTargetV7(
       !armyWarV7(context) &&
       view.cities.filter((city) => city.ownerId === view.viewer.id).length >=
         ARMY_ROADS_CITIES_V7;
+    // The Undead pass, correction: the cure first (`armyCureDueV7`).
+    if (armyCureDueV7(context)) {
+      const cure = effectiveRoleRuleV7("CAPTAIN", faction);
+      if (cure.technology !== null && cure.cost !== null)
+        chosen = toward(cure.technology, "CAPTAIN") ?? chosen;
+    }
     let unlocked = 0;
     for (const role of ARMY_RESEARCH_ROLES_V7[faction] ?? []) {
       if (chosen !== null) break;
@@ -3567,6 +3589,17 @@ function armyResearchTargetV7(
         chosen = toward("ROADS");
       if (chosen !== null) break;
       const rule = effectiveRoleRuleV7(role, faction);
+      // The Undead pass, correction: Pestilence (the Liches' Plague) before
+      // the last unit of the order, once the seat fields Liches.
+      if (
+        faction === "UNDEAD" &&
+        role === "KNIGHT" &&
+        view.units.filter(
+          (unit) => unit.ownerId === view.viewer.id && isLichV7(view, unit),
+        ).length >= ARMY_PESTILENCE_LICHES_V7
+      )
+        chosen = toward("EXPLOSIVES");
+      if (chosen !== null) break;
       if (
         rule.technology === null ||
         rule.cost === null ||
@@ -3699,6 +3732,326 @@ function armyResearchHoldsV7(
   );
 }
 
+// ---------------------------------------------------------------------------
+// The Undead pass, correction (`pulp_wars-w49.13`,
+// docs/product/RULESET_7_TUNING_UNDEAD.md section 13).
+// ---------------------------------------------------------------------------
+
+/** An Undead seat of the army play. */
+function armyUndeadSeatV7(context: PolicyContextV7): boolean {
+  return context.army && context.view.viewer.faction === "UNDEAD";
+}
+
+const ARMY_VILLAGES_FIRST_CACHE_V7 = new WeakMap<PolicyContextV7, boolean>();
+
+/**
+ * Villages first (`ARMY_VILLAGES_FIRST_ROUNDS_V7`): an Undead seat in its
+ * first rounds that knows a free village in reach of an own center with
+ * no hostile unit beside it.
+ */
+function armyVillagesFirstV7(context: PolicyContextV7): boolean {
+  const cached = ARMY_VILLAGES_FIRST_CACHE_V7.get(context);
+  if (cached !== undefined) return cached;
+  const view = context.view;
+  let result = false;
+  if (
+    armyUndeadSeatV7(context) &&
+    !context.naval.active &&
+    view.round <= ARMY_VILLAGES_FIRST_ROUNDS_V7
+  ) {
+    const centers = view.cities
+      .filter((city) => city.ownerId === view.viewer.id)
+      .map((city) => city.at);
+    const hostiles = armyHostilesV7(context);
+    result = view.board.tiles.some(
+      (tile) =>
+        tile.explored &&
+        tile.site === "VILLAGE" &&
+        tile.territoryOwnerId === null &&
+        centers.some(
+          (center) => distance(center, tile.at) <= ARMY_VILLAGES_FIRST_REACH_V7,
+        ) &&
+        !hostiles.some(
+          (unit) => distance(unit.at, tile.at) <= ARMY_VILLAGES_FIRST_DANGER_V7,
+        ),
+    );
+  }
+  ARMY_VILLAGES_FIRST_CACHE_V7.set(context, result);
+  return result;
+}
+
+/**
+ * Villages first, as a candidate filter, for the units that capture and
+ * attack (a Skeleton, a Zombie, a Ghoul): no Move into a visible enemy's
+ * reach outside the seat's own land (a Move onto a free village keeps its
+ * own rule), and after a Move no attack on a unit outside its own land
+ * that the attack does not kill. It does not walk up to a fight; a unit
+ * that has not moved still strikes what stands beside it.
+ */
+function armyVillagesFirstHoldsV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" | "ATTACK" }>,
+): boolean {
+  if (!armyVillagesFirstV7(context)) return false;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  // (Land form only: a unit afloat follows the naval rules.)
+  const capturer =
+    actor !== undefined &&
+    actor.form === "LAND" &&
+    actor.ownerId === view.viewer.id &&
+    unitRoleRuleV7(view, actor).abilities.includes("CAPTURE") &&
+    unitRoleRuleV7(view, actor).abilities.includes("ATTACK");
+  if (actor === undefined || !capturer) return false;
+  if (command.kind === "ATTACK") {
+    const target = context.lookup.unitsById.get(command.targetUnitId);
+    if (
+      target === undefined ||
+      !actor.activation.moved ||
+      inOwnTerritoryForPolicyV7(view, view.viewer.id, target.at)
+    )
+      return false;
+    return (
+      queryCombatPreviewV7(view, command.unitId, command.targetUnitId)
+        ?.defenderDies !== true
+    );
+  }
+  const to = command.path.at(-1);
+  if (
+    to === undefined ||
+    inOwnTerritoryForPolicyV7(view, view.viewer.id, to) ||
+    armyVillageMoveV7(context, actor, to)
+  )
+    return false;
+  const danger = visibleImmediateDamage(view, actor, to, context);
+  return (
+    danger > 0 &&
+    danger > visibleImmediateDamage(view, actor, actor.at, context)
+  );
+}
+
+/**
+ * Economy first: an Undead seat that can train the first unit of its order
+ * and not yet the second, and owns no technology that builds population (a
+ * Farm, a Lumber Camp, a Mine, a building), researches the growth its land
+ * has the most use for before its second unit. (Its cities did not grow
+ * for thirteen rounds on fertile ground and Forest while it bought Drill,
+ * Hunting, and Marksmanship; Forestry in round 13 levelled two of them at
+ * once.)
+ */
+function armyEconomyFirstV7(context: PolicyContextV7): boolean {
+  if (!armyUndeadSeatV7(context)) return false;
+  const view = context.view;
+  const faction = view.viewer.faction;
+  const technologies = (ARMY_RESEARCH_ROLES_V7[faction] ?? []).flatMap(
+    (role) => {
+      const rule = effectiveRoleRuleV7(role, faction);
+      return rule.technology === null ||
+        rule.cost === null ||
+        !factionUnlocksRoleV7(faction, role)
+        ? []
+        : [rule.technology];
+    },
+  );
+  const [first, second] = technologies;
+  if (
+    first === undefined ||
+    second === undefined ||
+    !view.viewer.researchedTechs.includes(first) ||
+    view.viewer.researchedTechs.includes(second)
+  )
+    return false;
+  for (const kind of ARMY_GROWTH_KINDS_V7) {
+    if (kind === "HARVEST_FRUIT" || kind === "HUNT_GAME") continue;
+    const technology =
+      kind in BASIC_ECONOMIC_ACTIONS_V7
+        ? BASIC_ECONOMIC_ACTIONS_V7[kind as BasicEconomicCommandKindV7]
+            .technology
+        : SPATIAL_ECONOMIC_ACTIONS_V7[kind as SpatialEconomicCommandKindV7]
+            .technology;
+    if (view.viewer.researchedTechs.includes(technology)) return false;
+  }
+  return true;
+}
+
+/**
+ * Economy first, the purchase: `tech` is the growth technology of an Undead
+ * seat's economy-first research (`armyEconomyFirstV7`) and no hostile land
+ * unit stands at the gates of an own city (`armyAtTheGatesV7`).
+ */
+function armyEconomyResearchV7(
+  context: PolicyContextV7,
+  tech: TechnologyIdV7,
+): boolean {
+  if (!armyEconomyFirstV7(context)) return false;
+  const target = armyResearchTargetV7(context);
+  if (target === null || !target.growth || target.tech !== tech) return false;
+  const view = context.view;
+  return !view.cities.some(
+    (city) =>
+      city.ownerId === view.viewer.id && armyAtTheGatesV7(context, city.id),
+  );
+}
+
+/** A unit that cannot attack a neighbour (a Banshee, a Lich). */
+function armyHelplessRuleV7(
+  rule: Pick<EffectiveRoleRuleV7, "abilities" | "minimumRange" | "attack2">,
+): boolean {
+  return (
+    rule.minimumRange >= 2 ||
+    !rule.abilities.includes("ATTACK") ||
+    rule.attack2 <= 0
+  );
+}
+
+/**
+ * The garrison swap: on a threatened own center of an Undead seat stands a
+ * unit that cannot attack a neighbour, and beside the center an own unit
+ * that is the better garrison (HP times Defense) and can still move. The
+ * step of the first off the center, to a tile next to it, is a Move worth
+ * making: the second then steps on (`movesOntoThreatenedCity`). (A capital
+ * fell with an 8-HP Banshee on its center and a Zombie beside it.)
+ */
+function armySwapsOutV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" | "ATTACK" }>,
+): boolean {
+  if (command.kind !== "MOVE" || !armyUndeadSeatV7(context)) return false;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const to = command.path.at(-1);
+  const helpless =
+    actor !== undefined &&
+    actor.form === "LAND" &&
+    actor.ownerId === view.viewer.id &&
+    armyHelplessRuleV7(unitRoleRuleV7(view, actor));
+  if (actor === undefined || to === undefined || !helpless) return false;
+  const city = context.lookup.citiesByKey.get(coordKey(actor.at));
+  if (
+    city === undefined ||
+    city.ownerId !== view.viewer.id ||
+    distance(to, city.at) !== 1 ||
+    context.lookup.citiesByKey.has(coordKey(to)) ||
+    !armyHostilesV7(context).some(
+      (unit) => distance(unit.at, city.at) <= ARMY_GARRISON_RADIUS_V7,
+    )
+  )
+    return false;
+  const own = armyDefenderWorthV7(
+    context,
+    city.at,
+    unitRoleRuleV7(view, actor),
+    unitRoleMechanicsV7(view, actor),
+    actor.hp,
+  );
+  return view.units.some(
+    (unit) =>
+      unit.id !== actor.id &&
+      unit.ownerId === view.viewer.id &&
+      unit.form === "LAND" &&
+      distance(unit.at, city.at) === 1 &&
+      !same(unit.at, to) &&
+      !armyHelplessRuleV7(unitRoleRuleV7(view, unit)) &&
+      context.commands.some(
+        (other) => other.kind === "MOVE" && other.unitId === unit.id,
+      ) &&
+      armyDefenderWorthV7(
+        context,
+        city.at,
+        unitRoleRuleV7(view, unit),
+        unitRoleMechanicsV7(view, unit),
+        unit.hp,
+      ) > own,
+  );
+}
+
+/**
+ * The Human seat against Zombies: no attack from the next tile on a
+ * full-HP unit that bites while an own unit can still attack the same
+ * target this turn from two or more tiles: the shots first. (A Human seat
+ * trained fourteen Knights and fed ten of them to full Zombies: bitten,
+ * then killed, they rose.) Any army seat but an Undead one.
+ */
+function armyShootsBiterFirstV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" | "ATTACK" }>,
+): boolean {
+  if (
+    command.kind !== "ATTACK" ||
+    !context.army ||
+    !context.undead ||
+    context.view.viewer.faction === "UNDEAD"
+  )
+    return false;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const target = context.lookup.unitsById.get(command.targetUnitId);
+  const besideFullBiter =
+    actor !== undefined &&
+    target !== undefined &&
+    actor.form === "LAND" &&
+    distance(actor.at, target.at) === 1 &&
+    target.hp >= target.maxHp &&
+    unitRoleRuleV7(view, target).abilities.includes("BITE");
+  if (actor === undefined || target === undefined || !besideFullBiter)
+    return false;
+  return context.commands.some((other) => {
+    if (
+      other.kind !== "ATTACK" ||
+      other.targetUnitId !== target.id ||
+      other.unitId === actor.id
+    )
+      return false;
+    const shooter = context.lookup.unitsById.get(other.unitId);
+    return shooter !== undefined && distance(shooter.at, target.at) >= 2;
+  });
+}
+
+/**
+ * The cure is due: the seat has a Bitten unit, its own Captain-role unit
+ * tends (the Human Captain), and it has no unit that tends on the board.
+ * Then the Captain's technology is its next research and the Captain its
+ * next unit. (Two Human seats with Bitten units on the board fielded no
+ * Captain in two games.)
+ */
+function armyCureDueV7(context: PolicyContextV7): boolean {
+  if (!context.army || !context.undead) return false;
+  const view = context.view;
+  const faction = view.viewer.faction;
+  if (
+    !effectiveRoleRuleV7("CAPTAIN", faction).abilities.includes("TEND_WOUNDED")
+  )
+    return false;
+  const own = new Set<UnitId>();
+  for (const unit of view.units)
+    if (unit.ownerId === view.viewer.id) {
+      if (unitRoleRuleV7(view, unit).abilities.includes("TEND_WOUNDED"))
+        return false;
+      own.add(unit.id);
+    }
+  return view.bitten.some((entry) => own.has(entry.unitId));
+}
+
+/**
+ * The cure, the purchase: `tech` is the first step to the Captain's
+ * technology of a seat whose cure is due (`armyCureDueV7`). It is bought as
+ * soon as the Coins are there, before the units, also in a war (a Human
+ * seat with seven Bitten Knights spent every Coin on more Knights for
+ * fourteen rounds and owned no Captain).
+ */
+function armyCureResearchV7(
+  context: PolicyContextV7,
+  tech: TechnologyIdV7,
+): boolean {
+  if (!armyCureDueV7(context)) return false;
+  const cure = effectiveRoleRuleV7("CAPTAIN", context.view.viewer.faction);
+  return (
+    cure.technology !== null &&
+    !context.view.viewer.researchedTechs.includes(cure.technology) &&
+    researchChain(context.view, cure.technology)[0] === tech
+  );
+}
+
 /**
  * A step off an own center so that its city can train: the city has a free
  * slot and its action, the seat has the Coins for its basic unit, and the
@@ -3777,13 +4130,15 @@ function armyDefenderWorthV7(
   mechanics: Pick<RoleMechanicsV7, "rangedDefense2">,
   hp: number,
 ): number {
+  // The Undead pass, correction: a Defense that is higher only against
+  // shots (a Skeleton's Bones) counts as the unit's own: a center is
+  // taken hand to hand, and the Zombie beside the Skeleton is the garrison.
+  const hand = roleDefense2AtDistanceV7(rule, mechanics, 1);
   const worth =
     hp *
-    roleDefense2AtDistanceV7(
-      rule,
-      mechanics,
-      (armyRangedReachV7(context).get(coordKey(center)) ?? 0) > 0 ? 2 : 1,
-    );
+    ((armyRangedReachV7(context).get(coordKey(center)) ?? 0) > 0
+      ? Math.min(hand, roleDefense2AtDistanceV7(rule, mechanics, 2))
+      : hand);
   // Correction pass: a unit that cannot attack a neighbour (the Bomb
   // Chucker) neither strikes what walks up to the center nor hits back:
   // three of them died as garrisons without a throw.
@@ -3822,7 +4177,11 @@ function armyHelplessGarrisonV7(
   if (!context.army) return false;
   const view = context.view;
   const faction = view.viewer.faction;
-  if (effectiveRoleRuleV7(role, faction).minimumRange < 2) return false;
+  // The Undead pass, correction: for an Undead seat also a unit with no
+  // attack of its own (the Banshee).
+  const helpless = (rule: EffectiveRoleRuleV7): boolean =>
+    faction === "UNDEAD" ? armyHelplessRuleV7(rule) : rule.minimumRange >= 2;
+  if (!helpless(effectiveRoleRuleV7(role, faction))) return false;
   const city = context.lookup.citiesById.get(cityId);
   if (city === undefined || !armyContestedCenterV7(context, city.at))
     return false;
@@ -3830,7 +4189,7 @@ function armyHelplessGarrisonV7(
     (command) =>
       command.kind === "TRAIN" &&
       command.cityId === cityId &&
-      effectiveRoleRuleV7(command.role, faction).minimumRange < 2 &&
+      !helpless(effectiveRoleRuleV7(command.role, faction)) &&
       armyClassV7(effectiveRoleRuleV7(command.role, faction)) !== null,
   );
 }
@@ -4360,6 +4719,19 @@ function armyMoveValueV7(
   const unchanged = { priority, strategic: 0 };
   if (!context.army || actor.form !== "LAND") return unchanged;
   const view = context.view;
+  // The Undead pass, correction: the garrison swap (`armySwapsOutV7`).
+  if (armySwapsOutV7(context, { kind: "MOVE", unitId: actor.id, path: [to] }))
+    return {
+      priority: Math.max(priority, ARMY_SWAP_PRIORITY_V7),
+      // To the tile that keeps its Wail, then the safest.
+      strategic:
+        (isBansheeV7(view, actor) && isPrimaryUnusedV7(actor)
+          ? projectedWailSummaryV7(view, actor, to, (unit) =>
+              targetStrategicValue(view, unit.id, context.lookup),
+            ).value
+          : 0) -
+        4 * visibleImmediateDamage(view, actor, to, context),
+    };
   if (armyVacatesCenterV7(context, actor, to))
     return {
       // Just above the training it makes room for.
@@ -4693,7 +5065,9 @@ function armyMoveValueV7(
         // Tuning 7: the whole position goes in together, so a melee unit
         // is not held by the reach it enters; a ranged, siege, or support
         // unit still does not walk to its death under a hostile melee unit.
-        (fragileUnit ? danger < actor.hp || meleeReach === 0 : true)
+        (fragileUnit ? danger < actor.hp || meleeReach === 0 : true) &&
+        // The Undead pass: a Zombie goes in with company, never alone.
+        !armyZombieAloneV7(context, actor, to, danger)
       )
         return {
           priority: Math.max(priority, ARMY_COMMIT_ADVANCE_PRIORITY_V7),
@@ -5929,6 +6303,14 @@ const ARMY_GROWTH_KINDS_V7: readonly (
   "BUILD_MARKET",
 ] as const);
 
+/** The growth an Undead seat's economy-first research looks at. */
+const ARMY_ECONOMY_FIRST_KINDS_V7: readonly string[] = Object.freeze([
+  "HARVEST_FRUIT",
+  "HUNT_GAME",
+  "BUILD_FARM",
+  "BUILD_LUMBER_CAMP",
+]);
+
 /**
  * Tuning 7 (`pulp_wars-w49.10`): the growth technology of a stalled seat.
  * Every city is at its unit limit and the technologies it owns leave
@@ -5957,11 +6339,18 @@ function armyGrowthResearchV7(
   // player's units at its border bought Engineering for its Mines before
   // the Banshee); the one growth technology of a war still comes once the
   // first two units of the order are in, enemy or no enemy.
-  if (
+  const stalled =
     (armyAtLimitV7(context) &&
       armyThreatDistanceV7(context) > ARMY_PRESSED_RADIUS_V7) ||
-    armyWarGrowthDueV7(context)
-  ) {
+    armyWarGrowthDueV7(context);
+  // The Undead pass, correction: economy first (`armyEconomyFirstV7`),
+  // and then of Hunting, Farming, and Forestry only: what its land shows
+  // (Fruit and Game to take, a Farm, a Lumber Camp). The seat in the
+  // diagnostic match bought Engineering for Mines at 5 Coins each and its
+  // capital stayed at level 2 for ten more rounds.
+  const economyFirst = armyEconomyFirstV7(context);
+  for (const landOnly of economyFirst ? [true, false] : [false]) {
+    if (chosen !== null || (!landOnly && !stalled)) break;
     const forbidden = forbiddenTechnologiesV7(view.setup);
     const technologyOf = (
       kind: (typeof ARMY_GROWTH_KINDS_V7)[number],
@@ -5982,7 +6371,13 @@ function armyGrowthResearchV7(
         (item) => item === potential.command,
       );
       if (kind === undefined || potential.targets <= 0) continue;
+      if (landOnly && !ARMY_ECONOMY_FIRST_KINDS_V7.includes(kind)) continue;
       const technology = technologyOf(kind);
+      // (Fruit or Game left to take with a technology it owns is not the
+      // economy technology, which builds population: a captured village's
+      // Fruit put the research off for three rounds.)
+      if (landOnly && view.viewer.researchedTechs.includes(technology))
+        continue;
       if (view.viewer.researchedTechs.includes(technology)) {
         available = true;
         break;
@@ -5996,6 +6391,11 @@ function armyGrowthResearchV7(
         (kind in BASIC_ECONOMIC_ACTIONS_V7
           ? BASIC_ECONOMIC_ACTIONS_V7[kind as BasicEconomicCommandKindV7]
               .population
+          : 1) *
+        // Economy first: Forestry is also the first step to the Lich
+        // (Sawmilling), so a Forest in the land counts threefold.
+        (landOnly && kind === "BUILD_LUMBER_CAMP"
+          ? ARMY_ECONOMY_FORESTRY_WEIGHT_V7
           : 1);
       const cost = totalResearchCost(view, chain);
       if (
@@ -6041,6 +6441,10 @@ function armyWarHoldsResearchV7(
   if (target === null)
     return armyCanTrainV7(context) || armyGrowthOfferedV7(context);
   if (target.tech !== tech) return true;
+  // The Undead pass, correction: economy first is not held by a war, nor
+  // is the cure.
+  if (armyEconomyResearchV7(context, tech) || armyCureResearchV7(context, tech))
+    return false;
   if (armyResearchClockDueV7(context)) return false;
   if (!armyCanTrainV7(context) && !armyGrowthOfferedV7(context)) return false;
   if (target.unlocks === null) return true;
@@ -6138,6 +6542,61 @@ function armyResearchFloorV7(context: PolicyContextV7): number {
   }
   context.armyResearchFloor = floor;
   return floor;
+}
+
+/**
+ * The Undead pass (`pulp_wars-w49.13`,
+ * docs/product/RULESET_7_TUNING_UNDEAD.md section 8): the Coins an Undead
+ * seat keeps for the dear unit its army is short of. An Undead seat with
+ * Sawmilling fielded Zombies and Skeletons for ten rounds: every turn its
+ * cities spent the Coins on 3-Coin units before 8 had come together.
+ *
+ * The unit is the Lich, then the Vampire: unlocked, its class below its
+ * share of the army (`armySharesV7`), and not affordable now but within one
+ * turn's income. The Coins a city may spend leave the price reachable next
+ * turn. It holds only a city where the dear unit itself would be trained:
+ * not a threatened or frontier one (those train bodies), and never with an
+ * enemy within `ARMY_PRESSED_RADIUS_V7` of an own center. 0 for every
+ * other seat.
+ */
+function armyDearUnitFloorV7(context: PolicyContextV7, cityId: CityId): number {
+  if (!context.army) return 0;
+  const view = context.view;
+  if (view.viewer.faction !== "UNDEAD" || !armyAlertV7(context)) return 0;
+  if (armyThreatDistanceV7(context) <= ARMY_PRESSED_RADIUS_V7) return 0;
+  const city = context.lookup.citiesById.get(cityId);
+  if (
+    city === undefined ||
+    threatenedCity(context, cityId) ||
+    armyFrontCenterV7(context, city.at)
+  )
+    return 0;
+  const counts = armyCountsForContextV7(context);
+  if (counts.total < ARMY_DEAR_UNIT_ARMY_V7) return 0;
+  const shares = armySharesV7(
+    "UNDEAD",
+    counts.hostileFragile >= ARMY_FRAGILE_HOSTILES_V7,
+  );
+  const income = armyIncomeV7(context);
+  for (const role of ["CATAPULT", "KNIGHT"] as const) {
+    const rule = effectiveRoleRuleV7(role, "UNDEAD");
+    const unitClass = armyClassV7(rule);
+    if (
+      rule.cost === null ||
+      rule.technology === null ||
+      !view.viewer.researchedTechs.includes(rule.technology) ||
+      (unitClass !== "SIEGE" && unitClass !== "BREAKTHROUGH") ||
+      shares[unitClass] * (counts.total + 1) -
+        100 * counts.byClass[unitClass] <=
+        0
+    )
+      continue;
+    // Affordable now: it is offered, and the composition takes it.
+    if (view.viewer.coins >= rule.cost) return 0;
+    if (view.viewer.coins + income >= rule.cost)
+      return Math.max(0, rule.cost - income);
+  }
+  return 0;
 }
 
 /** Tuning 8: a hostile land unit stands this close to the city's center. */
@@ -6392,7 +6851,14 @@ function armyGuardExposedV7(
   to: CoordV7,
 ): boolean {
   const view = context.view;
-  if (unitRoleMechanicsV7(view, actor).rangedDefense2 === null) return false;
+  // The Undead pass (`pulp_wars-w49.13`): only a ranged Defense below the
+  // unit's own exposes it (a Skeleton's Bones is above).
+  const rangedDefense2 = unitRoleMechanicsV7(view, actor).rangedDefense2;
+  if (
+    rangedDefense2 === null ||
+    rangedDefense2 >= unitRoleRuleV7(view, actor).defense2
+  )
+    return false;
   if ((armyRangedReachV7(context).get(coordKey(to)) ?? 0) === 0) return false;
   const tile = findPublicTileV7(view, to);
   if (tile?.explored !== true) return true;
@@ -6510,6 +6976,17 @@ function armyAttackValueV7(
   // A Zombie goes for cheap infantry: what it kills rises as a Zombie.
   if (armyZombieV7(context, actor) && armyZombiePreyV7(context, target))
     strategic += ARMY_ZOMBIE_PREY_VALUE_V7;
+  // The Undead pass (`pulp_wars-w49.13`): a Zombie bites the dearest unit
+  // in its reach: whoever kills a Bitten unit, it rises as a Zombie.
+  if (
+    armyZombieV7(context, actor) &&
+    survives &&
+    preview.defenderBitten &&
+    isNewBiteV7(context.afflictions, target.id, actor.ownerId)
+  )
+    strategic +=
+      ARMY_ZOMBIE_BITE_VALUE_V7 *
+      (unitRoleRuleV7(context.view, target).cost ?? ARMY_REWARD_UNIT_COST_V7);
   if (
     survives &&
     !preview.defenderDies &&
@@ -6544,14 +7021,68 @@ const ARMY_ZOMBIE_SHY_VALUE_V7 = 5;
 /** Line infantry at most this dear is a Zombie's prey. */
 const ARMY_ZOMBIE_PREY_COST_V7 = 2;
 
-/** An own Undead unit with Infect (the Zombie) of an army seat. */
+/**
+ * An own Undead unit with Infect and Bite (the Zombie) of an army seat. (The
+ * Undead pass, `pulp_wars-w49.13`: the Abomination has Infect too and is no
+ * Zombie; it attacks after moving.)
+ */
 function armyZombieV7(context: PolicyContextV7, unit: PublicUnitV7): boolean {
   return (
     context.army &&
     context.undead &&
     unit.ownerId === context.view.viewer.id &&
-    isZombieV7(context.view, unit)
+    isZombieV7(context.view, unit) &&
+    unitRoleRuleV7(context.view, unit).abilities.includes("BITE")
   );
+}
+
+/**
+ * The Undead pass (`pulp_wars-w49.13`): a Zombie advances together. Its
+ * Move into the reach of a visible enemy ends beside an own unit that
+ * fights hand to hand, or within two tiles of one that can strike on
+ * arrival and has not moved yet (a Skeleton, a Ghoul, a Vampire); else it
+ * waits for them. The candidate filter applies it to every Move of a
+ * Zombie that raises the damage it can take, in its own land too. A
+ * Zombie cannot attack after it moves, so alone it is shot or struck first:
+ * an Undead seat lost twenty-two Zombies that walked up one at a time. It
+ * applies to a committed army too.
+ */
+function armyZombieAloneV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  danger: number,
+): boolean {
+  if (!armyZombieV7(context, actor) || danger <= 0) return false;
+  const view = context.view;
+  // Correction: in its own land too (a Zombie stepped out alone beside
+  // three enemy units next to its capital), except onto an own center.
+  if (context.lookup.citiesByKey.get(coordKey(to))?.ownerId === view.viewer.id)
+    return false;
+  // Correction: the company is a unit that fights hand to hand (a Banshee
+  // beside it is none), or a striker within two tiles that has not moved
+  // yet this turn (it can still come along).
+  return !view.units.some((unit) => {
+    const other =
+      unit.id !== actor.id &&
+      unit.ownerId === view.viewer.id &&
+      unit.form === "LAND";
+    if (!other) return false;
+    const gap = distance(unit.at, to);
+    if (gap > ARMY_SUPPORT_RADIUS_V7) return false;
+    const facts = publicCombatFacts(view, unit, context.lookup);
+    const melee =
+      facts.abilities.includes("ATTACK") &&
+      facts.attack2 > 0 &&
+      facts.minimumRange <= 1 &&
+      armyClassV7(unitRoleRuleV7(view, unit)) !== "SUPPORT";
+    if (!melee) return false;
+    // (The garrison of a center does not come along.)
+    if (context.lookup.citiesByKey.has(coordKey(unit.at))) return false;
+    return (
+      gap <= 1 || (unitMayActAfterMoveV7(view, unit) && !unit.activation.moved)
+    );
+  });
 }
 
 /** Cheap hostile line infantry (a Fighter, a Skeleton, a Goblin). */
@@ -7504,15 +8035,50 @@ function isPolicyCandidate(
     !defenderActionException(context, command) &&
     // Tuning 5 (`pulp_wars-w49.4`): the step beside the center that lets
     // the city train is no desertion; the trained unit takes the center.
-    !armyStepsAsideToTrainV7(context, command)
+    !armyStepsAsideToTrainV7(context, command) &&
+    // The Undead pass, correction: nor the garrison swap.
+    !armySwapsOutV7(context, command)
   )
     return false;
   // Tuning 5 (`pulp_wars-w49.4`): the garrison of a center stays.
   if (
     (command.kind === "MOVE" || command.kind === "ATTACK") &&
-    armyGarrisonHoldsV7(context, command)
+    armyGarrisonHoldsV7(context, command) &&
+    !armySwapsOutV7(context, command)
   )
     return false;
+  // The Undead pass, correction (`pulp_wars-w49.13`): villages first; a
+  // Zombie moves with company; the shots before the melee on a biter.
+  if (
+    (command.kind === "MOVE" || command.kind === "ATTACK") &&
+    (armyVillagesFirstHoldsV7(context, command) ||
+      armyShootsBiterFirstV7(context, command))
+  )
+    return false;
+  if (command.kind === "MOVE") {
+    const zombie = context.lookup.unitsById.get(command.unitId);
+    const end = command.path.at(-1);
+    if (
+      zombie !== undefined &&
+      end !== undefined &&
+      armyZombieV7(context, zombie) &&
+      !armyVillageMoveV7(context, zombie, end)
+    ) {
+      const danger = visibleImmediateDamage(context.view, zombie, end, context);
+      // A step that raises the damage it can take, or that puts more
+      // hostile land units beside it.
+      const beside = (at: CoordV7): number =>
+        armyHostilesV7(context).filter((unit) => distance(unit.at, at) === 1)
+          .length;
+      if (
+        (danger >
+          visibleImmediateDamage(context.view, zombie, zombie.at, context) ||
+          beside(end) > beside(zombie.at)) &&
+        armyZombieAloneV7(context, zombie, end, danger)
+      )
+        return false;
+    }
+  }
   // Tuning 7 (`pulp_wars-w49.10`): the fast units wait for the infantry.
   if (command.kind === "MOVE") {
     const mover = context.lookup.unitsById.get(command.unitId);
@@ -7723,6 +8289,14 @@ function isPolicyCandidate(
     !armyAtTheGatesV7(context, command.cityId) &&
     context.view.viewer.coins - trainingCostV7(context.view, command) <
       armyResearchFloorV7(context)
+  )
+    return false;
+  // The Undead pass (`pulp_wars-w49.13`): the Coins kept for the dear unit
+  // the army is short of (`armyDearUnitFloorV7`).
+  if (
+    command.kind === "TRAIN" &&
+    context.view.viewer.coins - trainingCostV7(context.view, command) <
+      armyDearUnitFloorV7(context, command.cityId)
   )
     return false;
   // pulp_wars-9s0.8: the savings plan holds research it cannot spare.
@@ -8543,8 +9117,17 @@ function* sharedCityContextWorkV7(
     context.goblin && view.viewer.faction === "GOBLIN"
       ? goblinTrainingAdjustmentsV7()
       : null;
+  // The Undead pass, correction: the cure (`armyCureDueV7`).
+  const cureDue = armyCureDueV7(context);
   const trainingAdjustment = (role: UnitRoleIdV7): number =>
-    (undeadTraining?.get(role) ?? 0) + (goblinTraining?.get(role) ?? 0);
+    (undeadTraining?.get(role) ?? 0) +
+    (goblinTraining?.get(role) ?? 0) +
+    (cureDue &&
+    effectiveRoleRuleV7(role, view.viewer.faction).abilities.includes(
+      "TEND_WOUNDED",
+    )
+      ? ARMY_CURE_TRAINING_VALUE_V7
+      : 0);
   // Revision 20: the screened-siege bonus is for a Catapult-role unit the
   // policy plays as siege (never the Triceratops, a line unit).
   const siegeRole = (role: UnitRoleIdV7): boolean =>
@@ -9591,6 +10174,17 @@ function scoreCommandWithContext(
     // its technology affordable.
     if (armyWarV7(context) && armyResearchClockDueV7(context))
       priority = ARMY_DUE_RESEARCH_PRIORITY_V7;
+    // The Undead pass, correction: economy first. The growth technology
+    // of `armyEconomyFirstV7` is bought as soon as the Coins are there,
+    // before the units, also while the seat expands or is at war (its
+    // first three Skeletons take the villages; it trained Zombies with 7
+    // Coins in hand for three rounds and the technology came in round 8).
+    if (
+      armyEconomyResearchV7(context, command.tech) ||
+      // And the cure (`armyCureDueV7`): the Captain's technology.
+      armyCureResearchV7(context, command.tech)
+    )
+      priority = ARMY_DUE_RESEARCH_PRIORITY_V7;
     strategicValue = Math.max(strategicValue, 100);
   }
 
@@ -10200,6 +10794,20 @@ function scoreCommandWithContext(
       immediateValue = 5;
     } else if (movesOntoThreatenedCity(context, resultAt)) {
       priority = 1250;
+      // The Undead pass, correction: of an Undead seat's units that can
+      // step onto the center, the best garrison goes (a Skeleton stepped
+      // on with a Zombie beside it).
+      if (armyUndeadSeatV7(context) && resultAt !== null)
+        strategicValue += Math.min(
+          ARMY_CENTER_HOLDER_VALUE_MAXIMUM_V7,
+          armyDefenderWorthV7(
+            context,
+            resultAt,
+            unitRoleRuleV7(view, actor),
+            unitRoleMechanicsV7(view, actor),
+            actor.hp,
+          ),
+        );
     } else {
       objectiveValue = tacticalMovementObjectiveValueV7(
         context,
@@ -10269,12 +10877,20 @@ function scoreCommandWithContext(
         if (context.army && resultAt !== null) {
           const rule = unitRoleRuleV7(view, actor);
           const mechanics = unitRoleMechanicsV7(view, actor);
+          // The Undead pass (`pulp_wars-w49.13`): a Defense that is higher
+          // only against shots (a Skeleton's Bones) counts as the unit's
+          // own here: a center is retaken hand to hand, and the Zombie
+          // beside the Skeleton is still the one that holds it.
+          const hand = roleDefense2AtDistanceV7(rule, mechanics, 1);
           strategicValue += Math.min(
             ARMY_CENTER_HOLDER_VALUE_MAXIMUM_V7,
             Math.floor(
               (actor.hp *
-                (roleDefense2AtDistanceV7(rule, mechanics, 1) +
-                  roleDefense2AtDistanceV7(rule, mechanics, 2))) /
+                (hand +
+                  Math.min(
+                    hand,
+                    roleDefense2AtDistanceV7(rule, mechanics, 2),
+                  ))) /
                 (2 * ARMY_CENTER_HOLDER_WORTH_V7),
             ),
           );
@@ -10706,9 +11322,17 @@ function undeadMoveValueV7(
           // (Its Wail reaches no farther than a melee unit walks: behind
           // a line unit of its own it goes in.)
           armyScreenedV7(context, actor, to));
+      // The Undead pass (`pulp_wars-w49.13`): a Banshee of an army seat
+      // also steps up to a Wail on two or more units (or a kill) when the
+      // seat has not committed: behind an own melee unit, whatever comes
+      // back (a 3-Coin unit that draws two attacks has paid for itself;
+      // five Banshees held back made two Wails in ten rounds).
+      const screenedWail =
+        context.army && band > 905 && armyScreenedV7(context, actor, to);
       if (
         there.value > here.value &&
         (committed ||
+          screenedWail ||
           (band > 905 ? danger() < actor.hp : danger() * 2 < actor.hp))
       ) {
         priority = Math.max(
@@ -10717,6 +11341,35 @@ function undeadMoveValueV7(
           committed ? ARMY_COMMIT_FIRE_MOVE_PRIORITY_V7 : 0,
         );
         strategic += there.value - here.value;
+      }
+    }
+  }
+
+  // The Undead pass, correction: a Banshee near a fight walks up. With a
+  // hostile land unit within `ARMY_BANSHEE_APPROACH_RADIUS_V7` and none
+  // within three tiles, its Move toward the nearest one, to a
+  // tile no visible enemy reaches or behind an own melee unit, is a Move
+  // worth making. (One of two Banshees sat out seven rounds.)
+  if (isBansheeV7(view, actor) && armyUndeadSeatV7(context)) {
+    const hostiles = armyHostilesV7(context).map((unit) => unit.at);
+    if (hostiles.length > 0) {
+      const from = nearestDistance(actor.at, hostiles);
+      const next = nearestDistance(to, hostiles);
+      // (From three tiles its next step is into Wail range, which the
+      // rules above and the army's advance decide: this one is for the
+      // Banshee that is farther away.)
+      // (And for one that belongs to no assault: a committed or staged
+      // army moves its Banshees itself.)
+      if (
+        from > 3 &&
+        from <= ARMY_BANSHEE_APPROACH_RADIUS_V7 &&
+        armyModeV7(context, actor) === "NONE" &&
+        next < from &&
+        (danger() <= 0 ||
+          (danger() < actor.hp && armyScreenedV7(context, actor, to)))
+      ) {
+        priority = Math.max(priority, ARMY_BANSHEE_APPROACH_PRIORITY_V7);
+        objective += 2 * (from - next);
       }
     }
   }
@@ -11076,10 +11729,50 @@ function vampireAttackAcceptableV7(
     [actor.id, target.id],
   );
   const wounded = after.units.find((unit) => unit.id === actor.id);
-  return (
-    wounded !== undefined &&
-    visibleImmediateDamage(after, wounded, wounded.at, context) < hp
-  );
+  if (wounded === undefined) return false;
+  if (visibleImmediateDamage(after, wounded, wounded.at, context) < hp)
+    return true;
+  // The Undead pass (`pulp_wars-w49.13`): with Escape the Vampire flies
+  // back after its strike, so the strike is good where a tile within its
+  // Move leaves it alive.
+  return vampireEscapeTileV7(context, after, wounded, hp) !== null;
+}
+
+/**
+ * The Undead pass (`pulp_wars-w49.13`): a free land tile within the Move
+ * of a unit with Escape (the Vampire) on which the visible enemies'
+ * projected damage stays below `hp`, the nearest first; null without
+ * Escape or without such a tile. A reading of the board, not a path: a
+ * zone of control or a blocked way may still stop the flight short.
+ */
+function vampireEscapeTileV7(
+  context: PolicyContextV7,
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  hp: number,
+): CoordV7 | null {
+  const rule = unitRoleRuleV7(view, unit);
+  const escapes = unit.form === "LAND" && rule.abilities.includes("ESCAPE");
+  if (!escapes) return null;
+  let best: CoordV7 | null = null;
+  for (const tile of view.board.tiles) {
+    const gap = distance(tile.at, unit.at);
+    if (
+      !tile.explored ||
+      gap === 0 ||
+      gap > rule.move ||
+      // Open land only (a Mountain would end the flight where it stands).
+      tile.biome === null ||
+      tile.terrain === "RIFT" ||
+      tile.terrain === "MOUNTAIN" ||
+      (best !== null && gap >= distance(best, unit.at)) ||
+      view.units.some((other) => same(other.at, tile.at)) ||
+      visibleImmediateDamage(view, unit, tile.at, context) >= hp
+    )
+      continue;
+    best = tile.at;
+  }
+  return best;
 }
 
 /**
@@ -17690,7 +18383,11 @@ function preferredReward(
       : (offered[0] ?? command.reward);
   if (command.reachedLevel === 3)
     return offered.includes("MILITIA") &&
-      threatenedCity(context, command.cityId)
+      threatenedCity(context, command.cityId) &&
+      // The Undead pass, correction: a threatened Undead city takes its
+      // Walls (a Zombie behind Walls holds; a 5-HP militia Skeleton does
+      // not).
+      !(armyUndeadSeatV7(context) && offered.includes("WALLS"))
       ? "MILITIA"
       : offered.includes("WALLS")
         ? "WALLS"

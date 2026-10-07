@@ -1,5 +1,154 @@
 # Greedy Normal AI
 
+## The Undead pass (`pulp_wars-w49.13`)
+
+**[The Undead faction pass](../product/RULESET_7_TUNING_UNDEAD.md#8-the-normal-ai)**
+(`pulp-wars-poc-7r51`) changed three Undead unit rules: the Skeleton has
+Bones (Defense 3 against an attack from two or more tiles), the Vampire
+has Escape, and the Abomination has Infect. What the policy does with the
+roster, in `src/ai/v7-army.ts` and `src/ai/v7.ts`. Every rule below is an
+Undead seat's (or an Undead unit's); a seat of another faction decides as
+before.
+
+- **Research order** (`ARMY_RESEARCH_ROLES_V7.UNDEAD`): Zombie, Banshee,
+  Lich, Necromancer, Vampire (the Lich was fourth, behind the Necromancer):
+  Drill, Hunting, Marksmanship, Forestry, Sawmilling, Administration,
+  Scouting, Raiding, Chivalry from a Gathering opener.
+- **Shares** (`ARMY_SHARES_V7.undead`, line / defender / ranged / siege /
+  breakthrough): 25 / 25 / 20 / 20 / 10 (20 / 30 / 20 / 15 / 15 before);
+  against two or more visible ranged, siege, or support units 25 / 20 / 15
+  / 20 / 20. One Ghoul for every `ARMY_UNDEAD_SKIRMISHER_PER_UNITS_V7` (5)
+  units, at most `ARMY_UNDEAD_SKIRMISHER_MAXIMUM_V7` (2).
+- **The Coins for a dear unit** (`armyDearUnitFloorV7`, a candidate
+  filter on `TRAIN`). For the Lich, then the Vampire: the role is
+  unlocked, its class is below its share, the army has
+  `ARMY_DEAR_UNIT_ARMY_V7` (4) units, the Coins in hand do not pay for it,
+  and the Coins in hand plus one turn's income do. Then a `TRAIN` that
+  would leave less than the price less one turn's income is no candidate
+  in a city that is neither threatened nor a frontier center. With a
+  hostile unit within `ARMY_PRESSED_RADIUS_V7` of an own center the floor
+  is 0. Before, every city spent the Coins of the turn on a 3-Coin unit
+  and a seat with Sawmilling never held 8.
+- **A Zombie advances together** (`armyZombieAloneV7`). In the committed
+  advance of `armyMoveValueV7` a Zombie's Move into the reach of a visible
+  enemy, outside its own land, needs an own land unit beside the end tile
+  or an own unit that can strike on arrival within
+  `ARMY_SUPPORT_RADIUS_V7`. The same test held a Zombie of a seat that had
+  not committed (tuning 7).
+- **A Zombie bites the dearest unit** (`armyAttackValueV7`): a new bite
+  adds `ARMY_ZOMBIE_BITE_VALUE_V7` (4) a Coin of the target's price to the
+  attack's strategic value, next to the 12 for cheap line infantry it
+  converts. An own Zombie is a unit with Infect **and** Bite
+  (`armyZombieV7`): the Abomination, which has Infect alone and attacks
+  after a Move, is not one.
+- **A Banshee steps up to a Wail** (`undeadMoveValueV7`): the Move to a
+  tile from which its Wail hits two or more units (or kills) has the
+  Wail's priority plus one when an own melee unit is nearer to the enemy
+  than the tile (`armyScreenedV7`), also for a seat that has not
+  committed and whatever reaches the tile. Before, an uncommitted Banshee
+  took such a tile only where the visible enemies could not kill it.
+- **A Vampire strikes and flies back.** `vampireAttackAcceptableV7` also
+  accepts a strike that does not kill when a free open-land tile within
+  the Vampire's Move leaves it alive after the enemy's turn
+  (`vampireEscapeTileV7`, read from the projected view: a zone of control
+  may still stop the flight short). After the strike the escape rule of
+  the Human Raider (`raiderEscapeRetreatValueV7`, priority 1195) moves it
+  to the strictly safer tile.
+- **Holding a center** (`ARMY_CENTER_HOLDER_WORTH_V7`): a Defense that is
+  higher only against shots (Bones) counts as the unit's own, so a Zombie
+  beside a Skeleton is still the unit that steps onto an empty center.
+- **A Guard open to ranged attacks** (`armyGuardExposedV7`) is a unit
+  whose ranged Defense is below its own: a Skeleton is not held back by
+  that rule.
+
+Tests: `tests/unit/ruleset-v7-undead-pass.test.ts` ("the Normal AI's
+army", "the Normal AI's units"). Two diagnostic matches are in
+[the pass, section 8.2](../product/RULESET_7_TUNING_UNDEAD.md#82-two-diagnostic-matches);
+what they left open (the Undead seat's economy in an opening against a
+Human seat) is in its section 12.
+
+### The correction after three hand-played games
+
+[Section 13 of the pass](../product/RULESET_7_TUNING_UNDEAD.md#13-the-correction-after-three-hand-played-games)
+has the evidence. The constants are in `src/ai/v7-army.ts`, the hooks in
+`src/ai/v7.ts`. An **Undead seat's** rules (`armyUndeadSeatV7`: an army
+seat whose own faction is Undead):
+
+- **Villages first** (`armyVillagesFirstV7`, `armyVillagesFirstHoldsV7`).
+  Through round `ARMY_VILLAGES_FIRST_ROUNDS_V7` (10), while the seat
+  knows a free village within `ARMY_VILLAGES_FIRST_REACH_V7` (6) tiles of
+  an own center with no hostile land unit within
+  `ARMY_VILLAGES_FIRST_DANGER_V7` (2) of it:
+  - a Move of a unit that captures and attacks (a Skeleton, a Zombie, a
+    Ghoul) to a tile outside its own land where the visible enemies'
+    projected damage is above 0 and above what it is where the unit
+    stands is no candidate (a Move onto a free village keeps its own
+    rule);
+  - an attack of such a unit that has already moved this turn, on a unit
+    outside the seat's land, that does not kill, is no candidate;
+  - the campaign plan (`CampaignArmyFactsV7.villagesFirst`) counts a
+    hostile unit as an invader only on the seat's own land, so no unit is
+    sent out against one that stands outside it and the free units scout
+    and run the village errands.
+- **Economy first** (`armyEconomyFirstV7`). While the seat can train the
+  first unit of its order (the Zombie) and not the second (the Banshee)
+  and owns no technology that builds population, `armyGrowthResearchV7`
+  gives the growth technology its land can use, of Hunting, Farming, and
+  Forestry only (Fruit, Game, a Farm, a Lumber Camp; never Engineering
+  for Mines), by population per Coin of the research chain, a Lumber Camp
+  counted `ARMY_ECONOMY_FORESTRY_WEIGHT_V7` (3) times because Forestry is
+  also the first step to the Lich. Fruit or Game left to take with a
+  technology it owns does not count as growth on offer here. That
+  technology has `ARMY_DUE_RESEARCH_PRIORITY_V7`, above training, also
+  while the seat expands or is at war, unless a hostile land unit stands
+  at the gates of an own city (`armyEconomyResearchV7`,
+  `armyAtTheGatesV7`).
+- **Pestilence.** With `ARMY_PESTILENCE_LICHES_V7` (2) Liches on the
+  board the research order goes to Explosives (by way of Fortification)
+  before the Vampire's chain.
+- **The garrison swap** (`armySwapsOutV7`, `ARMY_SWAP_PRIORITY_V7` 1251).
+  A unit that cannot attack a neighbour (no attack of its own, or a
+  minimum range of 2: a Banshee, a Lich) on an own center with a hostile
+  land unit within `ARMY_GARRISON_RADIUS_V7` steps off to a tile beside
+  the center when an own unit beside the center that can attack a
+  neighbour and can still move is the better garrison
+  (`armyDefenderWorthV7`). It takes the tile that keeps its Wail, then
+  the safest. The step onto the threatened center (1250) then prefers
+  the best garrison. `armyDefenderWorthV7` counts a Defense that is
+  higher only against shots (Bones) as the unit's own, for every seat.
+- **No helpless garrison** (`armyHelplessGarrisonV7`): for an Undead
+  seat a role with no attack of its own (the Banshee) is not trained
+  onto a contested center while a role that can attack a neighbour is on
+  offer there (it was so for a role with a minimum range of 2).
+- **Walls** (`preferredReward`): a threatened Undead city takes Walls at
+  level 3 (other seats take the Militia unit there).
+- **A Banshee walks up** (`undeadMoveValueV7`,
+  `ARMY_BANSHEE_APPROACH_PRIORITY_V7` 716): one that belongs to no
+  assault (`armyModeV7` `NONE`), with the nearest hostile land unit four
+  to `ARMY_BANSHEE_APPROACH_RADIUS_V7` (6) tiles away, moves toward it,
+  to a tile no visible enemy reaches or one behind an own melee unit
+  where it survives.
+- **A Zombie moves with company** (`armyZombieAloneV7`, now also a
+  candidate filter). A Zombie's Move that raises the projected damage on
+  it, or puts more hostile land units beside it, is no candidate unless
+  an own land unit that fights hand to hand (not a support unit, not the
+  garrison of a center) stands beside the destination, or one that can
+  attack after moving and has not moved yet stands within
+  `ARMY_SUPPORT_RADIUS_V7` of it. It applies in the seat's own land too;
+  not to a Move onto an own center or onto a free village.
+
+**Every army seat but an Undead one**, in a match with an Undead seat:
+
+- **The shots first** (`armyShootsBiterFirstV7`): an attack from the next
+  tile on a full-HP unit with Bite is no candidate while an own unit two
+  or more tiles from the target still has an attack on it on offer.
+- **The cure** (`armyCureDueV7`): the seat has a Bitten unit, its own
+  Captain-role unit has Tend Wounded, and it has no unit that tends.
+  Then the Captain's technology is the first research target, and a role
+  that tends has `ARMY_CURE_TRAINING_VALUE_V7` (400) more in training.
+
+Tests: `tests/unit/ruleset-v7-undead-pass.test.ts` ("the correction: ...").
+
 ## The Goblin pass (`pulp_wars-w49.12`)
 
 **[The Goblin faction pass](../product/RULESET_7_TUNING_GOBLIN.md#8-the-normal-ai)**
@@ -305,7 +454,7 @@ Each faction's signature units come first:
 | Faction | Units in order                                                         | Technologies from a Gathering opener                                                                                           |
 | ------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | Humans  | Marksman, Guard, Swordsman, Catapult, Knight, Captain                  | Hunting, Marksmanship, Drill, Engineering, Forestry, Sawmilling, Scouting, Raiding, Chivalry, Administration (the Goblin pass) |
-| Undead  | Zombie, Banshee, Necromancer, Lich, Vampire                            | Drill, Hunting, Marksmanship, Administration, Forestry, Sawmilling, Scouting, Raiding, Chivalry                                |
+| Undead  | Zombie, Banshee, Lich, Necromancer, Vampire                            | Drill, Hunting, Marksmanship, Forestry, Sawmilling, Administration, Scouting, Raiding, Chivalry (the Undead pass)              |
 | Goblins | Bomb Chucker, Wolf Rider, Orc Brute, Rocket Cart, Warboss, Scrap Buggy | Hunting, Marksmanship, Scouting, Drill, Forestry, Sawmilling, Administration, Raiding, Chivalry (the Goblin pass)              |
 
 (The first draft of this bead used one class order for all three, ranged,
@@ -335,12 +484,15 @@ tuning 5); training never waits.
 
 `armySharesV7(faction, fragile)` gives the shares of the land army in
 percent (line / defender / ranged / siege / breakthrough): Humans 35 / 15 /
-20 / 15 / 15, **Undead 20 / 30 / 20 / 15 / 15** (the defender is the
-Zombie), **Goblins 20 / 20 / 20 / 25 / 15** (the Goblin pass; 30 / 10 /
+20 / 15 / 15, **Undead 25 / 25 / 20 / 20 / 10** (the Undead pass; 20 / 30
+/ 20 / 15 / 15 before; the defender is the Zombie), **Goblins 20 / 20 /
+20 / 25 / 15** (the Goblin pass; 30 / 10 /
 30 / 15 / 15 before); against two or more visible
 ranged, siege, or support units 5 points (Humans 10) move to the
-breakthrough unit. A Goblin army has a Wolf Rider per four units (at most
-three); the others one skirmisher from five units.
+breakthrough unit (the Undead: 25 / 20 / 15 / 20 / 20). A Goblin army has
+a Wolf Rider per four units (at most three), an Undead army a Ghoul per
+five (at most two, the Undead pass); a Human one one skirmisher from five
+units.
 
 An own Zombie (an Undead unit with Infect) of an army seat:
 

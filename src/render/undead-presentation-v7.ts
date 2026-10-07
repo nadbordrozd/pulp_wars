@@ -160,17 +160,20 @@ export function undeadAbilityDescriptionV7(
     case "RALLY":
       return "Frenzies adjacent friendly land troops except Necromancers, Liches and Banshees: +1 Attack on their next attack.";
     case "RAISE_DEAD":
-      return "Raises a 5 HP Skeleton from every free Grave next to it.";
+      // The Undead pass, correction: two tiles; a raised unit fills no
+      // unit slot.
+      return "Raises a 5 HP Skeleton from every free Grave within 2 tiles. They fill no unit slot.";
     case "DEVOUR":
       return "Eats the Grave under it to heal fully. Ends its turn.";
     case "WAIL":
       return "Damages every visible living enemy within 2 tiles. It can't attack.";
     case "INFECT":
-      return "A land unit it kills rises as your Zombie.";
+      return "A land unit it kills rises as your Zombie. It fills no unit slot.";
     case "LIFESTEAL":
       return "Heals by the damage it deals when it survives the fight.";
     case "PLAGUE":
-      return `Living units its attacks hit are plagued for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if this Lich dies${
+      // The Undead pass, correction: Plague needs Pestilence.
+      return `With Pestilence: living units its attacks hit are plagued for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if this Lich dies${
         cureCaptain === null ? "." : ` or ${cureCaptain} tends them.`
       }`;
     case "BITE":
@@ -181,6 +184,9 @@ export function undeadAbilityDescriptionV7(
       return null;
   }
 }
+
+/** The Undead pass, correction: the Pestilence unlock (Undead Explosives). */
+export const PESTILENCE_UNLOCK_TEXT_V7 = "Liches plague the units they hit";
 
 /** Undead command labels; Human commands keep their revision-12 labels. */
 export function undeadCommandLabelV7(

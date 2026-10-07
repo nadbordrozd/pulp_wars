@@ -156,6 +156,26 @@ The treasure-chest reward unit of the faction is the Vampire
 Zombies that Infect and a bite raise are the roster's own Skeleton and
 Zombie, so no further sprite exists.
 
+The Undead pass (`pulp_wars-w49.13`, `pulp-wars-poc-7r51`,
+[the tuning record](../../product/RULESET_7_TUNING_UNDEAD.md)) changed three
+unit rules and no art: the Skeleton has Bones (Defense 3 against an attack
+from two or more tiles), the Vampire has Escape (it may move again after an
+attack it survives), and the Abomination has Infect (what it kills rises as
+a Zombie, with the Zombie's own rising effect and sprite). Bones is a text
+line on the unit card and has no icon; Escape and Infect show as they do on
+the Human Raider and the Zombie. If an art bead gives Bones an icon, the
+vocabulary is the command icons' (above): a bare ribcage with an arrow
+passing through it, in violet.
+
+Its correction (the same bead and identity) made no art either. Two
+things stand in until an art bead: the Undead technology **Pestilence**
+(the Undead name of Explosives: the Liches plague) is drawn with the
+shared Explosives node icon, and the Ghoul's **Carrion** (+1 Attack
+against a Bitten or Plagued unit) is a text line on the unit card with no
+icon. For that bead, in the same vocabulary: a Pestilence node icon (a
+cracked flask or censer in the Plague status's colour), and a Carrion
+ability icon (a jawbone over the bite mark of the Bitten status).
+
 ## Cities and villages
 
 The Undead necropolis has a set of its own in the direction's calm building

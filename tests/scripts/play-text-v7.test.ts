@@ -615,12 +615,18 @@ describe("text-mode play harness", () => {
       LAB_BREAKTHROUGH_UNDEAD: ["UNDEAD", "Undead"],
       // The Goblin pass (`pulp_wars-w49.12`): the player is the Goblins.
       LAB_GOBLIN_MID: ["ORIGINAL", "Human"],
+      // The Undead pass (`pulp_wars-w49.13`): the player is the Undead.
+      LAB_UNDEAD_MID: ["ORIGINAL", "Human"],
     };
     expect(Object.keys(TEXT_PLAY_LABS_V7)).toEqual(Object.keys(attackers));
     for (const lab of Object.keys(TEXT_PLAY_LABS_V7)) {
       const [faction, name] = attackers[lab] ?? ["", ""];
       const [own, ownName] =
-        lab === "LAB_GOBLIN_MID" ? ["GOBLIN", "Goblin"] : ["ORIGINAL", "Human"];
+        lab === "LAB_GOBLIN_MID"
+          ? ["GOBLIN", "Goblin"]
+          : lab === "LAB_UNDEAD_MID"
+            ? ["UNDEAD", "Undead"]
+            : ["ORIGINAL", "Human"];
       const session = path.join(root, `${lab}.json`);
       const started = ok("lab", "--session", session, lab);
       expect(started).toContain(`LAB ${lab}:`);
@@ -657,6 +663,41 @@ describe("text-mode play harness", () => {
         ).toContain(
           `u${lone.id}.kaboom  kaboom | blast 5 at ${lone.at.x},${lone.at.y}: hits nobody | enemy 0 damage, 0 kills; yours 0 damage, 0 kills | this unit dies`,
         );
+      }
+      if (lab === "LAB_UNDEAD_MID") {
+        // The Undead pass: Bones on the Skeleton lines, the Human Guard's
+        // rule beside it, the Coins of the first turn, and the Vampire's
+        // and the Abomination's abilities on the train and tech lines.
+        expect(started).toContain("YOU PLAY THE UNDEAD");
+        expect(started).toContain("35c in hand on the first turn");
+        expect(started).toContain("YOUR TURN | coins 35 |");
+        expect(started).toContain(
+          "| Bones: Defense 3 against attacks from 2 or more tiles",
+        );
+        expect(started).toContain(
+          "| Open to ranged: Defense 1 against attacks from 2 or more tiles",
+        );
+        expect(ok("view", "--session", session, "--full")).toMatch(
+          /Vampire .*abilities: ATTACK, LIFESTEAL, UNANSWERED, ESCAPE/,
+        );
+        expect(ok("tech", "--session", session)).toMatch(
+          /unit Vampire \[KNIGHT\] 9c .*abilities LIFESTEAL,UNANSWERED,ESCAPE/,
+        );
+        expect(ok("help")).toContain("LAB_UNDEAD_MID: the Undead");
+        // The correction: Carrion on the Ghoul, the Lich's Plague behind
+        // Pestilence, why a Guard strikes back hard, and the Human side as
+        // it is at the start.
+        expect(started).toContain(
+          "| Carrion: +1 Attack against a Bitten or Plagued unit",
+        );
+        expect(started).toContain("| Plague needs Pestilence");
+        expect(started).toContain(
+          "| strikes back with its Defense 3, not its Attack",
+        );
+        expect(started).toContain(
+          "2 Knights, 2 Guards and 5 Fighters at the start (and 30c on their first turn, which buys more)",
+        );
+        expect(ok("tech", "--session", session)).toMatch(/Pestilence/);
       }
       const ids = offeredIds(session);
       expect(
@@ -1060,7 +1101,7 @@ describe("text-mode play harness", () => {
     const full = ok("view", "--session", plain, "--full");
     expect(full).toContain("  terrain: . grass");
     expect(full).toMatch(
-      /MUSTER \d+\/\d+ \(different unit kinds you have on the board at once\)/,
+      /MUSTER \d+\/\d+ \(different unit kinds you can train that you have on the board at once; a reward-only unit does not count\)/,
     );
     expect(full).toMatch(
       /ENGINEER \d+\/\d+ \(highest output of one Windmill, Sawmill, Forge, or Workshop; Mines do not count\)/,

@@ -1,5 +1,5 @@
 import type { UnitId } from "../model/ids";
-import { gravesEnabledV7 } from "../rules/ruleset-v7";
+import { RAISE_DEAD_RADIUS_V7, gravesEnabledV7 } from "../rules/ruleset-v7";
 import { unitIsConstructV7 } from "./afflictions";
 import { deathLeavesCrumbsV7 } from "./candy";
 import type { DomainEventV7 } from "./events";
@@ -96,11 +96,13 @@ export function withGraveV7(
 export const RAISE_DEAD_SKELETON_HP_V7 = 5;
 
 /**
- * Revision 13 Raise Dead eligibility (section 6.2): every Grave on the eight
- * cells adjacent to `at` with no living unit of any owner on it, in the
- * (y, x) order of the Grave list. There is no cap and no terrain or territory
- * filter. The public query passes the viewer's Graves and units; a raiser's
- * neighbours are always explored by its owner, so both agree exactly.
+ * Revision 13 Raise Dead eligibility (section 6.2): every Grave within
+ * `RAISE_DEAD_RADIUS_V7` of `at` (the Undead pass, correction: 2 tiles; the
+ * eight adjacent cells before) with no living unit of any owner on it, in
+ * the (y, x) order of the Grave list. There is no cap and no terrain or
+ * territory filter. The public query passes the viewer's Graves (those on
+ * explored tiles) and units; the reducer passes the Graves on the tiles
+ * the raiser's owner has explored, so both agree exactly.
  */
 export function raiseDeadGravesV7(
   graves: readonly CoordV7[],
@@ -109,7 +111,9 @@ export function raiseDeadGravesV7(
 ): readonly CoordV7[] {
   return graves.filter(
     (grave) =>
-      Math.max(Math.abs(grave.x - at.x), Math.abs(grave.y - at.y)) === 1 &&
+      Math.max(Math.abs(grave.x - at.x), Math.abs(grave.y - at.y)) <=
+        RAISE_DEAD_RADIUS_V7 &&
+      !sameCoordV7(grave, at) &&
       !units.some((unit) => unit.hp > 0 && sameCoordV7(unit.at, grave)),
   );
 }

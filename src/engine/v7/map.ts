@@ -4074,12 +4074,13 @@ export const MILITIA_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
  * reward also grants ("Scouts": the survey and a free Raider, with no
  * technology needed). Human only at first; the other factions' Survey is
  * the survey alone until their passes. The Goblin pass (`pulp_wars-w49.12`,
- * 7r50): a Goblin Survey grants a Wolf Rider.
+ * 7r50): a Goblin Survey grants a Wolf Rider. The Undead pass
+ * (`pulp_wars-w49.13`, 7r51): an Undead Survey grants a Ghoul.
  */
 export const SURVEY_RAIDERS_V7: Readonly<Record<FactionIdV7, 0 | 1>> =
   deepFreeze({
     ORIGINAL: 1,
-    UNDEAD: 0,
+    UNDEAD: 1,
     GOBLIN: 1,
     DINOSAUR: 0,
     MARTIAN: 0,

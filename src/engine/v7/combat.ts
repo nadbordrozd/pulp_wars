@@ -9,6 +9,7 @@ import {
   armouredDamageV7,
   unitIsBlastProofV7,
   attackIgnoresCityWallsV7,
+  attackPlaguesV7,
   attackIsChargeV7,
   attackIsRamV7,
   attackIsTorpedoV7,
@@ -349,6 +350,13 @@ export function calculateCombatPreviewV7(
     (plannedPathLength ?? 0) === 0;
   const coldBloodApplied =
     attackerLand && attackerMechanics.coldBloodBonus2 > 0 && defenderChilled;
+  // The Undead pass, correction (`pulp_wars-w49.13`): Carrion, a Ghoul's
+  // attack on a Bitten or Plagued unit.
+  const carrionApplied =
+    attackerLand &&
+    attackerMechanics.carrionBonus2 > 0 &&
+    (state.bitten.some((entry) => entry.unitId === defender.id) ||
+      state.plagued.some((entry) => entry.unitId === defender.id));
   const chargeApplied =
     ownerResearchedTechsV7(state, attacker.ownerId).includes("RAIDING") &&
     attackerRule.abilities.includes("CHARGE") &&
@@ -412,7 +420,8 @@ export function calculateCombatPreviewV7(
         unitAlphaAttack2V7(state, attacker) +
         runUpAttack2 +
         (plantedApplied ? attackerMechanics.plantedBonus2 : 0) +
-        (coldBloodApplied ? attackerMechanics.coldBloodBonus2 : 0);
+        (coldBloodApplied ? attackerMechanics.coldBloodBonus2 : 0) +
+        (carrionApplied ? attackerMechanics.carrionBonus2 : 0);
   // Revision 19 Acid (section 8.1): a land-form Spitter's attack removes the
   // defender's cover and fortification from the whole exchange.
   const acid = attackHasAcidV7(attackerRule, attacker);
@@ -667,6 +676,12 @@ export function calculateCombatPreviewV7(
     attacker,
     defender,
     attackerRule,
+    attackerPlagues: attackPlaguesV7(
+      state,
+      attacker,
+      attackerRule,
+      ownerResearchedTechsV7(state, attacker.ownerId),
+    ),
     defenderRule,
     damageToDefender,
     damageToAttacker,

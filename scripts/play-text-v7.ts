@@ -129,6 +129,7 @@ import {
   ACHIEVEMENT_REQUIRED_TECH_V7,
   CITY_LEVEL_INCOME_CAP_V7,
   LAND_GRANT_COST_PER_TILE_V7,
+  LAND_GRANT_MINIMUM_COST_V7,
   publicLandGrantPriceV7,
   unitIgnoresZocStopsV7,
   missionByIdV7,
@@ -154,7 +155,11 @@ import {
   RAIDER_SLIPS_TEXT_V7,
   CHARGE_CONDITION_TEXT_V7,
   BLAST_MOUNTAIN_SETTER_NOTE_V7,
-  openToRangedTextV7,
+  rangedDefenseTextV7,
+  rangedDefenseWordV7,
+  carrionTextV7,
+  PLAGUE_NEEDS_TEXT_V7,
+  strikesBackTextV7,
   NO_MOVE_AND_ATTACK_TEXT_V7,
   OVERRUN_BUDGET_TEXT_V7,
 } from "../src/render/technology-unlock-text-v7";
@@ -229,7 +234,7 @@ const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; st
   new     --session S [--map dry-land] [--size 11] [--seed 1] [--factions original,undead[,...]]
           [--seat 0] [--curiosities on|off] [--overwrite]
   lab     --session S <LAB> [--overwrite]
-                                        start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins); lab alone lists them
+                                        start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead); lab alone lists them
   view    --session S [--full]          public view of your seat: header, map, cities, units
   tech    --session S                   technology tree with costs and unlocks
   options --session S [--unit ID | --city ID | --tile x,y | --all]
@@ -720,7 +725,11 @@ function roleNotesV7(
   slipsPast = false,
   mechanics: Pick<
     RoleMechanicsV7,
-    "rangedDefense2" | "gangUpLimit" | "blastProof" | "kaboomAfterAttack"
+    | "rangedDefense2"
+    | "gangUpLimit"
+    | "blastProof"
+    | "kaboomAfterAttack"
+    | "carrionBonus2"
   > | null = null,
 ): readonly string[] {
   const rangedDefense2 = mechanics?.rangedDefense2 ?? null;
@@ -731,8 +740,18 @@ function roleNotesV7(
   if (slipsPast) notes.push(RAIDER_SLIPS_TEXT_V7);
   // Tuning 5 (`pulp_wars-w49.4`): the Guard's ranged Defense, and when a
   // Charge applies.
-  if (rangedDefense2 !== null) notes.push(openToRangedTextV7(rangedDefense2));
+  // The Undead pass (`pulp_wars-w49.13`, 7r51): or the Skeleton's Bones.
+  if (rangedDefense2 !== null)
+    notes.push(rangedDefenseTextV7(rangedDefense2, rule.defense2));
   if (rule.abilities.includes("CHARGE")) notes.push(CHARGE_CONDITION_TEXT_V7);
+  // The Undead pass, correction (`pulp_wars-w49.13`): Carrion, Plague
+  // behind Pestilence, and why a low Attack strikes back hard (a Guard
+  // deals a Skeleton 3 attacking and 8 striking back).
+  if (mechanics !== null && mechanics.carrionBonus2 > 0)
+    notes.push(carrionTextV7(mechanics.carrionBonus2));
+  if (rule.abilities.includes("PLAGUE")) notes.push(PLAGUE_NEEDS_TEXT_V7);
+  if (rule.attack2 > 0 && rule.range === 1 && rule.defense2 >= rule.attack2 + 2)
+    notes.push(strikesBackTextV7(rule.defense2));
   // The Goblin pass (`pulp_wars-w49.12`, 7r50): the three Goblin unit rules.
   if (mechanics !== null) {
     if (mechanics.gangUpLimit === 0) notes.push(NO_GANG_UP_TEXT_V7);
@@ -1087,8 +1106,16 @@ function defenseBreakdownTextV7(
     target !== undefined &&
     unitRoleMechanicsV7(context.view, target).rangedDefense2 === base2 &&
     unitRoleRuleV7(context.view, target).defense2 !== base2;
-  if (preview.fortificationLevel <= 0) return open ? " (open to ranged)" : "";
-  return ` (${halfV7(base2)}${open ? " open to ranged" : ""} + fort ${preview.fortificationLevel})`;
+  // The Undead pass (`pulp_wars-w49.13`, 7r51): "bones" for a Skeleton.
+  const word =
+    open && target !== undefined
+      ? rangedDefenseWordV7(
+          base2,
+          unitRoleRuleV7(context.view, target).defense2,
+        )
+      : "";
+  if (preview.fortificationLevel <= 0) return open ? ` (${word})` : "";
+  return ` (${halfV7(base2)}${open ? ` ${word}` : ""} + fort ${preview.fortificationLevel})`;
 }
 
 function combatTextV7(
@@ -1471,9 +1498,11 @@ function describeCommandV7(
     }
     case "LAND_GRANT": {
       const grant = queryLandGrantPreviewV7(view, command.cityId);
-      const cost = grant?.cost ?? 6;
+      const cost = grant?.cost ?? LAND_GRANT_MINIMUM_COST_V7;
       const claim = grant?.tiles.length ?? 0;
-      return `Land Grant for ${cost}c (2c per tile, at least 6c; coins ${view.viewer.coins}->${view.viewer.coins - cost}): the city claims the ${claim} neutral tiles of its 5x5 area that you have explored; unexplored tiles are not claimed and not charged | once per city | uses the city action`;
+      // The Undead pass, correction: the price as charged (it read "2c per
+      // tile, at least 6c" since tuning 5 made it 1 Coin a tile).
+      return `Land Grant for ${cost}c (${LAND_GRANT_COST_PER_TILE_V7}c per tile, at least ${LAND_GRANT_MINIMUM_COST_V7}c; coins ${view.viewer.coins}->${view.viewer.coins - cost}): the city claims the ${claim} neutral tiles of its 5x5 area that you have explored; unexplored tiles are not claimed and not charged | once per city | uses the city action`;
     }
     case "CHOOSE_CITY_REWARD": {
       const special =
@@ -1634,7 +1663,11 @@ function eventTextV7(
       const city = context.view.cities.find(
         (candidate) => candidate.id === event.cityId,
       );
-      const text = `CITY_CAPTURED c${event.cityId}${city === undefined ? "" : ` @${xyV7(city.at)}`} by ${seatLabelV7(context.view, event.to)} from ${event.from === null ? "neutral" : seatLabelV7(context.view, event.from)}`;
+      // The Undead pass (`pulp_wars-w49.13`): a capture is told to every
+      // seat, but a city the seat has not explored is not named (its id
+      // was printed; the fog test met one once an Undead AI seat took a
+      // village in round 3).
+      const text = `CITY_CAPTURED ${city === undefined ? "a city out of your sight" : `c${event.cityId} @${xyV7(city.at)}`} by ${seatLabelV7(context.view, event.to)} from ${event.from === null ? "neutral" : seatLabelV7(context.view, event.from)}`;
       lines.push(text);
       notes.push(text);
       break;
@@ -1677,6 +1710,32 @@ function eventTextV7(
           : `TREASURE_CAPTURED by ${context.memory.tag(event.unitId)} at ${xyV7(event.at)}: granted ${context.memory.tag(event.spawnedUnitId)}${event.spawnedAt === null ? "" : ` at ${xyV7(event.spawnedAt)}`}${event.homeCityId === null ? "" : ` home c${event.homeCityId}`}`;
       lines.push(text);
       if (event.playerId === me) notes.push(text);
+      break;
+    }
+    // The Undead pass, correction (`pulp_wars-w49.13`): a Captain's cure
+    // of a unit you bit or plagued (the tags vanished without a line).
+    case "WOUNDED_TENDED": {
+      const mine =
+        context.view.units.find((unit) => unit.id === event.captainId)
+          ?.ownerId === me ||
+        context.before?.units.find((unit) => unit.id === event.captainId)
+          ?.ownerId === me;
+      if (mine) {
+        lines.push(
+          `${event.kind} ${compactFieldsV7(event as unknown as Record<string, unknown>, context)}`.trimEnd(),
+        );
+        break;
+      }
+      for (const result of event.results) {
+        const cured = [
+          ...(result.curedBitten ? ["the bite"] : []),
+          ...(result.curedPlague ? ["the Plague"] : []),
+        ];
+        if (cured.length > 0)
+          lines.push(
+            `CURED: ${context.memory.tag(event.captainId)} cured ${cured.join(" and ")} of ${context.memory.tag(result.unitId)}`,
+          );
+      }
       break;
     }
     default: {
@@ -1955,6 +2014,9 @@ export const TEXT_PLAY_LABS_V7: Readonly<Record<string, string>> = {
   // The Goblin pass (`pulp_wars-w49.12`): the one lab played as the Goblins.
   LAB_GOBLIN_MID:
     "YOU PLAY THE GOBLINS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each); you can train every Goblin unit (ten technologies) and hold 6 Goblins, 4 Bomb Chuckers, 3 Wolf Riders, 3 Orc Brutes, a Warboss, 2 Rocket Carts and a Scrap Buggy, 35c in hand on the first turn and four free unit slots; the Humans hold 3 Swordsmen, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters, a walled capital, and Forest cover",
+  // The Undead pass (`pulp_wars-w49.13`): the one lab played as the Undead.
+  LAB_UNDEAD_MID:
+    "YOU PLAY THE UNDEAD in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each); you can train every Undead unit (ten technologies) and hold 4 Skeletons, 4 Zombies, 2 Ghouls, 2 Banshees, a Necromancer, 2 Liches and a Vampire, 35c in hand on the first turn and three free unit slots (the capital is full); the Humans hold 3 Swordsmen, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters at the start (and 30c on their first turn, which buys more), a walled capital, and Forest cover; your units recover only in your own land; your Liches plague only once you research Pestilence",
 };
 
 function commandLabV7(args: ArgsV7): string {
@@ -2784,7 +2846,7 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
           entry.achievement === "SLAYER"
             ? " (most kills by one living unit)"
             : entry.achievement === "MUSTER"
-              ? " (different unit kinds you have on the board at once)"
+              ? " (different unit kinds you can train that you have on the board at once; a reward-only unit does not count)"
               : entry.achievement === "ENGINEER"
                 ? " (highest output of one Windmill, Sawmill, Forge, or Workshop; Mines do not count)"
                 : "";

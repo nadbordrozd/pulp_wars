@@ -503,8 +503,9 @@ describe("Lich Plague ability text is match-aware", () => {
   };
 
   it("keeps Human/Undead text byte-identical and names no cure without a Human seat", () => {
+    // The Undead pass, correction (`pulp_wars-w49.13`): "With Pestilence".
     const base =
-      "Living units its attacks hit are plagued for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if this Lich dies";
+      "With Pestilence: living units its attacks hit are plagued for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if this Lich dies";
     expect(lichText(["UNDEAD", "ORIGINAL"])).toBe(
       `${base} or a Captain tends them.`,
     );

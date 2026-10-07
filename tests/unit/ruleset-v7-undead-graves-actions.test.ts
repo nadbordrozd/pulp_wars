@@ -102,16 +102,20 @@ describe("ruleset-7 revision-13 Raise Dead", () => {
     );
   }
 
-  it("raises every empty adjacent Grave as an exhausted 5-HP Skeleton in (y, x) order", () => {
+  it("raises every empty Grave within two tiles as an exhausted 5-HP Skeleton in (y, x) order", () => {
     const state = raiseArena();
     const necromancer = unitAt(state, NECROMANCER_AT);
     const result = apply(state, state.humanPlayerId, {
       kind: "RAISE_DEAD",
       unitId: necromancer.id,
     });
+    // The Undead pass, correction (`pulp_wars-w49.13`): two tiles (the
+    // Grave at 4,2 stayed while the reach was the adjacent tiles), and a
+    // raised Skeleton has no home city.
     const raisedAt = [
       { x: 1, y: 1 },
       { x: 3, y: 1 },
+      { x: 4, y: 2 },
       { x: 2, y: 3 },
     ];
     const ids = raisedAt.map((_, index) => unitId(state.nextEntityId + index));
@@ -126,11 +130,11 @@ describe("ruleset-7 revision-13 Raise Dead", () => {
     const rule = effectiveRoleRuleV7("FIGHTER", "UNDEAD");
     expect(rule.label).toBe("Skeleton");
     expect(RAISE_DEAD_SKELETON_HP_V7).toBe(5);
-    expect(result.state.units.slice(-3)).toEqual(
+    expect(result.state.units.slice(-4)).toEqual(
       raisedAt.map((at, index): UnitStateV7 => ({
         id: required(ids[index]),
         ownerId: state.humanPlayerId,
-        homeCityId: necromancer.homeCityId,
+        homeCityId: null,
         role: "FIGHTER",
         form: "LAND",
         at,
@@ -142,11 +146,10 @@ describe("ruleset-7 revision-13 Raise Dead", () => {
         activation: EXHAUSTED,
       })),
     );
-    // Occupied Graves (own or enemy unit), the Necromancer's own tile, and
-    // Graves at distance 2 stay.
+    // Occupied Graves (own or enemy unit) and the Necromancer's own tile
+    // stay.
     expect(result.state.graves).toEqual([
       NECROMANCER_AT,
-      { x: 4, y: 2 },
       { x: 1, y: 3 },
       { x: 3, y: 3 },
     ]);
@@ -155,7 +158,7 @@ describe("ruleset-7 revision-13 Raise Dead", () => {
       specialActed: true,
       handled: true,
     });
-    expect(result.state.nextEntityId).toBe(state.nextEntityId + 3);
+    expect(result.state.nextEntityId).toBe(state.nextEntityId + 4);
     expect(result.state.commandIndex).toBe(state.commandIndex + 1);
     expect(parseGameStateV7(result.state)).toEqual(result.state);
     // The Necromancer's primary action is spent: no Attack, Frenzy, or
@@ -202,7 +205,7 @@ describe("ruleset-7 revision-13 Raise Dead", () => {
     ).toHaveLength(8);
   });
 
-  it("may exceed the home city's capacity, which then blocks training", () => {
+  it("fills no unit slot of the Necromancer's city: training stays possible", () => {
     const state = arena(
       ["UNDEAD", "ORIGINAL"],
       [{ seat: 0, role: "CAPTAIN", at: NECROMANCER_AT }],
@@ -219,20 +222,21 @@ describe("ruleset-7 revision-13 Raise Dead", () => {
     const after = required(
       previewCityCapacityV7(result.state, cityId) ?? undefined,
     );
-    expect(after.assigned).toBe(before.assigned + 8);
-    expect(after.overCapacity).toBe(after.assigned - after.capacity);
-    expect(after.overCapacity).toBeGreaterThan(0);
+    // The Undead pass, correction (`pulp_wars-w49.13`): the eight raised
+    // Skeletons have no home city. (They were homed to the Necromancer's
+    // city, eight over its capacity, and training was refused.)
+    expect(
+      result.state.units.filter(
+        (unit) => unit.role === "FIGHTER" && unit.homeCityId === null,
+      ),
+    ).toHaveLength(8);
+    expect(after.assigned).toBe(before.assigned);
+    expect(after.available).toBe(before.available);
     expect(
       queryPlayerCommandsV7(result.state, state.humanPlayerId).some(
         (command) => command.kind === "TRAIN" && command.cityId === cityId,
       ),
-    ).toBe(false);
-    expectRejected(
-      result.state,
-      state.humanPlayerId,
-      { kind: "TRAIN", cityId, role: "FIGHTER" },
-      { code: "CITY_CAPACITY_FULL", params: { cityId } },
-    );
+    ).toBe(true);
   });
 
   it("orphans the risings of an orphaned Necromancer", () => {
@@ -410,9 +414,10 @@ describe("ruleset-7 revision-13 Raise Dead", () => {
       ["UNDEAD", "ORIGINAL"],
       [{ seat: 0, role: "CAPTAIN", at: { x: 4, y: 3 } }],
       {
+        // Three tiles away: out of the two-tile reach until it moves.
         graves: [
-          { x: 2, y: 1 },
-          { x: 3, y: 1 },
+          { x: 1, y: 1 },
+          { x: 1, y: 2 },
         ],
       },
     );
@@ -439,7 +444,7 @@ describe("ruleset-7 revision-13 Raise Dead", () => {
       kind: "RAISE_DEAD",
       unitId: necromancer.id,
     });
-    const skeleton = unitAt(raised.state, { x: 2, y: 1 });
+    const skeleton = unitAt(raised.state, { x: 1, y: 1 });
     expect(skeleton.activation).toEqual(EXHAUSTED);
     // Exhausted: a rising offers nothing this turn.
     expect(unitCommands(raised.state, skeleton.id)).toEqual([]);
@@ -518,7 +523,7 @@ describe("ruleset-7 revision-13 Raise Dead", () => {
         ...state,
         graves: [
           NECROMANCER_AT,
-          { x: 4, y: 2 },
+          { x: 5, y: 2 },
           { x: 1, y: 3 },
           { x: 3, y: 3 },
         ],

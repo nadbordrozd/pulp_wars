@@ -239,6 +239,7 @@ import {
   restlessRecoverBlockedV7,
   tendPreviewPresentationV7,
   cureCaptainPhraseV7,
+  PESTILENCE_UNLOCK_TEXT_V7,
   undeadBoundaryNoticeV7,
   undeadCommandLabelV7,
   unitAfflictionsV7,
@@ -10320,7 +10321,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r50",
+    rulesetId: "pulp-wars-poc-7r51",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -10509,6 +10510,8 @@ function effectDescription(
       return nestingUnlockTextV7();
     case "WALLBREAKER":
       return WALLBREAKER_UNLOCK_TEXT_V7;
+    case "PESTILENCE":
+      return PESTILENCE_UNLOCK_TEXT_V7;
     // The Martian revision (section 4).
     case "BRAIN_SUPPORT":
       return BRAIN_SUPPORT_UNLOCK_TEXT_V7;
@@ -10734,6 +10737,7 @@ function technologyEffectGroupIdV7(
     case "PLUNDER":
     case "NESTING":
     case "WALLBREAKER":
+    case "PESTILENCE":
     case "BRAIN_SUPPORT":
     case "FORCE_FIELDS":
     case "DISINTEGRATOR":

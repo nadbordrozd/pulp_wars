@@ -242,7 +242,7 @@ describe("Revision 13 Undead DOM", () => {
     const help = requiredElement<HTMLElement>(".v7-unit-help-dialog");
     expect(help.textContent).toContain("Frenzy");
     expect(help.textContent).toContain(
-      "Raises a 5 HP Skeleton from every free Grave next to it.",
+      "Raises a 5 HP Skeleton from every free Grave within 2 tiles. They fill no unit slot.",
     );
     expect(help.textContent).not.toContain("Rally");
     requiredButton("close-unit-help").click();
@@ -453,7 +453,7 @@ describe("Revision 13 Undead DOM", () => {
     expect(
       requiredElement<HTMLElement>(".v7-unit-help-dialog").textContent,
     ).toContain(
-      "Living units its attacks hit are plagued for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if this Lich dies or a Captain tends them.",
+      "With Pestilence: living units its attacks hit are plagued for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if this Lich dies or a Captain tends them.",
     );
     requiredButton("close-unit-help").click();
     selectUnitAt(controller, host, at.captain);

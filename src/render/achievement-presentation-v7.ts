@@ -25,7 +25,10 @@ export const ACHIEVEMENT_GOALS_V7: Readonly<Record<AchievementIdV7, string>> =
   Object.freeze({
     EXPLORER: "Explore 100 tiles.",
     ENGINEER: "Get one building to 6 population.",
-    MUSTER: "Field 4 different unit types.",
+    // The Undead pass, correction (`pulp_wars-w49.13`): "you can train" (a
+    // reward-only unit such as the Abomination does not count; the meter
+    // read 3 of 4 with four kinds on the board).
+    MUSTER: "Field 4 unit types you can train.",
     CONQUEROR: "Capture an enemy city.",
     LAND_BARON: "Own 5 cities at once.",
     SEA_DOG: "Own 3 warships at once.",

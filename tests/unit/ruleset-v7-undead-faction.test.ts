@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r50.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r51.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r49 and preserves the r50 save", () => {
+  it("cleans obsolete keys through v7r50 and preserves the r51 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r49.current",
+      "pulpWars.save.v7r50.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(49);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(50);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -619,7 +619,8 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         1,
         "CHIVALRY",
         true,
-        ["ATTACK", "LIFESTEAL", "UNANSWERED"],
+        // The Undead pass (`pulp_wars-w49.13`, 7r51): Escape.
+        ["ATTACK", "LIFESTEAL", "UNANSWERED", "ESCAPE"],
       ],
       JUGGERNAUT: [
         "Abomination",
@@ -633,7 +634,8 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         1,
         null,
         true,
-        ["ATTACK", "CAPTURE", "PUSH"],
+        // The Undead pass (7r51): Infect.
+        ["ATTACK", "CAPTURE", "PUSH", "INFECT"],
       ],
       PATROL_BOAT: [
         "Patrol Boat",
@@ -778,7 +780,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
     ]);
   });
 
-  it("differs from the Human graph only in the Administration and Chivalry unlocks", () => {
+  it("differs from the Human graph only in the Administration, Chivalry, and Explosives unlocks", () => {
     expect(UNDEAD_BASELINE_V1_NODES).toHaveLength(
       SHARED_BASELINE_NODES_V7.length,
     );
@@ -804,6 +806,12 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         expect(undead.unlocks).toEqual(
           human.unlocks.filter((unlock) => unlock.kind !== "OVERRUN"),
         );
+      // The Undead pass, correction (`pulp_wars-w49.13`): Pestilence.
+      else if (human.id === "EXPLOSIVES")
+        expect(undead.unlocks).toEqual([
+          ...human.unlocks,
+          { kind: "PESTILENCE" },
+        ]);
       else expect(undead.unlocks).toEqual(human.unlocks);
     });
   });

@@ -5152,9 +5152,10 @@ function graveActionTail(
 }
 
 /**
- * Revision 13 Raise Dead (section 6.2): every eligible adjacent Grave becomes
- * an exhausted 5-HP Skeleton rising homed to the Necromancer's home city, in
- * (y, x) order with consecutive unit IDs; capacity may be exceeded.
+ * Revision 13 Raise Dead (section 6.2): every eligible Grave within
+ * `RAISE_DEAD_RADIUS_V7` (the Undead pass, correction: 2 tiles, 1 before)
+ * becomes an exhausted 5-HP Skeleton rising with no home city (it fills no
+ * unit slot), in (y, x) order with consecutive unit IDs.
  */
 function applyRaiseDead(
   original: GameStateV7,
@@ -5167,8 +5168,13 @@ function applyRaiseDead(
   const necromancer = result.unit;
   // The Dwarf revision section 5.3: a Grave under a mound cannot be raised
   // (every burrowed record stands on its mound tile).
+  // The Undead pass, correction (`pulp_wars-w49.13`): Raise Dead reaches
+  // two tiles, and only Graves on tiles the raiser's owner has explored
+  // (the public view lists exactly those, and every unit on an explored
+  // tile is visible, so the public preview and this agree exactly).
+  const raiser = requirePlayer(state, actor);
   const graves = raiseDeadGravesV7(
-    state.graves,
+    state.graves.filter((grave) => isExplored(raiser, grave)),
     allOwnedUnitsV7(state),
     necromancer.at,
   );
@@ -5187,7 +5193,9 @@ function applyRaiseDead(
       risen.push({
         id: allocation.id,
         ownerId: actor,
-        homeCityId: necromancer.homeCityId,
+        // The Undead pass, correction (`pulp_wars-w49.13`): a raised
+        // Skeleton has no home city, so it fills no unit slot.
+        homeCityId: null,
         role: "FIGHTER",
         form: "LAND",
         at: { x: at.x, y: at.y },

@@ -122,7 +122,7 @@ describe("ruleset-7 revision-13 Infect", () => {
           victimUnitId: victim.id,
           unitId: risingId,
           at: { x: 3, y: 3 },
-          homeCityId: zombie.homeCityId,
+          homeCityId: null,
         },
       ]);
       // No Grave for the infected victim, and the Zombie never advances.
@@ -138,7 +138,7 @@ describe("ruleset-7 revision-13 Infect", () => {
       expect(unitById(result.state, risingId)).toEqual({
         id: risingId,
         ownerId: zombie.ownerId,
-        homeCityId: zombie.homeCityId,
+        homeCityId: null,
         role: "GUARD",
         form: "LAND",
         at: { x: 3, y: 3 },
@@ -185,14 +185,14 @@ describe("ruleset-7 revision-13 Infect", () => {
         victimUnitId: attacker.id,
         unitId: risingId,
         at: { x: 2, y: 3 },
-        homeCityId: zombie.homeCityId,
+        homeCityId: null,
       },
     ]);
     expect(result.state.graves).toEqual([]);
     expect(unitById(result.state, zombie.id).kills).toBe(1);
     expect(unitById(result.state, risingId)).toMatchObject({
       ownerId: zombie.ownerId,
-      homeCityId: zombie.homeCityId,
+      homeCityId: null,
       role: "GUARD",
       at: { x: 2, y: 3 },
       hp: 10,
@@ -227,7 +227,7 @@ describe("ruleset-7 revision-13 Infect", () => {
         victimUnitId: knight.id,
         unitId: unitId(first.state.nextEntityId),
         at: { x: 2, y: 3 },
-        homeCityId: zombie.homeCityId,
+        homeCityId: null,
       },
     ]);
     // The first victim's Grave stays under the risen Zombie.
@@ -339,7 +339,7 @@ describe("ruleset-7 revision-13 Infect", () => {
     });
   });
 
-  it("homes the rising to the Zombie's city even over capacity, or orphans it", () => {
+  it("gives the rising no home city: it fills no unit slot (the Undead pass, correction)", () => {
     const probe = arena(["UNDEAD", "ORIGINAL"], []);
     const home = required(
       probe.cities.find((city) => city.ownerId === probe.humanPlayerId),
@@ -360,8 +360,9 @@ describe("ruleset-7 revision-13 Infect", () => {
     );
     expect(assignedUnitCountV7(full, home.id)).toBe(capacity);
     const result = attack(full, { x: 2, y: 3 }, { x: 3, y: 3 });
-    expect(unitAt(result.state, { x: 3, y: 3 }).homeCityId).toBe(home.id);
-    expect(assignedUnitCountV7(result.state, home.id)).toBe(capacity + 1);
+    // It was homed to the Zombie's city, over capacity, until 7r51.
+    expect(unitAt(result.state, { x: 3, y: 3 }).homeCityId).toBeNull();
+    expect(assignedUnitCountV7(result.state, home.id)).toBe(capacity);
 
     const orphan = arena(
       ["UNDEAD", "ORIGINAL"],
@@ -804,7 +805,8 @@ describe("ruleset-7 revision-13 Infect and Lifesteal: events, fog, and persisten
     const { state, zombie, victim, risen, project } = infection(
       allExceptTiles([zombieAt], 14),
     );
-    expect(risen.homeCityId).not.toBeNull();
+    // The Undead pass, correction: a rising has no home city.
+    expect(risen.homeCityId).toBeNull();
     const infected = {
       kind: "UNIT_INFECTED",
       playerId: zombie.ownerId,

@@ -10,8 +10,8 @@ export const INFECT_RISING_HP_V7 = 10;
  * Records one death converted by Infect (revision 13 sections 5.4 and 6.4):
  * appends the victim's `UNIT_DIED` and then `UNIT_INFECTED`, and returns the
  * Zombie rising that replaces the victim on its tile. The rising is owned by
- * the killing Zombie's owner and homed to its home city (orphaned when the
- * Zombie is), may exceed capacity, has no kills, is not veteran, is not
+ * the killing unit's owner and has no home city (the Undead pass,
+ * correction: it fills no unit slot of any city), has no kills, is not veteran, is not
  * capture-eligible, and carries the caller's exhausted activation. Infect
  * never creates a Grave; an existing Grave stays under the rising.
  */
@@ -30,7 +30,10 @@ export function recordInfectionV7(
   const rising: UnitStateV7 = {
     id: risingId,
     ownerId: source.ownerId,
-    homeCityId: source.homeCityId,
+    // The Undead pass, correction (`pulp_wars-w49.13`): a rising has no
+    // home city, so it fills no unit slot (it took one of the killer's
+    // home city, and converting units stopped the player training).
+    homeCityId: null,
     role: "GUARD",
     form: "LAND",
     at: { x: victim.at.x, y: victim.at.y },

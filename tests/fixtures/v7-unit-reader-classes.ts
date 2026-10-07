@@ -215,14 +215,22 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::undeadMoveValueV7": "BOARD",
     "src/ai/v7.ts::undeadTrainingAdjustmentsV7": "BOARD",
     "src/ai/v7.ts::unitForCommand": "BOARD",
+    // The Undead pass, correction (`pulp_wars-w49.13`): the own Liches on
+    // the board (Pestilence), the unit beside a center that takes it, the
+    // own units that tend, and a Zombie's company.
+    "src/ai/v7.ts::armyResearchTargetV7": "BOARD",
+    "src/ai/v7.ts::armySwapsOutV7": "BOARD",
+    "src/ai/v7.ts::armyCureDueV7": "BOARD",
+    "src/ai/v7.ts::armyZombieAloneV7": "BOARD",
     "src/ai/v7.ts::vampireAttackAcceptableV7": "BOARD",
+    // The Undead pass (`pulp_wars-w49.13`): the free tiles a Vampire flies to.
+    "src/ai/v7.ts::vampireEscapeTileV7": "BOARD",
     "src/ai/v7.ts::vampireStrikesFromV7": "BOARD",
     // (Tuning 7: `visibleImmediateDamage` is the cached entry to it.)
     "src/ai/v7.ts::computeVisibleImmediateDamage": "BOARD",
     "src/ai/v7.ts::waaaghValueV7": "BOARD",
     "src/ai/v7.ts::warTrainingFirstV7": "BOARD",
     "src/engine/v7/achievements.ts::revision21AchievementCountsV7": "BOARD",
-    "src/engine/v7/afflictions.ts::recordBittenRisingV7": "BOARD",
     "src/engine/v7/combat.ts::calculateCombatPreviewV7": "BOARD",
     "src/engine/v7/combat.ts::requireUnit": "BOARD",
     // `pulp_wars-737.2`: the Fountain heals a unit standing on its tile and

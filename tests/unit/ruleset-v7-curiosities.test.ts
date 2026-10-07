@@ -417,11 +417,17 @@ describe("headless parity and the CLI flag", () => {
         // PRNG state too: the match ends a round later).
         // The Goblin pass, correction (`pulp_wars-w49.12`: the Human
         // seat's research order): 17 rounds, recomputed.
-        rounds: 17,
+        // The Undead pass (`pulp_wars-w49.13`: Bones, the Vampire's
+        // Escape, Undead Scouts, the Undead seat's research order and
+        // shares): 15 rounds, recomputed (the board and the final PRNG
+        // state are unchanged). Its correction (the Undead seat's opening
+        // and economy rules, the Human seat's answer to Zombies): 15
+        // rounds still, recomputed.
+        rounds: 15,
         commandHash:
-          "5a56ed9a358e4d26300ab332532472e5d3bd335485829bdf19749ebadd5e63e9",
+          "234332b7a11d6bb1fa832240d1c3232de6405dedce59b06d27c9afd4339e7ef2",
         eventHash:
-          "c4329064debca13293b038ca0a4dd577e52d5b1ab2a2b8a47bafc8fe47fd6292",
+          "cd79150b26decd6e2c8bb47d5cd1d28fa6b091e029a1908f7f56fbc2ae58d017",
         mapHash:
           "1f6ad08d476884229d6cb8a7319ea209b8667cf4e28e24cd07352ebafc3055de",
         finalPrngHash:

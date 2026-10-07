@@ -159,6 +159,18 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7-army.ts::armyRoleScoreV7": "SEAT",
   "src/ai/v7.ts::bareContext": "SEAT",
   "src/ai/v7.ts::armyResearchTargetV7": "SEAT",
+  // The Undead pass (`pulp_wars-w49.13`): an Undead seat keeps the Coins for
+  // a Lich (the seat's own plan).
+  "src/ai/v7.ts::armyDearUnitFloorV7": "SEAT",
+  // The Undead pass, correction: an Undead seat's opening, economy, and
+  // garrison rules are the seat's plan (the viewer's faction); so are a
+  // seat's answer to Zombies (not an Undead seat's) and its cure (its own
+  // Captain's rule).
+  "src/ai/v7.ts::armyUndeadSeatV7": "SEAT",
+  "src/ai/v7.ts::armyEconomyFirstV7": "SEAT",
+  "src/ai/v7.ts::armyShootsBiterFirstV7": "SEAT",
+  "src/ai/v7.ts::armyCureDueV7": "SEAT",
+  "src/ai/v7.ts::armyCureResearchV7": "SEAT",
   "src/ai/v7.ts::armyVacatesCenterV7": "SEAT",
   // The Goblin pass, correction (`pulp_wars-w49.12`): the escort is a
   // Goblin seat's policy (the viewer's faction), whatever kind the unit is.

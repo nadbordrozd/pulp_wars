@@ -229,6 +229,12 @@ export interface CampaignArmyFactsV7 {
    */
   readonly expanding?: boolean;
   /**
+   * The Undead pass, correction (`pulp_wars-w49.13`): villages first. A
+   * hostile unit outside the seat's own land is no invader (no unit is
+   * sent out against it), so the free units scout and take villages.
+   */
+  readonly villagesFirst?: boolean;
+  /**
    * Correction pass: the seat's naval plan is active, or it owns
    * Shorecraft. Its scouting is not changed by the rule for the opening.
    */
@@ -670,11 +676,22 @@ export function campaignPlanForPolicyV7(
   // Defence: engage the hostile land units next to an own city: all
   // hands while no enemy city is known, one unit each once there is a city
   // to march on (the rest counterattack).
+  const ownLand = (at: CoordV7): boolean => {
+    const tile = tiles[indexOf(at)];
+    return (
+      tile !== undefined &&
+      tile.explored &&
+      tile.territoryOwnerId === view.viewer.id
+    );
+  };
   const invaders = hostileLand
-    .filter((unit) =>
-      ownCenters.some(
-        (at) => chebyshev(at, unit.at) <= CAMPAIGN_INVADER_RADIUS_V7,
-      ),
+    .filter(
+      (unit) =>
+        ownCenters.some(
+          (at) => chebyshev(at, unit.at) <= CAMPAIGN_INVADER_RADIUS_V7,
+        ) &&
+        // The Undead pass, correction: villages first.
+        (facts.army?.villagesFirst !== true || ownLand(unit.at)),
     )
     .sort((left, right) => left.id - right.id);
   if (invaders.length > 0) {

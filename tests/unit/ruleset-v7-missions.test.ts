@@ -123,6 +123,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The Goblin pass (`pulp_wars-w49.12`): the Goblins for the hand player.
   "LAB_GOBLIN_MID@1:GOBLIN":
     "8ddcd6ec959703dfa7bed33a8d3c8c3a9e33b4edea20b1f18a70d61c240fdb11",
+  // The Undead pass (`pulp_wars-w49.13`): the Undead for the hand player.
+  "LAB_UNDEAD_MID@1:UNDEAD":
+    "a37ad50524ce01bd7e88b4300d561063d13cb8e51087a3e9adc978ad5cf08932",
 };
 
 /**
@@ -224,6 +227,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "b60fca0d1b6571f3ae2621c400e1af71d030b5dfea5f6b846845d7c3aedc3719",
   "LAB_GOBLIN_MID@1:GOBLIN":
     "d13ad9dd793b273e90954ebfa00f9d58ef0f1cb41f774825041c5c1151ef6df5",
+  "LAB_UNDEAD_MID@1:UNDEAD":
+    "1ba498c4ccc6d783141c1bed27083016627db6c434f8d91b2eeffe60f2137296",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {

@@ -118,6 +118,12 @@ export function afflictionCombatEffectsV7(input: {
   readonly attacker: AfflictionCombatantV7;
   readonly defender: AfflictionCombatantV7;
   readonly attackerRule: EffectiveRoleRuleV7;
+  /**
+   * The Undead pass, correction (`pulp_wars-w49.13`): the attacker's
+   * controller holds Pestilence (`attackPlaguesV7`); a Lich without it
+   * plagues nobody.
+   */
+  readonly attackerPlagues: boolean;
   readonly defenderRule: EffectiveRoleRuleV7;
   readonly damageToDefender: number;
   readonly damageToAttacker: number;
@@ -176,7 +182,7 @@ export function afflictionCombatEffectsV7(input: {
     unitTakesStatusV7(unit) &&
     isLivingUnitV7(input.roster, unit);
   const plagued: UnitId[] = [];
-  if (input.attackerRule.abilities.includes("PLAGUE") && !input.attackerDies) {
+  if (input.attackerPlagues && !input.attackerDies) {
     // The Martian revision section 5.3: a Lich plagues only targets that
     // lost HP, so a hit a Shield absorbed completely plagues nobody (an
     // unshielded target of a 0-damage hit is plagued as before).
@@ -351,16 +357,12 @@ export function recordBittenRisingV7(
 ): UnitStateV7 {
   // The rising is the biter seat's own `GUARD` (a role-level read).
   const rule = seatRoleRuleV7(lookup, bite.biterPlayerId, "GUARD");
-  const biter = lookup.units.find(
-    (unit) =>
-      unit.id === bite.biterUnitId &&
-      unit.hp > 0 &&
-      unit.ownerId === bite.biterPlayerId,
-  );
   const rising: UnitStateV7 = {
     id: risingId,
     ownerId: bite.biterPlayerId,
-    homeCityId: biter?.homeCityId ?? null,
+    // The Undead pass, correction (`pulp_wars-w49.13`): a rising has no
+    // home city, so it fills no unit slot.
+    homeCityId: null,
     role: "GUARD",
     form: "LAND",
     at: { x: victim.at.x, y: victim.at.y },

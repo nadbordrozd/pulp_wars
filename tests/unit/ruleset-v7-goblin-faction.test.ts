@@ -81,12 +81,12 @@ import {
 // 9, and 13).
 
 describe("ruleset-7 revision-17 identity", () => {
-  it("keeps r16 among the prior identities after the r50 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r50.current");
-    expect(PRIOR_RULESET_7_IDS.at(-34)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(49);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-34)).toBe(
+  it("keeps r16 among the prior identities after the r51 identity and cleans the r16 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r51.current");
+    expect(PRIOR_RULESET_7_IDS.at(-35)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(50);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-35)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -780,7 +780,8 @@ describe("ruleset-7 Goblin technology", () => {
     // (tests/unit/ruleset7-goblin-presentation.test.ts).
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7).toEqual({
       ORIGINAL: {},
-      UNDEAD: {},
+      // The Undead pass, correction (`pulp_wars-w49.13`): Pestilence.
+      UNDEAD: { EXPLOSIVES: "Pestilence" },
       GOBLIN: { COMMERCE: "Plunder" },
       DINOSAUR: { FORTIFICATION: "Nesting", EXPLOSIVES: "Wallbreaker" },
       MARTIAN: { FORTIFICATION: "Force Fields", EXPLOSIVES: "Disintegrator" },

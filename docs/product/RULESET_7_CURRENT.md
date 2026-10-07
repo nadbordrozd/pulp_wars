@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r50`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r51`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -199,6 +199,38 @@ balance on water maps, `pulp_wars-5ti.8`; and the polish items of
 a unit on ice has no fortification, so a Dwarf Hammerer or Steam Mole is
 never dug in on an ice tile ([section 22.7](#227-dig-in)). No shape changed,
 and a match without both a Dwarf and an Ice Folk seat plays as at `7r44`.
+`pulp-wars-poc-7r51` (`pulp_wars-w49.13`) is the
+**[Undead faction pass](RULESET_7_TUNING_UNDEAD.md)**. Three Undead unit
+rules changed and no number: the **Skeleton has Bones**, Defense 3 against
+an attack from two or more tiles ([sections 11](#11-unit-roster) and
+[13.2](#132-damage)); the **Vampire has Escape**, one more Move after an
+attack it survives ([section 12.2](#122-activation)); and the **Abomination
+has Infect**: a land unit it kills rises as a Zombie, and it does not
+advance ([section 17.6](#176-infect)). An Undead city's level-2 Survey is
+**Scouts**, with a free Ghoul, as the Humans' and the Goblins' is
+([section 4.8](#48-city-rewards)). The Undead Normal AI researches and buys
+for that roster ([section 16](#16-normal-ai-summary)), and the lab
+`LAB_UNDEAD_MID` stages the Undead for a hand player
+([section 2.6](#26-mission-setup)). No command, event, state, or view
+shape changed. A match without an Undead seat plays as at `7r50`. **Where
+another passage of this document, or the
+[revision-13 overlay](RULESET_7_REVISION_13_UNDEAD.md), still gives a
+Skeleton exact Fighter parity under fire, a Vampire no Escape, or an
+Abomination the Juggernaut's rule alone, this paragraph and the sections it
+names are the rule.**
+**Its correction** (the same bead and identity, after three hand-played
+games; [its section 13](RULESET_7_TUNING_UNDEAD.md#13-the-correction-after-three-hand-played-games)):
+a **rising has no home city** and fills no unit slot (an Infect or Bitten
+Zombie and a raised Skeleton; [section 17.3](#173-risings)); a **Lich
+plagues only with Pestilence**, the Undead Explosives
+([section 17.8](#178-plague)); **Raise Dead reaches Graves within two
+tiles** ([section 17.2](#172-raise-dead-and-devour)); the **Ghoul has
+Carrion**, +1 Attack against a Bitten or Plagued unit
+([section 11](#11-unit-roster)); a **Tend that cures** a Plague or a bite
+is also shown to every player who sees the Captain and the cured unit
+([section 17.10](#1710-commands-events-and-queries)); and the Undead and
+the Human Normal AI have the rules of
+[section 16](#16-normal-ai-summary).
 `pulp-wars-poc-7r50` (`pulp_wars-w49.12`) is the
 **[Goblin faction pass](RULESET_7_TUNING_GOBLIN.md)**. Three Goblin unit
 rules changed and no number: a **Bomb Chucker's bomb gets no Gang Up**
@@ -434,7 +466,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r50`.
+resolved ones as of `pulp-wars-poc-7r51`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -535,10 +567,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r50`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r51`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r50.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r51.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -1444,8 +1476,9 @@ test fixtures `TEST_GROUNDS`, `TEST_RUSH`, `TEST_HOLD`, `TEST_GUARD`, and
 `TEST_NECK`, which belong to no campaign chapter, and the hidden labs of
 the text harness ([text-mode play](../validation/TEXT_PLAY.md#labs)):
 `LAB_SIEGE`, `LAB_BACKLINE`, `LAB_LATE`, the three `LAB_BREAKTHROUGH`
-fixtures, and `LAB_GOBLIN_MID` (the Goblin pass: the hand player is the
-Goblins). Adding a mission is content: it
+fixtures, `LAB_GOBLIN_MID` (the Goblin pass: the hand player is the
+Goblins), and `LAB_UNDEAD_MID` (the Undead pass: the hand player is the
+Undead). Adding a mission is content: it
 changes no rule and no ruleset identity.
 
 | Setup field              | `MISSION` rule                                                                                                             |
@@ -2104,8 +2137,9 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
   city, [section 22.8](#228-engineer-repair-and-assemble)), `REBAKE` (in the
   Confectioner's home city, [section 23.3](#233-crumbs)), and a treasure
   unit need `used + slots(role) <= capacity`, otherwise
-  `CITY_CAPACITY_FULL` (or the 5-Coin chest). Reward units (a two-slot Brontosaurus or Colossus too) and
-  Undead risings ([section 17.3](#173-risings)) may exceed capacity; a
+  `CITY_CAPACITY_FULL` (or the 5-Coin chest). Reward units (a two-slot Brontosaurus or Colossus too)
+  may exceed capacity; an Undead rising has no home city and uses no slot
+  ([section 17.3](#173-risings)); a
   capturing unit is re-homed with its own slots (a controlled unit stays
   homeless) and
   may put its new city over capacity; capacity loss never removes a unit or
@@ -2229,7 +2263,8 @@ Each reached level grants exactly one reward, chosen by the owner:
   (12 before). A Human Militia is one Fighter again (two at round 3). A
   Human `SURVEY` also grants a Raider (`SURVEY_RAIDERS_V7`), placed like any
   reward unit, without Scouting. **The Goblin pass** (`7r50`): a Goblin
-  `SURVEY` grants a Wolf Rider in the same way; the other six factions'
+  `SURVEY` grants a Wolf Rider in the same way. **The Undead pass**
+  (`7r51`): an Undead `SURVEY` grants a Ghoul. The other five factions'
   Survey is still the survey alone.
 - **Barracks** (`BARRACKS`, the last reward ID). A record in the city's
   reward history; each adds 1 to the city's unit capacity
@@ -2471,9 +2506,12 @@ Candy trees (the **seafaring** factions: same unlocks, numbers, and names;
 
 The table uses Human (`ORIGINAL_BASELINE_V5`) names. The Undead tree
 (`UNDEAD_BASELINE_V1`) has the same graph, tiers, prerequisites, costs, free
-opener, Dry Land Naval rule, and every economic and movement unlock, with two
+opener, Dry Land Naval rule, and every economic and movement unlock, with three
 unlock differences: Administration grants Necromancer support (Frenzy and
-Raise Dead) instead of Captain support, and Chivalry grants no Overrun. Every
+Raise Dead) instead of Captain support, Chivalry grants no Overrun, and
+Explosives, shown to an Undead viewer as **Pestilence**, also grants
+`PESTILENCE` (the owner's Liches plague,
+[section 17.8](#178-plague); capability `plague`). Every
 other unlock is the same mechanical value, so role unlocks, the Fieldcraft
 Forest freedom, and the Sight entries apply to the Undead role of the same
 mechanical role. The tree, research offers, and Help describe each unlock
@@ -2489,6 +2527,7 @@ the table above are:
 | Scouting       | Ghoul; Ghoul Sight 2                                                            |
 | Raiding        | Pillage for all trainable land roles; Ghoul Charge                              |
 | Chivalry       | Vampire; Cultivate Forest                                                       |
+| Pestilence     | (Explosives) Blast Mountain; Breach; Liches plague the units they hit           |
 | Drill          | reveal Ore; Zombie; first-hostile-capture Spoils (2 Coins)                      |
 | Fortification  | Skeleton/Zombie Build Field Defense                                             |
 
@@ -3195,8 +3234,8 @@ copy these.
 `pulp-wars-poc-7r46`): the Marksman costs 4 Coins (3 before) and never
 advances after a kill (`advancesAfterKill` false; before, it advanced after
 a kill from distance 1); the Catapult has Attack 3 (3.5 before; a full-HP
-Fighter, Skeleton, or Caveman on a city center takes 8 and survives one
-shot); the Knight has 13 HP (10 before; promoted 18). The Knight has
+Fighter or Caveman on a city center takes 8 and survives one shot, a
+Skeleton 7 since the Bones of `7r51`); the Knight has 13 HP (10 before; promoted 18). The Knight has
 Overrun and no Charge. These are Human numbers: the Lich, Rocket Cart,
 Steam Cannon, Vampire, Scrap Buggy, and the other factions' ranged units
 are unchanged. Human Disband refunds follow the cost (a Marksman's is 2).
@@ -3260,26 +3299,46 @@ The table above is the Human (`ORIGINAL`) roster. The Undead (`UNDEAD`)
 roster, by mechanical role (half-unit values `attack2`/`defense2` in
 parentheses):
 
-| Unit        | Role          | Tech              | Cost |  HP | Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                   |
-| ----------- | ------------- | ----------------- | ---: | --: | -----: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------- |
-| Skeleton    | `FIGHTER`     | start             |    2 |  10 |  2 (4) |   2 (4) |    1 |     1 |     1 | yes               | yes     | Field Defense                               |
-| Ghoul       | `RAIDER`      | Scouting          |    3 |  10 |  2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Devour                    |
-| Banshee     | `MARKSMAN`    | Marksmanship      |    3 |   8 |  1 (2) |   1 (2) |    1 |     — |    1² | Wail: yes         | yes     | Wail; no targeted Attack                    |
-| Zombie      | `GUARD`       | Drill             |    3 |  18 |  2 (4) |   2 (4) |    1 |     1 |     1 | no                | yes     | Field Defense; Infect; Bite; never advances |
-| Necromancer | `CAPTAIN`     | Administration    |    5 |  10 |  1 (2) |   1 (2) |    1 |     1 |     1 | yes               | no      | Frenzy; Raise Dead                          |
-| Lich        | `CATAPULT`    | Sawmilling        |    8 |  10 |  3 (6) |   1 (2) |    1 |   2–3 |     1 | no                | no      | splash; Plague; never advances              |
-| Vampire     | `KNIGHT`      | Chivalry          |    9 |  10 |  3 (6) |   1 (2) |    3 |     1 |     1 | yes               | no      | Lifesteal; Unanswered                       |
-| Abomination | `JUGGERNAUT`  | reward only       |    — |  40 |  4 (8) |   4 (8) |    1 |     1 |     1 | yes               | yes     | Push                                        |
-| Patrol Boat | `PATROL_BOAT` | Shorecraft        |    5 |  10 |  2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                     |
-| Battleship  | `BATTLESHIP`  | Naval Engineering |   16 |  25 | 6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                               |
-| Submarine   | `SUBMARINE`   | Submersibles      |    9 |  12 |  4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                   |
+| Unit        | Role          | Tech              | Cost |  HP | Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                    |
+| ----------- | ------------- | ----------------- | ---: | --: | -----: | ------: | ---: | ----: | ----: | ----------------- | ------- | -------------------------------------------- |
+| Skeleton    | `FIGHTER`     | start             |    2 |  10 |  2 (4) |  2 (4)³ |    1 |     1 |     1 | yes               | yes     | Field Defense; Bones³                        |
+| Ghoul       | `RAIDER`      | Scouting          |    3 |  10 |  2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Devour; Carrion⁴           |
+| Banshee     | `MARKSMAN`    | Marksmanship      |    3 |   8 |  1 (2) |   1 (2) |    1 |     — |    1² | Wail: yes         | yes     | Wail; no targeted Attack                     |
+| Zombie      | `GUARD`       | Drill             |    3 |  18 |  2 (4) |   2 (4) |    1 |     1 |     1 | no                | yes     | Field Defense; Infect; Bite; never advances  |
+| Necromancer | `CAPTAIN`     | Administration    |    5 |  10 |  1 (2) |   1 (2) |    1 |     1 |     1 | yes               | no      | Frenzy; Raise Dead (2 tiles⁴)                |
+| Lich        | `CATAPULT`    | Sawmilling        |    8 |  10 |  3 (6) |   1 (2) |    1 |   2–3 |     1 | no                | no      | splash; Plague (Pestilence⁴); never advances |
+| Vampire     | `KNIGHT`      | Chivalry          |    9 |  10 |  3 (6) |   1 (2) |    3 |     1 |     1 | yes               | no      | Lifesteal; Unanswered; Escape³               |
+| Abomination | `JUGGERNAUT`  | reward only       |    — |  40 |  4 (8) |   4 (8) |    1 |     1 |     1 | yes               | yes     | Push; Infect³; never advances³               |
+| Patrol Boat | `PATROL_BOAT` | Shorecraft        |    5 |  10 |  2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                      |
+| Battleship  | `BATTLESHIP`  | Naval Engineering |   16 |  25 | 6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                |
+| Submarine   | `SUBMARINE`   | Submersibles      |    9 |  12 |  4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                    |
 
 ² Banshee Sight becomes 2 with Fieldcraft.
 
-- **Skeleton** has exact Fighter parity (Field Defense with Fortification,
-  capture, Pillage, Disband); Raise Dead also creates Skeletons.
+³ [The Undead pass](RULESET_7_TUNING_UNDEAD.md) (`pulp_wars-w49.13`,
+`pulp-wars-poc-7r51`): Bones, Escape, and Infect for the Abomination. No
+number of the roster changed.
+
+⁴ Its correction (the same bead and identity): Carrion, Raise Dead at two
+tiles, and Plague behind Pestilence.
+
+- **Skeleton** has Fighter parity for Field Defense with Fortification,
+  capture, Pillage, and Disband; Raise Dead also creates Skeletons. Since
+  `7r51` it has **Bones**: against an attack from two or more tiles its
+  Defense is 3 (`RoleMechanicsV7.rangedDefense2` 6 half-units,
+  `SKELETON_RANGED_DEFENSE2_V7`, the mechanic of the Human Guard's Open to
+  ranged set above the unit's Defense instead of below); next to its
+  attacker it defends at 2. A Marksman's shot deals a full-HP Skeleton 4
+  (5 before), a Catapult's 7 (8). A Skeleton's retaliation, and a splash
+  it takes, are as before.
 - **Ghoul** keeps Raider Charge (Raiding), Pillage, and Fieldcraft Forest
-  freedom; it has no Escape (Devour replaces it) and costs 3, not 4.
+  freedom; it has no Escape (Devour replaces it) and costs 3, not 4. It
+  has **Carrion**: its own attack on a unit that is Bitten or Plagued has
+  +1 Attack (role mechanic `carrionBonus2` 2 half-units,
+  `GHOUL_CARRION_BONUS2_V7`; the two marks do not add up; it adds to a
+  Charge and to Frenzy; not in a retaliation). The bonus is in the
+  preview's `attack2`. On a Bitten Fighter a Ghoul deals 8 (5 without),
+  with a Charge it kills it.
 - **Banshee** has no `ATTACK` ability: it cannot issue `ATTACK`, never
   retaliates, and its role stores range 0 and minimum range 0. Its Attack
   exists only for Wail. It keeps capture, Pillage, Disband, Fieldcraft Forest
@@ -3287,12 +3346,21 @@ parentheses):
 - **Zombie** has Guard parity for movement, capture, Field Defense, and "cannot
   attack after moving"; it never advances after a kill.
 - **Necromancer** cannot capture; its primary actions are Attack, Frenzy, and
-  Raise Dead.
+  Raise Dead, which reaches Graves within two tiles
+  ([section 17.2](#172-raise-dead-and-devour)).
 - **Lich** has Catapult parity for range 2–3, minimum range, "cannot attack
   after moving", no capture, no advance, and Field Defense destruction on the
-  primary target tile, and adds splash and Plague.
+  primary target tile, and adds splash and, once its owner has researched
+  Pestilence (the Undead Explosives), Plague
+  ([section 17.8](#178-plague)).
 - **Vampire** cannot capture and has no Overrun; the defender of its attacks
-  never retaliates (`UNANSWERED`).
+  never retaliates (`UNANSWERED`). Since `7r51` it has **Escape**
+  ([section 12.2](#122-activation)): after an attack it survives it may
+  make one more Move with its full Move 3.
+- **Abomination** has the Juggernaut's numbers and Push. Since `7r51` it
+  has **Infect** ([section 17.6](#176-infect)): a land unit it kills rises
+  as a Zombie on its tile, and the Abomination never advances after a kill
+  (`advancesAfterKill` false). It has no Bite.
 - **Abomination** has exact Juggernaut parity (reward only, Push, capture, no
   Pillage or Disband). Patrol Boat, Battleship, and Submarine are the Human
   units.
@@ -4042,7 +4110,9 @@ General roster rules:
   and never offered, except `DISBAND` (Abandon Egg,
   [section 19.7](#197-egg-destruction-capture-and-abandon-egg)).
 - `WAIT` only marks the unit handled (it also declines an available Escape).
-- **Escape** (Human Raider, innate; the Ghoul, Wolf Rider, Raptor, Saucer,
+- **Escape** (Human Raider, innate, and since `7r51` the Undead Vampire,
+  with its Move 3 where the text below says Raider and Move 2; the Ghoul,
+  Wolf Rider, Raptor, Saucer,
   Sled, and Gyrocopter have none; never granted to a sluggish Raider):
   after an accepted
   Attack that the Raider survives, including after a melee kill with its
@@ -4158,7 +4228,10 @@ attack  = base Attack (a half-power heat ray: half, rounded down;
 defense = base Defense + fortification level          (embarked or Egg: 1;
                                                        a Human Guard hit from
                                                        two or more tiles: 1
-                                                       + fortification level)
+                                                       + fortification level;
+                                                       an Undead Skeleton hit
+                                                       from two or more tiles:
+                                                       3 + fortification level)
 cover   = 1.5 on a Mountain, and in a Forest when the defender's owner has
           Forestry, for land-form ground defenders
           (never a Martian walker or flyer), else 1.25 on Snow, or on ice
@@ -5104,12 +5177,13 @@ Harbours from it.
   cities its first units come before research. With no enemy within four
   tiles of a center, a city level or cheap population is bought before
   training, and research goes toward the faction's own units in its own
-  order (Humans: Marksman, Guard, Catapult, Knight; Undead: Zombie,
-  Banshee, Necromancer, Lich, Vampire; Goblins since `7r50`: Bomb Chucker,
+  order (Humans: Marksman, Guard, Catapult, Knight; Undead since `7r51`:
+  Zombie, Banshee, Lich, Necromancer, Vampire; Goblins since `7r50`: Bomb Chucker,
   Wolf Rider, Rocket Cart, Warboss, Scrap Buggy, Orc Brute, with a fifth
   of the army Rocket Carts and a fifth Scrap Buggies), Roads with three cities, two city levels to a
-  technology; a third of an Undead army is Zombies, which go for cheap
-  infantry and keep out of ranged reach where they can; the dear unit of a class the
+  technology; a quarter of an Undead army is Zombies (a third before
+  `7r51`), which bite the dearest unit in reach, go for cheap
+  infantry, and keep out of ranged reach where they can; the dear unit of a class the
   army lacks is bought when the Coins are there. With an enemy within
   three tiles of a center nothing but units is bought while a city can
   still train. An enemy on an own center is attacked whatever the
@@ -5308,7 +5382,40 @@ Harbours from it.
   in every army seat's assault a unit with Gang Up weighs half as much
   again and a joined battle with one and a half times the enemy's units
   commits at 70% of its weight. The Human seat researches the Swordsman
-  third. Against
+  third. **The Undead pass** (`7r51`,
+  [its section 8](RULESET_7_TUNING_UNDEAD.md#8-the-normal-ai)), an Undead
+  seat's rules only: it researches the Lich third and fields a quarter
+  Zombies, a quarter Skeletons, a fifth Banshees, a fifth Liches, and one
+  Ghoul for five units (two at most); it keeps the Coins for a Lich or a
+  Vampire its army is short of when one more turn's income pays for it, in
+  a city no enemy is near; a Zombie's step into the enemy's reach outside
+  its own land ends beside another own unit or within two tiles of one
+  that can strike on arrival, also in a committed assault; a Zombie's new
+  bite is worth 4 a Coin of its target's price; a Banshee steps up behind
+  an own melee unit to a Wail on two or more units also when its seat has
+  not committed; a Vampire makes a strike that does not kill where a free
+  tile within its Move leaves it alive, and flies there afterwards; and a
+  Skeleton's Bones does not count for holding a center. **Its correction**
+  ([section 13.6](RULESET_7_TUNING_UNDEAD.md#136-the-undead-normal-ai)),
+  an Undead seat's rules: in its first ten rounds, while it knows a free
+  village within six tiles of an own center with no enemy beside it, its
+  Skeletons, Zombies, and Ghouls walk into no visible enemy's reach
+  outside its land and make no attack after a Move there that does not
+  kill; it researches the growth its land can use (Farming, or Forestry by
+  way of Hunting; a Forest counts threefold) right after the Zombie and
+  before the Banshee, and buys it before a unit; it researches Pestilence
+  before the Vampire once it fields two Liches; a Banshee or a Lich on a
+  threatened center steps off for the sturdier unit beside it, no Banshee
+  is trained onto a contested center while a Zombie can be, and a
+  threatened city takes Walls at level 3; a Banshee that belongs to no
+  assault walks up to a fight four to six tiles away; and a Zombie makes
+  no step that raises the damage it can take, or puts more enemies beside
+  it, without a unit that fights hand to hand beside the tile (or a
+  striker within two tiles that can still move), in its own land too.
+  Every army seat but an Undead one: no attack from the next tile on a
+  full-HP unit that bites while an own unit can still shoot the same
+  target this turn; and a seat with a Bitten unit and no unit that tends
+  researches its Captain's technology next and trains the Captain. Against
   Goblins, threat evaluation includes Gang Up, Bomb Chucker splash, and the
   Kaboom reach of visible goblin-crewed land units (an embarked one cannot
   land and Kaboom in the same turn), units avoid ending in a clump a visible
@@ -5638,8 +5745,11 @@ one `UNDEAD` seat) and stays enabled after the Undead seats are eliminated.
 - **Raise Dead** (`RAISE_DEAD { unitId }`, Necromancer primary action, 0
   Coins). Legal for an own land-form Necromancer that has not used its
   primary action (it may have moved) when at least one **eligible Grave**
-  exists: a Grave on one of its eight neighbours with no unit of any owner
-  and no Dwarf mound on it (no cap, no terrain or territory filter). In `(y, x)` order each
+  exists: a Grave within two tiles of it (`RAISE_DEAD_RADIUS_V7`; its eight
+  neighbours until the correction of `7r51`), on a tile its owner has
+  explored, with no unit of any owner
+  and no Dwarf mound on it (no cap, no terrain or territory filter; the
+  Necromancer's own tile is not one). In `(y, x)` order each
   eligible Grave is removed and replaced by a Skeleton rising at 5 of 10 HP,
   taking consecutive new unit IDs. The Necromancer is then handled. With no
   eligible Grave the command is rejected with `RAISE_DEAD_NOT_LEGAL`
@@ -5657,11 +5767,17 @@ one `UNDEAD` seat) and stays enabled after the Undead seats are eliminated.
 Raise Dead Skeletons, Infect Zombies, and Bitten Zombies are **risings**. A
 rising:
 
-- is homed to the creating unit's home city (for a Bitten rising, the biting
-  Zombie's home city while that Zombie is on the board), or orphaned when
-  that unit is orphaned or gone;
-- may exceed its home city's capacity, like a reward unit; an over-capacity
-  city cannot train until a slot frees;
+- has **no home city** (`homeCityId` null, an orphan) and so uses no unit
+  slot of any city for as long as it lives: converting and raising units
+  never stops a city from training. (Until the correction of `7r51` it was
+  homed to the creating unit's home city, over its capacity, and that city
+  could not train until a slot freed; a saved state with such a homed
+  rising still loads and keeps it.) Nothing else follows from it: a
+  rising is captured from, Disbands (half its role's price), counts for
+  Muster, recovers, and is cured like any unit, the capture of a city
+  changes nothing for it, and the city panel does not list it. Events
+  `UNIT_INFECTED`, `BITTEN_UNIT_RISEN`, and the units of `DEAD_RAISED`
+  carry `homeCityId` null;
 - appears in place regardless of movement-entry rules (Mountain without
   Engineering, allied territory) and never destroys Field Defense;
 - has 0 kills, is not veteran, is not capture-eligible, and is exhausted
@@ -5687,7 +5803,11 @@ Undead land-form units recover only in their owner's territory
 
 A land-form unit killed by a Zombie, by the Zombie's attack or by its
 retaliation, dies normally (the Zombie keeps the kill) and then rises as a
-Zombie of the Zombie's owner at 10 of 18 HP on its tile, with no Grave. The
+Zombie of the Zombie's owner at 10 of 18 HP on its tile, with no Grave.
+Since `7r51` the **Abomination** has Infect too (the role ability
+`INFECT`): what it kills by its attack or its retaliation rises in the same
+way, and like the Zombie it never advances after a kill. It has no Bite, so
+a unit that survives its hit is not Bitten. The
 victim may be of any faction and any land role, on any land tile,
 including a city or village center. The killing Zombie never advances.
 Naval and embarked victims, splash, Wail, Kaboom, and explosions never
@@ -5728,7 +5848,15 @@ infect, and a Dwarf construct never rises. Event
 
 ### 17.8 Plague
 
-- **Application.** When a Lich attacks and survives the exchange, the
+- **Pestilence.** A Lich plagues only while its controller owns
+  Explosives, which the Undead tree shows as **Pestilence**
+  (`attackPlaguesV7`: the `PLAGUE` ability and the capability `plague` of
+  the unit's own tree for the controller's technologies; the correction of
+  `7r51`). Without it a Lich's shot and splash deal their damage and the
+  preview's `plagued` is empty. A mind-controlled Lich plagues by its
+  controller's technologies read in the Lich's own tree (a Martian
+  controller with its Explosives, the Disintegrator).
+- **Application.** When such a Lich attacks and survives the exchange, the
   primary target and every surviving splash target that is living become
   plagued unless already plagued; units of any form qualify, except a target
   whose hit a Martian Shield absorbed completely (an unshielded target of a
@@ -5820,7 +5948,11 @@ infect, and a Dwarf construct never rises. Event
   `GRAVE_CREATED`, `BITTEN_UNIT_RISEN`, `PLAGUE_DAMAGED`, `PLAGUE_SPREAD`,
   `PLAGUE_EXPIRED`, and `PLAGUE_CLEARED`; `UNIT_DIED.cause` includes `WAIL`
   and `PLAGUE`; `WOUNDED_TENDED` results carry `curedPlague` and
-  `curedBitten`.
+  `curedBitten`. A `WOUNDED_TENDED` is projected to the Captain's owner
+  in full; since the correction of `7r51`, when it cured a Plague or a
+  bite, also to every player who sees the Captain and a cured unit, with
+  only the cured units that player sees in `results` (the player whose
+  Zombie bit the unit saw the mark vanish without an event).
 - Errors `RAISE_DEAD_NOT_LEGAL`, `DEVOUR_NOT_LEGAL`, `WAIL_NOT_LEGAL`, and
   `DISBAND_NOT_LEGAL`; `RECOVER_NOT_LEGAL` has the reason `RESTLESS`.
 - The public command query offers each Undead command, Tend Wounded, and
@@ -9711,6 +9843,7 @@ has no Candy step.
 | Tuning      | `pulp-wars-poc-7r49` | `pulp_wars-w49.10` [round 7 of the Human tuning](RULESET_7_TUNING_HUMAN.md#14-round-7) after five hand-played games on round 6, no identity change: the Normal AI of a Human, Undead, or Goblin seat reads a local position, commits with numbers and stays committed against a line that steps back, holds fast units for the infantry, grows at its unit limit, spends on units first while an enemy army is in the field, and marches on the hostile city in its reach that is easiest to take (a surplus on a second); `UNIT_DISBANDED` also reaches every viewer that saw the unit; the three breakthrough labs at revision 2 (a mission city may state `landGrant`); not played by hand yet                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Tuning      | `pulp-wars-poc-7r49` | `pulp_wars-w49.11` [round 8 of the Human tuning](RULESET_7_TUNING_HUMAN.md#15-round-8) after four hand-played games on round 7, no identity change: the Normal AI of a Human, Undead, or Goblin seat keeps a unit on an enemy center until it captures and enters a center in the turn its garrison is shot, researches on a clock while at war, attacks a held city with a group sized to its holders, scouts and expands as a Goblin seat, and grows its capital; corrected before publication after four hand-played games (the research clock under pressure, the answer to the defender's Catapults, the weak garrison, the Bomb Chucker's throw); the text harness breaks a fortified Defense down and says why no city trains; a third bounded-run script; not played by hand yet                                                                                                                                                                                                                                                                                                                                                              |
 | Goblin pass | `pulp-wars-poc-7r50` | `pulp_wars-w49.12` [the Goblin faction pass](RULESET_7_TUNING_GOBLIN.md): a Bomb Chucker's bomb gets no Gang Up; the Orc Brute is Blast-proof; a Scrap Buggy may Kaboom after attacking (Crash); Goblin Scouts (a free Wolf Rider); the Goblin Normal AI's research order and shares; the lab `LAB_GOBLIN_MID`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Undead pass | `pulp-wars-poc-7r51` | `pulp_wars-w49.13` [the Undead faction pass](RULESET_7_TUNING_UNDEAD.md): the Skeleton's Bones (Defense 3 against an attack from two or more tiles); the Vampire's Escape; the Abomination's Infect; Undead Scouts (a free Ghoul); the Undead Normal AI's research order, shares, and unit rules; the lab `LAB_UNDEAD_MID`; its correction after three hand-played games: a rising has no home city and fills no unit slot, Plague needs Pestilence (the Undead Explosives), Raise Dead reaches two tiles, the Ghoul's Carrion, a curing Tend shown to those who see it, and the Undead and Human Normal AI rules of section 16                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -10139,7 +10272,7 @@ and autosave key (it is `7r43`). The overlay's own corrections are in its
 
 ## 25. Known discrepancies
 
-As of `pulp-wars-poc-7r50` the rules in this document match the code for
+As of `pulp-wars-poc-7r51` the rules in this document match the code for
 the eight factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
 Martian overlay with the engine of the Mind Control overlay, the Ice Folk
@@ -10155,6 +10288,7 @@ cost of `7r41`, and the many seats of `7r42`, and the naval branch of
 and [round 5 of the Human tuning](RULESET_7_TUNING_HUMAN.md#12-round-5) of `7r48`
 and [round 6](RULESET_7_TUNING_HUMAN.md#13-round-6) of `7r49`,
 and [the Goblin pass](RULESET_7_TUNING_GOBLIN.md) of `7r50`,
+and [the Undead pass](RULESET_7_TUNING_UNDEAD.md) of `7r51`,
 with these
 open items: what is left of the naval branch after the fold, the Candy
 items left after the fold, and the pending balance steps below.

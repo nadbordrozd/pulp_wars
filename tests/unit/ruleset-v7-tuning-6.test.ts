@@ -70,7 +70,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r50`;
+ * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r51`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 13): the Normal AI breaks
  * a line with numbers, expands and grows, researches toward its army and
  * buys its dear units, and keeps its discipline; research costs 1 Coin more
@@ -176,15 +176,16 @@ const move = (unitId: UnitId, to: CoordV7): CommandV7 => ({
 
 describe("tuning 6 identity and the research price", () => {
   // The Goblin pass (tests/unit/ruleset-v7-goblin-pass.test.ts) took 7r50,
-  // so 7r49 is the last prior identity.
+  // and the Undead pass 7r51, so 7r49 is the prior identity before the
+  // last.
   it("was 7r49 after 7r48, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
-    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
+    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
       "pulp-wars-poc-7r48",
       "pulp-wars-poc-7r49",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r50.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r51.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3, -1)).toEqual([
       "pulpWars.save.v7r48.current",
       "pulpWars.save.v7r49.current",
     ]);
@@ -811,7 +812,9 @@ describe("research toward the army", () => {
         "KNIGHT",
         "CAPTAIN",
       ],
-      UNDEAD: ["GUARD", "MARKSMAN", "CAPTAIN", "CATAPULT", "KNIGHT"],
+      // The Undead pass (`pulp_wars-w49.13`): the Lich third (it was
+      // fourth, behind the Necromancer).
+      UNDEAD: ["GUARD", "MARKSMAN", "CATAPULT", "CAPTAIN", "KNIGHT"],
       // The Goblin pass (`pulp_wars-w49.12`): the Warboss before the Scrap
       // Buggy (it was KNIGHT, GUARD, CAPTAIN); its correction: the Orc
       // Brute third (a Human Knight's chain ends on a Brute).
@@ -841,9 +844,11 @@ describe("research toward the army", () => {
       "DRILL",
       "HUNTING",
       "MARKSMANSHIP",
-      "ADMINISTRATION",
+      // The Undead pass (`pulp_wars-w49.13`): the Lich before the
+      // Necromancer.
       "FORESTRY",
       "SAWMILLING",
+      "ADMINISTRATION",
       "SCOUTING",
       "RAIDING",
       "CHIVALRY",
@@ -948,11 +953,12 @@ describe("research toward the army", () => {
 });
 
 // The correction pass: the Undead army is a third Zombies, and they are
-// used the way they work.
+// used the way they work. The Undead pass (`pulp_wars-w49.13`): a quarter
+// Zombies, and a Zombie bites the dearest unit in its reach.
 describe("the Undead field Zombies", () => {
   const UNDEAD = ["UNDEAD", "ORIGINAL"] as const;
 
-  it("buys a Zombie for every third unit of a growing Undead army", () => {
+  it("buys a Zombie for every fourth unit of a growing Undead army", () => {
     const roles: readonly UnitRoleIdV7[] = [
       "FIGHTER",
       "GUARD",
@@ -985,9 +991,16 @@ describe("the Undead field Zombies", () => {
       const unitClass = effectiveRoleRuleV7(next, "UNDEAD").tacticalRole;
       byClass[unitClass as keyof typeof byClass] += 1;
     }
-    // Twelve units: two Skeletons to start with and ten bought.
-    expect(bought.filter((role) => role === "GUARD")).toHaveLength(4);
-    expect(byClass).toMatchObject({ DEFENDER: 4, RANGED: 2, SIEGE: 2 });
+    // Twelve units: two Skeletons to start with and ten bought. The
+    // Undead pass: three Zombies (four before), three Liches (two), two
+    // Banshees, two Vampires.
+    expect(bought.filter((role) => role === "GUARD")).toHaveLength(3);
+    expect(byClass).toMatchObject({
+      DEFENDER: 3,
+      RANGED: 2,
+      SIEGE: 3,
+      BREAKTHROUGH: 2,
+    });
     // With only Drill owned (its first technology bought), the Zombie is
     // the first unit an army of Skeletons buys.
     expect(
@@ -1040,7 +1053,7 @@ describe("the Undead field Zombies", () => {
     );
   });
 
-  it("a Zombie attacks the cheap infantry beside it, not the Raider or the Guard", () => {
+  it("a Zombie bites the dearest unit beside it, and of two as dear the infantry it converts", () => {
     const state = bare(
       field(
         [
@@ -1061,14 +1074,18 @@ describe("the Undead field Zombies", () => {
         unitId: zombie,
         targetUnitId: unitAtV7(state, where).id,
       }).strategicValue;
-    // The Fighter is worth 12 more as a Zombie's target than it would be.
-    expect(value(at(4, 2))).toBeGreaterThan(value(at(4, 4)));
-    expect(value(at(4, 2)) - 12).toBeLessThan(value(at(4, 4)));
+    // The Fighter is worth 12 more as a Zombie's target than it would be
+    // (it rises when the Zombie kills it). The Undead pass
+    // (`pulp_wars-w49.13`): a new bite is worth 4 a Coin of the target's
+    // price, so the 4-Coin Raider (16) now comes before the 2-Coin Fighter
+    // (8 and the 12), and the Fighter still before the 3-Coin Guard.
+    expect(value(at(4, 4))).toBeGreaterThan(value(at(4, 2)));
+    expect(value(at(4, 4)) - 8).toBeLessThan(value(at(4, 2)) + 12);
     expect(value(at(4, 2))).toBeGreaterThan(value(at(6, 2)));
     const attack = attacksOf(policyTurn(state).commands).find(
       (command) => command.unitId === zombie,
     );
-    expect(attack?.targetUnitId).toBe(unitAtV7(state, at(4, 2)).id);
+    expect(attack?.targetUnitId).toBe(unitAtV7(state, at(4, 4)).id);
   });
 
   it("a Zombie values the tile the Marksman does not reach", () => {
@@ -1693,7 +1710,10 @@ describe("LAB_BREAKTHROUGH: numbers against a prepared line", () => {
   // The Goblin pass (`pulp_wars-w49.12`, 7r50): the Goblin attacker takes
   // it in round 6 (7 before; a bomb gets no Gang Up, the Brutes are
   // Blast-proof, and a spent Buggy crashes).
-  const HOLD_ROUNDS = [6, 6, 7] as const;
+  // The Undead pass (`pulp_wars-w49.13`, 7r51): the Undead attacker takes
+  // it in round 8 (7 before) and loses 10 units (its Vampires fly back
+  // after their strike instead of standing in the line).
+  const HOLD_ROUNDS = [6, 6, 8] as const;
 
   const value = (state: GameStateV7, owner: number): number =>
     state.units

@@ -230,8 +230,8 @@ export const ARMY_SPLASH_SPACING_VALUE_V7 = 6;
  * - Humans: the Marksman, the Guard as a cheap anchor, the Catapult, the
  *   Knight, the Swordsman, the Captain.
  * - Undead: the **Zombie** with the first technology bought (its Infect
- *   waves are what the faction is), the Banshee, the Necromancer, the
- *   Lich, the Vampire.
+ *   waves are what the faction is), the Banshee, the Lich (third since the
+ *   Undead pass, `pulp_wars-w49.13`), the Necromancer, the Vampire.
  * - Goblins (the Goblin pass, `pulp_wars-w49.12`,
  *   docs/product/RULESET_7_TUNING_GOBLIN.md): the Bomb Chucker and the Wolf
  *   Rider, the Orc Brute (the correction pass: the one Goblin unit a
@@ -255,11 +255,16 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
     "KNIGHT",
     "CAPTAIN",
   ] as const),
+  // The Undead pass (`pulp_wars-w49.13`,
+  // docs/product/RULESET_7_TUNING_UNDEAD.md): the Lich third (it was
+  // fourth, behind the Necromancer): the Zombie, the 3-Coin Banshee, then
+  // the unit that wins the faction's fights; the Necromancer once there are
+  // Graves to raise, the Vampire last.
   UNDEAD: Object.freeze([
     "GUARD",
     "MARKSMAN",
-    "CAPTAIN",
     "CATAPULT",
+    "CAPTAIN",
     "KNIGHT",
   ] as const),
   GOBLIN: Object.freeze([
@@ -436,20 +441,27 @@ export const ARMY_SHARES_V7 = Object.freeze({
     SIEGE: 15,
     BREAKTHROUGH: 25,
   }),
-  // The correction pass of tuning 6: the Undead army is a third Zombies
-  // (its defender-class unit, whose kills rise as Zombies).
+  // The Undead pass (`pulp_wars-w49.13`): a quarter Zombies (30% before; in
+  // three hand-played games an Undead seat fielded ten Zombies of thirteen
+  // units), a quarter Skeletons (the units that strike on arrival and, with
+  // Bones, walk through arrows), a fifth Banshees, a fifth Liches (15%),
+  // a tenth Vampires. Against two or more hostile ranged, siege, or support
+  // units: a fifth Vampires (they reach the shooters and fly back), a fifth
+  // Zombies (shots kill them before they bite, but the Zombie is the one
+  // Undead unit a Knight does not kill in one attack, so it ends a chain),
+  // fewer Banshees.
   undead: Object.freeze({
-    LINE: 20,
-    DEFENDER: 30,
-    RANGED: 20,
-    SIEGE: 15,
-    BREAKTHROUGH: 15,
-  }),
-  undeadFragile: Object.freeze({
-    LINE: 20,
+    LINE: 25,
     DEFENDER: 25,
     RANGED: 20,
-    SIEGE: 15,
+    SIEGE: 20,
+    BREAKTHROUGH: 10,
+  }),
+  undeadFragile: Object.freeze({
+    LINE: 25,
+    DEFENDER: 20,
+    RANGED: 15,
+    SIEGE: 20,
     BREAKTHROUGH: 20,
   }),
   // The Goblin pass (`pulp_wars-w49.12`): a bomb no longer gets Gang Up,
@@ -489,6 +501,73 @@ export function armySharesV7(
 /** A Goblin army has one Wolf Rider per this many units (at most three). */
 export const ARMY_GOBLIN_SKIRMISHER_PER_UNITS_V7 = 4;
 export const ARMY_GOBLIN_SKIRMISHER_MAXIMUM_V7 = 3;
+/**
+ * The Undead pass (`pulp_wars-w49.13`): an Undead army has one Ghoul per
+ * this many units, at most two (one in all before): the fast unit that
+ * finishes what a Zombie has bitten.
+ */
+export const ARMY_UNDEAD_SKIRMISHER_PER_UNITS_V7 = 5;
+export const ARMY_UNDEAD_SKIRMISHER_MAXIMUM_V7 = 2;
+/**
+ * The Undead pass: an Undead seat keeps the Coins for the dear unit its
+ * army is short of (the Lich, the Vampire) when one more turn's income
+ * pays for it, in a city no enemy is near. The army must have this many
+ * units first.
+ */
+export const ARMY_DEAR_UNIT_ARMY_V7 = 4;
+/** What a Zombie's bite is worth for each Coin of its target's price. */
+export const ARMY_ZOMBIE_BITE_VALUE_V7 = 4;
+
+// ---------------------------------------------------------------------------
+// The Undead pass, correction (`pulp_wars-w49.13`,
+// docs/product/RULESET_7_TUNING_UNDEAD.md section 13): what three
+// hand-played games showed. The hooks are in `src/ai/v7.ts`
+// (`armyVillagesFirstV7`, `armyEconomyFirstV7`, `armySwapsOutV7`,
+// `armyZombieAloneV7`, `armyShootsBiterFirstV7`, `armyCureDueV7`).
+// ---------------------------------------------------------------------------
+
+/**
+ * Villages first: in its first rounds an Undead seat that knows a free
+ * village within `ARMY_VILLAGES_FIRST_REACH_V7` of an own center with no
+ * hostile unit beside it walks into no visible enemy's reach outside its
+ * own land with the units that capture and attack, and such a unit makes
+ * no attack after a Move on a unit outside its own land that the attack
+ * does not kill. (Its three starting Skeletons walked seven tiles to fight at the
+ * player's village while free villages four tiles from its capital stood
+ * empty: three cities by round 9 against five.)
+ */
+export const ARMY_VILLAGES_FIRST_ROUNDS_V7 = 10;
+export const ARMY_VILLAGES_FIRST_REACH_V7 = 6;
+/** A village with a hostile unit this close is not one "in reach". */
+export const ARMY_VILLAGES_FIRST_DANGER_V7 = 2;
+/**
+ * The garrison swap: the step off a threatened own center of a unit that
+ * cannot attack a neighbour (a Banshee, a Lich), for the sturdier own unit
+ * beside the center. Just above the step onto a threatened center (1250).
+ */
+export const ARMY_SWAP_PRIORITY_V7 = 1251;
+/**
+ * A Banshee with a hostile unit within this many tiles and none within
+ * three walks up (one of two sat out seven rounds four tiles from the
+ * fight).
+ */
+export const ARMY_BANSHEE_APPROACH_RADIUS_V7 = 6;
+/** That Move: above a route step (700) and a picket (710). */
+export const ARMY_BANSHEE_APPROACH_PRIORITY_V7 = 716;
+/**
+ * Economy first (`armyEconomyFirstV7`): the growth an Undead seat's land
+ * can use is weighed by population per Coin of research; a Lumber Camp
+ * counts this many times, because Forestry is also the first step to the
+ * Lich (Sawmilling).
+ */
+export const ARMY_ECONOMY_FORESTRY_WEIGHT_V7 = 3;
+/** An Undead seat with this many Liches researches Pestilence before the Vampire. */
+export const ARMY_PESTILENCE_LICHES_V7 = 2;
+/**
+ * A seat with Bitten units and no unit that tends: what its cure (the
+ * Captain) is worth more in training.
+ */
+export const ARMY_CURE_TRAINING_VALUE_V7 = 400;
 /** One skirmisher once the army has this many units. */
 export const ARMY_SKIRMISHER_ARMY_V7 = 5;
 /** One support unit per this many army units, at most two. */
@@ -564,7 +643,13 @@ export function armyRoleScoreV7(
             ARMY_GOBLIN_SKIRMISHER_MAXIMUM_V7,
             Math.floor(counts.total / ARMY_GOBLIN_SKIRMISHER_PER_UNITS_V7),
           )
-        : Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7)) -
+        : // The Undead pass: one Ghoul per five units, at most two.
+          faction === "UNDEAD"
+          ? Math.min(
+              ARMY_UNDEAD_SKIRMISHER_MAXIMUM_V7,
+              Math.floor(counts.total / ARMY_UNDEAD_SKIRMISHER_PER_UNITS_V7),
+            )
+          : Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7)) -
         have);
   else if (unitClass === "SUPPORT")
     deficit =

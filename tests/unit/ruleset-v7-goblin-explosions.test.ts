@@ -1143,7 +1143,7 @@ describe("ruleset-7 Goblin explosions and Undead rules", () => {
         victimUnitId: exploder.id,
         unitId: firstRising,
         at: at(4, 2),
-        homeCityId: biter.homeCityId,
+        homeCityId: null,
       },
       {
         kind: "EXPLOSION_RESOLVED",
@@ -1178,7 +1178,7 @@ describe("ruleset-7 Goblin explosions and Undead rules", () => {
         victimUnitId: victim.id,
         unitId: firstRising + 1,
         at: at(5, 2),
-        homeCityId: biter.homeCityId,
+        homeCityId: null,
       },
     ]);
     // The preview names the not-yet-existing rising with a null unit ID.

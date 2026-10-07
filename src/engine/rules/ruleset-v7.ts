@@ -126,6 +126,13 @@ export type TechnologyUnlockV7 =
    */
   | { readonly kind: "WALLBREAKER" }
   /**
+   * The Undead pass, correction (`pulp_wars-w49.13`): Pestilence (the
+   * Undead `EXPLOSIVES`): the attacks of the owner's units with the
+   * `PLAGUE` ability (the Lich) plague. Without it a Lich's shot and its
+   * splash deal their damage and plague nobody.
+   */
+  | { readonly kind: "PESTILENCE" }
+  /**
    * The Martian revision: the Brain's Psychic Command (Rally) and Mind
    * Control (the Martian `ADMINISTRATION`).
    */
@@ -494,6 +501,12 @@ export interface RoleMechanicsV7 {
   readonly rockfallAttack2: number;
   /** The Ice Folk revision (section 7.4): the Cold Blood `attack2` bonus. */
   readonly coldBloodBonus2: number;
+  /**
+   * The Undead pass, correction (`pulp_wars-w49.13`): Carrion, the
+   * `attack2` bonus of the unit's own attack on a Bitten or Plagued unit
+   * (the Ghoul 2), or 0.
+   */
+  readonly carrionBonus2: number;
   /**
    * The Dwarf revision (docs/product/RULESET_7_DWARVES.md section 2.3): a
    * construct (Clockwork Gunner, Brass Titan) is fully mechanical: not
@@ -1388,6 +1401,7 @@ const mechanics = (
           plantedBonus2: 0,
           rockfallAttack2: 0,
           coldBloodBonus2: 0,
+          carrionBonus2: 0,
           construct: false,
           unflinchingAttack: false,
           repairsAsMachine: false,
@@ -1422,6 +1436,28 @@ const mechanics = (
  * in the open at 4 HP, which one Fighter kills.
  */
 export const GUARD_RANGED_DEFENSE2_V7 = 2 as const;
+
+/**
+ * The Undead pass (`pulp_wars-w49.13`, 7r51,
+ * docs/product/RULESET_7_TUNING_UNDEAD.md): Bones. The Undead Skeleton's
+ * Defense against an attack from two or more tiles (3; its Defense is 2):
+ * arrows pass through it. A Marksman's shot deals a full-HP Skeleton 4
+ * instead of 5, so three shots kill it instead of two.
+ */
+export const SKELETON_RANGED_DEFENSE2_V7 = 6 as const;
+
+/**
+ * The Undead pass, correction (`pulp_wars-w49.13`): Carrion. A Ghoul's own
+ * attack on a Bitten or Plagued unit has +1 Attack (2 half-units): it
+ * finishes what a Zombie or a Lich has marked.
+ */
+export const GHOUL_CARRION_BONUS2_V7 = 2 as const;
+
+/**
+ * The Undead pass, correction: the distance (Chebyshev) within which a
+ * Necromancer's Raise Dead reaches a Grave (1 before).
+ */
+export const RAISE_DEAD_RADIUS_V7 = 2 as const;
 
 /**
  * Tuning 5: a land-form defender's base Defense in half-points against an
@@ -1474,19 +1510,20 @@ export const ORIGINAL_BASELINE_V5_TREE: FactionTechnologyTreeV7 = deepFreeze({
  */
 export const UNDEAD_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
   SHARED_BASELINE_NODES_V7.map((original) =>
-    node(
-      original.id,
-      original.branch,
-      original.tier,
-      original.prerequisites,
-      original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
+    node(original.id, original.branch, original.tier, original.prerequisites, [
+      ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
         unlock.kind === "CAPTAIN_SUPPORT"
           ? [{ kind: "NECROMANCER_SUPPORT" }]
           : unlock.kind === "OVERRUN"
             ? []
             : [unlock],
       ),
-    ),
+      // The Undead pass, correction: Explosives (shown as Pestilence)
+      // keeps both Human unlocks and adds `PESTILENCE`.
+      ...(original.id === "EXPLOSIVES"
+        ? [{ kind: "PESTILENCE" } as const]
+        : []),
+    ]),
   ),
 );
 
@@ -1607,12 +1644,16 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "LIFESTEAL", "UNANSWERED"],
+    // The Undead pass (`pulp_wars-w49.13`, 7r51): Escape. A Vampire that
+    // survives its attack may move again (it strikes and flies back).
+    abilities: ["ATTACK", "LIFESTEAL", "UNANSWERED", "ESCAPE"],
   }),
   JUGGERNAUT: role({
     ...ORIGINAL_ROLE_RULES_V7.JUGGERNAUT,
     label: "Abomination",
-    abilities: ["ATTACK", "CAPTURE", "PUSH"],
+    // The Undead pass (7r51): Infect. A land unit the Abomination kills
+    // rises as a Zombie (it does not bite: a survivor is not Bitten).
+    abilities: ["ATTACK", "CAPTURE", "PUSH", "INFECT"],
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
@@ -1629,8 +1670,16 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
  * Human public role abilities stay exactly as in revision 12.
  */
 export const UNDEAD_ROLE_MECHANICS_V7 = mechanics({
+  // The Undead pass (`pulp_wars-w49.13`, 7r51): Bones.
+  FIGHTER: { rangedDefense2: SKELETON_RANGED_DEFENSE2_V7 },
+  // The Undead pass, correction: Carrion.
+  RAIDER: { carrionBonus2: GHOUL_CARRION_BONUS2_V7 },
   GUARD: { advancesAfterKill: false },
   CATAPULT: { advancesAfterKill: false, splash: true },
+  // The Undead pass (7r51): with Infect the Abomination's victim rises on
+  // its own tile, so the Abomination does not advance, as the Zombie does
+  // not.
+  JUGGERNAUT: { advancesAfterKill: false },
   BATTLESHIP: { splash: true },
 });
 
@@ -3059,7 +3108,8 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
   Record<FactionIdV7, Readonly<Partial<Record<TechnologyIdV7, string>>>>
 > = deepFreeze({
   ORIGINAL: {},
-  UNDEAD: {},
+  // The Undead pass, correction: Explosives is Pestilence.
+  UNDEAD: { EXPLOSIVES: "Pestilence" },
   GOBLIN: { COMMERCE: "Plunder" },
   DINOSAUR: { FORTIFICATION: "Nesting", EXPLOSIVES: "Wallbreaker" },
   // The Martian revision: Fortification and Explosives are renamed.
@@ -3835,6 +3885,24 @@ export function chargeRunUpAttack2V7(
   return (
     chargeRunUpTilesV7(roster, unit, plannedPathLength) *
     unitRoleMechanicsV7(roster, unit).runUpBonus2
+  );
+}
+
+/**
+ * The Undead pass, correction (`pulp_wars-w49.13`): whether an `ATTACK` by
+ * a unit with this role rule plagues: the rule has `PLAGUE` and the
+ * controller's researched technology grants `plague` in the unit's own
+ * tree (Pestilence, the Undead `EXPLOSIVES`).
+ */
+export function attackPlaguesV7(
+  roster: FactionRosterV7,
+  unit: UnitKindRefV7,
+  rule: Pick<EffectiveRoleRuleV7, "abilities">,
+  ownerResearchedTechs: readonly TechnologyIdV7[],
+): boolean {
+  return (
+    rule.abilities.includes("PLAGUE") &&
+    unitCapabilitiesV7(roster, unit, ownerResearchedTechs).plague
   );
 }
 
@@ -4721,6 +4789,8 @@ export interface TechnologyCapabilitiesV7 {
   readonly nestingCityCapacityBonus: 0 | 1;
   /** Revision 20 Wallbreaker: the player's dinosaurs ignore City Walls. */
   readonly ignoresCityWalls: boolean;
+  /** The Undead pass, correction: Pestilence, the player's Liches plague. */
+  readonly plague: boolean;
   /**
    * The Martian revision, Force Fields: the player's Shields also recharge
    * at the end of its turn.
@@ -4850,6 +4920,7 @@ export function technologyCapabilitiesV7(
   let eggHatchTurnReduction: 0 | 1 = 0;
   let nestingCityCapacityBonus: 0 | 1 = 0;
   let ignoresCityWalls = false;
+  let plague = false;
   let shieldsRechargeAtEndTurn = false;
   let raysIgnoreFortification = false;
   let deepWinter = false;
@@ -4938,6 +5009,9 @@ export function technologyCapabilitiesV7(
         break;
       case "WALLBREAKER":
         ignoresCityWalls = true;
+        break;
+      case "PESTILENCE":
+        plague = true;
         break;
       case "FORCE_FIELDS":
         shieldsRechargeAtEndTurn = true;
@@ -5048,6 +5122,7 @@ export function technologyCapabilitiesV7(
     eggHatchTurnReduction,
     nestingCityCapacityBonus,
     ignoresCityWalls,
+    plague,
     shieldsRechargeAtEndTurn,
     raysIgnoreFortification,
     deepWinter,

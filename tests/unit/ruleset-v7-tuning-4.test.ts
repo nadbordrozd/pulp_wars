@@ -109,7 +109,7 @@ const moveTargets = (state: GameStateV7, from: CoordV7): readonly string[] => {
 
 describe("tuning 4 keeps the unpublished identity", () => {
   it("is 7r47", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
   });
 });
 
@@ -238,7 +238,13 @@ describe("the reward ladder", () => {
   });
 
   it("Scouts: a Human Survey also grants a free Raider", () => {
-    expect(SURVEY_RAIDERS_V7).toMatchObject({ ORIGINAL: 1, UNDEAD: 0 });
+    // The Undead pass (`pulp_wars-w49.13`, 7r51): an Undead Survey grants
+    // a Ghoul, as a Goblin one a Wolf Rider (7r50); the other five none.
+    expect(SURVEY_RAIDERS_V7).toMatchObject({
+      ORIGINAL: 1,
+      UNDEAD: 1,
+      DINOSAUR: 0,
+    });
     for (const faction of ["ORIGINAL", "UNDEAD"] as const) {
       let state = fieldV7([{ seat: 1, role: "FIGHTER", at: at(1, 1) }], {
         factions: [faction, faction === "ORIGINAL" ? "DWARF" : "ORIGINAL"],
@@ -262,14 +268,14 @@ describe("the reward ladder", () => {
       expect(
         granted.map((event) => "role" in event && event.role),
         faction,
-      ).toEqual(faction === "ORIGINAL" ? ["RAIDER"] : []);
+      ).toEqual(["RAIDER"]);
       expect(
         result.state.units.filter(
           (unit) =>
             unit.ownerId === seatIdV7(state, 0) && unit.role === "RAIDER",
         ),
         faction,
-      ).toHaveLength(faction === "ORIGINAL" ? 1 : 0);
+      ).toHaveLength(1);
     }
   });
 
@@ -644,6 +650,8 @@ describe("the Human labs", () => {
       "LAB_BREAKTHROUGH_UNDEAD",
       // The Goblin pass: the hand player as the Goblins, no mirror.
       "LAB_GOBLIN_MID",
+      // The Undead pass: the hand player as the Undead, no mirror.
+      "LAB_UNDEAD_MID",
     ]);
     for (const mission of labs) {
       expect(mission, mission.id).toMatchObject({ hidden: true, mirror: true });

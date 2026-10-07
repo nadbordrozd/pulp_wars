@@ -488,6 +488,26 @@ function eventVisible(
   afterVisible: ReadonlySet<UnitId>,
 ): boolean {
   const ids = unitIds(event);
+  // The Undead pass, correction (`pulp_wars-w49.13`): a Tend that cured a
+  // Plague or a bite also reaches every viewer that sees the Captain and a
+  // cured unit (a bite vanished from the biter's board without an event).
+  // Such a viewer's copy lists only the cured units it sees
+  // (`projectEventPayload`); a Tend that only healed stays its owner's.
+  if (event.kind === "WOUNDED_TENDED") {
+    const seen = (id: UnitId): boolean =>
+      beforeVisible.has(id) || afterVisible.has(id);
+    const owner =
+      before.units.find((unit) => unit.id === event.captainId)?.ownerId ??
+      after.units.find((unit) => unit.id === event.captainId)?.ownerId;
+    if (owner === viewerId) return ids.every(seen);
+    return (
+      seen(event.captainId) &&
+      event.results.some(
+        (result) =>
+          (result.curedPlague || result.curedBitten) && seen(result.unitId),
+      )
+    );
+  }
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 12): a
   // boarding is projected to the actor, the former owner, and every viewer
   // that sees the prize's tile before or after the command.
@@ -592,13 +612,6 @@ function eventVisible(
       return event.playerId === viewerId || beforeVisible.has(event.unitId);
     case "UNIT_WAITED":
       return event.playerId === viewerId;
-    case "WOUNDED_TENDED":
-      return (
-        before.units.find((unit) => unit.id === event.captainId)?.ownerId ===
-          viewerId ||
-        after.units.find((unit) => unit.id === event.captainId)?.ownerId ===
-          viewerId
-      );
     case "WINDMILL_HEALING_RESOLVED":
       return event.playerId === viewerId;
     // The Dwarf revision: an Assemble is owner-private like training (its
@@ -765,6 +778,25 @@ function projectEventPayload(
         ? visible
         : null;
     return { ...event, resourceRestored };
+  }
+  if (event.kind === "WOUNDED_TENDED") {
+    // The Undead pass, correction: another viewer's copy lists only the
+    // cured units it sees.
+    const captainId = event.captainId;
+    const owner =
+      before.units.find((unit) => unit.id === captainId)?.ownerId ??
+      after.units.find((unit) => unit.id === captainId)?.ownerId;
+    if (owner === viewerId) return event;
+    const seenBefore = visibility(before, viewerId);
+    const seenAfter = visibility(after, viewerId);
+    return {
+      ...event,
+      results: event.results.filter(
+        (result) =>
+          (result.curedPlague || result.curedBitten) &&
+          (seenBefore.has(result.unitId) || seenAfter.has(result.unitId)),
+      ),
+    };
   }
   if (event.kind === "DEAD_RAISED") {
     // Revision 13: only the Skeletons visible to the viewer afterwards.

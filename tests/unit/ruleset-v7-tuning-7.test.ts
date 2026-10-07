@@ -50,7 +50,7 @@ import {
 } from "../../src/ai/v7-campaign";
 
 /**
- * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r50`;
+ * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r51`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 14, the Normal AI of a
  * Human, Undead, or Goblin seat): it commits against the enemy in front of
  * it and keeps committing after the line breaks, every faction's seat
@@ -194,7 +194,7 @@ const whereIs = (state: GameStateV7, id: UnitId): CoordV7 => {
 
 describe("tuning 7 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
   });
 });
 
@@ -848,11 +848,20 @@ describe("2. every faction's seat grows", () => {
       "BUILD_LUMBER_CAMP",
       "BUILD_LUMBER_CAMP",
     ]);
-    expect(kinds).toContain("TRAIN");
-    expect(kinds.indexOf("TRAIN")).toBeGreaterThan(1);
-    const capital = turn.state.cities.find(
-      (city) => city.ownerId === seatIdV7(turn.state, 0),
-    );
+    // The Undead pass (`pulp_wars-w49.13`): an Undead level-2 Survey is
+    // Scouts, with a free Ghoul, so the level's slot is filled by the
+    // reward (it was a TRAIN after the two camps before).
+    expect(turn.commands[2]).toMatchObject({
+      kind: "CHOOSE_CITY_REWARD",
+      reward: "SURVEY",
+    });
+    const own = seatIdV7(turn.state, 0);
+    expect(
+      turn.state.units.filter(
+        (unit) => unit.ownerId === own && unit.role === "RAIDER",
+      ),
+    ).toHaveLength(1);
+    const capital = turn.state.cities.find((city) => city.ownerId === own);
     expect(capital?.level).toBe(2);
   });
 
@@ -886,7 +895,7 @@ describe("2. every faction's seat grows", () => {
   it("an Undead seat in a real opening (dry land 14 x 14, seed 4, against the Human AI) researches a growth technology and builds on it", () => {
     // The map of the hand-played game `r6d`, where the Undead AI stood at
     // five units on two cities from round 6 to round 12 and its capital
-    // never grew. Both seats play the Normal policy for sixteen rounds;
+    // never grew. Both seats play the Normal policy for eighteen rounds;
     // nothing is read but what the Undead seat bought.
     const created = createPlayableGameV7({
       rulesetId: RULESET_7_ID,
@@ -907,7 +916,11 @@ describe("2. every faction's seat grows", () => {
     const undead = state.players.find((player) => player.faction === "UNDEAD");
     if (undead === undefined) throw new Error("no Undead seat");
     const bought: string[] = [];
-    while (state.outcome === null && state.round <= 16) {
+    // The Undead pass (`pulp_wars-w49.13`, 7r51): eighteen rounds (sixteen
+    // before). With a quarter Zombies and the Banshees and Skeletons that
+    // go with them the seat trains in rounds 15 and 16 and builds its
+    // first Mine in round 17 and a Workshop in round 18.
+    while (state.outcome === null && state.round <= 18) {
       const actor = state.turnOrder[state.activeSeatIndex];
       if (actor === undefined) throw new Error("no actor");
       for (let accepted = 0; accepted < 128; accepted += 1) {
@@ -931,23 +944,28 @@ describe("2. every faction's seat grows", () => {
         if (command.kind === "END_TURN" || state.outcome !== null) break;
       }
     }
-    // A growth technology that is on no Undead unit's way before the
-    // fifth unit technology, and a building of it. Tuning 8, correction
-    // pass (`pulp_wars-w49.11`): the Banshee's technology comes before it
-    // (the first two units of the order, then the one growth technology).
-    expect(bought).toContain("RESEARCH ENGINEERING");
-    expect(bought.indexOf("RESEARCH MARKSMANSHIP")).toBeGreaterThanOrEqual(0);
-    expect(bought.indexOf("RESEARCH MARKSMANSHIP")).toBeLessThan(
-      bought.indexOf("RESEARCH ENGINEERING"),
+    // A growth technology and a building of it. Tuning 8, correction
+    // pass (`pulp_wars-w49.11`): the Banshee's technology came before it
+    // (the first two units of the order, then the one growth technology:
+    // Engineering, with a Mine in round 17).
+    // The Undead pass, correction (`pulp_wars-w49.13`): economy first. The
+    // growth its land can use comes right after the Zombie, before the
+    // Banshee: Forestry by way of Hunting (the land is Forest), a Lumber
+    // Camp on it, then Marksmanship, and Sawmilling (the Lich) by round 18.
+    expect(bought.filter((kind) => kind.startsWith("RESEARCH"))).toEqual([
+      "RESEARCH GATHERING",
+      "RESEARCH DRILL",
+      "RESEARCH HUNTING",
+      "RESEARCH FORESTRY",
+      "RESEARCH MARKSMANSHIP",
+      "RESEARCH SAWMILLING",
+    ]);
+    expect(bought.indexOf("BUILD_LUMBER_CAMP")).toBeGreaterThan(
+      bought.indexOf("RESEARCH FORESTRY"),
     );
-    expect(
-      bought.some((kind) => kind === "BUILD_MINE" || kind === "BUILD_WORKSHOP"),
-    ).toBe(true);
-    expect(
-      state.cities
-        .filter((city) => city.ownerId === undead.id)
-        .some((city) => city.level >= 3),
-    ).toBe(true);
+    expect(bought.indexOf("BUILD_LUMBER_CAMP")).toBeLessThan(
+      bought.indexOf("RESEARCH MARKSMANSHIP"),
+    );
   }, 120_000);
 });
 
@@ -1682,7 +1700,11 @@ describe("the defects of the round-6 hand play", () => {
  * Human attacker's Raider now stays on the center it rides onto. The
  * Goblin pass (`pulp_wars-w49.12`, 7r50): the Goblin attacker in round 7 (5
  * before): its Bomb Chuckers no longer kill a retreating unit in one throw
- * with two helpers beside it.
+ * with two helpers beside it. The Undead pass (`pulp_wars-w49.13`, 7r51):
+ * the Undead attacker in round 8 (7 before): its Vampires strike and fly
+ * back (Escape), so it loses 8 units where it lost more and takes a
+ * round longer. Its correction: round 7 again (its Liches do not plague
+ * without Pestilence and its Ghouls have Carrion).
  */
 const RETREAT_ROUNDS = [5, 7, 7] as const;
 

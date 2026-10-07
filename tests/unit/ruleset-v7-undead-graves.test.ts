@@ -639,8 +639,10 @@ describe("ruleset-7 revision-13 Graves: state, events, and persistence", () => {
     // many-seats boards (`pulp_wars-ykw.3`) seed 2 ends in round 19 with
     // none; seed 4 has five Raise Dead (seven Graves raised, four left).
     // With tuning 4 (`pulp_wars-w49.3`) seed 4 raises or devours all ten of
-    // its Graves; seed 8 removes five of ten and ends with five.
-    const setup = setupWith(["UNDEAD", "UNDEAD"], 8);
+    // its Graves; seed 8 removes five of ten and ends with five. With the
+    // Undead pass (`pulp_wars-w49.13`) seed 8 ends with twelve Graves and
+    // none removed; seed 9 removes eleven and ends with nine.
+    const setup = setupWith(["UNDEAD", "UNDEAD"], 9);
     const match = runAiMatchV7(setup, { maxRounds: 30 });
     expect(match.errors).toEqual([]);
     expect(match.state.graves.length).toBeGreaterThan(0);

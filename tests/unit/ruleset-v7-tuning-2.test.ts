@@ -58,10 +58,10 @@ const adjacentAttackers = (faction: FactionIdV7): readonly UnitRoleIdV7[] =>
 
 describe("tuning 2 identity", () => {
   it("is 7r47 with 7r46 last in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r50");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r50.current");
-    expect(PRIOR_RULESET_7_IDS.at(-4)).toBe("pulp-wars-poc-7r46");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(49);
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r51");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r51.current");
+    expect(PRIOR_RULESET_7_IDS.at(-5)).toBe("pulp-wars-poc-7r46");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(50);
   });
 });
 
@@ -168,8 +168,11 @@ describe("1: who moves after a kill", () => {
           (role) => `${faction} ${effectiveRoleRuleV7(role, faction).label}`,
         ),
     );
+    // (The Undead pass, 7r51: nor the Abomination, whose kill rises on
+    // its own tile.)
     expect(stay).toEqual([
       "UNDEAD Zombie",
+      "UNDEAD Abomination",
       "MARTIAN Saucer",
       "MARTIAN Mothership",
     ]);
