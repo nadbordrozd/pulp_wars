@@ -31,45 +31,50 @@ export type FirstStepIdV7 =
   | "END_TURN";
 
 /**
- * The steps in priority order: with nothing selected, the first one that
- * applies is shown. A unit on a village or an enemy city is rare and worth
- * the most, so it leads; the rest follow a first game. `UNIT_DONE` is the
- * one step no state asks for: its line goes up when a command of the
- * player leaves a unit without a Move (`outOfMovesUnitId`), ahead of the
- * others, for a few seconds.
+ * The steps in priority order (bead pulp_wars-eu3r.7): with nothing
+ * selected, the first one that applies is shown. A first game reads: a
+ * resource in the player's land and the technology that unlocks it
+ * (`RESEARCH`, or `RESOURCE` when no resource needs a technology), then a
+ * unit to move, then the city to train in. Capture and End turn follow the
+ * sequence. `UNIT_DONE` is the one step no state asks for: its line goes
+ * up when a command of the player leaves a unit without a Move
+ * (`outOfMovesUnitId`), ahead of the others, for a few seconds.
  */
 export const FIRST_STEP_IDS_V7: readonly FirstStepIdV7[] = [
-  "CAPTURE",
-  "TRAIN",
-  "MOVE",
-  "UNIT_DONE",
   "RESEARCH",
   "RESOURCE",
+  "MOVE",
+  "TRAIN",
+  "CAPTURE",
+  "UNIT_DONE",
   "END_TURN",
 ];
 
 /**
  * A step retires once the player has done its thing this many times
- * (`UNIT_DONE`: once its line has been shown this many times).
+ * (`UNIT_DONE`: once its line has been shown this many times). The steps
+ * of the first-game sequence retire at their first accepted command, in
+ * any order. `RESEARCH` and `RESOURCE` are one step of that sequence: doing
+ * either retires both (`firstStepLiveV7`).
  */
 export const FIRST_STEP_RETIRE_COUNT_V7: Readonly<
   Record<FirstStepIdV7, number>
 > = {
   CAPTURE: 1,
-  TRAIN: 2,
-  MOVE: 2,
+  TRAIN: 1,
+  MOVE: 1,
   UNIT_DONE: 2,
-  RESEARCH: 2,
-  RESOURCE: 2,
+  RESEARCH: 1,
+  RESOURCE: 1,
   END_TURN: 3,
 };
 
 /** The steps that make a player competent: all retired, the coach is off. */
 export const FIRST_STEP_CORE_IDS_V7: readonly FirstStepIdV7[] = [
-  "TRAIN",
-  "MOVE",
   "RESEARCH",
   "RESOURCE",
+  "MOVE",
+  "TRAIN",
   "END_TURN",
 ];
 
@@ -153,12 +158,23 @@ export function setFirstStepsEnabledV7(enabled: boolean): FirstStepsProgressV7 {
   return { ...NEW_FIRST_STEPS_PROGRESS_V7, enabled };
 }
 
-/** Whether a step is still to be learnt. */
+/** The two steps of the sequence's first place: a resource and its tech. */
+const RESOURCE_PAIR: readonly FirstStepIdV7[] = ["RESEARCH", "RESOURCE"];
+
+/**
+ * Whether a step is still to be learnt. `RESEARCH` and `RESOURCE` share
+ * the first place of the sequence: once either has been done (or its line
+ * dismissed), neither shows again.
+ */
 export function firstStepLiveV7(
   progress: FirstStepsProgressV7,
   step: FirstStepIdV7,
 ): boolean {
-  return progress.done[step] < FIRST_STEP_RETIRE_COUNT_V7[step];
+  const retired = (id: FirstStepIdV7): boolean =>
+    progress.done[id] >= FIRST_STEP_RETIRE_COUNT_V7[id];
+  return RESOURCE_PAIR.includes(step)
+    ? !RESOURCE_PAIR.some(retired)
+    : !retired(step);
 }
 
 /**
@@ -256,7 +272,10 @@ export interface FirstStepCueV7 {
   /** The one line, at most `FIRST_STEP_LINE_WORD_LIMIT_V7` words. */
   readonly line: string;
   readonly marker: FirstStepMarkerV7 | null;
-  /** The HUD button the cue points at, or null. */
+  /**
+   * The HUD button the cue points at, or null. Only the research cue for a
+   * resource has both: the marker on the resource and the Tech button.
+   */
   readonly button: "TECH" | "END_TURN" | null;
   /** `PULSE` in full motion, `STILL` (a static ring) in reduced motion. */
   readonly buttonMotion: "PULSE" | "STILL";
@@ -305,7 +324,7 @@ export const FIRST_STEP_LINES_V7 = {
   CAPTURE_SELECTED: "Press Capture to take this place",
   TRAIN: "Tap your city to train a unit",
   TRAIN_SELECTED: "Pick a unit to train",
-  MOVE: "Tap a ringed unit to move it",
+  MOVE: "Tap this unit to move it",
   MOVE_SELECTED: "Pick a highlighted tile to move",
   OUT_OF_MOVES: "No bright ring: this unit has moved",
   RESEARCH_FREE: "Your first technology is free",
@@ -363,9 +382,10 @@ export function firstStepResearchLineV7(
  * dialog, nothing with Hints off, nothing once the coach has retired.
  *
  * Order: the line of a unit that just ran out of moves; then what the
- * selection can do (its Move tiles, its Train list, its tile's action);
- * then, with nothing of the selection's to say, the first applicable step
- * of `FIRST_STEP_IDS_V7`.
+ * selection can do (its Capture, its Move tiles, its Train list, its
+ * tile's action); then, with nothing of the selection's to say, the first
+ * applicable step of `FIRST_STEP_IDS_V7`: research for a resource, move,
+ * train, capture, end turn.
  */
 export function chooseFirstStepV7(
   input: FirstStepsInputV7,
@@ -439,15 +459,67 @@ export function chooseFirstStepV7(
   )
     return cue("RESOURCE", FIRST_STEP_LINES_V7.RESOURCE_SELECTED);
 
-  // The next useful thing on the board.
-  if (live("CAPTURE")) {
-    const capture = commands.find((command) => command.kind === "CAPTURE");
-    const unit =
-      capture !== undefined && "unitId" in capture
-        ? ownUnit(capture.unitId)
-        : undefined;
+  // The next step of a first game: a resource and its technology, then a
+  // unit to move, then the city to train in.
+  if (live("RESEARCH")) {
+    const research = commands.filter(
+      (command): command is Extract<CommandV7, { kind: "RESEARCH" }> =>
+        command.kind === "RESEARCH",
+    );
+    // A resource in the player's land that an offered technology unlocks:
+    // the marker sits on the resource, the Tech button pulses, and the
+    // line names both. The plainest harvest first.
+    for (const kind of RESOURCE_ORDER) {
+      const action = BASIC_ECONOMIC_ACTIONS_V7[kind];
+      if (
+        action.resource === null ||
+        view.viewer.researchedTechs.includes(action.technology) ||
+        !research.some((command) => command.tech === action.technology)
+      )
+        continue;
+      const tile = view.board.tiles.find(
+        (candidate) =>
+          candidate.explored &&
+          candidate.territoryOwnerId === viewer &&
+          candidate.improvement === null &&
+          candidate.resource === action.resource,
+      );
+      const line = firstStepResearchLineV7(
+        technologyDisplayNameV7(action.technology, view.viewer.faction),
+        action.resource,
+      );
+      if (tile !== undefined && line !== null)
+        return cue("RESEARCH", line, { kind: "TILE", at: tile.at }, "TECH");
+    }
+    // No resource needs a technology: one the player can use now.
+    for (const kind of RESOURCE_ORDER) {
+      const command = economic.find((candidate) => candidate.kind === kind);
+      if (command !== undefined)
+        return cue("RESOURCE", FIRST_STEP_RESOURCE_LINES_V7[kind], {
+          kind: "TILE",
+          at: command.at,
+        });
+    }
+    if (research.length > 0)
+      return cue(
+        "RESEARCH",
+        view.viewer.researchedTechs.length === 0
+          ? FIRST_STEP_LINES_V7.RESEARCH_FREE
+          : FIRST_STEP_LINES_V7.RESEARCH,
+        null,
+        "TECH",
+      );
+  }
+  if (live("MOVE")) {
+    const unit = view.units.find(
+      (candidate) =>
+        candidate.ownerId === viewer &&
+        candidate.form !== "EGG" &&
+        !candidate.activation.handled &&
+        offered("MOVE", candidate.id),
+    );
     if (unit !== undefined)
-      return cue("CAPTURE", FIRST_STEP_LINES_V7.CAPTURE, {
+      return cue("MOVE", FIRST_STEP_LINES_V7.MOVE, {
         kind: "UNIT",
         at: unit.at,
       });
@@ -463,67 +535,19 @@ export function chooseFirstStepV7(
         at: city.at,
       });
   }
-  if (
-    live("MOVE") &&
-    view.units.some(
-      (unit) =>
-        unit.ownerId === viewer &&
-        unit.form !== "EGG" &&
-        !unit.activation.handled &&
-        offered("MOVE", unit.id),
-    )
-  )
-    return cue("MOVE", FIRST_STEP_LINES_V7.MOVE);
-  if (live("RESEARCH")) {
-    const research = commands.filter(
-      (command): command is Extract<CommandV7, { kind: "RESEARCH" }> =>
-        command.kind === "RESEARCH",
-    );
-    if (research.length > 0) {
-      // A resource in the player's land that an affordable technology
-      // unlocks: the line names both.
-      for (const tile of view.board.tiles) {
-        if (
-          !tile.explored ||
-          tile.territoryOwnerId !== viewer ||
-          tile.improvement !== null ||
-          tile.resource === null
-        )
-          continue;
-        const action = Object.values(BASIC_ECONOMIC_ACTIONS_V7).find(
-          (rule) => rule.resource !== null && rule.resource === tile.resource,
-        );
-        if (
-          action === undefined ||
-          view.viewer.researchedTechs.includes(action.technology) ||
-          !research.some((command) => command.tech === action.technology)
-        )
-          continue;
-        const line = firstStepResearchLineV7(
-          technologyDisplayNameV7(action.technology, view.viewer.faction),
-          String(tile.resource),
-        );
-        if (line !== null) return cue("RESEARCH", line, null, "TECH");
-      }
-      return cue(
-        "RESEARCH",
-        view.viewer.researchedTechs.length === 0
-          ? FIRST_STEP_LINES_V7.RESEARCH_FREE
-          : FIRST_STEP_LINES_V7.RESEARCH,
-        null,
-        "TECH",
-      );
-    }
+  // After the sequence: a unit on a village or an enemy city.
+  if (live("CAPTURE")) {
+    const capture = commands.find((command) => command.kind === "CAPTURE");
+    const unit =
+      capture !== undefined && "unitId" in capture
+        ? ownUnit(capture.unitId)
+        : undefined;
+    if (unit !== undefined)
+      return cue("CAPTURE", FIRST_STEP_LINES_V7.CAPTURE, {
+        kind: "UNIT",
+        at: unit.at,
+      });
   }
-  if (live("RESOURCE"))
-    for (const kind of RESOURCE_ORDER) {
-      const command = economic.find((candidate) => candidate.kind === kind);
-      if (command !== undefined)
-        return cue("RESOURCE", FIRST_STEP_RESOURCE_LINES_V7[kind], {
-          kind: "TILE",
-          at: command.at,
-        });
-    }
   if (
     live("END_TURN") &&
     commands.some((command) => command.kind === "END_TURN") &&

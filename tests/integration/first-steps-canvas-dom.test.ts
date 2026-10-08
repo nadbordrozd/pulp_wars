@@ -41,9 +41,11 @@ import {
 import { martianUiFieldV7 } from "../fixtures/v7-martian-ui";
 
 /**
- * First steps in the interface and on the board (bead pulp_wars-2yc.39,
- * docs/ui/SCREEN_FLOW.md "First steps"): one coach line with a small
- * dismiss, one marker or one pulsing HUD button, the record of this browser
+ * First steps in the interface and on the board (beads pulp_wars-2yc.39
+ * and pulp_wars-eu3r.7, docs/ui/SCREEN_FLOW.md "First steps"): one coach
+ * line with a small dismiss, a marker and the pulsing Tech button for the
+ * first step (a resource and its technology), then one marker for a unit
+ * to move and for the city to train in, the record of this browser
  * profile, the Hints toggle, and the marker the real board host draws.
  *
  * The arena: the viewer's capital at (8, 8), its land x 7-9, y 7-9.
@@ -113,21 +115,20 @@ afterEach(() => {
 });
 
 describe("first steps in the interface", () => {
-  it("shows one coach line and one board marker for the next useful thing", () => {
+  it("shows one coach line, a marker on the resource and the pulsing Tech button", () => {
     const { host, app } = open(match());
     const cue = line();
     expect(cue).not.toBeNull();
     expect(document.querySelectorAll(".v7-first-step")).toHaveLength(1);
-    expect(cue?.dataset.firstStep).toBe("train");
+    expect(cue?.dataset.firstStep).toBe("research");
     expect(cue?.getAttribute("role")).toBe("status");
-    expect(lineText()).toBe("Tap your city to train a unit");
+    expect(lineText()).toBe("Research Gathering to harvest your fruit");
     expect(host.lastModel?.firstStepMarker).toEqual({
-      kind: "CITY",
-      at: CAPITAL,
+      kind: "TILE",
+      at: FRUIT,
       motion: "HOP",
     });
-    // Neither HUD button is pointed at while the board marker is.
-    expect(requiredButton("tech").dataset.firstStep).toBeUndefined();
+    expect(requiredButton("tech").dataset.firstStep).toBe("pulse");
     expect(requiredButton("end-turn").dataset.firstStep).toBeUndefined();
     // The line is no dialog and takes no click of its own: only its small
     // dismiss is a control, and nothing dims or blocks the board.
@@ -143,6 +144,74 @@ describe("first steps in the interface", () => {
     app.destroy();
   });
 
+  it("a new player is led to research, then to move a unit, then to train", async () => {
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    const storage = new MemoryStorage();
+    const { controller, host, app } = open(match(), storage);
+    const view = controller.snapshot().view;
+    const unit = view?.units.find((item) => item.ownerId === view.viewer.id);
+    const city = view?.cities.find((item) => item.ownerId === view.viewer.id);
+    if (unit === undefined || city === undefined) throw new Error("fixture");
+    // 1. The resource and its technology.
+    expect(line()?.dataset.firstStep).toBe("research");
+    requiredButton("tech").click();
+    expect(line()).toBeNull();
+    requiredButton("tech-gathering").click();
+    requiredButton("research-gathering").click();
+    await vi.waitFor(() => expect(controller.accepted).toHaveLength(1));
+    expect(stored(storage).done.RESEARCH).toBe(1);
+    if (document.querySelector('[data-action="close-overlay"]') !== null)
+      requiredButton("close-overlay").click();
+    // 2. A unit to move: the marker sits on it.
+    await vi.waitFor(() => expect(line()?.dataset.firstStep).toBe("move"));
+    expect(lineText()).toBe("Tap this unit to move it");
+    expect(host.lastModel?.firstStepMarker).toEqual({
+      kind: "UNIT",
+      at: BESIDE,
+      motion: "HOP",
+    });
+    expect(requiredButton("tech").dataset.firstStep).toBeUndefined();
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: unit.id });
+    expect(lineText()).toBe("Pick a highlighted tile to move");
+    const move = boardPlan(host).targets.find(
+      (target) =>
+        target.family === "MOVE" &&
+        !(target.at.x === CAPITAL.x && target.at.y === CAPITAL.y),
+    );
+    if (move === undefined) throw new Error("fixture");
+    host.callbacks?.onCommand(move);
+    await vi.waitFor(() => expect(controller.accepted).toHaveLength(2));
+    expect(stored(storage).done.MOVE).toBe(1);
+    await vi.advanceTimersByTimeAsync(6_100);
+    host.callbacks?.onSelection(null);
+    // 3. The city to train in.
+    await vi.waitFor(() => expect(line()?.dataset.firstStep).toBe("train"));
+    expect(lineText()).toBe("Tap your city to train a unit");
+    expect(host.lastModel?.firstStepMarker).toEqual({
+      kind: "CITY",
+      at: CAPITAL,
+      motion: "HOP",
+    });
+    host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
+    expect(lineText()).toBe("Pick a unit to train");
+    requiredButton("command-train").click();
+    await vi.waitFor(() => expect(controller.accepted).toHaveLength(3));
+    expect(stored(storage).done.TRAIN).toBe(1);
+    // Done once each: none of the three comes back, now or in a new view.
+    host.callbacks?.onSelection(null);
+    expect(
+      ["research", "resource", "move", "train"].includes(
+        line()?.dataset.firstStep ?? "",
+      ),
+    ).toBe(false);
+    app.destroy();
+    document.body.innerHTML = '<div id="app"></div>';
+    const again = open(match(), storage);
+    expect(line()).toBeNull();
+    expect(again.host.lastModel?.firstStepMarker).toBeNull();
+    again.app.destroy();
+  });
+
   it("follows the selection: the Train list, then a unit's Move tiles", () => {
     const { controller, host, app } = open(match());
     const view = controller.snapshot().view;
@@ -156,7 +225,7 @@ describe("first steps in the interface", () => {
     expect(lineText()).toBe("Pick a highlighted tile to move");
     expect(host.lastModel?.firstStepMarker).toBeNull();
     host.callbacks?.onSelection(null);
-    expect(lineText()).toBe("Tap your city to train a unit");
+    expect(lineText()).toBe("Research Gathering to harvest your fruit");
     app.destroy();
   });
 
@@ -166,6 +235,7 @@ describe("first steps in the interface", () => {
     const view = controller.snapshot().view;
     const city = view?.cities.find((item) => item.ownerId === view.viewer.id);
     if (city === undefined) throw new Error("fixture");
+    // Training early, out of order, retires the Train step.
     host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
     requiredButton("command-train").click();
     await waitUntil(() => controller.accepted.length === 1);
@@ -176,12 +246,19 @@ describe("first steps in the interface", () => {
     app.destroy();
     document.body.innerHTML = '<div id="app"></div>';
     const again = open(match(), storage);
-    expect(lineText()).toBe("Tap your city to train a unit");
+    expect(lineText()).toBe("Research Gathering to harvest your fruit");
     // Dismissing the line retires its step for good; the next step shows.
     requiredButton("first-step-dismiss").click();
-    expect(stored(storage).done.TRAIN).toBe(2);
+    expect(stored(storage).done.RESEARCH).toBe(1);
     expect(line()?.dataset.firstStep).toBe("move");
-    expect(lineText()).toBe("Tap a ringed unit to move it");
+    expect(lineText()).toBe("Tap this unit to move it");
+    requiredButton("first-step-dismiss").click();
+    expect(stored(storage).done.MOVE).toBe(1);
+    // Train was done already: it does not come back, on the board or for
+    // the selected city.
+    expect(line()).toBeNull();
+    again.host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
+    expect(line()).toBeNull();
     again.app.destroy();
   });
 
@@ -215,15 +292,19 @@ describe("first steps in the interface", () => {
   it("pulses the Tech button for the free first technology, naming the resource it unlocks", () => {
     const storage = new MemoryStorage();
     const { host, app } = open(match({ unit: false }), storage);
-    requiredButton("first-step-dismiss").click();
     expect(line()?.dataset.firstStep).toBe("research");
     expect(lineText()).toBe("Research Gathering to harvest your fruit");
     expect(requiredButton("tech").dataset.firstStep).toBe("pulse");
     expect(requiredButton("end-turn").dataset.firstStep).toBeUndefined();
-    expect(host.lastModel?.firstStepMarker).toBeNull();
+    expect(host.lastModel?.firstStepMarker).toEqual({
+      kind: "TILE",
+      at: FRUIT,
+      motion: "HOP",
+    });
     // While the technology screen is open the coach is silent.
     requiredButton("tech").click();
     expect(line()).toBeNull();
+    expect(host.lastModel?.firstStepMarker).toBeNull();
     requiredButton("close-overlay").click();
     expect(line()?.dataset.firstStep).toBe("research");
     app.destroy();
@@ -254,12 +335,17 @@ describe("first steps in the interface", () => {
       "reduced",
     );
     expect(host.lastModel?.firstStepMarker).toEqual({
+      kind: "TILE",
+      at: FRUIT,
+      motion: "STILL",
+    });
+    expect(requiredButton("tech").dataset.firstStep).toBe("still");
+    requiredButton("first-step-dismiss").click();
+    expect(host.lastModel?.firstStepMarker).toEqual({
       kind: "CITY",
       at: CAPITAL,
       motion: "STILL",
     });
-    requiredButton("first-step-dismiss").click();
-    expect(requiredButton("tech").dataset.firstStep).toBe("still");
     app.destroy();
   });
 
@@ -267,7 +353,7 @@ describe("first steps in the interface", () => {
     const storage = new MemoryStorage();
     const { host, app } = open(match(), storage);
     requiredButton("first-step-dismiss").click();
-    expect(stored(storage).done.TRAIN).toBe(2);
+    expect(stored(storage).done.RESEARCH).toBe(1);
     requiredButton("compact-menu").click();
     requiredButton("settings").click();
     const hints = requiredButton("hints");
@@ -286,9 +372,9 @@ describe("first steps in the interface", () => {
     requiredButton("settings").click();
     requiredButton("hints").click();
     expect(stored(storage)).toMatchObject({ enabled: true, turns: 0 });
-    expect(stored(storage).done.TRAIN).toBe(0);
+    expect(stored(storage).done.RESEARCH).toBe(0);
     requiredButton("close-overlay").click();
-    expect(lineText()).toBe("Tap your city to train a unit");
+    expect(lineText()).toBe("Research Gathering to harvest your fruit");
     app.destroy();
   });
 

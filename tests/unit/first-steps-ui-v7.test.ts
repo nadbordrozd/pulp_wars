@@ -39,7 +39,7 @@ import { replaceTileV7 } from "../fixtures/v7-builders";
 import { martianUiFieldV7 } from "../fixtures/v7-martian-ui";
 
 /**
- * First steps (bead pulp_wars-2yc.39): the coach's step chooser is a pure
+ * First steps (beads pulp_wars-2yc.39 and pulp_wars-eu3r.7): the coach's step chooser is a pure
  * function of the viewer's public view, the commands the engine offers it,
  * and the profile's record. The arena: the viewer's capital at (8, 8) with
  * its land x 7-9, y 7-9, a village at (5, 8), the viewer's turn.
@@ -145,26 +145,120 @@ const ownCity = (data: Scene) => {
 };
 
 describe("first steps: the step chooser", () => {
-  it("train: a hopping marker over a city that can train, and its line", () => {
+  it("research for a resource: a marker on the resource and the Tech button", () => {
+    const data = scene({ fruit: true });
+    expect(choose(data)).toEqual({
+      step: "RESEARCH",
+      line: "Research Gathering to harvest your fruit",
+      marker: { kind: "TILE", at: FRUIT, motion: "HOP" },
+      button: "TECH",
+      buttonMotion: "PULSE",
+    });
+    // Tapping the resource tile changes nothing: it still needs the
+    // technology.
+    expect(
+      choose(data, { selection: { kind: "TILE", at: FRUIT } }),
+    ).toMatchObject({ step: "RESEARCH", button: "TECH" });
+  });
+
+  it("research: the Tech button pulses when no resource is in the land", () => {
+    const data = scene({ unitAt: null });
+    expect(choose(data)).toEqual({
+      step: "RESEARCH",
+      line: "Your first technology is free",
+      marker: null,
+      button: "TECH",
+      buttonMotion: "PULSE",
+    });
+    const second = scene({ unitAt: null, researched: ["GATHERING"] });
+    expect(choose(second)).toMatchObject({
+      step: "RESEARCH",
+      line: "You can afford a new technology",
+      marker: null,
+      button: "TECH",
+    });
+    // No Coins for the next one: nothing to point at.
+    const broke = scene({ unitAt: null, researched: ["GATHERING"], coins: 0 });
+    expect(broke.commands.some((command) => command.kind === "RESEARCH")).toBe(
+      false,
+    );
+    expect(choose(broke)?.step).not.toBe("RESEARCH");
+  });
+
+  it("resource: with no resource needing a technology, a marker on one usable now", () => {
+    const data = scene({
+      unitAt: null,
+      fruit: true,
+      researched: ["GATHERING"],
+    });
+    expect(choose(data)).toEqual({
+      step: "RESOURCE",
+      line: "Tap the fruit to harvest it",
+      marker: { kind: "TILE", at: FRUIT, motion: "HOP" },
+      button: null,
+      buttonMotion: "PULSE",
+    });
+    expect(choose(data, { selection: { kind: "TILE", at: FRUIT } })).toEqual({
+      step: "RESOURCE",
+      line: "Press the action below to use it",
+      marker: null,
+      button: null,
+      buttonMotion: "PULSE",
+    });
+    // Another tile selected: the marker still points at the fruit.
+    expect(
+      choose(data, { selection: { kind: "TILE", at: BESIDE } })?.marker,
+    ).toEqual({ kind: "TILE", at: FRUIT, motion: "HOP" });
+  });
+
+  it("move: a hopping marker over a unit that can move, and another line once it is selected", () => {
+    const data = scene({ unitAt: CAPITAL });
+    const progress = retired("RESEARCH");
+    expect(choose(data, { progress })).toEqual({
+      step: "MOVE",
+      line: "Tap this unit to move it",
+      marker: { kind: "UNIT", at: CAPITAL, motion: "HOP" },
+      button: null,
+      buttonMotion: "PULSE",
+    });
+    expect(
+      choose(data, {
+        progress,
+        selection: { kind: "UNIT", unitId: ownUnit(data).id },
+      }),
+    ).toMatchObject({
+      step: "MOVE",
+      line: "Pick a highlighted tile to move",
+      marker: null,
+    });
+  });
+
+  it("train: a hopping marker over the capital, and its line once it is selected", () => {
     const data = scene();
     expect(data.commands.some((command) => command.kind === "TRAIN")).toBe(
       true,
     );
-    expect(choose(data)).toEqual({
+    const progress = retired("RESEARCH", "MOVE");
+    expect(choose(data, { progress })).toEqual({
       step: "TRAIN",
       line: "Tap your city to train a unit",
       marker: { kind: "CITY", at: CAPITAL, motion: "HOP" },
       button: null,
       buttonMotion: "PULSE",
     });
-    // With the city selected the line points at its Train list instead.
-    expect(
-      choose(data, { selection: { kind: "CITY", cityId: ownCity(data).id } }),
-    ).toMatchObject({
-      step: "TRAIN",
-      line: "Pick a unit to train",
-      marker: null,
-    });
+    // With the city selected the line points at its Train list instead,
+    // whatever step of the sequence is next.
+    for (const before of [progress, NEW_FIRST_STEPS_PROGRESS_V7])
+      expect(
+        choose(data, {
+          progress: before,
+          selection: { kind: "CITY", cityId: ownCity(data).id },
+        }),
+      ).toMatchObject({
+        step: "TRAIN",
+        line: "Pick a unit to train",
+        marker: null,
+      });
   });
 
   it("train: no marker while the city cannot train (its centre is taken)", () => {
@@ -172,24 +266,9 @@ describe("first steps: the step chooser", () => {
     expect(data.commands.some((command) => command.kind === "TRAIN")).toBe(
       false,
     );
-    expect(choose(data)?.step).toBe("MOVE");
-  });
-
-  it("move: a line for a unit that can move, and another once it is selected", () => {
-    const data = scene({ unitAt: CAPITAL });
-    expect(choose(data)).toMatchObject({
-      step: "MOVE",
-      line: "Tap a ringed unit to move it",
-      marker: null,
-      button: null,
-    });
-    expect(
-      choose(data, { selection: { kind: "UNIT", unitId: ownUnit(data).id } }),
-    ).toMatchObject({
-      step: "MOVE",
-      line: "Pick a highlighted tile to move",
-      marker: null,
-    });
+    expect(choose(data, { progress: retired("RESEARCH") })?.step).toBe("MOVE");
+    // The unit can still move, so End turn is not pointed at either.
+    expect(choose(data, { progress: retired("RESEARCH", "MOVE") })).toBeNull();
   });
 
   it("unit done: one line when the player's command left a unit without a Move", () => {
@@ -200,79 +279,21 @@ describe("first steps: the step chooser", () => {
         (command) => command.kind === "MOVE" && command.unitId === unit.id,
       ),
     ).toBe(false);
-    expect(choose(data, { outOfMovesUnitId: unit.id })).toMatchObject({
+    const progress = retired("RESEARCH");
+    expect(choose(data, { progress, outOfMovesUnitId: unit.id })).toEqual({
       step: "UNIT_DONE",
       line: "No bright ring: this unit has moved",
       marker: null,
       button: null,
+      buttonMotion: "PULSE",
     });
     // It leads every other step while it is up, and is gone without it.
-    expect(choose(data)?.step).toBe("TRAIN");
+    expect(choose(data, { outOfMovesUnitId: unit.id })?.step).toBe("UNIT_DONE");
+    expect(choose(data, { progress })?.step).toBe("TRAIN");
     // A unit the viewer no longer has says nothing.
-    expect(choose(data, { outOfMovesUnitId: 999_999 })?.step).toBe("TRAIN");
-  });
-
-  it("research: the Tech button pulses when a technology is affordable", () => {
-    const data = scene({ unitAt: null });
-    const progress = retired("TRAIN");
-    expect(choose(data, { progress })).toEqual({
-      step: "RESEARCH",
-      line: "Your first technology is free",
-      marker: null,
-      button: "TECH",
-      buttonMotion: "PULSE",
-    });
-    const second = scene({ unitAt: null, researched: ["GATHERING"] });
-    expect(choose(second, { progress })).toMatchObject({
-      step: "RESEARCH",
-      line: "You can afford a new technology",
-      button: "TECH",
-    });
-    // No Coins for the next one: nothing to point at.
-    const broke = scene({ unitAt: null, researched: ["GATHERING"], coins: 0 });
-    expect(broke.commands.some((command) => command.kind === "RESEARCH")).toBe(
-      false,
+    expect(choose(data, { progress, outOfMovesUnitId: 999_999 })?.step).toBe(
+      "TRAIN",
     );
-    expect(choose(broke, { progress })?.step).not.toBe("RESEARCH");
-  });
-
-  it("resource: the line sends the player to Tech while the technology is missing", () => {
-    const data = scene({ unitAt: null, fruit: true });
-    expect(choose(data, { progress: retired("TRAIN") })).toEqual({
-      step: "RESEARCH",
-      line: "Research Gathering to harvest your fruit",
-      marker: null,
-      button: "TECH",
-      buttonMotion: "PULSE",
-    });
-  });
-
-  it("resource: a hopping marker over a tile that can be harvested now", () => {
-    const data = scene({
-      unitAt: null,
-      fruit: true,
-      researched: ["GATHERING"],
-    });
-    const progress = retired("TRAIN", "RESEARCH");
-    expect(choose(data, { progress })).toEqual({
-      step: "RESOURCE",
-      line: "Tap the fruit to harvest it",
-      marker: { kind: "TILE", at: FRUIT, motion: "HOP" },
-      button: null,
-      buttonMotion: "PULSE",
-    });
-    expect(
-      choose(data, { progress, selection: { kind: "TILE", at: FRUIT } }),
-    ).toMatchObject({
-      step: "RESOURCE",
-      line: "Press the action below to use it",
-      marker: null,
-    });
-    // Another tile selected: the marker still points at the fruit.
-    expect(
-      choose(data, { progress, selection: { kind: "TILE", at: BESIDE } })
-        ?.marker,
-    ).toEqual({ kind: "TILE", at: FRUIT, motion: "HOP" });
   });
 
   it("end turn: End turn is emphasised only when nothing useful is left", () => {
@@ -290,7 +311,7 @@ describe("first steps: the step chooser", () => {
     expect(choose(busy, { progress: retired("MOVE") })).toBeNull();
   });
 
-  it("capture: a unit that can capture leads every other step", () => {
+  it("capture: a marker over a unit that can capture, after the sequence", () => {
     const data = scene({ unitAt: VILLAGE, captureEligible: true });
     const unit = ownUnit(data);
     expect(
@@ -298,13 +319,18 @@ describe("first steps: the step chooser", () => {
         (command) => command.kind === "CAPTURE" && command.unitId === unit.id,
       ),
     ).toBe(true);
-    expect(choose(data)).toEqual({
+    // A new player is shown the sequence first.
+    expect(choose(data)?.step).toBe("RESEARCH");
+    expect(
+      choose(data, { progress: retired("RESEARCH", "MOVE", "TRAIN") }),
+    ).toEqual({
       step: "CAPTURE",
       line: "Tap this unit to capture here",
       marker: { kind: "UNIT", at: VILLAGE, motion: "HOP" },
       button: null,
       buttonMotion: "PULSE",
     });
+    // The selected unit's Capture is said at once, at any point.
     expect(
       choose(data, { selection: { kind: "UNIT", unitId: unit.id } }),
     ).toMatchObject({
@@ -314,14 +340,21 @@ describe("first steps: the step chooser", () => {
     });
   });
 
-  it("orders the steps: capture, train, move, research, resource, end turn", () => {
+  it("orders the steps: resource and research, move, train, then capture and end turn", () => {
     expect(FIRST_STEP_IDS_V7).toEqual([
-      "CAPTURE",
-      "TRAIN",
-      "MOVE",
-      "UNIT_DONE",
       "RESEARCH",
       "RESOURCE",
+      "MOVE",
+      "TRAIN",
+      "CAPTURE",
+      "UNIT_DONE",
+      "END_TURN",
+    ]);
+    expect(FIRST_STEP_CORE_IDS_V7).toEqual([
+      "RESEARCH",
+      "RESOURCE",
+      "MOVE",
+      "TRAIN",
       "END_TURN",
     ]);
     // Everything applies at once here; each retirement uncovers the next.
@@ -329,7 +362,6 @@ describe("first steps: the step chooser", () => {
       unitAt: VILLAGE,
       captureEligible: true,
       fruit: true,
-      researched: ["GATHERING"],
     });
     const order: FirstStepIdV7[] = [];
     let progress = NEW_FIRST_STEPS_PROGRESS_V7;
@@ -339,64 +371,138 @@ describe("first steps: the step chooser", () => {
       order.push(cue.step);
       progress = retireFirstStepV7(progress, cue.step);
     }
-    expect(order).toEqual(["CAPTURE", "TRAIN", "MOVE", "RESEARCH", "RESOURCE"]);
-    // With every core step but End turn learnt, End turn waits for a turn
-    // with nothing left to do.
+    expect(order).toEqual(["RESEARCH", "MOVE", "TRAIN", "CAPTURE"]);
+    // With every step but End turn learnt, End turn waits for a turn with
+    // nothing left to do.
     expect(firstStepLiveV7(progress, "END_TURN")).toBe(true);
     const idle = scene({ unitAt: null, coins: 0, researched: ["GATHERING"] });
     expect(choose(idle, { progress })?.step).toBe("END_TURN");
   });
 
-  it("shows one step at a time: one line, and one marker or one button", () => {
+  it("a new player's first turns: research for the resource, then move, then train", () => {
+    const data = scene({ fruit: true });
+    const steps: (FirstStepIdV7 | undefined)[] = [];
+    let progress = NEW_FIRST_STEPS_PROGRESS_V7;
+    for (const command of [
+      { kind: "RESEARCH", tech: "GATHERING" },
+      { kind: "MOVE", unitId: ownUnit(data).id, path: [] },
+      { kind: "TRAIN", cityId: ownCity(data).id, role: "WARRIOR" },
+    ] as unknown as CommandV7[]) {
+      const cue = choose(data, { progress });
+      steps.push(cue?.step);
+      expect(firstStepOfCommandV7(command)).toBe(cue?.step);
+      progress = noteFirstStepCommandV7(progress, command);
+    }
+    expect(steps).toEqual(["RESEARCH", "MOVE", "TRAIN"]);
+    // All three are done once: none of them shows again.
+    for (const step of ["RESEARCH", "RESOURCE", "MOVE", "TRAIN"] as const)
+      expect(firstStepLiveV7(progress, step), step).toBe(false);
+    expect(choose(data, { progress })).toBeNull();
+  });
+
+  it("doing a step early, out of order, retires it for good", () => {
+    const data = scene({ fruit: true });
+    // Train first: the sequence skips it later.
+    let progress = noteFirstStepCommandV7(NEW_FIRST_STEPS_PROGRESS_V7, {
+      kind: "TRAIN",
+    } as CommandV7);
+    expect(choose(data, { progress })?.step).toBe("RESEARCH");
+    progress = noteFirstStepCommandV7(progress, {
+      kind: "RESEARCH",
+    } as CommandV7);
+    expect(choose(data, { progress })?.step).toBe("MOVE");
+    progress = noteFirstStepCommandV7(progress, { kind: "MOVE" } as CommandV7);
+    expect(choose(data, { progress })).toBeNull();
+    // The city's Train line does not come back when it is selected.
+    expect(
+      choose(data, {
+        progress,
+        selection: { kind: "CITY", cityId: ownCity(data).id },
+      }),
+    ).toBeNull();
+    // Using a resource retires the research step too: they are one step.
+    const harvested = noteFirstStepCommandV7(NEW_FIRST_STEPS_PROGRESS_V7, {
+      kind: "HARVEST_FRUIT",
+    } as CommandV7);
+    expect(firstStepLiveV7(harvested, "RESEARCH")).toBe(false);
+    expect(choose(data, { progress: harvested })?.step).toBe("MOVE");
+    const researched = scene({ fruit: true, researched: ["GATHERING"] });
+    expect(
+      choose(researched, {
+        progress: retired("RESEARCH"),
+        selection: { kind: "TILE", at: FRUIT },
+      })?.step,
+    ).toBe("MOVE");
+  });
+
+  it("shows one step at a time: one line, one marker, one button at most", () => {
     for (const data of [
       scene(),
       scene({ unitAt: CAPITAL }),
       scene({ unitAt: null, fruit: true }),
       scene({ unitAt: VILLAGE, captureEligible: true }),
-    ]) {
-      const cue = choose(data);
-      expect(cue).not.toBeNull();
-      if (cue === null) continue;
-      expect(cue.marker !== null && cue.button !== null).toBe(false);
-      expect(cue.line.split(/\s+/).length).toBeLessThanOrEqual(
-        FIRST_STEP_LINE_WORD_LIMIT_V7,
-      );
-    }
+    ])
+      for (const progress of [
+        NEW_FIRST_STEPS_PROGRESS_V7,
+        retired("RESEARCH"),
+        retired("RESEARCH", "MOVE"),
+        retired("RESEARCH", "MOVE", "TRAIN"),
+      ]) {
+        const cue = choose(data, { progress });
+        if (cue === null) continue;
+        // Only the research cue for a resource has both.
+        if (cue.marker !== null && cue.button !== null) {
+          expect(cue.step).toBe("RESEARCH");
+          expect(cue.marker.kind).toBe("TILE");
+        }
+        expect(cue.line.split(/\s+/).length).toBeLessThanOrEqual(
+          FIRST_STEP_LINE_WORD_LIMIT_V7,
+        );
+      }
   });
 
-  it("retires a step after the player has done it a couple of times", () => {
+  it("retires a step of the sequence after the player has done it once", () => {
     const data = scene();
     expect(FIRST_STEP_RETIRE_COUNT_V7).toEqual({
       CAPTURE: 1,
-      TRAIN: 2,
-      MOVE: 2,
+      TRAIN: 1,
+      MOVE: 1,
       UNIT_DONE: 2,
-      RESEARCH: 2,
-      RESOURCE: 2,
+      RESEARCH: 1,
+      RESOURCE: 1,
       END_TURN: 3,
     });
-    expect(choose(data, { progress: done({ TRAIN: 1 }) })?.step).toBe("TRAIN");
-    expect(choose(data, { progress: done({ TRAIN: 2 }) })?.step).toBe("MOVE");
-    expect(choose(data, { progress: done({ TRAIN: 2, MOVE: 2 }) })?.step).toBe(
+    expect(choose(data)?.step).toBe("RESEARCH");
+    expect(choose(data, { progress: done({ RESEARCH: 1 }) })?.step).toBe(
+      "MOVE",
+    );
+    expect(
+      choose(data, { progress: done({ RESEARCH: 1, MOVE: 1 }) })?.step,
+    ).toBe("TRAIN");
+    // Dismissing a line retires its step at once.
+    const dismissed = retireFirstStepV7(
+      NEW_FIRST_STEPS_PROGRESS_V7,
       "RESEARCH",
     );
-    // A selected city's Train line retires with the step too.
-    expect(
-      choose(data, {
-        progress: done({ TRAIN: 2 }),
-        selection: { kind: "CITY", cityId: ownCity(data).id },
-      })?.step,
-    ).toBe("MOVE");
-    // Dismissing a line retires its step at once.
-    const dismissed = retireFirstStepV7(NEW_FIRST_STEPS_PROGRESS_V7, "TRAIN");
-    expect(firstStepLiveV7(dismissed, "TRAIN")).toBe(false);
+    expect(firstStepLiveV7(dismissed, "RESEARCH")).toBe(false);
+    expect(firstStepLiveV7(dismissed, "RESOURCE")).toBe(false);
     expect(choose(data, { progress: dismissed })?.step).toBe("MOVE");
+    // End turn still takes three turns.
+    expect(firstStepLiveV7(done({ END_TURN: 2 }), "END_TURN")).toBe(true);
+    expect(firstStepLiveV7(done({ END_TURN: 3 }), "END_TURN")).toBe(false);
   });
 
   it("is off for good after competent play or the turn limit", () => {
     const data = scene({ unitAt: VILLAGE, captureEligible: true });
     const competent = retired(...FIRST_STEP_CORE_IDS_V7);
     expect(firstStepsActiveV7(competent)).toBe(false);
+    // The resource step is one step: either half retires it.
+    expect(
+      firstStepsActiveV7(retired("RESEARCH", "MOVE", "TRAIN", "END_TURN")),
+    ).toBe(false);
+    expect(
+      firstStepsActiveV7(retired("RESOURCE", "MOVE", "TRAIN", "END_TURN")),
+    ).toBe(false);
     // Even a step never done (capture) no longer shows.
     expect(firstStepLiveV7(competent, "CAPTURE")).toBe(true);
     expect(choose(data, { progress: competent })).toBeNull();
@@ -408,7 +514,7 @@ describe("first steps: the step chooser", () => {
     expect(choose(data, { progress: late })).toBeNull();
     expect(
       choose(data, { progress: { ...late, turns: late.turns - 1 } })?.step,
-    ).toBe("CAPTURE");
+    ).toBe("RESEARCH");
   });
 
   it("says nothing with Hints off, and starts over when they are switched on", () => {
@@ -447,19 +553,22 @@ describe("first steps: the step chooser", () => {
   });
 
   it("reduced motion: a still marker and a still ring, never a hop or a pulse", () => {
-    expect(choose(scene(), { motion: "REDUCED" })).toEqual({
-      step: "TRAIN",
-      line: "Tap your city to train a unit",
-      marker: { kind: "CITY", at: CAPITAL, motion: "STILL" },
-      button: null,
+    expect(choose(scene({ fruit: true }), { motion: "REDUCED" })).toEqual({
+      step: "RESEARCH",
+      line: "Research Gathering to harvest your fruit",
+      marker: { kind: "TILE", at: FRUIT, motion: "STILL" },
+      button: "TECH",
       buttonMotion: "STILL",
     });
     expect(
-      choose(scene({ unitAt: null }), {
+      choose(scene(), {
         motion: "REDUCED",
-        progress: retired("TRAIN"),
+        progress: retired("RESEARCH", "MOVE"),
       }),
-    ).toMatchObject({ button: "TECH", buttonMotion: "STILL" });
+    ).toMatchObject({
+      marker: { kind: "CITY", at: CAPITAL, motion: "STILL" },
+      buttonMotion: "STILL",
+    });
   });
 
   it("reads only public commands: a step the engine does not offer is never shown", () => {

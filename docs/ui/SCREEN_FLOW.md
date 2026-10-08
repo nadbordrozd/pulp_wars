@@ -294,25 +294,32 @@ unit detail.
 
 `src/render/first-steps-v7.ts` chooses at most one cue from the viewer's
 public view, the commands the engine offers it, and this browser profile's
-record. A cue is one line of at most eight words, with either one marker on
-the board or one HUD button pointed at; never a dialog, and nothing of it
-takes a click except its small dismiss.
+record. A cue is one line of at most eight words, with one marker on the
+board, one HUD button pointed at, or (the first step only) both; never a
+dialog, and nothing of it takes a click except its small dismiss.
 
-| Step      | When                                                                              | Board or HUD                    | Line                                                                                                                                                              |
-| --------- | --------------------------------------------------------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Capture   | an own unit is offered Capture                                                    | marker over the unit            | "Tap this unit to capture here"; selected: "Press Capture to take this place"                                                                                     |
-| Train     | an own city is offered a Train or an Egg (affordable, a free slot, a free centre) | marker over the city            | "Tap your city to train a unit"; selected: "Pick a unit to train"                                                                                                 |
-| Move      | an own unit is offered a Move                                                     | the unit's own ring and chevron | "Tap a ringed unit to move it"; selected: "Pick a highlighted tile to move"                                                                                       |
-| Unit done | the player's command left a unit without a Move                                   | none                            | "No bright ring: this unit has moved" (about six seconds)                                                                                                         |
-| Research  | a technology is affordable                                                        | the Tech button                 | "Your first technology is free", "You can afford a new technology", or "Research Gathering to harvest your fruit" when it unlocks a resource in the player's land |
-| Resource  | a harvest or a farm, lumber camp or mine is offered in the player's land          | marker over the tile            | "Tap the fruit to harvest it" and the like; selected: "Press the action below to use it"                                                                          |
-| End turn  | End turn is offered and nothing else useful is                                    | the End turn button             | "All done: end your turn"                                                                                                                                         |
+A first game is a short sequence (bead `pulp_wars-eu3r.7`): a resource in
+the player's land and the technology that unlocks it, then a unit to move,
+then the city to train in. Capture and End turn follow the sequence.
+
+| Step      | When                                                                                    | Board or HUD                             | Line                                                                                     |
+| --------- | --------------------------------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Research  | an offered technology unlocks a resource in the player's land                           | marker over the resource, Tech button    | "Research Gathering to harvest your fruit" and the like                                  |
+| Resource  | no resource needs a technology, and a harvest or a farm, lumber camp or mine is offered | marker over the tile                     | "Tap the fruit to harvest it" and the like; selected: "Press the action below to use it" |
+| Research  | neither of the above, and a technology is affordable                                    | the Tech button                          | "Your first technology is free" or "You can afford a new technology"                     |
+| Move      | an own unit is offered a Move                                                           | marker over the unit                     | "Tap this unit to move it"; selected: "Pick a highlighted tile to move"                  |
+| Train     | an own city is offered a Train or an Egg (affordable, a free slot, a free centre)       | marker over the city (the capital first) | "Tap your city to train a unit"; selected: "Pick a unit to train"                        |
+| Capture   | an own unit is offered Capture                                                          | marker over the unit                     | "Tap this unit to capture here"; selected: "Press Capture to take this place"            |
+| Unit done | the player's command left a unit without a Move                                         | none                                     | "No bright ring: this unit has moved" (about six seconds)                                |
+| End turn  | End turn is offered and nothing else useful is                                          | the End turn button                      | "All done: end your turn"                                                                |
 
 - **Order.** A unit's "out of moves" line first, while it is up; then
   what the selection can do (a selected unit's Capture or Move, a selected
   city's Train list, a selected tile's action); then the first step of the
-  table that applies. So with nothing selected a first turn reads: move,
-  train, research, harvest, end turn.
+  table that applies. So with nothing selected a new player's first turn
+  reads: research (for a resource), move, train; then capture and end
+  turn. A step that does not apply now (nothing affordable, no unit that
+  can move) is passed over for the next one.
 - **The line** is a yellow plate under the HUD's left corner
   (`[data-v7-region="first-step"]`, `role="status"`), with a close button
   ("Dismiss hint"). The plate itself ignores the pointer.
@@ -323,12 +330,16 @@ takes a click except its small dismiss.
   has a still yellow ring instead of a pulse. It is drawn only while the
   board takes the player's input: never during AI turns, a presentation, or
   behind a dialog or the technology screen.
-- **Retiring.** A step retires when the player has done its thing twice
-  (Capture once, End turn three times; the "out of moves" line after it
-  has been shown twice), or at once when its line is dismissed. The whole
-  coach is off when Train, Move, Research, Resource and End turn have
-  retired, or after twelve of the player's turns. Nothing stays on the
-  board afterwards: the yet-to-move ring is the lasting cue.
+- **Retiring.** Research, Move, Train and Capture retire the first time
+  the player's command of that kind is accepted, in any order: a step done
+  early is never shown afterwards, nor its selected line. Research and
+  Resource are one step: researching any technology or using any resource
+  retires both. End turn retires after three turns, the "out of moves"
+  line after it has been shown twice, and any step at once when its line
+  is dismissed. The whole coach is off when the resource step, Move, Train
+  and End turn have retired, or after twelve of the player's turns.
+  Nothing stays on the board afterwards: the yet-to-move ring is the
+  lasting cue.
 - **The record** is per browser profile, not per save
   (`pulpWars.ruleset7.firstSteps.v1`, outside the shared settings
   envelope; a missing or malformed value is a new profile with Hints on).
