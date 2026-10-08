@@ -55,10 +55,12 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
  *   beside the center; without the Coins for a unit it does not move.
  *
  * It applies to a Human, Undead, Goblin, (the Martian pass,
- * `pulp_wars-w49.14`) Martian, or (the Dinosaur pass, `pulp_wars-w49.15`)
- * Dinosaur seat in a match whose every seat is one of those five (the
- * pairings the tuning rounds play): a match with any other faction keeps
- * the policy of that faction's own pass, on both sides. It is off while the seat's naval plan is active (it
+ * `pulp_wars-w49.14`) Martian, (the Dinosaur pass, `pulp_wars-w49.15`)
+ * Dinosaur, or (step two of the Ice Folk pass, `pulp_wars-w49.27`) Ice Folk
+ * seat in a match whose every seat is one of those six (the pairings the
+ * tuning rounds play): a match with a Dwarf or a Candy seat keeps the
+ * policy of that faction's own pass, on both sides. It is off while the
+ * seat's naval plan is active (it
  * must cross water to reach anyone) and while the opening growth harvest
  * is due. Everything is read from the public view and the public previews;
  * nothing draws from the PRNG or depends on elapsed time.
@@ -69,6 +71,11 @@ export const ARMY_PLAY_FACTIONS_V7: readonly FactionIdV7[] = Object.freeze([
   "GOBLIN",
   "MARTIAN",
   "DINOSAUR",
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`,
+  // docs/product/RULESET_7_TUNING_ICE_FOLK.md): an Ice Folk seat plays the
+  // army rules too. A match with a Dwarf or a Candy seat keeps the older
+  // policy for every seat.
+  "ICE_FOLK",
 ]);
 
 export function armyPlayFactionV7(faction: FactionIdV7): boolean {
@@ -393,6 +400,26 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
     "CAPTAIN",
     "KNIGHT",
   ] as const),
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`,
+  // docs/product/RULESET_7_TUNING_ICE_FOLK.md section 3): the Sled
+  // (Scouting, one technology of tier 1: the Bolas is the faction's cheap
+  // Chill, and one comes free with Scouts), the Snow Hunter (Hunting and
+  // Marksmanship: the one Ice Folk unit that kills from two tiles and does
+  // not advance onto the dead unit's tile; in a hand-played game five Yetis
+  // died on the tile their kill had carried them to), the Musk Ox (the root
+  // and Deep Winter: the garrison, wider Snow, Recover 6), the Ice Witch
+  // (Leadership: Cold Snap and the Blizzard, which halves the bombs and
+  // arrows that kill 9-HP Yetis), the Mammoth (Engineering and Mammoths:
+  // Sweep and Trample), the Boulder Yeti, the Sabretooth.
+  ICE_FOLK: Object.freeze([
+    "RAIDER",
+    "MARKSMAN",
+    "GUARD",
+    "CAPTAIN",
+    "SWORDSMAN",
+    "CATAPULT",
+    "KNIGHT",
+  ] as const),
 });
 
 /**
@@ -684,6 +711,12 @@ export function armyClassV7(rule: EffectiveRoleRuleV7): ArmyClassV7 | null {
   // Triceratops, registered as `SIEGE`) fights in the line: it walks up and
   // strikes the unit beside it, needs no screen, and is no fragile target.
   if (rule.abilities.includes("LINEBREAKER")) return "LINE";
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Boulder Yeti
+  // (registered as `SIEGE`) moves two tiles and throws from one or two in
+  // the same turn, and strikes back at both: it fights as a ranged unit
+  // (it takes a tile with a shot and stays behind the line), not as a
+  // siege unit that must stand a turn before it fires.
+  if (rule.abilities.includes("BOULDERS")) return "RANGED";
   return armyShareClassV7(rule);
 }
 
@@ -810,6 +843,30 @@ export const ARMY_SHARES_V7 = Object.freeze({
     SIEGE: 10,
     BREAKTHROUGH: 25,
   }),
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): two fifths line
+  // (Yetis, and Mammoths once their technology is owned: the dearer unit of a short
+  // class is bought first), 15% Musk Oxen (the garrisons: a unit that
+  // cannot strike after it moves does not go to war), a fifth Snow Hunters
+  // (the shot that brings a Chilled unit into the Shatter window), 15%
+  // Boulder Yetis, a tenth Sabretooths. Against two or more hostile ranged,
+  // siege, or support units a quarter Snow Hunters and a fifth Boulder
+  // Yetis, which answer from two tiles, and still a tenth Sabretooths (with
+  // a fifth, the seat of the lab trained three of the 9-Coin, 14-HP units
+  // with its first 35 Coins). The Sleds are counted apart (below).
+  iceFolk: Object.freeze({
+    LINE: 40,
+    DEFENDER: 15,
+    RANGED: 20,
+    SIEGE: 15,
+    BREAKTHROUGH: 10,
+  }),
+  iceFolkFragile: Object.freeze({
+    LINE: 35,
+    DEFENDER: 10,
+    RANGED: 25,
+    SIEGE: 20,
+    BREAKTHROUGH: 10,
+  }),
 });
 
 /** The shares of a faction's land army (`fragile`: see above). */
@@ -827,6 +884,8 @@ export function armySharesV7(
     return fragile ? ARMY_SHARES_V7.martianFragile : ARMY_SHARES_V7.martian;
   if (faction === "DINOSAUR")
     return fragile ? ARMY_SHARES_V7.dinosaurFragile : ARMY_SHARES_V7.dinosaur;
+  if (faction === "ICE_FOLK")
+    return fragile ? ARMY_SHARES_V7.iceFolkFragile : ARMY_SHARES_V7.iceFolk;
   return fragile ? ARMY_SHARES_V7.fragile : ARMY_SHARES_V7.standard;
 }
 /**
@@ -864,6 +923,45 @@ export function armyMartianHeavyCappedV7(
   grunts: number,
 ): boolean {
   return troopers * 2 >= grunts;
+}
+/**
+ * Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk army has
+ * one Sled per this many units, at most three: the Bolas is the Chill that
+ * needs no Witch, and one throw is one Shatter set up.
+ */
+export const ARMY_ICE_FOLK_SKIRMISHER_PER_UNITS_V7 = 4;
+export const ARMY_ICE_FOLK_SKIRMISHER_MAXIMUM_V7 = 3;
+/**
+ * Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk unit
+ * whose maximum HP is below this is a weak link of a kill chain at any HP:
+ * a Human Knight's hit (9 on a Yeti, 10 on a Sled, 8 on a Snow Hunter, 12
+ * on an Ice Witch or a Boulder Yeti, 14 on a Sabretooth) kills it at full
+ * HP and rides on. A Musk Ox (16 HP: 11, and the Knight is Chilled) and a
+ * Mammoth (20 HP: 12) are not. (In the lab one Knight killed a wounded
+ * Mammoth, a Snow Hunter, the Ice Witch, a Boulder Yeti, and the Sabretooth
+ * in one turn: they stood side by side.)
+ */
+export const ARMY_ICE_FOLK_STURDY_V7 = 15;
+/**
+ * Step two of the Ice Folk pass: an Ice Folk seat's Musk Oxen are capped.
+ * The Ox does not strike after it moves: it is the garrison of a center and
+ * the wall beside one, not an army. No more Oxen than the seat owns cities,
+ * and no more than a third of the army (the Dinosaur seat's Ankylosaurus
+ * rule). In the first diagnostic match a seat with three threatened cities
+ * fielded five Oxen of seven units. A capped Ox costs
+ * `ARMY_ICE_FOLK_DEFENDER_CAP_COST_V7` of training score (more than the
+ * garrison value of a threatened center leaves another unit behind).
+ */
+export const ARMY_ICE_FOLK_DEFENDER_CAP_COST_V7 = 6000;
+export function armyIceFolkDefenderCappedV7(
+  counts: ArmyCountsV7,
+  cities: number,
+): boolean {
+  const have = counts.byClass.DEFENDER;
+  return (
+    have >= Math.max(1, cities) ||
+    (have >= 1 && have >= Math.ceil((counts.total + 1) / 3))
+  );
 }
 /** A Goblin army has one Wolf Rider per this many units (at most three). */
 export const ARMY_GOBLIN_SKIRMISHER_PER_UNITS_V7 = 4;
@@ -1086,7 +1184,16 @@ export function armyRoleScoreV7(
                     counts.total / ARMY_DINOSAUR_SKIRMISHER_PER_UNITS_V7,
                   ),
                 )
-              : Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7)) -
+              : // Step two of the Ice Folk pass: one Sled per four units,
+                // at most three.
+                faction === "ICE_FOLK"
+                ? Math.min(
+                    ARMY_ICE_FOLK_SKIRMISHER_MAXIMUM_V7,
+                    Math.floor(
+                      counts.total / ARMY_ICE_FOLK_SKIRMISHER_PER_UNITS_V7,
+                    ),
+                  )
+                : Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7)) -
         have);
   else if (unitClass === "SUPPORT")
     deficit =
@@ -1288,7 +1395,14 @@ export function armyGarrisonYieldsToRangedV7(
   // trained Zombies and Skeletons only to round 25: ten Zombies of fifteen
   // units in another. (No Banshee and no Lich is trained onto a contested
   // center, as before: `armyHelplessGarrisonV7`.)
-  if (faction !== "ORIGINAL" && faction !== "GOBLIN" && faction !== "UNDEAD")
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk seat
+  // too (to a Snow Hunter; the Boulder Yeti is not trained for a garrison).
+  if (
+    faction !== "ORIGINAL" &&
+    faction !== "GOBLIN" &&
+    faction !== "UNDEAD" &&
+    faction !== "ICE_FOLK"
+  )
     return false;
   const siege = faction === "UNDEAD" && offersSiege;
   if (!offersRanged && !siege) return false;

@@ -39,7 +39,8 @@ import {
 // Step two of the Dinosaur pass (`pulp_wars-w49.26`,
 // docs/product/RULESET_7_TUNING_DINOSAUR.md section 14): hand-played games
 // as the Humans against the Dinosaur AI and as the Dinosaurs. No rule and
-// no number changed; the identity stays `pulp-wars-poc-7r58`. The Normal AI
+// no number changed; the identity stayed `pulp-wars-poc-7r58` (7r59 since
+// step two of the Ice Folk pass, `pulp_wars-w49.27`). The Normal AI
 // of a Dinosaur seat researches the Spitter and the Raptor before the
 // Triceratops, trains before it researches while it is short of units, buys
 // one growth technology before Nesting's two while no enemy is in sight,
@@ -152,8 +153,9 @@ const research = (state: GameStateV7) =>
   inspectNormalArmyV7(viewOf(state)).research;
 
 describe("step two of the Dinosaur pass: no rule changed", () => {
-  it("keeps the identity of step two of the Martian pass", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r58");
+  it("kept the identity of step two of the Martian pass", () => {
+    // (7r58 then; step two of the Ice Folk pass took 7r59.)
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r59");
   });
 });
 

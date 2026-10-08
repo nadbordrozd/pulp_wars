@@ -8,6 +8,7 @@ import {
   EMBARKED_MOVE_V7,
   GROWTH_HP_V7,
   GROWTH_KILLS_V7,
+  BOLAS_RANGE_V7,
   COLD_SNAP_RANGE_V7,
   MIND_CONTROL_HP_V7,
   FORCE_FIELD_SHIELD_V7,
@@ -241,6 +242,9 @@ import {
   armyShareClassV7,
   armyCountsV7,
   armyDinosaurDefenderCappedV7,
+  armyIceFolkDefenderCappedV7,
+  ARMY_ICE_FOLK_DEFENDER_CAP_COST_V7,
+  ARMY_ICE_FOLK_STURDY_V7,
   armyPlayFactionV7,
   armyResearchDueV7,
   armyGarrisonYieldsToRangedV7,
@@ -456,6 +460,7 @@ import {
   SHATTER_ESCAPE_PRIORITY_V7,
   SHATTER_KILL_VALUE_V7,
   SHATTER_SETUP_PRIORITY_V7,
+  BOLAS_SHATTER_PRIORITY_V7,
   SNOW_HUNTER_CHIP_OFFSET_V7,
   SNOW_OBJECTIVE_V7,
   TRAMPLE_VALUE_V7,
@@ -3785,11 +3790,16 @@ function armyResearchTargetV7(
     // unlocked the clock of a seat at war goes on to the technologies an
     // army uses (a rich
     // Human seat bought nothing for nine rounds on 22 Coins a turn).
-    if (armyWarV7(context))
+    if (armyWarV7(context)) {
+      // Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk
+      // seat's first is Brittle (a Shatter at 4 HP or fewer).
+      if (chosen === null && faction === "ICE_FOLK")
+        chosen = toward("EXPLOSIVES");
       for (const technology of ARMY_LATE_RESEARCH_V7) {
         if (chosen !== null) break;
         chosen = toward(technology);
       }
+    }
   }
   context.armyResearch = chosen;
   return context.armyResearch;
@@ -4221,13 +4231,22 @@ function armyBodiesSeatV7(context: PolicyContextV7): boolean {
     // Nesting): a seat with five cities bought Nesting, Farming, and
     // Engineering (43 Coins) in rounds 8 to 11 of a diagnostic match and
     // produced one Egg in those four rounds.
-    armyDinosaurSeatV7(context)
+    armyDinosaurSeatV7(context) ||
+    // Step two of the Ice Folk pass (`pulp_wars-w49.27`,
+    // docs/product/RULESET_7_TUNING_ICE_FOLK.md): and an Ice Folk seat. Its
+    // Musk Ox is two technologies away too (the root, then Deep Winter).
+    armyIceFolkSeatV7(context)
   );
 }
 
 /** A Dinosaur seat of the army play. */
 function armyDinosaurSeatV7(context: PolicyContextV7): boolean {
   return context.army && context.view.viewer.faction === "DINOSAUR";
+}
+
+/** An Ice Folk seat of the army play (`pulp_wars-w49.27`). */
+function armyIceFolkSeatV7(context: PolicyContextV7): boolean {
+  return context.army && context.view.viewer.faction === "ICE_FOLK";
 }
 
 // ---------------------------------------------------------------------------
@@ -4296,12 +4315,16 @@ function armyUndeadShortOfUnitsV7(context: PolicyContextV7): boolean {
   // and only the units that capture: a Triceratops, a Stegosaurus, and a
   // T-Rex take no village and hold no center.
   const dinosaur = armyDinosaurSeatV7(context);
+  // Step two of the Ice Folk pass: an Ice Folk seat counts the units that
+  // capture too: an Ice Witch, a Boulder Yeti, and a Sabretooth take no
+  // village and hold no center.
+  const iceFolk = armyIceFolkSeatV7(context);
   let units = 0;
   for (const unit of view.units)
     if (
       unit.ownerId === view.viewer.id &&
       (unit.form === "LAND" || (dinosaur && unit.form === "EGG")) &&
-      (!(martian || dinosaur) ||
+      (!(martian || dinosaur || iceFolk) ||
         unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"))
     )
       units += 1;
@@ -4403,9 +4426,13 @@ function armyUndeadGrowthFirstV7(context: PolicyContextV7): boolean {
 function armyOpeningSeatV7(context: PolicyContextV7): boolean {
   const faction = context.view.viewer.faction;
   // The Dinosaur pass (`pulp_wars-w49.15`): and a Dinosaur seat.
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): and an Ice Folk seat.
   return (
     context.army &&
-    (faction === "UNDEAD" || faction === "MARTIAN" || faction === "DINOSAUR")
+    (faction === "UNDEAD" ||
+      faction === "MARTIAN" ||
+      faction === "DINOSAUR" ||
+      faction === "ICE_FOLK")
   );
 }
 
@@ -4435,9 +4462,13 @@ function armyCorrectionSeatV7(context: PolicyContextV7): boolean {
   const faction = context.view.viewer.faction;
   // The Dinosaur pass (`pulp_wars-w49.15`): a Dinosaur seat takes the
   // latest rules too.
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): and an Ice Folk seat.
   return (
     context.army &&
-    (faction === "ORIGINAL" || faction === "MARTIAN" || faction === "DINOSAUR")
+    (faction === "ORIGINAL" ||
+      faction === "MARTIAN" ||
+      faction === "DINOSAUR" ||
+      faction === "ICE_FOLK")
   );
 }
 
@@ -5796,7 +5827,12 @@ function armyDinosaurContactHeldV7(
   context: PolicyContextV7,
   command: Extract<CommandV7, { kind: "MOVE" }>,
 ): boolean {
-  if (!armyDinosaurSeatV7(context)) return false;
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`,
+  // docs/product/RULESET_7_TUNING_ICE_FOLK.md section 3): an Ice Folk
+  // seat's Yeti, Sled, Mammoth, or Witch too (a Sabretooth has its own
+  // rule). On the older policy two Yetis of a hand-played game walked up
+  // alone to three Human units in rounds 9 and 10, struck once, and died.
+  if (!armyDinosaurSeatV7(context) && !armyIceFolkSeatV7(context)) return false;
   const view = context.view;
   const actor = context.lookup.unitsById.get(command.unitId);
   const to = command.path.at(-1);
@@ -5814,7 +5850,8 @@ function armyDinosaurContactHeldV7(
     facts.attack2 <= 0 ||
     facts.maximumRange > 1 ||
     facts.abilities.includes("OVERRUN") ||
-    facts.abilities.includes("LINEBREAKER")
+    facts.abilities.includes("LINEBREAKER") ||
+    facts.abilities.includes("PROWL")
   )
     return false;
   const hostiles = armyHostilesV7(context);
@@ -5900,6 +5937,94 @@ function dinosaurContactCompanyV7(
     }
   }
   return false;
+}
+
+/**
+ * Step two of the Ice Folk pass (`pulp_wars-w49.27`,
+ * docs/product/RULESET_7_TUNING_ICE_FOLK.md section 3): an Ice Folk seat's
+ * Snow Hunter or Boulder Yeti (a unit whose role shoots from two tiles)
+ * does not walk out in front of its line, whatever offers the Move (a
+ * combined kill too: in the lab a Boulder Yeti glided three tiles ahead of
+ * the Mammoths in the first turn to open a kill nobody else could reach,
+ * threw for 4, and was dead a turn later: 8 Coins). The Move is not made
+ * when it ends on a tile a visible hostile melee unit can attack next turn
+ * (`armyMeleeReachV7`) and no own line, defender, or breakthrough unit
+ * stands nearer to the nearest enemy than that tile (`armyScreenedV7`),
+ * nor when the visible enemy's blows on that tile add up to its HP,
+ * screened or not. Exempt: a unit that stands in such a reach already (it
+ * may step away),
+ * the Move from which its shot kills, and the Move onto a center or a
+ * village. The Martian seat's rule (`armyRayOutFrontV7`) holds routine
+ * Moves only; an Ice Folk shooter glides two or three tiles on its Snow, so
+ * a hunter's Move carries it as far out as a routine one.
+ *
+ * Nor does it, or an Ice Witch, move into the reach of a visible hostile
+ * unit with Overrun from a tile outside it, screened or not: a Knight kills
+ * each of them in one attack and rides on (`armyIceFolkChainReachV7`). On
+ * its own Snow that reach ends one tile inside the Snow's edge (a Knight's
+ * Move ends on the first Snow tile it enters).
+ */
+function armyIceFolkShooterHeldV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  if (!armyIceFolkSeatV7(context)) return false;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const to = command.path.at(-1);
+  if (
+    actor === undefined ||
+    to === undefined ||
+    actor.ownerId !== view.viewer.id ||
+    actor.form !== "LAND"
+  )
+    return false;
+  const rule = unitRoleRuleV7(view, actor);
+  const shooter = rule.range >= 2;
+  if (!shooter && !rule.abilities.includes("COLD_SNAP")) return false;
+  if (
+    context.lookup.citiesByKey.has(coordKey(to)) ||
+    armyVillageMoveV7(context, actor, to)
+  )
+    return false;
+  if (armyEngagementsForV7(context, actor).get(coordKey(to))?.kills === true)
+    return false;
+  if (
+    armyIceFolkChainReachV7(context, to) &&
+    !armyIceFolkChainReachV7(context, actor.at)
+  )
+    return true;
+  if (!shooter) return false;
+  // Nor onto a tile where the visible enemies kill it, from one where they
+  // do not (a Boulder Yeti took a firing tile three tiles ahead of its
+  // line, in the range of three Marksmen and a Catapult).
+  if (
+    visibleImmediateDamage(view, actor, to, context) >= actor.hp &&
+    visibleImmediateDamage(view, actor, actor.at, context) < actor.hp
+  )
+    return true;
+  const reach = armyMeleeReachV7(context);
+  if (
+    (reach.get(coordKey(to)) ?? 0) <= 0 ||
+    (reach.get(coordKey(actor.at)) ?? 0) > 0
+  )
+    return false;
+  return !armyScreenedV7(context, actor, to);
+}
+
+/**
+ * Step two of the Ice Folk pass: whether a visible hostile unit with
+ * Overrun can attack a unit on `at` next turn (the public threat lookup,
+ * which stops another faction's ground unit at known Snow).
+ */
+function armyIceFolkChainReachV7(
+  context: PolicyContextV7,
+  at: CoordV7,
+): boolean {
+  const key = coordKey(at);
+  return armyChainersV7(context).some(
+    (unit) => context.threatenedTiles.get(unit.id)?.has(key) === true,
+  );
 }
 
 /** The own units with an offered attack now. */
@@ -7394,10 +7519,20 @@ function armyWeakLinkV7(context: PolicyContextV7, unit: PublicUnitV7): boolean {
   // The Dinosaur pass (`pulp_wars-w49.15`): a Dinosaur unit a Knight's hit
   // kills at full HP (`ARMY_DINOSAUR_STURDY_V7`): a Caveman, a Shaman, a
   // Raptor that has not grown.
-  return (
+  if (
     context.dinosaur &&
     policyUnitFactionV7(context.view, unit) === "DINOSAUR" &&
     unit.maxHp < ARMY_DINOSAUR_STURDY_V7
+  )
+    return true;
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk unit a
+  // Knight's hit kills at full HP (`ARMY_ICE_FOLK_STURDY_V7`): every one
+  // but the Musk Ox, the Mammoth, and the Frost Giant.
+  return (
+    context.iceFolk &&
+    unit.form === "LAND" &&
+    policyUnitFactionV7(context.view, unit) === "ICE_FOLK" &&
+    unit.maxHp < ARMY_ICE_FOLK_STURDY_V7
   );
 }
 
@@ -7493,9 +7628,17 @@ function armyEscortValueV7(
   // stands beside the units a Knight kills in one attack (Cavemen, Raptors
   // that have not grown, Spitters, the Shaman) and ends the ride.
   const dinosaur = view.viewer.faction === "DINOSAUR";
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk seat's
+  // Musk Ox, and its Mammoth, stand beside the units a Knight kills in one
+  // attack (every other Ice Folk unit) and end the ride; a Knight that
+  // strikes the Ox is Chilled.
+  const iceFolk =
+    view.viewer.faction === "ICE_FOLK" &&
+    actor.maxHp >= ARMY_ICE_FOLK_STURDY_V7 &&
+    actor.role !== "JUGGERNAUT";
   if (
-    (view.viewer.faction !== "GOBLIN" && !dinosaur) ||
-    armyClassV7(unitRoleRuleV7(view, actor)) !== "DEFENDER"
+    (view.viewer.faction !== "GOBLIN" && !dinosaur && !iceFolk) ||
+    (!iceFolk && armyClassV7(unitRoleRuleV7(view, actor)) !== "DEFENDER")
   )
     return 0;
   let escorted = 0;
@@ -7513,7 +7656,8 @@ function armyEscortValueV7(
         unitClass === "RANGED" ||
         unitClass === "SIEGE" ||
         unitClass === "SUPPORT" ||
-        (dinosaur && unit.maxHp < ARMY_DINOSAUR_STURDY_V7)
+        (dinosaur && unit.maxHp < ARMY_DINOSAUR_STURDY_V7) ||
+        (iceFolk && unit.maxHp < ARMY_ICE_FOLK_STURDY_V7)
       )
         escorted += 1;
     }
@@ -9866,6 +10010,10 @@ function isPolicyCandidate(
   // Raptor.
   if (command.kind === "MOVE" && armyDinosaurContactHeldV7(context, command))
     return false;
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): a Snow Hunter or a
+  // Boulder Yeti does not walk out in front of its line.
+  if (command.kind === "MOVE" && armyIceFolkShooterHeldV7(context, command))
+    return false;
   // Tuning 6 (`pulp_wars-w49.6`): so does a unit on a village it will
   // capture next turn.
   if (
@@ -9962,6 +10110,10 @@ function isPolicyCandidate(
   // Step two of the Dinosaur pass (`pulp_wars-w49.26`): the Stegosaurus,
   // then the dinosaurs, then the Cavemen.
   if (command.kind === "ATTACK" && dinosaurPackWaitsV7(context, command))
+    return false;
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Bolas, then the
+  // shots from two tiles, then the blows that shatter.
+  if (command.kind === "ATTACK" && iceFolkShatterWaitsV7(context, command))
     return false;
   if (command.kind === "ATTACK" && isLowValueAttackV7(context, command)) {
     // pulp_wars-9s0.8: a hunter's share of a planned kill is not low value.
@@ -11285,8 +11437,13 @@ function* sharedCityContextWorkV7(
             effectiveRoleRuleV7(command.role, view.viewer.faction),
           ) === wanted,
       );
+    // Step two of the Ice Folk pass (`pulp_wars-w49.27`): and an Ice Folk
+    // seat's, to a Snow Hunter.
     const garrisonYields =
-      (withinFloor || goblinMobSeatV7(context) || armyUndeadSeatV7(context)) &&
+      (withinFloor ||
+        goblinMobSeatV7(context) ||
+        armyUndeadSeatV7(context) ||
+        armyIceFolkSeatV7(context)) &&
       armyCounts !== null &&
       !armyAtTheGatesV7(context, cityId) &&
       armyGarrisonYieldsToRangedV7(
@@ -11442,6 +11599,18 @@ function* sharedCityContextWorkV7(
                 ownedRoleCounts.get("FIGHTER") ?? 0,
               )
                 ? ARMY_MARTIAN_HEAVY_CAP_COST_V7
+                : 0) -
+              // Step two of the Ice Folk pass (`pulp_wars-w49.27`): no
+              // more Musk Oxen than cities, nor than a third of the army
+              // (`armyIceFolkDefenderCappedV7`).
+              (armyIceFolkSeatV7(context) &&
+              command.role === "GUARD" &&
+              armyIceFolkDefenderCappedV7(
+                armyCounts,
+                view.cities.filter((item) => item.ownerId === view.viewer.id)
+                  .length,
+              )
+                ? ARMY_ICE_FOLK_DEFENDER_CAP_COST_V7
                 : 0) +
               // Step two of the Undead pass: the Necromancer for the
               // Graves beside this city (`armyNecromancerDueV7`).
@@ -12008,7 +12177,9 @@ function scoreCommandWithContext(
         strategicValue = plan.strategic;
       }
     }
-    if (view.viewer.faction === "ICE_FOLK") {
+    // Step two of the Ice Folk pass (`pulp_wars-w49.27`): an army seat
+    // researches in the army's order (`ARMY_RESEARCH_ROLES_V7.ICE_FOLK`).
+    if (view.viewer.faction === "ICE_FOLK" && !context.army) {
       // The Ice Folk revision (`pulp_wars-7g3.4`): research toward the roles.
       const plan = iceFolkResearchV7(
         view,
@@ -12515,6 +12686,25 @@ function scoreCommandWithContext(
     priority = bolas.priority;
     strategicValue = bolas.strategic;
     immediateValue = bolas.immediate;
+    // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Bolas of a
+    // combined kill (`iceFolkShatterHuntV7`) is thrown at its target, before
+    // the hunters strike; the Sled of such a kill throws at no other unit,
+    // and a Sled that is one of its hunters keeps its action for its blow.
+    const thrown = iceFolkBolasPlanV7(context, command.unitId);
+    if (thrown !== undefined) {
+      if (thrown.target.id === command.targetUnitId) {
+        priority = BOLAS_SHATTER_PRIORITY_V7;
+        strategicValue = Math.max(
+          strategicValue,
+          targetStrategicValue(view, command.targetUnitId, context.lookup),
+        );
+      } else priority = -1;
+    } else if (
+      armyIceFolkSeatV7(context) &&
+      priority < BOLAS_SHATTER_PRIORITY_V7 &&
+      huntOfV7(context, command.unitId) !== undefined
+    )
+      priority = -1;
   }
 
   if (
@@ -14045,6 +14235,16 @@ interface HuntPlanV7 {
    * next to the Spider.
    */
   readonly tiles: ReadonlyMap<UnitId, string>;
+  /**
+   * Step two of the Ice Folk pass (`pulp_wars-w49.27`): the own Sled whose
+   * Bolas the plan counts on (the target is not Chilled yet and the kill
+   * is a Shatter), and the tile it throws from when it must move first
+   * (null: the throw is on offer where it stands).
+   */
+  readonly bolas?: {
+    readonly unitId: UnitId;
+    readonly tile: string | null;
+  };
 }
 
 function huntTargetV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
@@ -14171,6 +14371,9 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
       for (const to of movesByUnit.get(unit.id) ?? []) {
         const range = distance(to, target.at);
         if (range < facts.minimumRange || range > facts.maximumRange) continue;
+        // Step two of the Ice Folk pass (`pulp_wars-w49.27`): a Yeti on a
+        // Mountain has a range of two, and only from a Mountain.
+        if (range >= 2 && !iceFolkRockfallTileV7(view, unit, to)) continue;
         // Map curiosities: only a melee hunter ends next to the Monster.
         if (monster !== undefined && facts.maximumRange > 1 && range <= 1)
           continue;
@@ -14278,7 +14481,24 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
       for (const [id, tile] of pack.tiles) tiles.set(id, tile);
       left = 0;
     }
-    for (const candidate of mob !== null || gated || pack !== null
+    // Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk
+    // seat counts the Shatter of a Chilled target, with the Bolas that
+    // chills it first (`iceFolkShatterHuntV7`). Also for the garrison of a
+    // center the campaign marches on and the other named targets (never the
+    // Monster): on a recorded position a Yeti struck such a garrison for 5
+    // and took 5 before the Sled two tiles away had thrown.
+    const shatter = armyIceFolkSeatV7(context)
+      ? iceFolkShatterHuntV7(context, target, candidates, armyHunters)
+      : null;
+    if (shatter !== null) {
+      for (const [id, stays] of shatter.hunters) hunters.set(id, stays);
+      for (const [id, tile] of shatter.tiles) tiles.set(id, tile);
+      left = 0;
+    }
+    for (const candidate of mob !== null ||
+    gated ||
+    pack !== null ||
+    shatter !== null
       ? []
       : candidates) {
       if (left <= 0 || hunters.size >= HUNT_MAXIMUM_HUNTERS_V7) break;
@@ -14308,8 +14528,14 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
           capturerNearV7(context, unit, target.at, hunters),
         ))
     ) {
-      plans.push({ army, target, hunters, tiles });
+      const bolas = shatter?.bolas;
+      plans.push(
+        bolas === undefined
+          ? { army, target, hunters, tiles }
+          : { army, target, hunters, tiles, bolas },
+      );
       if (context.army) for (const id of hunters.keys()) armyHunters.add(id);
+      if (bolas !== undefined) armyHunters.add(bolas.unitId);
     }
   }
   context.hunts = plans;
@@ -14680,6 +14906,303 @@ function dinosaurPackWaitsV7(
 }
 
 /**
+ * Step two of the Ice Folk pass (`pulp_wars-w49.27`,
+ * docs/product/RULESET_7_TUNING_ICE_FOLK.md section 3): the own Sled that
+ * can chill `target` this turn for a combined kill: one whose `THROW_BOLAS`
+ * on it is on offer where it stands (the lowest unit ID), or else one that
+ * has not moved, has a Move to a tile within the Bolas's range of the
+ * target that the visible enemies do not kill it on (the tile where they
+ * deal it the least, two tiles off before one), and may throw after it.
+ * Never a unit already told off for another combined kill (`taken`).
+ */
+function iceFolkBolasSourceV7(
+  context: PolicyContextV7,
+  target: PublicUnitV7,
+  taken: ReadonlySet<UnitId>,
+): { readonly unitId: UnitId; readonly tile: string | null } | null {
+  const view = context.view;
+  let standing: UnitId | null = null;
+  for (const command of context.commands)
+    if (
+      command.kind === "THROW_BOLAS" &&
+      command.targetUnitId === target.id &&
+      !taken.has(command.unitId) &&
+      (standing === null || command.unitId < standing)
+    )
+      standing = command.unitId;
+  if (standing !== null) return { unitId: standing, tile: null };
+  let best: {
+    readonly unitId: UnitId;
+    readonly tile: string;
+    readonly key: readonly number[];
+  } | null = null;
+  for (const unit of view.units) {
+    if (
+      unit.ownerId !== view.viewer.id ||
+      unit.form !== "LAND" ||
+      unit.hp <= 0 ||
+      taken.has(unit.id) ||
+      unit.activation.moved ||
+      !primaryReadyForPolicyV7(unit) ||
+      !unitMayActAfterMoveV7(view, unit) ||
+      !hasAbilityForIceV7(view, unit, "BOLAS")
+    )
+      continue;
+    for (const to of context.lookup.moveDestinationsByUnit.get(unit.id) ?? []) {
+      const gap = distance(to, target.at);
+      if (gap > BOLAS_RANGE_V7) continue;
+      const danger = visibleImmediateDamage(view, unit, to, context);
+      if (danger >= unit.hp) continue;
+      const key = [-danger, gap, -unit.id, -to.y, -to.x];
+      if (best === null || compareNumericTuple(key, best.key) > 0)
+        best = { unitId: unit.id, tile: coordKey(to), key };
+    }
+  }
+  return best === null ? null : { unitId: best.unitId, tile: best.tile };
+}
+
+/**
+ * Step two of the Ice Folk pass: the combined kill of an Ice Folk seat,
+ * with the Shatter. The hunt of tuning 5 projects every hunter's hit by
+ * plain damage: a Sled and two Yetis beside a full Swordsman (15 HP: 5 and
+ * 5 of it) were no plan, though the Bolas chills it and the second Yeti's
+ * blow, which leaves it at 3 HP or fewer, shatters it with no strike back.
+ * In a hand-played game on the older policy a seat threw nine Bolas in
+ * nine rounds and two were followed by a Shatter.
+ *
+ * As for a Goblin and a Dinosaur seat, the smallest group of the strongest
+ * candidates that kills is taken (one hunter, then two, up to
+ * `HUNT_MAXIMUM_HUNTERS_V7`). The blows of a group are projected in order,
+ * the strikes from two tiles first (a Snow Hunter's shot, a Rockfall, a
+ * Boulder: they never shatter and draw no strike back from a unit that
+ * fights hand to hand), then the blows from the next tile, each on the HP
+ * the earlier ones leave; the projection counts Cold Blood and the Shatter
+ * of a Chilled target (`iceFolkBlowV7`). A target that is Chilled now, or
+ * that an own Witch's offered Cold Snap covers (it is cast before every
+ * attack), is taken as it is. For one that is not, the group is also tried
+ * with the Bolas of `iceFolkBolasSourceV7` thrown first (that Sled does not
+ * strike), and the plan with the Bolas is taken when it kills with fewer
+ * hunters than the plan without, or when only it kills. Null when no group
+ * kills: the plan of tuning 5 is then tried as before.
+ */
+function iceFolkShatterHuntV7(
+  context: PolicyContextV7,
+  target: PublicUnitV7,
+  candidates: readonly {
+    readonly unit: PublicUnitV7;
+    readonly stays: boolean;
+    readonly tiles: readonly string[];
+    readonly from: CoordV7;
+    readonly places: readonly CoordV7[];
+  }[],
+  taken: ReadonlySet<UnitId>,
+): {
+  readonly hunters: ReadonlyMap<UnitId, boolean>;
+  readonly tiles: ReadonlyMap<UnitId, string>;
+  readonly bolas?: { readonly unitId: UnitId; readonly tile: string | null };
+} | null {
+  const view = context.view;
+  // (A giant and the Monster are never shattered; an Egg is never Chilled.)
+  if (
+    target.form !== "LAND" ||
+    target.role === "JUGGERNAUT" ||
+    context.curiosities?.monsterById.has(target.id) === true
+  )
+    return null;
+  const facts = iceFolkFactsForViewV7(view);
+  const snapped = context.commands.some((command) => {
+    if (command.kind !== "COLD_SNAP") return false;
+    const witch = context.lookup.unitsById.get(command.unitId);
+    return (
+      witch !== undefined && distance(witch.at, target.at) <= COLD_SNAP_RANGE_V7
+    );
+  });
+  const source =
+    snapped || chilledForPolicyV7(facts, target.id)
+      ? null
+      : iceFolkBolasSourceV7(context, target, taken);
+  const kill = (
+    chilled: boolean,
+    without: UnitId | null,
+  ): {
+    readonly hunters: ReadonlyMap<UnitId, boolean>;
+    readonly tiles: ReadonlyMap<UnitId, string>;
+  } | null => {
+    const pool =
+      without === null
+        ? candidates
+        : candidates.filter((candidate) => candidate.unit.id !== without);
+    const limit = Math.min(HUNT_MAXIMUM_HUNTERS_V7, pool.length);
+    for (let size = 1; size <= limit; size += 1) {
+      const group: {
+        readonly unit: PublicUnitV7;
+        readonly from: CoordV7;
+        readonly rank: 0 | 1;
+        readonly index: number;
+      }[] = [];
+      const hunters = new Map<UnitId, boolean>();
+      const tiles = new Map<UnitId, string>();
+      const usedTiles = new Set<string>();
+      for (const candidate of pool) {
+        if (group.length >= size) break;
+        let from = candidate.from;
+        if (!candidate.stays) {
+          const index = candidate.tiles.findIndex((key) => !usedTiles.has(key));
+          const tile = candidate.tiles[index];
+          const place = candidate.places[index];
+          if (tile === undefined || place === undefined) continue;
+          usedTiles.add(tile);
+          tiles.set(candidate.unit.id, tile);
+          from = place;
+        }
+        hunters.set(candidate.unit.id, candidate.stays);
+        group.push({
+          unit: candidate.unit,
+          from,
+          rank: distance(from, target.at) >= 2 ? 0 : 1,
+          index: group.length,
+        });
+      }
+      if (group.length < size) return null;
+      group.sort(
+        (left, right) => left.rank - right.rank || left.index - right.index,
+      );
+      let left = target.hp;
+      for (const member of group) {
+        if (left <= 0) break;
+        left -= publicProjectedDamageWithLookupV7(
+          view,
+          { ...member.unit, at: member.from },
+          { ...target, hp: left },
+          target.at,
+          { chilled },
+          context.lookup,
+        );
+      }
+      if (left <= 0) return { hunters, tiles };
+    }
+    return null;
+  };
+  const plain = kill(snapped, null);
+  if (source === null) return plain;
+  const frozen = kill(true, source.unitId);
+  return frozen !== null &&
+    (plain === null || frozen.hunters.size < plain.hunters.size)
+    ? { ...frozen, bolas: source }
+    : plain;
+}
+
+/**
+ * Step two of the Ice Folk pass: the order of an Ice Folk seat's combined
+ * kill. A hunter's hit that does not kill waits (it is no candidate) while
+ *
+ * - the Bolas its plan counts on is still to be thrown: the target is not
+ *   Chilled, and the throw, or the Sled's Move to the tile it throws from,
+ *   is on offer and passes the candidate filter;
+ * - or it strikes from the next tile and a hunter of the same plan that
+ *   strikes from two tiles or more still has its blow to make (its attack
+ *   is on offer, or it has not moved and its Move to the tile the plan
+ *   counted is, and that command passes the candidate filter): the shots
+ *   bring the target into the Shatter window, and only a blow from the next
+ *   tile shatters.
+ *
+ * So the wait always ends. Its hit on another unit waits too: it has one
+ * attack. (Hits ranked by their own value: a Yeti struck a full Fighter for
+ * 5 and took 3 before the Sled beside it had thrown.)
+ */
+function iceFolkShatterWaitsV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+): boolean {
+  if (!armyIceFolkSeatV7(context)) return false;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  if (actor === undefined || actor.form !== "LAND") return false;
+  const plan = huntOfV7(context, command.unitId);
+  if (plan === undefined) return false;
+  const preview = queryCombatPreviewV7(
+    view,
+    command.unitId,
+    command.targetUnitId,
+  );
+  if (preview === null || preview.defenderDies) return false;
+  const target = plan.target;
+  const bolas = plan.bolas;
+  if (
+    bolas !== undefined &&
+    !chilledForPolicyV7(iceFolkFactsForViewV7(view), target.id)
+  )
+    for (const offered of context.commands) {
+      if (
+        offered.kind === "THROW_BOLAS" &&
+        offered.unitId === bolas.unitId &&
+        offered.targetUnitId === target.id
+      ) {
+        if (isPolicyCandidate(context, offered)) return true;
+      } else if (
+        bolas.tile !== null &&
+        offered.kind === "MOVE" &&
+        offered.unitId === bolas.unitId
+      ) {
+        const to = offered.path.at(-1);
+        if (
+          to !== undefined &&
+          coordKey(to) === bolas.tile &&
+          isPolicyCandidate(context, offered)
+        )
+          return true;
+      }
+    }
+  if (distance(actor.at, target.at) !== 1) return false;
+  for (const [id, stays] of plan.hunters) {
+    if (id === actor.id) continue;
+    const other = context.lookup.unitsById.get(id);
+    if (other === undefined) continue;
+    const tile = plan.tiles.get(id);
+    for (const offered of context.commands) {
+      if (
+        offered.kind === "ATTACK" &&
+        offered.unitId === id &&
+        offered.targetUnitId === target.id
+      ) {
+        if (
+          distance(other.at, target.at) >= 2 &&
+          isPolicyCandidate(context, offered)
+        )
+          return true;
+      } else if (
+        !stays &&
+        tile !== undefined &&
+        offered.kind === "MOVE" &&
+        offered.unitId === id
+      ) {
+        const to = offered.path.at(-1);
+        if (
+          to !== undefined &&
+          coordKey(to) === tile &&
+          distance(to, target.at) >= 2 &&
+          isPolicyCandidate(context, offered)
+        )
+          return true;
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * Step two of the Ice Folk pass: the combined kill an own Sled throws its
+ * Bolas for (`HuntPlanV7.bolas`), or undefined.
+ */
+function iceFolkBolasPlanV7(
+  context: PolicyContextV7,
+  unitId: UnitId,
+): HuntPlanV7 | undefined {
+  if (!armyIceFolkSeatV7(context)) return undefined;
+  return huntPlansV7(context).find((plan) => plan.bolas?.unitId === unitId);
+}
+
+/**
  * `pulp_wars-9s0.8` siege: the defender on the center of a hostile city the
  * campaign marches on (or an endgame target) is hunted like a high-value
  * unit while a capturer can take the cleared center (see
@@ -14748,6 +15271,18 @@ function huntMoveValueV7(
     return null;
   const view = context.view;
   const facts = publicCombatFacts(view, actor, context.lookup);
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Sled of a
+  // combined kill moves to the tile it throws its Bolas from.
+  const thrown = iceFolkBolasPlanV7(context, actor.id);
+  if (thrown?.bolas !== undefined)
+    return thrown.bolas.tile === coordKey(to)
+      ? {
+          priority: Math.max(priority, ARMY_HUNT_MOVE_PRIORITY_V7),
+          strategic:
+            -visibleImmediateDamage(view, actor, to, context) +
+            ARMY_RANGED_FIRST_VALUE_V7,
+        }
+      : null;
   const plan = huntOfV7(context, actor.id);
   if (plan === undefined || plan.hunters.get(actor.id) !== false) return null;
   const range = distance(to, plan.target.at);
@@ -14768,7 +15303,17 @@ function huntMoveValueV7(
       -visibleImmediateDamage(view, actor, to, context) +
       // Tuning 5 (`pulp_wars-w49.4`): an army seat's ranged hunters move in
       // (and so shoot) before its melee hunters: soften, then finish.
-      (context.army && facts.maximumRange > 1 ? ARMY_RANGED_FIRST_VALUE_V7 : 0),
+      // Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk
+      // seat's melee hunters move in first and its shooters after them, so
+      // that a shooter moves up behind a line that is there
+      // (`armyIceFolkShooterHeldV7`); the shots still fall before the blows
+      // (`iceFolkShatterWaitsV7`).
+      (context.army &&
+      (armyIceFolkSeatV7(context)
+        ? facts.maximumRange <= 1
+        : facts.maximumRange > 1)
+        ? ARMY_RANGED_FIRST_VALUE_V7
+        : 0),
   };
 }
 
@@ -19772,6 +20317,27 @@ function iceFolkMoveValueV7(
         }
       : reject;
   }
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): an army seat's
+  // Snow Hunter or Boulder Yeti that stands in the reach of a visible
+  // hostile unit with Overrun steps out of it (`armyIceFolkChainReachV7`),
+  // to a tile where the visible enemies deal it no more: with a shot from
+  // there first. Below every kill, above a hit that does not kill.
+  if (
+    armyIceFolkSeatV7(context) &&
+    next >= 0 &&
+    priority <= ARMY_KNIGHT_SHY_MAXIMUM_V7 &&
+    !same(actor.at, to) &&
+    unitRoleRuleV7(view, actor).range >= 2 &&
+    !context.lookup.citiesByKey.has(coordKey(actor.at)) &&
+    armyIceFolkChainReachV7(context, actor.at) &&
+    !armyIceFolkChainReachV7(context, to) &&
+    visibleImmediateDamage(view, actor, to, context) <=
+      visibleImmediateDamage(view, actor, actor.at, context)
+  ) {
+    next = Math.max(next, ARMY_STEP_BACK_PRIORITY_V7);
+    strategic +=
+      8 + (armyEngagementsForV7(context, actor).has(coordKey(to)) ? 6 : 0);
+  }
   // pulp_wars-9s0.8: a Mammoth steps where its Sweep hits a flank.
   if (
     abilities.includes("SWEEP") &&
@@ -21203,7 +21769,11 @@ function preferredReward(
     command.reachedLevel === 2 &&
     context.army &&
     (context.view.viewer.faction === "DINOSAUR" ||
-      context.view.viewer.faction === "MARTIAN") &&
+      context.view.viewer.faction === "MARTIAN" ||
+      // Step two of the Ice Folk pass (`pulp_wars-w49.27`): and an Ice Folk
+      // army seat. The free Sled is a 3-Coin unit that moves two tiles,
+      // takes villages, and throws the Bolas before the seat owns Scouting.
+      context.view.viewer.faction === "ICE_FOLK") &&
     offered.includes("SURVEY")
   )
     return "SURVEY";
@@ -21906,16 +22476,33 @@ function publicProjectedDamageWithLookupV7(
     readonly rayAttack2?: number;
     /** The Martian revision: the whole hit, not capped at the HP. */
     readonly uncapped?: boolean;
+    /**
+     * Step two of the Ice Folk pass: the target is taken as Chilled (an own
+     * Sled's Bolas is thrown at it earlier in the same combined kill).
+     */
+    readonly chilled?: boolean;
   },
   lookup?: PolicyLookupV7,
 ): number {
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): what an own Ice
+  // Folk unit's blow has that its published Attack does not (neutral for
+  // every other attacker).
+  const ice = iceFolkBlowV7(
+    view,
+    attacker,
+    defender,
+    defenderAt,
+    options.chilled === true,
+    lookup,
+  );
   const attackRule = unitRoleRuleV7(view, attacker);
   const defenseRule = unitRoleRuleV7(view, defender);
   const attackFacts = publicCombatFacts(view, attacker, lookup);
   const publishedAttack2 =
     options.rayAttack2 ??
     movedRayAttack2V7(view, attacker, attackFacts.attack2, lookup) ??
-    attackFacts.attack2;
+    ice.rockfall2 ??
+    attackFacts.attack2 + ice.bonus2;
   // Revision 19: an Alpha's +1 Attack is part of its published Attack; the
   // Pounce estimate adds it to the role's base (0 for every other unit).
   const attack2 =
@@ -22079,10 +22666,118 @@ function publicProjectedDamageWithLookupV7(
     defender.form === "LAND" && dwarfEstimatesV7(view)
       ? (publicDwarfStatsV7(view, defender, lookup)?.plated ?? null)
       : null;
-  return Math.min(
+  const dealt = Math.min(
     options.uncapped === true ? Number.MAX_SAFE_INTEGER : defender.hp,
     plated === null ? armoured : Math.min(plated, armoured),
   );
+  // Step two of the Ice Folk pass: a blow from the next tile that leaves a
+  // Chilled unit at the Shatter threshold or below kills it.
+  return ice.shatter > 0 &&
+    options.uncapped !== true &&
+    dealt < defender.hp &&
+    defender.hp - dealt <= ice.shatter
+    ? defender.hp
+    : dealt;
+}
+
+/** What `iceFolkBlowV7` returns for every blow that is not an own Ice Folk unit's. */
+const NO_ICE_FOLK_BLOW_V7: {
+  readonly bonus2: number;
+  readonly rockfall2: number | null;
+  readonly shatter: number;
+} = Object.freeze({ bonus2: 0, rockfall2: null, shatter: 0 });
+
+/**
+ * Step two of the Ice Folk pass (`pulp_wars-w49.27`,
+ * docs/product/RULESET_7_TUNING_ICE_FOLK.md section 3): what the blow of
+ * the viewer's own Ice Folk land unit on `defender` has that the published
+ * Attack the projection reads does not. The exact preview of an offered
+ * attack always had these; the projection of a blow after a planned Move,
+ * or on what earlier blows leave, had none of them.
+ *
+ * - `bonus2`: Cold Blood (a Snow Hunter's +0.5 Attack against a Chilled
+ *   unit; `chilled` or the public Chill entry), less Planted for a Boulder
+ *   Yeti projected from a tile it does not stand on (the published Attack
+ *   of one that has not moved has the +1, and a throw after a Move does
+ *   not).
+ * - `rockfall2`: for a Yeti's strike from a Mountain two tiles away, the
+ *   Rockfall's `attack2`; null for every other blow. (From any other tile
+ *   no such attack exists; the hunt leaves those tiles out,
+ *   `iceFolkRockfallTileV7`.)
+ * - `shatter`: the viewer's Shatter threshold when the blow comes from the
+ *   next tile and the defender is Chilled, in land form, and no giant; 0
+ *   otherwise. (A Martian Shield is not read: the blow of a unit that
+ *   strikes through one is overrated, as everywhere in the projection.)
+ */
+function iceFolkBlowV7(
+  view: PlayerViewV7,
+  attacker: PublicUnitV7,
+  defender: PublicUnitV7,
+  defenderAt: CoordV7,
+  chilledAssumed: boolean,
+  lookup?: PolicyLookupV7,
+): {
+  readonly bonus2: number;
+  readonly rockfall2: number | null;
+  readonly shatter: number;
+} {
+  if (
+    view.viewer.faction !== "ICE_FOLK" ||
+    attacker.ownerId !== view.viewer.id ||
+    attacker.form !== "LAND"
+  )
+    return NO_ICE_FOLK_BLOW_V7;
+  const mechanics = unitRoleMechanicsV7(view, attacker);
+  const facts = iceFolkFactsForViewV7(view);
+  const chilled =
+    defender.form === "LAND" &&
+    (chilledAssumed || chilledForPolicyV7(facts, defender.id));
+  const gap = distance(attacker.at, defenderAt);
+  let bonus2 = chilled ? mechanics.coldBloodBonus2 : 0;
+  if (mechanics.plantedBonus2 > 0) {
+    const real =
+      lookup?.unitsById.get(attacker.id) ??
+      view.units.find((unit) => unit.id === attacker.id);
+    if (
+      real !== undefined &&
+      !real.activation.moved &&
+      !same(real.at, attacker.at)
+    )
+      bonus2 -= mechanics.plantedBonus2;
+  }
+  const rockfall2 =
+    mechanics.rockfallAttack2 > 0 &&
+    gap === 2 &&
+    iceFolkRockfallTileV7(view, attacker, attacker.at)
+      ? mechanics.rockfallAttack2
+      : null;
+  return {
+    bonus2,
+    rockfall2,
+    shatter:
+      chilled && gap === 1 && defender.role !== "JUGGERNAUT"
+        ? shatterThresholdForPolicyV7(facts, view.viewer.id)
+        : 0,
+  };
+}
+
+/**
+ * Step two of the Ice Folk pass: whether a Yeti (a unit with Rockfall) may
+ * strike from `at` at two tiles: only from a Mountain. True for every unit
+ * without Rockfall.
+ */
+function iceFolkRockfallTileV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  at: CoordV7,
+): boolean {
+  if (
+    unit.form !== "LAND" ||
+    unitRoleMechanicsV7(view, unit).rockfallAttack2 <= 0
+  )
+    return true;
+  const tile = findPublicTileV7(view, at);
+  return tile?.explored === true && tile.terrain === "MOUNTAIN";
 }
 
 function publicCombatFacts(

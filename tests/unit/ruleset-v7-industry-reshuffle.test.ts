@@ -174,14 +174,14 @@ describe("the Industry reshuffle: identity", () => {
   it("was 7r56 after 7r55, with both save keys obsolete now", () => {
     // (Step two of the Undead pass, `pulp_wars-w49.24`, took 7r57, and
     // step two of the Martian pass, `pulp_wars-w49.25`, 7r58.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r58");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r58.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r59");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r59.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
       "pulp-wars-poc-7r55",
       "pulp-wars-poc-7r56",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3, -1)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -2)).toEqual([
       "pulpWars.save.v7r55.current",
       "pulpWars.save.v7r56.current",
     ]);
@@ -650,15 +650,16 @@ describe("the Industry reshuffle: the Normal AI", () => {
   });
 
   it("a seat outside the army policy that owns the root researches Fortification when it can pay", () => {
-    // Every seat of a match with an Ice Folk, Dwarf, or Candy seat plays
-    // the older policy: the last step to the defender is bought ahead of
+    // Every seat of a match with a Dwarf or a Candy seat plays the older
+    // policy (an Ice Folk seat too, there; in a match without one it plays
+    // the army rules since step two of the Ice Folk pass, `pulp_wars-w49.27`): the last step to the defender is bought ahead of
     // an economic technology (`defenderLastStepResearchV7`). Here the seat
     // trains a Fighter first and still pays for the technology.
     const cases: readonly (readonly [FactionIdV7, FactionIdV7])[] = [
-      ["ICE_FOLK", "ORIGINAL"],
+      ["ICE_FOLK", "DWARF"],
       ["DWARF", "ORIGINAL"],
       ["CANDY", "ORIGINAL"],
-      ["ORIGINAL", "ICE_FOLK"],
+      ["ORIGINAL", "CANDY"],
       ["UNDEAD", "DWARF"],
     ];
     for (const [faction, other] of cases) {

@@ -156,6 +156,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   "LAB_DINOSAUR_MID@3:DINOSAUR":
     "2c1c6e42c2f3b305e7b5c97077c74a8cdb57227bd7ba36df9018be4e026eb3a3",
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Ice Folk
+  // roster in the same middle game, the hand player as the Ice Folk.
+  "LAB_ICE_FOLK_MID@1:ICE_FOLK":
+    "c4b578b93fd3756c895536e7a2f1e3067269d178b962eb72ecfa6bd2bebfc185",
 };
 
 /**
@@ -299,6 +303,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   "LAB_DINOSAUR_MID@3:DINOSAUR":
     "57e1c97f2d8c05ba6e0cccffbf61ed290788552078d10bdd882eac27e23e7556",
+  "LAB_ICE_FOLK_MID@1:ICE_FOLK":
+    "7c2a4b8a9d4ab4ec04424434da6de3d804520171ddfefd482bd890154959e0f4",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {

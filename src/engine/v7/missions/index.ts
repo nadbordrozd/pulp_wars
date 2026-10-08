@@ -18,6 +18,7 @@ import {
 import { LAB_DINOSAUR_MID_V7 } from "./lab-dinosaur";
 import { LAB_GOBLIN_MID_V7 } from "./lab-goblin";
 import { LAB_BACKLINE_V7, LAB_LATE_V7, LAB_SIEGE_V7 } from "./lab-human";
+import { LAB_ICE_FOLK_MID_V7 } from "./lab-ice-folk";
 import { LAB_MARTIAN_MID_V7 } from "./lab-martian";
 import { LAB_UNDEAD_MID_V7 } from "./lab-undead";
 import { TEST_GROUNDS_V7 } from "./test-grounds";
@@ -70,6 +71,10 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   // same middle game on the same land, with grown units and an Egg, the
   // hand player as the Dinosaurs.
   LAB_DINOSAUR_MID_V7,
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Ice Folk roster
+  // in the same middle game on the same land, the hand player as the Ice
+  // Folk.
+  LAB_ICE_FOLK_MID_V7,
 ]);
 
 /** The registered mission with this ID (any revision), or null. */

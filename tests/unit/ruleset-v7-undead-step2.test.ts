@@ -182,15 +182,16 @@ const UNDEAD: readonly FactionIdV7[] = ["UNDEAD", "ORIGINAL"];
 
 describe("step two of the Undead pass: the identity", () => {
   it("was 7r57 after 7r56, with both save keys obsolete now", () => {
-    // (Step two of the Martian pass, `pulp_wars-w49.25`, took 7r58.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r58");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r58.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+    // (Step two of the Martian pass, `pulp_wars-w49.25`, took 7r58, and
+    // step two of the Ice Folk pass, `pulp_wars-w49.27`, 7r59.)
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r59");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r59.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
       "pulp-wars-poc-7r56",
       "pulp-wars-poc-7r57",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3, -1)).toEqual([
       "pulpWars.save.v7r56.current",
       "pulpWars.save.v7r57.current",
     ]);

@@ -274,6 +274,13 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // an enemy (a Dinosaur seat has no burrowed unit).
     "src/ai/v7.ts::movedRunUpAttack2V7": "BOARD",
     "src/ai/v7.ts::dinosaurContactCompanyV7": "BOARD",
+    // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the viewer's own
+    // Snow Hunter that can come within Bolas range of a hunted unit (it
+    // throws in land form, from the board), and the Boulder Yeti where it
+    // stands on the board, for Planted (an Ice Folk seat has no burrowed
+    // unit).
+    "src/ai/v7.ts::iceFolkBolasSourceV7": "BOARD",
+    "src/ai/v7.ts::iceFolkBlowV7": "BOARD",
     "src/ai/v7.ts::vampireAttackAcceptableV7": "BOARD",
     // The Undead pass (`pulp_wars-w49.13`): the free tiles a Vampire flies to.
     "src/ai/v7.ts::vampireEscapeTileV7": "BOARD",

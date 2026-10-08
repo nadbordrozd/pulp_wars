@@ -203,6 +203,12 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // Step two of the Dinosaur pass (`pulp_wars-w49.26`): the seat that
   // decides is a Dinosaur one (the viewer's faction).
   "src/ai/v7.ts::armyDinosaurSeatV7": "SEAT",
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the seat that
+  // decides is an Ice Folk one (the viewer's faction), and the blow whose
+  // Cold Blood, Planted, Rockfall and Shatter are projected is that seat's
+  // own (the attacker's abilities are read through `unitRoleMechanicsV7`).
+  "src/ai/v7.ts::armyIceFolkSeatV7": "SEAT",
+  "src/ai/v7.ts::iceFolkBlowV7": "SEAT",
   "src/ai/v7.ts::armyMartianResearchRolesV7": "SEAT",
   "src/ai/v7.ts::armyShootsBiterFirstV7": "SEAT",
   "src/ai/v7.ts::armyCureDueV7": "SEAT",

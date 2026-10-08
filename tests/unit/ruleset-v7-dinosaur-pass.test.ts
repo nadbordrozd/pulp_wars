@@ -121,7 +121,7 @@ import {
   walledV7,
 } from "../fixtures/v7-revision20";
 
-// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r58`,
+// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r59`,
 // docs/product/RULESET_7_TUNING_DINOSAUR.md): Scouts for a Dinosaur city (a
 // free Raptor); a Triceratops's run-up counts one tile, two with
 // Wallbreaker; the Caveman's Pack Hunt; a Dinosaur Market hires a dinosaur
@@ -206,15 +206,15 @@ describe("the Dinosaur pass: identity", () => {
   // The economy rejig (tests/unit/ruleset-v7-economy-rejig.test.ts) took
   // 7r54, so 7r53 is the last prior identity.
   it("was 7r53 after 7r52, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r58");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r58.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r59");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r59.current");
     // The ninth unit (`pulp_wars-w49.17`) took 7r55, so 7r54 is prior too.
-    expect(PRIOR_RULESET_7_IDS.slice(-6, -3)).toEqual([
+    expect(PRIOR_RULESET_7_IDS.slice(-7, -4)).toEqual([
       "pulp-wars-poc-7r52",
       "pulp-wars-poc-7r53",
       "pulp-wars-poc-7r54",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -3)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-7, -4)).toEqual([
       "pulpWars.save.v7r52.current",
       "pulpWars.save.v7r53.current",
       "pulpWars.save.v7r54.current",
@@ -298,7 +298,8 @@ describe("the Dinosaur pass: Scouts", () => {
       GOBLIN: 1,
       DINOSAUR: 1,
       MARTIAN: 1,
-      ICE_FOLK: 0,
+      // Step two of the Ice Folk pass (7r59): a Sled.
+      ICE_FOLK: 1,
       DWARF: 0,
       CANDY: 0,
     });
@@ -900,9 +901,11 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       "GOBLIN",
       "MARTIAN",
       "DINOSAUR",
+      // Step two of the Ice Folk pass (`pulp_wars-w49.27`).
+      "ICE_FOLK",
     ]);
     expect(armyPlayFactionV7("DINOSAUR")).toBe(true);
-    for (const faction of ["ICE_FOLK", "DWARF", "CANDY"] as const)
+    for (const faction of ["DWARF", "CANDY"] as const)
       expect(armyPlayFactionV7(faction), faction).toBe(false);
     // Ankylosaurus, Spitter, Raptor, Triceratops, Stegosaurus, Shaman,
     // T-Rex (the ninth unit, 7r55: the Triceratops is the heavy role and
@@ -971,18 +974,24 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     expect(armyShareClassV7(effectiveRoleRuleV7("SWORDSMAN", "DINOSAUR"))).toBe(
       "LINE",
     );
+    // (Step two of the Ice Folk pass, `pulp_wars-w49.27`: the Boulder Yeti
+    // has the siege share of an Ice Folk army and fights as a ranged unit:
+    // it moves and throws in one turn, from one or two tiles.)
     for (const faction of ARMY_PLAY_FACTIONS_V7)
       for (const role of ROSTER) {
         const rule = effectiveRoleRuleV7(role, faction);
+        if (faction === "ICE_FOLK" && role === "CATAPULT") continue;
         expect(armyShareClassV7(rule), `${faction} ${role}`).toBe(
           armyClassV7(rule),
         );
       }
-    for (const faction of ARMY_PLAY_FACTIONS_V7)
-      expect(
-        armyClassV7(effectiveRoleRuleV7("CATAPULT", faction)),
-        faction,
-      ).toBe("SIEGE");
+    for (const faction of ARMY_PLAY_FACTIONS_V7) {
+      const rule = effectiveRoleRuleV7("CATAPULT", faction);
+      expect(armyShareClassV7(rule), faction).toBe("SIEGE");
+      expect(armyClassV7(rule), faction).toBe(
+        faction === "ICE_FOLK" ? "RANGED" : "SIEGE",
+      );
+    }
   });
 
   it("is on in a match of Humans, Goblins, Undead, Martians, and Dinosaurs, and off with another faction", () => {
@@ -1003,7 +1012,12 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
         opponent,
       ).toBe(true);
     }
-    for (const opponent of ["ICE_FOLK", "DWARF", "CANDY"] as const)
+    // (Against an Ice Folk seat too since step two of the Ice Folk pass,
+    // `pulp_wars-w49.27`.)
+    expect(
+      inspectNormalArmyV7(viewOf(asDinosaur(pieces, {}, "ICE_FOLK"))).army,
+    ).toBe(true);
+    for (const opponent of ["DWARF", "CANDY"] as const)
       expect(
         inspectNormalArmyV7(viewOf(asDinosaur(pieces, {}, opponent))).army,
         opponent,

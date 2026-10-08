@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r58`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r59`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -199,6 +199,18 @@ balance on water maps, `pulp_wars-5ti.8`; and the polish items of
 a unit on ice has no fortification, so a Dwarf Hammerer or Steam Mole is
 never dug in on an ice tile ([section 22.7](#227-dig-in)). No shape changed,
 and a match without both a Dwarf and an Ice Folk seat plays as at `7r44`.
+`pulp-wars-poc-7r59` (`pulp_wars-w49.27`) is
+[step two of the Ice Folk pass](RULESET_7_TUNING_ICE_FOLK.md): **an Ice
+Folk city's level-2 Survey is Scouts, with a free Sled**, as the Humans',
+the Goblins', the Undead's, the Martians', and the Dinosaurs' is
+([section 4.8](#48-city-rewards)), and nothing else in the rules changed.
+An Ice Folk seat of the Normal AI plays the army rules in a match of
+Humans, Undead, Goblins, Martians, Dinosaurs, and Ice Folk
+([section 16](#16-normal-ai-summary)), and the lab `LAB_ICE_FOLK_MID`
+stages the Ice Folk for a hand player ([section 2.6](#26-mission-setup)).
+No command, event, state, or view shape changed. A save, replay, or setup
+of `7r58` is rejected, and the browser autosave has a new key. A match
+without an Ice Folk seat plays as at `7r58`.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
 **City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -648,7 +660,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r58`.
+resolved ones as of `pulp-wars-poc-7r59`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -749,10 +761,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r58`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r59`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r58.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r59.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -764,7 +776,7 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r57`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r58`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
   and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
   Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
@@ -1669,8 +1681,9 @@ the text harness ([text-mode play](../validation/TEXT_PLAY.md#labs)):
 fixtures, `LAB_GOBLIN_MID` (the Goblin pass: the hand player is the
 Goblins), `LAB_UNDEAD_MID` (the Undead pass: the hand player is the
 Undead), `LAB_MARTIAN_MID` (the Martian pass: the hand player is the
-Martians), and `LAB_DINOSAUR_MID` (the Dinosaur pass: the hand player is
-the Dinosaurs). A mission unit may carry `kills` (a dinosaur that has
+Martians), `LAB_DINOSAUR_MID` (the Dinosaur pass: the hand player is the
+Dinosaurs), and `LAB_ICE_FOLK_MID` (step two of the Ice Folk pass: the
+hand player is the Ice Folk). A mission unit may carry `kills` (a dinosaur that has
 grown: it starts at the HP of its stage) and `egg` (an Egg with its
 turns to hatch); the builder refuses `kills` on a role that does not grow
 and `egg` on a role that is not egg-laid. Adding a mission is content: it
@@ -2442,13 +2455,13 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
 
 Each reached level grants exactly one reward, chosen by the owner:
 
-| Reached level | Choices                                                                                                                                                       |
-| ------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|             2 | Survey: explore radius 3 around the city (Human, Goblin, Undead, and Martian, "Scouts": and a free Raider, Wolf Rider, Ghoul, or Saucer); Stockpile: +4 Coins |
-|             3 | Walls: +2 fortification at the center; Militia: one free Fighter-role unit (Goblin: two Goblins)                                                              |
-|             4 | Boom: +3 permanent population; Treasury: +6 Coins; Barracks: +1 unit capacity                                                                                 |
-|             5 | Treasury: +6 Coins; Barracks: +1 unit capacity                                                                                                                |
-|         6, 7… | Treasury: +6 Coins; Barracks: +1 unit capacity; until the city has taken it once: the Juggernaut-role reward unit (the faction's giant)                       |
+| Reached level | Choices                                                                                                                                                                                         |
+| ------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|             2 | Survey: explore radius 3 around the city (Human, Goblin, Undead, Martian, Dinosaur, and Ice Folk, "Scouts": and a free Raider, Wolf Rider, Ghoul, Saucer, Raptor, or Sled); Stockpile: +4 Coins |
+|             3 | Walls: +2 fortification at the center; Militia: one free Fighter-role unit (Goblin: two Goblins)                                                                                                |
+|             4 | Boom: +3 permanent population; Treasury: +6 Coins; Barracks: +1 unit capacity                                                                                                                   |
+|             5 | Treasury: +6 Coins; Barracks: +1 unit capacity                                                                                                                                                  |
+|         6, 7… | Treasury: +6 Coins; Barracks: +1 unit capacity; until the city has taken it once: the Juggernaut-role reward unit (the faction's giant)                                                         |
 
 - **The economy rejig** (`7r54`,
   [its record](RULESET_7_ECONOMY_REJIG.md#5-the-giant-in-every-city-at-level-6)).
@@ -2483,8 +2496,9 @@ Each reached level grants exactly one reward, chosen by the owner:
   (`7r52`): a Martian `SURVEY` grants a Saucer, with its Shield. **The
   Dinosaur pass** (`7r53`): a Dinosaur `SURVEY` grants a Raptor, hatched
   (no Egg), homed to the city and filling one of its unit slots like any
-  reward unit, without Scouting. The other three factions' Survey is
-  still the survey alone.
+  reward unit, without Scouting. **Step two of the Ice Folk pass**
+  (`7r59`): an Ice Folk `SURVEY` grants a Sled in the same way. The Dwarf
+  and the Candy Survey is still the survey alone.
 - **Barracks** (`BARRACKS`, the last reward ID). A record in the city's
   reward history; each adds 1 to the city's unit capacity
   (`cityBarracksV7`, `BARRACKS_CAPACITY_V7`), stays with the city across a
@@ -5678,6 +5692,34 @@ Harbours from it.
   Cavemen, and fall in that order: the Stegosaurus, the other dinosaurs,
   the Cavemen
   ([Normal AI](../architecture/NORMAL_AI.md#step-two-of-the-dinosaur-pass-pulp_wars-w4926)).
+- **Step two of the Ice Folk pass** (`pulp_wars-w49.27`, `7r59`). An Ice
+  Folk seat plays the army rules in a match whose every seat is Human,
+  Undead, Goblin, Martian, Dinosaur, or Ice Folk, and so do the other
+  seats of that match; a match with a Dwarf or a Candy seat keeps the
+  older policy for every seat. Its order of units is the Sled, the Snow
+  Hunter, the Musk Ox (with Deep Winter), the Ice Witch, the Mammoth, the
+  Boulder Yeti, the Sabretooth, with Brittle first of the late
+  technologies. It fields two fifths line units, 15% Musk Oxen, a fifth
+  Snow Hunters, 15% Boulder Yetis (which fight as ranged units), a tenth
+  Sabretooths, and one Sled for four units (three at most). Like the other
+  army seats it trains before it researches while it fields fewer units
+  that capture than its cities and two more, and takes Scouts at level 2
+  whatever its Coins. It keeps no more Musk Oxen than it owns cities and no
+  more than a third of its army, and the garrison of a threatened city
+  yields to a Snow Hunter. It knows Cold Blood, that a Boulder Yeti loses
+  Planted by a Move, Rockfall from a Mountain, and that an adjacent blow
+  which leaves a Chilled unit at 1 to 3 HP (4 with Brittle) kills it; its
+  combined kills may begin with a Bolas, thrown from where a Sled or a Snow
+  Hunter stands or after its Move, then the shots from two tiles, then the
+  blow that shatters, which waits for them. A Snow Hunter or a Boulder Yeti
+  makes no Move into the reach of a melee unit with no unit of its own
+  nearer to the enemy, nor onto a tile it dies on, unless its shot kills;
+  shooters and the Ice Witch stay out of the reach of a unit with Overrun;
+  units of less than 15 HP at their maximum do not stand side by side
+  there, and a Musk Ox's or a Mammoth's Move beside them has an escort's
+  value. A Yeti or a Sled does not step beside an enemy where it would die
+  without a unit of its side there or coming. The seat never Freezes
+  ([Normal AI](../architecture/NORMAL_AI.md#step-two-of-the-ice-folk-pass-pulp_wars-w4927)).
 - **Campaign** (`pulp_wars-9s0.1`): every land unit has one job and walks
   the land route to it: the nearest unclaimed village, an invader next to an
   own city, the unexplored frontier (two scouts and the group behind the
@@ -5972,7 +6014,8 @@ Harbours from it.
   Dinosaur seat plays the army rules in a match whose every seat is
   Human, Goblin, Undead, Martian, or Dinosaur (and so do the other seats
   of that match; a match with an Ice Folk, Dwarf, or Candy seat keeps the
-  older policies). It researches the Ankylosaurus, one economy technology
+  older policies; since step two of the Ice Folk pass, `7r59`, only one
+  with a Dwarf or a Candy seat does). It researches the Ankylosaurus, one economy technology
   its land can use, the Triceratops, the Raptor, the Spitter, the Shaman,
   Planning, and the T-Rex, with Nesting before the Triceratops once it
   fields an Ankylosaurus and Wallbreaker before the T-Rex once it fields
@@ -10846,6 +10889,7 @@ first guesses.
 | Tuning        | `pulp-wars-poc-7r57` | `pulp_wars-w49.24` [step two of the Undead pass](RULESET_7_TUNING_UNDEAD.md#15-step-two) after two hand-played games as the Undead, three as the Humans against the Undead AI, the lab, and six diagnostic matches: a Zombie that rises (Infect or Bitten) has 12 of its 18 HP (10 before: 17 of 23 risings in two passes died within one enemy turn); an Undead seat of the Normal AI trains before it researches while it is short of units, takes the free Ghoul and the Militia, buys one growth technology before the Zombie's two, a due technology before a capture, trains Banshees, Liches, and a Necromancer in a war; a unit of any army seat stays on its Field Defense                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Tuning        | `pulp-wars-poc-7r58` | `pulp_wars-w49.25` [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two) after a hand-played game as the Humans against the Martian AI before the change and one after it, two as the Martians (against the Undead AI, replayed after the change, and against three AIs), the lab, and six diagnostic matches: City Walls hold a unit on its own city center against a Saucer's Tractor Beam (a Mothership's Heavy Tractor Beam pulls it; a free Saucer pulled the garrison of a walled, fortified capital into two shots every turn); a Martian seat of the Normal AI trains before it researches while it is short of units, takes the free Saucer, researches the Brain third, the Tripod before the Shock Trooper unless the enemy fights hand to hand, Heat Sinks after its second Ray Gunner and the Disintegrator against Walls, keeps one Shock Trooper for two Grunts, and no longer walks its Tripods out in front of its line for a shot at half power                                                                                                                                                                   |
 | Tuning        | `pulp-wars-poc-7r58` | `pulp_wars-w49.26` [step two of the Dinosaur pass](RULESET_7_TUNING_DINOSAUR.md#14-step-two) after a hand-played game as the Humans against the Dinosaur AI before the change and one after it, two as the Dinosaurs (against the Goblin AI and against three AIs), the lab, and six diagnostic matches, no rule and no identity change: a Dinosaur seat of the Normal AI researches the Spitter and the Raptor before the Triceratops, trains before it researches while it is short of units, keeps the price of a due technology it can pay, sends no Caveman or Raptor into contact alone to die, counts a Triceratops's run-up before its Move and the Crack of a Stegosaurus's shot, and strikes with the Stegosaurus first, then its dinosaurs, then its Cavemen                                                                                                                                                                                                                                                                                                                                                                               |
+| Tuning        | `pulp-wars-poc-7r59` | `pulp_wars-w49.27` [step two of the Ice Folk pass](RULESET_7_TUNING_ICE_FOLK.md) after a hand-played game as the Humans against the Ice Folk AI before the change and one after it, three as the Ice Folk (twice against the Goblin AI, once against three AIs), the lab, two labs on water, and eight diagnostic matches: an Ice Folk city's level-2 Survey grants a free Sled (Scouts); an Ice Folk seat of the Normal AI plays the army rules in a match without a Dwarf or a Candy seat, researches the Sled, the Snow Hunter, and the Musk Ox first, caps its Musk Oxen, counts Cold Blood, Planted, Rockfall, and Shatter, throws the Bolas before the blow that shatters, and keeps its shooters out of reach; the lab `LAB_ICE_FOLK_MID`                                                                                                                                                                                                                                                                                                                                                                                                      |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

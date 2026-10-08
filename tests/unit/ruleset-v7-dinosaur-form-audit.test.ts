@@ -656,7 +656,13 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // blows (an Egg and an embarked unit strike nobody: last), its company
     // beside an enemy, and the hit that waits for the Stegosaurus are a
     // land-form unit's.
-    "src/ai/v7.ts": 48,
+    // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Snow Hunter
+    // that comes to throw its Bolas, the hunted unit a Shatter plan is made
+    // for, the unit that waits for the Bolas, the shooter that keeps out of
+    // reach, and the attacker whose Cold Blood, Planted, Rockfall and
+    // Shatter are projected are land-form units (an Egg and an embarked
+    // unit throw nothing, are never Chilled, and strike nobody).
+    "src/ai/v7.ts": 54,
     // Tuning 5: the army count takes land-form units only (an Egg and an
     // embarked unit are in no fighting class).
     "src/ai/v7-army.ts": 1,

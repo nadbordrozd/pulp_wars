@@ -97,7 +97,7 @@ import {
   withoutTechsV7,
 } from "../fixtures/v7-revision20";
 
-// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r58`,
+// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r59`,
 // docs/product/RULESET_7_TUNING_MARTIAN.md): a unit pulled by the Tractor
 // Beam explores for its owner from the tile it lands on; Scouts for a
 // Martian city (a free Saucer); the Shield Projector's Force Field needs
@@ -205,13 +205,13 @@ describe("the Martian pass: identity", () => {
   // The Dinosaur pass (tests/unit/ruleset-v7-dinosaur-pass.test.ts) took
   // 7r53 and the economy rejig 7r54, so 7r52 is a prior identity.
   it("was 7r52 after 7r51, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r58");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r58.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-7, -5)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r59");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r59.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-8, -6)).toEqual([
       "pulp-wars-poc-7r51",
       "pulp-wars-poc-7r52",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-7, -5)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-8, -6)).toEqual([
       "pulpWars.save.v7r51.current",
       "pulpWars.save.v7r52.current",
     ]);
@@ -431,7 +431,8 @@ describe("the Martian pass: Scouts", () => {
       // The Dinosaur pass, 7r53: a Dinosaur Survey grants a Raptor.
       DINOSAUR: 1,
       MARTIAN: 1,
-      ICE_FOLK: 0,
+      // Step two of the Ice Folk pass (7r59): a Sled.
+      ICE_FOLK: 1,
       DWARF: 0,
       CANDY: 0,
     });
@@ -975,9 +976,11 @@ describe("the Martian pass: Martian seats play the army rules", () => {
       "GOBLIN",
       "MARTIAN",
       "DINOSAUR",
+      // Step two of the Ice Folk pass (`pulp_wars-w49.27`).
+      "ICE_FOLK",
     ]);
     expect(armyPlayFactionV7("MARTIAN")).toBe(true);
-    expect(armyPlayFactionV7("ICE_FOLK")).toBe(false);
+    expect(armyPlayFactionV7("DWARF")).toBe(false);
     // Shield Projector, Ray Gunner, Brain (third since step two of the
     // Martian pass, `pulp_wars-w49.25`; it was fifth), Shock Trooper (the
     // ninth unit, 7r55), Tripod, Saucer, Mothership.
@@ -1057,7 +1060,12 @@ describe("the Martian pass: Martian seats play the army rules", () => {
     expect(
       inspectNormalArmyV7(viewOf(asMartian(pieces, {}, "DINOSAUR"))).army,
     ).toBe(true);
-    for (const opponent of ["ICE_FOLK", "DWARF", "CANDY"] as const)
+    // (And against an Ice Folk seat since step two of the Ice Folk pass,
+    // `pulp_wars-w49.27`.)
+    expect(
+      inspectNormalArmyV7(viewOf(asMartian(pieces, {}, "ICE_FOLK"))).army,
+    ).toBe(true);
+    for (const opponent of ["DWARF", "CANDY"] as const)
       expect(
         inspectNormalArmyV7(viewOf(asMartian(pieces, {}, opponent))).army,
         opponent,

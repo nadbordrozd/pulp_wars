@@ -161,9 +161,10 @@ const ENEMY_GARRISON: GoblinPieceV7 = {
 describe("step two of the Human pass: identity", () => {
   it("left the identity at 7r56: no rule, number, command, state, or event shape changed", () => {
     // (Step two of the Undead pass, `pulp_wars-w49.24`, took 7r57, and
-    // step two of the Martian pass, `pulp_wars-w49.25`, 7r58.)
-    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r56");
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r58");
+    // step two of the Martian pass, `pulp_wars-w49.25`, 7r58; step two of
+    // the Ice Folk pass, `pulp_wars-w49.27`, 7r59.)
+    expect(PRIOR_RULESET_7_IDS.at(-3)).toBe("pulp-wars-poc-7r56");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r59");
   });
 });
 

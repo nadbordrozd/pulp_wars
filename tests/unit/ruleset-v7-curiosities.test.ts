@@ -548,19 +548,30 @@ describe("headless parity and the CLI flag", () => {
         // Tuning 6: 20 rounds (22 before). The economy rejig: 19.
         // The ninth unit (7r55): 18 rounds (19 before).
         // The Industry reshuffle (7r56): 18 rounds again.
-        rounds: 18,
+        // Step two of the Ice Folk pass (`pulp_wars-w49.27`, 7r59: an Ice
+        // Folk seat's level-2 Survey grants a Sled, Scouts): 17 rounds,
+        // recomputed (the commands and the events); the board and the
+        // final PRNG state are unchanged. Both seats play the older policy
+        // here (a Dwarf seat). The other four pins are unchanged: the
+        // Lakes one has an Ice Folk seat that takes no Survey within its
+        // 250 commands.
+        rounds: 17,
         commandHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // 9f171d…eba6).
           // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
           // fd31d2…5e68).
-          "9b3f26f66645271a88eab512c7488a10dc7e4154ba4ce711e436c6962ded3d95",
+          // Step two of the Ice Folk pass (`pulp_wars-w49.27`, 7r59):
+          // recomputed (was 9b3f26…3d95).
+          "6ea77adb6a37f3eb0eb95fa4e216bc3ca46b317f47b15c40f428acb00fb64bfb",
         eventHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // b0de91…c9cf).
           // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
           // 1dfe18…8d4d).
-          "2aee4f883f0d83e3166e61ac29d260232fcd03c9e9580419157a82a955052671",
+          // Step two of the Ice Folk pass (`pulp_wars-w49.27`, 7r59):
+          // recomputed (was 2aee4f…2671).
+          "16a4dd2ea618e3fdcae2169ee9efa12d2d95d69ba4b8f9f6c43dc7d8f51ed1f6",
         mapHash:
           "2cbf36a1c5d03e70dd785be13a1ed7d5dd04fecdd54925baa1b483261d71c9be",
         finalPrngHash:

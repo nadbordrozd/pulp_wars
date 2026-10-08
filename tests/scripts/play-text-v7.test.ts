@@ -648,6 +648,9 @@ describe("text-mode play harness", () => {
       LAB_MARTIAN_MID: ["ORIGINAL", "Human"],
       // The Dinosaur pass (`pulp_wars-w49.15`): the player is the Dinosaurs.
       LAB_DINOSAUR_MID: ["ORIGINAL", "Human"],
+      // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the player is
+      // the Ice Folk.
+      LAB_ICE_FOLK_MID: ["ORIGINAL", "Human"],
     };
     expect(Object.keys(TEXT_PLAY_LABS_V7)).toEqual(Object.keys(attackers));
     for (const lab of Object.keys(TEXT_PLAY_LABS_V7)) {
@@ -661,7 +664,9 @@ describe("text-mode play harness", () => {
               ? ["MARTIAN", "Martian"]
               : lab === "LAB_DINOSAUR_MID"
                 ? ["DINOSAUR", "Dinosaur"]
-                : ["ORIGINAL", "Human"];
+                : lab === "LAB_ICE_FOLK_MID"
+                  ? ["ICE_FOLK", "Ice Folk"]
+                  : ["ORIGINAL", "Human"];
       const session = path.join(root, `${lab}.json`);
       const started = ok("lab", "--session", session, lab);
       expect(started).toContain(`LAB ${lab}:`);

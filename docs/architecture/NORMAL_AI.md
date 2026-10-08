@@ -1,5 +1,117 @@
 # Greedy Normal AI
 
+## Step two of the Ice Folk pass (`pulp_wars-w49.27`)
+
+[Step two of the Ice Folk pass](../product/RULESET_7_TUNING_ICE_FOLK.md)
+changed one rule (an Ice Folk Survey grants a Sled; the identity is
+`pulp-wars-poc-7r59`) and brought the Ice Folk seat under the army rules
+(`armyIceFolkSeatV7`: `context.army` and an Ice Folk viewer). In a match
+whose every seat is Human, Undead, Goblin, Martian, Dinosaur, or Ice Folk
+every seat plays them; a match with a Dwarf or a Candy seat keeps the
+older policy for every seat, an Ice Folk one too (`iceFolkResearchV7` and
+the production adjustment of the first Ice Folk policy apply there only).
+The Ice Folk rules of the older policy that are not about research or
+production (the Witch's Cold Snap and escort, the Shatter setup and
+escape values, Rockfall) stay under both. Everything reads the viewer's
+`PlayerViewV7` and the public previews.
+
+**What was seen** (a hand-played game as the Humans on seed 9 against the
+older policy, four diagnostic matches on that seed, and three in the lab).
+The older policy's seat held four cities of level 2 for fifteen rounds
+with an income of 9, sent single Yetis up beside two and three units, and
+threw nine Bolas for two Shatters. With the gate alone, and before the
+Survey Sled, the seat held two cities in round 25: an army seat takes
+Scouts at level 2 for the unit, and an Ice Folk Survey gave none.
+
+**1. The gate and the order** (`ARMY_PLAY_FACTIONS_V7`,
+`ARMY_RESEARCH_ROLES_V7.ICE_FOLK`). The Sled, the Snow Hunter, the Musk Ox,
+the Ice Witch, the Mammoth, the Boulder Yeti, the Sabretooth: from a
+Gathering opener Scouting, Hunting, Marksmanship, Crafting, Deep Winter,
+Leadership, Engineering, Mammoths, Forestry, Boulders, Raiding, and
+Sabretooths. Brittle is the first of the late technologies.
+
+**2. The army** (`armySharesV7`, `armyRoleScoreV7`, `armyClassV7`). 40%
+line, 15% defenders, 20% ranged, 15% siege, 10% breakthrough (35, 10, 25,
+20, 10 against an enemy with ranged or siege units); one Sled for
+`ARMY_ICE_FOLK_SKIRMISHER_PER_UNITS_V7` (4) units,
+`ARMY_ICE_FOLK_SKIRMISHER_MAXIMUM_V7` (3) at most. The Boulder Yeti has
+the siege share and fights as a ranged unit (`armyClassV7` returns
+`RANGED` for a role with Boulders): it moves two tiles and throws from one
+or two in the same turn, so it takes a tile with a shot and stays behind
+the line instead of standing a turn before it fires.
+
+**3. Bodies first, and Scouts** (`armyBodiesSeatV7`, `preferredReward`).
+The rule of step two of the Undead pass holds for an Ice Folk seat, which
+counts its units that capture; it takes the Survey at level 2 whatever its
+Coins, and the opening and correction rules of the other army seats
+(`armyOpeningSeatV7`, `armyCorrectionSeatV7`).
+
+**4. The Musk Ox is a garrison** (`armyIceFolkDefenderCappedV7`,
+`ARMY_ICE_FOLK_DEFENDER_CAP_COST_V7`, `armyGarrisonYieldsToRangedV7`). No
+more Oxen than the seat owns cities, and no more than a third of the army
+with the new one counted (a seat with three threatened cities fielded five
+Oxen of seven units). A capped Ox costs 6000 of training score. The
+garrison of a threatened city yields to a Snow Hunter as a Human seat's
+does to a Marksman.
+
+**5. What the projection counts** (`iceFolkBlowV7` in
+`publicProjectedDamageWithLookupV7`, with the option `chilled`). For a blow
+of the viewer's own Ice Folk unit: Cold Blood against a unit that is
+Chilled (or assumed Chilled by a plan); Planted taken off a Boulder Yeti's
+published Attack when the blow is projected from a tile it has yet to move
+to; Rockfall's Attack for a blow from a Mountain at two tiles
+(`iceFolkRockfallTileV7`, which also keeps a hunt's tiles to those the
+shot is real from); and Shatter: an adjacent blow that leaves a Chilled
+unit that is not a giant at 1 to the threshold (3, 4 with Brittle) is
+worth all its HP. Each number equals the engine's preview once the Move is
+made.
+
+**6. Chill, then Shatter** (`iceFolkShatterHuntV7`, `iceFolkBolasSourceV7`,
+`iceFolkBolasPlanV7`, `iceFolkShatterWaitsV7`, `HuntPlanV7.bolas`). For
+every target of an Ice Folk army seat the hunt is planned twice, as it
+stands and with the target Chilled by a Bolas a Sled or a Snow Hunter can
+throw from where it stands or after a Move it survives. The plan with the
+Bolas is taken when it kills with fewer units or only it kills. Its
+thrower's Move has the hunt's priority, the throw has
+`BOLAS_SHATTER_PRIORITY_V7`, the shots from two tiles come next, and the
+adjacent blows last: an adjacent blow on that target is no candidate while
+the Bolas or a shot of the plan is to come. A unit of the plan throws no
+other Bolas. The melee units of an Ice Folk hunt move before its shooters
+(the pattern of `dinosaurPackHuntV7`, with the order turned: the body
+takes the tile beside the target, and the shooter then has a line in front
+of it).
+
+**7. Shooters out of reach** (`armyIceFolkShooterHeldV7`,
+`armyIceFolkChainReachV7`). A Snow Hunter or a Boulder Yeti makes no Move,
+whatever offers it, onto a tile a visible hostile melee unit can attack
+next turn with no own line, defender, or breakthrough unit nearer to the
+enemy, nor onto a tile where the visible blows add up to its HP; exempt
+are the Move from which its shot kills, the Move onto a center or a
+village, and a unit already in such a reach. A shooter or an Ice Witch
+makes no Move into the reach of a visible unit with Overrun from outside
+it, and a shooter inside it steps out at `ARMY_STEP_BACK_PRIORITY_V7`. In
+the lab a Boulder Yeti glided three tiles ahead of the Mammoths for a
+4-point throw and died, and one Knight killed a Snow Hunter, the Witch, a
+Boulder Yeti, and the Sabretooth in one ride.
+
+**8. Weak links and escorts** (`armyWeakLinkV7`, `armyEscortValueV7`,
+`ARMY_ICE_FOLK_STURDY_V7`). An Ice Folk unit of less than 15 HP at its
+maximum is a weak link of a kill chain at any HP (a Knight kills each at
+full HP); the Musk Ox and the Mammoth are not, and their Move beside weak
+units has an escort's value.
+
+**9. Contact with company** (`armyDinosaurContactHeldV7`, widened). A
+Yeti or a Sled does not step beside an enemy unit where it would die
+unless a unit of its side stands beside that enemy or can still come; the
+Sabretooth's Prowl is left out of the rule.
+
+**Not done.** The seat never Freezes and has no plan across water; the
+Mammoth's Sweep and the Sabretooth have no rule of their own; a Bolas with
+no blow behind it is still thrown (it costs nothing and the target is
+sluggish for a turn).
+
+Tests: `tests/unit/ruleset-v7-ice-folk-step2.test.ts`.
+
 ## Step two of the Dinosaur pass (`pulp_wars-w49.26`)
 
 [Step two of the Dinosaur pass](../product/RULESET_7_TUNING_DINOSAUR.md#14-step-two)

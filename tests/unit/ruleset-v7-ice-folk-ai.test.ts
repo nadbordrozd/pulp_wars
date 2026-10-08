@@ -224,15 +224,27 @@ describe("Ice Folk Normal AI: Chill, then Shatter", () => {
   });
 
   it("orders the chips: Snow Hunters before the other units", () => {
-    const state = asIce([
+    const pieces = [
       own("MARKSMAN", 6, 2),
       own("FIGHTER", 5, 0),
       foe("GUARD", 6, 0),
-    ]);
-    const hunter = unitCandidatesV7(state, at(6, 2), "ATTACK")[0];
-    const yeti = unitCandidatesV7(state, at(5, 0), "ATTACK")[0];
-    expect(hunter?.score.priority).toBe(900 + SNOW_HUNTER_CHIP_OFFSET_V7);
-    expect(yeti?.score.priority ?? 0).toBeLessThan(hunter?.score.priority ?? 0);
+    ];
+    // The older policy (a match with a Dwarf seat): the chip offset.
+    const older = iceFieldV7(pieces, { factions: ["ICE_FOLK", "DWARF"] });
+    expect(unitCandidatesV7(older, at(6, 2), "ATTACK")[0]?.score.priority).toBe(
+      900 + SNOW_HUNTER_CHIP_OFFSET_V7,
+    );
+    // Both policies (step two of the Ice Folk pass, `pulp_wars-w49.27`: an
+    // Ice Folk seat plays the army rules against a Human seat, and the
+    // shot from two tiles still comes before the adjacent blow).
+    for (const state of [older, asIce(pieces)]) {
+      const hunter = unitCandidatesV7(state, at(6, 2), "ATTACK")[0];
+      const yeti = unitCandidatesV7(state, at(5, 0), "ATTACK")[0];
+      expect(hunter?.command).toEqual(attackV7(state, at(6, 2), at(6, 0)));
+      expect(yeti?.score.priority ?? 0).toBeLessThan(
+        hunter?.score.priority ?? 0,
+      );
+    }
   });
 
   it("swings the Mammoth at the target with two flank units", () => {
@@ -248,11 +260,18 @@ describe("Ice Folk Normal AI: Chill, then Shatter", () => {
   });
 
   it("throws the Boulder Yeti planted instead of moving", () => {
-    const state = asIce([own("CATAPULT", 6, 3), foe("FIGHTER", 6, 1)]);
-    expect(unitCandidatesV7(state, at(6, 3), "MOVE")).toEqual([]);
-    const shot = unitCandidatesV7(state, at(6, 3), "ATTACK")[0];
-    expect(shot?.command).toEqual(attackV7(state, at(6, 3), at(6, 1)));
-    expect(preview(state, at(6, 3), at(6, 1))?.plantedApplied).toBe(true);
+    const pieces = [own("CATAPULT", 6, 3), foe("FIGHTER", 6, 1)];
+    // The older policy (a match with a Dwarf seat) offers it no Move.
+    const older = iceFieldV7(pieces, { factions: ["ICE_FOLK", "DWARF"] });
+    expect(unitCandidatesV7(older, at(6, 3), "MOVE")).toEqual([]);
+    // Both policies throw before anything else (the army rules, step two
+    // of the Ice Folk pass, `pulp_wars-w49.27`, rank the planted throw
+    // above every Move of the Boulder Yeti).
+    for (const state of [older, asIce(pieces)]) {
+      const best = unitCandidatesV7(state, at(6, 3))[0];
+      expect(best?.command).toEqual(attackV7(state, at(6, 3), at(6, 1)));
+      expect(preview(state, at(6, 3), at(6, 1))?.plantedApplied).toBe(true);
+    }
   });
 });
 
@@ -331,11 +350,18 @@ describe("Ice Folk Normal AI: against the Ice Folk", () => {
       }),
       foe("FIGHTER", 5, 2),
     ]);
+    // Step two of the Ice Folk pass (`pulp_wars-w49.27`): both seats play
+    // the army rules in this match, whose retreat outranks the escape
+    // value; the unit leaves the Yeti's reach either way, and it has no
+    // other Move.
     const best = unitCandidatesV7(state, at(5, 4))[0];
     expect(best?.command.kind).toBe("MOVE");
-    expect(best?.score.priority).toBe(SHATTER_ESCAPE_PRIORITY_V7);
+    expect(best?.score.priority).toBeGreaterThanOrEqual(
+      SHATTER_ESCAPE_PRIORITY_V7,
+    );
     const end = best === undefined ? undefined : endOf(best.command);
     expect(end === undefined ? 0 : chebyshev(end, at(5, 2))).toBeGreaterThan(2);
+    expect(unitCandidatesV7(state, at(5, 4), "MOVE")).toHaveLength(1);
   });
 
   it("holds a sluggish unit instead of walking into a Yeti's reach", () => {

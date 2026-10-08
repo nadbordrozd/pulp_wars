@@ -190,13 +190,13 @@ describe("the Undead pass: identity", () => {
   // , the Dinosaur pass 7r53, and the economy rejig 7r54, so 7r51 is a
   // prior identity.
   it("was 7r51 after 7r50, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r58");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r58.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-8, -6)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r59");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r59.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-9, -7)).toEqual([
       "pulp-wars-poc-7r50",
       "pulp-wars-poc-7r51",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-8, -6)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-9, -7)).toEqual([
       "pulpWars.save.v7r50.current",
       "pulpWars.save.v7r51.current",
     ]);
@@ -592,7 +592,8 @@ describe("the Undead pass: Scouts", () => {
       DINOSAUR: 1,
       // The Martian pass, 7r52: a Martian Survey grants a Saucer.
       MARTIAN: 1,
-      ICE_FOLK: 0,
+      // Step two of the Ice Folk pass (7r59): a Sled.
+      ICE_FOLK: 1,
       DWARF: 0,
       CANDY: 0,
     });

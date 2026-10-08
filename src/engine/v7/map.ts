@@ -4081,7 +4081,9 @@ export const MILITIA_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
  * the survey alone until their passes. The Goblin pass (`pulp_wars-w49.12`,
  * 7r50): a Goblin Survey grants a Wolf Rider. The Undead pass
  * (`pulp_wars-w49.13`, 7r51): an Undead Survey grants a Ghoul. The Martian
- * pass (`pulp_wars-w49.14`, 7r52): a Martian Survey grants a Saucer.
+ * pass (`pulp_wars-w49.14`, 7r52): a Martian Survey grants a Saucer. Step
+ * two of the Ice Folk pass (`pulp_wars-w49.27`, 7r59): an Ice Folk Survey
+ * grants a Sled.
  */
 export const SURVEY_RAIDERS_V7: Readonly<Record<FactionIdV7, 0 | 1>> =
   deepFreeze({
@@ -4090,7 +4092,7 @@ export const SURVEY_RAIDERS_V7: Readonly<Record<FactionIdV7, 0 | 1>> =
     GOBLIN: 1,
     DINOSAUR: 1,
     MARTIAN: 1,
-    ICE_FOLK: 0,
+    ICE_FOLK: 1,
     DWARF: 0,
     CANDY: 0,
   });

@@ -10664,7 +10664,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r58",
+    rulesetId: "pulp-wars-poc-7r59",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -11313,7 +11313,10 @@ function rewardLabel(
             : // The Martian pass, correction: a tester's free Saucer
               // filled the capital's third slot unannounced.
               // The Dinosaur pass (`pulp_wars-w49.15`): the Raptor too.
-              `${scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", faction).label)}${faction === "MARTIAN" || faction === "DINOSAUR" ? " (uses a unit slot)" : ""}`,
+              // Step two of the Ice Folk pass (`pulp_wars-w49.27`): and
+              // the Sled (a hand player's capital of level 2 was full
+              // with it and could not train in round 4).
+              `${scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", faction).label)}${faction === "MARTIAN" || faction === "DINOSAUR" || faction === "ICE_FOLK" ? " (uses a unit slot)" : ""}`,
         ]
       : ["Survey", "Reveal the area"];
   if (reward === "STOCKPILE") return ["Stockpile", "+4 Coins"];

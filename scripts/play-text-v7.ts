@@ -279,7 +279,7 @@ const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; st
   new     --session S [--map dry-land] [--size 11] [--seed 1] [--factions original,undead[,...]]
           [--seat 0] [--curiosities on|off] [--overwrite]
   lab     --session S <LAB> [--overwrite]
-                                        start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead; LAB_MARTIAN_MID: the Martians; LAB_DINOSAUR_MID: the Dinosaurs); lab alone lists them
+                                        start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead; LAB_MARTIAN_MID: the Martians; LAB_DINOSAUR_MID: the Dinosaurs; LAB_ICE_FOLK_MID: the Ice Folk); lab alone lists them
   view    --session S [--full]          public view of your seat: header, map, cities, units
   tech    --session S                   technology tree with costs and unlocks
   options --session S [--unit ID | --city ID | --tile x,y | --all]
@@ -2342,6 +2342,10 @@ export const TEXT_PLAY_LABS_V7: Readonly<Record<string, string>> = {
   // Dinosaurs, on the same land.
   LAB_DINOSAUR_MID:
     "YOU PLAY THE DINOSAURS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can produce every Dinosaur unit (thirteen technologies; the Stegosaurus too) and hold 3 Cavemen, 2 Raptors (one Big), 2 Spitters (one Big), 2 Ankylosauruses, a Shaman, 2 Triceratops (one Big) and a T-Rex Egg beside your capital, two turns from hatching, with the Shaman next to it (12 units and the Egg), 35c in hand on the first turn and eight free unit slots (three in the capital, two in the northern level-3 city, one in each other city; a Triceratops and a T-Rex fill two); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you own Nesting, where the Ankylosaurus is (one more unit slot in every city, Eggs with 10 HP), and not Wallbreaker (a Triceratops's run-up of two tiles)",
+  // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the one lab played
+  // as the Ice Folk, on the same land.
+  LAB_ICE_FOLK_MID:
+    "YOU PLAY THE ICE FOLK in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Ice Folk unit (thirteen technologies) and hold 5 Yetis, 2 Sleds, 2 Snow Hunters, 2 Musk Oxen, an Ice Witch, 2 Mammoths, a Boulder Yeti and a Sabretooth (16 units), 35c in hand on the first turn and three free unit slots (two in the capital, one in the northern level-3 city); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you own Deep Winter, where the Musk Ox is (your Snow reaches two tiles beyond your cities' land, and Recover heals 6 in your land), and not Brittle (a Shatter at 4 HP or fewer)",
 };
 
 function commandLabV7(args: ArgsV7): string {
