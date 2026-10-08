@@ -247,8 +247,8 @@ export interface ScreenBand {
  * fits, else the `focus` point (the capital); the camera then slides the
  * least distance that keeps a board that fits the region wholly inside it,
  * or leaves no empty off-board margin inside the region when the board is
- * larger than it. The result only sets the starting camera; pan and zoom
- * stay unclamped.
+ * larger than it. The result only sets the starting camera; later user pan
+ * and zoom are bounded by `clampCamera`.
  */
 export function frameCameraOnArea(
   camera: CameraState,
@@ -313,6 +313,183 @@ function frameAxisOffset(
   if (start > regionStart) return offset - (start - regionStart);
   if (end < regionEnd) return offset + (regionEnd - end);
   return offset;
+}
+
+/**
+ * Bead pulp_wars-eu3r.5: when the limit area's outer box does not fit the
+ * visible map region on an axis (the canvas width, or the vertical `band`
+ * left free by the HUD and the dock), the explored cells themselves must
+ * still cover this share of the region on that axis (or all of their own
+ * extent, when smaller).
+ */
+export const MIN_VISIBLE_AREA_SHARE = 1 / 2;
+
+/** What a user pan or zoom must keep in view (see `cameraLimitArea`). */
+export interface CameraLimitArea {
+  /** The explored (and included) cells; the whole board when none. */
+  readonly inner: WorldBounds;
+  /** `inner` grown by one cell on every side, clipped to the board. */
+  readonly outer: WorldBounds;
+}
+
+/**
+ * The world area a user pan or zoom must keep in view: the bounding box of
+ * the viewer's explored cells and, around it, a one-cell margin clipped to
+ * the board's cells; every cell of the board when nothing is explored. Fog
+ * alone is not "the map", so the limit follows what the player knows.
+ * `include` (the keyboard cursor) joins the explored cells so following it
+ * never fights the limit.
+ */
+export function cameraLimitArea(
+  board: Size,
+  explored: readonly Coord[],
+  include: readonly Coord[] = [],
+): CameraLimitArea {
+  const whole = {
+    left: -TILE_WIDTH / 2,
+    top: -TILE_HEIGHT / 2,
+    right: (board.width - 1) * TILE_WIDTH + TILE_WIDTH / 2,
+    bottom: (board.height - 1) * TILE_HEIGHT + TILE_HEIGHT / 2,
+  };
+  const known =
+    explored.length === 0 ? null : cellWorldBounds([...explored, ...include]);
+  if (known === null) return { inner: whole, outer: whole };
+  const inner = {
+    left: Math.max(whole.left, known.left),
+    top: Math.max(whole.top, known.top),
+    right: Math.min(whole.right, known.right),
+    bottom: Math.min(whole.bottom, known.bottom),
+  };
+  return {
+    inner,
+    outer: {
+      left: Math.max(whole.left, inner.left - TILE_WIDTH),
+      top: Math.max(whole.top, inner.top - TILE_HEIGHT),
+      right: Math.min(whole.right, inner.right + TILE_WIDTH),
+      bottom: Math.min(whole.bottom, inner.bottom + TILE_HEIGHT),
+    },
+  };
+}
+
+/** The camera offset range on each axis that `clampCamera` allows. */
+export interface CameraPanLimits {
+  readonly minOffsetX: number;
+  readonly maxOffsetX: number;
+  readonly minOffsetY: number;
+  readonly maxOffsetY: number;
+}
+
+export interface CameraClampInput {
+  readonly area: CameraLimitArea;
+  readonly viewport: Size;
+  /** Unobscured vertical band; a band under 1 px means the whole canvas. */
+  readonly band: ScreenBand;
+}
+
+/**
+ * Offset limits at `zoom`, per axis: where the outer box fits the visible
+ * region it must lie wholly inside it; otherwise the inner box must cover
+ * `MIN_VISIBLE_AREA_SHARE` of the region, or all of itself when smaller.
+ */
+export function cameraPanLimits(
+  zoom: number,
+  input: CameraClampInput,
+): CameraPanLimits {
+  const { area, viewport } = input;
+  const band =
+    input.band.bottom - input.band.top >= 1
+      ? input.band
+      : { top: 0, bottom: viewport.height };
+  const axis = (
+    regionStart: number,
+    regionEnd: number,
+    outerStart: number,
+    outerEnd: number,
+    innerStart: number,
+    innerEnd: number,
+  ): readonly [number, number] => {
+    const region = regionEnd - regionStart;
+    if ((outerEnd - outerStart) * zoom <= region)
+      return [regionStart - outerStart * zoom, regionEnd - outerEnd * zoom];
+    const visible = Math.min(
+      (innerEnd - innerStart) * zoom,
+      region * MIN_VISIBLE_AREA_SHARE,
+    );
+    return [
+      regionStart + visible - innerEnd * zoom,
+      regionEnd - visible - innerStart * zoom,
+    ];
+  };
+  const [minOffsetX, maxOffsetX] = axis(
+    0,
+    viewport.width,
+    area.outer.left,
+    area.outer.right,
+    area.inner.left,
+    area.inner.right,
+  );
+  const [minOffsetY, maxOffsetY] = axis(
+    band.top,
+    band.bottom,
+    area.outer.top,
+    area.outer.bottom,
+    area.inner.top,
+    area.inner.bottom,
+  );
+  return { minOffsetX, maxOffsetX, minOffsetY, maxOffsetY };
+}
+
+/**
+ * Keeps a user pan or zoom from carrying the explored map out of view (see
+ * `cameraPanLimits`). A camera inside the limits is returned unchanged. With
+ * a `prior` camera the clamp is gentle: a camera that was already past a
+ * limit (after a resize, a dock opening or an AI-turn camera move) may move
+ * freely back towards the limit and stays where it is otherwise, but never
+ * moves further out, so nothing snaps under the user's finger. Without
+ * `prior` the camera is clamped to the limits outright. The zoom never
+ * changes.
+ */
+export function clampCamera(
+  camera: CameraState,
+  input: CameraClampInput,
+  prior?: CameraState,
+): CameraState {
+  const limits = cameraPanLimits(camera.zoom, input);
+  const before =
+    prior === undefined ? null : cameraPanLimits(prior.zoom, input);
+  const axis = (
+    offset: number,
+    min: number,
+    max: number,
+    priorOffset: number | null,
+    priorMin: number,
+    priorMax: number,
+  ): number => {
+    const slackLow =
+      priorOffset === null ? 0 : Math.max(0, priorMin - priorOffset);
+    const slackHigh =
+      priorOffset === null ? 0 : Math.max(0, priorOffset - priorMax);
+    return Math.min(max + slackHigh, Math.max(min - slackLow, offset));
+  };
+  const offsetX = axis(
+    camera.offsetX,
+    limits.minOffsetX,
+    limits.maxOffsetX,
+    prior?.offsetX ?? null,
+    before?.minOffsetX ?? 0,
+    before?.maxOffsetX ?? 0,
+  );
+  const offsetY = axis(
+    camera.offsetY,
+    limits.minOffsetY,
+    limits.maxOffsetY,
+    prior?.offsetY ?? null,
+    before?.minOffsetY ?? 0,
+    before?.maxOffsetY ?? 0,
+  );
+  return offsetX === camera.offsetX && offsetY === camera.offsetY
+    ? camera
+    : { ...camera, offsetX, offsetY };
 }
 
 /** World bounds of the listed cells' squares, or null when there are none. */

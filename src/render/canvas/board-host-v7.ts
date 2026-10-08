@@ -82,8 +82,10 @@ import {
   MAX_ZOOM,
   MIN_ZOOM,
   boardWorldBounds,
+  cameraLimitArea,
   cellWorldBounds,
   centerCameraOn,
+  clampCamera,
   fitCamera,
   frameCameraOnArea,
   panCamera,
@@ -317,6 +319,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #model: BoardHostModelV7 | null = null;
   #viewport: Size = { width: 1024, height: 640 };
   #camera: CameraState = { offsetX: 0, offsetY: 0, zoom: 1 };
+  #exploredCache: {
+    readonly tiles: PlayerViewV7["board"]["tiles"];
+    readonly cells: readonly CoordV7[];
+  } | null = null;
   #focused: CoordV7 | null = null;
   /** Mouse hover cell; it only focuses revision-13 splash previews. */
   #hovered: CoordV7 | null = null;
@@ -872,21 +878,71 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#cameraFollowAllowed = false;
     this.#cancelCameraPan();
     if (this.#artSet() === "CHIBI") {
-      this.#camera = zoomChibiCameraAt(
-        this.#camera,
-        adjacentChibiZoomStep(chibiZoomStepForCamera(this.#camera), direction),
-        { x: this.#viewport.width / 2, y: this.#viewport.height / 2 },
+      this.#camera = this.#limitCamera(
+        zoomChibiCameraAt(
+          this.#camera,
+          adjacentChibiZoomStep(
+            chibiZoomStepForCamera(this.#camera),
+            direction,
+          ),
+          { x: this.#viewport.width / 2, y: this.#viewport.height / 2 },
+        ),
       );
       this.#draw();
       return;
     }
     const factor = direction === "IN" ? 1.2 : 1 / 1.2;
-    this.#camera = zoomCameraAt(
-      this.#camera,
-      Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, this.#camera.zoom * factor)),
-      { x: this.#viewport.width / 2, y: this.#viewport.height / 2 },
+    this.#camera = this.#limitCamera(
+      zoomCameraAt(
+        this.#camera,
+        Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, this.#camera.zoom * factor)),
+        { x: this.#viewport.width / 2, y: this.#viewport.height / 2 },
+      ),
     );
     this.#draw();
+  }
+
+  /**
+   * Bead pulp_wars-eu3r.5: bounds a user pan or zoom so the explored map
+   * plus a one-cell margin stays wholly in view where it fits, else the
+   * explored cells cover half the visible map region on that axis (see
+   * `cameraPanLimits`). Gentle against `prior`: never snaps a camera that
+   * an AI-turn move, resize or dock left past a limit, only stops it moving
+   * further out. A null `prior` clamps outright (a resize). `include` adds
+   * cells to the limit area (the keyboard cursor). Programmatic framing and
+   * the follow camera are not clamped.
+   */
+  #limitCamera(
+    next: CameraState,
+    prior: CameraState | null = this.#camera,
+    include: readonly CoordV7[] = [],
+  ): CameraState {
+    const model = this.#model;
+    if (model === null) return next;
+    return clampCamera(
+      next,
+      {
+        area: cameraLimitArea(
+          model.view.board,
+          this.#exploredCells(model.view),
+          include,
+        ),
+        viewport: this.#viewport,
+        band: this.#unobscuredBand(),
+      },
+      prior ?? undefined,
+    );
+  }
+
+  /** The viewer's explored cells, cached per view's tile list. */
+  #exploredCells(view: PlayerViewV7): readonly CoordV7[] {
+    const cached = this.#exploredCache;
+    if (cached?.tiles === view.board.tiles) return cached.cells;
+    const cells = view.board.tiles
+      .filter((tile) => tile.explored)
+      .map((tile) => tile.at);
+    this.#exploredCache = { tiles: view.board.tiles, cells };
+    return cells;
   }
 
   focus(): void {
@@ -1582,7 +1638,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       effectsCanvas.style.height = `${this.#viewport.height}px`;
     }
     if (priorCenter !== null)
-      this.#camera = centerCameraOn(this.#camera, priorCenter, this.#viewport);
+      this.#camera = this.#limitCamera(
+        centerCameraOn(this.#camera, priorCenter, this.#viewport),
+        null,
+      );
     this.#glowCache.clear();
     this.#draw();
   }
@@ -2469,6 +2528,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       const current = pinchState([...this.#pointers.values()]);
       const prior = this.#pinch;
       if (current !== null && prior !== null && prior.distance > 0) {
+        const before = this.#camera;
         this.#camera = panCamera(this.#camera, {
           x: current.midpoint.x - prior.midpoint.x,
           y: current.midpoint.y - prior.midpoint.y,
@@ -2497,6 +2557,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
               current.midpoint,
             );
         }
+        this.#camera = this.#limitCamera(this.#camera, before);
         this.#draw();
       }
       this.#pinch = current;
@@ -2511,7 +2572,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         next.y - this.#pointer.start.y,
       ) > 6
     ) {
-      this.#camera = panCamera(this.#camera, { x: dx, y: dy });
+      this.#camera = this.#limitCamera(
+        panCamera(this.#camera, { x: dx, y: dy }),
+      );
       this.#draw();
     }
     this.#pointer.current = next;
@@ -2599,19 +2662,26 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       if (Math.abs(this.#wheelDelta) < CHIBI_WHEEL_STEP_DELTA) return;
       const direction = this.#wheelDelta < 0 ? "IN" : "OUT";
       this.#wheelDelta = 0;
-      this.#camera = zoomChibiCameraAt(
-        this.#camera,
-        adjacentChibiZoomStep(chibiZoomStepForCamera(this.#camera), direction),
-        localPoint(canvas, event),
+      this.#camera = this.#limitCamera(
+        zoomChibiCameraAt(
+          this.#camera,
+          adjacentChibiZoomStep(
+            chibiZoomStepForCamera(this.#camera),
+            direction,
+          ),
+          localPoint(canvas, event),
+        ),
       );
       this.#draw();
       return;
     }
     const factor = event.deltaY < 0 ? 1.1 : 1 / 1.1;
-    this.#camera = zoomCameraAt(
-      this.#camera,
-      Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, this.#camera.zoom * factor)),
-      localPoint(canvas, event),
+    this.#camera = this.#limitCamera(
+      zoomCameraAt(
+        this.#camera,
+        Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, this.#camera.zoom * factor)),
+        localPoint(canvas, event),
+      ),
     );
     this.#draw();
   };
@@ -2807,7 +2877,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           ? safeBottom - point.y
           : 0;
     if (dx !== 0 || dy !== 0)
-      this.#camera = panCamera(this.#camera, { x: dx, y: dy });
+      this.#camera = this.#limitCamera(
+        panCamera(this.#camera, { x: dx, y: dy }),
+        this.#camera,
+        [this.#focused],
+      );
   }
 
   #detach(): void {

@@ -11,11 +11,17 @@ import {
   MIN_ZOOM,
   TILE_HEIGHT,
   TILE_WIDTH,
+  MIN_VISIBLE_AREA_SHARE,
   boardWorldBounds,
+  cameraLimitArea,
+  cameraPanLimits,
+  cellWorldBounds,
   centerCameraOn,
   cityLabelVerticalBounds,
+  clampCamera,
   compareGroundAnchors,
   fitCamera,
+  frameCameraOnArea,
   inverseProject,
   pickGridTile,
   projectGrid,
@@ -23,6 +29,7 @@ import {
   unitHealthBarGeometry,
   worldToScreen,
   zoomCameraAt,
+  type CameraState,
 } from "../../src/render/canvas/geometry";
 import {
   buildRenderPlan,
@@ -991,5 +998,181 @@ describe("stable draw ordering and deterministic render fixtures", () => {
       (entry) => entry.kind === "MOVE_TARGET" || entry.kind === "ATTACK_TARGET",
     );
     expect(enemyTargets).toEqual([]);
+  });
+});
+
+describe("camera pan limits (bead pulp_wars-eu3r.5)", () => {
+  const size = { width: 16, height: 16 };
+  const square = (x0: number, y0: number, x1: number, y1: number) => {
+    const cells = [];
+    for (let y = y0; y <= y1; y += 1)
+      for (let x = x0; x <= x1; x += 1) cells.push({ x, y });
+    return cells;
+  };
+  // A 3x3 explored patch around (4,4): the limit area is 5x5 cells.
+  const explored = square(3, 3, 5, 5);
+  const area = cameraLimitArea(size, explored);
+  const desktop = {
+    area,
+    viewport: { width: 1280, height: 720 },
+    band: { top: 56, bottom: 720 },
+  };
+  const phone = {
+    area,
+    viewport: { width: 390, height: 844 },
+    band: { top: 96, bottom: 520 },
+  };
+  const region = (input: typeof desktop) => ({
+    x: [0, input.viewport.width] as const,
+    y: [input.band.top, input.band.bottom] as const,
+  });
+  /** A box's on-screen span per axis. */
+  const span = (camera: CameraState, box: typeof area.outer) => ({
+    x: [
+      camera.offsetX + box.left * camera.zoom,
+      camera.offsetX + box.right * camera.zoom,
+    ] as const,
+    y: [
+      camera.offsetY + box.top * camera.zoom,
+      camera.offsetY + box.bottom * camera.zoom,
+    ] as const,
+  });
+  const expectKeptInView = (camera: CameraState, input: typeof desktop) => {
+    const outer = span(camera, input.area.outer);
+    const inner = span(camera, input.area.inner);
+    const visible = region(input);
+    for (const axis of ["x", "y"] as const) {
+      const [low, high] = visible[axis];
+      const [outerStart, outerEnd] = outer[axis];
+      const [innerStart, innerEnd] = inner[axis];
+      if (outerEnd - outerStart <= high - low) {
+        expect(outerStart).toBeGreaterThanOrEqual(low - 1e-6);
+        expect(outerEnd).toBeLessThanOrEqual(high + 1e-6);
+      } else
+        expect(
+          Math.min(innerEnd, high) - Math.max(innerStart, low),
+        ).toBeGreaterThanOrEqual(
+          Math.min(
+            innerEnd - innerStart,
+            (high - low) * MIN_VISIBLE_AREA_SHARE,
+          ) - 1e-6,
+        );
+    }
+  };
+
+  it("limits to the explored cells plus one cell, clipped to the board", () => {
+    const box = (x0: number, y0: number, x1: number, y1: number) => ({
+      left: x0 * TILE_WIDTH - TILE_WIDTH / 2,
+      top: y0 * TILE_HEIGHT - TILE_HEIGHT / 2,
+      right: x1 * TILE_WIDTH + TILE_WIDTH / 2,
+      bottom: y1 * TILE_HEIGHT + TILE_HEIGHT / 2,
+    });
+    expect(area).toEqual({ inner: box(3, 3, 5, 5), outer: box(2, 2, 6, 6) });
+    const whole = box(0, 0, 15, 15);
+    expect(cameraLimitArea(size, [])).toEqual({ inner: whole, outer: whole });
+    // The keyboard cursor never counts as explored on its own.
+    expect(cameraLimitArea(size, [], [{ x: 3, y: 3 }])).toEqual({
+      inner: whole,
+      outer: whole,
+    });
+    expect(cameraLimitArea(size, [{ x: 0, y: 15 }])).toEqual({
+      inner: box(0, 15, 0, 15),
+      outer: box(0, 14, 1, 15),
+    });
+    // The keyboard cursor joins the area.
+    expect(cameraLimitArea(size, explored, [{ x: 10, y: 4 }])).toEqual({
+      inner: box(3, 3, 10, 5),
+      outer: box(2, 2, 11, 6),
+    });
+  });
+
+  it("leaves the opening framing and moves inside the limits untouched", () => {
+    for (const input of [desktop, phone])
+      for (const zoom of [MIN_ZOOM, 1]) {
+        const framed = frameCameraOnArea(
+          { zoom, offsetX: 0, offsetY: 0 },
+          {
+            area: cellWorldBounds(explored),
+            focus: projectGrid({ x: 4, y: 4 }),
+            board: boardWorldBounds(16, 16),
+            viewport: input.viewport,
+            band: input.band,
+          },
+        );
+        expect(clampCamera(framed, input)).toBe(framed);
+        const nudged = { ...framed, offsetX: framed.offsetX + 10 };
+        expect(clampCamera(nudged, input, framed)).toBe(nudged);
+      }
+  });
+
+  it("keeps the explored area in view past every edge at every zoom and viewport", () => {
+    const whole = { ...phone, area: cameraLimitArea(size, []) };
+    const wide = { ...phone, area: cameraLimitArea(size, square(0, 0, 9, 2)) };
+    for (const input of [desktop, phone, whole, wide])
+      for (const zoom of [MIN_ZOOM, 1, MAX_ZOOM])
+        for (const [dx, dy] of [
+          [1e5, 0],
+          [-1e5, 0],
+          [0, 1e5],
+          [0, -1e5],
+          [1e5, 1e5],
+          [-1e5, -1e5],
+        ] as const) {
+          const clamped = clampCamera(
+            { zoom, offsetX: dx, offsetY: dy },
+            input,
+          );
+          expect(clamped.zoom).toBe(zoom);
+          expectKeptInView(clamped, input);
+        }
+  });
+
+  it("keeps a fitting margin box wholly visible, else half the region explored", () => {
+    // 5 margin cells at zoom 1 = 640 px: fits 1280 wide, not 390.
+    const right = clampCamera({ zoom: 1, offsetX: 1e5, offsetY: 0 }, desktop);
+    expect(span(right, area.outer).x[1]).toBeCloseTo(1280, 6);
+    const left = clampCamera({ zoom: 1, offsetX: -1e5, offsetY: 0 }, phone);
+    // The 3 explored cells (384 px), not fog, cover half of 390 px.
+    expect(span(left, area.inner).x[1]).toBeCloseTo(
+      390 * MIN_VISIBLE_AREA_SHARE,
+      6,
+    );
+    const away = clampCamera({ zoom: 1, offsetX: 1e5, offsetY: 0 }, phone);
+    expect(span(away, area.inner).x[0]).toBeCloseTo(
+      390 * (1 - MIN_VISIBLE_AREA_SHARE),
+      6,
+    );
+  });
+
+  it("is gentle against a prior camera already past a limit", () => {
+    const limits = cameraPanLimits(1, desktop);
+    const prior = {
+      zoom: 1,
+      offsetX: limits.maxOffsetX + 300,
+      offsetY: (limits.minOffsetY + limits.maxOffsetY) / 2,
+    };
+    // Further out: held where it was, never snapped back.
+    expect(
+      clampCamera({ ...prior, offsetX: prior.offsetX + 50 }, desktop, prior)
+        .offsetX,
+    ).toBe(prior.offsetX);
+    // Back towards the area: moves freely.
+    expect(
+      clampCamera({ ...prior, offsetX: prior.offsetX - 50 }, desktop, prior)
+        .offsetX,
+    ).toBe(prior.offsetX - 50);
+    // Without a prior the same camera is clamped outright.
+    expect(clampCamera(prior, desktop).offsetX).toBe(limits.maxOffsetX);
+  });
+
+  it("keeps the area in view when zooming out about a far corner", () => {
+    const limits = cameraPanLimits(MAX_ZOOM, desktop);
+    const edge = {
+      zoom: MAX_ZOOM,
+      offsetX: limits.minOffsetX,
+      offsetY: limits.minOffsetY,
+    };
+    const out = zoomCameraAt(edge, MIN_ZOOM, { x: 0, y: 56 });
+    expectKeptInView(clampCamera(out, desktop, edge), desktop);
   });
 });

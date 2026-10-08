@@ -15,7 +15,11 @@ import {
   type BoardHostModelV7,
 } from "../../src/render/canvas/board-host-v7";
 import * as renderer from "../../src/render/canvas/board-renderer-v7";
-import type { CameraState } from "../../src/render/canvas/geometry";
+import {
+  MIN_VISIBLE_AREA_SHARE,
+  cameraLimitArea,
+  type CameraState,
+} from "../../src/render/canvas/geometry";
 import { initialV7 } from "../fixtures/v7-builders";
 
 beforeEach(() => {
@@ -314,6 +318,113 @@ describe("CHIBI Canvas host camera", () => {
     });
     host.destroy();
   });
+
+  it.each(["CHIBI", "LEGACY"] as const)(
+    "never drags, pinches or zooms the %s explored map out of view (bead pulp_wars-eu3r.5)",
+    (artSet) => {
+      const { host, view, camera, pointer, canvas, key } = rig(artSet);
+      // The explored cells (plus one cell) must stay in view, not fog.
+      const area = cameraLimitArea(
+        view.board,
+        view.board.tiles.filter((tile) => tile.explored).map((tile) => tile.at),
+      );
+      // Where the margin box fits it stays wholly visible; otherwise the
+      // explored cells cover half the canvas on that axis.
+      const kept = () => {
+        const { offsetX, offsetY, zoom } = camera();
+        for (const [offset, size, outer, inner] of [
+          [
+            offsetX,
+            1024,
+            [area.outer.left, area.outer.right],
+            [area.inner.left, area.inner.right],
+          ],
+          [
+            offsetY,
+            640,
+            [area.outer.top, area.outer.bottom],
+            [area.inner.top, area.inner.bottom],
+          ],
+        ] as const) {
+          if ((outer[1] - outer[0]) * zoom <= size) {
+            expect(offset + outer[0] * zoom).toBeGreaterThanOrEqual(-1e-6);
+            expect(offset + outer[1] * zoom).toBeLessThanOrEqual(size + 1e-6);
+          } else
+            expect(
+              Math.min(size, offset + inner[1] * zoom) -
+                Math.max(0, offset + inner[0] * zoom),
+            ).toBeGreaterThanOrEqual(
+              Math.min(
+                (inner[1] - inner[0]) * zoom,
+                size * MIN_VISIBLE_AREA_SHARE,
+              ) - 1e-6,
+            );
+        }
+      };
+      let id = 10;
+      const drag = (dx: number, dy: number) => {
+        id += 1;
+        pointer("pointerdown", id, 500, 300);
+        pointer("pointermove", id, 500 + dx, 300 + dy);
+        pointer("pointerup", id, 500 + dx, 300 + dy);
+      };
+      // Within the limits a drag pans by exactly the pointer delta.
+      const start = camera();
+      drag(40, 12);
+      expect(camera()).toEqual({
+        ...start,
+        offsetX: start.offsetX + 40,
+        offsetY: start.offsetY + 12,
+      });
+      for (const step of ["IN", "OUT", "OUT", "OUT", "OUT"] as const) {
+        for (const [dx, dy] of [
+          [6000, 0],
+          [-6000, 0],
+          [0, 6000],
+          [0, -6000],
+          [6000, 6000],
+          [-6000, -6000],
+        ] as const) {
+          drag(dx, dy);
+          kept();
+          // Stopped at the limit with no stored overshoot: dragging back
+          // moves the board at once.
+          const held = camera();
+          drag(-Math.sign(dx) * 20, -Math.sign(dy) * 20);
+          expect(camera().offsetX).toBeCloseTo(
+            held.offsetX - Math.sign(dx) * 20,
+            6,
+          );
+          expect(camera().offsetY).toBeCloseTo(
+            held.offsetY - Math.sign(dy) * 20,
+            6,
+          );
+        }
+        // Zoom about a far corner, by key and by pinch; the board stays.
+        drag(-6000, -6000);
+        key(step === "IN" ? "+" : "-");
+        kept();
+        pointer("pointerdown", 1, 20, 20);
+        pointer("pointerdown", 2, 120, 20);
+        pointer("pointermove", 2, 60, 20);
+        pointer("pointermove", 1, 6000, 4000);
+        pointer("pointerup", 2, 60, 20);
+        pointer("pointerup", 1, 6000, 4000);
+        kept();
+        canvas.dispatchEvent(
+          new WheelEvent("wheel", {
+            deltaY: 100,
+            clientX: 1000,
+            clientY: 620,
+            bubbles: true,
+            cancelable: true,
+          }),
+        );
+        kept();
+      }
+      host.destroy();
+    },
+  );
 
   it("keeps LEGACY camera behaviour and refits when the art set changes", () => {
     const { host, model, canvas, camera, key } = rig(undefined);
