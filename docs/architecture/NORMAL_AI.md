@@ -1,5 +1,133 @@
 # Greedy Normal AI
 
+## Step two of the Goblin pass (`pulp_wars-w49.23`)
+
+[Step two of the Goblin pass](../product/RULESET_7_TUNING_GOBLIN.md#14-step-two)
+changed no rule (the identity stays `pulp-wars-poc-7r56`) and five things
+in the policy of a Goblin seat that plays the army rules
+(`goblinMobSeatV7`: `context.army`, a Goblin match, a Goblin viewer). A
+seat of another faction, and a Goblin seat in a match with an Ice Folk,
+Dwarf, or Candy seat, decide as before. Everything reads the viewer's
+`PlayerViewV7` and the public previews.
+
+**What was seen** (a hand-played game as the Humans on seed 11, two
+diagnostic matches against the Human AI on seeds 4 and 11, and recorded
+positions of all three). A Goblin beside a full Fighter attacked for 3 and
+took 5 while a second Goblin stood two tiles away; with the second one
+beside the target each deals 6 and the Fighter is dead. Of 21 attacks in
+21 rounds of the seed-4 match four had Gang Up. Single Goblins walked up
+to Fighters and died. The Orc Brute came in round 18 or later and the Ogre
+in round 21 to 27. On the defensive the seat trained Goblins only.
+
+**1. The combined kill counts Gang Up** (`goblinMobHuntV7`, in
+`huntPlansV7`). The combined kill of tuning 5 projects every hunter's hit
+from the tile it strikes from, each on the HP the earlier ones leave, and
+knew nothing of the hunters as each other's helpers. For a Goblin seat the
+group is now the smallest prefix of the candidates (strongest first, one,
+two, up to `HUNT_MAXIMUM_HUNTERS_V7`) that kills when every hit is
+projected with the Gang Up it has once the whole group stands on its
+tiles: the own units beside the target that are not of the group, and the
+hunters that strike from a tile beside it, by their weight
+(`gangUpHelperWeightV7`: an Ogre 2), capped by the faction and the role
+(`gangUpWithHelpersV7`: a bomb none, a rocket 1). The projection is
+`publicProjectedDamageWithLookupV7` with `bonusAttack2`. Where no group
+kills, the plan of tuning 5 is tried as before.
+
+**2. The helpers first** (`goblinMobWaitsV7`, a candidate filter). A
+hunter's hit had priority 1172 and a hunter's Move 1171, so the unit
+beside the target struck before the others came up. The hit of a unit
+whose attack takes Gang Up (`gangUpAttackerV7`), that stands beside the
+target of its plan and does not kill, is no candidate while another hunter
+of that plan still has its Move to a tile beside the target on offer and
+that Move passes the candidate filter. Its hit on any other unit waits
+too (it has one attack). The wait ends when the Move is made, taken by
+another rule, or no longer a candidate, so it cannot stall a turn.
+
+**3. The front gate lets a mob through** (`armyHuntGatedV7`). Tuning 8
+left the holders of a city the seat has not the numbers for out of the
+hunts. A Goblin seat still plans the kill of such a holder when two or
+more units make it; a single unit's kill of one stays gated.
+
+**4. Into contact with company** (`armyGoblinContactHeldV7`, a candidate
+filter; `armyGoblinAloneV7`; `goblinContactCompanyV7`). A Move of a
+Goblin seat's melee unit whose attack takes Gang Up, that may attack after
+it and has no Overrun (a Goblin, a Wolf Rider, an Ogre), is not made when
+it ends beside an enemy unit from a tile beside none, the visible enemies
+kill the unit there, and it has no company: no own unit stands beside that
+enemy, none has it in range, and none that has not moved can still be
+offered a tile from which it has (the tile the mover leaves counts: the
+Goblins of a column stand on the firing tiles of the Bomb Chuckers behind
+them, and without this a recorded army of seventeen made two attacks in a
+turn where it had made six). Whatever offers the Move: a committed
+position sent its units into contact one a turn where one tile was in
+reach. Exempt are a hunter's Move of a combined kill, a Move after which
+the unit's own attack kills, the Move to a Kaboom worth making
+(`kaboomSetupValueV7`), and a Move onto a center or a village.
+Away from contact, the routine Move and the committed advance of such a
+unit to a tile where it would die need another own unit that fights hand
+to hand beside that tile, or within two tiles of it and still to move
+(`armySupportedV7` counted a unit against one enemy as supported).
+
+**5. Research** (`ARMY_RESEARCH_ROLES_V7.GOBLIN`, `armyBlockerV7`,
+`armyBlockerResearchV7`). The order is Bomb Chucker, Wolf Rider, **Ogre**,
+Orc Brute, Rocket Cart, Warboss, Scrap Buggy (the Ogre was sixth): the
+root, Engineering, and Armoury are bought after Scouting, with Mines and
+the Workshop on the way, and Fortification is then one step. The Orc
+Brute's technology goes before the rest of the order once the seat can
+train Bomb Chuckers and has in sight two hostile melee units that move
+two tiles or more (`WANTED`: the next technology, on the ordinary tempo),
+and with a hostile unit with Overrun in sight it is `URGENT`: bought as
+soon as the Coins are there, before the units, also in a war, with the
+Coins kept for it (the hooks of the cure, `armyCureResearchV7`).
+
+**6. A Bomb Chucker in a threatened city**
+(`armyGarrisonYieldsToRangedV7`). The rule of step two of the Human pass
+holds for a Goblin seat: the garrison value is not given while the army
+has three line and defender units, is below its share of ranged units,
+and the city is offered one, except with an enemy within two tiles of the
+center. `armyHelplessGarrisonV7` still keeps a Bomb Chucker off a
+contested center. (A Goblin seat does not choose within the kept Coins:
+`armyChoosesWithinFloorV7` is the Human seat's.)
+
+**Not changed.** A unit that is lost anyway and stands beside an enemy
+still attacks alone (`armyLostAnywayV7`). A Kaboom still needs a kill or
+two enemies. The seat's danger estimate does not see units on tiles it has
+not explored, and a unit already inside an enemy's reach steps forward
+inside it.
+
+**Before and after.** Not a balance measurement: the two diagnostic
+matches (14 x 14, 25 rounds) and the hand-played game on seed 11, read for
+what the Goblin seat does.
+
+| Where                           | Before                                                                                             | After                                                                                                                                             |
+| ------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Humans against Goblins, seed 4  | eliminated in round 21; 21 attacks, 4 with Gang Up, 4 alone at a loss; two Bomb Chuckers trained   | eliminated in round 25; 24 attacks, 9 with Gang Up, 3 alone at a loss                                                                             |
+| Humans against Goblins, seed 11 | seven cities to two or three in round 25 (the run of the Human pass)                               | the Human seat eliminated in round 24; 34 attacks, 13 with Gang Up, 1 alone at a loss; Armoury in round 16, an Ogre in 17, three Orc Brutes in 19 |
+| The hand-played Human, seed 11  | `a`: 21 attacks, 3 with Gang Up, 3 alone at a loss; Bomb Chuckers round 5, Scouting 9, the root 15 | `a2`: 15 attacks, 8 with Gang Up, 1 alone at a loss; the root in round 10 and Fortification in 15, before Scouting, with Raiders in sight         |
+
+No error and no stall in any of them.
+
+**Pins that moved**, each with a note at the test, because a Goblin seat
+of the Normal AI plays differently (no map and no PRNG digest moved):
+
+- the Pangea and Archipelago pins of the curiosities parity matches
+  (`tests/unit/ruleset-v7-curiosities.test.ts`: the command and event
+  digests; 13 rounds each still; Dry Land, Continents, and Lakes are
+  unchanged);
+- the Goblin breakthrough lab against the defender that gives ground: the
+  capital falls in round 6 (7) (`tests/unit/ruleset-v7-tuning-7.test.ts`);
+- the research order of a Goblin seat where a test states it
+  (`ruleset-v7-goblin-pass`, `ruleset-v7-martian-pass`,
+  `ruleset-v7-undead-pass`, `ruleset-v7-tuning-6` with the order of the
+  technologies, and `ruleset-v7-industry-reshuffle`: a Goblin seat with
+  the root goes on to Engineering and Armoury before Fortification);
+- `ruleset-v7-human-step2`: a Goblin seat is no longer among the factions
+  whose garrison rule never yields;
+- the source audits: four more land-form tests in `src/ai/v7.ts` and one
+  in `src/ai/v7-goblin.ts` (`ruleset-v7-dinosaur-form-audit`), and the
+  six new readers classified (`tests/fixtures/v7-unit-reader-classes.ts`,
+  `tests/fixtures/v7-kind-reader-classes.ts`).
+
 ## Step two of the Human pass (`pulp_wars-w49.22`)
 
 [Step two of the Human pass](../product/RULESET_7_TUNING_HUMAN.md#17-step-two)

@@ -255,7 +255,8 @@ export const ARMY_SPLASH_SPACING_VALUE_V7 = 6;
  *
  * - Humans: unchanged in order (the Champion third); its chain is one
  *   technology longer (Drill, Engineering, Metallurgy).
- * - Goblins: the Ogre after the Warboss and before the Scrap Buggy.
+ * - Goblins: the Ogre after the Warboss and before the Scrap Buggy (third,
+ *   behind the Wolf Rider, since step two of the Goblin pass, below).
  * - Undead: the Wight after the Necromancer and before the Vampire.
  * - Martians: the Shock Trooper after the Ray Gunner and before the Tripod.
  * - Dinosaurs: the Triceratops second, as before, by its new chain; the
@@ -307,14 +308,24 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
     "SWORDSMAN",
     "KNIGHT",
   ] as const),
+  // Step two of the Goblin pass (`pulp_wars-w49.23`,
+  // docs/product/RULESET_7_TUNING_GOBLIN.md section 14): the Ogre third
+  // (it was sixth, behind the Warboss) and the Orc Brute behind it. The
+  // Ogre's chain is the root, Engineering, and Armoury: Mines and the
+  // Workshop on the way (a Goblin seat boxed in by Mountains stood on three
+  // cities of level 1 and 2 for twenty rounds with no growth technology but
+  // its opening harvest), and Fortification is then one step from the root.
+  // A seat reached Armoury in round 21 to 27 with the Ogre sixth. The Orc
+  // Brute comes first whenever Knights or Raiders are in sight
+  // (`armyBlockerV7` in `src/ai/v7.ts`).
   GOBLIN: Object.freeze([
     "MARKSMAN",
     "RAIDER",
+    // The ninth unit (7r55): the Ogre.
+    "SWORDSMAN",
     "GUARD",
     "CATAPULT",
     "CAPTAIN",
-    // The ninth unit (7r55): the Ogre.
-    "SWORDSMAN",
     "KNIGHT",
   ] as const),
   // The Martian pass (`pulp_wars-w49.14`,
@@ -1170,6 +1181,14 @@ export const ARMY_GARRISON_TRAINING_VALUE_V7 = 5000;
  * defender units, its ranged class is below its share of the army
  * (`armySharesV7`), and the city is offered a ranged unit that its Coins
  * reach. The shares then choose (a ranged unit until it has its share).
+ *
+ * Step two of the Goblin pass (`pulp_wars-w49.23`,
+ * docs/product/RULESET_7_TUNING_GOBLIN.md section 14): a Goblin seat too.
+ * In a diagnostic match a Goblin seat on the defensive owned Bomb Chuckers
+ * from round 7 and trained two in twenty-one rounds, and Goblins in every
+ * other training: its three cities were threatened every turn. (No Bomb
+ * Chucker is trained onto a contested center, as before:
+ * `armyHelplessGarrisonV7`.)
  */
 export const ARMY_GARRISON_YIELD_BODIES_V7 = 3;
 
@@ -1178,7 +1197,8 @@ export function armyGarrisonYieldsToRangedV7(
   counts: ArmyCountsV7,
   offersRanged: boolean,
 ): boolean {
-  if (faction !== "ORIGINAL" || !offersRanged) return false;
+  if ((faction !== "ORIGINAL" && faction !== "GOBLIN") || !offersRanged)
+    return false;
   if (
     counts.byClass.LINE + counts.byClass.DEFENDER <
     ARMY_GARRISON_YIELD_BODIES_V7

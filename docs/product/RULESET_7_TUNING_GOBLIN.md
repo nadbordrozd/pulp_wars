@@ -48,7 +48,7 @@ hand-played games that had a Goblin seat (rounds 5 to 8 of the Human pass),
 and two single diagnostic matches read for what the Goblin AI researches and
 buys. No AI-against-AI result was counted.
 
-**Superseded in part at `pulp-wars-poc-7r56`** ([the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md), `pulp_wars-w49.21`): The Orc Brute is unlocked by Fortification (with Field Defense), one technology behind the root, which is shown as Crafting and unlocks the Workshop; Engineering no longer does. The games recorded here were played with the Orc Brute at the root. Nothing else here changed, and no number did.
+**Superseded in part at `pulp-wars-poc-7r56`** ([the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md), `pulp_wars-w49.21`): The Orc Brute is unlocked by Fortification (with Field Defense), one technology behind the root, which is shown as Crafting and unlocks the Workshop; Engineering no longer does. The games recorded here were played with the Orc Brute at the root. Nothing else here changed, and no number did. **Step two** (bead `pulp_wars-w49.23`) played the Goblins by hand at `7r56`: no rule changed, the Normal AI of a Goblin seat changed in five places (the research order among them: the Ogre third), and the findings are [section 14](#14-step-two).
 
 ## 1. The changes
 
@@ -1217,3 +1217,287 @@ of the two seats and it is one more reason for question 1 of section
 7r55": a Bomb Chucker beside a Fighter with 3 HP, two Marksmen in reach of
 it, scores its Kaboom below zero, moves to a tile two away, and then
 throws for the kill; the same Bomb Chucker after a Move still uses Kaboom.
+
+## 14. Step two
+
+The second pass over the Goblins on `pulp-wars-poc-7r56`
+([the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md): the Orc Brute
+at Fortification, the Workshop at the root), bead `pulp_wars-w49.23`. Step
+two is "iterate on each faction including playing games manually to rejig
+the balance better and improve the AI for each faction". Three games were
+played by hand as the Humans against the Goblin AI, two as the Goblins,
+and the lab. **No rule and no number changed, and the identity stays
+`7r56`.** The Normal AI of a Goblin seat changed in five places
+([section 14.4](#144-the-goblin-normal-ai)). The bar was the user's: "the
+faction is not crazy op or crazy weak and that all the tech branches are
+useful and that units are differentiated from other factions by more than
+stats".
+
+### 14.1 The games
+
+All in text mode against the Normal AI, on Dry Land.
+
+| Game | Played as | Against                 | Map         | Route                                                                      | Result                                                                            |
+| ---- | --------- | ----------------------- | ----------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `a`  | Human     | Goblin (before)         | 14, seed 11 | by the book: Gathering 1, Hunting 3, Marksmanship 8, Scouting 13           | stopped in round 16, losing: 3 cities and 7 units against 6 and 14                |
+| `b`  | Goblin    | Human                   | 14, seed 2  | the mob, then bombs: Scouting 3, Hunting 3, Bomb Chuckers 8, Leadership 14 | stopped in round 16, ahead: 5 cities and 12 units against 5 and 9                 |
+| `c`  | Goblin    | Human, Undead, Dinosaur | 16, seed 5  | Mobility: Hunting 1, Scouting 3, Raiding 9                                 | stopped in round 11, behind: 4 cities and 8 units; the Undead seat 5 and 10       |
+| `gl` | Goblin    | Human                   | the lab     | `LAB_GOBLIN_MID`, two rounds, Ogres and Orc Brutes bought and dug in       | the Human AI massed and did not dive                                              |
+| `a2` | Human     | Goblin (after)          | 14, seed 11 | the counter: Scouting 3, Raiding 7, Hunting 11, Chivalry 16                | stopped in round 17, level: 4 cities, 10 units, income 9 against 4 cities and 13  |
+| `e`  | Human     | Goblin (after)          | 14, seed 9  | by the book: Hunting 1, Marksmanship 4, Forestry 11                        | stopped in round 12, ahead: 7 cities, 15 units, income 13 against 4 cities and 16 |
+
+The numbers after a technology are the rounds it was bought in. "Before"
+and "after" are the Goblin AI before and after section 14.4.
+
+### 14.2 The opening against Humans
+
+**The verdict: a wanted blowout with a counter, and not too strong on a
+map that is fair. No rule was changed.** Three things were found.
+
+**1. Seed 11 is not a fair map.** A hand-played Human had lost on it five
+times in five games, and lost a sixth (`a`). Both chests of that map lie
+within two tiles of the Goblin capital, and none near the Human one. The
+Goblin seat opened the first in round 1 (5 Coins, which paid for its
+second technology) and the second in round 2 (a free Wolf Rider): 8 Coins
+of value on top of an income of 11 in its first three rounds. It had four
+units in round 2 and two Wolf Riders beside the contested village in
+round 4. Of seeds 1 to 20 on this board, seed 11 is the only one with two
+chests beside one capital; seeds 4, 6, 7, 9, 10, 13, 14, and 19 have none
+within three tiles of either
+(`probe-chests.mts` in the scratch folder of the pass).
+
+**2. On a fair map the Human is ahead.** On seed 9 (`e`) the Human, played
+by the book, owned five cities in round 7 and seven in round 11, with 15
+units and an income of 13 against four cities and 16 units. Three
+villages went to level 2 in one turn for nothing (two hunts each: 4 Coins,
+and a Stockpile of 4 or a free Raider back). The Goblin AI lost a
+diagnostic match on seed 4 to the Human AI, eliminated in round 21 before
+the change and in round 25 after it (section 14.4).
+
+**3. On seed 11 itself the Human holds with the counter.** Game `a` was
+lost by the book: the Wolf Rider rush of rounds 4 to 6 was beaten level
+(two Wolf Riders and four Goblins for one Fighter), and then four Bomb
+Chuckers arrived (3 Coins each). A bomb deals a Fighter 5 or 6 from two
+tiles and every unit beside it 3, and came from tiles the Human had not
+explored: eight of ten losses, three of them in one turn. Marksmen behind
+Fighters is the wrong answer to bombs: the units stand together. Game `a2`
+was played on the same seed against the improved AI with the answer:
+
+- **Raiders with Raiding.** A charging Raider kills a Goblin, a Wolf
+  Rider, or a Bomb Chucker in one attack and escapes. Four Bomb Chuckers,
+  eight Goblins, and two Wolf Riders died for a Fighter and five Raiders.
+  The Raider reaches three tiles, as far as a Bomb Chucker that moves and
+  throws: whoever steps into the other's reach is struck first.
+- **A slot and a free Raider from every city.** Two fruits or two hunts
+  take a village to level 2 (4 Coins, a third unit slot, a free Raider).
+  With three cities the Human of `a` held 6 or 7 units with Coins left
+  over while the Goblin seat held 9 to 12; in `a2` every city was at level
+  2 by round 12.
+- **Units apart.** Nothing beside a garrison that a bomb can reach.
+- In round 17 the game was level (4 cities each, 10 units and an income of
+  9 against 13 units), where `a` stood at 3 cities and 8 units against 6
+  and 14 in round 15. A Knight (Chivalry, bought in round 16) kills every
+  Goblin unit but the Orc Brute and the Ogre and rides on.
+
+**What the earlier evidence called bodies** is three things, and none is
+out of line. The free Wolf Rider of a level-2 city is the Humans' free
+Raider. The 1-Coin Goblin dies to every attack, so a Fighter (2 Coins)
+kills one a turn without loss; what it buys is a turn on a contested
+center (`b`: a Goblin a turn on one center for five turns, each of which
+took the enemy's attack of that turn). The extra unit slot of every Goblin city (Warrens) is the
+real difference in rounds 6 to 10, and the Human answer is the level-2
+village above.
+
+**Left for the user:** a chest beside a capital decides an opening
+whoever owns it (5 Coins is a turn and a half of income in round 1, a free
+unit two turns). Chests could keep three tiles from a capital, or seed 11
+could stop being the benchmark map.
+
+### 14.3 The questions
+
+**The Ogre at Armoury.** Wanted, and it stays. One Ogre beside a target
+gives every other Goblin unit +2 (a Goblin deals a Champion 9 and lives
+where it deals 3 and dies alone), and it is one of the two Goblin units a
+Knight does not kill (12 of 16). It needs three technologies (21 Coins
+with one city, 39 with four), so by hand it is a round-15 unit. The
+AI now researches it third (section 14.4).
+
+**The Orc Brute at Fortification.** Not bought by hand in two games: the
+Human AI fielded no Knight before round 16 and the Brute cannot attack
+after it moves. It is worth its two technologies (12 Coins with one city)
+against Knights and Raiders and for nothing else: a Knight deals it 11 of
+15 and its Overrun ends; a charging Raider deals it 7 and takes 5; it is
+Blast-proof beside its own Bomb Chuckers. A Goblin player who meets
+neither skips the branch, and that is the designer's placement working as
+intended: a counter technology. The AI now buys it when it sees them.
+
+**Plunder.** Not bought: with four cities Roads cost 13 Coins and Plunder
+18 on an income of 7 (`c`). The numbers of this pass agree with the last:
+a Goblin seat kills about one unit a turn in a war (8 kills in rounds 6 to
+16 of `b`; the AI 10 in 15 rounds of `a`), so Plunder pays 2 Coins a turn
+where land trade pays a Human seat with five linked cities 5. **3 Coins a
+kill does not mend it** (3 a turn, for 31 Coins of research). The price
+and the place are the problem, not the rate. Two changes would put it in
+reach, both the user's call because they change a tree: Plunder at Raiding
+(tier 2, with Pillage and Charge), or Plunder as it is with 3 Coins a kill
+and Raiding as its prerequisite in place of Roads.
+
+**One best unit?** No. The Bomb Chucker is the best buy of rounds 8 to 15
+against Humans (3 Coins, 5 or 6 from two tiles and 3 beside), and it dies
+to one charge, hits nothing beside itself (it cannot throw at a
+neighbour), and hurts its own side (the player of `b` had to move a Goblin away before a
+throw; the AI killed one of its own Goblins with splash in `a`). Against the Undead it is the answer to Zombies and
+the Skeleton is the answer to it (section 13). Goblins take the villages
+and hold centers; Wolf Riders make the first kills; the Warboss turned two
+bombs into 53 damage in one turn of `b` (10 and 7 to a Marksman, 9 to each
+of four units beside it).
+
+**The branches no Goblin player buys.**
+
+| Technology  | Seen                                                                                                               | Worth its price as a Goblin?                                                                                                                                                          |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Farming     | not bought. Hunts and fruit made every level 2; a Farm is 5 Coins for 2                                            | On Fertile Ground, as for every faction. Nothing Goblin about it, and nothing wrong                                                                                                   |
+| Milling     | not looked at (left alone by ruling)                                                                               |                                                                                                                                                                                       |
+| Pathfinding | not bought. In `c` Forest ended five of a Wolf Rider's Moves in ten rounds, and a charge needs a Move of two tiles | Only to a player who already owns Bomb Chuckers. A Mobility player, whose Wolf Riders need it, is three technologies away. Forest march for the Wolf Rider at Raiding would mend that |
+| Explosives  | not bought. A Kaboom already destroys a Field Defense, and a bomb's splash ignores Walls and cover                 | Least of any faction: Breach repeats what blasts do. Its Goblin use is Blast Mountain (5 damage around a Mountain for 3 Coins)                                                        |
+
+### 14.4 The Goblin Normal AI
+
+Read in `a`, in two diagnostic matches against the Human AI (seeds 4 and
+11, 14 x 14, 25 rounds), and on recorded positions of both. Details and
+function names:
+[Normal AI, step two of the Goblin pass](../architecture/NORMAL_AI.md#step-two-of-the-goblin-pass-pulp_wars-w4923).
+
+**What it does well.** It spends every Coin every turn (0 or 1 left in
+thirteen of fifteen rounds of `a`). It masses its Bomb Chuckers and throws
+from two tiles, the wounded target first. It grows its villages with
+hunts.
+
+**What was wrong, and is corrected.**
+
+- _Its combined kills did not count Gang Up._ A kill by several units was
+  planned from what each deals alone. Two Goblins beside a full Fighter
+  deal 3 each alone and 6 each together, so no kill was planned, one of
+  them attacked, and the other walked up afterwards. **Now** the plan
+  counts the Gang Up the units give each other, the helpers move beside
+  the target first, and the first blow waits for them. On the recorded
+  position of seed 4, round 8 (a Fighter on the seat's own center), two
+  Goblins kill it for 6 and 6 where one attacked another unit for 3 and
+  the city fell. The kill of a unit that holds a city the seat has not the
+  numbers for is planned too when two or more units make it.
+- _Single Goblins walked at the enemy._ A unit that one enemy can reach
+  counted as supported. **Now** a Goblin, a Wolf Rider, or an Ogre does
+  not step beside an enemy unit where it would die unless another unit of
+  its side stands beside that enemy, has it in range, or can still come
+  into range of it this turn (a Bomb Chucker behind counts: the Goblin in
+  front stands on its firing tile), and does not walk alone into a reach
+  that kills it.
+- _No Orc Brute against Knights._ The Orc Brute was third in the research
+  order and came in round 18 or later. **Now** its technology is the next
+  one as soon as two Raiders are in sight, and is bought before the units
+  with a Knight in sight.
+- _The Ogre in round 21 to 27, and no growth technology._ **Now** the Ogre
+  is third in the order (Bomb Chucker, Wolf Rider, Ogre, Orc Brute, Rocket
+  Cart, Warboss, Scrap Buggy), which puts Engineering and its Mines in
+  round 12 to 14.
+- _Goblins only on the defensive._ A threatened city trained its garrison
+  every turn, as a Human seat's did. **Now** the rule of step two of the
+  Human pass holds for a Goblin seat too: a Bomb Chucker while the army is
+  short of them, the body with an enemy within two tiles of the center.
+
+**Before and after.** Not a balance measurement: the two diagnostic
+matches (14 x 14, 25 rounds) and the hand-played game on seed 11, read for
+what the Goblin seat does.
+
+| Where                           | Before                                                                                             | After                                                                                                                                             |
+| ------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Humans against Goblins, seed 4  | eliminated in round 21; 21 attacks, 4 with Gang Up, 4 alone at a loss; two Bomb Chuckers trained   | eliminated in round 25; 24 attacks, 9 with Gang Up, 3 alone at a loss                                                                             |
+| Humans against Goblins, seed 11 | seven cities to two or three in round 25 (the run of the Human pass)                               | the Human seat eliminated in round 24; 34 attacks, 13 with Gang Up, 1 alone at a loss; Armoury in round 16, an Ogre in 17, three Orc Brutes in 19 |
+| The hand-played Human, seed 11  | `a`: 21 attacks, 3 with Gang Up, 3 alone at a loss; Bomb Chuckers round 5, Scouting 9, the root 15 | `a2`: 15 attacks, 8 with Gang Up, 1 alone at a loss; the root in round 10 and Fortification in 15, before Scouting, with Raiders in sight         |
+
+No error and no stall in any of them.
+
+**Seen and left.**
+
+- A unit already beside an enemy and lost anyway still attacks alone
+  (3 for a Goblin). A Kaboom would deal 5; the rule that a Kaboom needs a
+  kill or two enemies was not touched.
+- The seat cannot see a unit on a tile it has not explored, and a Goblin
+  has a Sight of one tile: several "lone" attacks in `e` were a step onto
+  a tile from which the enemy first showed.
+- On seed 4 the seat is boxed in by Mountains with three cities and at
+  most ten units (its unit limit) and is eliminated either way. With
+  Raiders in sight it now buys the root and Fortification there, and does
+  not come to Engineering, which is what that land wants.
+- In `a2` and `e` the seat stepped single Goblins forward inside the reach
+  of Raiders and Marksmen from tiles already inside it.
+
+### 14.5 Open, for the user
+
+1. **Chests beside a capital** (section 14.2): keep them three tiles
+   away, or retire seed 11 as the benchmark.
+2. **Plunder** (section 14.3): at Raiding, or behind Raiding at 3 Coins.
+   The rate alone does not mend it.
+3. **Pathfinding for a Mobility player**: Forest march for the Wolf Rider
+   (and the Human Raider and Knight, question 3 of the Human pass) at
+   Raiding.
+4. **Explosives** gives a Goblin seat nothing its blasts do not already
+   do.
+5. **Human Field Defense at the root** (the Human pass's fix (a)) is not
+   needed for the Goblin matchup by the evidence of this pass: the answer
+   to bombs is distance, and a Field Defense is destroyed by a Kaboom.
+6. **Both free Scouts Raiders of `a2` died on the turn they arrived**: a
+   reward unit appears on the enemy's side of its city and cannot move.
+   That is true for every faction's free unit.
+
+### 14.6 For the passes that follow
+
+- **The Undead against Goblins.** A Goblin unit that attacks a Zombie hand
+  to hand is Bitten and rises as a Zombie when it dies, and a Goblin a
+  Zombie kills rises too (`c`: a Wolf Rider and a Goblin in two rounds).
+  The new mob rule sends two or three Goblin units at one target: against
+  a Zombie that is two or three Bitten units. The Undead pass should look
+  at whether the Goblin AI feeds an Undead seat that way, and from the
+  Undead side whether a Skeleton line dies to mobs (a Goblin with two
+  helpers kills a full Skeleton in one attack: 10).
+- **The Undead AI** took a village from a Wolf Rider with one Skeleton and
+  built a Field Defense under a Zombie and walked the Zombie off it in the
+  same turn (`c`, round 8). The Human AI did the same twice in `b`.
+- **Seeds.** Check the chests before choosing a benchmark map.
+
+### 14.7 Tests
+
+`tests/unit/ruleset-v7-goblin-step2.test.ts`: the identity is unchanged;
+a helper counts as the engine counts it (an Ogre 2, a bomb none); two
+Goblins kill a full Fighter for 6 and 6, the second moving beside it
+before the first strikes; an Ogre comes beside a Champion, the Goblin
+strikes at +2 for 9, and the Ogre kills; the recorded position of seed 4,
+round 8 (`tests/fixtures/ruleset-v7-goblin-mob-kill.json`) is won back
+with two attacks at +1; one Goblin does not walk up to a Fighter, two do, a
+Wolf Rider that lives through it does, a Goblin that kills does, and a
+Human seat is as it was; the research order; one Raider in sight changes
+nothing, two make the Orc Brute's technology the next one, a Knight makes
+it the next purchase, and a seat that owns it or does not own Bomb
+Chuckers yet keeps its order; the garrison rule of a Goblin seat yields to
+a Bomb Chucker.
+
+**Pins that moved**, each with a note at the test, because a Goblin seat
+of the Normal AI plays differently (no map and no PRNG digest moved):
+
+- the Pangea and Archipelago pins of the curiosities parity matches
+  (`tests/unit/ruleset-v7-curiosities.test.ts`: the command and event
+  digests; 13 rounds each still; Dry Land, Continents, and Lakes are
+  unchanged);
+- the Goblin breakthrough lab against the defender that gives ground: the
+  capital falls in round 6 (7) (`tests/unit/ruleset-v7-tuning-7.test.ts`);
+- the research order of a Goblin seat where a test states it
+  (`ruleset-v7-goblin-pass`, `ruleset-v7-martian-pass`,
+  `ruleset-v7-undead-pass`, `ruleset-v7-tuning-6` with the order of the
+  technologies, and `ruleset-v7-industry-reshuffle`: a Goblin seat with
+  the root goes on to Engineering and Armoury before Fortification);
+- `ruleset-v7-human-step2`: a Goblin seat is no longer among the factions
+  whose garrison rule never yields;
+- the source audits: four more land-form tests in `src/ai/v7.ts` and one
+  in `src/ai/v7-goblin.ts` (`ruleset-v7-dinosaur-form-audit`), and the
+  six new readers classified (`tests/fixtures/v7-unit-reader-classes.ts`,
+  `tests/fixtures/v7-kind-reader-classes.ts`).

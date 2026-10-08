@@ -203,7 +203,9 @@ describe("1. the garrison rule yields to a ranged unit", () => {
     expect(
       armyGarrisonYieldsToRangedV7("ORIGINAL", counts(5, 0, 0), false),
     ).toBe(false);
-    for (const faction of ["UNDEAD", "GOBLIN", "MARTIAN", "DINOSAUR"] as const)
+    // (Step two of the Goblin pass, `pulp_wars-w49.23`: a Goblin seat's
+    // yields too; `tests/unit/ruleset-v7-goblin-step2.test.ts`.)
+    for (const faction of ["UNDEAD", "MARTIAN", "DINOSAUR"] as const)
       expect(armyGarrisonYieldsToRangedV7(faction, counts(5, 0, 0), true)).toBe(
         false,
       );

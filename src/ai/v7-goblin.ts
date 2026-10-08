@@ -173,6 +173,57 @@ export function gangUpForPolicyV7(
   return Math.min(maximum, limit, helpers);
 }
 
+/**
+ * Step two of the Goblin pass (`pulp_wars-w49.23`): a unit whose attack
+ * takes Gang Up (a Goblin, a Wolf Rider, an Orc Brute, an Ogre, a Scrap
+ * Buggy, a Rocket Cart; never a Bomb Chucker, and no unit of another
+ * faction).
+ */
+export function gangUpAttackerV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): boolean {
+  return (
+    factionRulesV7(unitFactionV7(view, unit)).gangUpMaximum > 0 &&
+    unitRoleMechanicsV7(view, unit).gangUpLimit > 0
+  );
+}
+
+/**
+ * What a unit beside a target counts for in another unit's Gang Up: its
+ * role's `gangUpWeight` in land form (the Ogre 2), else 1, as in the engine
+ * (`gangUpBonusV7`).
+ */
+export function gangUpHelperWeightV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): number {
+  return unit.form === "LAND"
+    ? unitRoleMechanicsV7(view, unit).gangUpWeight
+    : 1;
+}
+
+/**
+ * The Gang Up `attacker` gets with helpers of the summed weight
+ * `helperWeight` beside its target: the smallest of the faction's maximum,
+ * the role's limit, and the helpers.
+ */
+export function gangUpWithHelpersV7(
+  view: PlayerViewV7,
+  attacker: PublicUnitV7,
+  helperWeight: number,
+): number {
+  if (attacker.form !== "LAND") return 0;
+  return Math.max(
+    0,
+    Math.min(
+      factionRulesV7(unitFactionV7(view, attacker)).gangUpMaximum,
+      unitRoleMechanicsV7(view, attacker).gangUpLimit,
+      helperWeight,
+    ),
+  );
+}
+
 export interface ExplosionChainValueV7 {
   readonly hostileValue: number;
   readonly friendlyValue: number;

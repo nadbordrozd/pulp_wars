@@ -248,6 +248,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-dinosaur.ts::packHuntForPolicyV7": "BOARD",
     "src/engine/v7/reducer.ts::huntedAfterAttackV7": "BOARD",
     "src/ai/v7.ts::armyZombieAloneV7": "BOARD",
+    // Step two of the Goblin pass (`pulp_wars-w49.23`): the own units
+    // beside a target, and the company of a Goblin that goes into contact,
+    // stand on the board.
+    "src/ai/v7.ts::armyGoblinAloneV7": "BOARD",
+    "src/ai/v7.ts::goblinContactCompanyV7": "BOARD",
+    "src/ai/v7.ts::goblinMobHuntV7": "BOARD",
     "src/ai/v7.ts::vampireAttackAcceptableV7": "BOARD",
     // The Undead pass (`pulp_wars-w49.13`): the free tiles a Vampire flies to.
     "src/ai/v7.ts::vampireEscapeTileV7": "BOARD",

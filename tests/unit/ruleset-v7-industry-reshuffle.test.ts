@@ -504,11 +504,27 @@ describe("the Industry reshuffle: the Normal AI", () => {
         tech: "DRILL",
         unlocks: null,
       });
+      // Step two of the Goblin pass (`pulp_wars-w49.23`): a Goblin seat
+      // goes on to Engineering and Armoury (the Ogre, third in its order)
+      // and comes to Fortification after them.
+      const heavy: readonly TechnologyIdV7[] =
+        faction === "GOBLIN" ? ["ENGINEERING", "METALLURGY"] : [];
+      if (faction === "GOBLIN")
+        expect(
+          research(
+            faction,
+            TECHNOLOGY_IDS_V7.filter(
+              (tech) => tech === "DRILL" || before.includes(tech),
+            ),
+          ),
+          faction,
+        ).toMatchObject({ tech: "ENGINEERING" });
       expect(
         research(
           faction,
           TECHNOLOGY_IDS_V7.filter(
-            (tech) => tech === "DRILL" || before.includes(tech),
+            (tech) =>
+              tech === "DRILL" || before.includes(tech) || heavy.includes(tech),
           ),
         ),
         faction,

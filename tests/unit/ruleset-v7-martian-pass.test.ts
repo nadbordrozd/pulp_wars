@@ -1010,10 +1010,11 @@ describe("the Martian pass: Martian seats play the army rules", () => {
     expect(ARMY_RESEARCH_ROLES_V7.GOBLIN).toEqual([
       "MARKSMAN",
       "RAIDER",
+      // Step two of the Goblin pass (`pulp_wars-w49.23`): the Ogre third.
+      "SWORDSMAN",
       "GUARD",
       "CATAPULT",
       "CAPTAIN",
-      "SWORDSMAN",
       "KNIGHT",
     ]);
     expect(armySharesV7("MARTIAN", false)).toEqual({

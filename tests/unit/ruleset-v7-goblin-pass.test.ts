@@ -598,7 +598,7 @@ describe("the Goblin pass: Crash", () => {
 });
 
 describe("the Goblin pass: the Normal AI", () => {
-  it("researches Bomb Chucker, Wolf Rider, Orc Brute, Rocket Cart, Warboss, Scrap Buggy", () => {
+  it("researches Bomb Chucker, Wolf Rider, Ogre, Orc Brute, Rocket Cart, Warboss, Scrap Buggy", () => {
     // The correction pass: the Orc Brute third (it was last, and the first
     // Brute of a hand-played game came in round 20).
     // The ninth unit (`pulp_wars-w49.17`, 7r55): the Ogre after the
@@ -606,10 +606,11 @@ describe("the Goblin pass: the Normal AI", () => {
     expect(ARMY_RESEARCH_ROLES_V7.GOBLIN).toEqual([
       "MARKSMAN",
       "RAIDER",
+      // Step two of the Goblin pass (`pulp_wars-w49.23`): the Ogre third.
+      "SWORDSMAN",
       "GUARD",
       "CATAPULT",
       "CAPTAIN",
-      "SWORDSMAN",
       "KNIGHT",
     ]);
     // The Human seat: the Swordsman third (it was fifth).

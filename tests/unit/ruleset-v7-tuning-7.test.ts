@@ -1718,9 +1718,11 @@ describe("the defects of the round-6 hand play", () => {
  * the Undead attacker in round 8 (7 before): its Vampires strike and fly
  * back (Escape), so it loses 8 units where it lost more and takes a
  * round longer. Its correction: round 7 again (its Liches do not plague
- * without Pestilence and its Ghouls have Carrion).
+ * without Pestilence and its Ghouls have Carrion). Step two of the Goblin
+ * pass (`pulp_wars-w49.23`): the Goblin attacker in round 6 (7 before): its
+ * combined kills count Gang Up and its helpers come up before the blow.
  */
-const RETREAT_ROUNDS = [5, 7, 7] as const;
+const RETREAT_ROUNDS = [5, 6, 7] as const;
 
 describe("the bounded lab runs", () => {
   // The `RETREAT` script of tests/fixtures/v7-breakthrough-lab.ts: the

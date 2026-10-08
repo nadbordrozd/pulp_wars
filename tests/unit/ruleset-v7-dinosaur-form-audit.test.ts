@@ -605,7 +605,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // defends no center).
     "src/ai/v7-curiosities.ts": 1,
     "src/ai/v7-dinosaur.ts": 2,
-    "src/ai/v7-goblin.ts": 1,
+    // Step two of the Goblin pass (`pulp_wars-w49.23`): only a land-form
+    // attacker has Gang Up (`gangUpWithHelpersV7`, as the engine's
+    // `gangUpBonusV7`; an Egg makes no attack).
+    "src/ai/v7-goblin.ts": 2,
     "src/ai/v7-ice-folk.ts": 7,
     "src/ai/v7-martian.ts": 2,
     "src/ai/v7-undead.ts": 1,
@@ -637,7 +640,11 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // that stays under a fast unit's eye, the Triceratops's support, and
     // its held Move are rules of land-form units (an Egg and an embarked
     // unit make no Move).
-    "src/ai/v7.ts": 39,
+    // Step two of the Goblin pass (`pulp_wars-w49.23`): the Goblin that
+    // waits for its helpers, the one that goes into contact, and its
+    // company are land-form units (an Egg and an embarked unit neither
+    // strike beside a target nor walk up to one).
+    "src/ai/v7.ts": 43,
     // Tuning 5: the army count takes land-form units only (an Egg and an
     // embarked unit are in no fighting class).
     "src/ai/v7-army.ts": 1,

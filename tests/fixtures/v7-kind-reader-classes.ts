@@ -186,6 +186,12 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // Step two of the Human pass (`pulp_wars-w49.22`): whether the seat that
   // chooses a city's training is a Human one (the viewer's faction).
   "src/ai/v7.ts::armyChoosesWithinFloorV7": "SEAT",
+  // Step two of the Goblin pass (`pulp_wars-w49.23`): whether the seat
+  // that decides is a Goblin one (the viewer's faction), and the Orc
+  // Brute's technology in that seat's own tree.
+  "src/ai/v7.ts::goblinMobSeatV7": "SEAT",
+  "src/ai/v7.ts::armyBlockerV7": "SEAT",
+  "src/ai/v7.ts::armyBlockerResearchV7": "SEAT",
   "src/ai/v7.ts::armyShootsBiterFirstV7": "SEAT",
   "src/ai/v7.ts::armyCureDueV7": "SEAT",
   "src/ai/v7.ts::armyCureResearchV7": "SEAT",

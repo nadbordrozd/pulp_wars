@@ -852,10 +852,11 @@ describe("research toward the army", () => {
       GOBLIN: [
         "MARKSMAN",
         "RAIDER",
+        // Step two of the Goblin pass (`pulp_wars-w49.23`): the Ogre third.
+        "SWORDSMAN",
         "GUARD",
         "CATAPULT",
         "CAPTAIN",
-        "SWORDSMAN",
         "KNIGHT",
       ],
       // The Martian pass (`pulp_wars-w49.14`): the Shield Projector, the
@@ -927,18 +928,19 @@ describe("research toward the army", () => {
     // Goblins: the Bomb Chucker and the Wolf Rider, the Orc Brute (the
     // correction of the Goblin pass; it was last), then the Rocket Cart,
     // the Warboss, and the Scrap Buggy.
+    // Step two of the Goblin pass (`pulp_wars-w49.23`): the Ogre third (the
+    // root, Engineering, Armoury), and Fortification one step behind it.
     expect(researchOrder(oneCity("GOBLIN"))).toEqual([
       "HUNTING",
       "MARKSMANSHIP",
       "SCOUTING",
       "DRILL",
+      "ENGINEERING",
+      "METALLURGY",
       "FORTIFICATION",
       "FORESTRY",
       "SAWMILLING",
       "ADMINISTRATION",
-      // The ninth unit (7r55): the Ogre, at Metallurgy.
-      "ENGINEERING",
-      "METALLURGY",
       "RAIDING",
       "CHIVALRY",
     ]);

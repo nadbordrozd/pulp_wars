@@ -495,13 +495,17 @@ describe("headless parity and the CLI flag", () => {
           // b030da…af4c).
           // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
           // 4bc504…6f14).
-          "ed5934a6f131009afb55e735c25bb4792051af0045b55dfeb659071a09e76bf4",
+          // Step two of the Goblin pass (`pulp_wars-w49.23`): recomputed (was
+          // ed5934…6bf4).
+          "c99053334c9a3b5745fbb2a088b597882dff8aeb3d480488d13843b018be81a8",
         eventHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // 6f55cd…6484).
           // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
           // 3d8b8f…1845).
-          "bde7a3688953d033f12be9f9bf873dd1eb8d64f5e17ca011f70a95e51ae8b117",
+          // Step two of the Goblin pass (`pulp_wars-w49.23`): recomputed (was
+          // bde7a3…b117).
+          "ac54511f8150efc52b8ee49223e7088bd11491956238d117ee0cd4e18f0e4589",
         mapHash:
           "5b286bbe8cdb2f8a339cd7a74ba219bc2b57a4322370548442b3c8f26bef4ad9",
         finalPrngHash:
@@ -550,11 +554,15 @@ describe("headless parity and the CLI flag", () => {
         commandHash:
           // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
           // 45d7b1…eb56).
-          "7d40e50f250c659aed4ac4c56207b906d20708618b356e5f2c69f56bf040b72f",
+          // Step two of the Goblin pass (`pulp_wars-w49.23`): recomputed (was
+          // 7d40e5…b72f).
+          "57e0368dcd6b08c3d8e407f70e2f3a02a4bbcbd8355a7de13ffb6974e9f16414",
         eventHash:
           // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
           // a2cb57…32ab).
-          "e15c18abf01dec86314b3b03af6dda503602217b441f8cdb9f1de494b6752a2b",
+          // Step two of the Goblin pass (`pulp_wars-w49.23`): recomputed (was
+          // e15c18…2a2b).
+          "696f38f3b5ee50dc1b922895d6107c154881ced9a6bb0b8570af23ac047073b8",
         mapHash:
           "be112bd78cfeb3f5ae72a6b67f8f91bd45b81814c5d0cdad9abe7f31f221be5d",
         finalPrngHash:

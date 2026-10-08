@@ -306,7 +306,10 @@ import {
   deathBlastDamageV7,
   explosionChainValueV7,
   friendlyFireBomberV7,
+  gangUpAttackerV7,
   gangUpForPolicyV7,
+  gangUpHelperWeightV7,
+  gangUpWithHelpersV7,
   goblinMatchForPolicyV7,
   hostileKaboomExposureV7,
   hypotheticalBlastV7,
@@ -3633,6 +3636,13 @@ function armyResearchTargetV7(
       if (cure.technology !== null && cure.cost !== null)
         chosen = toward(cure.technology, "CAPTAIN") ?? chosen;
     }
+    // Step two of the Goblin pass (`pulp_wars-w49.23`): the Orc Brute
+    // first once Knights or Raiders are in sight (`armyBlockerV7`).
+    if (armyBlockerV7(context) !== "NO") {
+      const blocker = effectiveRoleRuleV7("GUARD", faction);
+      if (blocker.technology !== null)
+        chosen = toward(blocker.technology, "GUARD") ?? chosen;
+    }
     let unlocked = 0;
     for (const role of ARMY_RESEARCH_ROLES_V7[faction] ?? []) {
       if (chosen !== null) break;
@@ -4533,6 +4543,78 @@ function armyCureResearchV7(
   );
 }
 
+/** Hostile fast melee units in sight that make the Orc Brute wanted. */
+const ARMY_BLOCKER_FAST_HOSTILES_V7 = 2;
+
+/**
+ * Step two of the Goblin pass (`pulp_wars-w49.23`): the blocker. A Goblin
+ * seat that cannot train its Orc Brute and can train the first unit of its
+ * order (the Bomb Chucker) researches the Orc Brute's technology (the root,
+ * then Fortification) next:
+ *
+ * - `URGENT` with a hostile land unit with Overrun in sight (a Knight, a
+ *   Scrap Buggy): like the cure, the technology is bought as soon as the
+ *   Coins are there, before the units, also in a war, and the Coins are
+ *   kept for it (`armyBlockerResearchV7`);
+ * - `WANTED` with two hostile melee units in sight that move two tiles or
+ *   more (Raiders, Wolf Riders, Raptors): it is the next technology, on the
+ *   seat's ordinary research tempo.
+ *
+ * The Orc Brute is third in the order, behind the Wolf Rider. A Knight
+ * kills every other Goblin unit but the Ogre in one attack and rides on,
+ * and a charging Raider every Bomb Chucker and Wolf Rider. In a hand-played
+ * game no Orc Brute stood in a Goblin army by round 17 and three Knights
+ * made nine kills in four rounds.
+ */
+function armyBlockerV7(context: PolicyContextV7): "NO" | "WANTED" | "URGENT" {
+  if (!goblinMobSeatV7(context)) return "NO";
+  const view = context.view;
+  const faction = view.viewer.faction;
+  const owned = view.viewer.researchedTechs;
+  const guard = effectiveRoleRuleV7("GUARD", faction);
+  if (
+    guard.technology === null ||
+    guard.cost === null ||
+    !factionUnlocksRoleV7(faction, "GUARD") ||
+    owned.includes(guard.technology)
+  )
+    return "NO";
+  const first = (ARMY_RESEARCH_ROLES_V7[faction] ?? [])[0];
+  const firstTechnology =
+    first === undefined ? null : effectiveRoleRuleV7(first, faction).technology;
+  if (firstTechnology !== null && !owned.includes(firstTechnology)) return "NO";
+  let fast = 0;
+  for (const unit of armyHostilesV7(context)) {
+    if (unitRoleRuleV7(view, unit).abilities.includes("OVERRUN"))
+      return "URGENT";
+    const facts = publicCombatFacts(view, unit, context.lookup);
+    if (
+      facts.move >= 2 &&
+      facts.maximumRange <= 1 &&
+      facts.abilities.includes("ATTACK") &&
+      facts.attack2 > 0
+    )
+      fast += 1;
+  }
+  return fast >= ARMY_BLOCKER_FAST_HOSTILES_V7 ? "WANTED" : "NO";
+}
+
+/**
+ * The blocker, the purchase: `tech` is the first step to the Orc Brute's
+ * technology of a seat whose blocker is urgent (`armyBlockerV7`).
+ */
+function armyBlockerResearchV7(
+  context: PolicyContextV7,
+  tech: TechnologyIdV7,
+): boolean {
+  if (armyBlockerV7(context) !== "URGENT") return false;
+  const guard = effectiveRoleRuleV7("GUARD", context.view.viewer.faction);
+  return (
+    guard.technology !== null &&
+    researchChain(context.view, guard.technology)[0] === tech
+  );
+}
+
 /**
  * A step off an own center so that its city can train: the city has a free
  * slot and its action, the seat has the Coins for its basic unit, and the
@@ -5141,6 +5223,173 @@ function armySupportedV7(
   return support >= pressure;
 }
 
+/**
+ * Step two of the Goblin pass (`pulp_wars-w49.23`): a Goblin seat's unit
+ * whose attack takes Gang Up does not make a routine Move alone to a tile
+ * where the visible enemies kill it. `armySupportedV7` counts a unit against
+ * one enemy as supported, which is right for a Fighter and wrong for a 6-HP
+ * Goblin that one attack kills: in a hand-played game single Goblins walked
+ * up to two Fighters in four turns, attacked for 3, and died.
+ *
+ * Next to an enemy unit the company is `goblinContactCompanyV7`. Elsewhere
+ * it is another own fighting land unit on a tile beside `to`, or one within
+ * `ARMY_SUPPORT_RADIUS_V7` of it that has not moved, may attack after a
+ * Move, and does not hold a center (it can still come along).
+ */
+function armyGoblinAloneV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  danger: number,
+): boolean {
+  if (!goblinMobSeatV7(context) || danger < actor.hp) return false;
+  const view = context.view;
+  if (!gangUpAttackerV7(view, actor)) return false;
+  // (Onto an own center it is the garrison.)
+  if (context.lookup.citiesByKey.get(coordKey(to))?.ownerId === view.viewer.id)
+    return false;
+  if (armyHostilesV7(context).some((unit) => distance(unit.at, to) === 1))
+    return !goblinContactCompanyV7(context, actor, to);
+  return !view.units.some((unit) => {
+    if (
+      unit.id === actor.id ||
+      unit.ownerId !== view.viewer.id ||
+      unit.form !== "LAND"
+    )
+      return false;
+    const gap = distance(unit.at, to);
+    if (gap > ARMY_SUPPORT_RADIUS_V7) return false;
+    const facts = publicCombatFacts(view, unit, context.lookup);
+    // (A unit that fights hand to hand: a Bomb Chucker two tiles behind
+    // is no company for the Goblin in front of it.)
+    if (
+      !facts.abilities.includes("ATTACK") ||
+      facts.attack2 <= 0 ||
+      facts.minimumRange > 1
+    )
+      return false;
+    return (
+      gap <= 1 ||
+      (!unit.activation.moved &&
+        unitMayActAfterMoveV7(view, unit) &&
+        !context.lookup.citiesByKey.has(coordKey(unit.at)))
+    );
+  });
+}
+
+/**
+ * Step two of the Goblin pass: whether a unit that ends its Move on `to`,
+ * next to an enemy unit, has company there. For one of the enemy units it
+ * would touch: another own unit already stands beside it (the attack has
+ * Gang Up); or another own unit has that enemy in its range now; or
+ * another own unit that has not moved, may attack after a Move, and does
+ * not hold a center can still be offered a tile from which it has (a tile
+ * beside the enemy for a unit that fights hand to hand, a tile at two for
+ * a Bomb Chucker). The tile the mover leaves counts as such a tile: the
+ * Goblins of a column stand on the firing tiles of the Bomb Chuckers
+ * behind them.
+ */
+function goblinContactCompanyV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): boolean {
+  const view = context.view;
+  for (const hostile of armyHostilesV7(context)) {
+    if (distance(hostile.at, to) !== 1) continue;
+    for (const unit of view.units) {
+      if (
+        unit.id === actor.id ||
+        unit.ownerId !== view.viewer.id ||
+        unit.form !== "LAND"
+      )
+        continue;
+      const gap = distance(unit.at, hostile.at);
+      if (gap === 1) return true;
+      const facts = publicCombatFacts(view, unit, context.lookup);
+      if (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0) continue;
+      const reaches = (range: number): boolean =>
+        range >= facts.minimumRange && range <= facts.maximumRange;
+      if (reaches(gap) && primaryReadyForPolicyV7(unit)) return true;
+      if (
+        unit.activation.moved ||
+        !unitMayActAfterMoveV7(view, unit) ||
+        !primaryReadyForPolicyV7(unit) ||
+        context.lookup.citiesByKey.has(coordKey(unit.at))
+      )
+        continue;
+      if (
+        distance(unit.at, actor.at) <= facts.move &&
+        reaches(distance(actor.at, hostile.at))
+      )
+        return true;
+      for (const at of context.lookup.moveDestinationsByUnit.get(unit.id) ?? [])
+        if (!same(at, to) && reaches(distance(at, hostile.at))) return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Step two of the Goblin pass: a Goblin goes into contact with company. A
+ * Move of a Goblin seat's melee unit whose attack takes Gang Up, that may
+ * attack after it, and that has no Overrun (a Goblin, a Wolf Rider, an
+ * Ogre) is not made when it ends next to an enemy unit from a tile next to
+ * none, the visible enemies kill the unit there, and it has no company
+ * (`goblinContactCompanyV7`). Whatever offers the Move: a committed position
+ * sent its units into contact one a turn where only one tile was in reach,
+ * and each struck alone for 3 and died. Exempt: a hunter's Move of a
+ * combined kill, a Move after which the unit's own attack kills, a Move to a
+ * Kaboom worth making (`kaboomSetupValueV7`), and a
+ * Move onto a center or a village.
+ */
+function armyGoblinContactHeldV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  if (!goblinMobSeatV7(context)) return false;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const to = command.path.at(-1);
+  if (
+    actor === undefined ||
+    to === undefined ||
+    actor.ownerId !== view.viewer.id ||
+    actor.form !== "LAND" ||
+    !gangUpAttackerV7(view, actor) ||
+    !unitMayActAfterMoveV7(view, actor)
+  )
+    return false;
+  const facts = publicCombatFacts(view, actor, context.lookup);
+  if (facts.maximumRange > 1 || facts.abilities.includes("OVERRUN"))
+    return false;
+  const hostiles = armyHostilesV7(context);
+  if (
+    !hostiles.some((unit) => distance(unit.at, to) === 1) ||
+    hostiles.some((unit) => distance(unit.at, actor.at) === 1)
+  )
+    return false;
+  const tile = findPublicTileV7(view, to);
+  if (
+    context.lookup.citiesByKey.has(coordKey(to)) ||
+    (tile?.explored === true && tile.site !== null)
+  )
+    return false;
+  if (visibleImmediateDamage(view, actor, to, context) < actor.hp) return false;
+  const plan = huntOfV7(context, actor.id);
+  if (
+    plan !== undefined &&
+    plan.hunters.get(actor.id) === false &&
+    distance(to, plan.target.at) === 1
+  )
+    return false;
+  if (armyEngagementsForV7(context, actor).get(coordKey(to))?.kills === true)
+    return false;
+  // (Nor the Move to a Kaboom worth making: it is why the unit goes.)
+  if (kaboomSetupValueV7(context, actor, to) > 0) return false;
+  return !goblinContactCompanyV7(context, actor, to);
+}
+
 /** The own units with an offered attack now. */
 function armyOfferedAttackersV7(context: PolicyContextV7): ReadonlySet<UnitId> {
   if (context.armyAttackers !== null) return context.armyAttackers;
@@ -5182,14 +5431,11 @@ function armyHuntTargetsV7(
           ) &&
           // Tuning 8: the holders of a city the seat has not the numbers
           // for are left alone until it has (the front gate).
-          !(
-            assault !== null &&
-            !context.naval.active &&
-            !armyWeakGarrisonV7(context, target) &&
-            assault.positionByHostile.get(target.id)?.mode === "NONE" &&
-            assault.positionByHostile.get(target.id)?.heldCity === true &&
-            !inOwnTerritoryForPolicyV7(view, view.viewer.id, target.at)
-          ),
+          // Step two of the Goblin pass: a Goblin seat still plans the
+          // kill of such a holder by two or more units together
+          // (`goblinMobHuntV7`; `huntPlansV7` takes no other plan for it).
+          (goblinMobSeatV7(context) ||
+            !armyHuntGatedV7(context, assault, target)),
       )
       .map((target) => ({
         target,
@@ -5206,6 +5452,27 @@ function armyHuntTargetsV7(
       )
       .slice(0, ARMY_HUNT_TARGETS_V7)
       .map((entry) => entry.target)
+  );
+}
+
+/**
+ * Tuning 8 (`pulp_wars-w49.11`): a holder of a city the seat has not the
+ * numbers for (the front gate): its position has mode `NONE`, holds a city,
+ * and stands outside the seat's own territory; not a weak garrison.
+ */
+function armyHuntGatedV7(
+  context: PolicyContextV7,
+  assault: ArmyAssaultV7 | null,
+  target: PublicUnitV7,
+): boolean {
+  const view = context.view;
+  return (
+    assault !== null &&
+    !context.naval.active &&
+    !armyWeakGarrisonV7(context, target) &&
+    assault.positionByHostile.get(target.id)?.mode === "NONE" &&
+    assault.positionByHostile.get(target.id)?.heldCity === true &&
+    !inOwnTerritoryForPolicyV7(view, view.viewer.id, target.at)
   );
 }
 
@@ -5624,7 +5891,9 @@ function armyMoveValueV7(
         // unit still does not walk to its death under a hostile melee unit.
         (fragileUnit ? danger < actor.hp || meleeReach === 0 : true) &&
         // The Undead pass: a Zombie goes in with company, never alone.
-        !armyZombieAloneV7(context, actor, to, danger)
+        !armyZombieAloneV7(context, actor, to, danger) &&
+        // Step two of the Goblin pass: nor a Goblin to its death.
+        !armyGoblinAloneV7(context, actor, to, danger)
       )
         return {
           priority: Math.max(priority, ARMY_COMMIT_ADVANCE_PRIORITY_V7),
@@ -5757,7 +6026,9 @@ function armyMoveValueV7(
   // lethal reach (tuning 7: where a hostile melee unit reaches it; the
   // enemy's shots alone do not stop a committed army).
   if (mode === "COMMIT")
-    return fragile && danger >= actor.hp && meleeReach > 0
+    return (fragile && danger >= actor.hp && meleeReach > 0) ||
+      // Step two of the Goblin pass: nor a Goblin alone to its death.
+      (!fragile && armyGoblinAloneV7(context, actor, to, danger))
       ? { priority: -1, strategic: 0 }
       : moved;
   if (mode === "STAGE") return { priority: -1, strategic: 0 };
@@ -5775,6 +6046,10 @@ function armyMoveValueV7(
       ? danger >= actor.hp || !armyScreenedV7(context, actor, to)
       : danger * 2 >= actor.hp && !armySupportedV7(context, actor, to)
   )
+    return { priority: -1, strategic: 0 };
+  // Step two of the Goblin pass (`pulp_wars-w49.23`): not alone to its
+  // death (`armyGoblinAloneV7`).
+  if (!fragile && armyGoblinAloneV7(context, actor, to, danger))
     return { priority: -1, strategic: 0 };
   return moved;
 }
@@ -7056,6 +7331,8 @@ function armyWarHoldsResearchV7(
   // is the cure.
   if (armyEconomyResearchV7(context, tech) || armyCureResearchV7(context, tech))
     return false;
+  // Step two of the Goblin pass: nor is the urgent blocker (`armyBlockerV7`).
+  if (armyBlockerResearchV7(context, tech)) return false;
   // The Industry reshuffle (7r56): nor is the defender's last step.
   if (armyDefenderResearchV7(context, tech)) return false;
   // The Dinosaur pass: nor is the slot technology of a crowded Dinosaur
@@ -7177,7 +7454,9 @@ function armyResearchFloorV7(context: PolicyContextV7): number {
     // The Dinosaur pass, correction: and for Wallbreaker.
     (target !== null && armyWallbreakerDueV7(context, target.tech)) ||
     // The Industry reshuffle (7r56): and for the defender's last step.
-    (target !== null && armyDefenderResearchV7(context, target.tech))
+    (target !== null && armyDefenderResearchV7(context, target.tech)) ||
+    // Step two of the Goblin pass: and for the urgent blocker.
+    (target !== null && armyBlockerResearchV7(context, target.tech))
   ) {
     if (target !== null && context.view.viewer.coins < target.cost)
       floor = Math.max(0, target.cost - armyIncomeV7(context));
@@ -8951,6 +9230,10 @@ function isPolicyCandidate(
     )
       return false;
   }
+  // Step two of the Goblin pass (`pulp_wars-w49.23`): a Goblin goes into
+  // contact with company.
+  if (command.kind === "MOVE" && armyGoblinContactHeldV7(context, command))
+    return false;
   // Tuning 6 (`pulp_wars-w49.6`): so does a unit on a village it will
   // capture next turn.
   if (
@@ -9040,6 +9323,9 @@ function isPolicyCandidate(
   }
   // pulp_wars-68k.6: the fire on a single-file front goes to one holder.
   if (command.kind === "ATTACK" && chokepointOffFocusV7(context, command))
+    return false;
+  // Step two of the Goblin pass (`pulp_wars-w49.23`): the helpers first.
+  if (command.kind === "ATTACK" && goblinMobWaitsV7(context, command))
     return false;
   if (command.kind === "ATTACK" && isLowValueAttackV7(context, command)) {
     // pulp_wars-9s0.8: a hunter's share of a planned kill is not low value.
@@ -10343,8 +10629,10 @@ function* sharedCityContextWorkV7(
       withinFloor &&
       (command.kind === "TRAIN" || command.kind === "LAY_EGG") &&
       armyFloorHoldsTrainingV7(context, command);
+    // Step two of the Goblin pass (`pulp_wars-w49.23`): the garrison rule
+    // of a Goblin seat yields too (to a Bomb Chucker).
     const garrisonYields =
-      withinFloor &&
+      (withinFloor || goblinMobSeatV7(context)) &&
       armyCounts !== null &&
       !armyAtTheGatesV7(context, cityId) &&
       armyGarrisonYieldsToRangedV7(
@@ -11176,7 +11464,9 @@ function scoreCommandWithContext(
       armyCureResearchV7(context, command.tech) ||
       // The Industry reshuffle (7r56): and the last step to the defender
       // of a seat whose order begins with it (`armyDefenderResearchV7`).
-      armyDefenderResearchV7(context, command.tech)
+      armyDefenderResearchV7(context, command.tech) ||
+      // Step two of the Goblin pass: and the urgent blocker (`armyBlockerV7`).
+      armyBlockerResearchV7(context, command.tech)
     )
       priority = ARMY_DUE_RESEARCH_PRIORITY_V7;
     strategicValue = Math.max(strategicValue, 100);
@@ -13129,6 +13419,8 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
       readonly tiles: readonly string[];
       /** The tile it strikes from. */
       readonly from: CoordV7;
+      /** The tiles of `tiles`, as coordinates (a hunter that moves in). */
+      readonly places: readonly CoordV7[];
     }[] = [];
     for (const unit of view.units) {
       if (
@@ -13168,6 +13460,7 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
             stays: true,
             tiles: [],
             from: unit.at,
+            places: [],
           });
         continue;
       }
@@ -13175,6 +13468,7 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
       // Map curiosities: a sole city defender never walks to a Monster.
       if (monster !== undefined && soleCityDefenderV7(view, unit)) continue;
       const tiles: string[] = [];
+      const places: CoordV7[] = [];
       let firstTile: CoordV7 | null = null;
       for (const to of movesByUnit.get(unit.id) ?? []) {
         const range = distance(to, target.at);
@@ -13183,6 +13477,7 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
         if (monster !== undefined && facts.maximumRange > 1 && range <= 1)
           continue;
         tiles.push(coordKey(to));
+        places.push(to);
         firstTile ??= to;
       }
       if (firstTile === null) continue;
@@ -13231,7 +13526,14 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
       )
         continue;
       if (damage > 0)
-        candidates.push({ unit, damage, stays: false, tiles, from: firstTile });
+        candidates.push({
+          unit,
+          damage,
+          stays: false,
+          tiles,
+          from: firstTile,
+          places,
+        });
     }
     candidates.sort(
       (left, right) =>
@@ -13245,7 +13547,27 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
     const tiles = new Map<UnitId, string>();
     const usedTiles = new Set<string>();
     let left = target.hp;
-    for (const candidate of candidates) {
+    // Step two of the Goblin pass (`pulp_wars-w49.23`): a Goblin seat
+    // counts the Gang Up its hunters give each other (`goblinMobHuntV7`).
+    const mob =
+      army && goblinMobSeatV7(context)
+        ? goblinMobHuntV7(context, target, candidates)
+        : null;
+    // (A holder behind the front gate: only the kill by two or more.)
+    const gated =
+      army &&
+      goblinMobSeatV7(context) &&
+      armyHuntGatedV7(
+        context,
+        context.chokepoint === null ? armyAssaultV7(context) : null,
+        target,
+      );
+    if (mob !== null && !(gated && mob.hunters.size < 2)) {
+      for (const [id, stays] of mob.hunters) hunters.set(id, stays);
+      for (const [id, tile] of mob.tiles) tiles.set(id, tile);
+      left = 0;
+    }
+    for (const candidate of mob !== null || gated ? [] : candidates) {
       if (left <= 0 || hunters.size >= HUNT_MAXIMUM_HUNTERS_V7) break;
       if (!candidate.stays) {
         const tile = candidate.tiles.find((key) => !usedTiles.has(key));
@@ -13279,6 +13601,169 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
   }
   context.hunts = plans;
   return plans;
+}
+
+/**
+ * Step two of the Goblin pass (`pulp_wars-w49.23`,
+ * docs/product/RULESET_7_TUNING_GOBLIN.md section 14): a Goblin seat that
+ * plays the army rules. Its combined kills count Gang Up, its units strike
+ * after the helpers have come up, and its cheap units do not walk at the
+ * enemy one at a time.
+ */
+function goblinMobSeatV7(context: PolicyContextV7): boolean {
+  return (
+    context.army && context.goblin && context.view.viewer.faction === "GOBLIN"
+  );
+}
+
+/**
+ * Step two of the Goblin pass: the combined kill of a Goblin seat, with the
+ * Gang Up the hunters give each other. The hunt of tuning 5 projected every
+ * hunter's hit as if it struck alone, so two Goblins beside a full Fighter
+ * (3 each alone, 6 each with the other beside the target) were no plan, and
+ * one of them attacked while the other stood two tiles away: in two matches
+ * a Goblin seat made one attack in four with Gang Up.
+ *
+ * The smallest group of the strongest candidates kills: for one hunter,
+ * then two, up to `HUNT_MAXIMUM_HUNTERS_V7`, each hunter's hit is projected
+ * on the HP the earlier ones leave, with the Gang Up of the own units beside
+ * the target once every hunter of the group stands on its tile (the units
+ * there now that are not of the group, and the hunters that strike from a
+ * tile beside it; an Ogre counts 2). Null when no group kills.
+ */
+function goblinMobHuntV7(
+  context: PolicyContextV7,
+  target: PublicUnitV7,
+  candidates: readonly {
+    readonly unit: PublicUnitV7;
+    readonly stays: boolean;
+    readonly tiles: readonly string[];
+    readonly from: CoordV7;
+    readonly places: readonly CoordV7[];
+  }[],
+): {
+  readonly hunters: ReadonlyMap<UnitId, boolean>;
+  readonly tiles: ReadonlyMap<UnitId, string>;
+} | null {
+  const view = context.view;
+  const limit = Math.min(HUNT_MAXIMUM_HUNTERS_V7, candidates.length);
+  for (let size = 1; size <= limit; size += 1) {
+    const group: { readonly unit: PublicUnitV7; readonly from: CoordV7 }[] = [];
+    const hunters = new Map<UnitId, boolean>();
+    const tiles = new Map<UnitId, string>();
+    const usedTiles = new Set<string>();
+    for (const candidate of candidates) {
+      if (group.length >= size) break;
+      let from = candidate.from;
+      if (!candidate.stays) {
+        const index = candidate.tiles.findIndex((key) => !usedTiles.has(key));
+        const tile = candidate.tiles[index];
+        const place = candidate.places[index];
+        if (tile === undefined || place === undefined) continue;
+        usedTiles.add(tile);
+        tiles.set(candidate.unit.id, tile);
+        from = place;
+      }
+      hunters.set(candidate.unit.id, candidate.stays);
+      group.push({ unit: candidate.unit, from });
+    }
+    if (group.length < size) return null;
+    // The own units beside the target once the group stands on its tiles.
+    let beside = 0;
+    for (const unit of view.units)
+      if (
+        unit.ownerId === view.viewer.id &&
+        unit.id !== target.id &&
+        !hunters.has(unit.id) &&
+        distance(unit.at, target.at) === 1
+      )
+        beside += gangUpHelperWeightV7(view, unit);
+    for (const member of group)
+      if (distance(member.from, target.at) === 1)
+        beside += gangUpHelperWeightV7(view, member.unit);
+    let left = target.hp;
+    for (const member of group) {
+      if (left <= 0) break;
+      const gangUp = gangUpAttackerV7(view, member.unit)
+        ? gangUpWithHelpersV7(
+            view,
+            member.unit,
+            beside -
+              (distance(member.from, target.at) === 1
+                ? gangUpHelperWeightV7(view, member.unit)
+                : 0),
+          )
+        : 0;
+      left -= publicProjectedDamageWithLookupV7(
+        view,
+        { ...member.unit, at: member.from },
+        { ...target, hp: left },
+        target.at,
+        { bonusAttack2: 2 * gangUp },
+        context.lookup,
+      );
+    }
+    if (left <= 0) return { hunters, tiles };
+  }
+  return null;
+}
+
+/**
+ * Step two of the Goblin pass: the hit of a hunter that stands beside the
+ * target waits while another hunter of the same combined kill still has its
+ * Move to make, so that the helpers stand beside the target before the
+ * first blow (hits ranked above the hunters' Moves, and a Goblin struck
+ * alone for 3 before the second came up to strike for 6). Only the hit of
+ * a unit whose attack takes Gang Up, on the target of its own plan, that
+ * does not kill; and only while a Move of such a hunter to the tile the
+ * plan counted is on offer and passes the candidate filter, so that the
+ * wait always ends.
+ */
+function goblinMobWaitsV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+): boolean {
+  if (!goblinMobSeatV7(context)) return false;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  if (
+    actor === undefined ||
+    actor.form !== "LAND" ||
+    !gangUpAttackerV7(view, actor)
+  )
+    return false;
+  const plan = huntOfV7(context, command.unitId);
+  // (Its hit on another unit waits too: it has one attack.)
+  if (
+    plan === undefined ||
+    !plan.army ||
+    plan.hunters.get(command.unitId) !== true ||
+    distance(actor.at, plan.target.at) !== 1
+  )
+    return false;
+  const preview = queryCombatPreviewV7(
+    view,
+    command.unitId,
+    command.targetUnitId,
+  );
+  if (preview === null || preview.defenderDies) return false;
+  for (const [id, stays] of plan.hunters) {
+    if (stays) continue;
+    const tile = plan.tiles.get(id);
+    if (tile === undefined) continue;
+    for (const move of context.commands) {
+      if (move.kind !== "MOVE" || move.unitId !== id) continue;
+      const to = move.path.at(-1);
+      if (
+        to !== undefined &&
+        coordKey(to) === tile &&
+        distance(to, plan.target.at) === 1 &&
+        isPolicyCandidate(context, move)
+      )
+        return true;
+    }
+  }
+  return false;
 }
 
 /**

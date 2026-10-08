@@ -769,10 +769,11 @@ describe("the Undead pass: the Normal AI's army", () => {
     expect(ARMY_RESEARCH_ROLES_V7.GOBLIN).toEqual([
       "MARKSMAN",
       "RAIDER",
+      // Step two of the Goblin pass (`pulp_wars-w49.23`): the Ogre third.
+      "SWORDSMAN",
       "GUARD",
       "CATAPULT",
       "CAPTAIN",
-      "SWORDSMAN",
       "KNIGHT",
     ]);
   });

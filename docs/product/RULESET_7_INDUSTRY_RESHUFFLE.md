@@ -266,6 +266,12 @@ rounds?
 **Goblins.** The Orc Brute is the one Goblin unit a Knight does not kill
 in one attack. It was already third in the AI's order and is a
 technology later still. Is that too late against a Human Knight rush?
+**Played** (bead `pulp_wars-w49.23`, no rule changed): the answers are in
+[the Goblin tuning, step two](RULESET_7_TUNING_GOBLIN.md#14-step-two). In
+short: a hand player skips Fortification unless Knights or Raiders show,
+which is a counter technology doing its work; the AI now researches it
+when it sees them, and the Ogre (the other unit a Knight does not kill)
+third in its order.
 
 **Dinosaurs.** Nesting now carries the Ankylosaurus Egg, +4 HP for Eggs,
 and a slot in every city: three good things on one tier-2 node. Is it the
