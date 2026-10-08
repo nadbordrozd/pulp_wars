@@ -8,7 +8,8 @@
     "DINOSAUR": "#fe7500",
     "MARTIAN": "#e83aae",
     "ICE_FOLK": "#10b8ff",
-    "DWARF": "#2db885"
+    "DWARF": "#2db885",
+    "CANDY": "#ffb8d8"
   },
   "masters": {
     "chibi-curiosity-giant-spider": {
@@ -31,7 +32,8 @@
           "DINOSAUR": 0,
           "MARTIAN": 0,
           "ICE_FOLK": 0,
-          "DWARF": 0
+          "DWARF": 0,
+          "CANDY": 0
         },
         "nearestFaction": {
           "faction": "ORIGINAL",
@@ -59,7 +61,8 @@
           "DINOSAUR": 0,
           "MARTIAN": 0,
           "ICE_FOLK": 0,
-          "DWARF": 0
+          "DWARF": 0,
+          "CANDY": 0
         },
         "nearestFaction": {
           "faction": "ORIGINAL",
@@ -87,7 +90,8 @@
           "DINOSAUR": 0,
           "MARTIAN": 0,
           "ICE_FOLK": 0,
-          "DWARF": 0
+          "DWARF": 0,
+          "CANDY": 0
         },
         "nearestFaction": {
           "faction": "ORIGINAL",
@@ -115,7 +119,8 @@
           "DINOSAUR": 0,
           "MARTIAN": 0,
           "ICE_FOLK": 0.008,
-          "DWARF": 0
+          "DWARF": 0,
+          "CANDY": 0
         },
         "nearestFaction": {
           "faction": "ICE_FOLK",
@@ -143,7 +148,8 @@
           "DINOSAUR": 0,
           "MARTIAN": 0,
           "ICE_FOLK": 0,
-          "DWARF": 0
+          "DWARF": 0,
+          "CANDY": 0
         },
         "nearestFaction": {
           "faction": "ORIGINAL",
@@ -171,7 +177,8 @@
           "DINOSAUR": 0,
           "MARTIAN": 0,
           "ICE_FOLK": 0,
-          "DWARF": 0
+          "DWARF": 0,
+          "CANDY": 0
         },
         "nearestFaction": {
           "faction": "ORIGINAL",
@@ -199,7 +206,8 @@
           "DINOSAUR": 0,
           "MARTIAN": 0,
           "ICE_FOLK": 0,
-          "DWARF": 0
+          "DWARF": 0,
+          "CANDY": 0
         },
         "nearestFaction": {
           "faction": "ORIGINAL",
@@ -227,7 +235,8 @@
           "DINOSAUR": 0,
           "MARTIAN": 0,
           "ICE_FOLK": 0.048,
-          "DWARF": 0
+          "DWARF": 0,
+          "CANDY": 0
         },
         "nearestFaction": {
           "faction": "ICE_FOLK",
@@ -255,11 +264,12 @@
           "DINOSAUR": 0,
           "MARTIAN": 0,
           "ICE_FOLK": 0,
-          "DWARF": 0
+          "DWARF": 0,
+          "CANDY": 0.002
         },
         "nearestFaction": {
-          "faction": "ORIGINAL",
-          "share": 0
+          "faction": "CANDY",
+          "share": 0.002
         }
       }
     },
@@ -283,7 +293,8 @@
           "DINOSAUR": 0,
           "MARTIAN": 0,
           "ICE_FOLK": 0,
-          "DWARF": 0
+          "DWARF": 0,
+          "CANDY": 0
         },
         "nearestFaction": {
           "faction": "ORIGINAL",
@@ -311,7 +322,8 @@
           "DINOSAUR": 0,
           "MARTIAN": 0,
           "ICE_FOLK": 0,
-          "DWARF": 0
+          "DWARF": 0,
+          "CANDY": 0
         },
         "nearestFaction": {
           "faction": "GOBLIN",
@@ -339,7 +351,8 @@
           "DINOSAUR": 0,
           "MARTIAN": 0,
           "ICE_FOLK": 0,
-          "DWARF": 0
+          "DWARF": 0,
+          "CANDY": 0
         },
         "nearestFaction": {
           "faction": "ORIGINAL",
@@ -367,7 +380,8 @@
           "DINOSAUR": 0,
           "MARTIAN": 0,
           "ICE_FOLK": 0,
-          "DWARF": 0
+          "DWARF": 0,
+          "CANDY": 0
         },
         "nearestFaction": {
           "faction": "ORIGINAL",
@@ -395,7 +409,8 @@
           "DINOSAUR": 0.006,
           "MARTIAN": 0,
           "ICE_FOLK": 0,
-          "DWARF": 0
+          "DWARF": 0,
+          "CANDY": 0
         },
         "nearestFaction": {
           "faction": "GOBLIN",
@@ -423,7 +438,385 @@
           "DINOSAUR": 0,
           "MARTIAN": 0,
           "ICE_FOLK": 0,
-          "DWARF": 0
+          "DWARF": 0,
+          "CANDY": 0.019
+        },
+        "nearestFaction": {
+          "faction": "CANDY",
+          "share": 0.019
+        }
+      }
+    },
+    "chibi-curiosity-bigfoot": {
+      "canvas": "88 x 96",
+      "opaqueBounds": {
+        "left": 12,
+        "right": 74,
+        "top": 7,
+        "bottom": 88
+      },
+      "opaqueSize": "63 x 82",
+      "palette": {
+        "opaque": 3458,
+        "mean": "#644531",
+        "saturatedShare": 0.242,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0
+        },
+        "nearestFaction": {
+          "faction": "ORIGINAL",
+          "share": 0
+        }
+      }
+    },
+    "chibi-curiosity-portrait-bigfoot": {
+      "canvas": "48 x 48",
+      "opaqueBounds": {
+        "left": 4,
+        "right": 43,
+        "top": 2,
+        "bottom": 46
+      },
+      "opaqueSize": "40 x 45",
+      "palette": {
+        "opaque": 1449,
+        "mean": "#65452f",
+        "saturatedShare": 0.326,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0
+        },
+        "nearestFaction": {
+          "faction": "ORIGINAL",
+          "share": 0
+        }
+      }
+    },
+    "chibi-curiosity-downed-saucer": {
+      "canvas": "80 x 80",
+      "opaqueBounds": {
+        "left": 12,
+        "right": 63,
+        "top": 14,
+        "bottom": 64
+      },
+      "opaqueSize": "52 x 51",
+      "palette": {
+        "opaque": 1670,
+        "mean": "#5b656d",
+        "saturatedShare": 0,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0
+        },
+        "nearestFaction": {
+          "faction": "ORIGINAL",
+          "share": 0
+        }
+      }
+    },
+    "chibi-curiosity-graveyard": {
+      "canvas": "80 x 80",
+      "opaqueBounds": {
+        "left": 6,
+        "right": 69,
+        "top": 10,
+        "bottom": 61
+      },
+      "opaqueSize": "64 x 52",
+      "palette": {
+        "opaque": 1464,
+        "mean": "#636463",
+        "saturatedShare": 0,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0
+        },
+        "nearestFaction": {
+          "faction": "ORIGINAL",
+          "share": 0
+        }
+      }
+    },
+    "chibi-curiosity-gate": {
+      "canvas": "80 x 80",
+      "opaqueBounds": {
+        "left": 4,
+        "right": 76,
+        "top": 7,
+        "bottom": 71
+      },
+      "opaqueSize": "73 x 65",
+      "palette": {
+        "opaque": 3660,
+        "mean": "#7a7d74",
+        "saturatedShare": 0.024,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0
+        },
+        "nearestFaction": {
+          "faction": "ORIGINAL",
+          "share": 0
+        }
+      }
+    },
+    "chibi-curiosity-wishing-well": {
+      "canvas": "80 x 80",
+      "opaqueBounds": {
+        "left": 18,
+        "right": 62,
+        "top": 10,
+        "bottom": 66
+      },
+      "opaqueSize": "45 x 57",
+      "palette": {
+        "opaque": 1932,
+        "mean": "#564b4b",
+        "saturatedShare": 0.04,
+        "nearFaction": {
+          "ORIGINAL": 0.004,
+          "UNDEAD": 0,
+          "GOBLIN": 0.001,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0
+        },
+        "nearestFaction": {
+          "faction": "ORIGINAL",
+          "share": 0.004
+        }
+      }
+    },
+    "chibi-curiosity-icon-downed-saucer": {
+      "canvas": "48 x 48",
+      "opaqueBounds": {
+        "left": 4,
+        "right": 43,
+        "top": 11,
+        "bottom": 39
+      },
+      "opaqueSize": "40 x 29",
+      "palette": {
+        "opaque": 838,
+        "mean": "#616f72",
+        "saturatedShare": 0,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0.013,
+          "CANDY": 0
+        },
+        "nearestFaction": {
+          "faction": "DWARF",
+          "share": 0.013
+        }
+      }
+    },
+    "chibi-curiosity-icon-graveyard": {
+      "canvas": "48 x 48",
+      "opaqueBounds": {
+        "left": 2,
+        "right": 45,
+        "top": 4,
+        "bottom": 39
+      },
+      "opaqueSize": "44 x 36",
+      "palette": {
+        "opaque": 1004,
+        "mean": "#6c6c72",
+        "saturatedShare": 0.023,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0
+        },
+        "nearestFaction": {
+          "faction": "ORIGINAL",
+          "share": 0
+        }
+      }
+    },
+    "chibi-curiosity-icon-gate": {
+      "canvas": "48 x 48",
+      "opaqueBounds": {
+        "left": 3,
+        "right": 43,
+        "top": 8,
+        "bottom": 38
+      },
+      "opaqueSize": "41 x 31",
+      "palette": {
+        "opaque": 707,
+        "mean": "#9caab0",
+        "saturatedShare": 0,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0
+        },
+        "nearestFaction": {
+          "faction": "ORIGINAL",
+          "share": 0
+        }
+      }
+    },
+    "chibi-curiosity-icon-bigfoot": {
+      "canvas": "48 x 48",
+      "opaqueBounds": {
+        "left": 5,
+        "right": 43,
+        "top": 6,
+        "bottom": 41
+      },
+      "opaqueSize": "39 x 36",
+      "palette": {
+        "opaque": 876,
+        "mean": "#723d22",
+        "saturatedShare": 0.525,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0
+        },
+        "nearestFaction": {
+          "faction": "ORIGINAL",
+          "share": 0
+        }
+      }
+    },
+    "chibi-curiosity-icon-wishing-well": {
+      "canvas": "48 x 48",
+      "opaqueBounds": {
+        "left": 9,
+        "right": 40,
+        "top": 3,
+        "bottom": 39
+      },
+      "opaqueSize": "32 x 37",
+      "palette": {
+        "opaque": 788,
+        "mean": "#705b64",
+        "saturatedShare": 0.093,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0
+        },
+        "nearestFaction": {
+          "faction": "ORIGINAL",
+          "share": 0
+        }
+      }
+    },
+    "chibi-curiosity-effect-gate-traverse": {
+      "canvas": "48 x 48",
+      "opaqueBounds": {
+        "left": 10,
+        "right": 36,
+        "top": 7,
+        "bottom": 32
+      },
+      "opaqueSize": "27 x 26",
+      "palette": {
+        "opaque": 178,
+        "mean": "#eaeaf2",
+        "saturatedShare": 0,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0
+        },
+        "nearestFaction": {
+          "faction": "ORIGINAL",
+          "share": 0
+        }
+      }
+    },
+    "chibi-curiosity-effect-coin-splash": {
+      "canvas": "48 x 48",
+      "opaqueBounds": {
+        "left": 10,
+        "right": 37,
+        "top": 6,
+        "bottom": 37
+      },
+      "opaqueSize": "28 x 32",
+      "palette": {
+        "opaque": 568,
+        "mean": "#85745b",
+        "saturatedShare": 0.317,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0
         },
         "nearestFaction": {
           "faction": "ORIGINAL",
@@ -438,7 +831,7 @@
       "height": 63
     },
     "fighter": {
-      "width": 52,
+      "width": 53,
       "height": 72
     },
     "giants": {
@@ -451,12 +844,12 @@
         "height": 85
       },
       "Goblin": {
-        "width": 71,
-        "height": 77
+        "width": 76,
+        "height": 93
       },
       "Dinosaur": {
-        "width": 74,
-        "height": 89
+        "width": 85,
+        "height": 83
       },
       "Martian": {
         "width": 83,
@@ -482,10 +875,136 @@
       "right": 85
     }
   },
+  "bigfoot": {
+    "opaqueSize": {
+      "width": 63,
+      "height": 82
+    },
+    "fighter": {
+      "width": 53,
+      "height": 72
+    },
+    "footprint": {
+      "contactY": 89,
+      "footLeft": 21,
+      "footRight": 66,
+      "baseLeft": 21,
+      "baseRight": 69,
+      "top": 7,
+      "left": 12,
+      "right": 75
+    }
+  },
+  "guards": {
+    "Grunt": {
+      "file": "public/assets/chibi/units/chibi-direction-martian-grunt.png",
+      "opaqueSize": {
+        "width": 48,
+        "height": 75
+      },
+      "palette": {
+        "opaque": 1949,
+        "mean": "#696f82",
+        "saturatedShare": 0.027,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0.012,
+          "ICE_FOLK": 0.008,
+          "DWARF": 0,
+          "CANDY": 0.004
+        },
+        "nearestFaction": {
+          "faction": "MARTIAN",
+          "share": 0.012
+        }
+      }
+    },
+    "Ray Gunner": {
+      "file": "public/assets/chibi/units/chibi-direction-martian-ray-gunner.png",
+      "opaqueSize": {
+        "width": 56,
+        "height": 73
+      },
+      "palette": {
+        "opaque": 2288,
+        "mean": "#4b455a",
+        "saturatedShare": 0.055,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0.041,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0.003
+        },
+        "nearestFaction": {
+          "faction": "MARTIAN",
+          "share": 0.041
+        }
+      }
+    },
+    "Shield Projector": {
+      "file": "public/assets/chibi/units/chibi-direction-martian-shield-projector.png",
+      "opaqueSize": {
+        "width": 54,
+        "height": 73
+      },
+      "palette": {
+        "opaque": 2849,
+        "mean": "#6c607c",
+        "saturatedShare": 0.094,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0.065,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0
+        },
+        "nearestFaction": {
+          "faction": "MARTIAN",
+          "share": 0.065
+        }
+      }
+    },
+    "Zombie": {
+      "file": "public/assets/chibi/units/chibi-direction-undead-zombie.png",
+      "opaqueSize": {
+        "width": 51,
+        "height": 68
+      },
+      "palette": {
+        "opaque": 2150,
+        "mean": "#575059",
+        "saturatedShare": 0.054,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0.048,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0
+        },
+        "nearestFaction": {
+          "faction": "UNDEAD",
+          "share": 0.048
+        }
+      }
+    }
+  },
   "underUnits": {
     "fountainBesideFighter": {
-      "share": 0.347,
-      "pixels": 1111
+      "share": 0.352,
+      "pixels": 1129
     },
     "fountainBesideJuggernaut": {
       "share": 0.203,
@@ -496,8 +1015,28 @@
       "pixels": 768
     },
     "webBesideFighter": {
-      "share": 0.405,
-      "pixels": 967
+      "share": 0.416,
+      "pixels": 992
+    },
+    "saucerBesideFighter": {
+      "share": 0.192,
+      "pixels": 321
+    },
+    "graveyardBesideFighter": {
+      "share": 0.343,
+      "pixels": 502
+    },
+    "gateBesideFighter": {
+      "share": 0.412,
+      "pixels": 1509
+    },
+    "gateBesideJuggernaut": {
+      "share": 0.22,
+      "pixels": 807
+    },
+    "wellBesideFighter": {
+      "share": 0.165,
+      "pixels": 319
     }
   }
 }

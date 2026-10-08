@@ -1,0 +1,36 @@
+{
+  "id": "saucer-b-edit",
+  "jobId": "ca8b6d38-42a3-455f-a631-2879c5304d98",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-2",
+    "asset": "chibi-curiosity-downed-saucer",
+    "subject": "CURIOSITY:DOWNED_SAUCER",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-site",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 73713023,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the green grass and the brown soil block under the saucer, so the crashed saucer lies directly on a transparent background with nothing at all under it. Keep the grey metal saucer, its pale glass dome, the antenna, the black scorched breach, the bent leg, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the green grass and the brown soil block under the saucer, so the crashed saucer lies directly on a transparent background with nothing at all under it. Keep the grey metal saucer, its pale glass dome, the antenna, the black scorched breach, the bent leg, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the green grass and the brown soil block under the saucer, so the crashed saucer lies directly on a transparent background with nothing at all under it. Keep the grey metal saucer, its pale glass dome, the antenna, the black scorched breach, the bent leg, the outline and the art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the green grass and the brown soil block under the saucer, so the crashed saucer lies directly on a transparent background with nothing at all under it. Keep the grey metal saucer, its pale glass dome, the antenna, the black scorched breach, the bent leg, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "saucer-b",
+      "candidate": 0,
+      "sha256": "99f0c366890465d4669851ab09acac88f4dbfe7d1cff48ee4effefe9bb16dea4"
+    }
+  }
+}

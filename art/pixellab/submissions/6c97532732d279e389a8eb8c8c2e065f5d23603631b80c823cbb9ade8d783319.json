@@ -1,0 +1,36 @@
+{
+  "id": "icon-well-a-edit",
+  "jobId": "a164a41f-55c2-4a35-804b-8c90255f2329",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-2",
+    "asset": "chibi-curiosity-icon-wishing-well",
+    "subject": "ICON:CURIOSITY:WISHING_WELL",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73713068,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase everything except the stone well, its roof, its posts and its bucket: remove the brown soil and the green grass under the well completely, so the well stands directly on a transparent background with nothing at all under it. Keep the grey stone well, the roof, the bucket, the small gold coin, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Erase everything except the stone well, its roof, its posts and its bucket: remove the brown soil and the green grass under the well completely, so the well stands directly on a transparent background with nothing at all under it. Keep the grey stone well, the roof, the bucket, the small gold coin, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Erase everything except the stone well, its roof, its posts and its bucket: remove the brown soil and the green grass under the well completely, so the well stands directly on a transparent background with nothing at all under it. Keep the grey stone well, the roof, the bucket, the small gold coin, the outline and the art style exactly the same.",
+    "editInstruction": "Erase everything except the stone well, its roof, its posts and its bucket: remove the brown soil and the green grass under the well completely, so the well stands directly on a transparent background with nothing at all under it. Keep the grey stone well, the roof, the bucket, the small gold coin, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "icon-well-a",
+      "candidate": 0,
+      "sha256": "5b5ddde02041b632bd2ed3032b85f4ecc88a63a23734d42b88a3a02049ac3a20"
+    }
+  }
+}

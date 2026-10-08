@@ -1,0 +1,36 @@
+{
+  "id": "icon-gate-c-edit",
+  "jobId": "a5d1a4d4-b271-4674-9682-27570b0a4467",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-2",
+    "asset": "chibi-curiosity-icon-gate",
+    "subject": "ICON:CURIOSITY:GATE",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73713075,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove only the ground: erase the round green grass island and the brown soil under it completely, so the standing stones and the swirl of light stand directly on a transparent background with nothing at all under them. Keep the four grey standing stones and the white swirl of light exactly the same; keep the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove only the ground: erase the round green grass island and the brown soil under it completely, so the standing stones and the swirl of light stand directly on a transparent background with nothing at all under them. Keep the four grey standing stones and the white swirl of light exactly the same; keep the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove only the ground: erase the round green grass island and the brown soil under it completely, so the standing stones and the swirl of light stand directly on a transparent background with nothing at all under them. Keep the four grey standing stones and the white swirl of light exactly the same; keep the outline and the art style exactly the same.",
+    "editInstruction": "Remove only the ground: erase the round green grass island and the brown soil under it completely, so the standing stones and the swirl of light stand directly on a transparent background with nothing at all under them. Keep the four grey standing stones and the white swirl of light exactly the same; keep the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "icon-gate-c",
+      "candidate": 0,
+      "sha256": "8bd62feca37ded0b26351b827f9fab0f485fed1497c5dc8df16b046dcb92c457"
+    }
+  }
+}

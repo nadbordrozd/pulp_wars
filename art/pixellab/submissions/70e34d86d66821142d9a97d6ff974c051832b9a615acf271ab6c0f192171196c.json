@@ -1,0 +1,36 @@
+{
+  "id": "icon-graveyard-b-edit",
+  "jobId": "2c8526a1-f3d0-4797-a441-065860c796c5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-2",
+    "asset": "chibi-curiosity-icon-graveyard",
+    "subject": "ICON:CURIOSITY:GRAVEYARD",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73713069,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove only the ground: erase the green grass and the brown soil block under the headstones, so nothing is drawn under them. Keep the two pale grey headstones, the moss on them and the black iron fence bars exactly the same; keep the outline and the art style exactly the same; transparent background."
+      }
+    ],
+    "prompt": "Remove only the ground: erase the green grass and the brown soil block under the headstones, so nothing is drawn under them. Keep the two pale grey headstones, the moss on them and the black iron fence bars exactly the same; keep the outline and the art style exactly the same; transparent background.",
+    "negativePrompt": "",
+    "description": "Remove only the ground: erase the green grass and the brown soil block under the headstones, so nothing is drawn under them. Keep the two pale grey headstones, the moss on them and the black iron fence bars exactly the same; keep the outline and the art style exactly the same; transparent background.",
+    "editInstruction": "Remove only the ground: erase the green grass and the brown soil block under the headstones, so nothing is drawn under them. Keep the two pale grey headstones, the moss on them and the black iron fence bars exactly the same; keep the outline and the art style exactly the same; transparent background.",
+    "source": {
+      "recipe": "icon-graveyard-b",
+      "candidate": 0,
+      "sha256": "6ca09b9191f3ec9e161fb12922a3d9edd0f90c76c05ae78da972a8660b72ebc2"
+    }
+  }
+}

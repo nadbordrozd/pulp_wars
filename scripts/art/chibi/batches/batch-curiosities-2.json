@@ -1,0 +1,533 @@
+{
+  "schemaVersion": 1,
+  "batch": "curiosities-2",
+  "title": "Map curiosities, round 2: the Downed Saucer, the Graveyard, the Dimensional Gate and the Wishing Well as tile overlays, the neutral Bigfoot and its portrait, their legend icons, and the gate-traverse and coin-splash effects",
+  "bead": "pulp_wars-737.13",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-curiosity-bigfoot",
+      "subject": "UNIT:NEUTRAL_BIGFOOT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "curiosity-monster",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-curiosity-portrait-bigfoot",
+      "subject": "PORTRAIT:NEUTRAL_BIGFOOT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "curiosity-portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-curiosity-downed-saucer",
+      "subject": "CURIOSITY:DOWNED_SAUCER",
+      "assetClass": "BUILDING",
+      "recipeClass": "curiosity-site",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-curiosity-graveyard",
+      "subject": "CURIOSITY:GRAVEYARD",
+      "assetClass": "BUILDING",
+      "recipeClass": "curiosity-site",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-curiosity-gate",
+      "subject": "CURIOSITY:GATE",
+      "assetClass": "BUILDING",
+      "recipeClass": "curiosity-site",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-curiosity-wishing-well",
+      "subject": "CURIOSITY:WISHING_WELL",
+      "assetClass": "BUILDING",
+      "recipeClass": "curiosity-site",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-curiosity-icon-downed-saucer",
+      "subject": "ICON:CURIOSITY:DOWNED_SAUCER",
+      "assetClass": "ICON",
+      "recipeClass": "curiosity-item",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-curiosity-icon-graveyard",
+      "subject": "ICON:CURIOSITY:GRAVEYARD",
+      "assetClass": "ICON",
+      "recipeClass": "curiosity-item",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-curiosity-icon-gate",
+      "subject": "ICON:CURIOSITY:GATE",
+      "assetClass": "ICON",
+      "recipeClass": "curiosity-item",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-curiosity-icon-bigfoot",
+      "subject": "ICON:CURIOSITY:BIGFOOT",
+      "assetClass": "ICON",
+      "recipeClass": "curiosity-item",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-curiosity-icon-wishing-well",
+      "subject": "ICON:CURIOSITY:WISHING_WELL",
+      "assetClass": "ICON",
+      "recipeClass": "curiosity-item",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-curiosity-effect-gate-traverse",
+      "subject": "EFFECT:GATE_TRAVERSE",
+      "assetClass": "EFFECT",
+      "recipeClass": "curiosity-item",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-curiosity-effect-coin-splash",
+      "subject": "EFFECT:COIN_SPLASH",
+      "assetClass": "EFFECT",
+      "recipeClass": "curiosity-item",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "bigfoot-a",
+      "asset": "chibi-curiosity-bigfoot",
+      "endpoint": "create-image-pixen",
+      "seed": 73713001,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      }
+    },
+    {
+      "id": "bigfoot-portrait-a",
+      "asset": "chibi-curiosity-portrait-bigfoot",
+      "endpoint": "create-image-pixen",
+      "seed": 73713011,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "saucer-a",
+      "asset": "chibi-curiosity-downed-saucer",
+      "endpoint": "create-image-pixen",
+      "seed": 73713021,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "graveyard-a",
+      "asset": "chibi-curiosity-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 73713031,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "gate-a",
+      "asset": "chibi-curiosity-gate",
+      "endpoint": "create-image-pixen",
+      "seed": 73713041,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "well-a",
+      "asset": "chibi-curiosity-wishing-well",
+      "endpoint": "create-image-pixen",
+      "seed": 73713051,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "icon-saucer-a",
+      "asset": "chibi-curiosity-icon-downed-saucer",
+      "endpoint": "create-image-pixen",
+      "seed": 73713061,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-graveyard-a",
+      "asset": "chibi-curiosity-icon-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 73713062,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-gate-a",
+      "asset": "chibi-curiosity-icon-gate",
+      "endpoint": "create-image-pixen",
+      "seed": 73713063,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-bigfoot-a",
+      "asset": "chibi-curiosity-icon-bigfoot",
+      "endpoint": "create-image-pixen",
+      "seed": 73713064,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-well-a",
+      "asset": "chibi-curiosity-icon-wishing-well",
+      "endpoint": "create-image-pixen",
+      "seed": 73713065,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "effect-gate-traverse-a",
+      "asset": "chibi-curiosity-effect-gate-traverse",
+      "endpoint": "create-image-pixen",
+      "seed": 73713071,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "options": {
+        "view": "side"
+      }
+    },
+    {
+      "id": "effect-coin-splash-a",
+      "asset": "chibi-curiosity-effect-coin-splash",
+      "endpoint": "create-image-pixen",
+      "seed": 73713072,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "options": {
+        "view": "side"
+      }
+    },
+    {
+      "id": "saucer-b",
+      "asset": "chibi-curiosity-downed-saucer",
+      "endpoint": "create-image-pixen",
+      "seed": 73713022,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "The saucer is big and wide: its flat disc touches the left edge and the right edge of the image, tilted so its left rim is sunk low and its right rim is lifted up. The damage is only long black scorch streaks across the grey metal, never a hole; the glass dome is pale grey, not blue. It has no face.",
+      "negativeAddendum": "grass, ground block, dirt block, island, hole, crater, face, eyes, mouth, blue, cyan, lights, magenta, green, alien"
+    },
+    {
+      "id": "bigfoot-b",
+      "asset": "chibi-curiosity-bigfoot",
+      "endpoint": "create-image-pixen",
+      "seed": 73713002,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "promptAddendum": "Bold chibi proportions like the other game pieces: a big round shaggy head, very big round glossy black eyes, a chunky round furry body and short thick legs on two huge flat feet; few fur strands, big simple shapes. It is Bigfoot, not a gorilla.",
+      "negativeAddendum": "gorilla, monkey, realistic fur, tiny details, knuckle walking"
+    },
+    {
+      "id": "saucer-b-edit",
+      "asset": "chibi-curiosity-downed-saucer",
+      "endpoint": "edit-image-pixen",
+      "seed": 73713023,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "saucer-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the green grass and the brown soil block under the saucer, so the crashed saucer lies directly on a transparent background with nothing at all under it. Keep the grey metal saucer, its pale glass dome, the antenna, the black scorched breach, the bent leg, the outline and the art style exactly the same."
+    },
+    {
+      "id": "graveyard-a-edit",
+      "asset": "chibi-curiosity-graveyard",
+      "endpoint": "edit-image-pixen",
+      "seed": 73713032,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "graveyard-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase everything except the three grey headstones and the black iron fence: remove the green grass and the brown soil block under them completely, so the headstones and the fence stand directly on a transparent background with nothing at all under them. Keep the three headstones, the moss on them, the black iron fence, the outline and the art style exactly the same."
+    },
+    {
+      "id": "gate-b",
+      "asset": "chibi-curiosity-gate",
+      "endpoint": "create-image-pixen",
+      "seed": 73713042,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "Like a tiny Stonehenge: each standing stone is a tall upright pillar twice as tall as it is wide, with wide open gaps between the stones, and the ring is so wide that its stones touch the left edge and the right edge of the image. The swirl is pure white light with a pale grey shadow tone, never blue and never red. No basin, no rim, no wall and no water.",
+      "negativeAddendum": "basin, fountain, well, rim, wall, water, pool, blue, cyan, red, pink, grass, ground block"
+    },
+    {
+      "id": "icon-graveyard-b",
+      "asset": "chibi-curiosity-icon-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 73713066,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "options": {
+        "view": "side"
+      },
+      "promptAddendum": "The headstones are pale grey stone #b8b4a8 with a darker grey shadow tone #7c786e, not purple; nothing is drawn under them: no ground, no soil, no grass and no glow.",
+      "negativeAddendum": "purple, violet, lilac, soil, ground block, grass plate, glow, fire, lava, orange"
+    },
+    {
+      "id": "icon-gate-b",
+      "asset": "chibi-curiosity-icon-gate",
+      "endpoint": "create-image-pixen",
+      "seed": 73713067,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "options": {
+        "view": "side"
+      },
+      "promptAddendum": "The stones are tall upright pale grey pillars standing in a row behind and beside the swirl; the swirl is a round whirlpool of pure white light with a pale grey shadow tone standing upright between them, never red and never blue; nothing under them.",
+      "negativeAddendum": "red, pink, blue, cyan, disc, plate, ground, candy, peppermint"
+    },
+    {
+      "id": "icon-well-a-edit",
+      "asset": "chibi-curiosity-icon-wishing-well",
+      "endpoint": "edit-image-pixen",
+      "seed": 73713068,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-well-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase everything except the stone well, its roof, its posts and its bucket: remove the brown soil and the green grass under the well completely, so the well stands directly on a transparent background with nothing at all under it. Keep the grey stone well, the roof, the bucket, the small gold coin, the outline and the art style exactly the same."
+    },
+    {
+      "id": "effect-gate-traverse-a-edit",
+      "asset": "chibi-curiosity-effect-gate-traverse",
+      "endpoint": "edit-image-pixen",
+      "seed": 73713073,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "effect-gate-traverse-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase everything except the round white spiral of light and the white rays and sparkles around it: remove the green grass disc, the brown stem and the grass and soil block under the spiral completely, so the burst of light floats alone on a transparent background. Keep the white spiral, the rays, the sparkles, the outline and the art style exactly the same."
+    },
+    {
+      "id": "effect-coin-splash-a-edit",
+      "asset": "chibi-curiosity-effect-coin-splash",
+      "endpoint": "edit-image-pixen",
+      "seed": 73713074,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "effect-coin-splash-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase only the brown and amber ring and base under the white water splash, so the splash and the gold coin float alone on a transparent background with nothing under them. Keep the gold coin, the white water splash, the droplets, the sparkles, the outline and the art style exactly the same."
+    },
+    {
+      "id": "graveyard-a-edit2",
+      "asset": "chibi-curiosity-graveyard",
+      "endpoint": "edit-image-pixen",
+      "seed": 73713033,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "graveyard-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove only the ground: erase the green grass top and the brown soil sides of the block, so nothing is drawn under the graveyard. Keep the three grey headstones and keep every black iron fence bar standing exactly where it is, with its bottom ends on the transparent background; keep the outline and the art style exactly the same."
+    },
+    {
+      "id": "graveyard-b",
+      "asset": "chibi-curiosity-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 73713034,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "The headstones and the fence bars stand directly on the empty transparent background: no grass, no soil, no mound and no block under them. The graveyard is centred in the image and fills most of its width.",
+      "negativeAddendum": "grass, soil, dirt, ground block, isometric block, mound, island, plate"
+    },
+    {
+      "id": "icon-graveyard-b-edit",
+      "asset": "chibi-curiosity-icon-graveyard",
+      "endpoint": "edit-image-pixen",
+      "seed": 73713069,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-graveyard-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove only the ground: erase the green grass and the brown soil block under the headstones, so nothing is drawn under them. Keep the two pale grey headstones, the moss on them and the black iron fence bars exactly the same; keep the outline and the art style exactly the same; transparent background."
+    },
+    {
+      "id": "icon-gate-c",
+      "asset": "chibi-curiosity-icon-gate",
+      "endpoint": "create-image-pixen",
+      "seed": 73713070,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Like a tiny Stonehenge: four tall upright weathered grey standing stones with dull green moss, each twice as tall as it is wide, in a ring around a round whirlpool of pure white light with a pale grey shadow tone; never red and never blue; nothing under them.",
+      "negativeAddendum": "red, pink, blue, cyan, ice, crystal, plate, ground, candy, peppermint"
+    },
+    {
+      "id": "icon-gate-c-edit",
+      "asset": "chibi-curiosity-icon-gate",
+      "endpoint": "edit-image-pixen",
+      "seed": 73713075,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-gate-c",
+        "candidate": 0
+      },
+      "editInstruction": "Remove only the ground: erase the round green grass island and the brown soil under it completely, so the standing stones and the swirl of light stand directly on a transparent background with nothing at all under them. Keep the four grey standing stones and the white swirl of light exactly the same; keep the outline and the art style exactly the same."
+    },
+    {
+      "id": "icon-gate-d",
+      "asset": "chibi-curiosity-icon-gate",
+      "endpoint": "create-image-pixen",
+      "seed": 73713076,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Like a tiny Stonehenge seen from slightly above: five tall upright weathered grey standing stones with a little dull green moss, each a thick pillar twice as tall as it is wide, in a ring with open gaps between them, around a flat round whirlpool of pure white light with a pale grey shadow tone; the stones' thick black outline; never red and never blue; nothing under them.",
+      "negativeAddendum": "red, pink, blue, cyan, ice, crystal, grass, island, ground, plate, candy, peppermint"
+    },
+    {
+      "id": "icon-gate-c-edit-white",
+      "asset": "chibi-curiosity-icon-gate",
+      "endpoint": "edit-image-pixen",
+      "seed": 73713077,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-gate-c-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: recolour the light blue and cyan swirl of light to pure white #f4f4f0 with the pale grey shadow tone #c4c4c8, not blue and not cyan, and give the grey standing stones a thick black outline. Keep the four standing stones, the swirl's shape and the art style exactly the same."
+    },
+    {
+      "id": "icon-gate-d-edit",
+      "asset": "chibi-curiosity-icon-gate",
+      "endpoint": "edit-image-pixen",
+      "seed": 73713078,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-gate-d",
+        "candidate": 0
+      },
+      "editInstruction": "Erase everything except the ring of grey standing stones and the white swirl of light inside it: remove the green grass rim and the brown soil block under the ring completely, so the stones and the swirl stand directly on a transparent background with nothing at all under them. Keep the standing stones, the white swirl, the outline and the art style exactly the same."
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "id": "gate-b",
+  "jobId": "sync-679c43aa-10ee-4087-8eaa-39ca16ef6e39",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "curiosities-2",
+    "asset": "chibi-curiosity-gate",
+    "subject": "CURIOSITY:GATE",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-site",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 73713042,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-curiosity-site.txt + scripts/art/chibi/fragments/class-curiosity-site.negative.txt",
+        "text": "Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/SHARED.json",
+        "text": "Subject: a small ancient portal: a ring of five rough weathered pale grey standing stones arranged in a circle, around a round swirl of bright white light that spirals inward in the middle of the ring, with a few small white sparkles rising from the swirl; a little dull moss on the stones; the stone ring touches the left edge and the right edge of the image; the portal is the only thing in the image."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Like a tiny Stonehenge: each standing stone is a tall upright pillar twice as tall as it is wide, with wide open gaps between the stones, and the ring is so wide that its stones touch the left edge and the right edge of the image. The swirl is pure white light with a pale grey shadow tone, never blue and never red. No basin, no rim, no wall and no water.",
+        "negative": "basin, fountain, well, rim, wall, water, pool, blue, cyan, red, pink, grass, ground block"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a small ancient portal: a ring of five rough weathered pale grey standing stones arranged in a circle, around a round swirl of bright white light that spirals inward in the middle of the ring, with a few small white sparkles rising from the swirl; a little dull moss on the stones; the stone ring touches the left edge and the right edge of the image; the portal is the only thing in the image. Like a tiny Stonehenge: each standing stone is a tall upright pillar twice as tall as it is wide, with wide open gaps between the stones, and the ring is so wide that its stones touch the left edge and the right edge of the image. The swirl is pure white light with a pale grey shadow tone, never blue and never red. No basin, no rim, no wall and no water.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon, basin, fountain, well, wall, water, pool, blue, cyan, ground block",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a small ancient portal: a ring of five rough weathered pale grey standing stones arranged in a circle, around a round swirl of bright white light that spirals inward in the middle of the ring, with a few small white sparkles rising from the swirl; a little dull moss on the stones; the stone ring touches the left edge and the right edge of the image; the portal is the only thing in the image. Like a tiny Stonehenge: each standing stone is a tall upright pillar twice as tall as it is wide, with wide open gaps between the stones, and the ring is so wide that its stones touch the left edge and the right edge of the image. The swirl is pure white light with a pale grey shadow tone, never blue and never red. No basin, no rim, no wall and no water. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon, basin, fountain, well, wall, water, pool, blue, cyan, ground block."
+  }
+}

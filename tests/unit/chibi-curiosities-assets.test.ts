@@ -7,7 +7,9 @@ import {
   chibiOverflowV7,
 } from "../../src/assets/chibi-art-v7";
 import {
+  BIGFOOT_SHADOW_MEASUREMENT_V7,
   CHIBI_CURIOSITIES_ART_ASSETS_V7,
+  CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7,
   GIANT_SPIDER_SHADOW_MEASUREMENT_V7,
 } from "../../src/assets/chibi-curiosities-art-manifest";
 import { chibiDirectionArtRegistryV7 } from "../../src/assets/chibi-direction-art-manifest";
@@ -236,5 +238,167 @@ describe("map curiosity art (pulp_wars-737.5)", () => {
     );
     expect(visibleBesideUnit(web, fighter).share).toBeGreaterThanOrEqual(0.3);
     expect(visibleBesideUnit(web, spider).share).toBeGreaterThanOrEqual(0.25);
+  });
+});
+
+const BATCH_2 = "curiosities-2";
+
+/** Round 2: subject and asset id, in the order of the manifest module. */
+const EXPECTED_2: readonly (readonly [string, string])[] = [
+  ["UNIT:NEUTRAL_BIGFOOT", "chibi-curiosity-bigfoot"],
+  ["PORTRAIT:NEUTRAL_BIGFOOT", "chibi-curiosity-portrait-bigfoot"],
+  ["CURIOSITY:DOWNED_SAUCER", "chibi-curiosity-downed-saucer"],
+  ["CURIOSITY:GRAVEYARD", "chibi-curiosity-graveyard"],
+  ["CURIOSITY:GATE", "chibi-curiosity-gate"],
+  ["CURIOSITY:WISHING_WELL", "chibi-curiosity-wishing-well"],
+  ["ICON:CURIOSITY:DOWNED_SAUCER", "chibi-curiosity-icon-downed-saucer"],
+  ["ICON:CURIOSITY:GRAVEYARD", "chibi-curiosity-icon-graveyard"],
+  ["ICON:CURIOSITY:GATE", "chibi-curiosity-icon-gate"],
+  ["ICON:CURIOSITY:BIGFOOT", "chibi-curiosity-icon-bigfoot"],
+  ["ICON:CURIOSITY:WISHING_WELL", "chibi-curiosity-icon-wishing-well"],
+  ["EFFECT:GATE_TRAVERSE", "chibi-curiosity-effect-gate-traverse"],
+  ["EFFECT:COIN_SPLASH", "chibi-curiosity-effect-coin-splash"],
+];
+
+describe("map curiosity art, round 2 (pulp_wars-737.13)", () => {
+  const byId = new Map(
+    CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7.map((asset) => [asset.id, asset]),
+  );
+
+  it("lists Bigfoot, its portrait, four overlays, five icons and two effects", () => {
+    expect(
+      CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7.map((asset) => [
+        asset.subject,
+        asset.id,
+      ]),
+    ).toEqual(EXPECTED_2);
+    const { problems } = buildChibiArtRegistryV7([
+      ...CHIBI_CURIOSITIES_ART_ASSETS_V7,
+      ...CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7,
+    ]);
+    expect(problems).toEqual([]);
+  });
+
+  it("is registered in the live look only; the classic look has none", () => {
+    const live = chibiDirectionArtRegistryV7();
+    const classic = new Set(CHIBI_ART_ASSETS_V7.map((asset) => asset.id));
+    for (const asset of CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7) {
+      expect(
+        live.variants(asset.subject).map((variant) => variant.id),
+        asset.id,
+      ).toEqual([asset.id]);
+      expect(classic.has(asset.id), asset.id).toBe(false);
+    }
+  });
+
+  it("has a valid batch whose recipes send no faction and no owner layer", async () => {
+    const manifest = await loadBatchManifest(ROOT, BATCH_2);
+    const fragments = await loadFragments(ROOT);
+    expect(batchManifestProblems(manifest, fragments, BATCH_2)).toEqual([]);
+    expect(
+      manifest.assets.every((asset) =>
+        (CLASSES as readonly string[]).includes(asset.recipeClass),
+      ),
+    ).toBe(true);
+    const records = await loadRecords(productionLayout(ROOT, BATCH_2), BATCH_2);
+    for (const recipe of Object.values(records.recipes))
+      for (const layer of recipe.request.layers)
+        expect(["faction", "owner"], recipe.id).not.toContain(layer.layer);
+  });
+
+  it("registers every accepted asset exactly as its record says", async () => {
+    const manifest = await loadBatchManifest(ROOT, BATCH_2);
+    const records = await loadRecords(productionLayout(ROOT, BATCH_2), BATCH_2);
+    const accepted = Object.values(records.assets).filter(
+      (record) => record.status === "ACCEPTED",
+    );
+    expect(accepted.map((record) => record.id).sort()).toEqual(
+      EXPECTED_2.map(([, id]) => id).sort(),
+    );
+    for (const record of accepted) {
+      const entry = byId.get(record.id);
+      const asset = manifest.assets.find((spec) => spec.id === record.id);
+      if (entry === undefined || asset === undefined)
+        throw new Error(`${record.id}: not registered`);
+      const line = registryEntry(asset, record);
+      expect(line, record.id).toContain(`subject: "${entry.subject}"`);
+      expect(line, record.id).toContain(`width: ${entry.width}`);
+      expect(line, record.id).toContain(`height: ${entry.height}`);
+      expect(line.includes("fixedColours: true"), record.id).toBe(
+        entry.fixedColours === true,
+      );
+      expect(entry.ownerMaskUrl, record.id).toBeUndefined();
+      expect(masterFile(entry), record.id).toBe(
+        path.join(ROOT, record.master.path),
+      );
+      const master = await readRaster(masterFile(entry));
+      expect([master.width, master.height], record.id).toEqual([
+        entry.width,
+        entry.height,
+      ]);
+      expect(
+        await verifyAssetRecord(ROOT, manifest, record),
+        record.id,
+      ).toEqual([]);
+    }
+  });
+
+  it("draws each tile overlay on exactly one cell", () => {
+    for (const asset of CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7) {
+      if (!asset.subject.startsWith("CURIOSITY:")) continue;
+      expect([asset.width, asset.height], asset.id).toEqual([80, 80]);
+      expect(chibiAnchorV7(asset), asset.id).toEqual({ x: 40, y: 40 });
+      expect(chibiOverflowV7(asset), asset.id).toEqual({
+        left: 0,
+        right: 0,
+        up: 0,
+        down: 0,
+      });
+    }
+  });
+
+  it("keeps the faction colours out of every piece", async () => {
+    for (const asset of CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7) {
+      const report = paletteReport(await readRaster(masterFile(asset)));
+      expect(report.nearestFaction.share, asset.id).toBeLessThanOrEqual(0.02);
+    }
+  });
+
+  it("makes Bigfoot bigger than a Fighter and measures its ground contact", async () => {
+    const bigfoot = byId.get("chibi-curiosity-bigfoot");
+    if (bigfoot === undefined) throw new Error("no Bigfoot");
+    const raster = await readRaster(masterFile(bigfoot));
+    const bounds = opaqueBounds(raster);
+    const fighter = opaqueBounds(
+      await readRaster(unitFile("chibi-direction-fighter")),
+    );
+    if (bounds === null || fighter === null) throw new Error("empty sprite");
+    expect(bounds.right - bounds.left).toBeGreaterThan(
+      fighter.right - fighter.left,
+    );
+    expect(bounds.bottom - bounds.top).toBeGreaterThan(
+      fighter.bottom - fighter.top,
+    );
+    const footprint = measureUnitFootprintV7(raster);
+    expect(BIGFOOT_SHADOW_MEASUREMENT_V7).toEqual({
+      assetId: bigfoot.id,
+      assetClass: bigfoot.assetClass,
+      width: bigfoot.width,
+      height: bigfoot.height,
+      contactY: footprint.contactY,
+      footLeft: footprint.footLeft,
+      footRight: footprint.footRight,
+      baseLeft: footprint.baseLeft,
+      baseRight: footprint.baseRight,
+    });
+  });
+
+  it("leaves the gate readable under a unit", async () => {
+    const gate = byId.get("chibi-curiosity-gate");
+    if (gate === undefined) throw new Error("no gate");
+    const fighter = await readRaster(unitFile("chibi-direction-fighter"));
+    expect(
+      visibleBesideUnit(await readRaster(masterFile(gate)), fighter).share,
+    ).toBeGreaterThanOrEqual(0.3);
   });
 });

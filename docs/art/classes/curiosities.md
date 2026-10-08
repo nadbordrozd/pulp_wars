@@ -9,7 +9,11 @@ Shrine and the Sunken Wreck, and their small interface and effect pieces.
 The UI bead (`pulp_wars-737.6`) wired it into the live look: the board, the
 dock, Help and the Gallery draw it
 ([section 7](#7-how-the-game-draws-it-pulp_wars-7376)). LEGACY and the
-Classic look draw code markers instead.
+Classic look draw code markers instead. Bead `pulp_wars-737.13` added the
+round-2 curiosities (the Downed Saucer, the Graveyard, the Dimensional
+Gate, the Wishing Well and Bigfoot), registered but not yet drawn by the
+game
+([section 8](#8-round-2-pulp_wars-73713)).
 
 ## 1. What a curiosity must look like
 
@@ -235,3 +239,142 @@ Measured on the masters (`readability.json`; a test pins them):
 - **Captures.** `npm run review:ruleset7-curiosities-ui -- <dev server URL>`
   (the curiosities UI fixture; desktop and phone; the live look, the
   Classic look and LEGACY; zoom 1 and 0.75).
+
+## 8. Round 2 (`pulp_wars-737.13`)
+
+[The spec, section 34.2](../../product/RULESET_7_MAP_CURIOSITIES.md#342-art-pixellab-chibi-direction)
+asks for the art of the round-2 curiosities under this contract: the
+Downed Saucer and the Graveyard (camp centres), one look for both
+Dimensional Gates, the Wishing Well, the neutral Bigfoot, their icons and
+two effects. Sections 1 to 3 apply unchanged: no faction or owner layer,
+neutral colours (gold only on a coin), black outline, nothing under a
+tile overlay, the same four recipe classes, canvases and anchors.
+
+### 8.1 Assets
+
+Batch `curiosities-2` (faction `ORIGINAL`, never sent; `fixedFactionColours`).
+Subject texts in
+[`SHARED.json`](../../../scripts/art/chibi/subjects/SHARED.json); the
+manifest's subject pattern and the type `CuriosityRound2ArtSubjectV7` in
+[`chibi-art-v7.ts`](../../../src/assets/chibi-art-v7.ts) accept them.
+
+| Subject                        | Class        |  Canvas | Accepted recipe               | What it is                                                                                          |
+| ------------------------------ | ------------ | ------: | ----------------------------- | --------------------------------------------------------------------------------------------------- |
+| `UNIT:NEUTRAL_BIGFOOT`         | `GIANT_UNIT` | 88 x 96 | `bigfoot-a`                   | shaggy umber Bigfoot, 63 x 82 px, hunched, one hand raised shyly to its chest, huge bare feet       |
+| `PORTRAIT:NEUTRAL_BIGFOOT`     | `PORTRAIT`   | 48 x 48 | `bigfoot-portrait-a`          | its head and shoulders, a hand raised shyly to its face                                             |
+| `CURIOSITY:DOWNED_SAUCER`      | `BUILDING`   | 80 x 80 | `saucer-b-edit`               | dull grey riveted saucer tilted steeply, pale glass dome, bent antenna, scorched breach, 52 x 51 px |
+| `CURIOSITY:GRAVEYARD`          | `BUILDING`   | 80 x 80 | `graveyard-a-edit2`           | three crooked mossy grey headstones and broken black iron fence bars, 64 x 52 px                    |
+| `CURIOSITY:GATE`               | `BUILDING`   | 80 x 80 | `gate-b`                      | a ring of tall mossy standing stones round a white whirlpool of light, 73 x 65 px                   |
+| `CURIOSITY:WISHING_WELL`       | `BUILDING`   | 80 x 80 | `well-a`                      | round grey stone well, shingled roof on two posts, crank, rope, bucket and a coin glint, 45 x 57    |
+| `ICON:CURIOSITY:DOWNED_SAUCER` | `ICON`       | 48 x 48 | `icon-saucer-a`               | small tilted grey saucer                                                                            |
+| `ICON:CURIOSITY:GRAVEYARD`     | `ICON`       | 48 x 48 | `icon-graveyard-b-edit`       | two leaning headstones behind an iron fence                                                         |
+| `ICON:CURIOSITY:GATE`          | `ICON`       | 48 x 48 | `icon-gate-d-edit`            | a ring of small standing stones round a pale white whirlpool                                        |
+| `ICON:CURIOSITY:BIGFOOT`       | `ICON`       | 48 x 48 | `icon-bigfoot-a`              | one big umber five-toed footprint (the LEGACY glyph's subject)                                      |
+| `ICON:CURIOSITY:WISHING_WELL`  | `ICON`       | 48 x 48 | `icon-well-a-edit`            | the well with its roof and bucket                                                                   |
+| `EFFECT:GATE_TRAVERSE`         | `EFFECT`     | 48 x 48 | `effect-gate-traverse-a-edit` | a white spiral burst with short rays and sparkles                                                   |
+| `EFFECT:COIN_SPLASH`           | `EFFECT`     | 48 x 48 | `effect-coin-splash-a-edit`   | one gold coin dropping into a white splash with droplets                                            |
+
+Bigfoot has the giant bounds the spec asks for (88 x 96, under the 88 x 104
+limit; the hunched pose is lower than a Juggernaut). The registry lines are
+`CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7` in
+[`chibi-curiosities-art-manifest.ts`](../../../src/assets/chibi-curiosities-art-manifest.ts),
+with `BIGFOOT_SHADOW_MEASUREMENT_V7` (contact line 89 of 96, foot band 21
+to 66, base band 21 to 69). **Registered, not drawn:** like the faction
+Monuments, they are in the live direction registry (so the preload fetches
+them), but no rule or drawing asks for their subjects until the round-2 UI
+bead (`pulp_wars-737.16`), which also adds Bigfoot to the unit-shadow
+table, as `pulp_wars-737.6` did for the Spider.
+
+31 recipes, 31 PixelLab calls (21 creations, 10 edits), $0.28 in all (0.7
+to 1.6 cents a call, `usageUsd` in
+[`records/batch-curiosities-2.json`](../../../scripts/art/chibi/records/batch-curiosities-2.json),
+which keeps every rejected recipe's reason).
+
+### 8.2 The camp guards
+
+The guards have no sprite of their own (spec section 34.2): the Martian
+Grunt, Ray Gunner and Shield Projector and the Undead Zombie are drawn as
+authored, with no owner colour, like the Spider. `guards-{x2,1x}.png`
+shows each on Grass, Forest, Mountain and the dark panel, beside the Spider
+and Bigfoot. **Ruling: acceptable.** The Martian bodies are grey suits
+with a lilac face and small magenta lights (1.2 to 6.5% of their pixels
+near the Martian magenta, under 0.5% near the Candy pink, nothing near any
+other faction); the Zombie has 4.8% near the Undead violet. A Downed
+Saucer is never placed with a Martian seat and a Graveyard never with an
+Undead one, so the faction colour on a guard never names a player in the
+match, and the live look shows owners by the faction's look and the
+territory border, not by a garment. They read as "stranded Martians" and
+"Zombies" at once, which the curiosity wants. No guard sprite was made or
+changed.
+
+### 8.3 What worked and what did not
+
+- **Sites still come on plates.** The first Saucer, Graveyard, Well icon,
+  Gate icon, Graveyard icon and both effects stood on a grass, soil or
+  pedestal block, despite the class text. "Erase everything except …" or
+  "Remove only the ground …" removed each.
+- **An edit may drop what it should keep.** The first Graveyard edit
+  erased the iron fence with the soil; naming the fence bars and saying
+  "keep every bar standing exactly where it is" kept them (scattered, which
+  reads as a broken fence).
+- **"A dent" became a face.** The first Saucer's dark dent with a rim read
+  as an eye; "only long black scorch streaks, never a hole, it has no face"
+  gave a crash breach instead.
+- **A gate must say "tall upright pillars".** "A ring of standing stones
+  around a swirl" gave a low basin ring that read as a second Fountain with
+  a blue swirl; "like a tiny Stonehenge: each stone a tall upright pillar
+  twice as tall as it is wide … touch the left and right edge … never blue"
+  gave a 73 px ring.
+- **A gate icon is hard at 48 px.** A red peppermint swirl (30% near the
+  Human crimson), a white crystal cluster, a cyan swirl whose stones lost
+  their outline, and a recolour that erased the swirl were rejected; the
+  Stonehenge text plus a plate edit gave the accepted ring.
+- **Bigfoot needs no special view.** The default unit view gave a clean
+  shaggy cryptid first time; a "chibi proportions, not a gorilla" variant
+  drifted to ginger fur and a grumpy face.
+
+### 8.4 Measurements (`readability.json`)
+
+- **Faction colours:** no round-2 master has more than 1.3% of its pixels
+  within CIE76 25 of a faction colour (the saucer icon's moss dots, toward
+  the Dwarf green); the Well's coin glint is 0.4% near the Human crimson.
+  The coin splash's gold is not within the threshold of the Goblin yellow.
+- **Size:** Bigfoot 63 x 82 px against the Fighter's 53 x 72.
+- **Under a unit:** 41% of the gate shows beside a Fighter (22% beside a
+  Juggernaut), 34% of the Graveyard, 19% of the Saucer, 17% of the Well.
+  The round-1 numbers of section 5 were re-measured against today's
+  Fighter and giants (`readability.json`): the Fountain 35%, the web 42%
+  beside a Fighter; the tests' bounds still hold.
+
+### 8.5 Weak spots and notes for the UI bead
+
+- **The Well under a unit** shows only its roof edge and bucket (17%); a
+  unit stands on it to toss, so the dock's Toss a Coin command and the
+  tile chip are the cue there.
+- **The Saucer** is smaller than a camp guard (52 px) and tilted, not half
+  buried; the guards round it make the camp.
+- **The Graveyard's fence** lies in two loose pieces to the left of the
+  headstones; the composition sits in the cell's upper middle.
+- **The gate** has one brown stone among the grey, and a stone floor in
+  its ring (part of the portal, not a terrain plate).
+- **The gate icon's whirlpool** has no black outline and reads at 24 px as
+  a pale disc in a ring of dots.
+- **The gate-traverse burst** is white: on the light page it nearly
+  vanishes; it is a board effect.
+- **Bigfoot** is drawn in fine fur strands, a little more detailed than the
+  Spider; it reads at zoom 0.75 by its silhouette.
+
+### 8.6 Review
+
+`npm run art:curiosities-review` now reads both batches and also writes
+`pieces2-{x4,1x}.png` and `pieces2-zoom-0.75.png` (Bigfoot on Forest, Grass
+and Mountain; each overlay on its terrain, with a Fighter, a Juggernaut on
+the gate, and the Saucer's Grunt and the Graveyard's Zombie),
+`interface2-{x4,1x}.png` (the portrait, icons and effects on the dock and
+a light page, the traverse burst over a Fighter, the splash over the Well),
+`guards-{x2,1x}.png`, `scene2-{x2,1x}.png` and `scene2-zoom-0.75.png` (a
+board mock with a saucer camp, a Graveyard with two Zombies, a gate,
+Bigfoot in its Forest and the Well), `contact-sheet-{x2,1x}.png` (every
+master of both rounds), Bigfoot in the scale sheet, and the round-2
+masters, guards, Bigfoot and overlays in `readability.json`. `--preview`
+finds a recipe in either batch.

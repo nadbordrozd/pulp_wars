@@ -1,0 +1,36 @@
+{
+  "id": "icon-gate-d-edit",
+  "jobId": "97430fe0-406c-48b3-9f04-8b3dd64e0879",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-2",
+    "asset": "chibi-curiosity-icon-gate",
+    "subject": "ICON:CURIOSITY:GATE",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73713078,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase everything except the ring of grey standing stones and the white swirl of light inside it: remove the green grass rim and the brown soil block under the ring completely, so the stones and the swirl stand directly on a transparent background with nothing at all under them. Keep the standing stones, the white swirl, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Erase everything except the ring of grey standing stones and the white swirl of light inside it: remove the green grass rim and the brown soil block under the ring completely, so the stones and the swirl stand directly on a transparent background with nothing at all under them. Keep the standing stones, the white swirl, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Erase everything except the ring of grey standing stones and the white swirl of light inside it: remove the green grass rim and the brown soil block under the ring completely, so the stones and the swirl stand directly on a transparent background with nothing at all under them. Keep the standing stones, the white swirl, the outline and the art style exactly the same.",
+    "editInstruction": "Erase everything except the ring of grey standing stones and the white swirl of light inside it: remove the green grass rim and the brown soil block under the ring completely, so the stones and the swirl stand directly on a transparent background with nothing at all under them. Keep the standing stones, the white swirl, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "icon-gate-d",
+      "candidate": 0,
+      "sha256": "ac59e43e03d3975a74c60821d002477807051890e5951fa3db8d1f970269e462"
+    }
+  }
+}

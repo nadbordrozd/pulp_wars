@@ -1,0 +1,36 @@
+{
+  "id": "effect-gate-traverse-a-edit",
+  "jobId": "fdc48f84-2477-44e3-9e8f-ddc87eec3880",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-2",
+    "asset": "chibi-curiosity-effect-gate-traverse",
+    "subject": "EFFECT:GATE_TRAVERSE",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73713073,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase everything except the round white spiral of light and the white rays and sparkles around it: remove the green grass disc, the brown stem and the grass and soil block under the spiral completely, so the burst of light floats alone on a transparent background. Keep the white spiral, the rays, the sparkles, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Erase everything except the round white spiral of light and the white rays and sparkles around it: remove the green grass disc, the brown stem and the grass and soil block under the spiral completely, so the burst of light floats alone on a transparent background. Keep the white spiral, the rays, the sparkles, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Erase everything except the round white spiral of light and the white rays and sparkles around it: remove the green grass disc, the brown stem and the grass and soil block under the spiral completely, so the burst of light floats alone on a transparent background. Keep the white spiral, the rays, the sparkles, the outline and the art style exactly the same.",
+    "editInstruction": "Erase everything except the round white spiral of light and the white rays and sparkles around it: remove the green grass disc, the brown stem and the grass and soil block under the spiral completely, so the burst of light floats alone on a transparent background. Keep the white spiral, the rays, the sparkles, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "effect-gate-traverse-a",
+      "candidate": 0,
+      "sha256": "d31a8a498387997c564c4e37e2d761a4fb0c1b8f86b29f0eebc942cf66c98863"
+    }
+  }
+}

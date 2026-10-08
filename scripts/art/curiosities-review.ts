@@ -1,6 +1,7 @@
 /**
  * Review evidence of the map curiosity art (bead pulp_wars-737.5, batch
- * `curiosities`, docs/art/classes/curiosities.md).
+ * `curiosities`, and round 2, bead pulp_wars-737.13, batch `curiosities-2`;
+ * docs/art/classes/curiosities.md).
  *
  *   npm run art:curiosities-review
  *   npm run art:curiosities-review -- --copy-to DIR
@@ -25,11 +26,19 @@
  *   from the seven faction colours, how much of the Fountain and the web
  *   shows beside a unit, the Spider's size against the giants and its
  *   ground-contact measurement (scripts/art/unit-shadows/measure.ts);
+ * - round 2: `pieces2-{x4,1x}.png` and `pieces2-zoom-0.75.png` (Bigfoot and
+ *   the Downed Saucer, Graveyard, gate and Wishing Well overlays on their
+ *   terrain, with units and guards), `interface2-{x4,1x}.png` (Bigfoot's
+ *   portrait, the five icons, the two effects), `guards-{x2,1x}.png` (the
+ *   camp guards' reused Martian and Undead sprites, beside the Spider and
+ *   Bigfoot), `scene2-{x2,1x}.png` and `scene2-zoom-0.75.png` (a round-2
+ *   board mock), `contact-sheet-{x2,1x}.png` (every master of both rounds);
+ *   Bigfoot joins the scale sheet and `readability.json`;
  * - `index.json`.
  *
- * The art is not wired into the board yet (bead pulp_wars-737.6), so every
- * sheet is composed from the masters; no browser capture and no PixelLab
- * call is made. `--preview` lays raw candidates of the named recipes out
+ * Every sheet is composed from the masters; no browser capture and no
+ * PixelLab call is made (the board captures are
+ * `npm run review:ruleset7-curiosities-ui`). `--preview` lays raw candidates of the named recipes out
  * the same way before acceptance and writes them to `--out DIR`.
  */
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
@@ -58,6 +67,8 @@ import { measureUnitFootprintV7 } from "./unit-shadows/measure";
 
 const ROOT = process.cwd();
 const BATCH = "curiosities";
+/** Round 2 (bead pulp_wars-737.13): the camps, the gates, Bigfoot, the Well. */
+const BATCH_2 = "curiosities-2";
 const OUT = path.join(ROOT, "art/pixellab/reviews/chibi-batch-curiosities");
 const CELL = 80;
 type Rgb = readonly [number, number, number];
@@ -148,8 +159,8 @@ const TERRAIN_LABEL: Readonly<Record<Terrain, string>> = {
   DEEP: "Deep",
 };
 
-/** Asset id slugs of this batch, by what the sheets call them. */
-const IDS = {
+/** Round 1 (bead pulp_wars-737.5, batch `curiosities`), by sheet key. */
+const ROUND1_IDS = {
   spider: "chibi-curiosity-giant-spider",
   portrait: "chibi-curiosity-portrait-giant-spider",
   web: "chibi-curiosity-web",
@@ -166,7 +177,39 @@ const IDS = {
   salvage: "chibi-curiosity-effect-salvage-coins",
   provoked: "chibi-curiosity-status-provoked",
 } as const;
+/** Round 2 (bead pulp_wars-737.13, batch `curiosities-2`), by sheet key. */
+const ROUND2_IDS = {
+  bigfoot: "chibi-curiosity-bigfoot",
+  bigfootPortrait: "chibi-curiosity-portrait-bigfoot",
+  saucer: "chibi-curiosity-downed-saucer",
+  graveyard: "chibi-curiosity-graveyard",
+  gate: "chibi-curiosity-gate",
+  well: "chibi-curiosity-wishing-well",
+  iconSaucer: "chibi-curiosity-icon-downed-saucer",
+  iconGraveyard: "chibi-curiosity-icon-graveyard",
+  iconGate: "chibi-curiosity-icon-gate",
+  iconBigfoot: "chibi-curiosity-icon-bigfoot",
+  iconWell: "chibi-curiosity-icon-wishing-well",
+  gateTraverse: "chibi-curiosity-effect-gate-traverse",
+  coinSplash: "chibi-curiosity-effect-coin-splash",
+} as const;
+/** Asset id slugs of both batches, by what the sheets call them. */
+const IDS = { ...ROUND1_IDS, ...ROUND2_IDS } as const;
 type PieceKey = keyof typeof IDS;
+const batchOf = (key: PieceKey): string =>
+  key in ROUND2_IDS ? BATCH_2 : BATCH;
+
+/**
+ * The camp guards of round 2 have no sprite of their own (spec section
+ * 34.2): the Martian Grunt, Ray Gunner and Shield Projector and the Undead
+ * Zombie, drawn as authored with no owner colour, like the Spider.
+ */
+const GUARDS: readonly (readonly [string, string])[] = [
+  ["Grunt", "units/chibi-direction-martian-grunt"],
+  ["Ray Gunner", "units/chibi-direction-martian-ray-gunner"],
+  ["Shield Projector", "units/chibi-direction-martian-shield-projector"],
+  ["Zombie", "units/chibi-direction-undead-zombie"],
+];
 
 /** The Juggernaut-class giant of every faction, for the scale sheet. */
 const GIANTS: readonly (readonly [string, string])[] = [
@@ -183,7 +226,24 @@ interface Library {
   readonly terrain: Readonly<Record<Terrain, Raster>>;
   readonly fighter: Raster;
   readonly juggernaut: Raster;
+  /** The camp guards, by GUARDS label. */
+  readonly guards: Readonly<Record<string, Raster>>;
   readonly pieces: Partial<Record<PieceKey, Raster>>;
+}
+
+/** A batch's manifest and records. */
+interface BatchSource {
+  readonly batch: string;
+  readonly manifest: ChibiBatchManifest;
+  readonly records: BatchRecords;
+}
+
+async function loadSource(batch: string): Promise<BatchSource> {
+  return {
+    batch,
+    manifest: await loadBatchManifest(ROOT, batch),
+    records: await loadRecords(productionLayout(ROOT, batch), batch),
+  };
 }
 
 async function loadLibrary(
@@ -192,25 +252,33 @@ async function loadLibrary(
   const terrain = {} as Record<Terrain, Raster>;
   for (const [name, file] of Object.entries(TERRAIN_FILE))
     terrain[name as Terrain] = await readRaster(chibi(file));
+  const guards: Record<string, Raster> = {};
+  for (const [label, file] of GUARDS)
+    guards[label] = await readRaster(chibi(file));
   return {
     terrain,
     fighter: await readRaster(chibi("units/chibi-direction-fighter")),
     juggernaut: await readRaster(chibi("units/chibi-direction-juggernaut")),
+    guards,
     pieces,
   };
 }
 
-/** The accepted masters of the batch, by sheet key. */
+/** The accepted masters of both batches, by sheet key. */
 async function acceptedPieces(
-  manifest: ChibiBatchManifest,
-  records: BatchRecords,
+  sources: readonly BatchSource[],
 ): Promise<Partial<Record<PieceKey, Raster>>> {
-  const layout = productionLayout(ROOT, BATCH);
   const pieces: Partial<Record<PieceKey, Raster>> = {};
   for (const [key, id] of Object.entries(IDS)) {
-    if (records.assets[id]?.status !== "ACCEPTED") continue;
+    const source = sources.find(
+      (candidate) => candidate.batch === batchOf(key as PieceKey),
+    );
+    if (source?.records.assets[id]?.status !== "ACCEPTED") continue;
     pieces[key as PieceKey] = await readRaster(
-      masterPaths(layout, findAsset(manifest, id)).master,
+      masterPaths(
+        productionLayout(ROOT, source.batch),
+        findAsset(source.manifest, id),
+      ).master,
     );
   }
   return pieces;
@@ -452,6 +520,53 @@ function boardStages(
       on("DEEP", [overlay]),
       { label: `${name} · dark`, fill: DOCK, things: [overlay] },
     ];
+  // Round 2 (bead pulp_wars-737.13).
+  if (key === "bigfoot") {
+    const unit: Thing = { kind: "unit", raster };
+    return [
+      on("FOREST", [unit]),
+      on("GRASS", [unit]),
+      on("MOUNTAIN", [unit]),
+      { label: `${name} · dark`, fill: DOCK, things: [unit] },
+    ];
+  }
+  const guard = (label: string): Thing => ({
+    kind: "unit",
+    raster: library.guards[label] as Raster,
+  });
+  if (key === "saucer")
+    return [
+      on("GRASS", [overlay]),
+      on("FOREST", [overlay]),
+      on("GRASS", [overlay, { kind: "unit", raster: fighter }], " + Fighter"),
+      on("GRASS", [guard("Grunt")], " · Grunt guard"),
+      { label: `${name} · dark`, fill: DOCK, things: [overlay] },
+    ];
+  if (key === "graveyard")
+    return [
+      on("GRASS", [overlay]),
+      on("GRASS", [overlay, { kind: "unit", raster: fighter }], " + Fighter"),
+      on("GRASS", [guard("Zombie")], " · Zombie guard"),
+      { label: `${name} · dark`, fill: DOCK, things: [overlay] },
+    ];
+  if (key === "gate")
+    return [
+      on("GRASS", [overlay]),
+      on("FOREST", [overlay]),
+      on("GRASS", [overlay, { kind: "unit", raster: fighter }], " + Fighter"),
+      on(
+        "GRASS",
+        [overlay, { kind: "unit", raster: juggernaut }],
+        " + Juggernaut",
+      ),
+      { label: `${name} · dark`, fill: DOCK, things: [overlay] },
+    ];
+  if (key === "well")
+    return [
+      on("GRASS", [overlay]),
+      on("GRASS", [overlay, { kind: "unit", raster: fighter }], " + Fighter"),
+      { label: `${name} · dark`, fill: DOCK, things: [overlay] },
+    ];
   // Interface and effect pieces.
   const centre: Thing = { kind: "centre", raster };
   const stages: Stage[] = [
@@ -471,6 +586,33 @@ function boardStages(
     );
   if (key === "salvage")
     stages.push(on("SHALLOW", [centre]), on("DEEP", [centre]));
+  if (key === "gateTraverse")
+    stages.push(
+      on(
+        "GRASS",
+        [
+          ...(pieces.gate === undefined
+            ? []
+            : [{ kind: "overlay", raster: pieces.gate } as const]),
+          { kind: "unit", raster: fighter },
+          { kind: "centre", raster, dy: -14 },
+        ],
+        " over Fighter on gate",
+      ),
+    );
+  if (key === "coinSplash")
+    stages.push(
+      on(
+        "GRASS",
+        [
+          ...(pieces.well === undefined
+            ? []
+            : [{ kind: "overlay", raster: pieces.well } as const]),
+          { kind: "centre", raster },
+        ],
+        " over Well",
+      ),
+    );
   if (key === "provoked") {
     // Placeholder position: above the unit, where the UI bead may put it.
     const spider = pieces.spider;
@@ -505,6 +647,19 @@ const NAMES: Readonly<Record<PieceKey, string>> = {
   blessing: "Shrine blessing",
   salvage: "Salvage coins",
   provoked: "Provoked",
+  bigfoot: "Bigfoot",
+  bigfootPortrait: "Bigfoot portrait",
+  saucer: "Downed Saucer",
+  graveyard: "Graveyard",
+  gate: "Gate",
+  well: "Wishing Well",
+  iconSaucer: "Icon saucer",
+  iconGraveyard: "Icon graveyard",
+  iconGate: "Icon gate",
+  iconBigfoot: "Icon Bigfoot",
+  iconWell: "Icon well",
+  gateTraverse: "Gate traverse",
+  coinSplash: "Coin splash",
 };
 const BOARD_KEYS: readonly PieceKey[] = [
   "spider",
@@ -512,6 +667,23 @@ const BOARD_KEYS: readonly PieceKey[] = [
   "fountain",
   "shrine",
   "wreck",
+];
+const ROUND2_BOARD_KEYS: readonly PieceKey[] = [
+  "bigfoot",
+  "saucer",
+  "graveyard",
+  "gate",
+  "well",
+];
+const ROUND2_INTERFACE_KEYS: readonly PieceKey[] = [
+  "bigfootPortrait",
+  "iconSaucer",
+  "iconGraveyard",
+  "iconGate",
+  "iconBigfoot",
+  "iconWell",
+  "gateTraverse",
+  "coinSplash",
 ];
 const INTERFACE_KEYS: readonly PieceKey[] = [
   "portrait",
@@ -573,10 +745,14 @@ async function pieceSheets(
   return files;
 }
 
-/** The Spider beside a Fighter and the giants, each on its own Grass cell. */
+/**
+ * The Spider and Bigfoot beside a Fighter and the giants, each on its own
+ * Grass cell.
+ */
 async function scaleSheet(library: Library, out: string): Promise<string[]> {
   const spider = library.pieces.spider;
   if (spider === undefined) return [];
+  const bigfoot = library.pieces.bigfoot;
   const row: Stage[] = [
     {
       label: "Fighter",
@@ -588,6 +764,15 @@ async function scaleSheet(library: Library, out: string): Promise<string[]> {
       terrain: "GRASS",
       things: [{ kind: "unit", raster: spider }],
     },
+    ...(bigfoot === undefined
+      ? []
+      : [
+          {
+            label: "Bigfoot",
+            terrain: "GRASS",
+            things: [{ kind: "unit", raster: bigfoot }],
+          } as const,
+        ]),
   ];
   for (const [label, file] of GIANTS)
     row.push({
@@ -671,6 +856,160 @@ async function sceneSheet(library: Library, out: string): Promise<string[]> {
     path.join(out, "scene-1x.png"),
   );
   return ["scene-x2.png", "scene-1x.png", "scene-zoom-0.75.png"];
+}
+
+/**
+ * The camp guards (no new sprite, spec section 34.2): each guard as
+ * authored, with no owner colour, on Grass, Forest and Mountain and on the
+ * dark dock panel, beside the Spider and Bigfoot for comparison.
+ */
+async function guardsSheet(library: Library, out: string): Promise<string[]> {
+  const rows: Stage[][] = GUARDS.map(([label]) => {
+    const unit: Thing = {
+      kind: "unit",
+      raster: library.guards[label] as Raster,
+    };
+    return [
+      { label: `${label} · Grass`, terrain: "GRASS", things: [unit] },
+      { label: `${label} · Forest`, terrain: "FOREST", things: [unit] },
+      { label: `${label} · Mountain`, terrain: "MOUNTAIN", things: [unit] },
+      { label: `${label} · dark`, fill: DOCK, things: [unit] },
+    ];
+  });
+  const neutral: Stage[] = [];
+  for (const key of ["spider", "bigfoot"] as const) {
+    const raster = library.pieces[key];
+    if (raster !== undefined)
+      neutral.push({
+        label: `${NAMES[key]} · Grass`,
+        terrain: "GRASS",
+        things: [{ kind: "unit", raster }],
+      });
+  }
+  if (neutral.length > 0) rows.push(neutral);
+  const sheet = stageSheet(library, rows);
+  await writeSheet(path.join(out, "guards-x2.png"), sheet, 2);
+  await writeSheet(path.join(out, "guards-1x.png"), sheet, 1);
+  return ["guards-x2.png", "guards-1x.png"];
+}
+
+/**
+ * A 7 x 5 board mock of round 2: a Downed Saucer camp (two Grunts and a
+ * Shield Projector), a Graveyard with two Zombies, a gate with a Fighter
+ * beside it, Bigfoot in its Forest, and the Wishing Well with a Fighter
+ * beside it, among a Village and a Treasure chest.
+ */
+async function scene2Sheet(library: Library, out: string): Promise<string[]> {
+  const { pieces } = library;
+  if (ROUND2_BOARD_KEYS.some((key) => pieces[key] === undefined)) return [];
+  const rows = ["GGGGGFF", "GGGGFFF", "GGMGGFF", "GGGGGGF", "GGFGGGG"];
+  const terrainOf: Readonly<Record<string, Terrain>> = {
+    G: "GRASS",
+    F: "FOREST",
+    M: "MOUNTAIN",
+  };
+  const top = 28;
+  const raster = blank(7 * CELL, top + 5 * CELL, PANEL);
+  const grass = library.terrain.GRASS;
+  rows.forEach((row, y) =>
+    [...row].forEach((_, x) => blit(raster, grass, x * CELL, top + y * CELL)),
+  );
+  const village = await readRaster(
+    chibi("settlements/chibi-direction-village"),
+  );
+  const treasure = await readRaster(chibi("resources/chibi-treasure"));
+  const unit = (source: RgbaRaster): Thing => ({
+    kind: "unit",
+    raster: source,
+  });
+  const guard = (label: string): Thing => unit(library.guards[label] as Raster);
+  const overlay = (key: PieceKey): Thing => ({
+    kind: "overlay",
+    raster: pieces[key] as Raster,
+  });
+  const content: Readonly<Record<string, readonly Thing[]>> = {
+    "1,0": [guard("Grunt")],
+    "2,0": [guard("Shield Projector")],
+    "1,1": [overlay("saucer")],
+    "2,1": [guard("Grunt")],
+    "5,1": [unit(pieces.bigfoot as Raster)],
+    "4,0": [{ kind: "centre", raster: treasure }],
+    "0,3": [guard("Zombie")],
+    "1,3": [overlay("graveyard")],
+    "1,4": [guard("Zombie")],
+    "3,4": [overlay("gate")],
+    "4,4": [unit(library.fighter)],
+    "4,2": [overlay("well")],
+    "3,2": [unit(library.fighter)],
+    "6,4": [unit(village)],
+  };
+  rows.forEach((row, y) => {
+    [...row].forEach((code, x) => {
+      const terrain = terrainOf[code] ?? "GRASS";
+      if (terrain === "FOREST" || terrain === "MOUNTAIN")
+        drawTerrain(raster, library, terrain, x * CELL, top + y * CELL);
+    });
+    [...row].forEach((_, x) =>
+      drawCell(raster, x * CELL, top + y * CELL, content[`${x},${y}`] ?? []),
+    );
+  });
+  const sheet = { raster, labels: [] };
+  await writeSheet(path.join(out, "scene2-x2.png"), sheet, 2);
+  await writeSheet(path.join(out, "scene2-1x.png"), sheet, 1);
+  await writeZoomed(
+    path.join(out, "scene2-zoom-0.75.png"),
+    path.join(out, "scene2-1x.png"),
+  );
+  return ["scene2-x2.png", "scene2-1x.png", "scene2-zoom-0.75.png"];
+}
+
+/**
+ * Every accepted master of both rounds, each on its own transparent-check
+ * cell with its asset id, at 1:1 and x2.
+ */
+async function contactSheet(library: Library, out: string): Promise<string[]> {
+  const keys = (Object.keys(IDS) as PieceKey[]).filter(
+    (key) => library.pieces[key] !== undefined,
+  );
+  if (keys.length === 0) return [];
+  const cellWidth = 120;
+  const cellHeight = 124;
+  const columns = 7;
+  const raster = blank(
+    columns * cellWidth,
+    Math.ceil(keys.length / columns) * cellHeight,
+    PANEL,
+  );
+  const labels: Label[] = [];
+  keys.forEach((key, index) => {
+    const piece = library.pieces[key] as Raster;
+    const left = (index % columns) * cellWidth;
+    const top = Math.floor(index / columns) * cellHeight;
+    // A grey check shows the transparent pixels.
+    const check = blank(104, 104, null);
+    for (let y = 0; y < 104; y += 1)
+      for (let x = 0; x < 104; x += 1) {
+        const light = (Math.floor(x / 8) + Math.floor(y / 8)) % 2 === 0;
+        const value = light ? 150 : 128;
+        check.data.set([value, value, value, 255], (y * 104 + x) * 4);
+      }
+    blit(raster, check, left + 8, top + 4);
+    blit(
+      raster,
+      piece,
+      left + 8 + Math.floor((104 - piece.width) / 2),
+      top + 4 + (104 - piece.height),
+    );
+    labels.push({
+      left: left + 4,
+      top: top + 110,
+      text: IDS[key].replace("chibi-curiosity-", ""),
+    });
+  });
+  const sheet = { raster, labels };
+  await writeSheet(path.join(out, "contact-sheet-x2.png"), sheet, 2);
+  await writeSheet(path.join(out, "contact-sheet-1x.png"), sheet, 1);
+  return ["contact-sheet-x2.png", "contact-sheet-1x.png"];
 }
 
 // ------------------------------------------------------------ measurements
@@ -826,6 +1165,23 @@ async function readability(library: Library): Promise<unknown> {
   for (const [label, file] of GIANTS)
     giants[label] = size(await readRaster(chibi(file)));
   const spider = pieces.spider;
+  const bigfoot = pieces.bigfoot;
+  const beside = (
+    key: PieceKey,
+    unit: RgbaRaster,
+  ): ReturnType<typeof visibleBesideUnit> | null => {
+    const overlay = pieces[key];
+    return overlay === undefined ? null : visibleBesideUnit(overlay, unit);
+  };
+  const guards: Record<string, unknown> = {};
+  for (const [label, file] of GUARDS) {
+    const raster = library.guards[label] as Raster;
+    guards[label] = {
+      file: `public/assets/chibi/${file}.png`,
+      opaqueSize: size(raster),
+      palette: paletteReport(raster),
+    };
+  }
   return {
     note: "CIE76 distances; nearFaction is the share of opaque pixels within the threshold of a faction colour. Gold coins are near the Goblin hazard yellow by design (docs/art/classes/curiosities.md section 1).",
     factionNearDeltaE: FACTION_NEAR_DELTA_E,
@@ -841,6 +1197,16 @@ async function readability(library: Library): Promise<unknown> {
             // scripts/art/unit-shadows/measure.ts, as the live units' table.
             footprint: measureUnitFootprintV7(spider),
           },
+    bigfoot:
+      bigfoot === undefined
+        ? null
+        : {
+            opaqueSize: size(bigfoot),
+            fighter: size(library.fighter),
+            footprint: measureUnitFootprintV7(bigfoot),
+          },
+    // Round 2: the guards reuse the faction sprites as authored.
+    guards,
     underUnits: {
       fountainBesideFighter:
         pieces.fountain === undefined
@@ -858,6 +1224,11 @@ async function readability(library: Library): Promise<unknown> {
         pieces.web === undefined
           ? null
           : visibleBesideUnit(pieces.web, library.fighter),
+      saucerBesideFighter: beside("saucer", library.fighter),
+      graveyardBesideFighter: beside("graveyard", library.fighter),
+      gateBesideFighter: beside("gate", library.fighter),
+      gateBesideJuggernaut: beside("gate", library.juggernaut),
+      wellBesideFighter: beside("well", library.fighter),
     },
   };
 }
@@ -866,17 +1237,26 @@ async function readability(library: Library): Promise<unknown> {
 
 /** `recipe[:candidate]` raw candidates in place of the accepted masters. */
 async function previewPieces(
-  manifest: ChibiBatchManifest,
-  records: BatchRecords,
+  sources: readonly BatchSource[],
   names: readonly string[],
 ): Promise<{ key: PieceKey; label: string; raster: Raster }[]> {
   const out: { key: PieceKey; label: string; raster: Raster }[] = [];
   for (const name of names) {
     const [recipeId = "", index = "0"] = name.split(":");
-    const record = records.recipes[recipeId];
-    if (record?.rawSheet === undefined || record.candidateSize === undefined)
+    const owners = sources.filter(
+      (source) => source.records.recipes[recipeId] !== undefined,
+    );
+    if (owners.length > 1)
+      throw new Error(`${recipeId}: a recipe of more than one batch`);
+    const source = owners[0];
+    const record = source?.records.recipes[recipeId];
+    if (
+      source === undefined ||
+      record?.rawSheet === undefined ||
+      record.candidateSize === undefined
+    )
       throw new Error(`${recipeId}: no generated candidate`);
-    const asset: ChibiAssetSpec = findAsset(manifest, record.asset);
+    const asset: ChibiAssetSpec = findAsset(source.manifest, record.asset);
     const key = (Object.keys(IDS) as PieceKey[]).find(
       (candidate) => IDS[candidate] === asset.id,
     );
@@ -902,16 +1282,14 @@ async function previewPieces(
 }
 
 async function main(): Promise<void> {
-  const manifest = await loadBatchManifest(ROOT, BATCH);
-  const records = await loadRecords(productionLayout(ROOT, BATCH), BATCH);
-  const accepted = await acceptedPieces(manifest, records);
+  const sources = [await loadSource(BATCH), await loadSource(BATCH_2)];
+  const accepted = await acceptedPieces(sources);
   const preview = option("--preview");
   if (preview !== undefined) {
     const out = option("--out");
     if (out === undefined) throw new Error("--preview needs --out DIR");
     const candidates = await previewPieces(
-      manifest,
-      records,
+      sources,
       preview.split(",").filter(Boolean),
     );
     const rows: Stage[][] = [];
@@ -930,11 +1308,18 @@ async function main(): Promise<void> {
       console.log(
         `${candidate.label}: opaque ${bounds === null ? "none" : `${bounds.left}..${bounds.right} x ${bounds.top}..${bounds.bottom}`}, mean ${report.mean}, saturated ${report.saturatedShare}, nearest faction ${report.nearestFaction.faction} ${report.nearestFaction.share}`,
       );
-      if (candidate.key === "fountain" || candidate.key === "web")
+      if (
+        candidate.key === "fountain" ||
+        candidate.key === "web" ||
+        candidate.key === "saucer" ||
+        candidate.key === "graveyard" ||
+        candidate.key === "gate" ||
+        candidate.key === "well"
+      )
         console.log(
           `  visible beside a Fighter: ${JSON.stringify(visibleBesideUnit(candidate.raster, library.fighter))}`,
         );
-      if (candidate.key === "spider")
+      if (candidate.key === "spider" || candidate.key === "bigfoot")
         console.log(
           `  footprint: ${JSON.stringify(measureUnitFootprintV7(candidate.raster))}`,
         );
@@ -953,14 +1338,27 @@ async function main(): Promise<void> {
     ...(await scaleSheet(library, OUT)),
     ...(await pieceSheets(library, INTERFACE_KEYS, OUT, "interface", [4, 1])),
     ...(await sceneSheet(library, OUT)),
+    // Round 2 (bead pulp_wars-737.13).
+    ...(await pieceSheets(library, ROUND2_BOARD_KEYS, OUT, "pieces2", [4, 1])),
+    ...(await pieceSheets(
+      library,
+      ROUND2_INTERFACE_KEYS,
+      OUT,
+      "interface2",
+      [4, 1],
+    )),
+    ...(await guardsSheet(library, OUT)),
+    ...(await scene2Sheet(library, OUT)),
+    ...(await contactSheet(library, OUT)),
   ];
-  if (written.includes("pieces-1x.png")) {
-    await writeZoomed(
-      path.join(OUT, "pieces-zoom-0.75.png"),
-      path.join(OUT, "pieces-1x.png"),
-    );
-    written.push("pieces-zoom-0.75.png");
-  }
+  for (const name of ["pieces", "pieces2"])
+    if (written.includes(`${name}-1x.png`)) {
+      await writeZoomed(
+        path.join(OUT, `${name}-zoom-0.75.png`),
+        path.join(OUT, `${name}-1x.png`),
+      );
+      written.push(`${name}-zoom-0.75.png`);
+    }
   const report = await readability(library);
   await writeFile(
     path.join(OUT, "readability.json"),
@@ -968,15 +1366,19 @@ async function main(): Promise<void> {
   );
   written.push("readability.json");
   const subjects: Record<string, ArtSubjectV7> = {};
-  for (const id of Object.values(IDS))
-    if (records.assets[id]?.status === "ACCEPTED")
-      subjects[id] = findAsset(manifest, id).subject;
+  for (const [key, id] of Object.entries(IDS)) {
+    const source = sources.find(
+      (candidate) => candidate.batch === batchOf(key as PieceKey),
+    );
+    if (source?.records.assets[id]?.status === "ACCEPTED")
+      subjects[id] = findAsset(source.manifest, id).subject;
+  }
   await writeFile(
     path.join(OUT, "index.json"),
     `${JSON.stringify(
       {
-        bead: "pulp_wars-737.5",
-        batch: BATCH,
+        beads: ["pulp_wars-737.5", "pulp_wars-737.13"],
+        batches: [BATCH, BATCH_2],
         command: "npm run art:curiosities-review",
         accepted: subjects,
         files: written,

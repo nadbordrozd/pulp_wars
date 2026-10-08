@@ -1,6 +1,12 @@
 {
-  "bead": "pulp_wars-737.5",
-  "batch": "curiosities",
+  "beads": [
+    "pulp_wars-737.5",
+    "pulp_wars-737.13"
+  ],
+  "batches": [
+    "curiosities",
+    "curiosities-2"
+  ],
   "command": "npm run art:curiosities-review",
   "accepted": {
     "chibi-curiosity-giant-spider": "UNIT:MONSTER_GIANT_SPIDER",
@@ -17,7 +23,20 @@
     "chibi-curiosity-effect-fountain-heal": "EFFECT:FOUNTAIN_HEAL",
     "chibi-curiosity-effect-shrine-blessing": "EFFECT:SHRINE_BLESSING",
     "chibi-curiosity-effect-salvage-coins": "EFFECT:SALVAGE_COINS",
-    "chibi-curiosity-status-provoked": "STATUS:PROVOKED"
+    "chibi-curiosity-status-provoked": "STATUS:PROVOKED",
+    "chibi-curiosity-bigfoot": "UNIT:NEUTRAL_BIGFOOT",
+    "chibi-curiosity-portrait-bigfoot": "PORTRAIT:NEUTRAL_BIGFOOT",
+    "chibi-curiosity-downed-saucer": "CURIOSITY:DOWNED_SAUCER",
+    "chibi-curiosity-graveyard": "CURIOSITY:GRAVEYARD",
+    "chibi-curiosity-gate": "CURIOSITY:GATE",
+    "chibi-curiosity-wishing-well": "CURIOSITY:WISHING_WELL",
+    "chibi-curiosity-icon-downed-saucer": "ICON:CURIOSITY:DOWNED_SAUCER",
+    "chibi-curiosity-icon-graveyard": "ICON:CURIOSITY:GRAVEYARD",
+    "chibi-curiosity-icon-gate": "ICON:CURIOSITY:GATE",
+    "chibi-curiosity-icon-bigfoot": "ICON:CURIOSITY:BIGFOOT",
+    "chibi-curiosity-icon-wishing-well": "ICON:CURIOSITY:WISHING_WELL",
+    "chibi-curiosity-effect-gate-traverse": "EFFECT:GATE_TRAVERSE",
+    "chibi-curiosity-effect-coin-splash": "EFFECT:COIN_SPLASH"
   },
   "files": [
     "pieces-x4.png",
@@ -29,7 +48,19 @@
     "scene-x2.png",
     "scene-1x.png",
     "scene-zoom-0.75.png",
+    "pieces2-x4.png",
+    "pieces2-1x.png",
+    "interface2-x4.png",
+    "interface2-1x.png",
+    "guards-x2.png",
+    "guards-1x.png",
+    "scene2-x2.png",
+    "scene2-1x.png",
+    "scene2-zoom-0.75.png",
+    "contact-sheet-x2.png",
+    "contact-sheet-1x.png",
     "pieces-zoom-0.75.png",
+    "pieces2-zoom-0.75.png",
     "readability.json"
   ]
 }

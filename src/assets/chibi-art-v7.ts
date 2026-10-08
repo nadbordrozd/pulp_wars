@@ -74,6 +74,7 @@ export type ArtSubjectV7 =
   | NavalFactionArtSubjectV7
   | DwarfArtSubjectV7
   | CuriosityArtSubjectV7
+  | CuriosityRound2ArtSubjectV7
   | CandyArtSubjectV7
   | NavalBranchArtSubjectV7;
 
@@ -134,6 +135,36 @@ export type CuriosityOverlayIdV7 = "WEB" | "FOUNTAIN" | "SHRINE" | "WRECK";
  */
 export type CuriosityEffectIdV7 =
   "FOUNTAIN_HEAL" | "SHRINE_BLESSING" | "SALVAGE_COINS";
+
+/**
+ * Round-2 map curiosity art subjects (bead pulp_wars-737.13,
+ * docs/product/RULESET_7_MAP_CURIOSITIES.md section 34.2,
+ * docs/art/classes/curiosities.md section 8): the neutral Bigfoot and its
+ * portrait, the four 80 x 80 tile overlays (the Downed Saucer, the
+ * Graveyard, one look for both Dimensional Gates, the Wishing Well), their
+ * legend icons with Bigfoot's footprint, and two effect sprites. The assets
+ * are in chibi-curiosities-art-manifest.ts
+ * (CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7), registered in the live
+ * direction registry; nothing asks for them until the round-2 UI bead
+ * (pulp_wars-737.16). The camp guards have no
+ * sprite of their own: they draw the Martian and Undead unit art.
+ */
+export type CuriosityRound2ArtSubjectV7 =
+  | "UNIT:NEUTRAL_BIGFOOT"
+  | "PORTRAIT:NEUTRAL_BIGFOOT"
+  | `CURIOSITY:${CuriosityRound2OverlayIdV7}`
+  | `ICON:CURIOSITY:${CuriosityRound2OverlayIdV7 | "BIGFOOT"}`
+  | `EFFECT:${CuriosityRound2EffectIdV7}`;
+
+/** The round-2 tile overlays: two camp centres, a gate, the Well. */
+export type CuriosityRound2OverlayIdV7 =
+  "DOWNED_SAUCER" | "GRAVEYARD" | "GATE" | "WISHING_WELL";
+
+/**
+ * Round-2 effect sprites: GATE_TRAVERSE (the burst at both gates when a unit
+ * traverses) and COIN_SPLASH (a Coin tossed into the Wishing Well).
+ */
+export type CuriosityRound2EffectIdV7 = "GATE_TRAVERSE" | "COIN_SPLASH";
 
 /**
  * The naval sprites a player sees (bead pulp_wars-w5j.2, NAVAL_FACTIONS.md):

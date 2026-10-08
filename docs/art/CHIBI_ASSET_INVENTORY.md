@@ -822,3 +822,23 @@ and are the fallback of every faction subject.
 Undead redo, and a Martian job whose polling was cut off): 9 PixelLab calls.
 The Human `chibi-direction-market` is unchanged and is the fallback of every
 faction subject.
+
+## Map curiosities, round 2: batch `curiosities-2` (bead `pulp_wars-737.13`)
+
+See [classes/curiosities.md, section 8](classes/curiosities.md#8-round-2-pulp_wars-73713).
+The registry lines are `CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7` in
+[`chibi-curiosities-art-manifest.ts`](../../src/assets/chibi-curiosities-art-manifest.ts),
+registered in the live direction registry; nothing draws them until the
+round-2 UI bead (`pulp_wars-737.16`).
+
+| Subjects                                                             | Assets                                                        | Class and canvas                  | Drawn today |
+| -------------------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------- | ----------- |
+| `UNIT:NEUTRAL_BIGFOOT`                                               | `chibi-curiosity-bigfoot` (fixed colours)                     | `GIANT_UNIT`, 88 x 96             | no          |
+| `PORTRAIT:NEUTRAL_BIGFOOT`                                           | `chibi-curiosity-portrait-bigfoot` (fixed colours)            | `PORTRAIT`, 48 x 48               | no          |
+| `CURIOSITY:{DOWNED_SAUCER,GRAVEYARD,GATE,WISHING_WELL}`              | `chibi-curiosity-{downed-saucer,graveyard,gate,wishing-well}` | `BUILDING`, 80 x 80, anchor 40,40 | no          |
+| `ICON:CURIOSITY:{DOWNED_SAUCER,GRAVEYARD,GATE,BIGFOOT,WISHING_WELL}` | `chibi-curiosity-icon-*`                                      | `ICON`, 48 x 48                   | no          |
+| `EFFECT:{GATE_TRAVERSE,COIN_SPLASH}`                                 | `chibi-curiosity-effect-{gate-traverse,coin-splash}`          | `EFFECT`, 48 x 48                 | no          |
+
+13 PixelLab assets from 31 recipes (31 calls, $0.28). The camp guards
+(Martian Grunt, Ray Gunner, Shield Projector; Undead Zombie) reuse the
+faction unit sprites and add no asset.

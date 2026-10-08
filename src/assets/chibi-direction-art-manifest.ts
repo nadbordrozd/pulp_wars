@@ -5,7 +5,10 @@ import {
 } from "./chibi-art-v7";
 import { chibiArtUrl } from "./chibi-art-manifest";
 import { CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7 } from "./chibi-direction-dinosaur-art-manifest";
-import { CHIBI_CURIOSITIES_ART_ASSETS_V7 } from "./chibi-curiosities-art-manifest";
+import {
+  CHIBI_CURIOSITIES_ART_ASSETS_V7,
+  CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7,
+} from "./chibi-curiosities-art-manifest";
 import { CHIBI_DIRECTION_CANDY_ART_ASSETS_V7 } from "./chibi-direction-candy-art-manifest";
 import { CHIBI_DIRECTION_DWARF_ART_ASSETS_V7 } from "./chibi-direction-dwarf-art-manifest";
 import { CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7 } from "./chibi-direction-ice-folk-art-manifest";
@@ -633,6 +636,9 @@ export function chibiDirectionArtAssetsV7(): readonly ChibiArtAssetV7[] {
     // --- Map curiosities (pulp_wars-737.5 art, wired in by pulp_wars-737.6):
     // the neutral Giant Spider, the tile overlays, icons, effects, marker.
     ...CHIBI_CURIOSITIES_ART_ASSETS_V7,
+    // --- Map curiosities, round 2 (pulp_wars-737.13): registered, but
+    // nothing asks for their subjects until the UI bead (pulp_wars-737.16).
+    ...CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7,
   ];
 }
 

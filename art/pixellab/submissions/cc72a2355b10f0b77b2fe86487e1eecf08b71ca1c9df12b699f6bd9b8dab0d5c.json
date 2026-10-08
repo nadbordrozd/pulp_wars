@@ -1,0 +1,36 @@
+{
+  "id": "effect-coin-splash-a-edit",
+  "jobId": "9c234176-dea3-4f65-a17c-52d1d315f037",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-2",
+    "asset": "chibi-curiosity-effect-coin-splash",
+    "subject": "EFFECT:COIN_SPLASH",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73713074,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase only the brown and amber ring and base under the white water splash, so the splash and the gold coin float alone on a transparent background with nothing under them. Keep the gold coin, the white water splash, the droplets, the sparkles, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Erase only the brown and amber ring and base under the white water splash, so the splash and the gold coin float alone on a transparent background with nothing under them. Keep the gold coin, the white water splash, the droplets, the sparkles, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Erase only the brown and amber ring and base under the white water splash, so the splash and the gold coin float alone on a transparent background with nothing under them. Keep the gold coin, the white water splash, the droplets, the sparkles, the outline and the art style exactly the same.",
+    "editInstruction": "Erase only the brown and amber ring and base under the white water splash, so the splash and the gold coin float alone on a transparent background with nothing under them. Keep the gold coin, the white water splash, the droplets, the sparkles, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "effect-coin-splash-a",
+      "candidate": 0,
+      "sha256": "ca39f360aa2a72bf0e5242faa092411b04c961c393c317081a20512e23006d48"
+    }
+  }
+}

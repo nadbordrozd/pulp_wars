@@ -1438,6 +1438,15 @@ pipeline pieces:
 It composes its sheets from the masters with no browser capture, and with
 `--preview recipe[:candidate],… --out DIR` lays raw candidates out the same
 way before acceptance.
+
+**Round 2** (bead `pulp_wars-737.13`) is batch `curiosities-2`, on the same
+four classes: Bigfoot (`UNIT:NEUTRAL_BIGFOOT`, a 88 x 96 giant) and its
+portrait, the Downed Saucer, Graveyard, Dimensional Gate and Wishing Well
+overlays (`CURIOSITY:{DOWNED_SAUCER,GRAVEYARD,GATE,WISHING_WELL}`), five
+icons and two effects; 13 assets from 31 recipes. The manifest's subject
+pattern accepts the new `CURIOSITY:` and `ICON:CURIOSITY:` names. The
+review reads both batches (see
+[the class document, section 8](classes/curiosities.md#8-round-2-pulp_wars-73713)).
 [`scene.ts`](../../scripts/art/faction-buildings/scene.ts) and a contact
 sheet. Its captures start Vite on port 6540 unless `--port` says otherwise
 and need `CHROME_PATH`; `--copy-to DIR` copies the outputs.

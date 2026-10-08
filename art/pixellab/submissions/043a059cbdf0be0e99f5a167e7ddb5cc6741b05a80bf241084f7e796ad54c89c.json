@@ -1,0 +1,36 @@
+{
+  "id": "graveyard-a-edit",
+  "jobId": "fc90f7c6-9be3-4d01-9154-d44f5da3ce71",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-2",
+    "asset": "chibi-curiosity-graveyard",
+    "subject": "CURIOSITY:GRAVEYARD",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-site",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 73713032,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase everything except the three grey headstones and the black iron fence: remove the green grass and the brown soil block under them completely, so the headstones and the fence stand directly on a transparent background with nothing at all under them. Keep the three headstones, the moss on them, the black iron fence, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Erase everything except the three grey headstones and the black iron fence: remove the green grass and the brown soil block under them completely, so the headstones and the fence stand directly on a transparent background with nothing at all under them. Keep the three headstones, the moss on them, the black iron fence, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Erase everything except the three grey headstones and the black iron fence: remove the green grass and the brown soil block under them completely, so the headstones and the fence stand directly on a transparent background with nothing at all under them. Keep the three headstones, the moss on them, the black iron fence, the outline and the art style exactly the same.",
+    "editInstruction": "Erase everything except the three grey headstones and the black iron fence: remove the green grass and the brown soil block under them completely, so the headstones and the fence stand directly on a transparent background with nothing at all under them. Keep the three headstones, the moss on them, the black iron fence, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "graveyard-a",
+      "candidate": 0,
+      "sha256": "c0a1102d750cf63d2f4b62500634201cd6abfc1962e443e11a831d2500e6dc18"
+    }
+  }
+}

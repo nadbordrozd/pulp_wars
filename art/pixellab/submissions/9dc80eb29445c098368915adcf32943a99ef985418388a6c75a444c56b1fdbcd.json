@@ -1,0 +1,36 @@
+{
+  "id": "graveyard-a-edit2",
+  "jobId": "a012f5c4-7722-4d3f-8628-43fbccbaefaf",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-2",
+    "asset": "chibi-curiosity-graveyard",
+    "subject": "CURIOSITY:GRAVEYARD",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-site",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 73713033,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove only the ground: erase the green grass top and the brown soil sides of the block, so nothing is drawn under the graveyard. Keep the three grey headstones and keep every black iron fence bar standing exactly where it is, with its bottom ends on the transparent background; keep the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove only the ground: erase the green grass top and the brown soil sides of the block, so nothing is drawn under the graveyard. Keep the three grey headstones and keep every black iron fence bar standing exactly where it is, with its bottom ends on the transparent background; keep the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove only the ground: erase the green grass top and the brown soil sides of the block, so nothing is drawn under the graveyard. Keep the three grey headstones and keep every black iron fence bar standing exactly where it is, with its bottom ends on the transparent background; keep the outline and the art style exactly the same.",
+    "editInstruction": "Remove only the ground: erase the green grass top and the brown soil sides of the block, so nothing is drawn under the graveyard. Keep the three grey headstones and keep every black iron fence bar standing exactly where it is, with its bottom ends on the transparent background; keep the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "graveyard-a",
+      "candidate": 0,
+      "sha256": "c0a1102d750cf63d2f4b62500634201cd6abfc1962e443e11a831d2500e6dc18"
+    }
+  }
+}
