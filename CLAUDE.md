@@ -214,10 +214,10 @@ the user explicitly requests it.
 
 Workers still must not commit or push; publication remains the root
 orchestrator's responsibility after review and validation. Git publication does
-not authorize `bd dolt push`, opening a pull request, exposing credentials, or
-including unrelated changes. Before handoff, run `git status`, update Beads
-accurately, and report the commit, push verification, checks, bead status, and
-any remaining blockers.
+not authorize opening a pull request, exposing credentials, or including
+unrelated changes. Before handoff, run `git status`, update Beads accurately,
+sync the tracker as described below, and report the commit, push verification,
+checks, bead status, and any remaining blockers.
 
 ## Beads Issue Tracker
 
@@ -232,3 +232,11 @@ bd show <id>
 bd update <id> --claim
 bd close <id>
 ```
+
+The tracker is shared through the project's Git remote so that local and web
+sessions see the same issues. The root orchestrator syncs it: run `bd dolt pull`
+after `bd prime` at the start of a session, and `bd dolt push` after closing a
+bead and whenever tracker state changes that another session should see. Sync
+only to the remote configured in `.beads/config.yaml`; never force-push the
+tracker, and if a pull or push reports a conflict, stop and surface it rather
+than overwriting either side. Workers still do not sync Beads.
