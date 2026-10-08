@@ -328,6 +328,14 @@ export const CHIBI_FACTION_MONUMENT_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
         "assets/chibi/buildings/chibi-martian-monument-slayer.png",
       ),
     },
+    {
+      id: "chibi-martian-monument",
+      subject: "IMPROVEMENT:MONUMENT:MARTIAN",
+      assetClass: "BUILDING",
+      width: 48,
+      height: 72,
+      url: chibiArtUrl("assets/chibi/buildings/chibi-martian-monument.png"),
+    },
     // --- ICE_FOLK (batch monuments-ice-folk) ---
     {
       id: "chibi-ice-folk-monument-explorer",

@@ -134,7 +134,8 @@ describe("the faction Monuments", () => {
         expect(line).toContain(`subject: ${JSON.stringify(entry.subject)}`);
         const request = records.recipes[record.recipe]?.request;
         expect(request?.endpoint, asset.id).toBe("generate-image-v2");
-        // The two redone recipes add a one-line recipe addendum.
+        // The two redone recipes add a one-line recipe addendum, the
+        // Dinosaur obelisk-b a negative one.
         expect(
           request?.layers
             .map((layer) => layer.layer)
@@ -148,11 +149,16 @@ describe("the faction Monuments", () => {
     expect([...registered.keys()]).toEqual([]);
   });
 
-  it("take five obelisks from Explorer sheets and leave the Martian one to its own recipe", async () => {
+  it("take five obelisks from Explorer sheets and give the Dinosaur and Martian ones their own", async () => {
     // The US$5 limit stopped generation after 52 calls; five obelisks are
     // reviewed compass-free pieces of their faction's Explorer sheet
-    // (fromRecipe), and the Martian sheets had none that did not repeat an
-    // achievement (FACTION_BUILDINGS.md, section 15).
+    // (fromRecipe). Bead pulp_wars-eu3r.10 generated the Martian obelisk
+    // (obelisk-a) and replaced the Dinosaur one, whose tusks and spiral read
+    // as an angry face, with obelisk-b (FACTION_BUILDINGS.md, section 15).
+    const own = new Map<Faction, { recipe: string; candidate: number }>([
+      ["DINOSAUR", { recipe: "obelisk-b", candidate: 5 }],
+      ["MARTIAN", { recipe: "obelisk-a", candidate: 12 }],
+    ]);
     const reused = new Map<Faction, number>([
       ["UNDEAD", 13],
       ["GOBLIN", 14],
@@ -190,16 +196,25 @@ describe("the faction Monuments", () => {
         expect(records.recipes["explorer-a"]?.review?.candidate, batch).toBe(
           explorer?.candidate,
         );
-      } else if (faction === "DINOSAUR") {
-        expect(obelisk.fromRecipe, batch).toBeUndefined();
-        expect(record?.recipe, batch).toBe("obelisk-a");
       } else {
-        expect(faction).toBe("MARTIAN");
+        const expected = own.get(faction);
+        if (expected === undefined) throw new Error(`${batch}: no obelisk`);
         expect(obelisk.fromRecipe, batch).toBeUndefined();
-        expect(record, batch).toBeUndefined();
+        expect(record?.status, batch).toBe("ACCEPTED");
+        expect(record?.recipe, batch).toBe(expected.recipe);
+        expect(record?.candidate, batch).toBe(expected.candidate);
+        expect(records.recipes[expected.recipe]?.review?.candidate, batch).toBe(
+          expected.candidate,
+        );
       }
     }
-    expect(CHIBI_FACTION_MONUMENT_ART_ASSETS_V7).toHaveLength(55);
+    // The Dinosaur obelisk-a sheet stays as history, rejected.
+    const dinosaur = await loadRecords(
+      productionLayout(ROOT, "monuments-dinosaur"),
+      "monuments-dinosaur",
+    );
+    expect(dinosaur.recipes["obelisk-a"]?.review?.verdict).toBe("REJECTED");
+    expect(CHIBI_FACTION_MONUMENT_ART_ASSETS_V7).toHaveLength(56);
   });
 
   it("stand on the shared Monument's footprint, in no owner colour, each one different", async () => {

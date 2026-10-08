@@ -560,18 +560,18 @@
   "DINOSAUR:OBELISK": {
     "id": "chibi-dinosaur-monument",
     "file": "public/assets/chibi/buildings/chibi-dinosaur-monument.png",
-    "sha256": "5aad961985e1a44c05f28630b38226a644b7419f2573eff436dcf07aa3edaf7f",
+    "sha256": "c6ac1ace3f5e262625a6fdec6b1d17cd39e7a5c16f7abf85013cc9d87c528217",
     "size": [
       48,
       72
     ],
     "box": {
-      "left": 6,
-      "right": 41,
+      "left": 11,
+      "right": 36,
       "top": 3,
       "bottom": 68
     },
-    "faces": 20.2,
+    "faces": 1.8,
     "light": "LEFT",
     "keyColourPixels": 0
   },
@@ -701,7 +701,24 @@
     "light": "LEFT",
     "keyColourPixels": 0
   },
-  "MARTIAN:OBELISK": null,
+  "MARTIAN:OBELISK": {
+    "id": "chibi-martian-monument",
+    "file": "public/assets/chibi/buildings/chibi-martian-monument.png",
+    "sha256": "aad7d38c553ec201b2dec8c8120045c9d8ee87963625ab257eb25c34cf545c56",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 12,
+      "right": 35,
+      "top": 5,
+      "bottom": 68
+    },
+    "faces": 74.2,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
   "ICE_FOLK:EXPLORER": {
     "id": "chibi-ice-folk-monument-explorer",
     "file": "public/assets/chibi/buildings/chibi-ice-folk-monument-explorer.png",

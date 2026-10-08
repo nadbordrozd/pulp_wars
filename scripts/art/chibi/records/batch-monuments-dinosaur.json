@@ -998,10 +998,183 @@
       "completedAt": "2026-10-08T13:58:55.120Z",
       "usageUsd": 0.095,
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 5,
+        "notes": "Candidate 5 of 16: a tall standing stone of dark green-grey basalt with an orange painted spiral on its front, two cream tusks at its top and a tuft of orange feathers on its tip; the Dinosaur Monument for a viewer who may not see the achievement, lit from the left. 0 and 8 are darker but measure lit from the right; 1, 13 and 15 a brown stone; 2 and 10 lose the feathers. Superseded by obelisk-b (bead pulp_wars-eu3r.10): enlarged, the two tusks and the spiral read as an angry face, as on every candidate of this sheet.",
+        "reviewedAt": "2026-10-08T14:02:03.657Z"
+      }
+    },
+    "obelisk-b": {
+      "id": "obelisk-b",
+      "asset": "chibi-dinosaur-monument",
+      "jobId": "c1b592b4-2cc6-4f8a-a71a-30fe725c741d",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dinosaur",
+        "asset": "chibi-dinosaur-monument",
+        "subject": "IMPROVEMENT:MONUMENT:DINOSAUR",
+        "faction": "DINOSAUR",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22660,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dinosaur monument: one tall slender standing stone of dark basalt rising straight out of the ground, tapering to a blunt point, with one big orange painted three-toed dinosaur footprint on its front, a band of green vine round its middle and a small tuft of orange feathers on its point. Dark basalt shaded on its right side, green vine, orange feathers (never red); no metal, no bone; tall and narrow. Monument only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "face, eyes, mouth, beak, tusks, horns, spiral, compass, wheel, anchor, sword, crown, wreath"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur monument: one tall slender standing stone of dark basalt rising straight out of the ground, tapering to a blunt point, with one big orange painted three-toed dinosaur footprint on its front, a band of green vine round its middle and a small tuft of orange feathers on its point. Dark basalt shaded on its right side, green vine, orange feathers (never red); no metal, no bone; tall and narrow. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people, face, eyes, mouth, beak, tusks, horns, spiral, compass, wheel, anchor, sword, crown, wreath",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur monument: one tall slender standing stone of dark basalt rising straight out of the ground, tapering to a blunt point, with one big orange painted three-toed dinosaur footprint on its front, a band of green vine round its middle and a small tuft of orange feathers on its point. Dark basalt shaded on its right side, green vine, orange feathers (never red); no metal, no bone; tall and narrow. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people, face, eyes, mouth, beak, tusks, horns, spiral, compass, wheel, anchor, sword, crown, wreath."
+      },
+      "submittedAt": "2026-10-08T15:24:05.028Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dinosaur/obelisk-b.png",
+      "rawSheetSha256": "bcdf60adb85ce4a5afd696ae3360fec4a25c284db98146a17c5d2055d622b390",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0351,
+          "footprintWidthShare": 0.8333,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8966,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1563,
+          "footprintWidthShare": 0.8621,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0401,
+          "footprintWidthShare": 0.931,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.931,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0142,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T15:25:16.995Z",
+      "usageUsd": 0.095,
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 5,
-        "notes": "Candidate 5 of 16: a tall standing stone of dark green-grey basalt with an orange painted spiral on its front, two cream tusks at its top and a tuft of orange feathers on its tip; the Dinosaur Monument for a viewer who may not see the achievement, lit from the left. 0 and 8 are darker but measure lit from the right; 1, 13 and 15 a brown stone; 2 and 10 lose the feathers.",
-        "reviewedAt": "2026-10-08T14:02:03.657Z"
+        "notes": "Candidate 5 of 16: a tall tapering standing stone of dark basalt with a big orange painted three-toed dinosaur footprint on its front, a double band of green vine round its middle and a tuft of orange feathers on its point; the Dinosaur Monument for a viewer who may not see the achievement, no achievement motif and no face (it replaces obelisk-a 5, whose tusks and spiral read as an angry face at x4), lit from the left. 2, 4 and 14 are also lit from the left but 2 has no vine, 4 a mop of feathers and 14 a crossed vine like an X; 0, 1, 3 and 8 to 11 lose the vine or the feathers or grow a stepped foot; 6, 7, 12, 13 and 15 measure flat; 10 is lit from the right.",
+        "reviewedAt": "2026-10-08T15:26:00.351Z"
       }
     },
     "sea-dog-a": {
@@ -1345,13 +1518,13 @@
       "subject": "IMPROVEMENT:MONUMENT:DINOSAUR",
       "assetClass": "BUILDING",
       "status": "ACCEPTED",
-      "recipe": "obelisk-a",
+      "recipe": "obelisk-b",
       "candidate": 5,
-      "candidateSha256": "0720f542737f0426e26dc890dda0b83cb8a70163618f6676e38b08e9eaa03842",
+      "candidateSha256": "b5733cb49a076e36372722d2516e28a8ada7cd3bf6858bc9daf99dca760963b2",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-dinosaur-monument.png",
-        "sha256": "5aad961985e1a44c05f28630b38226a644b7419f2573eff436dcf07aa3edaf7f",
-        "pixelSha256": "253aff352a2b404d6081338879eff91a11f0e82267768e31fdb671184efe622f",
+        "sha256": "c6ac1ace3f5e262625a6fdec6b1d17cd39e7a5c16f7abf85013cc9d87c528217",
+        "pixelSha256": "bb092aa0ab7217f8e0054956b0b844f4d3db343f8c4c4c40ea9452e10942f053",
         "width": 48,
         "height": 72
       },
@@ -1378,8 +1551,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Candidate 5 of 16: a tall standing stone of dark green-grey basalt with an orange painted spiral on its front, two cream tusks at its top and a tuft of orange feathers on its tip; the Dinosaur Monument for a viewer who may not see the achievement, lit from the left. 0 and 8 are darker but measure lit from the right; 1, 13 and 15 a brown stone; 2 and 10 lose the feathers.",
-      "acceptedAt": "2026-10-08T14:02:03.657Z"
+      "notes": "Candidate 5 of 16: a tall tapering standing stone of dark basalt with a big orange painted three-toed dinosaur footprint on its front, a double band of green vine round its middle and a tuft of orange feathers on its point; the Dinosaur Monument for a viewer who may not see the achievement, no achievement motif and no face (it replaces obelisk-a 5, whose tusks and spiral read as an angry face at x4), lit from the left. 2, 4 and 14 are also lit from the left but 2 has no vine, 4 a mop of feathers and 14 a crossed vine like an X; 0, 1, 3 and 8 to 11 lose the vine or the feathers or grow a stepped foot; 6, 7, 12, 13 and 15 measure flat; 10 is lit from the right.",
+      "acceptedAt": "2026-10-08T15:26:00.351Z"
     },
     "chibi-dinosaur-monument-conqueror": {
       "id": "chibi-dinosaur-monument-conqueror",

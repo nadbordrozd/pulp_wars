@@ -183,6 +183,18 @@
         "height": 72
       },
       "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dinosaur obelisk, the Monument a viewer sees when its achievement is hidden, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "obelisk-b",
+      "asset": "chibi-dinosaur-monument",
+      "endpoint": "generate-image-v2",
+      "seed": 22660,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "negativeAddendum": "face, eyes, mouth, beak, tusks, horns, spiral, compass, wheel, anchor, sword, crown, wreath",
+      "notes": "Bead pulp_wars-eu3r.10: obelisk-a's two tusks and painted spiral read as an angry face at x4 (FACTION_BUILDINGS.md, section 15). The subject line now asks for a tapering basalt stone with a painted three-toed footprint, a vine band and a feather tuft, and the negative forbids a face and every achievement motif."
     }
   ]
 }

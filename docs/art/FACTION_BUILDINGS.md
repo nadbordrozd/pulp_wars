@@ -1035,8 +1035,8 @@ were passed over is in the records.
 | -------- | --------------- | --------------- | ------------- | ---------------- | ----------------- | ------------- | ------------- | ------------------------ |
 | Undead   | `explorer-a` 2  | `engineer-a` 0  | `muster-a` 3  | `conqueror-a` 3  | `land-baron-a` 1  | `sea-dog-a` 1 | `slayer-a` 10 | `explorer-a` 13 (reused) |
 | Goblin   | `explorer-a` 8  | `engineer-a` 0  | `muster-a` 11 | `conqueror-a` 10 | `land-baron-a` 5  | `sea-dog-a` 0 | `slayer-a` 2  | `explorer-a` 14 (reused) |
-| Dinosaur | `explorer-a` 5  | `engineer-a` 12 | `muster-a` 12 | `conqueror-a` 10 | `land-baron-a` 6  | `sea-dog-a` 3 | `slayer-a` 7  | `obelisk-a` 5            |
-| Martian  | `explorer-a` 10 | `engineer-a` 0  | `muster-a` 8  | `conqueror-a` 0  | `land-baron-a` 10 | `sea-dog-a` 5 | `slayer-a` 8  | not made (pending)       |
+| Dinosaur | `explorer-a` 5  | `engineer-a` 12 | `muster-a` 12 | `conqueror-a` 10 | `land-baron-a` 6  | `sea-dog-a` 3 | `slayer-a` 7  | `obelisk-b` 5            |
+| Martian  | `explorer-a` 10 | `engineer-a` 0  | `muster-a` 8  | `conqueror-a` 0  | `land-baron-a` 10 | `sea-dog-a` 5 | `slayer-a` 8  | `obelisk-a` 12           |
 | Ice Folk | `explorer-a` 1  | `engineer-b` 6  | `muster-a` 13 | `conqueror-a` 0  | `land-baron-a` 13 | `sea-dog-a` 6 | `slayer-a` 9  | `explorer-a` 9 (reused)  |
 | Dwarf    | `explorer-a` 4  | `engineer-a` 6  | `muster-a` 13 | `conqueror-a` 15 | `land-baron-a` 2  | `sea-dog-a` 9 | `slayer-a` 9  | `explorer-a` 2 (reused)  |
 | Candy    | `explorer-a` 4  | `engineer-a` 3  | `muster-a` 2  | `conqueror-a` 0  | `land-baron-b` 0  | `sea-dog-a` 4 | `slayer-a` 4  | `explorer-a` 2 (reused)  |
@@ -1048,7 +1048,9 @@ were passed over is in the records.
 - **PixelLab calls: 52** (US$4.94; 0.095 each): 49 first recipes, the
   Dinosaur obelisk and two redone recipes. Six calls lost their poll
   connection ("fetch failed") after the job was paid; `art:chibi -- resume`
-  (below) fetched their candidates without a new job.
+  (below) fetched their candidates without a new job. Bead
+  `pulp_wars-eu3r.10` added two (US$0.19): the Martian obelisk and the
+  Dinosaur `obelisk-b`.
 - **Redone.** `land-baron-a` of the Candy ran its wafer signpost into the
   canvas edge in every candidate and had owner key red in most jewels;
   `land-baron-b` adds "Small signpost; nothing touches the edges."
@@ -1073,13 +1075,23 @@ were passed over is in the records.
   trace of the Explorer prompt). Each obelisk keeps its own `obelisk-a`
   recipe; a later dedicated generation supersedes the reuse when
   accepted.
-- **Not made: the Martian obelisk.** Every Martian candidate either
-  carries a motif (all sixteen Explorers stand by a telescope) or is the
-  Sea Dog's column without its anchor, which would read as the Sea Dog.
-  `obelisk-a` is pending (one call, about US$0.095, needs the user's
-  approval above the limit); until then a Martian Monument a viewer may
-  not identify falls back to the shared obelisk.
-- **No red, inside the canvas.** None of the fifty-five has a pixel of the owner
+- **The Martian obelisk** (bead `pulp_wars-eu3r.10`, `obelisk-a` 12).
+  No candidate of the achievement sheets would do (every Explorer stands
+  by a telescope, and a bare column reads as the Sea Dog), so it has its
+  own call: a silver-white chrome needle spire like a rocket antenna on
+  three gunmetal fins, a chrome ring round its middle and a hot magenta
+  light on its tip. The sixteen were near twins; 12 has the tip light
+  that best survives 1:1.
+- **The Dinosaur obelisk, redone** (bead `pulp_wars-eu3r.10`, `obelisk-b`
+  5). On `obelisk-a` the two cream tusks at the top and the painted
+  spiral read as an angry face when enlarged, on all sixteen candidates;
+  its verdict is now rejected. `obelisk-b` changes the subject line (a
+  tapering basalt stone with one orange painted three-toed footprint, a
+  vine band and a tuft of orange feathers, no bone) and adds a negative
+  (face, eyes, mouth, beak, tusks, horns, spiral and every achievement's
+  motif). The stone is now the near-black basalt of the set, not the
+  brown one of candidate `obelisk-a` 5.
+- **No red, inside the canvas.** None of the fifty-six has a pixel of the owner
   key red; each is seated 3 px above the bottom and inside x 1 to 46.
 
 ### In the game
@@ -1124,8 +1136,11 @@ not made is a dashed "missing" cell. Tests:
   face is the lit one; the test lists both. The Dwarf Engineer and Conqueror
   are flat (-0.6, +1.4): every other Dwarf candidate of those two was lit
   from the right.
-- **The Dinosaur obelisk's tusk and painted spiral can read as a face** at
-  x4 (a tusk like an eyebrow); at 1:1 it is a standing stone.
+- **The Dinosaur obelisk's footprint** is a three-toed track pointing
+  down; at 1:1 it is an orange mark that could pass for a flame. The
+  Martian obelisk is a rocket-like spire, the plainest Martian piece, and
+  shares the Explorer's chrome needle outline (as the Human obelisk shares
+  the Human Explorer's).
 - **The Candy Explorer's rose looks like a biscuit** with a bolt, and the
   Candy Slayer has a rose-brown halo round its whole outline.
 - **The reused obelisks resemble their faction's Explorer** in outline
