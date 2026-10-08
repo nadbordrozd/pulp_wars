@@ -34,6 +34,13 @@ with the pending [Dwarf overlay](RULESET_7_DWARVES.md) and the pending
 does not mention stays in force. Appendix A records the first draft, the
 critique, and what the critique changed.
 
+**Round 2** (`pulp_wars-737.12`, spec, not yet implemented): sections 22
+to 38 and Appendix B add five more kinds (the Downed Saucer and the
+Graveyard, two neutral camps; the Dimensional Gates; and two easter eggs,
+Bigfoot and the Wishing Well) for beads `pulp_wars-737.13` to
+`pulp_wars-737.17`. Unlike sections 1 to 21, that part is a live spec; see
+[section 22](#22-round-2-source-and-scope).
+
 **Source.** The user, 2026-10-03: "figure out some more interesting random
 things on the map. they are there to add color and occasional extra
 tactical consideration. like random neutral monster roaming the map minding
@@ -1009,6 +1016,873 @@ this stage), with no identity change and no tuning:
   25 (as numbered since `7r38`), and the gates of the
   [release validation](../validation/RULESET_7_RELEASE.md).
 
+## 22. Round 2: source and scope
+
+**Status:** spec (`pulp_wars-737.12`), not yet implemented. Sections 22 to
+38 and [Appendix B](#appendix-b-round-2-draft-critique-and-changes) are the
+live design of round 2; they overlay
+[Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r59`,
+where the round-1 curiosities are folded in
+[section 2.7](RULESET_7_CURRENT.md#27-map-curiosities). Where this part
+names a round-1 rule (sections 3 to 9), it means that rule as the code
+implements it today (sections 17 to 21 and current rules section 2.7), not
+the round-1 values of sections 4 to 9 where those differ. Every rule this
+part does not mention stays in force. The implementation beads append
+their notes after section 38.
+
+**Source.** The user, 2026-10-08 (`pulp_wars-737.12`, superseding the
+2026-10-06 requests `pulp_wars-737.10` and `pulp_wars-737.11`):
+
+> (1) Downed spaceship, only on maps without Martians: a downed flying
+> saucer with, next to it, 1 Grunt, or 2 Grunts, or 2 Grunts and a Shield
+> Projector, or a Grunt and a Ray Gunner; they walk around randomly within
+> 2 tiles of the saucer and attack anyone who gets too close. (2) Only on
+> maps without the Undead: a graveyard and 2 Zombies wandering around it;
+> they attack anyone on sight. (3) On big maps: 2 dimensional gates on
+> opposite sides of the map; a unit that steps on one emerges from the
+> other; a unit standing on the other gate gets displaced. (4) Think of 2
+> more little easter-egg curiosities and implement them.
+
+The root's proposal for (4) was **Bigfoot** (a shy neutral cryptid on big
+maps with Forest that never attacks, wanders widely through Forest, flees
+fast from any unit that comes near, and pays a large Coin bounty) and the
+**Wishing Well** (a unit standing on it may toss a Coin once for a seeded
+random small outcome: a few Coins back, a full heal, a revealed area, or
+just a splash).
+
+**Fixed by the user:** the four camp compositions; the saucer only on maps
+without a Martian seat and the graveyard only on maps without an Undead
+seat; the guards wander within 2 tiles of their saucer or graveyard; the
+saucer guards attack anyone who gets too close and the Zombies anyone on
+sight; two gates on opposite sides of big maps, a unit stepping on one
+emerging from the other, and a unit on the exit displaced. Everything else
+is a ruling of this part; the critique of
+[Appendix B](#appendix-b-round-2-draft-critique-and-changes) kept both
+easter eggs and narrowed each (B.2, C17 and C18).
+
+## 23. Round 2: summary and pillars
+
+| Curiosity             | Where                                                       | One sentence (the Help text)                                                                                                                                 |
+| --------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Downed Saucer**     | Grass or Forest, boards 16 and up, no Martian seat          | Stranded Martians guard a crashed saucer and, after every round, attack the weakest unit that came within 2 of the saucer, stood next to them, or hurt them. |
+| **Graveyard**         | Grass, boards 16 and up, no Undead seat                     | Two Zombies shamble around a graveyard and, after every round, attack the weakest unit they can reach.                                                       |
+| **Dimensional Gates** | Grass or Forest, a pair on opposite sides, boards 20 and up | A unit that steps onto a gate comes out of the other one, shoving aside any unit standing there.                                                             |
+| **Bigfoot**           | Forest, boards 20 and up                                    | A shy Bigfoot roams its forest, never fights, flees from any unit that comes within 3, and pays 12 Coins to whoever brings it down.                          |
+| **Wishing Well**      | Grass                                                       | Once per match, each player may have a unit standing on the Well toss a Coin into it for a small surprise.                                                   |
+
+The round-1 pillars hold, with one addition:
+
+1. **Colour first, tactics second.** A camp is a hazard and a small purse,
+   the gates a shortcut, Bigfoot a chase, the Well a coin flip; none is a
+   reason a match is won.
+2. **Very rare.** The per-board counts of section 4.2 are unchanged: the
+   five new kinds share the same one or two draws with the four old ones
+   (section 24.1), so no board gets more curiosities than before, and each
+   round-1 kind becomes rarer.
+3. **Every rule is visible and fits in one sentence** (the table above).
+   Everything a curiosity does is public on an explored tile; a gate's exit
+   is explored with its entrance (section 28.5).
+4. **Simplicity.** One new command (`TOSS_COIN`, the Well's choice), no new
+   terrain, no new status. Every neutral unit is a unit of the Spider's
+   neutral owner, acts in the Spider's neutral turn, and has the Spider's
+   immunities.
+5. **Neutral when absent.** The option off is byte for byte the option off
+   of `7r59`; a match whose board drew none of the new kinds has no
+   `TOSS_COIN`, no gate stop, and no extra neutral unit.
+6. **One danger per board** (new). A board has at most one hostile neutral
+   group: the Giant Spider, a Downed Saucer camp, or a Graveyard
+   (section 24.1). Bigfoot never attacks and does not count.
+
+The option (section 3) is unchanged: `curiosities: false` switches every
+kind of both rounds off. The setup hint becomes "Rare sights on the map:
+monsters, camps, gates, a well, and more."
+
+## 24. Generation (round 2)
+
+### 24.1 Kinds, order, weights, and eligibility
+
+Placement keeps section 4.1 (its own stream, no board rejected, run after
+the chests and the Rifts) and the count table of section 4.2. The kinds, in
+the frozen draw order:
+
+| #   | Kind            | Weight | Board            | Seats (`setup.factions`) | Terrain of its tile               |
+| --- | --------------- | -----: | ---------------- | ------------------------ | --------------------------------- |
+| 1   | `MONSTER`       |      3 | width 16 or more | any                      | Grass, Forest, or Mountain (lair) |
+| 2   | `FOUNTAIN`      |      3 | any              | any                      | Grass                             |
+| 3   | `SHRINE`        |      2 | any              | any                      | Grass or Forest                   |
+| 4   | `WRECK`         |      2 | not Dry Land     | any                      | Shallow or Deep Water             |
+| 5   | `DOWNED_SAUCER` |      2 | width 16 or more | no `MARTIAN` entry       | Grass or Forest (the camp centre) |
+| 6   | `GRAVEYARD`     |      2 | width 16 or more | no `UNDEAD` entry        | Grass (the camp centre)           |
+| 7   | `GATES`         |      2 | width 20 or more | any                      | Grass or Forest (each gate)       |
+| 8   | `BIGFOOT`       |      1 | width 20 or more | any                      | Forest (its home)                 |
+| 9   | `WISHING_WELL`  |      1 | any              | any                      | Grass                             |
+
+Each curiosity in turn, the **eligible kinds** are the kinds that are not
+yet placed, allowed by the board and the seats in the table, **not
+excluded by the one-danger rule** (once `MONSTER`, `DOWNED_SAUCER`, or
+`GRAVEYARD` is placed, the other two of these three are not eligible), and
+with at least one legal site (for `GATES`, one legal pair). With none,
+placement stops. The faction test reads `setup.factions` (every seat, AI
+and human; a mind-controlled unit later in the match changes nothing).
+
+**The stream's draws, in order** (all `nextBounded` on the curiosity
+stream of section 4.1):
+
+1. the count draw of section 4.2 (none on widths 16 and 25);
+2. for each curiosity: the kind draw over the summed weights of the
+   eligible kinds in table order; then the site draw over the kind's legal
+   sites in `(y, x)` order (for `GATES`, over the legal pairs, section
+   24.4); then
+   - `DOWNED_SAUCER`: the composition draw `nextBounded(4)` (section 26),
+     then one guard-tile draw per guard in composition order;
+   - `GRAVEYARD`: one guard-tile draw per Zombie (two);
+   - every other kind: nothing more.
+
+A **guard-tile draw** is uniform over the centre's eight neighbours, in
+`(y, x)` order, that a guard may stand on (section 25.3) and that no guard
+placed before it occupies.
+
+**Entities.** Neutral units (the Spider, the guards, Bigfoot) are created
+after every other initial entity, in the order their curiosities were
+placed, a camp's guards in composition order. Each starts at its maximum HP
+with a fresh activation and an empty `provokedBy`.
+
+**What the option on changes.** Since the kind draw now spans nine kinds,
+a board with the option on may draw different curiosities from the same
+seed at `7r59`; the option off is untouched (section 32.1).
+
+### 24.2 Where: the rules every new kind shares
+
+Every tile a new kind occupies (a camp centre, each gate, Bigfoot's home,
+the Well) obeys rules 1, 2, 3, 5, and 6 of section 4.3 as implemented
+(off the edge ring; no site, chest, resource, improvement, or Rift; 3 or
+more from every settlement centre; 5 or more from every curiosity already
+placed, counting every tile of a placed kind: a lair, a camp centre, both
+gates, Bigfoot's home; a shared or neutral landmass, reached over land
+without Mountains from a capital on a shared one). Rule 4 (5 or more from
+every capital, at most 4 between the farthest and nearest capital) holds
+for every new kind except the gates, which replace its second half with
+the pair rule of section 24.4.
+
+### 24.3 Where: each new kind
+
+| Kind            | More                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DOWNED_SAUCER` | Every lair rule of the Spider as implemented (current rules section 2.7): every tile within 2 on the board; 5 or more from every capital and 4 or more from every village centre; at least 12 of the 24 tiles around it Grass, Forest, or Mountain; no cut tile of the land graph, with or without Mountains, within 2 of it. And **at least 3** of its eight neighbours are tiles a guard may stand on at generation (section 25.3). |
+| `GRAVEYARD`     | The same, with **at least 2** such neighbours.                                                                                                                                                                                                                                                                                                                                                                                        |
+| `GATES`         | Section 24.4.                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `BIGFOOT`       | Its **habitat** at placement (section 29.2) has **at least 12** tiles, home included, and no Forest tile within 4 of home that is 3 or more from every settlement centre is a cut tile of the land graph, with or without Mountains.                                                                                                                                                                                                  |
+| `WISHING_WELL`  | Nothing more.                                                                                                                                                                                                                                                                                                                                                                                                                         |
+
+### 24.4 The gate pair
+
+A **gate tile** obeys section 24.2 (rule 4's first half only: 5 or more
+from every capital), stands on Grass or Forest, and is not a cut tile of
+the land graph, with or without Mountains (Rifts excluded), so a gate never
+closes a corridor (entering a gate ends a Move, section 28.2).
+
+A **legal pair** is two gate tiles `A` and `B`, `A` before `B` in `(y, x)`
+order, with:
+
+- **opposite sides:** Chebyshev distance from `A` to `B` at least
+  `GATE_SEPARATION_V7(width) = ceil(2 × width / 3)`: **14** on 20 x 20 and
+  **17** on 25 x 25;
+- **fair to every start:** for each capital `c`, let `g(c)` be the
+  Chebyshev distance from `c` to the nearer of `A` and `B`; the largest
+  `g(c)` minus the smallest is **at most 4**.
+
+The site draw is uniform over the legal pairs listed in lexicographic order
+of `(A, B)`, each by `(y, x)`. Both gates count as placed curiosities for
+rule 5 (the next curiosity keeps 5 from each).
+
+### 24.5 Distribution
+
+The engine bead extends the distribution validator
+(`npm run validate:ruleset7-curiosity-maps`, seeds 0–31, every map type,
+size, and AI count, with faction mixes that include and exclude the Martian
+and Undead seats) and records the count of every kind per map type and
+size. Hard checks: no `DOWNED_SAUCER` with a Martian seat, no `GRAVEYARD`
+with an Undead seat, no `GATES` or `BIGFOOT` below width 20, never two of
+the three dangers on one board, and every placed curiosity accepted by the
+independent checker of sections 24.2 to 24.4. Expected, not checked: on
+Continents and Archipelago the camps are as rare as the Spider (none in the
+round-1 measure) and the gates mostly fail rule 6 there too.
+
+## 25. Neutral camps: the shared rules
+
+A **camp** is a camp centre (a `DOWNED_SAUCER` or `GRAVEYARD` tile marker
+in `GameStateV7.curiosities`) and its **guards**: neutral units with a
+`monsters` entry whose `breed` is a guard breed and whose `home` is the
+centre. Everything the round-1 rules say of the Spider's neutral owner
+(section 8.1: owned by `NEUTRAL_OWNER_ID_V7`, hostile to every player in
+both modes, allied to nobody, no home city, never commanded), its
+immunities (section 8.6: every damage applies, no status sticks, nothing
+moves it, no healing), its death and kill credit (section 8.7), its fog
+(section 8.8), and its determinism (section 8.9) holds for every guard and
+for Bigfoot, with the differences this part states.
+
+### 25.1 The camp's area
+
+The camp's **area** is every tile within Chebyshev **2** of the centre,
+except the centre (the user's "within 2 tiles"). The centre itself is an
+ordinary tile for every player's unit (enter, stand, pass) and is never
+stood on by a guard.
+
+### 25.2 Guard stats (the neutral registration)
+
+A guard has its faction role's stats with two changes: **its Shield maximum
+is added to its HP** (a neutral unit has no Shield: the `shields` list
+admits no entry in a match without a Martian seat, and nobody recharges a
+neutral Shield), and **every guard may attack after its step** (the
+Shield Projector and the Zombie may not as faction units).
+
+| Breed              | Label            | Mechanical role | HP                 | Attack (`attack2`)        | Defense (`defense2`) | Move | Range | Abilities            | Bounty |
+| ------------------ | ---------------- | --------------- | ------------------ | ------------------------- | -------------------- | ---: | ----- | -------------------- | -----: |
+| `GRUNT`            | Grunt            | `FIGHTER`       | 10 (8 + Shield 2)  | 2 (4)                     | 1.5 (3)              |    1 | 1–2   | `ATTACK`             |      3 |
+| `RAY_GUNNER`       | Ray Gunner       | `MARKSMAN`      | 10 (8 + Shield 2)  | 3 (6), half power 1.5 (3) | 1 (2)                |    1 | 1–2   | `ATTACK`, `HEAT_RAY` |      4 |
+| `SHIELD_PROJECTOR` | Shield Projector | `GUARD`         | 15 (12 + Shield 3) | 1.5 (3)                   | 2.5 (5)              |    1 | 1     | `ATTACK`             |      4 |
+| `ZOMBIE`           | Zombie           | `GUARD`         | 18                 | 2 (4)                     | 2 (4)                |    1 | 1     | `ATTACK`             |      5 |
+
+- **No Sight, no cost, no technology, no capture, no Force Field** (the
+  neutral owner has no Force Fields), **no Bite, no Infect** (the Bitten
+  and Plague lists are empty without an Undead seat, and a guard's kill
+  raising more guards would be a respawning neutral, which round 1
+  rejected: section A.4), no advance after a kill, no Push, and **no
+  regeneration** (only the Spider regenerates).
+- **The Ray Gunner's ray** follows current rules section 20.4: full power
+  when it has not stepped in this neutral turn, half power after a step;
+  its registration has the `heatSink` mechanic, so it **never Cools** and
+  adds no `cooling` entry.
+- Constants: `CAMP_RADIUS_V7` 2, `GRUNT_BOUNTY_V7` 3,
+  `RAY_GUNNER_BOUNTY_V7` 4, `SHIELD_PROJECTOR_BOUNTY_V7` 4,
+  `ZOMBIE_BOUNTY_V7` 5.
+
+Worked examples (engine formula of current rules section 13.2, full HP,
+open Grass; "dealt / taken back"):
+
+| A guard attacks                                 | Result    | A unit attacks a guard      | Result                      |
+| ----------------------------------------------- | --------- | --------------------------- | --------------------------- |
+| Grunt, Fighter (12) next to it                  | 5 / 5     | Fighter, Grunt              | 5 / 3                       |
+| Grunt, Fighter from 2                           | 5 / none  | Fighter, Shield Projector   | 4 / 6                       |
+| Grunt, Knight (13) from 2                       | 6 / none  | Fighter, Zombie             | 5 / 5                       |
+| Ray Gunner (full), Fighter from 2               | 8 / none  | Knight, Grunt or Ray Gunner | 10, dead                    |
+| Ray Gunner (full), Knight from 2                | 10 / none | Knight, Zombie              | 12 / 3                      |
+| Ray Gunner (half, after a step), Fighter from 2 | 3 / none  | Marksman from 2, Grunt      | 5 / 3 (the Grunt reaches 2) |
+| Shield Projector, Fighter                       | 3 / 5     | Marksman from 2, Zombie     | 5 / none                    |
+| Zombie, Fighter                                 | 5 / 5     | Catapult from 3, Grunt      | 9 / none                    |
+
+So a lone Fighter that wanders in loses about 5 HP a round; a Ray Gunner
+standing still hits a scout hard from 2; one Knight kills a Grunt or Ray
+Gunner outright; the two Zombies (36 HP in all, no regeneration) want three
+or four good hits.
+
+### 25.3 Where a guard may stand, and how it moves
+
+A guard may stand on a tile of its camp's area (section 25.1) that is
+Grass, Forest, or Mountain (never a Rift or water), 3 or more from every
+settlement centre, with no unit, mound, or treasure chest: the Spider's
+standable rule (`monsterStandableV7`) with the camp centre as `home`, minus
+the centre. It moves **one step** to a Chebyshev neighbour it may stand on,
+at most once per neutral turn and only then; it exerts no zone of control
+and blocks its own tile like any other owner's unit.
+
+Because a guard always stands 3 or more from every settlement centre and
+reaches at most 2 from where it stands, **it never attacks a unit on a
+settlement centre**; a unit on a centre's first ring can be attacked only
+by a Grunt or Ray Gunner that the unit itself hurt (section 25.4).
+
+### 25.4 Provocation and the attack
+
+The **provokers of a camp** at its neutral turn are the units that are on
+the board, not neutral, and:
+
+- **Downed Saucer** ("anyone who gets too close"): stand within **2** of
+  the saucer (the **perimeter**, the area plus the centre), or stand next
+  to (Chebyshev 1) a guard of the camp, in any form, or are listed in the
+  `provokedBy` of any guard of the camp (they hurt one of them since the
+  previous neutral turn; the round-1 recording of section 18 applies to
+  each guard).
+- **Graveyard** ("anyone on sight"): every such unit. The Zombies' reach
+  (2 from the graveyard to stand, 1 to strike) bounds it: in practice
+  every unit within 3 of the graveyard.
+
+Each guard of the camp acts in unit-ID order within the neutral turn
+(section 25.5), reading the board as the earlier guards left it:
+
+1. Its **candidates** are the camp's provokers it can attack this turn:
+   at a distance within its range now, or from a tile it may step to.
+2. It picks the one with the **lowest HP**, ties broken by the **lowest
+   unit ID** (a Shield does not count, as for the Spider).
+3. If the target is within its range now, it attacks **without stepping**.
+   Otherwise it steps to the **first** tile in `(y, x)` order among the
+   tiles it may step to from which the target is within its range, then
+   attacks.
+4. The attack is the ordinary `ATTACK` exchange the Spider uses (damage
+   both ways, retaliation when the defender reaches the guard, kill
+   credit, deaths, Graves, risings, death-blast chains, Plunder, the
+   bounty, the live economy). It never advances and never pushes.
+
+With **no candidate** it **wanders**: the Spider's stateless draw of
+section 8.4 ("stay" followed by its step tiles in `(y, x)` order, one
+`nextBounded` on `randomState(seedFromText("pulp-wars-monster:" + seed +
+":" + round + ":" + unitId))`).
+
+### 25.5 The neutral turn, generalized
+
+The neutral turn of section 8.5 and current rules section 2.7 now runs when
+`monsters` is non-empty (any breed) and acts for **every neutral unit in
+unit-ID order**: the Spider attacks or wanders (unchanged), a guard attacks
+or wanders (section 25.4), Bigfoot flees or wanders (section 29.3). Then
+the Spider alone regenerates, and every `provokedBy` is cleared. The events
+are those of the Spider's turn (`NEUTRAL_TURN_STARTED`, `UNIT_MOVED`,
+`COMBAT_RESOLVED`, the death events, `MONSTER_REGENERATED`,
+`NEUTRAL_TURN_ENDED`).
+
+### 25.6 Death, bounty, and the cleared camp
+
+- A guard's death is credited by the ordinary table (section 8.7 as
+  implemented); the credited player gains the guard's bounty (section
+  25.2) through the Spider's event `MONSTER_BOUNTY_AWARDED { playerId,
+unitId, coins }`. Ordinary kill credit (Promotion, growth, Slayer,
+  Plunder) applies; a guard's own kills are credited to nobody.
+- **No respawn.** A dead guard is gone for the match and its `monsters`
+  entry is removed.
+- **The cleared camp** (no guard left) stays on the board as **scenery**:
+  the centre's marker never changes and is never claimed, removed, or
+  looted; its tile stays ordinary. A camp's whole purse is its bounties:
+  1 Grunt 3 Coins, 2 Grunts 6, 2 Grunts and a Shield Projector 10, a Grunt
+  and a Ray Gunner 7, the Graveyard 10.
+
+## 26. The Downed Saucer
+
+**One sentence:** stranded Martians guard a crashed saucer and, after every
+round, attack the weakest unit that came within 2 of the saucer, stood next
+to them, or hurt them.
+
+- **Placement:** section 24 (kind 5): only when no entry of
+  `setup.factions` is `MARTIAN`, width 16 or more, Grass or Forest.
+- **Composition**, by the composition draw `nextBounded(4)`, each equally
+  likely (the user's four, in the user's order):
+
+  | Draw | Guards, in composition order   | HP in all | Bounty in all |
+  | ---: | ------------------------------ | --------: | ------------: |
+  |    0 | Grunt                          |        10 |             3 |
+  |    1 | Grunt, Grunt                   |        20 |             6 |
+  |    2 | Grunt, Grunt, Shield Projector |        35 |            10 |
+  |    3 | Grunt, Ray Gunner              |        20 |             7 |
+
+- Each guard starts on a neighbour of the saucer (a guard-tile draw,
+  section 24.1); then the shared camp rules of section 25 apply with the
+  saucer's provocation (the perimeter, adjacency, or a hurt).
+- The saucer is scenery: it is not a Martian unit, building, or Saucer,
+  nothing salvages it, and a Martian seat never meets it (the kind is
+  never placed with one).
+
+## 27. The Graveyard
+
+**One sentence:** two Zombies shamble around a graveyard and, after every
+round, attack the weakest unit they can reach.
+
+- **Placement:** section 24 (kind 6): only when no entry of
+  `setup.factions` is `UNDEAD`, width 16 or more, Grass.
+- **Two Zombies** start on two neighbours of the graveyard (two guard-tile
+  draws); then the shared camp rules of section 25 apply with the
+  graveyard's provocation (every unit they can reach).
+- **Not a Grave.** The graveyard is a tile marker of `curiosities`, not an
+  entry of `graves`; no Undead rule reads it (and the match has no Undead
+  seat). A Zombie's death leaves no Grave for the same reason.
+
+## 28. Dimensional Gates
+
+**One sentence:** a unit that steps onto a gate comes out of the other one,
+shoving aside any unit standing there.
+
+### 28.1 The pair
+
+Two `GATE` tile markers, each naming its `partner` (section 24.4 places
+them). Gate tiles are ordinary land otherwise: never in territory (3 or
+more from every centre), never claimed or removed, a Road may cross one,
+and a Grave may lie on one. A neutral unit never stands on a gate (spacing
+and Bigfoot's habitat keep them away).
+
+### 28.2 Stepping on
+
+- **A gate stops every Move that enters it,** for every unit (flyers,
+  walkers, Rushed units, a Raider's Escape included): a `MOVE` path may end
+  on a gate but never continue past one (`MOVEMENT_ILLEGAL` with a new
+  reason `GATE_STOPS_MOVE`), the way a terrain stop works
+  (`terrainStopsMoveV7`). A unit can therefore never pass over a gate
+  without traversing it.
+- **Traversal.** A unit **traverses** when its own `MOVE` ends on a gate
+  with a non-empty path (the step onto the gate is its own), or its
+  `DISEMBARK` lands on a gate. First the command's ordinary end-of-Move
+  steps run on the entry gate (for example, Crumbs there are eaten); then
+  the unit is placed on the partner gate, after displacing any unit there
+  (section 28.3).
+- **After traversal** the Move is spent (`activation.moved` true and
+  `movedPathLength` the path's length, as before the traversal); the unit
+  may still use a primary action this turn if it could after that Move
+  (`unitMayActAfterMoveV7`), and an embarked unit that landed is exhausted
+  as after any `DISEMBARK`. Arriving triggers nothing else: no zone of
+  control, capture, chest, Crumbs, claim, or Shrine at the exit.
+- **Not a traversal:** every placement or forced move onto a gate (Push,
+  the Charge! push and follow, Knockback, the Tractor Beam, an advance, an
+  Overrun, Beam Down, a rising, a hatch, a treasure or reward unit, a
+  displacement). Such a unit just stands on the gate; it traverses only by
+  later stepping off and back on. A gate is never a tunnel or rider
+  destination (the Dwarf tunnel-tile rule gains "not a gate"), so a mound
+  never lies on a gate; a tunnel may pass under one. Afloat units never
+  reach a gate (land).
+
+### 28.3 Displacing the occupant
+
+When a unit traverses and a unit (of any owner, the mover's own included)
+stands on the exit gate, that occupant is **displaced** first: it is moved
+to the first tile, in the clockwise order **N, NE, E, SE, S, SW, W, NW**
+around the exit gate, that is on the board, may hold the occupant under
+`canEnterTerrainV7` (its form, movement mode, and owner's technologies),
+holds no unit, mound, treasure chest, or gate, and is not a settlement
+centre.
+
+- The displaced unit keeps its activation, HP, Shield, and statuses; the
+  displacement is not a Move and triggers nothing (no capture, chest,
+  claim, Crumbs, or provocation of its own; standing next to a Spider or
+  inside a perimeter afterwards provokes as usual at the next neutral
+  turn). It deals no damage.
+- **Blocked.** With no such tile, nothing is displaced and **the traversal
+  does not happen**: the mover stays on the entry gate with its Move spent
+  (`GATE_BLOCKED`).
+
+### 28.4 Events
+
+`GATE_DISPLACED { unitId, from, to }` (when an occupant moves), then
+`GATE_TRAVERSED { playerId, unitId, from, to }`, or instead
+`GATE_BLOCKED { playerId, unitId, at }`; all after the command's own
+`UNIT_MOVED` or `UNIT_DISEMBARKED` and its reveals, then one
+`TILES_REVEALED` for the traversed unit's sight at the exit. Projection:
+to every viewer that has explored the gates (section 28.5) or sees a unit
+involved, by the ordinary unit-visibility rule.
+
+### 28.5 Fog: a gate shows its partner
+
+Whenever a gate tile becomes explored for a player, by any reveal, its
+partner tile becomes explored for that player **in the same reveal**
+(`TILES_REVEALED` lists both). Since a unit on an explored tile is visible,
+a player who knows one gate always sees who stands on the other, and every
+displacement is predictable from the public view.
+
+## 29. Bigfoot
+
+**One sentence:** a shy Bigfoot roams its forest, never fights, flees from
+any unit that comes within 3, and pays 12 Coins to whoever brings it down.
+
+### 29.1 Stats
+
+| Breed     | Label   | Mechanical role |  HP | Attack | Defense (`defense2`) | Flee | Range | Abilities | Regeneration | Bounty |
+| --------- | ------- | --------------- | --: | -----: | -------------------- | ---: | ----: | --------- | -----------: | -----: |
+| `BIGFOOT` | Bigfoot | `RAIDER`        |  15 |      0 | 2 (4)                |    3 |     0 | none      |            0 |     12 |
+
+- **It never attacks and never retaliates** (range 0: every attack on it
+  is unanswered, `noRetaliationReason` `OUT_OF_RANGE`). It is attacked like
+  any hostile unit and gets the Forest cover (1.5) of a neutral defender.
+- Constants `BIGFOOT_HP_V7` 15, `BIGFOOT_DEFENSE2_V7` 4,
+  `BIGFOOT_HABITAT_RADIUS_V7` 4, `BIGFOOT_ALERT_RADIUS_V7` 3,
+  `BIGFOOT_FLEE_STEPS_V7` 3, `BIGFOOT_BOUNTY_V7` 12.
+- Worked examples (full HP; open / Forest): a Fighter deals 5 / 4, a
+  Knight 12 / 10, a Catapult 8 / 7, a Juggernaut 12 / 10. A Knight and a
+  Fighter in one turn kill it in its Forest.
+
+### 29.2 Habitat
+
+Its **home** is its placement tile. Its **habitat** is every tile within
+Chebyshev **4** of home that is **Forest**, 3 or more from every settlement
+centre, and **3 or more from every other curiosity tile** on the board (a
+lair, a camp centre, a gate, a Fountain, Shrine, Wreck, or Well), so it
+never enters a Spider's or a camp's area and never stands on a gate.
+Bigfoot may stand on a habitat tile with no unit, mound, or treasure chest.
+Territory never reaches its habitat (3 from every centre), so its Forest is
+never cleared; a Shrine or Wreck that leaves the board can only widen it.
+
+### 29.3 Its turn: flee or wander
+
+In the neutral turn (section 25.5):
+
+- **Alert.** When any unit that is not neutral is on the board within
+  Chebyshev **3** of it, Bigfoot **flees**: among the tiles it can reach in
+  **0 to 3 steps**, each step to a Chebyshev neighbour it may stand on
+  (section 29.2; it cannot pass any unit), it moves to the one with the
+  **greatest Chebyshev distance to the nearest non-neutral unit on the
+  board**; ties broken by fewer steps, then by `(y, x)` order. One
+  `UNIT_MOVED` with the whole path (none when it stays).
+- **Otherwise** it wanders like the Spider: one step or stay, by the
+  stateless draw of section 8.4 over its standable neighbours.
+- It is never provoked; its `provokedBy` is recorded like any neutral
+  unit's and has no effect.
+
+A Move-1 unit rarely reaches it; a Knight (Move 3, attacks after moving),
+a Raider, a Catapult or Battleship in range, or several units closing a
+Forest pocket do. That is the chase.
+
+### 29.4 Death and bounty
+
+As a guard (section 25.6), with `BIGFOOT_BOUNTY_V7` = **12** Coins through
+`MONSTER_BOUNTY_AWARDED`. No respawn; it leaves a Grave in a match with an
+Undead seat like any death.
+
+## 30. The Wishing Well
+
+**One sentence:** once per match, each player may have a unit standing on
+the Well toss a Coin into it for a small surprise.
+
+### 30.1 The command
+
+`TOSS_COIN { kind, unitId }`, a **primary action**. Legality, in this
+order (all rejections atomic):
+
+| #   | Requirement                                                                                                                                      | Rejection                                          |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                                                   | the ordinary unit errors                           |
+| 2   | It is in land form on the `WISHING_WELL` tile.                                                                                                   | `TOSS_COIN_NOT_LEGAL { reason: "NOT_ON_WELL" }`    |
+| 3   | It may use a primary action now (current rules section 12.2: not already acted, may act after its Move, not sluggish after a Move, not Crashed). | the ordinary activation errors                     |
+| 4   | The actor is not in the Well's `tossedBy`.                                                                                                       | `TOSS_COIN_NOT_LEGAL { reason: "ALREADY_TOSSED" }` |
+| 5   | The actor has at least 1 Coin.                                                                                                                   | `INSUFFICIENT_COINS { cost: 1 }`                   |
+
+An Egg has no activation and never tosses; a neutral unit never commands.
+
+### 30.2 The outcome
+
+The actor pays `WELL_TOSS_COST_V7` = **1** Coin, joins the Well's
+`tossedBy` (sorted), and the unit's primary action is spent. The outcome is
+one `nextBounded(4)` on
+`randomState(seedFromText("pulp-wars-well:" + seed + ":" + playerId))`: a
+stateless draw keyed by the player, so it never touches the match PRNG and
+does not depend on when, or with which unit, the player tosses.
+
+| Draw | Outcome  | Effect                                                                                                                        |
+| ---: | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+|    0 | `SPLASH` | Nothing (the Coin is gone).                                                                                                   |
+|    1 | `COINS`  | The actor gains `WELL_COINS_V7` = **5** Coins (4 net).                                                                        |
+|    2 | `HEAL`   | The unit heals to its maximum HP (HP only, like the Fountain: cures nothing, recharges no Shield; a construct heals nothing). |
+|    3 | `VISION` | Every tile within Chebyshev `WELL_VISION_RADIUS_V7` = **5** of the Well becomes explored for the actor.                       |
+
+Event `COIN_TOSSED { playerId, unitId, at, outcome, coinsGained, hpAfter }`
+(`coinsGained` 5 or 0, `hpAfter` the unit's HP after), then
+`TILES_REVEALED` for `VISION`. Projected in full to the actor and to every
+viewer that sees the unit (the outcome is visible at the Well and its
+amounts are rule constants).
+
+### 30.3 The tile
+
+The Well is Grass for the match, never claimed or removed; units enter and
+stand on it normally and nothing happens on entering. It stays after every
+player has tossed.
+
+## 31. Interactions (round 2)
+
+The round-1 table of section 9 applies to every neutral unit as to the
+Spider. In addition:
+
+| Rule or faction        | Ruling                                                                                                                                                                                                                                                           |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cities, capture, siege | No new curiosity is in territory; no neutral unit stands within 2 of a centre or attacks a unit on one (sections 25.3 and 29.2). Gates and the Well are never owned.                                                                                             |
+| Movement               | A gate stops every Move that enters it (section 28.2) and is never a cut tile, so no route is closed. Camp centres and the Well are ordinary to enter.                                                                                                           |
+| One danger per board   | Never a Spider and a camp, or two camps, on one board (section 24.1).                                                                                                                                                                                            |
+| Round-1 curiosities    | Every curiosity keeps 5 from every other (rule 5), so a guard's reach (at most 4 from its centre) never covers a unit on a Fountain, Shrine, Wreck, gate, or Well; Bigfoot keeps 3 from every curiosity tile.                                                    |
+| Human                  | A Knight that kills a guard advances onto its tile (inside the camp) and may Overrun; Field Defense never stands in a camp (never territory).                                                                                                                    |
+| Undead                 | No Graveyard in an Undead match. Wail and Lich splash damage guards and record `provokedBy`; a guard or Bigfoot leaves a Grave like any death; an Undead seat's Zombie that kills a neutral unit raises nothing (immune to Infect).                              |
+| Goblin                 | Gang Up, Kaboom, and death blasts work on neutral units; Plunder and the bounty both pay the credited Goblin seat.                                                                                                                                               |
+| Dinosaur               | A neutral kill grows a dinosaur. Charge! damages a guard but never pushes it. Eggs are never on or next to a gate (Eggs lie within 1 of a centre).                                                                                                               |
+| Martian                | No Downed Saucer in a Martian match. Mind Control and the Tractor Beam never take a neutral unit. A Saucer or Mothership that flies onto a gate stops and traverses; a Tractor Beam pull or Beam Down onto a gate does not traverse.                             |
+| Ice Folk               | Chill, Bolas, Cold Snap, and the Cold Aura skip neutral units. A Glide onto a gate stops there; gates are land, so no slide reaches one.                                                                                                                         |
+| Dwarf                  | A gate is never a tunnel or rider destination (a tunnel may pass under it). A Gyrocopter stops on a gate and traverses. Knockback never moves a neutral unit; Knockback onto a gate does not traverse. Constructs gain nothing from the Well's `HEAL`.           |
+| Candy                  | Splat and every Candy status skip neutral units (the round-1 "no status sticks" rule). A neutral step is not a `MOVE`: it never eats Crumbs. A unit that traverses eats Crumbs on the entry gate only. A Rushed unit's extra point never carries it past a gate. |
+| Naval                  | A boat or embarked unit within a saucer's perimeter or next to a guard provokes it, and a Graveyard Zombie attacks one it can reach from the shore. Afloat units never traverse or toss.                                                                         |
+| Achievements           | Slayer counts every neutral kill like any kill; nothing else counts the new kinds.                                                                                                                                                                               |
+| Showcase, missions     | Never any curiosity (section 17), whatever the field.                                                                                                                                                                                                            |
+
+## 32. Engine impact (round 2)
+
+### 32.1 Identity and compatibility
+
+- **One identity bump** (bead `pulp_wars-737.14`): the next free
+  `pulp-wars-poc-7rNN`, appending the previous identity to
+  `PRIOR_RULESET_7_IDS` and moving the autosave key, as every bump does.
+  Earlier identities are rejected, never migrated.
+- Map revision unchanged (no tile changes). The `*_CURIOSITIES` generation
+  rules place the round-2 kinds; no mode reproduces the round-1 placement
+  with the option on (earlier identities are rejected anyway).
+- **Off is unchanged:** with `curiosities: false`, generation and every
+  pinned match equal those of the previous identity apart from the
+  identity, for every seed, size, AI count, map type, and faction mix.
+
+### 32.2 State
+
+| Field                     | Shape                                                                                                                                                                                                                                   | Parsing rejects                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GameStateV7.curiosities` | A union sorted by `(y, x)`: `{ kind: "FOUNTAIN" \| "SHRINE" \| "WRECK" \| "DOWNED_SAUCER" \| "GRAVEYARD", at }`, `{ kind: "GATE", at, partner }`, `{ kind: "WISHING_WELL", at, tossedBy: PlayerId[] }` (`tossedBy` sorted, seats only). | What round 1 rejects; a `GATE` without exactly one other `GATE` naming it as `partner`, or more than one pair; a `DOWNED_SAUCER` with a Martian seat or a `GRAVEYARD` with an Undead seat; two camps, or a camp with a Spider; a `GATE` below width 20; a camp centre or gate on the wrong terrain; a `tossedBy` entry that is not a seat, duplicated, or unsorted.                                               |
+| `GameStateV7.monsters`    | `{ unitId, breed, home, provokedBy }[]`, sorted by `unitId`; `breed` one of `GIANT_SPIDER`, `GRUNT`, `RAY_GUNNER`, `SHIELD_PROJECTOR`, `ZOMBIE`, `BIGFOOT`.                                                                             | What round 1 rejects, per breed: a unit whose role is not the breed's mechanical role, whose maximum HP is not the breed's, or that stands where its breed may not (the lair area, its camp's area, its habitat); a guard whose `home` is not a camp centre of a matching kind (Grunt, Ray Gunner, Shield Projector: a saucer; Zombie: a graveyard); a `BIGFOOT` below width 20; more than one Spider or Bigfoot. |
+
+No other field. A state with `curiosities: false` serializes as before
+apart from the identity.
+
+### 32.3 The neutral registration by breed
+
+The registration becomes a table keyed by `breed` (section 25.2, section
+29.1, and the Spider's row), not by role: the Zombie and the Shield
+Projector share the mechanical role `GUARD`. The kind resolvers
+(`unitRoleRuleV7`, `unitRoleMechanicsV7`, `unitCapabilitiesV7`) read a
+neutral unit's breed from its `monsters` entry; the roster they take gains
+the `monsters` list, as it carries `mindControlled`. Every neutral
+breed's capabilities are those of the empty technology list; the Ray
+Gunner's mechanics carry `heatSink`. The owner-reader audit of sections
+10.5 and 18 is extended: every new call site is classified, and the fuzz
+of section 18 places a camp of every composition, a Graveyard, and Bigfoot
+next to units of all eight factions.
+
+### 32.4 Commands and events
+
+- **New command** `TOSS_COIN` (section 30.1), placed before `RECOVER` in
+  `COMMAND_KIND_ORDER_V7`; offered by the command query only to a unit
+  that may toss. Any command naming a neutral unit is refused as before.
+- **New events** (`DOMAIN_EVENT_KIND_ORDER_V7` places each next to its
+  precedent): `GATE_DISPLACED`, `GATE_TRAVERSED`, `GATE_BLOCKED` (after
+  `UNIT_MOVED`), and `COIN_TOSSED`. `MONSTER_BOUNTY_AWARDED` now pays each
+  breed's bounty.
+- **New reasons**: `MOVEMENT_ILLEGAL` `GATE_STOPS_MOVE`;
+  `TOSS_COIN_NOT_LEGAL` `NOT_ON_WELL` and `ALREADY_TOSSED`.
+
+### 32.5 Public queries and previews
+
+- `PlayerViewV7.curiosities` lists the new markers on explored tiles (a
+  gate with its `partner`, the Well with its `tossedBy`);
+  `PlayerViewV7.monsters` lists every visible neutral unit with its
+  `breed`.
+- `previewMonsterV7(view, unitId)` covers every visible neutral unit and
+  adds `breed`. For a guard: `home` (the camp centre), `area` (its
+  standable tiles as far as explored), `provokeTiles` (saucer: the
+  perimeter plus the tiles next to each visible guard of the camp;
+  graveyard: the guard's `reachTiles`), `reachTiles` (every tile it could
+  attack on its next turn after at most one step), `provokers`,
+  `likelyTarget`. For Bigfoot: `area` (its habitat as far as explored),
+  `provokeTiles` (the tiles within 3 of it: standing there makes it flee),
+  `reachTiles` empty, `likelyTarget` null. `exact` is false when an
+  unexplored tile lies within `1 + range` of a guard (2 for the Spider, as
+  before) or within 3 of Bigfoot.
+- `previewGateV7(view, unitId, gateAt)` for an own unit and a visible gate:
+  `exit` (the partner), `displaces` (the visible occupant's ID or null),
+  `displaceTo` (its tile by section 28.3, or null), and `blocked`. The
+  movement query marks every gate destination with its `exit`.
+- `queryCombatPreviewV7` sets `monsterRetaliates` for any visible hostile
+  neutral target: true when neither side dies and, as positions stand, the
+  attacker would be a candidate of that neutral unit (a guard: of any guard
+  of its camp) at the next neutral turn; always false for Bigfoot.
+  `queryThreatenedTilesV7` of a guard is its `provokeTiles` within its
+  `reachTiles`; of Bigfoot, none.
+- **Headless metrics:** `monsters` entries gain `breed`; new `gates`
+  (`traversals`, `displacements`, `blocked`) and `well` (`tosses` by
+  outcome).
+
+## 33. Normal AI (round 2)
+
+Bead `pulp_wars-737.15`. Everything reads the public view and previews; no
+heuristic uses a stateless draw or hidden state, and each runs only when
+the view has the curiosity it concerns, so a match without one keeps its
+decisions and pinned hashes byte for byte.
+
+- **Camps: avoid unless strong.** The Spider rules of sections 11 and 20
+  apply to every visible guard with that guard's `provokeTiles`,
+  `reachTiles`, and `monsterRetaliates`: no routine Move ends on a camp's
+  `provokeTiles`, a unit already there with no attack on a seat's unit
+  steps out when it can, and Normal attacks a guard only (a) in a hunt
+  plan that kills it this turn (valued at its bounty plus the ordinary
+  kill value) or (b) from outside every guard's reach. Never a sole city
+  defender.
+- **Threat.** Every visible guard is a threat to the own units on its
+  `provokeTiles` within its `reachTiles`, with the ordinary damage estimate.
+- **Gates.** When a unit's route goal is visible, the gate route (walk to
+  a visible gate, traverse, walk on from its exit) counts as a route in
+  the ordinary route choice when it is shorter by at least 3 turns. Normal
+  never traverses onto an exit that holds an own unit, or whose exit is on
+  a visible Spider's or camp's `provokeTiles`; it may displace an enemy.
+- **Bigfoot: opportunistic.** Normal never makes a Move toward Bigfoot.
+  It attacks Bigfoot only with a unit that has it among this turn's
+  offered attacks (including after a Move the existing hunt plan finds)
+  and no offered attack on a seat's unit.
+- **Wishing Well.** When the seat has not tossed and has at least 3 Coins,
+  the nearest own land unit that can stand on a visible free Well this turn
+  (route within its Move), is not a sole city defender, and has no offered
+  attack on a seat's unit walks there and tosses; a unit at half HP or
+  less is preferred.
+
+## 34. UI and art (round 2)
+
+### 34.1 UI
+
+Bead `pulp_wars-737.16`, extending the round-1 UI (section 19):
+
+- **Board:** the camp centres, gates, and Well as tile overlays on explored
+  tiles (drawn like the Fountain); guards and Bigfoot as units with no
+  owner colour on the neutral base; the dock chip "Neutral" (and
+  "Provoked" while a visible unit provokes the camp).
+- **Selection:** a selected guard outlines its camp's area and shades its
+  reach (the saucer's perimeter outlined too); a selected Bigfoot outlines
+  its habitat as explored; a selected gate marks its partner.
+- **Move preview:** a Move target on a camp's `provokeTiles` carries the
+  provoked marker; a gate target shows the exit and, when the exit is
+  occupied, the occupant's `displaceTo` (or "Blocked").
+- **Well:** a "Toss a Coin" command in the dock while legal; the outcome as
+  a toast and a log line.
+- **Neutral turn:** played back like the Spider's ("The wilds stir"),
+  every visible neutral unit's step, attack, and flight animated.
+- **Help:** the five sentences of section 23 join the Curiosities section;
+  the event log names each traversal, displacement, block, toss, and
+  bounty. **Gallery:** the new sprites and overlays in the Curiosities tab.
+
+### 34.2 Art (PixelLab, chibi direction)
+
+Bead `pulp_wars-737.13`, under the
+[curiosity class](../art/classes/curiosities.md) (neutral palette, no
+faction colour, black outline, nothing under a tile overlay):
+
+| Asset                                                                                                      | Kind                                    | Notes                                                                                                          |
+| ---------------------------------------------------------------------------------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `CURIOSITY:DOWNED_SAUCER`                                                                                  | 80 x 80 overlay on Grass and Forest     | A tilted, half-buried flying saucer with a scorched dent and a few sparks; dull grey metal, no Martian colour. |
+| `CURIOSITY:GRAVEYARD`                                                                                      | 80 x 80 overlay on Grass                | Three crooked headstones and a broken iron fence; weathered grey stone.                                        |
+| `CURIOSITY:GATE`                                                                                           | 80 x 80 overlay on Grass and Forest     | One look for both gates: a ring of old standing stones around a swirl of white light.                          |
+| `CURIOSITY:WISHING_WELL`                                                                                   | 80 x 80 overlay on Grass                | A round stone well with a little roof and bucket; a gold glint allowed (a coin).                               |
+| `UNIT:NEUTRAL_BIGFOOT` and its portrait                                                                    | unit sprite (giant bounds) and portrait | Shaggy umber fur, big feet, a shy hunched pose; reads at zoom 0.75 by its silhouette.                          |
+| Guards                                                                                                     | no new sprite                           | The Martian Grunt, Ray Gunner, and Shield Projector and the Undead Zombie, on the Spider's neutral base.       |
+| `ICON:CURIOSITY:{DOWNED_SAUCER,GRAVEYARD,GATE,BIGFOOT,WISHING_WELL}`, `EFFECT:{GATE_TRAVERSE,COIN_SPLASH}` | icons and effects                       | Cut from the overlays; the traverse and splash effects are short sparkle bursts.                               |
+
+LEGACY and Classic draw code markers (a saucer glyph, a headstone glyph, a
+ring glyph, a footprint glyph on a neutral disc for Bigfoot, a well
+glyph), shipped first so the rules are playable before the art.
+
+## 35. Test plan (round 2)
+
+### 35.1 Generation and the option
+
+- **Off is unchanged:** for seeds 0–31, every size, AI count, map type,
+  and faction mixes with and without Martian and Undead seats, the option
+  off reproduces the previous identity byte for byte.
+- **On changes no tile:** the same matrix with the option on has exactly
+  the tiles of the option off; neutral units take the last entity IDs in
+  placement order.
+- **Exclusions and rules:** the hard checks of section 24.5 by the
+  independent checker; the stream order of section 24.1 (composition and
+  guard-tile draws pinned on chosen seeds); gate pairs at their separation
+  and fairness; the one-danger rule.
+
+### 35.2 Rules
+
+- **Camps:** provocation per kind (perimeter, adjacency, a hurt, in reach
+  for the graveyard; a provoker out of reach is no candidate); the target
+  by HP then ID; a ranged guard firing without a step when in range and
+  stepping to the first `(y, x)` tile otherwise; the Ray Gunner at half
+  power after a step and never Cooling; the guards in unit-ID order on the
+  board the earlier ones left; the wander draw; standable tiles (never the
+  centre, never within 2 of a centre); no regeneration; each bounty; the
+  cleared camp unchanged; immunities (one test per status and forced move
+  per breed).
+- **Gates:** the stop for every movement mode; traversal by `MOVE` and
+  `DISEMBARK` only; no traversal for each forced move and placement; the
+  clockwise displacement, the occupant's own terrain rule, and the blocked
+  case; activation after traversal (act after Move, a landed unit
+  exhausted); Crumbs on the entry gate; partner exploration on every kind
+  of reveal; events and projection; never a tunnel destination.
+- **Bigfoot:** alert at exactly 3 (not 4); the flee choice and its three
+  tie-breaks; no passing through units; the habitat (Forest, centres,
+  curiosity distance); never attacking or retaliating; the bounty.
+- **Well:** each legality row; the cost; once per player; the draw per
+  player independent of round and unit; each outcome (a construct's
+  `HEAL`, `VISION` radius 5, a gate in the vision revealing its partner);
+  projection.
+- **Neutral-owner audit and fuzz** (section 32.3); **saves and replays**
+  mid-match with every kind; hashes stable.
+
+### 35.3 AI and headless
+
+- Normal never ends a routine Move on a camp's `provokeTiles`; attacks a
+  guard only under section 33; uses a gate only per section 33; never
+  moves toward Bigfoot; tosses once with a safe unit.
+- Matches without a new kind: decisions and pinned hashes unchanged.
+- Headless `match` and `batch` with the option on complete without a
+  structured failure on seeds that drew each new kind.
+
+### 35.4 UI
+
+Drawing of every new kind in the default and LEGACY looks; the gate
+preview with an occupant and when blocked; the Toss a Coin command and its
+toast; the neutral-turn playback with guards and Bigfoot; Help; the smoke
+probe on a seeded board with a camp and the gates.
+
+## 36. Acceptance criteria (round 2)
+
+1. With `curiosities: false`, generation and every pinned match of the
+   previous identity are reproduced; with `true`, no tile differs.
+2. Every placed curiosity obeys section 24, with no exclusion ever broken
+   (section 24.5) and the counts of section 4.2 unchanged.
+3. Every rule of sections 25 to 31 is implemented and tested, with exact
+   public previews for what the viewer can see.
+4. The owner-reader audit and the fuzz cover every breed (section 32.3).
+5. Normal plays matches with each new kind to completion without
+   failures, as section 33 says; matches without them are byte-identical.
+6. The board drawing, previews, the Well command, Help, and the art (or
+   its LEGACY markers) are live, on phone and desktop.
+7. The coarse check (bead `pulp_wars-737.17`, small and hand-played at the
+   user's direction) finds no error or stall and records, per new kind,
+   how often it was met, fought, used, or cleared; tuning stays inside the
+   bounds of section 37.
+
+## 37. Implementation beads (round 2)
+
+| #   | Bead               | Scope                                                                                                                                                                                                                 | Validation profile                    | Depends on                |
+| --- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | ------------------------- |
+| 1   | `pulp_wars-737.12` | This spec (sections 22 to 38, Appendix B).                                                                                                                                                                            | `docs/tracker`                        | —                         |
+| 2   | `pulp_wars-737.13` | Art of section 34.2 (crashed saucer, graveyard, gate, Bigfoot, Well, icons and effects), sampled and reviewed by `npm run art:curiosities-review`; guards reuse the faction sprites on the neutral base.              | `asset-only`                          | 1                         |
+| 3   | `pulp_wars-737.14` | Engine, one identity bump: generation (section 24), camps, gates, Bigfoot, the Well and `TOSS_COIN`, state, events, views, previews, the registration by breed, the audit and fuzz, the distribution validator, pins. | `ai/map/persistence`                  | 1, and `pulp_wars-w49.28` |
+| 4   | `pulp_wars-737.15` | Normal AI of section 33, gated; tests of section 35.3.                                                                                                                                                                | `ai/map/persistence`                  | 3                         |
+| 5   | `pulp_wars-737.16` | UI of section 34.1 with the LEGACY markers first, then the art of bead 2; Help, Gallery, the curiosities UI review, the smoke probe.                                                                                  | `ui/presentation` (+ `smoke:browser`) | 2, 3                      |
+| 6   | `pulp_wars-737.17` | Coarse check (on versus off on seeds that drew each new kind) and fold into the current rules.                                                                                                                        | `cross-cutting/release`               | 4, 5                      |
+
+The superseded user requests `pulp_wars-737.10` (saucer) and
+`pulp_wars-737.11` (gates) are closed into bead 3. The round-1 AI
+follow-up `pulp_wars-737.9` stays separate.
+
+Tuning bounds for bead 6: guard bounties 2–6 each; Bigfoot HP 12–18,
+bounty 8–15, alert radius 2–3, flee steps 2–3; Well Coins 3–6 and vision
+radius 3–6; the weights of section 24.1 by at most 1 each; the gate
+separation by at most 2. Composition odds, the one-danger rule, the user's
+radius 2, and the exclusions are not tuning knobs.
+
+## 38. Open questions for the user
+
+Each has a default the engine bead applies unless the user answers
+otherwise.
+
+1. **Camp size.** Camps appear from 16 x 16 up, like the Spider (the
+   2026-10-06 saucer note said "big maps"; the 2026-10-08 request did not).
+   _Default: 16 x 16 and up._ Or only 20 x 20 and 25 x 25, like the gates?
+2. **The camp's reward.** Each guard pays a small bounty (3 to 5 Coins; a
+   whole camp 3 to 10) and the saucer and graveyard stay as scenery.
+   _Default: bounties._ Or a salvage cache on the saucer that the first
+   unit to step on it after the camp is cleared takes (B.2, C12)?
+3. **The gate's occupant.** It is shoved to the first free tile clockwise
+   from north around the exit. _Default: shoved aside._ Or swapped
+   through the gate to the entrance (B.4)?
+4. **Bigfoot.** A chase with a 12-Coin bounty, never fighting back.
+   _Default: as specified._ Or a non-combat "sighting" that pays the first
+   unit to end a Move next to it (B.2, C17)?
+5. **The Wishing Well.** One toss per player per match, 1 Coin, one of
+   four even outcomes (nothing, 5 Coins, a full heal, a radius-5 reveal).
+   _Default: as specified._ Other outcomes, or one toss per unit?
+6. **Rarity.** The new kinds share the old count of curiosities per board,
+   so each round-1 kind (including the Spider) becomes roughly half as
+   common, and a board never has more than two curiosities. _Default:
+   share the count._ Or raise the count on 20 x 20 and 25 x 25 by one?
+7. **One danger per board.** Never a Spider and a camp, or two camps, on
+   one board. _Default: one danger._ Or allow two?
+
 ## Appendix A. Draft, critique, and changes
 
 ### A.1 Draft 1
@@ -1143,3 +2017,174 @@ rulings (C15).
 - **A Monster that chases beyond its area:** luring it into an enemy's
   cities would be fun once and griefing afterwards; the leash of 2 keeps
   every encounter local and readable.
+
+## Appendix B. Round 2: draft, critique, and changes
+
+### B.1 Draft 1
+
+Draft 1 took the user's words and the root's two proposals as literally as
+possible and reused round 1 where it could:
+
+- **Counts:** the five new kinds were **added on top** of section 4.2: one
+  more curiosity on every 20 x 20 and 25 x 25 board, drawn only from the
+  new kinds.
+- **Saucer camp:** on any board without a Martian seat; the guards were
+  ordinary Martian-kind units under the neutral owner, with their
+  **Shields, Force Field, and Cooling**; "too close" was **within 2 of any
+  guard**; the camp's reward was a **salvage cache** (10 Coins) that the
+  first unit to end a Move on the saucer took once every guard was dead.
+- **Graveyard:** two Undead-kind Zombies with **Bite and Infect** (a unit
+  they killed rose as a third neutral Zombie); "on sight" was their Sight
+  of 1, so they attacked only units next to them; no reward.
+- **Both camps** could appear with a Spider on the same board; the Zombie
+  and Shield Projector kept "cannot attack after moving".
+- **Gates:** placed on **mirrored tiles** (`(x, y)` and
+  `(width − 1 − x, height − 1 − y)`); a unit **passing over** a gate
+  anywhere in its path was moved to the other and **continued its Move**
+  with the movement left; the occupant was displaced to a **random free
+  neighbour drawn from the match PRNG**; nothing told a player where the
+  exit was or who stood on it.
+- **Bigfoot:** wandered **every Forest tile of the map**; fled **4 tiles**
+  when any unit came within 2; Defense 2, retaliated normally; bounty
+  **20** Coins.
+- **Wishing Well:** `TOSS_COIN` was a **free action** (not a primary
+  action) any unit could take **any number of times**, 1 Coin each, with
+  the outcome drawn from the **match PRNG**; the reveal outcome explored
+  radius **3** around the Well.
+
+### B.2 Critique (as a skeptical designer)
+
+- **C1. Rarity creep.** One more curiosity on every big board turns "very
+  rare" into "every big board has two or three", and the camps and gates
+  are the biggest of all. **Change:** the counts of section 4.2 stand; the
+  new kinds share the draw by weight (section 24.1). The round-1 kinds
+  become rarer; asked as open question 6.
+- **C2. Danger stacking.** A Spider plus a saucer camp, both between the
+  capitals, blocks the middle of a 20 x 20 board with two kill zones and
+  turns colour into terrain. **Change:** one danger per board (pillar 6).
+  Bigfoot and the gates are not dangers. Asked as open question 7.
+- **C3. Martian Shields on a neutral unit.** The `shields` and `cooling`
+  lists are rejected in a match without a Martian seat, which is exactly
+  where the saucer appears; the recharge runs at the owner's Start Turn,
+  which the neutral owner never has; Force Field needs a technology it
+  never has. Keeping them means a neutral Start Turn, the step round 1
+  deleted (section A.2, C7). **Change:** the Shield maximum is folded into
+  HP, the Force Field is gone, and the Ray Gunner has the Heat Sinks
+  behaviour (full when it did not step, half after a step, never Cools).
+- **C4. Infectious Zombies.** Bite and Infect need the Bitten and Plague
+  lists (empty without an Undead seat), and an Infect kill raising a third
+  Zombie is a growing, respawning neutral, which round 1 rejected
+  (section A.4). **Change:** a neutral Zombie has `ATTACK` only.
+- **C5. "Too close" around a moving guard.** A zone of 2 around each guard
+  moves every round, cannot be drawn as one outline, and reaches 4
+  from the saucer, into village territory. **Change:** the saucer's perimeter is fixed, within 2 of
+  the saucer (the user's own radius), plus the tiles next to a guard and
+  any unit that hurt one; a guard's reach stays within 4 of the saucer.
+- **C6. "On sight" as Sight 1.** With the Zombies' Sight of 1, "attack
+  anyone on sight" would mean "attack only what stands next to them", no
+  different from the Spider and weaker than the user's words. **Change:**
+  every unit is a Zombie provoker; reach bounds it (3 from the graveyard),
+  which is what "on sight" means on a board with no live fog.
+- **C7. Shamblers that cannot strike.** With "cannot attack after moving"
+  a Zombie or Shield Projector steps toward a unit and does nothing, which
+  reads as a bug, and the reach preview would need two cases. **Change:**
+  every guard may attack after its one step, as the Spider does.
+- **C8. Role collision.** The round-1 registration is keyed by role, but
+  the Zombie and the Shield Projector are both `GUARD`. **Change:** a
+  `breed` on every `monsters` entry keys the registration (section 32.3).
+- **C9. Gates on mirrored tiles.** A mirror tile is often water, a Rift, a
+  village, or someone's backyard; with 3 or 4 seats a mirror pair can sit
+  next to one capital and far from the rest. **Change:** a pair of legal
+  gate tiles, at least two thirds of the width apart, each 5 from every
+  capital, with every capital's nearer gate within 4 of every other's
+  (section 24.4).
+- **C10. Gates in mid-path.** Teleporting a passing unit and letting it
+  continue needs paths through two places at once, ZOC and terrain stops
+  at the exit, Road costs across the jump, and a preview of a Move that
+  may end twenty tiles away; and a gate in a corridor would teleport
+  everyone who walks by. **Change:** entering a gate always ends the Move
+  (a stop like deep snow), only a step onto it traverses, the unit may
+  still act, and a gate is never a cut tile.
+- **C11. Random, hidden displacement.** A random neighbour from the match
+  PRNG makes the result unpreviewable and shifts every later PRNG draw of
+  the match, and an exit the mover cannot see makes displacement a blind
+  gamble. **Change:** a fixed clockwise order with the occupant's own
+  terrain rule, a defined blocked case, a public preview, and the partner
+  explored together with its gate (section 28.5).
+- **C12. The salvage cache.** A cache taken by "the first unit to step on
+  it after the last guard dies" rewards the vulture, not the player who
+  fought: the clearer's unit is usually hurt, and a fresh enemy unit
+  steps in. It also needs a claim rule, a looted flag, and an AI errand.
+  **Change:** each guard pays a small bounty to whoever is credited with
+  its kill, and the camp stays as scenery. Asked as open question 2.
+- **C13. Bigfoot everywhere.** Wandering every Forest of the map takes it
+  through territories, onto corridors, and across the whole board in a
+  chase no one can plan; a 4-tile flight with an alert at 2 means a Move-1
+  unit never reaches it, and a bounty of 20 is twice the Spider's for a
+  target that cannot hurt anyone. **Change:** a habitat of Forest within 4
+  of home, 3 from every centre and every curiosity, with no cut tile; an
+  alert at 3 and a flight of up to 3 (a Knight, a Raider, ranged units, or
+  a pocket catch it); bounty 12.
+- **C14. A punching bag that punches.** "Never attacks" with normal
+  retaliation makes Bigfoot hit back at every hunter, which reads as an
+  attack. **Change:** range 0, so it never retaliates (the existing
+  `OUT_OF_RANGE` reason, no new rule).
+- **C15. A Well as a slot machine.** Unlimited free tosses are a Coin pump
+  (positive expected value) and, drawn from the match PRNG, make every
+  later draw of the match depend on how often someone tossed, and let a
+  player reorder commands to fish for an outcome. **Change:** a primary
+  action, once per player per match, outcome from a stateless draw keyed
+  by the seed and the player (section 30.2).
+- **C16. A useless reveal.** Radius 3 around the Well adds almost nothing
+  to what the tossing unit already sees. **Change:** radius 5, which shows
+  the surrounding region, including a gate (and so its partner).
+- **C17. Is Bigfoot the best small idea?** A non-combat "sighting" (pay the
+  first unit that ends a Move next to it) was weighed: it is gentler, but
+  it needs a new "cannot be attacked" rule in every attack, preview, and
+  AI path and a new claim trigger, while a hunt reuses the neutral owner,
+  the bounty, and the Spider's turn, and a chase is the better story.
+  **Kept** as a hunt, narrowed by C13 and C14. Asked as open question 4.
+- **C18. Is the Well the best small idea?** An automatic wish on stepping
+  onto the Well (no new command) was weighed: it keeps round 1's "no new
+  command", but it removes the only decision the Well offers (when to
+  toss: wounded, so `HEAL` matters; early, so `VISION` matters), and the
+  root's "may" asks for a choice. **Kept** with one command, narrowed by
+  C15 and C16. Other small ideas are in B.4.
+- **C19. Neutral when absent, again.** Gates add a movement stop and the
+  Well a command; both must vanish on boards without them, and the AI's
+  new heuristics must not touch matches without them. **Change:** the
+  stop, the command, and every heuristic exist only with their curiosity
+  (pillar 5, section 33).
+
+### B.3 What the redraft changed
+
+The shared count and the weights (C1); one danger per board (C2); the
+folded Shields, no Force Field, and the never-Cooling ray (C3); `ATTACK`
+only Zombies (C4); the fixed perimeter (C5); "on sight" as reach (C6);
+step-then-attack guards (C7); the breed key (C8); legal, fair gate pairs
+(C9); the gate stop and traversal by a step only (C10); clockwise
+displacement, the blocked case, and partner exploration (C11); bounties
+instead of a cache (C12); Bigfoot's habitat, alert, flight, and bounty
+(C13); its range 0 (C14); the Well's primary action, once per player, and
+stateless draw (C15); its radius 5 (C16); the gating of every new rule
+(C19).
+
+### B.4 Ideas weighed and rejected
+
+- **Swapping through the gate:** the occupant goes to the entrance instead
+  of aside. Always possible and elegant, but it lets a player pull an
+  enemy from the far side into its own army; the user said "displaced".
+  Asked as open question 3.
+- **A gate cooldown** (one traversal per gate per round): it would stop a
+  conveyor of units, but the exit's occupant is already shoved aside each
+  time and a gate pair is a deliberate shortcut; it adds state for little.
+- **Damage on displacement** ("telefrag"): makes the gate a weapon and
+  needs kill credit for a teleport; colour, not combat.
+- **More easter eggs:** a **crop circle** (Martian-themed, a Survey-like
+  reveal; overlaps the Well's `VISION`), a **message in a bottle** (a
+  floating Wreck variant; overlaps the Wreck), a **fairy ring** (a random
+  teleport; overlaps the gates and is not previewable), and a **lost
+  traveller** (a neutral unit that joins whoever reaches it; a free unit
+  is a balance swing, not an easter egg).
+- **Respawning camps:** guards that return after a few rounds invite
+  bounty farming (round 1's reason, section A.4).
