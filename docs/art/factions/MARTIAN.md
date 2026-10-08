@@ -633,3 +633,12 @@ gave it its own art.
 - **Ochre by hex.** Asked for "red-ochre" stalks, the generator drew a saturated red: 233 and 166 pixels of the first camp and mill were the owner key red, on unowned buildings (`lumber-camp-a`, `sawmill-a`, rejected), and one colour edit of the mill left 115. The subject lines now give the forest's ochre (`#b06a48`, shade `#7f4634`) and say "never red".
 
 Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, section 12](../FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38). Both buildings keep the names "Lumber camp" and "Sawmill", are drawn by the owner of the territory they stand in, and fall back to the shared pair in the Classic look and the LEGACY art set.
+
+## Forge, Workshop, Port and Shipyard (bead `pulp_wars-2yc.38`, stage 2)
+
+- **Forge** (`chibi-martian-forge`, `forge-a` candidate 0): a low chrome dome with a gunmetal exhaust stack and a steam puff, an arch glowing hot magenta, a chrome anvil block.
+- **Workshop** (`chibi-martian-workshop`, `workshop-a` candidate 5): a tall chrome dome with a magenta window, a big chrome cogwheel with a magenta hub, a gunmetal workbench with a robot arm.
+- **Port** (`chibi-martian-port`, `port-a` candidate 0): a chrome pier deck on gunmetal pylons, a round chrome dome hut with a magenta window, a mooring pylon with a magenta light.
+- **Shipyard** (`chibi-martian-shipyard`, `shipyard-b` candidate 14): a chrome boat hull on gunmetal cradles, a chrome crane with a magenta light, a tall chrome dome hangar with a magenta band.
+
+Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-workshop-a-port-and-a-shipyard-per-faction-bead-pulp_wars-2yc38-stage-2). Names unchanged; drawn by the owner of the territory; the shared four in the Classic look and the LEGACY art set.

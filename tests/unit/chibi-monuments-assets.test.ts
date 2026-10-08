@@ -258,7 +258,7 @@ describe("a Monument on the board", () => {
       "IMPROVEMENT:UNDEAD:FARM",
     );
     expect(tileImprovementSubjectV7(view, at, "FORGE", "UNDEAD")).toBe(
-      "IMPROVEMENT:FORGE",
+      "IMPROVEMENT:UNDEAD:FORGE",
     );
   });
 

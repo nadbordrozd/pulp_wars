@@ -277,6 +277,173 @@
         "reviewedAt": "2026-10-04T09:14:09.993Z"
       }
     },
+    "forge-a": {
+      "id": "forge-a",
+      "asset": "chibi-undead-forge",
+      "jobId": "12f73d16-5d70-4788-ac7d-fb3da3323d98",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-forge",
+        "subject": "IMPROVEMENT:UNDEAD:FORGE",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23901,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a spooky smithy: one squat house of pale slate-blue stone (#8b92a3) with a near-black peaked roof, a tall crooked stone chimney with a wisp of violet smoke, a wide open front arch with a violet fire glow inside, and a big dark iron anvil on a pale bone stump in front of the arch. Pale slate, charcoal, ivory bone, violet; no green, no red; dark slate outline. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a spooky smithy: one squat house of pale slate-blue stone (#8b92a3) with a near-black peaked roof, a tall crooked stone chimney with a wisp of violet smoke, a wide open front arch with a violet fire glow inside, and a big dark iron anvil on a pale bone stump in front of the arch. Pale slate, charcoal, ivory bone, violet; no green, no red; dark slate outline. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a spooky smithy: one squat house of pale slate-blue stone (#8b92a3) with a near-black peaked roof, a tall crooked stone chimney with a wisp of violet smoke, a wide open front arch with a violet fire glow inside, and a big dark iron anvil on a pale bone stump in front of the arch. Pale slate, charcoal, ivory bone, violet; no green, no red; dark slate outline. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:43:08.098Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/forge-a.png",
+      "rawSheetSha256": "fc25116d9a21114e4fcf2edbb06c36a40ee043b47938fa93f5bc1e125e16df75",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9655,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9821,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9655,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9492,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9655,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9483,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9831,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9828,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9821,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9643,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9492,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8793,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9492,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:45:22.620Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a squat smithy of pale slate stone under a near-black roof, a crooked stone chimney with a wisp of violet smoke, an arch with a violet fire glow and a dark anvil on a bone stump in front; the palest walls of the sheet, so the roof, the walls and the glow are three tones on the ashen ground. The sixteen are one plan: 1, 2, 4, 8 and 12 are close with darker walls; 3, 5, 6, 10, 11, 14 and 15 are taller houses with windows; 7, 9 and 15 have a lean-to; 13 and 14 barrels.",
+        "reviewedAt": "2026-10-07T23:45:52.187Z"
+      }
+    },
     "graveyard-pixen-a": {
       "id": "graveyard-pixen-a",
       "asset": "chibi-undead-graveyard",
@@ -2378,6 +2545,173 @@
         "reviewedAt": "2026-10-07T22:58:16.778Z"
       }
     },
+    "port-a": {
+      "id": "port-a",
+      "asset": "chibi-undead-port",
+      "jobId": "69496235-4ca5-4108-b227-a441c1a39c57",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-port",
+        "subject": "IMPROVEMENT:UNDEAD:PORT",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23903,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a spooky harbour pier: a wide pier deck of ashen grey planks on crooked dark posts, a small harbour hut of pale slate-blue stone (#8b92a3) with a near-black roof and a violet window on the pier, two pale bone mooring posts, a coil of rope and a lantern with a violet flame on a pole at the pier's corner. Ash grey, pale slate, charcoal, bone, violet; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a spooky harbour pier: a wide pier deck of ashen grey planks on crooked dark posts, a small harbour hut of pale slate-blue stone (#8b92a3) with a near-black roof and a violet window on the pier, two pale bone mooring posts, a coil of rope and a lantern with a violet flame on a pole at the pier's corner. Ash grey, pale slate, charcoal, bone, violet; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a spooky harbour pier: a wide pier deck of ashen grey planks on crooked dark posts, a small harbour hut of pale slate-blue stone (#8b92a3) with a near-black roof and a violet window on the pier, two pale bone mooring posts, a coil of rope and a lantern with a violet flame on a pole at the pier's corner. Ash grey, pale slate, charcoal, bone, violet; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:47:43.995Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/port-a.png",
+      "rawSheetSha256": "16d57bfb59b91883a517ce4134c6be64ffacfa105cf28b15b0d28222fa962ee5",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3774,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3818,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3889,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3889,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5185,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.537,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4444,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3704,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4259,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3889,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.013,
+          "footprintWidthShare": 0.3529,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3636,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3889,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3846,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4182,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0263,
+          "footprintWidthShare": 0.4909,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:49:17.085Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a pier of ashen grey planks on dark posts, a pale slate hut with a near-black roof and a violet window, pale bone mooring posts and a lantern with a violet flame on a pole at the corner; nothing under the posts. 1, 4 and 6 are close (a smaller lantern, or none lit); 2 and 13 have a grey or brown roof; 3, 5, 7, 11 and 14 no lantern; 9 and 10 a flat hut or none; 8, 12 and 15 extra nets and rope.",
+        "reviewedAt": "2026-10-07T23:51:05.873Z"
+      }
+    },
     "sawmill-a": {
       "id": "sawmill-a",
       "asset": "chibi-undead-sawmill",
@@ -2544,6 +2878,507 @@
         "notes": "Candidate 9 of 16: a dark slate plank shed with a near-black roof and a violet window, a round toothed blade of ivory bone standing on a slate bench in front of it, and a stack of ashen logs with pale ends; the blade is the roundest and clearest of the sheet. 3, 6, 11 and 13 have a smaller or half-hidden blade; 0 to 2, 4, 5, 7, 8, 10, 12, 14 and 15 have no blade (a shed with logs).",
         "reviewedAt": "2026-10-07T23:04:41.690Z"
       }
+    },
+    "sawmill-b": {
+      "id": "sawmill-b",
+      "asset": "chibi-undead-sawmill",
+      "jobId": "6ecb5e82-6be6-4f43-8f91-ba37f859d45a",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-sawmill",
+        "subject": "IMPROVEMENT:UNDEAD:SAWMILL",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23931,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a spooky bone sawmill, no trees: one small crooked shed of pale slate-blue planks (#8b92a3, shade #6a7082) with a charcoal peaked roof and one glowing violet window; at its front one big round saw blade of pale ivory bone with jagged teeth standing upright in a low bench, a pale grey log lying on the bench; beside it a stack of three ashen grey logs and a pile of pale planks. Slate, charcoal, ivory bone, a little violet; no green; dark slate outline. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a spooky bone sawmill, no trees: one small crooked shed of pale slate-blue planks (#8b92a3, shade #6a7082) with a charcoal peaked roof and one glowing violet window; at its front one big round saw blade of pale ivory bone with jagged teeth standing upright in a low bench, a pale grey log lying on the bench; beside it a stack of three ashen grey logs and a pile of pale planks. Slate, charcoal, ivory bone, a little violet; no green; dark slate outline. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a spooky bone sawmill, no trees: one small crooked shed of pale slate-blue planks (#8b92a3, shade #6a7082) with a charcoal peaked roof and one glowing violet window; at its front one big round saw blade of pale ivory bone with jagged teeth standing upright in a low bench, a pale grey log lying on the bench; beside it a stack of three ashen grey logs and a pile of pale planks. Slate, charcoal, ivory bone, a little violet; no green; dark slate outline. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:50:52.134Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/sawmill-b.png",
+      "rawSheetSha256": "dbebebfa1eae82a2896de2389266d062808171624ccb059d572c88dd7637cb74",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7667,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8947,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9474,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9655,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8852,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8833,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8548,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6538,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9483,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6364,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8689,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8689,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8814,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:53:03.444Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "One attempt at a lighter Undead Sawmill, not taken. The sixteen do have pale slate-blue walls under a charcoal roof, three tones on the ashen ground, but the bone blade came out a low toothless half disc in fifteen of them (a pale mound on the bench; only 7 has teeth, and its blade is small), where sawmill-a candidate 9 has a round toothed blade. The blade is what says sawmill, so sawmill-a stays the master.",
+        "reviewedAt": "2026-10-07T23:55:09.285Z"
+      }
+    },
+    "shipyard-a": {
+      "id": "shipyard-a",
+      "asset": "chibi-undead-shipyard",
+      "jobId": "8d93f460-4b6f-4fec-9b11-ad3860740f6d",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-shipyard",
+        "subject": "IMPROVEMENT:UNDEAD:SHIPYARD",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23904,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a spooky shipyard: a half-built boat hull of ashen grey planks showing its curved pale rib bones, resting on dark trestles, a tall crooked dark timber crane with a chain and hook leaning over it, and a small boathouse of pale slate-blue stone (#8b92a3) with a near-black roof and a violet window behind. Ash grey, pale slate, charcoal, bone, violet. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a spooky shipyard: a half-built boat hull of ashen grey planks showing its curved pale rib bones, resting on dark trestles, a tall crooked dark timber crane with a chain and hook leaning over it, and a small boathouse of pale slate-blue stone (#8b92a3) with a near-black roof and a violet window behind. Ash grey, pale slate, charcoal, bone, violet. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a spooky shipyard: a half-built boat hull of ashen grey planks showing its curved pale rib bones, resting on dark trestles, a tall crooked dark timber crane with a chain and hook leaning over it, and a small boathouse of pale slate-blue stone (#8b92a3) with a near-black roof and a violet window behind. Ash grey, pale slate, charcoal, bone, violet. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:39:25.779Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/shipyard-a.png",
+      "rawSheetSha256": "e33bf721d6b0296f915740d953e4d55de16b9db6b53213cd4e99f312c9362ef8",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7627,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7627,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7719,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8491,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7679,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7857,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7593,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6964,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8214,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7321,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7119,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7368,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6842,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:42:24.397Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 9,
+        "notes": "Candidate 9 of 16: a half-built hull of ashen grey planks with pale rib bones standing out of it, on dark trestles, a dark timber crane with a chain and hook over it, and a pale slate boathouse with a near-black roof and a violet window behind; hull, crane and boathouse all clear. The sixteen are one plan: 0, 2 and 5 have no crane; 3, 4 and 8 no boathouse; 11 to 13 and 15 few ribs; 1, 6, 7, 10 and 14 are close, with the crane or the house smaller.",
+        "reviewedAt": "2026-10-07T23:42:56.402Z"
+      }
+    },
+    "workshop-a": {
+      "id": "workshop-a",
+      "asset": "chibi-undead-workshop",
+      "jobId": "edd67e66-19dc-429d-96a5-599ce21c91cf",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-workshop",
+        "subject": "IMPROVEMENT:UNDEAD:WORKSHOP",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23902,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a spooky craftsman's workshop: one crooked two-storey house of pale slate-blue stone (#8b92a3) with dark timber and a near-black steep roof, one big ivory bone cogwheel on the front gable, a glowing violet window, and by the open door a low workbench with a hammer and a bone saw. Pale slate, charcoal, ivory bone, violet; no green, no red; dark slate outline. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a spooky craftsman's workshop: one crooked two-storey house of pale slate-blue stone (#8b92a3) with dark timber and a near-black steep roof, one big ivory bone cogwheel on the front gable, a glowing violet window, and by the open door a low workbench with a hammer and a bone saw. Pale slate, charcoal, ivory bone, violet; no green, no red; dark slate outline. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a spooky craftsman's workshop: one crooked two-storey house of pale slate-blue stone (#8b92a3) with dark timber and a near-black steep roof, one big ivory bone cogwheel on the front gable, a glowing violet window, and by the open door a low workbench with a hammer and a bone saw. Pale slate, charcoal, ivory bone, violet; no green, no red; dark slate outline. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:45:38.955Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/workshop-a.png",
+      "rawSheetSha256": "7bee14035e9cf91bc3ee015f3f377955a6d77f639e18e6830cb60f79a0c34dd0",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0024,
+          "footprintWidthShare": 0.8947,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0064,
+          "footprintWidthShare": 0.8936,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.046,
+          "footprintWidthShare": 0.8871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0024,
+          "footprintWidthShare": 0.9643,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9123,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0079,
+          "footprintWidthShare": 0.8667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0024,
+          "footprintWidthShare": 0.9787,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0031,
+          "footprintWidthShare": 0.8679,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0026,
+          "footprintWidthShare": 0.9259,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9672,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0052,
+          "footprintWidthShare": 0.8929,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0024,
+          "footprintWidthShare": 0.963,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0026,
+          "footprintWidthShare": 0.8909,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0023,
+          "footprintWidthShare": 0.9516,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0403,
+          "footprintWidthShare": 0.9057,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:47:32.092Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a crooked timbered house of slate stone under a near-black roof, one big ivory bone cogwheel on its gable, violet windows and a workbench with a bone saw by the door; the biggest cog of the sheet, which is what says workshop at board size. 8 and 10 are close (a chimney; a second cog); 1 to 7, 9, 11, 12, 14 and 15 have a small cog or none on the gable; 13 is a round tower.",
+        "reviewedAt": "2026-10-07T23:47:58.768Z"
+      }
     }
   },
   "assets": {
@@ -2587,6 +3422,47 @@
       },
       "notes": "The shared Windmill's shape with a light slate tower, near-black charcoal roofs, ragged mid-grey sails and violet windows: three tones, so tower, roofs and sails separate at 1:1 and at zoom 0.75. Candidate 1 is the same with a paler tower. Reviewed at 1:1 and x5.",
       "acceptedAt": "2026-10-04T09:14:09.993Z"
+    },
+    "chibi-undead-forge": {
+      "id": "chibi-undead-forge",
+      "subject": "IMPROVEMENT:UNDEAD:FORGE",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "forge-a",
+      "candidate": 0,
+      "candidateSha256": "041a229403ad33d80c181eee960309a361069bd91c747ada273d2d003a6ed2d6",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-undead-forge.png",
+        "sha256": "280fac56150d3420f329291c64be4489794421e2a07e2965ad0cdf4f9e61ae3c",
+        "pixelSha256": "1a31b9e8c923f48ff0106cfe63d18ce40d56c0d6dca2a2da2b52252ba993c491",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a squat smithy of pale slate stone under a near-black roof, a crooked stone chimney with a wisp of violet smoke, an arch with a violet fire glow and a dark anvil on a bone stump in front; the palest walls of the sheet, so the roof, the walls and the glow are three tones on the ashen ground. The sixteen are one plan: 1, 2, 4, 8 and 12 are close with darker walls; 3, 5, 6, 10, 11, 14 and 15 are taller houses with windows; 7, 9 and 15 have a lean-to; 13 and 14 barrels.",
+      "acceptedAt": "2026-10-07T23:45:52.186Z"
     },
     "chibi-undead-graveyard": {
       "id": "chibi-undead-graveyard",
@@ -2670,6 +3546,47 @@
       "notes": "Candidate 2 of 16: two bare ashen dead trees, a stack of pale grey logs, a rusty axe in a stump and one bone; reads as the camp of the dead wood at 1:1 and x6 on the ashen ground. The lean-to came only in the candidates without a log stack (0, 3, 7, 11, 13 to 15), which read as a tent, not a lumber camp; 1, 5 and 9 have no axe; 4, 8, 10 and 12 are the same plan with busier log piles.",
       "acceptedAt": "2026-10-07T22:58:16.778Z"
     },
+    "chibi-undead-port": {
+      "id": "chibi-undead-port",
+      "subject": "IMPROVEMENT:UNDEAD:PORT",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "port-a",
+      "candidate": 0,
+      "candidateSha256": "d1536ad8c825f49b11b397c78f1b96300eaaf2bc0f8a309d07288cd0e110111d",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-undead-port.png",
+        "sha256": "9096daf06871b8f097968ff00bc91be5efac644cb117190d9e2e283ffef55f10",
+        "pixelSha256": "60d5a25011b55d8b8a6df00cb96212b56a77e17a4533e49fd1528003bc38c693",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a pier of ashen grey planks on dark posts, a pale slate hut with a near-black roof and a violet window, pale bone mooring posts and a lantern with a violet flame on a pole at the corner; nothing under the posts. 1, 4 and 6 are close (a smaller lantern, or none lit); 2 and 13 have a grey or brown roof; 3, 5, 7, 11 and 14 no lantern; 9 and 10 a flat hut or none; 8, 12 and 15 extra nets and rope.",
+      "acceptedAt": "2026-10-07T23:51:05.873Z"
+    },
     "chibi-undead-sawmill": {
       "id": "chibi-undead-sawmill",
       "subject": "IMPROVEMENT:UNDEAD:SAWMILL",
@@ -2710,6 +3627,88 @@
       },
       "notes": "Candidate 9 of 16: a dark slate plank shed with a near-black roof and a violet window, a round toothed blade of ivory bone standing on a slate bench in front of it, and a stack of ashen logs with pale ends; the blade is the roundest and clearest of the sheet. 3, 6, 11 and 13 have a smaller or half-hidden blade; 0 to 2, 4, 5, 7, 8, 10, 12, 14 and 15 have no blade (a shed with logs).",
       "acceptedAt": "2026-10-07T23:04:41.690Z"
+    },
+    "chibi-undead-shipyard": {
+      "id": "chibi-undead-shipyard",
+      "subject": "IMPROVEMENT:UNDEAD:SHIPYARD",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "shipyard-a",
+      "candidate": 9,
+      "candidateSha256": "d82923c67104bc32762a171c4a9c43e92f74b5318cb475ef2932564d078fc5f9",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-undead-shipyard.png",
+        "sha256": "8fe1b09195128bcd5b07375094b8da9c20518ceeb49ff87700122e0d21564682",
+        "pixelSha256": "004f6cd22cf80fbeecb73b6eb92e8b0a9c3616dc49a4fafd3368c0025ca8bd6d",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 9 of 16: a half-built hull of ashen grey planks with pale rib bones standing out of it, on dark trestles, a dark timber crane with a chain and hook over it, and a pale slate boathouse with a near-black roof and a violet window behind; hull, crane and boathouse all clear. The sixteen are one plan: 0, 2 and 5 have no crane; 3, 4 and 8 no boathouse; 11 to 13 and 15 few ribs; 1, 6, 7, 10 and 14 are close, with the crane or the house smaller.",
+      "acceptedAt": "2026-10-07T23:42:56.402Z"
+    },
+    "chibi-undead-workshop": {
+      "id": "chibi-undead-workshop",
+      "subject": "IMPROVEMENT:UNDEAD:WORKSHOP",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "workshop-a",
+      "candidate": 0,
+      "candidateSha256": "a64e1481c58fc470981e4d208e84eaef88896db18fdc466befa4449ff495ea77",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-undead-workshop.png",
+        "sha256": "c5c9e8a5e996ffee1a924f73a9a76a3f89990bec7da8745f9bedc77caa5c33e7",
+        "pixelSha256": "9f5438fbafa0bd04ff33f5f186c212abee88b5a19e2ea518a474cad194cc0d8c",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a crooked timbered house of slate stone under a near-black roof, one big ivory bone cogwheel on its gable, violet windows and a workbench with a bone saw by the door; the biggest cog of the sheet, which is what says workshop at board size. 8 and 10 are close (a chimney; a second cog); 1 to 7, 9, 11, 12, 14 and 15 have a small cog or none on the gable; 13 is a round tower.",
+      "acceptedAt": "2026-10-07T23:47:58.768Z"
     }
   }
 }

@@ -236,7 +236,7 @@ describe("Ice Folk art wiring (ICE_FOLK.md wiring steps 1-3, 5)", () => {
     // the Workshop (the Musk Ox, which it showed at 7r55, is at Deep
     // Winter, whose card is the icon above).
     expect(technologySubjectV7("DRILL", "ICE_FOLK")).toBe(
-      "IMPROVEMENT:WORKSHOP",
+      "IMPROVEMENT:ICE_FOLK:WORKSHOP",
     );
     expect(technologySubjectV7("FORTIFICATION", "ORIGINAL")).toBe(
       "ICON:TECH:FORTIFICATION",

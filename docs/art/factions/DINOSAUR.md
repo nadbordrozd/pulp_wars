@@ -467,3 +467,12 @@ and generation records stay under the art slot they were made for,
 - **Sawmill**: the Chopping Block (`chibi-dinosaur-chopping-block`), unchanged: a big stone axe in a stump. So the Dinosaur pair is palms and logs against the axe.
 
 Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, section 12](../FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38). Both buildings keep the names "Lumber camp" and "Sawmill", are drawn by the owner of the territory they stand in, and fall back to the shared pair in the Classic look and the LEGACY art set.
+
+## Forge, Workshop, Port and Shipyard (bead `pulp_wars-2yc.38`, stage 2)
+
+- **Forge** (`chibi-dinosaur-forge`, `forge-a` candidate 3): a round furnace of grey basalt stones with an orange fire, a stone chimney, a flat stone anvil, a lean-to of spotted hide.
+- **Workshop** (`chibi-dinosaur-workshop`, `workshop-a` candidate 0): a round hut of spotted hide with tusks at its door, a big stone wheel on a rack, a log workbench with stone tools.
+- **Port** (`chibi-dinosaur-port`, `port-a` candidate 4): a jetty of lashed brown logs with green vine lashings and a cone tent of spotted hide with tusks on it.
+- **Shipyard** (`chibi-dinosaur-shipyard`, `shipyard-a` candidate 8): a big dugout canoe half carved from a log, on trestles with wood chips, a tripod hoist of poles and tusks, a hide lean-to.
+
+Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-workshop-a-port-and-a-shipyard-per-faction-bead-pulp_wars-2yc38-stage-2). Names unchanged; drawn by the owner of the territory; the shared four in the Classic look and the LEGACY art set.

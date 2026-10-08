@@ -580,3 +580,14 @@ generation records stay under the art slot they were made for,
 - **Sawmill** (`chibi-ice-folk-sawmill`, `sawmill-a` candidate 3): a pale timber cabin under a thick snow roof, a round toothed blade of ice blue on a timber bench, and a log on a small hoist. The ice blue is the faction's one accent.
 
 Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, section 12](../FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38). Both buildings keep the names "Lumber camp" and "Sawmill", are drawn by the owner of the territory they stand in, and fall back to the shared pair in the Classic look and the LEGACY art set.
+
+## Forge, Workshop, Port and Shipyard (bead `pulp_wars-2yc.38`, stage 2)
+
+- **Forge** (`chibi-ice-folk-forge`, `forge-a` candidate 2): an igloo of snow blocks with an orange fire glow in its mouth, a grey stone chimney with smoke, a stone anvil with an ice-blue hammer.
+- **Workshop** (`chibi-ice-folk-workshop`, `workshop-a` candidate 0): a tall pale timber hut under a thick snow roof, a pale cogwheel on the gable, a workbench with a block of ice being carved.
+- **Port** (`chibi-ice-folk-port`, `port-a` candidate 0): a pier of pale timber dusted with snow, an igloo on it, a bone rack with hanging fish, a rope coil; no boat.
+- **Shipyard** (`chibi-ice-folk-shipyard`, `shipyard-a` candidate 13): a timber shed under a thick snow roof, a dog sled on a plank slipway at its door, a block of ice-blue ice; no boat.
+
+The Ice Folk have no ships and never embark, but they build both docks (a Port keeps its population, Fish and sea trade, and upgrades to a Shipyard), so neither piece shows a boat.
+
+Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-workshop-a-port-and-a-shipyard-per-faction-bead-pulp_wars-2yc38-stage-2). Names unchanged; drawn by the owner of the territory; the shared four in the Classic look and the LEGACY art set.

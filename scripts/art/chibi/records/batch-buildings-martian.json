@@ -2,6 +2,173 @@
   "schemaVersion": 1,
   "batch": "buildings-martian",
   "recipes": {
+    "forge-a": {
+      "id": "forge-a",
+      "asset": "chibi-martian-forge",
+      "jobId": "fb5e0f6e-dbf3-445e-a70d-95c5bc42215d",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-martian",
+        "asset": "chibi-martian-forge",
+        "subject": "IMPROVEMENT:MARTIAN:FORGE",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23913,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/MARTIAN.json",
+            "text": "Subject: an alien plasma forge: one low round silver-white chrome dome with a tall dark gunmetal exhaust stack and one small pale steam puff, a wide open front arch glowing hot magenta inside, and a big chrome anvil block on a gunmetal stand in front of the arch. Chrome, gunmetal, hot magenta; no wood, no stone, no green, no red. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien plasma forge: one low round silver-white chrome dome with a tall dark gunmetal exhaust stack and one small pale steam puff, a wide open front arch glowing hot magenta inside, and a big chrome anvil block on a gunmetal stand in front of the arch. Chrome, gunmetal, hot magenta; no wood, no stone, no green, no red. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien plasma forge: one low round silver-white chrome dome with a tall dark gunmetal exhaust stack and one small pale steam puff, a wide open front arch glowing hot magenta inside, and a big chrome anvil block on a gunmetal stand in front of the arch. Chrome, gunmetal, hot magenta; no wood, no stone, no green, no red. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:54:45.223Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-martian/forge-a.png",
+      "rawSheetSha256": "128e038643c99e3cf2df9d51898282829502eaaafcd778eb67b093fbf0ef40e1",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7368,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7544,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6316,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6316,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4211,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6491,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4211,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4211,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4211,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4211,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5965,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5965,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5965,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4211,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4211,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:57:50.164Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a low chrome dome with a gunmetal exhaust stack and a steam puff, an arch glowing hot magenta and a chrome anvil block on a gunmetal stand in front of it; the clearest steam puff. The sixteen are one plan: 2 to 4, 6, 8 to 10, 14 and 15 have no steam; 5 and 10 specks in the glow; 1, 7, 11 to 13 are close.",
+        "reviewedAt": "2026-10-07T23:58:17.101Z"
+      }
+    },
     "hydroponic-edit-a": {
       "id": "hydroponic-edit-a",
       "asset": "chibi-martian-hydroponic-farm",
@@ -408,6 +575,173 @@
         "reviewedAt": "2026-10-07T23:16:43.314Z"
       }
     },
+    "port-a": {
+      "id": "port-a",
+      "asset": "chibi-martian-port",
+      "jobId": "704279d0-a46e-4e16-bbd9-80e5c7ba0137",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-martian",
+        "asset": "chibi-martian-port",
+        "subject": "IMPROVEMENT:MARTIAN:PORT",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23915,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/MARTIAN.json",
+            "text": "Subject: an alien harbour pier: a wide silver-white chrome pier deck on thick gunmetal pylons, a small round chrome dome hut with a hot magenta window on the pier, two gunmetal mooring pylons with small magenta lights and a thin antenna mast with a ball on top. Chrome, gunmetal, hot magenta, pale glass; no wood, no green, no red; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien harbour pier: a wide silver-white chrome pier deck on thick gunmetal pylons, a small round chrome dome hut with a hot magenta window on the pier, two gunmetal mooring pylons with small magenta lights and a thin antenna mast with a ball on top. Chrome, gunmetal, hot magenta, pale glass; no wood, no green, no red; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien harbour pier: a wide silver-white chrome pier deck on thick gunmetal pylons, a small round chrome dome hut with a hot magenta window on the pier, two gunmetal mooring pylons with small magenta lights and a thin antenna mast with a ball on top. Chrome, gunmetal, hot magenta, pale glass; no wood, no green, no red; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T00:04:56.244Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-martian/port-a.png",
+      "rawSheetSha256": "61c2c9444678adefcadfa463226271b732684c9c5554824056e9e2964edb9160",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.371,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3793,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2787,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5323,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2903,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3833,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2623,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4032,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6613,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.541,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4839,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3548,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9516,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4677,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T00:10:09.849Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a chrome pier deck on gunmetal pylons, a round chrome dome hut with a magenta window on it and mooring pylons with a magenta light; the plainest pier with a dome, which matches the dome of the Martian Forge and Sawmill. 3 and 7 have railings like a cage; 8 and 12 a big dish dome that reads as a city; 1, 2, 4 to 6 a box or a screen and no dome; 9 to 11 and 13 to 15 an L-shaped or slab deck with a tower.",
+        "reviewedAt": "2026-10-08T00:10:45.455Z"
+      }
+    },
     "sawmill-a": {
       "id": "sawmill-a",
       "asset": "chibi-martian-sawmill",
@@ -809,6 +1143,340 @@
         "reviewedAt": "2026-10-07T23:20:25.774Z"
       }
     },
+    "shipyard-a": {
+      "id": "shipyard-a",
+      "asset": "chibi-martian-shipyard",
+      "jobId": "f5baa92b-ca40-4969-95d7-e83e6c015f20",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-martian",
+        "asset": "chibi-martian-shipyard",
+        "subject": "IMPROVEMENT:MARTIAN:SHIPYARD",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23916,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/MARTIAN.json",
+            "text": "Subject: an alien shipyard: a half-built boat hull of silver-white chrome plates showing its curved gunmetal ribs, resting on gunmetal cradles, a tall chrome gantry crane arm with a hook and one magenta light leaning over it, and a low chrome dome hangar with a hot magenta window behind. Chrome, gunmetal, hot magenta, pale glass; no wood, no green, no red. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien shipyard: a half-built boat hull of silver-white chrome plates showing its curved gunmetal ribs, resting on gunmetal cradles, a tall chrome gantry crane arm with a hook and one magenta light leaning over it, and a low chrome dome hangar with a hot magenta window behind. Chrome, gunmetal, hot magenta, pale glass; no wood, no green, no red. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien shipyard: a half-built boat hull of silver-white chrome plates showing its curved gunmetal ribs, resting on gunmetal cradles, a tall chrome gantry crane arm with a hook and one magenta light leaning over it, and a low chrome dome hangar with a hot magenta window behind. Chrome, gunmetal, hot magenta, pale glass; no wood, no green, no red. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:36:56.774Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-martian/shipyard-a.png",
+      "rawSheetSha256": "50cf5ebace984c970c4ade2787fe1dad064649dfc8cabfde39bc6a8020fad0cb",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4211,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3462,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4082,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2586,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2593,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2264,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2586,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2909,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3393,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3214,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3953,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4107,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4259,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3929,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3256,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4151,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:38:52.217Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The generator answered with a sheet of sixteen different labelled parts (a hull, a crane, a hangar, a 'power core', a 'debris field'), each with a caption of pixel text under it, small and in dark gunmetal: no candidate is the shipyard as one group, and every one has text. Redone as shipyard-b: one single scene, the three things touching, silver-white chrome.",
+        "reviewedAt": "2026-10-07T23:39:16.265Z"
+      }
+    },
+    "shipyard-b": {
+      "id": "shipyard-b",
+      "asset": "chibi-martian-shipyard",
+      "jobId": "70d70cd0-2b74-4cf9-a379-33780edf555e",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-martian",
+        "asset": "chibi-martian-shipyard",
+        "subject": "IMPROVEMENT:MARTIAN:SHIPYARD",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23933,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/MARTIAN.json",
+            "text": "Subject: an alien shipyard, one single building group: in front one big half-built boat hull of silver-white chrome plates showing its curved gunmetal ribs, resting on gunmetal cradles; leaning over it one tall chrome crane with a hook and one magenta light; behind them one low chrome dome hangar with a hot magenta window; the three touch and fill most of the image. Mostly silver-white chrome, a little gunmetal and hot magenta; no wood, no green, no red. It stands on nothing: no water, no waves. No captions."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien shipyard, one single building group: in front one big half-built boat hull of silver-white chrome plates showing its curved gunmetal ribs, resting on gunmetal cradles; leaning over it one tall chrome crane with a hook and one magenta light; behind them one low chrome dome hangar with a hot magenta window; the three touch and fill most of the image. Mostly silver-white chrome, a little gunmetal and hot magenta; no wood, no green, no red. It stands on nothing: no water, no waves. No captions.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien shipyard, one single building group: in front one big half-built boat hull of silver-white chrome plates showing its curved gunmetal ribs, resting on gunmetal cradles; leaning over it one tall chrome crane with a hook and one magenta light; behind them one low chrome dome hangar with a hot magenta window; the three touch and fill most of the image. Mostly silver-white chrome, a little gunmetal and hot magenta; no wood, no green, no red. It stands on nothing: no water, no waves. No captions. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:39:25.772Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-martian/shipyard-b.png",
+      "rawSheetSha256": "030de04c3252e6337ab0e272eb268bd7436d955552b05d4ec8a6082af9a6a547",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3036,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6833,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5333,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.431,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6364,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.55,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5862,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5614,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5172,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4912,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6441,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5085,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:41:10.958Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 14,
+        "notes": "Candidate 14 of 16: a chrome boat hull on gunmetal cradles in front of a tall chrome dome hangar with a magenta band and a magenta door, and a chrome crane with a magenta light and a hook beside it; a boat, a crane and a hangar at a glance, no text. 1 has glyphs like writing on its dome; 4 a hull like a bathtub; 9 and 13 a small hull apart from the dome; 2, 6, 8, 11 and 15 dark rib cages; 0, 3, 5, 7, 10 and 12 a small hull far from the dome.",
+        "reviewedAt": "2026-10-07T23:42:56.025Z"
+      }
+    },
     "solar-b": {
       "id": "solar-b",
       "asset": "chibi-martian-solar-array",
@@ -966,9 +1634,217 @@
         "notes": "Three tilted navy panels in a dark frame, a mast with a magenta light; the slab is gone, a few grey stepping stones stay under the feet. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
         "reviewedAt": "2026-10-04T09:12:32.409Z"
       }
+    },
+    "workshop-a": {
+      "id": "workshop-a",
+      "asset": "chibi-martian-workshop",
+      "jobId": "36e57504-9c0d-4c9b-8e9e-76ae98bf9c48",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-martian",
+        "asset": "chibi-martian-workshop",
+        "subject": "IMPROVEMENT:MARTIAN:WORKSHOP",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23914,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/MARTIAN.json",
+            "text": "Subject: an alien assembly lab: one tall silver-white chrome dome building with a round hot magenta window, one big chrome cogwheel mounted on its front, and by the open door a gunmetal workbench with a small chrome robot arm and tools. Chrome, gunmetal, hot magenta, pale glass; no wood, no stone, no green, no red. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien assembly lab: one tall silver-white chrome dome building with a round hot magenta window, one big chrome cogwheel mounted on its front, and by the open door a gunmetal workbench with a small chrome robot arm and tools. Chrome, gunmetal, hot magenta, pale glass; no wood, no stone, no green, no red. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien assembly lab: one tall silver-white chrome dome building with a round hot magenta window, one big chrome cogwheel mounted on its front, and by the open door a gunmetal workbench with a small chrome robot arm and tools. Chrome, gunmetal, hot magenta, pale glass; no wood, no stone, no green, no red. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T00:02:43.426Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-martian/workshop-a.png",
+      "rawSheetSha256": "a36daea0640edc7cc7e5ce4d68d8cc0c064b0734ed9622815367a98c58dae3fb",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9661,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9153,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9153,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9322,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9661,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8833,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9661,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9153,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9661,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9153,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9661,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9153,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9661,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8983,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8833,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9661,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T00:04:22.254Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 5,
+        "notes": "Candidate 5 of 16: a tall chrome dome with a magenta window, a big chrome cogwheel with a magenta hub at its side, and a gunmetal workbench with tools and a small robot arm; cog, bench and arm all there. 1 to 3, 9, 11, 13 and 14 are close (no arm, or a busier bench); 0, 4, 6, 8, 10, 12 and 15 have an open door panel and no workbench; 7 a grey hub.",
+        "reviewedAt": "2026-10-08T00:05:09.053Z"
+      }
     }
   },
   "assets": {
+    "chibi-martian-forge": {
+      "id": "chibi-martian-forge",
+      "subject": "IMPROVEMENT:MARTIAN:FORGE",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "forge-a",
+      "candidate": 0,
+      "candidateSha256": "ed9ba8ac47d96f9943538bf1b026a3c091d9f1e9debe9f859bf94f72e9e21f01",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-forge.png",
+        "sha256": "b437cef54733a6ac7e50a94a7fb80c688d5fa28f5f6406fce44768b08af16f97",
+        "pixelSha256": "25fca8c92e5f92ec6ee27d7e1d50596cbe3887a5dd12affc81dcb4ffc2f250ca",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a low chrome dome with a gunmetal exhaust stack and a steam puff, an arch glowing hot magenta and a chrome anvil block on a gunmetal stand in front of it; the clearest steam puff. The sixteen are one plan: 2 to 4, 6, 8 to 10, 14 and 15 have no steam; 5 and 10 specks in the glow; 1, 7, 11 to 13 are close.",
+      "acceptedAt": "2026-10-07T23:58:17.101Z"
+    },
     "chibi-martian-hydroponic-farm": {
       "id": "chibi-martian-hydroponic-farm",
       "subject": "IMPROVEMENT:MARTIAN:FARM",
@@ -1051,6 +1927,47 @@
       "notes": "Candidate 0 of 16: a tall ochre fungal stalk with a teal cap and two smaller ones, a stack of cut ochre stalk logs, a cut stump, and a chrome harvester pod with a glass dome on three gunmetal legs, its magenta beam on the logs; the forest's ochre and teal, no red. 3 is close (the beam hides the pod's legs); 11, 12 and 14 have a long beam that leaves the group; 1, 2, 4, 6 to 10, 13 and 15 have no beam; 5 a short one under the pod.",
       "acceptedAt": "2026-10-07T23:16:43.314Z"
     },
+    "chibi-martian-port": {
+      "id": "chibi-martian-port",
+      "subject": "IMPROVEMENT:MARTIAN:PORT",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "port-a",
+      "candidate": 0,
+      "candidateSha256": "f8e9fb91906872135755d020d4fca8b9672241902a504213b4a47559c7d2776f",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-port.png",
+        "sha256": "72ea6eea936c25e0785cb2aab507f55604964c219ae5ec971938a4af116dbb65",
+        "pixelSha256": "4ecdc24630d1f175dfa8b52bdee5022829e6250d0ede1b4b9d6d8c5f59740b54",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a chrome pier deck on gunmetal pylons, a round chrome dome hut with a magenta window on it and mooring pylons with a magenta light; the plainest pier with a dome, which matches the dome of the Martian Forge and Sawmill. 3 and 7 have railings like a cage; 8 and 12 a big dish dome that reads as a city; 1, 2, 4 to 6 a box or a screen and no dome; 9 to 11 and 13 to 15 an L-shaped or slab deck with a tower.",
+      "acceptedAt": "2026-10-08T00:10:45.455Z"
+    },
     "chibi-martian-sawmill": {
       "id": "chibi-martian-sawmill",
       "subject": "IMPROVEMENT:MARTIAN:SAWMILL",
@@ -1092,6 +2009,47 @@
       "notes": "Candidate 0 of 16: a low chrome dome hut with a round magenta window and an antenna, a round chrome saw disc with a glowing magenta edge standing in a gunmetal bench at its front, an ochre stalk log on the bench and a stack of three ochre logs with pale ends; no red. The sixteen are one plan; 0 has the cleanest dome and the whole disc. 3, 7, 11, 12 and 14 have rust streaks on the dome; 12, 14 and 15 no log on the bench; 6 and 11 a box under the bench; 1, 2, 4, 5, 8 to 10 and 13 differ by the disc's size.",
       "acceptedAt": "2026-10-07T23:20:25.774Z"
     },
+    "chibi-martian-shipyard": {
+      "id": "chibi-martian-shipyard",
+      "subject": "IMPROVEMENT:MARTIAN:SHIPYARD",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "shipyard-b",
+      "candidate": 14,
+      "candidateSha256": "84d06b297bbdd281ab505ab6b81ad6266a3685ff5c49f211cd206e8ec0d830c8",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-shipyard.png",
+        "sha256": "db6147a2c0f4641318e6083cb1465dc7c1f0768421d0658ba5931713630ca1bf",
+        "pixelSha256": "bd5050ee0376f249630a2c6c952f062f60a8ca8d8b52c3f877a4ab9f3b7ff7a2",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 14 of 16: a chrome boat hull on gunmetal cradles in front of a tall chrome dome hangar with a magenta band and a magenta door, and a chrome crane with a magenta light and a hook beside it; a boat, a crane and a hangar at a glance, no text. 1 has glyphs like writing on its dome; 4 a hull like a bathtub; 9 and 13 a small hull apart from the dome; 2, 6, 8, 11 and 15 dark rib cages; 0, 3, 5, 7, 10 and 12 a small hull far from the dome.",
+      "acceptedAt": "2026-10-07T23:42:56.025Z"
+    },
     "chibi-martian-solar-array": {
       "id": "chibi-martian-solar-array",
       "subject": "IMPROVEMENT:MARTIAN:WINDMILL",
@@ -1132,6 +2090,47 @@
       },
       "notes": "Three tilted navy panels in a dark frame, a mast with a magenta light; the slab is gone, a few grey stepping stones stay under the feet. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
       "acceptedAt": "2026-10-04T09:12:32.409Z"
+    },
+    "chibi-martian-workshop": {
+      "id": "chibi-martian-workshop",
+      "subject": "IMPROVEMENT:MARTIAN:WORKSHOP",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "workshop-a",
+      "candidate": 5,
+      "candidateSha256": "c6bd56982d7fadec851d57b4893754dbf5d166d2f34cc94e113273c0bf04cf5e",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-workshop.png",
+        "sha256": "7b4e9d02ccc9f6cfd9e764e0be5a778d796b172710baddad46969dc206893793",
+        "pixelSha256": "ce5b7e29d19ea6444c58db1d2ccbe242d788e6581ba3eab4154db7501727acf9",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 5 of 16: a tall chrome dome with a magenta window, a big chrome cogwheel with a magenta hub at its side, and a gunmetal workbench with tools and a small robot arm; cog, bench and arm all there. 1 to 3, 9, 11, 13 and 14 are close (no arm, or a busier bench); 0, 4, 6, 8, 10, 12 and 15 have an open door panel and no workbench; 7 a grey hub.",
+      "acceptedAt": "2026-10-08T00:05:09.053Z"
     }
   }
 }

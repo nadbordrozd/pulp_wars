@@ -27,6 +27,50 @@
         "height": 72
       },
       "ownerColour": false
+    },
+    {
+      "id": "chibi-candy-forge",
+      "subject": "IMPROVEMENT:CANDY:FORGE",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-candy-workshop",
+      "subject": "IMPROVEMENT:CANDY:WORKSHOP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-candy-port",
+      "subject": "IMPROVEMENT:CANDY:PORT",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-candy-shipyard",
+      "subject": "IMPROVEMENT:CANDY:SHIPYARD",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
     }
   ],
   "recipes": [
@@ -51,6 +95,61 @@
         "height": 72
       },
       "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the CANDY Sawmill: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
+    },
+    {
+      "id": "forge-a",
+      "asset": "chibi-candy-forge",
+      "endpoint": "generate-image-v2",
+      "seed": 23925,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the CANDY Forge: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "workshop-a",
+      "asset": "chibi-candy-workshop",
+      "endpoint": "generate-image-v2",
+      "seed": 23926,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the CANDY Workshop: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "port-a",
+      "asset": "chibi-candy-port",
+      "endpoint": "generate-image-v2",
+      "seed": 23927,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the CANDY Port: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "shipyard-a",
+      "asset": "chibi-candy-shipyard",
+      "endpoint": "generate-image-v2",
+      "seed": 23928,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the CANDY Shipyard: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "port-b",
+      "asset": "chibi-candy-port",
+      "endpoint": "generate-image-v2",
+      "seed": 23935,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "port-a is the plan, but the stripes of its candy-cane posts and its gumdrops are a deep pink that is the owner key red: 64 to 173 pixels in every candidate (113 in candidate 7), on an unowned building. The subject now gives the stripes and the gumdrops a pale peach by hex and says never red or deep pink."
     }
   ]
 }

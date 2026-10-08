@@ -459,18 +459,31 @@ export type MartianArtRoleV7 = UndeadArtRoleV7;
  * the Humans': a camp among the trees of the faction's forest, a mill in its
  * building materials. They keep the names "Lumber camp" and "Sawmill" (the
  * Dinosaur Chopping Block was named before); FACTION_BUILDINGS of
- * src/render/faction-buildings-v7.ts names only the renamed ones.
+ * src/render/faction-buildings-v7.ts names only the renamed ones. Stage 2 of
+ * the bead (the user: "forge, workshop, port and shipyard should be
+ * generated per faction") adds those four the same way, names unchanged. The
+ * Ice Folk, who have no ships, have a Port and a Shipyard like every seat
+ * (docs/product/RULESET_7_CURRENT.md, section 21.16); theirs show no boat.
  */
+const FOREST_AND_TRADE_LOOKS: readonly ImprovementIdV7[] = [
+  "LUMBER_CAMP",
+  "SAWMILL",
+  "FORGE",
+  "WORKSHOP",
+  "PORT",
+  "SHIPYARD",
+];
+
 export const FACTION_IMPROVEMENT_LOOKS_V7: Readonly<
   Partial<Record<FactionIdV7, readonly ImprovementIdV7[]>>
 > = {
-  UNDEAD: ["FARM", "WINDMILL", "LUMBER_CAMP", "SAWMILL"],
-  GOBLIN: ["LUMBER_CAMP", "SAWMILL"],
-  DINOSAUR: ["WINDMILL", "SAWMILL", "LUMBER_CAMP"],
-  MARTIAN: ["FARM", "WINDMILL", "LUMBER_CAMP", "SAWMILL"],
-  ICE_FOLK: ["FARM", "LUMBER_CAMP", "SAWMILL"],
-  DWARF: ["FARM", "WINDMILL", "LUMBER_CAMP", "SAWMILL"],
-  CANDY: ["LUMBER_CAMP", "SAWMILL"],
+  UNDEAD: ["FARM", "WINDMILL", ...FOREST_AND_TRADE_LOOKS],
+  GOBLIN: FOREST_AND_TRADE_LOOKS,
+  DINOSAUR: ["WINDMILL", ...FOREST_AND_TRADE_LOOKS],
+  MARTIAN: ["FARM", "WINDMILL", ...FOREST_AND_TRADE_LOOKS],
+  ICE_FOLK: ["FARM", ...FOREST_AND_TRADE_LOOKS],
+  DWARF: ["FARM", "WINDMILL", ...FOREST_AND_TRADE_LOOKS],
+  CANDY: FOREST_AND_TRADE_LOOKS,
 };
 
 export type FactionImprovementSubjectV7 =

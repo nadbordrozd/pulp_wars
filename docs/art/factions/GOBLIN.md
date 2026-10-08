@@ -896,3 +896,12 @@ gave it its own art.
 - **Sawmill** (`chibi-goblin-sawmill`, `sawmill-a` candidate 7): a ramshackle hut of patched light grey tin and grey-tan planks with a hazard yellow door and a bent chimney pipe, a toothed tin blade in a rickety bench, a heap of crooked planks and a stump. In the live lime, sand and tin of the redesign.
 
 Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, section 12](../FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38). Both buildings keep the names "Lumber camp" and "Sawmill", are drawn by the owner of the territory they stand in, and fall back to the shared pair in the Classic look and the LEGACY art set.
+
+## Forge, Workshop, Port and Shipyard (bead `pulp_wars-2yc.38`, stage 2)
+
+- **Forge** (`chibi-goblin-forge`, `forge-a` candidate 0): a patched tin hut with a hazard yellow panel and a bent pipe, an oil-drum furnace with an orange fire, a dented anvil on a stump.
+- **Workshop** (`chibi-goblin-workshop`, `workshop-a` candidate 0): a tin and plank shack with a hazard yellow cogwheel, a sand-buff hide awning and a workbench.
+- **Port** (`chibi-goblin-port`, `port-a` candidate 12): a wide rickety pier of grey-tan planks, a patched tin hut with a hazard yellow door, a rope coil, a barrel.
+- **Shipyard** (`chibi-goblin-shipyard`, `shipyard-b` candidate 13): a half-built hull of tin sheets on rickety trestles, a crooked pole crane, a tin shed with a yellow door and awning.
+
+Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-workshop-a-port-and-a-shipyard-per-faction-bead-pulp_wars-2yc38-stage-2). Names unchanged; drawn by the owner of the territory; the shared four in the Classic look and the LEGACY art set.

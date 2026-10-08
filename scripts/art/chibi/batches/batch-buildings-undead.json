@@ -51,6 +51,50 @@
         "height": 72
       },
       "ownerColour": false
+    },
+    {
+      "id": "chibi-undead-forge",
+      "subject": "IMPROVEMENT:UNDEAD:FORGE",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-undead-workshop",
+      "subject": "IMPROVEMENT:UNDEAD:WORKSHOP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-undead-port",
+      "subject": "IMPROVEMENT:UNDEAD:PORT",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-undead-shipyard",
+      "subject": "IMPROVEMENT:UNDEAD:SHIPYARD",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
     }
   ],
   "recipes": [
@@ -399,6 +443,61 @@
         "height": 72
       },
       "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the UNDEAD Sawmill: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
+    },
+    {
+      "id": "forge-a",
+      "asset": "chibi-undead-forge",
+      "endpoint": "generate-image-v2",
+      "seed": 23901,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the UNDEAD Forge: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "workshop-a",
+      "asset": "chibi-undead-workshop",
+      "endpoint": "generate-image-v2",
+      "seed": 23902,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the UNDEAD Workshop: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "port-a",
+      "asset": "chibi-undead-port",
+      "endpoint": "generate-image-v2",
+      "seed": 23903,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the UNDEAD Port: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "shipyard-a",
+      "asset": "chibi-undead-shipyard",
+      "endpoint": "generate-image-v2",
+      "seed": 23904,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the UNDEAD Shipyard: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "sawmill-b",
+      "asset": "chibi-undead-sawmill",
+      "endpoint": "generate-image-v2",
+      "seed": 23931,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2, one attempt at a lighter Undead Sawmill: sawmill-a (candidate 9) is a near-black roof on dark slate walls and reads as one dark mass on the ashen ground. The subject now gives the walls the pale slate of the Bone Mill tower by hex."
     }
   ]
 }

@@ -229,7 +229,7 @@ describe("Martian art wiring (MARTIAN.md wiring steps 1-4, 6)", () => {
     );
     // (The root's card is the Workshop since the Industry reshuffle, 7r56.)
     expect(technologySubjectV7("DRILL", "MARTIAN")).toBe(
-      "IMPROVEMENT:WORKSHOP",
+      "IMPROVEMENT:MARTIAN:WORKSHOP",
     );
     expect(technologySubjectV7("CHIVALRY", "MARTIAN")).toBe(
       "UNIT:MARTIAN:KNIGHT",

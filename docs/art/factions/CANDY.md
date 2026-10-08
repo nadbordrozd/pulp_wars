@@ -757,3 +757,12 @@ the Marshmallow under a steel disc lettered **J** until bead
 - **Sawmill** (`chibi-candy-sawmill`, `sawmill-a` candidate 13): a small gingerbread mill house with a pale pink frosting roof and a cream door, a round peppermint blade with a pink swirl in a wafer bench, a candy log and a pile of cut candy sticks. The swirl is pink, not the owner key red.
 
 Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, section 12](../FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38). Both buildings keep the names "Lumber camp" and "Sawmill", are drawn by the owner of the territory they stand in, and fall back to the shared pair in the Classic look and the LEGACY art set.
+
+## Forge, Workshop, Port and Shipyard (bead `pulp_wars-2yc.38`, stage 2)
+
+- **Forge** (`chibi-candy-forge`, `forge-a` candidate 0): a gingerbread house with a white frosting roof, a pink-striped candy-cane chimney, a warm oven glow, a caramel anvil on a gumdrop.
+- **Workshop** (`chibi-candy-workshop`, `workshop-a` candidate 2): a gingerbread house with two round peppermint cogwheels in cream and pink, a piping bag by the door, a wafer workbench.
+- **Port** (`chibi-candy-port`, `port-b` candidate 8): a deck of pale biscuit wafers on peach-striped candy-cane posts, a gingerbread hut with a pale pink roof, a coil of caramel rope.
+- **Shipyard** (`chibi-candy-shipyard`, `shipyard-a` candidate 0): a half-built hull of chocolate bar planks with wafer ribs, a pink-striped candy-cane crane, a gingerbread boathouse.
+
+Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-workshop-a-port-and-a-shipyard-per-faction-bead-pulp_wars-2yc38-stage-2). Names unchanged; drawn by the owner of the territory; the shared four in the Classic look and the LEGACY art set.

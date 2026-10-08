@@ -2,6 +2,173 @@
   "schemaVersion": 1,
   "batch": "buildings-goblin",
   "recipes": {
+    "forge-a": {
+      "id": "forge-a",
+      "asset": "chibi-goblin-forge",
+      "jobId": "ac9e53e4-6f31-4e73-b581-75f0be401845",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-goblin",
+        "asset": "chibi-goblin-forge",
+        "subject": "IMPROVEMENT:GOBLIN:FORGE",
+        "faction": "GOBLIN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23905,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: a goblin scrap smithy: one hut of patched light grey tin sheets with a hazard yellow panel, a tall bent tin chimney pipe with a small grey smoke puff, a wide open front with an orange fire glow in an oil-drum furnace, and a dented dark anvil on a tree stump in front. Light grey tin, grey-tan wood, hazard yellow, orange glow; dark brown outline. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a goblin scrap smithy: one hut of patched light grey tin sheets with a hazard yellow panel, a tall bent tin chimney pipe with a small grey smoke puff, a wide open front with an orange fire glow in an oil-drum furnace, and a dented dark anvil on a tree stump in front. Light grey tin, grey-tan wood, hazard yellow, orange glow; dark brown outline. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a goblin scrap smithy: one hut of patched light grey tin sheets with a hazard yellow panel, a tall bent tin chimney pipe with a small grey smoke puff, a wide open front with an orange fire glow in an oil-drum furnace, and a dented dark anvil on a tree stump in front. Light grey tin, grey-tan wood, hazard yellow, orange glow; dark brown outline. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:43:08.102Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-goblin/forge-a.png",
+      "rawSheetSha256": "0ce9f597c6e5c9995a6621c9a633cf2f2a90d606377045a84e33f08970091e1b",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7193,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7593,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7193,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7321,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7321,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7321,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8772,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7455,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7818,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6981,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.717,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.0049,
+          "footprintWidthShare": 0.717,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8302,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7358,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:45:15.593Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a hut of patched light grey tin with a hazard yellow panel, a bent tin chimney pipe with a small smoke puff, an oil-drum furnace with an orange fire in its open front and a dented anvil on a tree stump; the clearest yellow panel and smoke of the sheet. The sixteen are one plan: 11 and 13 have no pipe; 3, 6, 7, 9 and 14 a leaning sheet over the yellow; 1, 2, 4, 5, 8, 10, 12 and 15 a smaller or paler panel.",
+        "reviewedAt": "2026-10-07T23:45:52.590Z"
+      }
+    },
     "lumber-camp-a": {
       "id": "lumber-camp-a",
       "asset": "chibi-goblin-lumber-camp",
@@ -167,6 +334,173 @@
         "candidate": 4,
         "notes": "Candidate 4 of 16: a crooked half-dead scrub tree with a few olive-yellow leaves, three sawn stumps with a cleaver axe in the front one, and a patched sand-buff lean-to with a tin sheet and a hazard yellow patch: scrap and stumps, the Goblin scrub cut down. 8 and 14 are the same plan with a paler patch; 12 adds a log but has no yellow; 0 has no lean-to; 1 no third stump; 2, 3, 5 to 7, 9 to 11, 13 and 15 have neat log stacks and no axe, which read as the Human camp.",
         "reviewedAt": "2026-10-07T23:07:00.405Z"
+      }
+    },
+    "port-a": {
+      "id": "port-a",
+      "asset": "chibi-goblin-port",
+      "jobId": "6588fea6-ae6f-422a-a739-c9785e7d2fa1",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-goblin",
+        "asset": "chibi-goblin-port",
+        "subject": "IMPROVEMENT:GOBLIN:PORT",
+        "faction": "GOBLIN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23907,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: a goblin harbour pier: a wide rickety pier deck of crooked grey-tan planks on uneven posts, a small hut of patched light grey tin sheets with a hazard yellow door on the pier, two crooked mooring posts, a coil of rope and an old barrel. Light grey tin, sand, grey-tan wood, hazard yellow; dark brown outline; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a goblin harbour pier: a wide rickety pier deck of crooked grey-tan planks on uneven posts, a small hut of patched light grey tin sheets with a hazard yellow door on the pier, two crooked mooring posts, a coil of rope and an old barrel. Light grey tin, sand, grey-tan wood, hazard yellow; dark brown outline; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a goblin harbour pier: a wide rickety pier deck of crooked grey-tan planks on uneven posts, a small hut of patched light grey tin sheets with a hazard yellow door on the pier, two crooked mooring posts, a coil of rope and an old barrel. Light grey tin, sand, grey-tan wood, hazard yellow; dark brown outline; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:47:43.994Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-goblin/port-a.png",
+      "rawSheetSha256": "18f7873995392fef3042cd0577f422a6d3dd4d704ff08b71550a1dd43db0c48f",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.25,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4098,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4098,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.35,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3934,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4754,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4754,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4426,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4918,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4839,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3387,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3548,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4032,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.377,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:50:36.308Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 12,
+        "notes": "Candidate 12 of 16: a wide rickety pier of grey-tan planks on uneven posts, a small patched tin hut with a hazard yellow door in the middle of it, crooked mooring posts, a coil of rope and a barrel; the widest whole deck of the sheet. The sixteen are one plan: 13 and 14 are close; 0, 3 to 5 and 9 have a door turned away or no yellow; 1, 2, 6, 8 and 15 an L-shaped deck; 7, 10 and 11 steps down to the water.",
+        "reviewedAt": "2026-10-07T23:51:07.167Z"
       }
     },
     "sawmill-a": {
@@ -335,9 +669,551 @@
         "notes": "Candidate 7 of 16: a ramshackle hut of patched light grey tin sheets and grey-tan planks with a hazard yellow door and a bent chimney pipe, a toothed tin saw blade standing in a rickety bench, a heap of crooked planks and a sawn stump; its blade has the clearest teeth of the sheet. The sixteen are one plan; in the others the blade is a plain grey disc (1, 9, 10, 12 to 15) or lies low in the bench (0, 2 to 6, 8, 11).",
         "reviewedAt": "2026-10-07T23:09:38.649Z"
       }
+    },
+    "shipyard-a": {
+      "id": "shipyard-a",
+      "asset": "chibi-goblin-shipyard",
+      "jobId": "7cfaff72-82da-4636-b3c3-c9aabd828b1b",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-goblin",
+        "asset": "chibi-goblin-shipyard",
+        "subject": "IMPROVEMENT:GOBLIN:SHIPYARD",
+        "faction": "GOBLIN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23908,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: a goblin shipyard: a half-built boat hull patched from light grey tin sheets and grey-tan planks showing its curved ribs, resting on rickety trestles, a tall crooked crane of grey-tan poles with a rope and hook leaning over it, and a small tin shed with a hazard yellow panel behind. Light grey tin, sand, grey-tan wood, hazard yellow; dark brown outline. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a goblin shipyard: a half-built boat hull patched from light grey tin sheets and grey-tan planks showing its curved ribs, resting on rickety trestles, a tall crooked crane of grey-tan poles with a rope and hook leaning over it, and a small tin shed with a hazard yellow panel behind. Light grey tin, sand, grey-tan wood, hazard yellow; dark brown outline. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a goblin shipyard: a half-built boat hull patched from light grey tin sheets and grey-tan planks showing its curved ribs, resting on rickety trestles, a tall crooked crane of grey-tan poles with a rope and hook leaning over it, and a small tin shed with a hazard yellow panel behind. Light grey tin, sand, grey-tan wood, hazard yellow; dark brown outline. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:50:52.141Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-goblin/shipyard-a.png",
+      "rawSheetSha256": "7a72b7af0c597ec73ddcccadff78866a6d6db5c6f9b212494811b8e5967f6626",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.1274,
+          "footprintWidthShare": 0.5161,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1491,
+          "footprintWidthShare": 0.7258,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.2652,
+          "footprintWidthShare": 0.6452,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1772,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1629,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0962,
+          "footprintWidthShare": 0.7258,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1409,
+          "footprintWidthShare": 0.7377,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0327,
+          "footprintWidthShare": 0.6774,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3243,
+          "footprintWidthShare": 0.9167,
+          "suspect": true
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.3351,
+          "footprintWidthShare": 0.7097,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0664,
+          "footprintWidthShare": 0.7551,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2903,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0623,
+          "footprintWidthShare": 0.7255,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1686,
+          "footprintWidthShare": 0.55,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.1531,
+          "footprintWidthShare": 0.8689,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0721,
+          "footprintWidthShare": 0.5167,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:54:28.905Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Brown wooden boats and cranes on a square plate of sand in eleven of sixteen (the word 'sand' in the colour list drew a beach), no tin and no hazard yellow anywhere; the plain brown wood is the Human look. 10 and 12 have no plate but are a brown hull or a crane alone. Redone as shipyard-b without the word sand.",
+        "reviewedAt": "2026-10-07T23:55:10.759Z"
+      }
+    },
+    "shipyard-b": {
+      "id": "shipyard-b",
+      "asset": "chibi-goblin-shipyard",
+      "jobId": "ea3facec-c46e-46ce-a7c6-dade5404f5b8",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-goblin",
+        "asset": "chibi-goblin-shipyard",
+        "subject": "IMPROVEMENT:GOBLIN:SHIPYARD",
+        "faction": "GOBLIN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23934,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: a goblin scrap shipyard, one building group: in front one big half-built boat hull patched from light grey tin sheets with rivets, showing its curved ribs, resting on rickety trestles; leaning over it one tall crooked crane of pale grey-tan poles with a rope and hook; behind them one small shed of light grey tin sheets with a hazard yellow door. Light grey tin, pale grey-tan wood, hazard yellow; no brown boat; dark brown outline. It stands on nothing: no beach, no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a goblin scrap shipyard, one building group: in front one big half-built boat hull patched from light grey tin sheets with rivets, showing its curved ribs, resting on rickety trestles; leaning over it one tall crooked crane of pale grey-tan poles with a rope and hook; behind them one small shed of light grey tin sheets with a hazard yellow door. Light grey tin, pale grey-tan wood, hazard yellow; no brown boat; dark brown outline. It stands on nothing: no beach, no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a goblin scrap shipyard, one building group: in front one big half-built boat hull patched from light grey tin sheets with rivets, showing its curved ribs, resting on rickety trestles; leaning over it one tall crooked crane of pale grey-tan poles with a rope and hook; behind them one small shed of light grey tin sheets with a hazard yellow door. Light grey tin, pale grey-tan wood, hazard yellow; no brown boat; dark brown outline. It stands on nothing: no beach, no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:58:03.207Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-goblin/shipyard-b.png",
+      "rawSheetSha256": "6dfe998ea5a339df21a3e4024320c89e2f38032d52369bad4bbb6cb36f9929e7",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0176,
+          "footprintWidthShare": 0.5574,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0205,
+          "footprintWidthShare": 0.5167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5484,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7049,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5246,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5902,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5484,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0146,
+          "footprintWidthShare": 0.6034,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5323,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0149,
+          "footprintWidthShare": 0.5484,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5484,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5574,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5484,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5763,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T00:00:36.149Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 13,
+        "notes": "Candidate 13 of 16: a half-built hull of light grey tin sheets on rickety trestles, a crooked crane of pale grey-tan poles with a rope and hook over it, and a tin shed with a hazard yellow door and a yellow awning behind; the most yellow of the sheet and a whole hull. 3, 5 to 7, 9 to 11 and 15 are the same plan with less yellow or a ladder; 0 to 2, 4, 8, 12 and 14 have a bare rib frame that reads as a wreck.",
+        "reviewedAt": "2026-10-08T00:03:05.006Z"
+      }
+    },
+    "workshop-a": {
+      "id": "workshop-a",
+      "asset": "chibi-goblin-workshop",
+      "jobId": "4aa2635b-a490-42b6-a755-d4631d7502c6",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-goblin",
+        "asset": "chibi-goblin-workshop",
+        "subject": "IMPROVEMENT:GOBLIN:WORKSHOP",
+        "faction": "GOBLIN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23906,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: a goblin tinker's shack: one tall crooked hut of patched light grey tin sheets and grey-tan planks with a sand-buff hide awning, one big hazard yellow cogwheel on its front, and by the open door a cluttered workbench with a big spanner, a hammer and loose cogs, and a small heap of scrap. Light grey tin, sand, grey-tan wood, hazard yellow; dark brown outline. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a goblin tinker's shack: one tall crooked hut of patched light grey tin sheets and grey-tan planks with a sand-buff hide awning, one big hazard yellow cogwheel on its front, and by the open door a cluttered workbench with a big spanner, a hammer and loose cogs, and a small heap of scrap. Light grey tin, sand, grey-tan wood, hazard yellow; dark brown outline. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a goblin tinker's shack: one tall crooked hut of patched light grey tin sheets and grey-tan planks with a sand-buff hide awning, one big hazard yellow cogwheel on its front, and by the open door a cluttered workbench with a big spanner, a hammer and loose cogs, and a small heap of scrap. Light grey tin, sand, grey-tan wood, hazard yellow; dark brown outline. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:45:38.955Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-goblin/workshop-a.png",
+      "rawSheetSha256": "f6631bd19f20512b1b077a9670edb56f59521e9069fa684da8bccb18f181abd9",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.4699,
+          "footprintWidthShare": 0.8333,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.4498,
+          "footprintWidthShare": 0.8542,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.4402,
+          "footprintWidthShare": 0.8936,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.231,
+          "footprintWidthShare": 0.8214,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.5585,
+          "footprintWidthShare": 0.8723,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.3889,
+          "footprintWidthShare": 0.8235,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.5556,
+          "footprintWidthShare": 0.7907,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.6864,
+          "footprintWidthShare": 0.814,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.1787,
+          "footprintWidthShare": 0.8776,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.607,
+          "footprintWidthShare": 0.8085,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.6074,
+          "footprintWidthShare": 0.8293,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5265,
+          "footprintWidthShare": 0.9268,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.4222,
+          "footprintWidthShare": 0.8409,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.5735,
+          "footprintWidthShare": 0.8,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.4767,
+          "footprintWidthShare": 0.9024,
+          "suspect": true
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.482,
+          "footprintWidthShare": 0.9333,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-07T23:47:28.992Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a shack of light grey tin sheets and grey-tan planks, a hazard yellow cogwheel on its front, a sand-buff hide awning and a workbench under it; the live Goblin tin, sand and yellow. The plate hint is a false alarm: nothing is drawn under it. The sheet varies widely: 1, 3, 4 and 12 are rust-brown scrap (the retired Scrap look); 2, 5 to 11, 13 and 14 are plain brown wooden sheds, most with no yellow cog; 15 has windmill sails.",
+        "reviewedAt": "2026-10-07T23:47:59.785Z"
+      }
     }
   },
   "assets": {
+    "chibi-goblin-forge": {
+      "id": "chibi-goblin-forge",
+      "subject": "IMPROVEMENT:GOBLIN:FORGE",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "forge-a",
+      "candidate": 0,
+      "candidateSha256": "cdbe28be8ad8b7d31e6ca0f00c5a9f05835822feb15ba960f9fdf24bda729380",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-goblin-forge.png",
+        "sha256": "3eff2fc0e8cd3e7d4b48aa14c6526f7bbd2319ebffcd1ffef52e90c7ca93c104",
+        "pixelSha256": "09c7e8f3972cb41ad81017ee9efda44738f1f1d792c671abb0067b092622b5f9",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a hut of patched light grey tin with a hazard yellow panel, a bent tin chimney pipe with a small smoke puff, an oil-drum furnace with an orange fire in its open front and a dented anvil on a tree stump; the clearest yellow panel and smoke of the sheet. The sixteen are one plan: 11 and 13 have no pipe; 3, 6, 7, 9 and 14 a leaning sheet over the yellow; 1, 2, 4, 5, 8, 10, 12 and 15 a smaller or paler panel.",
+      "acceptedAt": "2026-10-07T23:45:52.590Z"
+    },
     "chibi-goblin-lumber-camp": {
       "id": "chibi-goblin-lumber-camp",
       "subject": "IMPROVEMENT:GOBLIN:LUMBER_CAMP",
@@ -379,6 +1255,47 @@
       "notes": "Candidate 4 of 16: a crooked half-dead scrub tree with a few olive-yellow leaves, three sawn stumps with a cleaver axe in the front one, and a patched sand-buff lean-to with a tin sheet and a hazard yellow patch: scrap and stumps, the Goblin scrub cut down. 8 and 14 are the same plan with a paler patch; 12 adds a log but has no yellow; 0 has no lean-to; 1 no third stump; 2, 3, 5 to 7, 9 to 11, 13 and 15 have neat log stacks and no axe, which read as the Human camp.",
       "acceptedAt": "2026-10-07T23:07:00.405Z"
     },
+    "chibi-goblin-port": {
+      "id": "chibi-goblin-port",
+      "subject": "IMPROVEMENT:GOBLIN:PORT",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "port-a",
+      "candidate": 12,
+      "candidateSha256": "b4ef57dcf9a006cf70c6153873d003341c3faa55e95513170fc598ebbd12bb82",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-goblin-port.png",
+        "sha256": "ab7bb225281d45ff1167fe167434c12ce5c393a3cf00fc51b393d603561543cc",
+        "pixelSha256": "2896818715704ec71442a8e74207c976eb27a152e585e07fbb337ee9d5a9d6c9",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 12 of 16: a wide rickety pier of grey-tan planks on uneven posts, a small patched tin hut with a hazard yellow door in the middle of it, crooked mooring posts, a coil of rope and a barrel; the widest whole deck of the sheet. The sixteen are one plan: 13 and 14 are close; 0, 3 to 5 and 9 have a door turned away or no yellow; 1, 2, 6, 8 and 15 an L-shaped deck; 7, 10 and 11 steps down to the water.",
+      "acceptedAt": "2026-10-07T23:51:07.167Z"
+    },
     "chibi-goblin-sawmill": {
       "id": "chibi-goblin-sawmill",
       "subject": "IMPROVEMENT:GOBLIN:SAWMILL",
@@ -419,6 +1336,88 @@
       },
       "notes": "Candidate 7 of 16: a ramshackle hut of patched light grey tin sheets and grey-tan planks with a hazard yellow door and a bent chimney pipe, a toothed tin saw blade standing in a rickety bench, a heap of crooked planks and a sawn stump; its blade has the clearest teeth of the sheet. The sixteen are one plan; in the others the blade is a plain grey disc (1, 9, 10, 12 to 15) or lies low in the bench (0, 2 to 6, 8, 11).",
       "acceptedAt": "2026-10-07T23:09:38.649Z"
+    },
+    "chibi-goblin-shipyard": {
+      "id": "chibi-goblin-shipyard",
+      "subject": "IMPROVEMENT:GOBLIN:SHIPYARD",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "shipyard-b",
+      "candidate": 13,
+      "candidateSha256": "359b787328e0223bd6556206fddfe727873903f007cbead74ee1e7eee9aa6398",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-goblin-shipyard.png",
+        "sha256": "02ff5ba8db0c6bc9af5c0c24f47249821d9487ea14a222fa0a27e056b12ed7dd",
+        "pixelSha256": "4f54cbfaa544fd84459e4856a13b112fe34aa2766cfb34551edeeac91288d2ef",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 13 of 16: a half-built hull of light grey tin sheets on rickety trestles, a crooked crane of pale grey-tan poles with a rope and hook over it, and a tin shed with a hazard yellow door and a yellow awning behind; the most yellow of the sheet and a whole hull. 3, 5 to 7, 9 to 11 and 15 are the same plan with less yellow or a ladder; 0 to 2, 4, 8, 12 and 14 have a bare rib frame that reads as a wreck.",
+      "acceptedAt": "2026-10-08T00:03:05.006Z"
+    },
+    "chibi-goblin-workshop": {
+      "id": "chibi-goblin-workshop",
+      "subject": "IMPROVEMENT:GOBLIN:WORKSHOP",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "workshop-a",
+      "candidate": 0,
+      "candidateSha256": "63586770a2f58a3fdd632971b823cf53af0d489de67ae151132a12f059a01636",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-goblin-workshop.png",
+        "sha256": "e32800e8728a61af3643af2f0ab5377241f676bf90dfffefa3e433e9631682d1",
+        "pixelSha256": "5b2f591de6edde6cc04ec4fa469cca6b890e08d09125794c091c1574a93a438a",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a shack of light grey tin sheets and grey-tan planks, a hazard yellow cogwheel on its front, a sand-buff hide awning and a workbench under it; the live Goblin tin, sand and yellow. The plate hint is a false alarm: nothing is drawn under it. The sheet varies widely: 1, 3, 4 and 12 are rust-brown scrap (the retired Scrap look); 2, 5 to 11, 13 and 14 are plain brown wooden sheds, most with no yellow cog; 15 has windmill sails.",
+      "acceptedAt": "2026-10-07T23:47:59.785Z"
     }
   }
 }

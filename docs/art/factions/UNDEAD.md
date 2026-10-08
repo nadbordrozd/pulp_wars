@@ -315,3 +315,14 @@ it its own art.
 - **Sawmill** (`chibi-undead-sawmill`, `sawmill-a` candidate 9): a dark slate plank shed with a near-black roof and a violet window, a round toothed blade of ivory bone on a slate bench, a stack of ashen logs. It is dark; the bone blade and the window carry it on the ashen ground.
 
 Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, section 12](../FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38). Both buildings keep the names "Lumber camp" and "Sawmill", are drawn by the owner of the territory they stand in, and fall back to the shared pair in the Classic look and the LEGACY art set.
+
+## Forge, Workshop, Port and Shipyard (bead `pulp_wars-2yc.38`, stage 2)
+
+- **Forge** (`chibi-undead-forge`, `forge-a` candidate 0): a squat smithy of pale slate stone under a near-black roof, a crooked chimney with violet smoke, a violet fire glow, a dark anvil on a bone stump.
+- **Workshop** (`chibi-undead-workshop`, `workshop-a` candidate 0): a crooked timbered slate house with one big ivory bone cogwheel on its gable, violet windows, a workbench.
+- **Port** (`chibi-undead-port`, `port-a` candidate 0): a pier of ashen planks on dark posts, a pale slate hut with a violet window, bone mooring posts, a lantern with a violet flame.
+- **Shipyard** (`chibi-undead-shipyard`, `shipyard-a` candidate 9): a half-built ashen hull with pale rib bones on trestles, a dark timber crane with a chain, a slate boathouse.
+
+One attempt at a lighter Sawmill (`sawmill-b`) was not taken: its bone blade lost its teeth.
+
+Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-workshop-a-port-and-a-shipyard-per-faction-bead-pulp_wars-2yc38-stage-2). Names unchanged; drawn by the owner of the territory; the shared four in the Classic look and the LEGACY art set.

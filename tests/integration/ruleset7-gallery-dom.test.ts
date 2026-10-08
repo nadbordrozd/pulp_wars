@@ -603,10 +603,12 @@ describe("Ruleset 7 Gallery", () => {
       cell("CITY_2", "MARTIAN").querySelector("canvas")?.dataset.subject,
     ).toBe("CITY:MARTIAN:2");
     // A shared improvement is one cell across every faction.
-    const forge = rows[9]?.querySelectorAll<HTMLElement>(".v7-gallery-cell");
-    expect(forge).toHaveLength(1);
-    expect(forge?.[0]?.getAttribute("aria-label")).toBe("Forge, every faction");
-    expect(forge?.[0]?.closest("td")?.getAttribute("colspan")).toBe("8");
+    const market = rows[11]?.querySelectorAll<HTMLElement>(".v7-gallery-cell");
+    expect(market).toHaveLength(1);
+    expect(market?.[0]?.getAttribute("aria-label")).toBe(
+      "Market, every faction",
+    );
+    expect(market?.[0]?.closest("td")?.getAttribute("colspan")).toBe("8");
     // Faction building looks (bead pulp_wars-xdh.2): the Farm, Windmill and
     // Sawmill rows have one cell per faction, named as that faction has it.
     const cellNames = (row: number) =>
@@ -649,7 +651,17 @@ describe("Ruleset 7 Gallery", () => {
     expect(
       cell("SAWMILL", "ICE_FOLK").querySelector("canvas")?.dataset.subject,
     ).toBe("IMPROVEMENT:ICE_FOLK:SAWMILL");
-    for (const row of [6, 9, 10, 11, 12, 13, 14])
+    // Stage 2: the Forge, Workshop, Port and Shipyard rows too.
+    for (const row of [9, 10, 20, 21])
+      expect(rows[row]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(8);
+    expect(cellNames(9)).toEqual(Array.from({ length: 8 }, () => "Forge"));
+    expect(
+      cell("SHIPYARD", "ICE_FOLK").querySelector("canvas")?.dataset.subject,
+    ).toBe("IMPROVEMENT:ICE_FOLK:SHIPYARD");
+    expect(
+      cell("PORT", "ORIGINAL").querySelector("canvas")?.dataset.subject,
+    ).toBe("IMPROVEMENT:PORT");
+    for (const row of [6, 11, 12, 13, 14])
       expect(rows[row]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(1);
     const graveyard = cell("FARM", "UNDEAD");
     expect(graveyard.getAttribute("aria-label")).toBe("Graveyard, Undead");

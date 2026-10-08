@@ -110,6 +110,86 @@ export const sceneDwarf = scene("DWARF");
 export const sceneCandy = scene("CANDY");
 
 /**
+ * Stage 2 of the bead: the border scene with a strip of Shallow Water down
+ * the outer edge of each territory. `~` water, `P` a Port and `Y` a
+ * Shipyard on water, `F` a Forge and `K` a Workshop on Grass, `T` Forest,
+ * `U` a faction unit, `.` as the border scene has it.
+ */
+const TRADE_OVERLAY = [
+  "~....TT....~",
+  "P..F....F..P",
+  "~..K....K..~",
+  "Y..........Y",
+  "~......U...~",
+  "~....TT....~",
+  "~..........~",
+] as const;
+
+function traded(state: GameStateV7): GameStateV7 {
+  const code = (at: CoordV7): string =>
+    TRADE_OVERLAY[at.y - ORIGIN.y]?.[at.x - ORIGIN.x] ?? ".";
+  const template = state.units.find(
+    (unit) => unit.ownerId !== state.humanPlayerId,
+  );
+  if (template === undefined) throw new Error("no faction unit");
+  let nextId = Math.max(...state.units.map((unit) => Number(unit.id))) + 1;
+  const improvements: Readonly<Record<string, ImprovementIdV7>> = {
+    P: "PORT",
+    Y: "SHIPYARD",
+    F: "FORGE",
+    K: "WORKSHOP",
+  };
+  const tiles = state.board.tiles.map((tile) => {
+    const mark = code(tile.at);
+    if (mark === "." || tile.site !== null) return tile;
+    const water = mark === "~" || mark === "P" || mark === "Y";
+    return {
+      ...tile,
+      terrain: water
+        ? ("SHALLOW_WATER" as const)
+        : mark === "T"
+          ? ("FOREST" as const)
+          : ("GRASS" as const),
+      resource: null,
+      road: false,
+      improvement: improvements[mark] ?? null,
+    };
+  });
+  const cleared = new Set(
+    tiles
+      .filter((tile) => code(tile.at) !== ".")
+      .map((tile) => `${tile.at.x},${tile.at.y}`),
+  );
+  return {
+    ...state,
+    board: { ...state.board, tiles },
+    units: [
+      ...state.units.filter(
+        (unit) => !cleared.has(`${unit.at.x},${unit.at.y}`),
+      ),
+      ...tiles
+        .filter((tile) => code(tile.at) === "U")
+        .map((tile) => ({
+          ...template,
+          id: nextId++ as typeof template.id,
+          at: tile.at,
+        })),
+    ],
+  };
+}
+
+const trade = (faction: FactionIdV7) => (): GameStateV7 =>
+  traded(borderScene(faction));
+
+export const tradeUndead = trade("UNDEAD");
+export const tradeGoblin = trade("GOBLIN");
+export const tradeDinosaur = trade("DINOSAUR");
+export const tradeMartian = trade("MARTIAN");
+export const tradeIceFolk = trade("ICE_FOLK");
+export const tradeDwarf = trade("DWARF");
+export const tradeCandy = trade("CANDY");
+
+/**
  * The Ice Folk scene with the two east columns and the bottom row of its
  * window unexplored, so the tundra wood of the Ice Folk territory runs into
  * the fog: its pieces are packed with the cells behind the cloud and drawn
@@ -157,6 +237,8 @@ export const SWITCH_PARAMETER = "faction-forests";
 const CROP = [240, 200, 960, 590] as const;
 /** The faction's wood with its Lumber Camp and Sawmill, shown again at 3x. */
 const ZOOM = [880, 500, 320, 260] as const;
+/** The faction's Forge, Workshop, Port and Shipyard, shown again at 3x. */
+const TRADE_ZOOM = [820, 240, 380, 280] as const;
 const shot = (name: string, sceneName: string): LookSwitchShot => ({
   name,
   scene: sceneName,
@@ -178,4 +260,22 @@ export const REVIEW_SHOTS: readonly LookSwitchShot[] = [
   shot("dinosaur", "sceneDinosaur"),
   shot("martian", "sceneMartian"),
   shot("dwarf", "sceneDwarf"),
+  // Stage 2: a Forge, a Workshop, a Port and a Shipyard in both territories.
+  ...(
+    [
+      ["undead", "tradeUndead"],
+      ["goblin", "tradeGoblin"],
+      ["dinosaur", "tradeDinosaur"],
+      ["martian", "tradeMartian"],
+      ["ice-folk", "tradeIceFolk"],
+      ["dwarf", "tradeDwarf"],
+      ["candy", "tradeCandy"],
+    ] as const
+  ).map(([name, sceneName]): LookSwitchShot => ({
+    name: `trade-${name}`,
+    scene: sceneName,
+    zoomIn: 1,
+    crop: CROP,
+    zoom: TRADE_ZOOM,
+  })),
 ];

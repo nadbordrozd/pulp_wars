@@ -40,6 +40,50 @@
         "height": 72
       },
       "ownerColour": false
+    },
+    {
+      "id": "chibi-ice-folk-forge",
+      "subject": "IMPROVEMENT:ICE_FOLK:FORGE",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-ice-folk-workshop",
+      "subject": "IMPROVEMENT:ICE_FOLK:WORKSHOP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-ice-folk-port",
+      "subject": "IMPROVEMENT:ICE_FOLK:PORT",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-ice-folk-shipyard",
+      "subject": "IMPROVEMENT:ICE_FOLK:SHIPYARD",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
     }
   ],
   "recipes": [
@@ -92,6 +136,50 @@
         "height": 72
       },
       "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the ICE_FOLK Sawmill: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
+    },
+    {
+      "id": "forge-a",
+      "asset": "chibi-ice-folk-forge",
+      "endpoint": "generate-image-v2",
+      "seed": 23917,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the ICE_FOLK Forge: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "workshop-a",
+      "asset": "chibi-ice-folk-workshop",
+      "endpoint": "generate-image-v2",
+      "seed": 23918,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the ICE_FOLK Workshop: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "port-a",
+      "asset": "chibi-ice-folk-port",
+      "endpoint": "generate-image-v2",
+      "seed": 23919,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the ICE_FOLK Port: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "shipyard-a",
+      "asset": "chibi-ice-folk-shipyard",
+      "endpoint": "generate-image-v2",
+      "seed": 23920,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the ICE_FOLK Shipyard: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
     }
   ]
 }

@@ -1,0 +1,52 @@
+{
+  "id": "shipyard-a",
+  "jobId": "b519dd98-5c93-49f7-b56d-6aab22bd5b1f",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "batch": "buildings-candy",
+    "asset": "chibi-candy-shipyard",
+    "subject": "IMPROVEMENT:CANDY:SHIPYARD",
+    "faction": "CANDY",
+    "recipeClass": "calm-feature",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 23928,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "light",
+        "source": "scripts/art/chibi/fragments/light-south-west.txt",
+        "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+        "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+        "negative": "ground plate, platform, grass square, isometric block, background, people"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/CANDY.json",
+        "text": "Subject: a candy shipyard: a half-built boat hull of milk chocolate bar planks showing its curved pale wafer ribs, resting on wafer trestles, a tall pink-and-cream striped candy-cane crane with a caramel hook leaning over it, and a small gingerbread boathouse with a white frosting roof behind. Chocolate, biscuit, cream, pink, caramel; pink is never red; rose-brown outline. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a candy shipyard: a half-built boat hull of milk chocolate bar planks showing its curved pale wafer ribs, resting on wafer trestles, a tall pink-and-cream striped candy-cane crane with a caramel hook leaning over it, and a small gingerbread boathouse with a white frosting roof behind. Chocolate, biscuit, cream, pink, caramel; pink is never red; rose-brown outline. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a candy shipyard: a half-built boat hull of milk chocolate bar planks showing its curved pale wafer ribs, resting on wafer trestles, a tall pink-and-cream striped candy-cane crane with a caramel hook leaning over it, and a small gingerbread boathouse with a white frosting roof behind. Chocolate, biscuit, cream, pink, caramel; pink is never red; rose-brown outline. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+  }
+}

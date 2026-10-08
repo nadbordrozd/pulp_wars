@@ -798,3 +798,15 @@ red), and two forest sets from six recipes of the run
 `art/pixellab/faction-forests/`: 22 PixelLab calls. The Human pair (`chibi-direction-lumber-camp`,
 `chibi-direction-sawmill`) is unchanged and is the fallback of every
 faction subject.
+
+### Stage 2: Forge, Workshop, Port and Shipyard
+
+| Subjects                                                                                                                    | Assets                                                     | Class and canvas                                                             |
+| --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `IMPROVEMENT:<FACTION>:FORGE`, `WORKSHOP`, `PORT`, `SHIPYARD` for Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, Candy | `chibi-<faction>-forge`, `-workshop`, `-port`, `-shipyard` | `BUILDING`, 72 x 72, seated 3 px, no owner colour (the shared four's canvas) |
+
+28 building masters from 31 recipes of the batches `buildings-<faction>`,
+and two touch-up recipes (the Dwarf Lumber Camp redone, an Undead Sawmill
+attempt not taken): 33 PixelLab calls. The Human four
+(`chibi-direction-forge`, `-workshop`, `-port`, `-shipyard`) are unchanged
+and are the fallback of every faction subject.

@@ -615,3 +615,14 @@ and generation records stay under the art slot they were made for,
 - **Sawmill** (`chibi-dwarf-sawmill`, `sawmill-a` candidate 7): a squat mill house of warm grey stone with a muted copper roof, a dark iron chimney with a puff of white steam, a steel saw blade in its front arch over a pine log, a brass cog on the gable and a stack of pale planks: the steam saw.
 
 Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, section 12](../FACTION_BUILDINGS.md#12-a-lumber-camp-and-a-sawmill-per-faction-bead-pulp_wars-2yc38). Both buildings keep the names "Lumber camp" and "Sawmill", are drawn by the owner of the territory they stand in, and fall back to the shared pair in the Classic look and the LEGACY art set.
+
+## Forge, Workshop, Port and Shipyard (bead `pulp_wars-2yc.38`, stage 2)
+
+- **Forge** (`chibi-dwarf-forge`, `forge-a` candidate 2): a squat grey stone hall under a copper roof, a tall iron chimney with white steam, a fire glow, a big dark anvil.
+- **Workshop** (`chibi-dwarf-workshop`, `workshop-a` candidate 6): a two-storey grey stone house under a copper roof, three meshing brass cogwheels, a copper pipe with a big steam puff, a workbench.
+- **Port** (`chibi-dwarf-port`, `port-a` candidate 3): a quay of iron-banded timber on squat stone piers, a stone harbour house under a copper roof, bollards, a brass lantern.
+- **Shipyard** (`chibi-dwarf-shipyard`, `shipyard-a` candidate 13): a half-built timber hull with copper plates on a stone cradle, an iron steam crane with a steam puff, a stone boathouse.
+
+The Lumber Camp was lightened in the same stage (`lumber-camp-b`, candidate 0: pines of the forest's mid green).
+
+Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-workshop-a-port-and-a-shipyard-per-faction-bead-pulp_wars-2yc38-stage-2). Names unchanged; drawn by the owner of the territory; the shared four in the Classic look and the LEGACY art set.

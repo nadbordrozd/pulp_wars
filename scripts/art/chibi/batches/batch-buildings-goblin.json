@@ -27,6 +27,50 @@
         "height": 72
       },
       "ownerColour": false
+    },
+    {
+      "id": "chibi-goblin-forge",
+      "subject": "IMPROVEMENT:GOBLIN:FORGE",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-goblin-workshop",
+      "subject": "IMPROVEMENT:GOBLIN:WORKSHOP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-goblin-port",
+      "subject": "IMPROVEMENT:GOBLIN:PORT",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-goblin-shipyard",
+      "subject": "IMPROVEMENT:GOBLIN:SHIPYARD",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
     }
   ],
   "recipes": [
@@ -51,6 +95,61 @@
         "height": 72
       },
       "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the GOBLIN Sawmill: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
+    },
+    {
+      "id": "forge-a",
+      "asset": "chibi-goblin-forge",
+      "endpoint": "generate-image-v2",
+      "seed": 23905,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the GOBLIN Forge: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "workshop-a",
+      "asset": "chibi-goblin-workshop",
+      "endpoint": "generate-image-v2",
+      "seed": 23906,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the GOBLIN Workshop: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "port-a",
+      "asset": "chibi-goblin-port",
+      "endpoint": "generate-image-v2",
+      "seed": 23907,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the GOBLIN Port: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "shipyard-a",
+      "asset": "chibi-goblin-shipyard",
+      "endpoint": "generate-image-v2",
+      "seed": 23908,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the GOBLIN Shipyard: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "shipyard-b",
+      "asset": "chibi-goblin-shipyard",
+      "endpoint": "generate-image-v2",
+      "seed": 23934,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "shipyard-a drew brown wooden yards on a plate of sand. The subject no longer names sand, gives the hull as tin sheets with rivets and the shed a hazard yellow door, and says no beach."
     }
   ]
 }

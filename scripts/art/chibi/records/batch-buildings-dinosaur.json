@@ -89,6 +89,173 @@
         "reviewedAt": "2026-10-04T09:12:36.147Z"
       }
     },
+    "forge-a": {
+      "id": "forge-a",
+      "asset": "chibi-dinosaur-forge",
+      "jobId": "a481e765-1293-47b0-b2a5-e363af3cbce6",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-dinosaur",
+        "asset": "chibi-dinosaur-forge",
+        "subject": "IMPROVEMENT:DINOSAUR:FORGE",
+        "faction": "DINOSAUR",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23909,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: a stone-age fire forge: one squat round furnace of dark basalt stones with a tall stone chimney and a small smoke puff, an orange fire glow in its wide open mouth, a big flat grey stone anvil with a stone hammer on it in front, and a small lean-to of tawny spotted hide on cream tusks beside it. Basalt, grey stone, tawny hide, cream bone, orange glow; no metal. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a stone-age fire forge: one squat round furnace of dark basalt stones with a tall stone chimney and a small smoke puff, an orange fire glow in its wide open mouth, a big flat grey stone anvil with a stone hammer on it in front, and a small lean-to of tawny spotted hide on cream tusks beside it. Basalt, grey stone, tawny hide, cream bone, orange glow; no metal. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a stone-age fire forge: one squat round furnace of dark basalt stones with a tall stone chimney and a small smoke puff, an orange fire glow in its wide open mouth, a big flat grey stone anvil with a stone hammer on it in front, and a small lean-to of tawny spotted hide on cream tusks beside it. Basalt, grey stone, tawny hide, cream bone, orange glow; no metal. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:54:45.223Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dinosaur/forge-a.png",
+      "rawSheetSha256": "ad70a8975c799b2361fd3a65682140ec65ac25b127e5da6d1babdc145d6df9b7",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.0328,
+          "footprintWidthShare": 0.6935,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.033,
+          "footprintWidthShare": 0.6935,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0111,
+          "footprintWidthShare": 0.6935,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0257,
+          "footprintWidthShare": 0.6935,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0233,
+          "footprintWidthShare": 0.6774,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0349,
+          "footprintWidthShare": 0.6774,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0241,
+          "footprintWidthShare": 0.6774,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0235,
+          "footprintWidthShare": 0.8871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.032,
+          "footprintWidthShare": 0.8871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0414,
+          "footprintWidthShare": 0.8871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.042,
+          "footprintWidthShare": 0.8871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0243,
+          "footprintWidthShare": 0.8871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.042,
+          "footprintWidthShare": 0.8871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0422,
+          "footprintWidthShare": 0.8871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0727,
+          "footprintWidthShare": 0.8871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0449,
+          "footprintWidthShare": 0.8871,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:57:10.846Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 3,
+        "notes": "Candidate 3 of 16: a round furnace of grey basalt stones with an orange fire in its mouth, a stone chimney with a smoke puff, a flat stone anvil in front and a lean-to of spotted hide; the palest basalt of the grey ones, so the stones show. The sixteen are one plan: 0, 1, 4, 7, 8, 12 and 14 are red-brown brick, not basalt; 5, 6, 10, 11 and 13 near-black; 2, 9 and 15 are close.",
+        "reviewedAt": "2026-10-07T23:58:16.615Z"
+      }
+    },
     "grindstone-a": {
       "id": "grindstone-a",
       "asset": "chibi-dinosaur-grinding-stone",
@@ -342,6 +509,507 @@
         "notes": "Candidate 0 of 16: two palms and a fern of the jungle, a neat stack of brown palm logs and a small tent of tawny spotted hide over cream tusks; the biggest and clearest of the sheet, and with no axe it stays apart from the Chopping Block (the Dinosaur Sawmill: a big stone axe in a stump). The plate hint on it is a false alarm: nothing is drawn under the pieces. 4 is the same without the fern; 1, 7 and 13 are small; 5, 6 and 9 have pale yellow-green palms; 2, 10, 11, 12 and 15 have loose logs and no stack; 3 one palm; 8 no tent; 14 a plain brown tent.",
         "reviewedAt": "2026-10-07T23:09:13.265Z"
       }
+    },
+    "port-a": {
+      "id": "port-a",
+      "asset": "chibi-dinosaur-port",
+      "jobId": "c0bb1f42-3a29-427f-8738-4c4c522c7dfc",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-dinosaur",
+        "asset": "chibi-dinosaur-port",
+        "subject": "IMPROVEMENT:DINOSAUR:PORT",
+        "faction": "DINOSAUR",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23911,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: a stone-age jetty: a wide pier deck of lashed brown logs on thick log posts, a small cone tent of tawny spotted hide over cream tusks on the jetty, two log mooring posts with vine rope, and a bone rack with three hanging fish. Brown logs, tawny hide, cream bone, green vine; no metal; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a stone-age jetty: a wide pier deck of lashed brown logs on thick log posts, a small cone tent of tawny spotted hide over cream tusks on the jetty, two log mooring posts with vine rope, and a bone rack with three hanging fish. Brown logs, tawny hide, cream bone, green vine; no metal; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a stone-age jetty: a wide pier deck of lashed brown logs on thick log posts, a small cone tent of tawny spotted hide over cream tusks on the jetty, two log mooring posts with vine rope, and a bone rack with three hanging fish. Brown logs, tawny hide, cream bone, green vine; no metal; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T00:02:43.408Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dinosaur/port-a.png",
+      "rawSheetSha256": "ff5d78278eedd4341cc4e4003ddc33731062e43d94bbab20b83f2582292954bb",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.6515,
+          "footprintWidthShare": 0.1333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5565,
+          "footprintWidthShare": 0.4,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5431,
+          "footprintWidthShare": 0.4,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5,
+          "footprintWidthShare": 0.5167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.541,
+          "footprintWidthShare": 0.4167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5403,
+          "footprintWidthShare": 0.4167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4926,
+          "footprintWidthShare": 0.4167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5214,
+          "footprintWidthShare": 0.4333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5667,
+          "footprintWidthShare": 0.4,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.575,
+          "footprintWidthShare": 0.4,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.5618,
+          "footprintWidthShare": 0.2333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5822,
+          "footprintWidthShare": 0.45,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5583,
+          "footprintWidthShare": 0.4,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.625,
+          "footprintWidthShare": 0.45,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5548,
+          "footprintWidthShare": 0.4333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5862,
+          "footprintWidthShare": 0.4667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T00:04:44.793Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 4,
+        "notes": "Candidate 4 of 16: a jetty of lashed brown logs on thick log posts with green vine lashings, and a cone tent of tawny spotted hide with cream tusks on it; the clearest spotted tent and vine. No candidate has both the tent and the fish rack: 3, 7, 11, 14 and 15 have the rack and no tent, 0 and 10 a bare jetty; 1, 2, 5, 6, 8, 9, 12 and 13 are the same plan with a plainer or smaller tent.",
+        "reviewedAt": "2026-10-08T00:05:08.689Z"
+      }
+    },
+    "shipyard-a": {
+      "id": "shipyard-a",
+      "asset": "chibi-dinosaur-shipyard",
+      "jobId": "da838a3b-2118-4525-84b2-afc3469099ff",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-dinosaur",
+        "asset": "chibi-dinosaur-shipyard",
+        "subject": "IMPROVEMENT:DINOSAUR:SHIPYARD",
+        "faction": "DINOSAUR",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23912,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: a stone-age boat yard: one big dugout canoe hull half carved from a huge brown log, resting on log trestles with pale wood chips under it, a tall tripod hoist of lashed logs and cream tusks with a vine rope hanging over it, and a small lean-to of tawny spotted hide behind. Brown logs, tawny hide, cream bone, green vine; no metal. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a stone-age boat yard: one big dugout canoe hull half carved from a huge brown log, resting on log trestles with pale wood chips under it, a tall tripod hoist of lashed logs and cream tusks with a vine rope hanging over it, and a small lean-to of tawny spotted hide behind. Brown logs, tawny hide, cream bone, green vine; no metal. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a stone-age boat yard: one big dugout canoe hull half carved from a huge brown log, resting on log trestles with pale wood chips under it, a tall tripod hoist of lashed logs and cream tusks with a vine rope hanging over it, and a small lean-to of tawny spotted hide behind. Brown logs, tawny hide, cream bone, green vine; no metal. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T00:04:56.243Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dinosaur/shipyard-a.png",
+      "rawSheetSha256": "1e09e35b30665944211db0d0a7d0ea6878f512133d8a5d47d6901dab8018966f",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.3668,
+          "footprintWidthShare": 0.614,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3562,
+          "footprintWidthShare": 0.7719,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4416,
+          "footprintWidthShare": 0.7705,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4213,
+          "footprintWidthShare": 0.6429,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2885,
+          "footprintWidthShare": 0.6885,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4142,
+          "footprintWidthShare": 0.7377,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5473,
+          "footprintWidthShare": 0.6034,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4605,
+          "footprintWidthShare": 0.6613,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4652,
+          "footprintWidthShare": 0.6129,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3398,
+          "footprintWidthShare": 0.7119,
+          "suspect": true
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.4898,
+          "footprintWidthShare": 0.5902,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.4725,
+          "footprintWidthShare": 0.6393,
+          "suspect": true
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.3491,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3926,
+          "footprintWidthShare": 0.6393,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3933,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.3421,
+          "footprintWidthShare": 0.5593,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T00:06:25.070Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 8,
+        "notes": "Candidate 8 of 16: a big dugout canoe half carved from a brown log on log trestles with pale wood chips under it, a tripod hoist of lashed poles and cream tusks, and a lean-to of tawny spotted hide behind; canoe, hoist and lean-to all clear and apart. The plate hint is a false alarm: the pale specks are the wood chips the subject names. 4, 10 and 11 are close (the hoist hides the canoe's end); 0, 2 and 12 have no hoist; 1, 3, 6, 9, 13 and 15 no lean-to; 5 and 7 a tangle of poles; 14 green leaves on the hoist.",
+        "reviewedAt": "2026-10-08T00:10:45.091Z"
+      }
+    },
+    "workshop-a": {
+      "id": "workshop-a",
+      "asset": "chibi-dinosaur-workshop",
+      "jobId": "c8f44970-2761-46ad-9668-4f85bc91c96f",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-dinosaur",
+        "asset": "chibi-dinosaur-workshop",
+        "subject": "IMPROVEMENT:DINOSAUR:WORKSHOP",
+        "faction": "DINOSAUR",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23910,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: a stone-age toolmakers' hut: one round hut of tawny spotted hide over crossed cream tusks, one big round stone wheel with a hole leaning against it, and in front a low log workbench with a stone hammer, flint blades and a bone saw, and a rack of three spears. Tawny hide, cream bone, grey stone, brown logs, a few orange feathers; no metal. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a stone-age toolmakers' hut: one round hut of tawny spotted hide over crossed cream tusks, one big round stone wheel with a hole leaning against it, and in front a low log workbench with a stone hammer, flint blades and a bone saw, and a rack of three spears. Tawny hide, cream bone, grey stone, brown logs, a few orange feathers; no metal. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a stone-age toolmakers' hut: one round hut of tawny spotted hide over crossed cream tusks, one big round stone wheel with a hole leaning against it, and in front a low log workbench with a stone hammer, flint blades and a bone saw, and a rack of three spears. Tawny hide, cream bone, grey stone, brown logs, a few orange feathers; no metal. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:58:03.210Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dinosaur/workshop-a.png",
+      "rawSheetSha256": "2805436b4fd00d2f2935b072c992b8ca8938b53ed93b42505a3135661574f65f",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.5,
+          "footprintWidthShare": 0.7759,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5168,
+          "footprintWidthShare": 0.7627,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5321,
+          "footprintWidthShare": 0.7797,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4841,
+          "footprintWidthShare": 0.8644,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4497,
+          "footprintWidthShare": 0.8621,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5344,
+          "footprintWidthShare": 0.7627,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5238,
+          "footprintWidthShare": 0.7759,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4617,
+          "footprintWidthShare": 0.8305,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5106,
+          "footprintWidthShare": 0.7931,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5291,
+          "footprintWidthShare": 0.8103,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4949,
+          "footprintWidthShare": 0.8448,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4949,
+          "footprintWidthShare": 0.8305,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4935,
+          "footprintWidthShare": 0.8448,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4845,
+          "footprintWidthShare": 0.8621,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4458,
+          "footprintWidthShare": 0.8136,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.487,
+          "footprintWidthShare": 0.8475,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-08T00:02:29.596Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a round hut of tawny spotted hide with cream tusks at its door, a big round stone wheel on a wooden rack beside it and a log workbench with stone tools in front; the clearest spots and a clean wheel. The plate hint is a false alarm on all sixteen: nothing is drawn under the pieces. The sixteen are one plan: 1 to 3, 7, 11 and 14 have plain hide with few spots; 3 to 5, 7, 10 to 13 and 15 a small fire under the wheel that reads as a second forge; 6, 8 and 9 are close.",
+        "reviewedAt": "2026-10-08T00:03:05.421Z"
+      }
     }
   },
   "assets": {
@@ -385,6 +1053,47 @@
       },
       "notes": "A huge axe in a stump, a pile of split logs and a hide lean-to; no slab. The axe head is grey and reads as stone at map size, though it is drawn smooth. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
       "acceptedAt": "2026-10-04T09:12:36.146Z"
+    },
+    "chibi-dinosaur-forge": {
+      "id": "chibi-dinosaur-forge",
+      "subject": "IMPROVEMENT:DINOSAUR:FORGE",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "forge-a",
+      "candidate": 3,
+      "candidateSha256": "373681226fd5378971c0442bbf48febced0ee3591c8773e6fda96037ab0e7168",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dinosaur-forge.png",
+        "sha256": "b9fbcf23eb6bf6afb8f8a8152c3259efbd1a0b31e49b5cff457ce77c7296806a",
+        "pixelSha256": "bd613cdbd291d25b16f38908df5bd8e709d70f787d8a995cb322992269a910ba",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 3 of 16: a round furnace of grey basalt stones with an orange fire in its mouth, a stone chimney with a smoke puff, a flat stone anvil in front and a lean-to of spotted hide; the palest basalt of the grey ones, so the stones show. The sixteen are one plan: 0, 1, 4, 7, 8, 12 and 14 are red-brown brick, not basalt; 5, 6, 10, 11 and 13 near-black; 2, 9 and 15 are close.",
+      "acceptedAt": "2026-10-07T23:58:16.615Z"
     },
     "chibi-dinosaur-grinding-stone": {
       "id": "chibi-dinosaur-grinding-stone",
@@ -467,6 +1176,129 @@
       },
       "notes": "Candidate 0 of 16: two palms and a fern of the jungle, a neat stack of brown palm logs and a small tent of tawny spotted hide over cream tusks; the biggest and clearest of the sheet, and with no axe it stays apart from the Chopping Block (the Dinosaur Sawmill: a big stone axe in a stump). The plate hint on it is a false alarm: nothing is drawn under the pieces. 4 is the same without the fern; 1, 7 and 13 are small; 5, 6 and 9 have pale yellow-green palms; 2, 10, 11, 12 and 15 have loose logs and no stack; 3 one palm; 8 no tent; 14 a plain brown tent.",
       "acceptedAt": "2026-10-07T23:09:13.265Z"
+    },
+    "chibi-dinosaur-port": {
+      "id": "chibi-dinosaur-port",
+      "subject": "IMPROVEMENT:DINOSAUR:PORT",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "port-a",
+      "candidate": 4,
+      "candidateSha256": "824ea9a01ef13b0c7b060030191f25a9ba392330b768ecc83bbee62a37b8bcf6",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dinosaur-port.png",
+        "sha256": "434175ec44eef6634b2853728a8d238f6a0d480197ae289e20d48af6ef55949d",
+        "pixelSha256": "a3cd61616bbb340feb0c0e7d4fcac9eb0eeee3c627cec06e72a61bcfc5f2f4dc",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 4 of 16: a jetty of lashed brown logs on thick log posts with green vine lashings, and a cone tent of tawny spotted hide with cream tusks on it; the clearest spotted tent and vine. No candidate has both the tent and the fish rack: 3, 7, 11, 14 and 15 have the rack and no tent, 0 and 10 a bare jetty; 1, 2, 5, 6, 8, 9, 12 and 13 are the same plan with a plainer or smaller tent.",
+      "acceptedAt": "2026-10-08T00:05:08.689Z"
+    },
+    "chibi-dinosaur-shipyard": {
+      "id": "chibi-dinosaur-shipyard",
+      "subject": "IMPROVEMENT:DINOSAUR:SHIPYARD",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "shipyard-a",
+      "candidate": 8,
+      "candidateSha256": "d2155e63223dfaca96adf94d747c98eed6fdc5fa31921458021797ff86bc927d",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dinosaur-shipyard.png",
+        "sha256": "cc5e43404fc5d853494205e4d7491705b61795be757a595af192d255aa81ffec",
+        "pixelSha256": "7e37c241fa7a3f5a8649801ffcfa2f220df8e03dd740c595c519f70f5fdd932b",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 8 of 16: a big dugout canoe half carved from a brown log on log trestles with pale wood chips under it, a tripod hoist of lashed poles and cream tusks, and a lean-to of tawny spotted hide behind; canoe, hoist and lean-to all clear and apart. The plate hint is a false alarm: the pale specks are the wood chips the subject names. 4, 10 and 11 are close (the hoist hides the canoe's end); 0, 2 and 12 have no hoist; 1, 3, 6, 9, 13 and 15 no lean-to; 5 and 7 a tangle of poles; 14 green leaves on the hoist.",
+      "acceptedAt": "2026-10-08T00:10:45.091Z"
+    },
+    "chibi-dinosaur-workshop": {
+      "id": "chibi-dinosaur-workshop",
+      "subject": "IMPROVEMENT:DINOSAUR:WORKSHOP",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "workshop-a",
+      "candidate": 0,
+      "candidateSha256": "fee6b22b38f73fc394a5ebb093924f6e2febf424d60f0e7e331f3a80695bcc72",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dinosaur-workshop.png",
+        "sha256": "8e228a8ed65d9e5f6e95e16f46a6f42bdff8bd1c3f39d815e1ec62bb5168db6c",
+        "pixelSha256": "da0bb333dfbb5b301c6653fbaafbb418c435fa3c534bdb7170f3f9675826f885",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a round hut of tawny spotted hide with cream tusks at its door, a big round stone wheel on a wooden rack beside it and a log workbench with stone tools in front; the clearest spots and a clean wheel. The plate hint is a false alarm on all sixteen: nothing is drawn under the pieces. The sixteen are one plan: 1 to 3, 7, 11 and 14 have plain hide with few spots; 3 to 5, 7, 10 to 13 and 15 a small fire under the wheel that reads as a second forge; 6, 8 and 9 are close.",
+      "acceptedAt": "2026-10-08T00:03:05.421Z"
     }
   }
 }

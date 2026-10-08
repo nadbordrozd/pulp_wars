@@ -286,7 +286,8 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
       document
         .querySelector('[data-action="tech-drill"] img')
         ?.getAttribute("data-chibi-subject"),
-    ).toBe("IMPROVEMENT:WORKSHOP");
+      // The viewer's own Workshop (pulp_wars-2yc.38, stage 2).
+    ).toBe("IMPROVEMENT:UNDEAD:WORKSHOP");
     expect(
       document
         .querySelector('[data-action="tech-chivalry"] img')
@@ -498,7 +499,8 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     expect(
       document.querySelector<HTMLImageElement>('[data-action="tech-drill"] img')
         ?.dataset.chibiAssetId,
-    ).toBe("chibi-direction-workshop");
+      // The Goblin Workshop (pulp_wars-2yc.38, stage 2).
+    ).toBe("chibi-goblin-workshop");
     goblin.app.destroy();
     // The city dock and its training cards (a fresh Goblin capital with
     // room to train): the Goblin city and portraits, never the Human ones.

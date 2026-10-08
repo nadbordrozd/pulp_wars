@@ -2,6 +2,173 @@
   "schemaVersion": 1,
   "batch": "buildings-ice-folk",
   "recipes": {
+    "forge-a": {
+      "id": "forge-a",
+      "asset": "chibi-ice-folk-forge",
+      "jobId": "09876f6b-16ad-4775-82fc-6561c1c5da88",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-ice-folk",
+        "asset": "chibi-ice-folk-forge",
+        "subject": "IMPROVEMENT:ICE_FOLK:FORGE",
+        "faction": "ICE_FOLK",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23917,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: a frost smithy: one squat igloo of white snow blocks shaded blue-grey, a tall grey stone chimney with a small smoke puff, a wide open front arch with a warm orange fire glow inside, and a big dark stone anvil with a bone-handled hammer with an ice-blue head on it in front. Snow white, blue-grey, grey stone, bone, one ice-blue accent, orange glow; dark blue-slate outline. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a frost smithy: one squat igloo of white snow blocks shaded blue-grey, a tall grey stone chimney with a small smoke puff, a wide open front arch with a warm orange fire glow inside, and a big dark stone anvil with a bone-handled hammer with an ice-blue head on it in front. Snow white, blue-grey, grey stone, bone, one ice-blue accent, orange glow; dark blue-slate outline. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a frost smithy: one squat igloo of white snow blocks shaded blue-grey, a tall grey stone chimney with a small smoke puff, a wide open front arch with a warm orange fire glow inside, and a big dark stone anvil with a bone-handled hammer with an ice-blue head on it in front. Snow white, blue-grey, grey stone, bone, one ice-blue accent, orange glow; dark blue-slate outline. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T00:10:31.800Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-ice-folk/forge-a.png",
+      "rawSheetSha256": "29948e66f66758777f070a911c60eea5a4da524fa3b0e95d3135faf651f95912",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.0037,
+          "footprintWidthShare": 0.807,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8036,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0037,
+          "footprintWidthShare": 0.807,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6842,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6842,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6607,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8214,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6842,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5789,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5789,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6842,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5789,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5614,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5789,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5614,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5789,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T00:13:02.511Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 2,
+        "notes": "Candidate 2 of 16: an igloo of white snow blocks shaded blue-grey with an orange fire glow in its mouth, a grey stone chimney with a smoke puff, and a dark stone anvil with an ice-blue hammer across it; the fire in the snow says forge at a glance. The sixteen are one plan: 0, 1 and 6 are pink or grey, not snow; 3 to 5, 7 to 9 and 11 to 15 have no smoke; 10 is close with a thinner puff.",
+        "reviewedAt": "2026-10-08T00:13:30.437Z"
+      }
+    },
     "frost-garden-edit-a": {
       "id": "frost-garden-edit-a",
       "asset": "chibi-ice-folk-frost-garden",
@@ -408,6 +575,173 @@
         "reviewedAt": "2026-10-07T23:06:13.370Z"
       }
     },
+    "port-a": {
+      "id": "port-a",
+      "asset": "chibi-ice-folk-port",
+      "jobId": "3220a8f3-23e1-40a5-a9a0-c8f9543f809b",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-ice-folk",
+        "asset": "chibi-ice-folk-port",
+        "subject": "IMPROVEMENT:ICE_FOLK:PORT",
+        "faction": "ICE_FOLK",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23919,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: an ice-fishing pier: a wide pier deck of pale timber planks dusted with snow on thick posts, a small igloo of white snow blocks on the pier, a bone rack with four hanging fish, two mooring posts and a coil of rope. Pale timber, white snow shaded blue-grey, bone, one ice-blue accent; dark blue-slate outline; no boat, no ship. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an ice-fishing pier: a wide pier deck of pale timber planks dusted with snow on thick posts, a small igloo of white snow blocks on the pier, a bone rack with four hanging fish, two mooring posts and a coil of rope. Pale timber, white snow shaded blue-grey, bone, one ice-blue accent; dark blue-slate outline; no boat, no ship. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an ice-fishing pier: a wide pier deck of pale timber planks dusted with snow on thick posts, a small igloo of white snow blocks on the pier, a bone rack with four hanging fish, two mooring posts and a coil of rope. Pale timber, white snow shaded blue-grey, bone, one ice-blue accent; dark blue-slate outline; no boat, no ship. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T00:13:17.089Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-ice-folk/port-a.png",
+      "rawSheetSha256": "0341c375fb4a5acfeea0b0d83749188f0c4e709878c08d63fe5dc86990eac888",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2188,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2031,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2063,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2344,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2188,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2308,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.1875,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2188,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2188,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2154,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2222,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2188,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2188,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2031,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2063,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T00:15:38.837Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a wide pier of pale timber planks dusted with snow on thick posts, an igloo of snow blocks on it, a bone rack with hanging fish and a coil of rope; no boat anywhere, as the Ice Folk have none. The sixteen are one plan and differ by the rope and the snow on the deck; 0 has the clearest igloo door and rack.",
+        "reviewedAt": "2026-10-08T00:16:12.671Z"
+      }
+    },
     "sawmill-a": {
       "id": "sawmill-a",
       "asset": "chibi-ice-folk-sawmill",
@@ -574,9 +908,384 @@
         "notes": "Candidate 3 of 16: a pale timber cabin under a thick snow roof, a big round toothed blade of ice blue standing whole in front of it on a timber bench, and a log hanging from a small hoist; the blade is the clearest of the sheet at 1:1. 2 has the blade half hidden behind the log on the bench, 10 and 12 a small blade in the doorway, 4 a blade on a frame with no cabin, 8 a water wheel; 0, 1, 5 to 7, 9, 11 and 13 to 15 have no blade (a cabin with logs or planks).",
         "reviewedAt": "2026-10-07T23:00:21.944Z"
       }
+    },
+    "shipyard-a": {
+      "id": "shipyard-a",
+      "asset": "chibi-ice-folk-shipyard",
+      "jobId": "753b614e-c57c-4a1f-96a2-cb91d56f5074",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-ice-folk",
+        "asset": "chibi-ice-folk-shipyard",
+        "subject": "IMPROVEMENT:ICE_FOLK:SHIPYARD",
+        "faction": "ICE_FOLK",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23920,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: an ice works on the shore, no boat and no ship: a big dog sled of pale timber and bone resting on timber trestles on a plank slipway, a tall hoist crane of timber and bone with a rope lifting one big block of ice-blue ice, and a timber shed under a thick white snow roof behind. Pale timber, bone, white snow shaded blue-grey, ice blue; dark blue-slate outline. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an ice works on the shore, no boat and no ship: a big dog sled of pale timber and bone resting on timber trestles on a plank slipway, a tall hoist crane of timber and bone with a rope lifting one big block of ice-blue ice, and a timber shed under a thick white snow roof behind. Pale timber, bone, white snow shaded blue-grey, ice blue; dark blue-slate outline. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an ice works on the shore, no boat and no ship: a big dog sled of pale timber and bone resting on timber trestles on a plank slipway, a tall hoist crane of timber and bone with a rope lifting one big block of ice-blue ice, and a timber shed under a thick white snow roof behind. Pale timber, bone, white snow shaded blue-grey, ice blue; dark blue-slate outline. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T00:13:17.089Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-ice-folk/shipyard-a.png",
+      "rawSheetSha256": "6c21a6049af2263a696e70218ca56d26da85a2e47e466dcae5ff7f088bcda56b",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.625,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6491,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5192,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5902,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6087,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7959,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8478,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.629,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7037,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6909,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6129,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6491,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6491,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7255,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6491,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T00:15:45.378Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 13,
+        "notes": "Candidate 13 of 16: a timber shed under a thick snow roof, a dog sled of pale timber and bone on a plank slipway in front of its open door, and a block of ice-blue ice beside it; no boat and no ship. It has no hoist: no candidate has the shed, the sled and the crane together (2, 5, 6, 10 and 14 have the crane and no shed; 7 to 9, 11, 12 and 15 the shed and no ice; 0, 3 and 4 sleds alone; 1 a shed alone). The shed and slipway say 'the bigger dock' beside the igloo pier of the Port.",
+        "reviewedAt": "2026-10-08T00:16:13.038Z"
+      }
+    },
+    "workshop-a": {
+      "id": "workshop-a",
+      "asset": "chibi-ice-folk-workshop",
+      "jobId": "611a4704-7bdf-4316-8663-cdcff085b5b4",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-ice-folk",
+        "asset": "chibi-ice-folk-workshop",
+        "subject": "IMPROVEMENT:ICE_FOLK:WORKSHOP",
+        "faction": "ICE_FOLK",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23918,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: an ice carvers' workshop: one tall hut of pale timber with a steep cream hide roof under thick white snow, one big pale bone cogwheel on the front gable, and by the open door a timber workbench with a bone saw, a mallet and a block of ice-blue ice being carved. Pale timber, cream hide, white snow shaded blue-grey, bone, ice blue; dark blue-slate outline. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an ice carvers' workshop: one tall hut of pale timber with a steep cream hide roof under thick white snow, one big pale bone cogwheel on the front gable, and by the open door a timber workbench with a bone saw, a mallet and a block of ice-blue ice being carved. Pale timber, cream hide, white snow shaded blue-grey, bone, ice blue; dark blue-slate outline. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an ice carvers' workshop: one tall hut of pale timber with a steep cream hide roof under thick white snow, one big pale bone cogwheel on the front gable, and by the open door a timber workbench with a bone saw, a mallet and a block of ice-blue ice being carved. Pale timber, cream hide, white snow shaded blue-grey, bone, ice blue; dark blue-slate outline. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T00:10:31.800Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-ice-folk/workshop-a.png",
+      "rawSheetSha256": "bb1137ed6c047a42f0a8e9304bbbee1082dab80320f086cd0a2a137317de3d78",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.3525,
+          "footprintWidthShare": 0.9643,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0414,
+          "footprintWidthShare": 0.9643,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.3104,
+          "footprintWidthShare": 0.9643,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0083,
+          "footprintWidthShare": 0.9643,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3707,
+          "footprintWidthShare": 0.9464,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1371,
+          "footprintWidthShare": 0.9107,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3857,
+          "footprintWidthShare": 0.875,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0031,
+          "footprintWidthShare": 0.9464,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3454,
+          "footprintWidthShare": 0.9464,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0521,
+          "footprintWidthShare": 0.9636,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3616,
+          "footprintWidthShare": 0.9464,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0032,
+          "footprintWidthShare": 0.9464,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4297,
+          "footprintWidthShare": 0.875,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3875,
+          "footprintWidthShare": 0.9464,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0111,
+          "footprintWidthShare": 0.9464,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0037,
+          "footprintWidthShare": 0.9464,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T00:12:07.939Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a tall hut of pale timber under a thick white snow roof with crossed poles at its peak, a pale cogwheel on the gable, an open door and a workbench with a block of ice-blue ice being carved; the pale timber of the Ice Folk Sawmill. The plate hint is a false alarm. The sixteen are one plan in different colours: 1, 5 and 9 are red-brown (red on an unowned building); 2, 6, 10 and 12 dark brown; 3, 7, 11, 14 and 15 grey; 4, 8 and 13 have a cream hide roof with little snow.",
+        "reviewedAt": "2026-10-08T00:13:30.804Z"
+      }
     }
   },
   "assets": {
+    "chibi-ice-folk-forge": {
+      "id": "chibi-ice-folk-forge",
+      "subject": "IMPROVEMENT:ICE_FOLK:FORGE",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "forge-a",
+      "candidate": 2,
+      "candidateSha256": "c7aa7285cfc95ba2eb277afe5ecd4ba337aea34151e33bc518c654f042c47bc1",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-ice-folk-forge.png",
+        "sha256": "6ea75637a7078f2bcfc6560bf0d369f048509591c30d745d7b56e06f11c9414c",
+        "pixelSha256": "cfba43824c5b1414c84e1ca0d9dba0af1271fa4a72890cf406956cf634c76955",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 2 of 16: an igloo of white snow blocks shaded blue-grey with an orange fire glow in its mouth, a grey stone chimney with a smoke puff, and a dark stone anvil with an ice-blue hammer across it; the fire in the snow says forge at a glance. The sixteen are one plan: 0, 1 and 6 are pink or grey, not snow; 3 to 5, 7 to 9 and 11 to 15 have no smoke; 10 is close with a thinner puff.",
+      "acceptedAt": "2026-10-08T00:13:30.437Z"
+    },
     "chibi-ice-folk-frost-garden": {
       "id": "chibi-ice-folk-frost-garden",
       "subject": "IMPROVEMENT:ICE_FOLK:FARM",
@@ -659,6 +1368,47 @@
       "notes": "Candidate 0 of 16: two snow-capped dwarf firs, a cream hide tent on bone poles, a stack of pale birch logs and a stump with an ice-blue axe in it, four pieces standing apart on the Snow; the only candidate with the trees, the logs, the tent and the axe. 3 is the same without snow on the logs and a tent turned away; 9 is stumps only; 10 and 15 have no trees or no log stack; 1, 2, 4 to 8 and 11 to 14 have no axe.",
       "acceptedAt": "2026-10-07T23:06:13.370Z"
     },
+    "chibi-ice-folk-port": {
+      "id": "chibi-ice-folk-port",
+      "subject": "IMPROVEMENT:ICE_FOLK:PORT",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "port-a",
+      "candidate": 0,
+      "candidateSha256": "b9a458d77b49af179de928dbaff6abf8293b172cd0384bc77807b1599b570c92",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-ice-folk-port.png",
+        "sha256": "cf02c613243d34c2c9740a9a9c65c20fb8a4eb7d8873ecf7ab506ceb50afefff",
+        "pixelSha256": "5f46c60c5018a47ca7ffff2b48c333bbff436ef61884b154ac24f9778c626c57",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a wide pier of pale timber planks dusted with snow on thick posts, an igloo of snow blocks on it, a bone rack with hanging fish and a coil of rope; no boat anywhere, as the Ice Folk have none. The sixteen are one plan and differ by the rope and the snow on the deck; 0 has the clearest igloo door and rack.",
+      "acceptedAt": "2026-10-08T00:16:12.671Z"
+    },
     "chibi-ice-folk-sawmill": {
       "id": "chibi-ice-folk-sawmill",
       "subject": "IMPROVEMENT:ICE_FOLK:SAWMILL",
@@ -699,6 +1449,88 @@
       },
       "notes": "Candidate 3 of 16: a pale timber cabin under a thick snow roof, a big round toothed blade of ice blue standing whole in front of it on a timber bench, and a log hanging from a small hoist; the blade is the clearest of the sheet at 1:1. 2 has the blade half hidden behind the log on the bench, 10 and 12 a small blade in the doorway, 4 a blade on a frame with no cabin, 8 a water wheel; 0, 1, 5 to 7, 9, 11 and 13 to 15 have no blade (a cabin with logs or planks).",
       "acceptedAt": "2026-10-07T23:00:21.944Z"
+    },
+    "chibi-ice-folk-shipyard": {
+      "id": "chibi-ice-folk-shipyard",
+      "subject": "IMPROVEMENT:ICE_FOLK:SHIPYARD",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "shipyard-a",
+      "candidate": 13,
+      "candidateSha256": "9ce3a964d62c2a89357e246371eac791891e36ff27ef07ed1e27f494f2837f8d",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-ice-folk-shipyard.png",
+        "sha256": "5e99540fbd8177bd64e418cd5be9ad9312b1f8f42feba7d4541bcd7053532fd8",
+        "pixelSha256": "4f5c18ff0908fe5e7e32da8c8ec104afa5b0d96a0434f4752408def3d93c6778",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 13 of 16: a timber shed under a thick snow roof, a dog sled of pale timber and bone on a plank slipway in front of its open door, and a block of ice-blue ice beside it; no boat and no ship. It has no hoist: no candidate has the shed, the sled and the crane together (2, 5, 6, 10 and 14 have the crane and no shed; 7 to 9, 11, 12 and 15 the shed and no ice; 0, 3 and 4 sleds alone; 1 a shed alone). The shed and slipway say 'the bigger dock' beside the igloo pier of the Port.",
+      "acceptedAt": "2026-10-08T00:16:13.038Z"
+    },
+    "chibi-ice-folk-workshop": {
+      "id": "chibi-ice-folk-workshop",
+      "subject": "IMPROVEMENT:ICE_FOLK:WORKSHOP",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "workshop-a",
+      "candidate": 0,
+      "candidateSha256": "cbccf2c2d25eb8e172687cd7f2df65a5c7af9b3907abd5bdcd6b4ac97727bff4",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-ice-folk-workshop.png",
+        "sha256": "e1ce43c5647847a2f2ea2d5ed8c9efd6eac1f438946330c72fffb44e5a540892",
+        "pixelSha256": "ada369b428583f40e17f115a1a44cecb55bb989d50bc5eb5ed330b32fe0db313",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a tall hut of pale timber under a thick white snow roof with crossed poles at its peak, a pale cogwheel on the gable, an open door and a workbench with a block of ice-blue ice being carved; the pale timber of the Ice Folk Sawmill. The plate hint is a false alarm. The sixteen are one plan in different colours: 1, 5 and 9 are red-brown (red on an unowned building); 2, 6, 10 and 12 dark brown; 3, 7, 11, 14 and 15 grey; 4, 8 and 13 have a cream hide roof with little snow.",
+      "acceptedAt": "2026-10-08T00:13:30.803Z"
     }
   }
 }

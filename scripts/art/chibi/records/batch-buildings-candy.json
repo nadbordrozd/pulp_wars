@@ -2,6 +2,173 @@
   "schemaVersion": 1,
   "batch": "buildings-candy",
   "recipes": {
+    "forge-a": {
+      "id": "forge-a",
+      "asset": "chibi-candy-forge",
+      "jobId": "7b20595b-8e93-489b-b284-1aa29083db9d",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-candy",
+        "asset": "chibi-candy-forge",
+        "subject": "IMPROVEMENT:CANDY:FORGE",
+        "faction": "CANDY",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23925,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: a candy forge: one squat gingerbread house of warm biscuit with a thick roof of white frosting, a tall pink-and-cream striped candy-cane chimney with a puff of pale pink candy floss, a wide open front arch with a warm orange oven glow inside, and a big caramel anvil on a gumdrop block in front of the arch. Biscuit, cream, pink, caramel; pink is never red; rose-brown outline. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a candy forge: one squat gingerbread house of warm biscuit with a thick roof of white frosting, a tall pink-and-cream striped candy-cane chimney with a puff of pale pink candy floss, a wide open front arch with a warm orange oven glow inside, and a big caramel anvil on a gumdrop block in front of the arch. Biscuit, cream, pink, caramel; pink is never red; rose-brown outline. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a candy forge: one squat gingerbread house of warm biscuit with a thick roof of white frosting, a tall pink-and-cream striped candy-cane chimney with a puff of pale pink candy floss, a wide open front arch with a warm orange oven glow inside, and a big caramel anvil on a gumdrop block in front of the arch. Biscuit, cream, pink, caramel; pink is never red; rose-brown outline. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T00:21:17.427Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-candy/forge-a.png",
+      "rawSheetSha256": "fa34060a6f3a7ae8d4d2f38960bc5106cc2ac6e1cf943bf5ecdee873addaf5d0",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.2873,
+          "footprintWidthShare": 0.7037,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1567,
+          "footprintWidthShare": 0.8333,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.1315,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0958,
+          "footprintWidthShare": 0.6034,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0634,
+          "footprintWidthShare": 0.4906,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0644,
+          "footprintWidthShare": 0.7143,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0934,
+          "footprintWidthShare": 0.8462,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0954,
+          "footprintWidthShare": 0.8462,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0569,
+          "footprintWidthShare": 0.7925,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.1661,
+          "footprintWidthShare": 0.8462,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.1858,
+          "footprintWidthShare": 0.8868,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0633,
+          "footprintWidthShare": 0.8462,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0743,
+          "footprintWidthShare": 0.8462,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0947,
+          "footprintWidthShare": 0.8462,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.1673,
+          "footprintWidthShare": 0.7037,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0376,
+          "footprintWidthShare": 0.7091,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T00:23:25.996Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a gingerbread house with a white frosting roof, a pink-striped candy-cane chimney, an arch with a warm oven glow, and a caramel anvil on a gumdrop block in front; the only candidate with an anvil. 1 has a purple anvil and a spill of bright sweets; 2 to 15 have a barrel, a lollipop, a crate or nothing in front, and read as a cottage.",
+        "reviewedAt": "2026-10-08T00:24:33.907Z"
+      }
+    },
     "lumber-camp-a": {
       "id": "lumber-camp-a",
       "asset": "chibi-candy-lumber-camp",
@@ -167,6 +334,340 @@
         "candidate": 4,
         "notes": "Candidate 4 of 16: a pink-striped candy cane and two peach swirl lollipops standing behind a stack of cut striped candy logs with swirl ends, a caramel gumdrop stump with a little axe in it and a wafer lean-to; the grove's sweets, in its warm pastels, with the cane's stripes the clearest of the sheet. 5, 6, 7, 9, 14 have a cane with mint stripes or stripes too pale to read; 8, 10, 11 an axe lying loose; 1 and 3 no log stack; 0 and 2 no stump; 12, 13 and 15 no axe.",
         "reviewedAt": "2026-10-07T23:02:42.641Z"
+      }
+    },
+    "port-a": {
+      "id": "port-a",
+      "asset": "chibi-candy-port",
+      "jobId": "77f03637-9b58-4e70-b7d8-08317b0f8bdd",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-candy",
+        "asset": "chibi-candy-port",
+        "subject": "IMPROVEMENT:CANDY:PORT",
+        "faction": "CANDY",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23927,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: a candy harbour pier: a wide pier deck of pale biscuit wafers on pink-and-cream striped candy-cane posts, a small gingerbread hut with a pale pink frosting roof on the pier, two gumdrop mooring posts and a coil of caramel rope. Biscuit, cream, pink, caramel, a little mint; pink is never red; rose-brown outline; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a candy harbour pier: a wide pier deck of pale biscuit wafers on pink-and-cream striped candy-cane posts, a small gingerbread hut with a pale pink frosting roof on the pier, two gumdrop mooring posts and a coil of caramel rope. Biscuit, cream, pink, caramel, a little mint; pink is never red; rose-brown outline; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a candy harbour pier: a wide pier deck of pale biscuit wafers on pink-and-cream striped candy-cane posts, a small gingerbread hut with a pale pink frosting roof on the pier, two gumdrop mooring posts and a coil of caramel rope. Biscuit, cream, pink, caramel, a little mint; pink is never red; rose-brown outline; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-07T23:33:09.657Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-candy/port-a.png",
+      "rawSheetSha256": "d67c9841b44fca73d8f0e7b79b72d82253f0eccdb8d6489ce0c5d783d55f2a96",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3276,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3103,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3276,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0104,
+          "footprintWidthShare": 0.3276,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.339,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3448,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0114,
+          "footprintWidthShare": 0.3167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0114,
+          "footprintWidthShare": 0.3167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0119,
+          "footprintWidthShare": 0.3,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0101,
+          "footprintWidthShare": 0.3333,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2419,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-07T23:35:51.617Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The plan is right (candidate 7 was first taken), but the stripes of the candy-cane posts and the gumdrops are a deep pink that is the owner key red: 64 to 173 pixels in every candidate (113 in candidate 7), on an unowned building. Redone as port-b with pale peach by hex.",
+        "reviewedAt": "2026-10-08T00:29:29.400Z"
+      }
+    },
+    "port-b": {
+      "id": "port-b",
+      "asset": "chibi-candy-port",
+      "jobId": "82edfd26-57f1-4b2b-863d-bede7f7c475b",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-candy",
+        "asset": "chibi-candy-port",
+        "subject": "IMPROVEMENT:CANDY:PORT",
+        "faction": "CANDY",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23935,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: a candy harbour pier: a wide pier deck of pale biscuit wafers on candy-cane posts striped cream and pale peach (#f0b99a, never red or deep pink), a small gingerbread hut with a pale pink frosting roof (#f6c9d2) on the pier, two pale peach gumdrop mooring posts and a coil of caramel rope. Biscuit, cream, pale peach, pale pink, caramel; nothing red; rose-brown outline; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a candy harbour pier: a wide pier deck of pale biscuit wafers on candy-cane posts striped cream and pale peach (#f0b99a, never red or deep pink), a small gingerbread hut with a pale pink frosting roof (#f6c9d2) on the pier, two pale peach gumdrop mooring posts and a coil of caramel rope. Biscuit, cream, pale peach, pale pink, caramel; nothing red; rose-brown outline; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a candy harbour pier: a wide pier deck of pale biscuit wafers on candy-cane posts striped cream and pale peach (#f0b99a, never red or deep pink), a small gingerbread hut with a pale pink frosting roof (#f6c9d2) on the pier, two pale peach gumdrop mooring posts and a coil of caramel rope. Biscuit, cream, pale peach, pale pink, caramel; nothing red; rose-brown outline; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T00:27:13.635Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-candy/port-b.png",
+      "rawSheetSha256": "4cd25b42cbf7a5bc54dcf7826b5d67d939a0028ce5d26fbdc28cfb1f1d0bbb27",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.0096,
+          "footprintWidthShare": 0.2258,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0333,
+          "footprintWidthShare": 0.129,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.129,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0333,
+          "footprintWidthShare": 0.129,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.129,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.129,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0111,
+          "footprintWidthShare": 0.129,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0111,
+          "footprintWidthShare": 0.129,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.129,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.129,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.129,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.1129,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.1452,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.1452,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.1452,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.129,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T00:29:03.373Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 8,
+        "notes": "Candidate 8 of 16: a wide deck of pale biscuit wafers on candy-cane posts striped cream and pale peach, a gingerbread hut with a pale pink frosting roof, peach gumdrop mooring posts and a coil of caramel rope; no pixel of the owner key red. 1, 12 and 14 also have none but no rope coil; the other twelve have 3 to 16 key pixels in the hut's shade; 3, 6, 7 and 13 have a round hut.",
+        "reviewedAt": "2026-10-08T00:29:29.038Z"
       }
     },
     "sawmill-a": {
@@ -335,9 +836,384 @@
         "notes": "Candidate 13 of 16: a small gingerbread mill house with a pale pink frosting roof and a cream door, a round peppermint blade with a pink swirl standing in a wafer bench against its front, a striped candy log on the bench and a pile of cut candy sticks; a house, a blade and cut sticks at a glance. 1, 2 and 6 have a bigger blade but a plain block with no door behind it; 9, 12 and 14 a blade without teeth; 0, 3 to 5, 7, 8, 10, 11 and 15 no blade.",
         "reviewedAt": "2026-10-07T23:04:55.180Z"
       }
+    },
+    "shipyard-a": {
+      "id": "shipyard-a",
+      "asset": "chibi-candy-shipyard",
+      "jobId": "b519dd98-5c93-49f7-b56d-6aab22bd5b1f",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-candy",
+        "asset": "chibi-candy-shipyard",
+        "subject": "IMPROVEMENT:CANDY:SHIPYARD",
+        "faction": "CANDY",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23928,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: a candy shipyard: a half-built boat hull of milk chocolate bar planks showing its curved pale wafer ribs, resting on wafer trestles, a tall pink-and-cream striped candy-cane crane with a caramel hook leaning over it, and a small gingerbread boathouse with a white frosting roof behind. Chocolate, biscuit, cream, pink, caramel; pink is never red; rose-brown outline. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a candy shipyard: a half-built boat hull of milk chocolate bar planks showing its curved pale wafer ribs, resting on wafer trestles, a tall pink-and-cream striped candy-cane crane with a caramel hook leaning over it, and a small gingerbread boathouse with a white frosting roof behind. Chocolate, biscuit, cream, pink, caramel; pink is never red; rose-brown outline. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a candy shipyard: a half-built boat hull of milk chocolate bar planks showing its curved pale wafer ribs, resting on wafer trestles, a tall pink-and-cream striped candy-cane crane with a caramel hook leaning over it, and a small gingerbread boathouse with a white frosting roof behind. Chocolate, biscuit, cream, pink, caramel; pink is never red; rose-brown outline. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T00:24:20.048Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-candy/shipyard-a.png",
+      "rawSheetSha256": "436a1792d811646f8cb29d8ba46b79ea779bb3b31012e60138b47c05fc2d6d7c",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0509,
+          "footprintWidthShare": 0.7419,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0359,
+          "footprintWidthShare": 0.6129,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.054,
+          "footprintWidthShare": 0.7419,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0332,
+          "footprintWidthShare": 0.7419,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0831,
+          "footprintWidthShare": 0.7097,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0801,
+          "footprintWidthShare": 0.7903,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.073,
+          "footprintWidthShare": 0.7419,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0463,
+          "footprintWidthShare": 0.7903,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0318,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0444,
+          "footprintWidthShare": 0.7419,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0488,
+          "footprintWidthShare": 0.5645,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0442,
+          "footprintWidthShare": 0.5806,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0685,
+          "footprintWidthShare": 0.5806,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0607,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0576,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0768,
+          "footprintWidthShare": 0.7903,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T00:26:28.489Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a half-built hull of chocolate bar planks with pale wafer ribs on wafer trestles, a pink-striped candy-cane crane with a caramel hook over it, a gingerbread boathouse with a white frosting roof and a stack of chocolate planks; a whole hull with a few ribs showing. The sixteen are one plan: 1, 2, 4, 5, 8, 11, 13 and 15 are mostly ribs and read as a wreck; 6, 7, 9, 12 and 14 a closed hull with no ribs; 3 and 10 are close.",
+        "reviewedAt": "2026-10-08T00:26:42.261Z"
+      }
+    },
+    "workshop-a": {
+      "id": "workshop-a",
+      "asset": "chibi-candy-workshop",
+      "jobId": "d405ec95-d523-4e95-bd89-eb77f7100124",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-candy",
+        "asset": "chibi-candy-workshop",
+        "subject": "IMPROVEMENT:CANDY:WORKSHOP",
+        "faction": "CANDY",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 23926,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: a sweet-makers' workshop: one two-storey gingerbread house of warm biscuit with a steep roof of white frosting, one big round peppermint cogwheel in cream with a pink swirl on the front gable, and by the open door a wafer workbench with a rolling pin and a piping bag. Biscuit, cream, pink, caramel, a little mint; pink is never red; rose-brown outline. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a sweet-makers' workshop: one two-storey gingerbread house of warm biscuit with a steep roof of white frosting, one big round peppermint cogwheel in cream with a pink swirl on the front gable, and by the open door a wafer workbench with a rolling pin and a piping bag. Biscuit, cream, pink, caramel, a little mint; pink is never red; rose-brown outline. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a sweet-makers' workshop: one two-storey gingerbread house of warm biscuit with a steep roof of white frosting, one big round peppermint cogwheel in cream with a pink swirl on the front gable, and by the open door a wafer workbench with a rolling pin and a piping bag. Biscuit, cream, pink, caramel, a little mint; pink is never red; rose-brown outline. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T00:21:17.428Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-candy/workshop-a.png",
+      "rawSheetSha256": "a0fb0085562279e527a1751358ee38b181b525349cea7704ccd938751e62c489",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.1786,
+          "footprintWidthShare": 0.8667,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1756,
+          "footprintWidthShare": 0.9,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1708,
+          "footprintWidthShare": 0.8226,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4212,
+          "footprintWidthShare": 0.8103,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.4017,
+          "footprintWidthShare": 0.8475,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2638,
+          "footprintWidthShare": 0.8136,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.109,
+          "footprintWidthShare": 0.8197,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.361,
+          "footprintWidthShare": 0.88,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0618,
+          "footprintWidthShare": 0.8475,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.094,
+          "footprintWidthShare": 0.8475,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0887,
+          "footprintWidthShare": 0.8333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3652,
+          "footprintWidthShare": 0.7931,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1857,
+          "footprintWidthShare": 0.8644,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4626,
+          "footprintWidthShare": 0.7258,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1044,
+          "footprintWidthShare": 0.8333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3264,
+          "footprintWidthShare": 0.8214,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-08T00:24:10.507Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 2,
+        "notes": "Candidate 2 of 16: a gingerbread house with a white frosting roof, a round peppermint cogwheel in cream and pink on the gable and a second on the roof, a cream door with a piping bag beside it and a wafer workbench; the peppermint wheels are the workshop's cog. 10 is close with a paler bench; 1 has deep raspberry wheels (near the owner key red); 4 mint green ones; 0, 6, 8, 12 and 14 one small wheel; 3, 5, 7, 9, 11, 13 and 15 no wheel or no bench.",
+        "reviewedAt": "2026-10-08T00:24:34.265Z"
+      }
     }
   },
   "assets": {
+    "chibi-candy-forge": {
+      "id": "chibi-candy-forge",
+      "subject": "IMPROVEMENT:CANDY:FORGE",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "forge-a",
+      "candidate": 0,
+      "candidateSha256": "4c825f02f287f02cb917e69f28d34ba954ee705f375d5d4c843de8b578bed341",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-candy-forge.png",
+        "sha256": "c15c201b094c5d912fea5bd7949740243688caecfc93d6c8af2cf7f2e67daf2e",
+        "pixelSha256": "c5075f6a849df753370ffd5d6d1b0a589216c29c4a30ddf4876bfb07b1c169a2",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a gingerbread house with a white frosting roof, a pink-striped candy-cane chimney, an arch with a warm oven glow, and a caramel anvil on a gumdrop block in front; the only candidate with an anvil. 1 has a purple anvil and a spill of bright sweets; 2 to 15 have a barrel, a lollipop, a crate or nothing in front, and read as a cottage.",
+      "acceptedAt": "2026-10-08T00:24:33.907Z"
+    },
     "chibi-candy-lumber-camp": {
       "id": "chibi-candy-lumber-camp",
       "subject": "IMPROVEMENT:CANDY:LUMBER_CAMP",
@@ -379,6 +1255,47 @@
       "notes": "Candidate 4 of 16: a pink-striped candy cane and two peach swirl lollipops standing behind a stack of cut striped candy logs with swirl ends, a caramel gumdrop stump with a little axe in it and a wafer lean-to; the grove's sweets, in its warm pastels, with the cane's stripes the clearest of the sheet. 5, 6, 7, 9, 14 have a cane with mint stripes or stripes too pale to read; 8, 10, 11 an axe lying loose; 1 and 3 no log stack; 0 and 2 no stump; 12, 13 and 15 no axe.",
       "acceptedAt": "2026-10-07T23:02:42.641Z"
     },
+    "chibi-candy-port": {
+      "id": "chibi-candy-port",
+      "subject": "IMPROVEMENT:CANDY:PORT",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "port-b",
+      "candidate": 8,
+      "candidateSha256": "d25d189c150b0cf06c31138cea376630808a2202d6805df4503445113b7c585a",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-candy-port.png",
+        "sha256": "a05a3050677912b02d63b86e9ae80e749697354086563d26d296f94d2483c4ed",
+        "pixelSha256": "62ed54901728c48f2245f61c5df92665805a1e44630428c4e47d388043ff7145",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 8 of 16: a wide deck of pale biscuit wafers on candy-cane posts striped cream and pale peach, a gingerbread hut with a pale pink frosting roof, peach gumdrop mooring posts and a coil of caramel rope; no pixel of the owner key red. 1, 12 and 14 also have none but no rope coil; the other twelve have 3 to 16 key pixels in the hut's shade; 3, 6, 7 and 13 have a round hut.",
+      "acceptedAt": "2026-10-08T00:29:29.038Z"
+    },
     "chibi-candy-sawmill": {
       "id": "chibi-candy-sawmill",
       "subject": "IMPROVEMENT:CANDY:SAWMILL",
@@ -419,6 +1336,88 @@
       },
       "notes": "Candidate 13 of 16: a small gingerbread mill house with a pale pink frosting roof and a cream door, a round peppermint blade with a pink swirl standing in a wafer bench against its front, a striped candy log on the bench and a pile of cut candy sticks; a house, a blade and cut sticks at a glance. 1, 2 and 6 have a bigger blade but a plain block with no door behind it; 9, 12 and 14 a blade without teeth; 0, 3 to 5, 7, 8, 10, 11 and 15 no blade.",
       "acceptedAt": "2026-10-07T23:04:55.180Z"
+    },
+    "chibi-candy-shipyard": {
+      "id": "chibi-candy-shipyard",
+      "subject": "IMPROVEMENT:CANDY:SHIPYARD",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "shipyard-a",
+      "candidate": 0,
+      "candidateSha256": "ddad97c68678dfa115ef556a1856319491ac1871d42e018c5e612e220b0e8451",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-candy-shipyard.png",
+        "sha256": "04424b60df8cf0a643119e1257bc5c86681bdd4b25c1e8d6d2fb5ec1ecded8f2",
+        "pixelSha256": "58e59e5454797fc75b7bfe54e90d2c3ef52e2d1bdaec723c4bcb0a260c4ec4dc",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a half-built hull of chocolate bar planks with pale wafer ribs on wafer trestles, a pink-striped candy-cane crane with a caramel hook over it, a gingerbread boathouse with a white frosting roof and a stack of chocolate planks; a whole hull with a few ribs showing. The sixteen are one plan: 1, 2, 4, 5, 8, 11, 13 and 15 are mostly ribs and read as a wreck; 6, 7, 9, 12 and 14 a closed hull with no ribs; 3 and 10 are close.",
+      "acceptedAt": "2026-10-08T00:26:42.261Z"
+    },
+    "chibi-candy-workshop": {
+      "id": "chibi-candy-workshop",
+      "subject": "IMPROVEMENT:CANDY:WORKSHOP",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "workshop-a",
+      "candidate": 2,
+      "candidateSha256": "6e3ec8e48d9def212c56042b9184f0242a141653a55f13fd19387f10ff2bedf4",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-candy-workshop.png",
+        "sha256": "ec7fd06192a62a2827e015d8378764f1fb6d7c873504a99b46ad595c453a623a",
+        "pixelSha256": "157c7d25a2a8e01436989d6e9071ae5d6fb75cb6c7aeced4d740510e2f57c64b",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 2 of 16: a gingerbread house with a white frosting roof, a round peppermint cogwheel in cream and pink on the gable and a second on the roof, a cream door with a piping bag beside it and a wafer workbench; the peppermint wheels are the workshop's cog. 10 is close with a paler bench; 1 has deep raspberry wheels (near the owner key red); 4 mint green ones; 0, 6, 8, 12 and 14 one small wheel; 3, 5, 7, 9, 11, 13 and 15 no wheel or no bench.",
+      "acceptedAt": "2026-10-08T00:24:34.265Z"
     }
   }
 }

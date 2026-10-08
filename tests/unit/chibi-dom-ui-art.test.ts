@@ -134,7 +134,12 @@ describe("CHIBI interface subjects", () => {
     // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the root's card is
     // the Workshop for every faction (the defender, at Fortification now,
     // is on no card); Chivalry is a card that follows the faction.
-    expect(technologySubjectV7("DRILL", "UNDEAD")).toBe("IMPROVEMENT:WORKSHOP");
+    expect(technologySubjectV7("DRILL", "UNDEAD")).toBe(
+      "IMPROVEMENT:UNDEAD:WORKSHOP",
+    );
+    expect(technologySubjectV7("DRILL", "ORIGINAL")).toBe(
+      "IMPROVEMENT:WORKSHOP",
+    );
     expect(technologySubjectV7("CHIVALRY", "UNDEAD")).toBe(
       "UNIT:UNDEAD:KNIGHT",
     );
@@ -237,7 +242,7 @@ describe("CHIBI interface subjects", () => {
     );
     // (The root's card is the Workshop since the Industry reshuffle.)
     expect(technologySubjectV7("DRILL", "DINOSAUR")).toBe(
-      "IMPROVEMENT:WORKSHOP",
+      "IMPROVEMENT:DINOSAUR:WORKSHOP",
     );
     expect(technologySubjectV7("CHIVALRY", "DINOSAUR")).toBe(
       "UNIT:DINOSAUR:KNIGHT",

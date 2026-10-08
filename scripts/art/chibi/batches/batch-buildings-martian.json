@@ -50,6 +50,50 @@
         "height": 72
       },
       "ownerColour": false
+    },
+    {
+      "id": "chibi-martian-forge",
+      "subject": "IMPROVEMENT:MARTIAN:FORGE",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-martian-workshop",
+      "subject": "IMPROVEMENT:MARTIAN:WORKSHOP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-martian-port",
+      "subject": "IMPROVEMENT:MARTIAN:PORT",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-martian-shipyard",
+      "subject": "IMPROVEMENT:MARTIAN:SHIPYARD",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
     }
   ],
   "recipes": [
@@ -158,6 +202,61 @@
         "height": 72
       },
       "notes": "sawmill-a-edit left the logs red (115 key pixels in both candidates). As for lumber-camp-b, the subject now gives the logs the ochre of the Martian forest by hex and says never red; the plan (dome, antenna, magenta-edged disc in a gunmetal bench, three logs) is sawmill-a candidate 1."
+    },
+    {
+      "id": "forge-a",
+      "asset": "chibi-martian-forge",
+      "endpoint": "generate-image-v2",
+      "seed": 23913,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the MARTIAN Forge: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "workshop-a",
+      "asset": "chibi-martian-workshop",
+      "endpoint": "generate-image-v2",
+      "seed": 23914,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the MARTIAN Workshop: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "port-a",
+      "asset": "chibi-martian-port",
+      "endpoint": "generate-image-v2",
+      "seed": 23915,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the MARTIAN Port: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "shipyard-a",
+      "asset": "chibi-martian-shipyard",
+      "endpoint": "generate-image-v2",
+      "seed": 23916,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the MARTIAN Shipyard: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "shipyard-b",
+      "asset": "chibi-martian-shipyard",
+      "endpoint": "generate-image-v2",
+      "seed": 23933,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "shipyard-a came back as a sheet of sixteen labelled parts with captions. The subject now asks for one single building group whose three things touch and fill the image, in silver-white chrome, and for no captions."
     }
   ]
 }

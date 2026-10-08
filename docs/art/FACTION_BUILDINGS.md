@@ -14,7 +14,8 @@ Mushroom Farm were redrawn, and the shared Sawmill was redone. Rule 3's
 "seamless `crop-rows` field" and the row looks of sections 3, 5 and 6 are
 history. **Section 12 supersedes the "same" of the Lumber Camp and the
 Sawmill** (bead `pulp_wars-2yc.38`): every faction but the Humans draws its
-own pair.
+own pair, **and section 13 the "same" of the Forge, the Workshop, the Port
+and the Shipyard**.
 
 The user's request (2026-10-03): some, not all, building sprites and
 descriptions become faction specific. When the Undead take a city, the
@@ -665,21 +666,21 @@ All `calm-feature` (`generate-image-v2`, 16 candidates a call, the light
 stated, seated 3 px above the bottom edge), on the 72 x 72 canvas and the
 anchor of the shared pair, no owner colour, no mask.
 
-| Asset (subject)                                                   | Shows                                                                                                                                                                | Recipe, candidate  | Sprite  |
-| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------- |
-| `chibi-undead-lumber-camp` (`IMPROVEMENT:UNDEAD:LUMBER_CAMP`)     | two bare ashen dead trees, a stack of pale grey logs, a rusty axe in a stump, one bone                                                                               | `lumber-camp-a`, 2 | 68 x 64 |
-| `chibi-undead-sawmill` (`IMPROVEMENT:UNDEAD:SAWMILL`)             | a dark slate plank shed with a near-black roof and a violet window, a round blade of ivory bone on a bench, ashen logs                                               | `sawmill-a`, 9     | 65 x 64 |
-| `chibi-goblin-lumber-camp` (`IMPROVEMENT:GOBLIN:LUMBER_CAMP`)     | a crooked scrub tree, three sawn stumps, a cleaver axe in one, a patched sand-buff lean-to with a tin sheet and a hazard yellow patch                                | `lumber-camp-a`, 4 | 58 x 62 |
-| `chibi-goblin-sawmill` (`IMPROVEMENT:GOBLIN:SAWMILL`)             | a ramshackle hut of patched tin and grey-tan planks with a hazard yellow door and a bent pipe, a toothed tin blade in a rickety bench                                | `sawmill-a`, 7     | 61 x 60 |
-| `chibi-dinosaur-lumber-camp` (`IMPROVEMENT:DINOSAUR:LUMBER_CAMP`) | two palms and a fern, a stack of brown palm logs, a small tent of spotted hide over tusks; no axe                                                                    | `lumber-camp-a`, 0 | 61 x 61 |
-| `chibi-martian-lumber-camp` (`IMPROVEMENT:MARTIAN:LUMBER_CAMP`)   | a tall ochre fungal stalk with a teal cap and two small ones, a stack of cut stalk logs, a stump, a chrome harvester pod with a magenta cutting beam                 | `lumber-camp-b`, 0 | 61 x 62 |
-| `chibi-martian-sawmill` (`IMPROVEMENT:MARTIAN:SAWMILL`)           | a low chrome dome hut with a magenta window and an antenna, a round chrome saw disc with a glowing magenta edge in a gunmetal bench, ochre stalk logs                | `sawmill-b`, 0     | 62 x 62 |
-| `chibi-ice-folk-lumber-camp` (`IMPROVEMENT:ICE_FOLK:LUMBER_CAMP`) | two snow-capped dwarf firs, a cream hide tent on bone poles, a stack of pale birch logs, an ice-blue axe in a stump                                                  | `lumber-camp-a`, 0 | 62 x 63 |
-| `chibi-ice-folk-sawmill` (`IMPROVEMENT:ICE_FOLK:SAWMILL`)         | a pale timber cabin under a thick snow roof, a round toothed blade of ice blue on a bench, a log on a small hoist                                                    | `sawmill-a`, 3     | 62 x 59 |
-| `chibi-dwarf-lumber-camp` (`IMPROVEMENT:DWARF:LUMBER_CAMP`)       | two sturdy dark pines and a mossy grey boulder, a stack of thick pine logs in an iron band, an iron axe in a stump, a copper lantern on a post                       | `lumber-camp-a`, 1 | 62 x 60 |
-| `chibi-dwarf-sawmill` (`IMPROVEMENT:DWARF:SAWMILL`)               | a squat grey stone mill house with a muted copper roof, an iron chimney with a puff of steam, a steel blade in its front arch, a brass cog on the gable, pale planks | `sawmill-a`, 7     | 61 x 62 |
-| `chibi-candy-lumber-camp` (`IMPROVEMENT:CANDY:LUMBER_CAMP`)       | a pink-striped candy cane and two peach lollipops, a stack of striped candy logs, a little axe in a gumdrop stump, a wafer lean-to                                   | `lumber-camp-a`, 4 | 58 x 58 |
-| `chibi-candy-sawmill` (`IMPROVEMENT:CANDY:SAWMILL`)               | a gingerbread mill house with a pale pink frosting roof, a round peppermint blade in a wafer bench, a candy log, cut candy sticks                                    | `sawmill-a`, 13    | 60 x 62 |
+| Asset (subject)                                                   | Shows                                                                                                                                                                                  | Recipe, candidate  | Sprite  |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------- |
+| `chibi-undead-lumber-camp` (`IMPROVEMENT:UNDEAD:LUMBER_CAMP`)     | two bare ashen dead trees, a stack of pale grey logs, a rusty axe in a stump, one bone                                                                                                 | `lumber-camp-a`, 2 | 68 x 64 |
+| `chibi-undead-sawmill` (`IMPROVEMENT:UNDEAD:SAWMILL`)             | a dark slate plank shed with a near-black roof and a violet window, a round blade of ivory bone on a bench, ashen logs                                                                 | `sawmill-a`, 9     | 65 x 64 |
+| `chibi-goblin-lumber-camp` (`IMPROVEMENT:GOBLIN:LUMBER_CAMP`)     | a crooked scrub tree, three sawn stumps, a cleaver axe in one, a patched sand-buff lean-to with a tin sheet and a hazard yellow patch                                                  | `lumber-camp-a`, 4 | 58 x 62 |
+| `chibi-goblin-sawmill` (`IMPROVEMENT:GOBLIN:SAWMILL`)             | a ramshackle hut of patched tin and grey-tan planks with a hazard yellow door and a bent pipe, a toothed tin blade in a rickety bench                                                  | `sawmill-a`, 7     | 61 x 60 |
+| `chibi-dinosaur-lumber-camp` (`IMPROVEMENT:DINOSAUR:LUMBER_CAMP`) | two palms and a fern, a stack of brown palm logs, a small tent of spotted hide over tusks; no axe                                                                                      | `lumber-camp-a`, 0 | 61 x 61 |
+| `chibi-martian-lumber-camp` (`IMPROVEMENT:MARTIAN:LUMBER_CAMP`)   | a tall ochre fungal stalk with a teal cap and two small ones, a stack of cut stalk logs, a stump, a chrome harvester pod with a magenta cutting beam                                   | `lumber-camp-b`, 0 | 61 x 62 |
+| `chibi-martian-sawmill` (`IMPROVEMENT:MARTIAN:SAWMILL`)           | a low chrome dome hut with a magenta window and an antenna, a round chrome saw disc with a glowing magenta edge in a gunmetal bench, ochre stalk logs                                  | `sawmill-b`, 0     | 62 x 62 |
+| `chibi-ice-folk-lumber-camp` (`IMPROVEMENT:ICE_FOLK:LUMBER_CAMP`) | two snow-capped dwarf firs, a cream hide tent on bone poles, a stack of pale birch logs, an ice-blue axe in a stump                                                                    | `lumber-camp-a`, 0 | 62 x 63 |
+| `chibi-ice-folk-sawmill` (`IMPROVEMENT:ICE_FOLK:SAWMILL`)         | a pale timber cabin under a thick snow roof, a round toothed blade of ice blue on a bench, a log on a small hoist                                                                      | `sawmill-a`, 3     | 62 x 59 |
+| `chibi-dwarf-lumber-camp` (`IMPROVEMENT:DWARF:LUMBER_CAMP`)       | two sturdy mid-green pines and a mossy grey boulder, a stack of thick pine logs in an iron band, an iron axe in a stump, a copper lantern on a post (lightened in stage 2, section 13) | `lumber-camp-b`, 0 | 62 x 62 |
+| `chibi-dwarf-sawmill` (`IMPROVEMENT:DWARF:SAWMILL`)               | a squat grey stone mill house with a muted copper roof, an iron chimney with a puff of steam, a steel blade in its front arch, a brass cog on the gable, pale planks                   | `sawmill-a`, 7     | 61 x 62 |
+| `chibi-candy-lumber-camp` (`IMPROVEMENT:CANDY:LUMBER_CAMP`)       | a pink-striped candy cane and two peach lollipops, a stack of striped candy logs, a little axe in a gumdrop stump, a wafer lean-to                                                     | `lumber-camp-a`, 4 | 58 x 58 |
+| `chibi-candy-sawmill` (`IMPROVEMENT:CANDY:SAWMILL`)               | a gingerbread mill house with a pale pink frosting roof, a round peppermint blade in a wafer bench, a candy log, cut candy sticks                                                      | `sawmill-a`, 13    | 60 x 62 |
 
 - **Batches.** The assets are in the faction's `buildings-<faction>` batch;
   `buildings-goblin` and `buildings-candy` are new. The subject lines are
@@ -763,5 +764,137 @@ Tests: `tests/unit/chibi-faction-buildings-assets.test.ts`,
   ochre by hex (`#b06a48`, shade `#7f4634`) and have none. The ochre
   stalks and logs are close to the Martian ground's own ochre; the teal
   caps, the chrome and the outline carry the camp.
-- **The Dwarf camp is dark**: near-black pines beside the softened pines
-  of the Dwarf forest.
+- _Fixed in stage 2:_ the Dwarf camp's pines were near-black beside the
+  softened pines of the Dwarf forest (section 13).
+
+## 13. A Forge, a Workshop, a Port and a Shipyard per faction (bead `pulp_wars-2yc.38`, stage 2)
+
+The user, 2026-10-07: "forge, workshop, port and shipyard should be
+generated per faction". Purely visual: no rule, number, command, save, name
+or identity changed. This supersedes the "same" of those four rows of
+section 3. The Humans keep the shared four.
+
+**What each must say, in every faction.** The Forge: a fire glow in an
+open mouth, a chimney and an anvil in front. The Workshop: a house with a
+big cogwheel (a stone wheel for the Dinosaurs) and a workbench. The Port: a
+pier deck on posts with a small hut. The Shipyard: a half-built hull under a
+crane beside a boathouse.
+
+**What exists in the game.** All four are improvements of
+`IMPROVEMENT_IDS_V7`. The Shipyard is a distinct building, not a
+technology name: Naval Engineering lets a city upgrade one of its active
+Ports into its Shipyard, one per city
+([RULESET_7_CURRENT.md](../product/RULESET_7_CURRENT.md), section 14). No
+other dock building exists, so nothing else was made.
+
+**The Ice Folk have no ships and never embark** (section 21.16 of the same
+document), **but they build both docks**: a Port keeps its population, its
+Fish and its sea trade for them, and upgrades to a Shipyard. Their two
+pieces therefore show no boat: the Port is an ice-fishing pier with an
+igloo and a rack of fish, the Shipyard a timber shed with a dog sled on a
+slipway and a block of cut ice.
+
+### The art
+
+All `calm-feature` (`generate-image-v2`, 16 candidates a call), on the
+72 x 72 canvas and the anchor of the shared four, seated 3 px above the
+bottom edge, no owner colour, no mask. A Port and a Shipyard stand on
+nothing: the board draws the water under them.
+
+| Asset (subject)                                             | Shows                                                                                                                                             | Recipe, candidate | Sprite  |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | ------- |
+| `chibi-undead-forge` (`IMPROVEMENT:UNDEAD:FORGE`)           | a squat smithy of pale slate stone under a near-black roof, a crooked chimney with violet smoke, a violet fire glow, a dark anvil on a bone stump | `forge-a`, 0      | 58 x 62 |
+| `chibi-undead-workshop` (`IMPROVEMENT:UNDEAD:WORKSHOP`)     | a crooked timbered slate house with one big ivory bone cogwheel on its gable, violet windows, a workbench                                         | `workshop-a`, 0   | 57 x 62 |
+| `chibi-undead-port` (`IMPROVEMENT:UNDEAD:PORT`)             | a pier of ashen planks on dark posts, a pale slate hut with a violet window, bone mooring posts, a lantern with a violet flame                    | `port-a`, 0       | 53 x 57 |
+| `chibi-undead-shipyard` (`IMPROVEMENT:UNDEAD:SHIPYARD`)     | a half-built ashen hull with pale rib bones on trestles, a dark timber crane with a chain, a slate boathouse                                      | `shipyard-a`, 9   | 56 x 62 |
+| `chibi-goblin-forge` (`IMPROVEMENT:GOBLIN:FORGE`)           | a patched tin hut with a hazard yellow panel and a bent pipe, an oil-drum furnace with an orange fire, a dented anvil on a stump                  | `forge-a`, 0      | 57 x 62 |
+| `chibi-goblin-workshop` (`IMPROVEMENT:GOBLIN:WORKSHOP`)     | a tin and plank shack with a hazard yellow cogwheel, a sand-buff hide awning and a workbench                                                      | `workshop-a`, 0   | 48 x 50 |
+| `chibi-goblin-port` (`IMPROVEMENT:GOBLIN:PORT`)             | a wide rickety pier of grey-tan planks, a patched tin hut with a hazard yellow door, a rope coil, a barrel                                        | `port-a`, 12      | 62 x 60 |
+| `chibi-goblin-shipyard` (`IMPROVEMENT:GOBLIN:SHIPYARD`)     | a half-built hull of tin sheets on rickety trestles, a crooked pole crane, a tin shed with a yellow door and awning                               | `shipyard-b`, 13  | 60 x 62 |
+| `chibi-dinosaur-forge` (`IMPROVEMENT:DINOSAUR:FORGE`)       | a round furnace of grey basalt stones with an orange fire, a stone chimney, a flat stone anvil, a lean-to of spotted hide                         | `forge-a`, 3      | 62 x 63 |
+| `chibi-dinosaur-workshop` (`IMPROVEMENT:DINOSAUR:WORKSHOP`) | a round hut of spotted hide with tusks at its door, a big stone wheel on a rack, a log workbench with stone tools                                 | `workshop-a`, 0   | 58 x 62 |
+| `chibi-dinosaur-port` (`IMPROVEMENT:DINOSAUR:PORT`)         | a jetty of lashed brown logs with green vine lashings and a cone tent of spotted hide with tusks on it                                            | `port-a`, 4       | 60 x 60 |
+| `chibi-dinosaur-shipyard` (`IMPROVEMENT:DINOSAUR:SHIPYARD`) | a big dugout canoe half carved from a log, on trestles with wood chips, a tripod hoist of poles and tusks, a hide lean-to                         | `shipyard-a`, 8   | 62 x 60 |
+| `chibi-martian-forge` (`IMPROVEMENT:MARTIAN:FORGE`)         | a low chrome dome with a gunmetal exhaust stack and a steam puff, an arch glowing hot magenta, a chrome anvil block                               | `forge-a`, 0      | 57 x 60 |
+| `chibi-martian-workshop` (`IMPROVEMENT:MARTIAN:WORKSHOP`)   | a tall chrome dome with a magenta window, a big chrome cogwheel with a magenta hub, a gunmetal workbench with a robot arm                         | `workshop-a`, 5   | 60 x 62 |
+| `chibi-martian-port` (`IMPROVEMENT:MARTIAN:PORT`)           | a chrome pier deck on gunmetal pylons, a round chrome dome hut with a magenta window, a mooring pylon with a magenta light                        | `port-a`, 0       | 62 x 56 |
+| `chibi-martian-shipyard` (`IMPROVEMENT:MARTIAN:SHIPYARD`)   | a chrome boat hull on gunmetal cradles, a chrome crane with a magenta light, a tall chrome dome hangar with a magenta band                        | `shipyard-b`, 14  | 59 x 58 |
+| `chibi-ice-folk-forge` (`IMPROVEMENT:ICE_FOLK:FORGE`)       | an igloo of snow blocks with an orange fire glow in its mouth, a grey stone chimney with smoke, a stone anvil with an ice-blue hammer             | `forge-a`, 2      | 57 x 67 |
+| `chibi-ice-folk-workshop` (`IMPROVEMENT:ICE_FOLK:WORKSHOP`) | a tall pale timber hut under a thick snow roof, a pale cogwheel on the gable, a workbench with a block of ice being carved                        | `workshop-a`, 0   | 56 x 63 |
+| `chibi-ice-folk-port` (`IMPROVEMENT:ICE_FOLK:PORT`)         | a pier of pale timber dusted with snow, an igloo on it, a bone rack with hanging fish, a rope coil; no boat                                       | `port-a`, 0       | 64 x 60 |
+| `chibi-ice-folk-shipyard` (`IMPROVEMENT:ICE_FOLK:SHIPYARD`) | a timber shed under a thick snow roof, a dog sled on a plank slipway at its door, a block of ice-blue ice; no boat                                | `shipyard-a`, 13  | 57 x 62 |
+| `chibi-dwarf-forge` (`IMPROVEMENT:DWARF:FORGE`)             | a squat grey stone hall under a copper roof, a tall iron chimney with white steam, a fire glow, a big dark anvil                                  | `forge-a`, 2      | 52 x 62 |
+| `chibi-dwarf-workshop` (`IMPROVEMENT:DWARF:WORKSHOP`)       | a two-storey grey stone house under a copper roof, three meshing brass cogwheels, a copper pipe with a big steam puff, a workbench                | `workshop-a`, 6   | 61 x 62 |
+| `chibi-dwarf-port` (`IMPROVEMENT:DWARF:PORT`)               | a quay of iron-banded timber on squat stone piers, a stone harbour house under a copper roof, bollards, a brass lantern                           | `port-a`, 3       | 62 x 63 |
+| `chibi-dwarf-shipyard` (`IMPROVEMENT:DWARF:SHIPYARD`)       | a half-built timber hull with copper plates on a stone cradle, an iron steam crane with a steam puff, a stone boathouse                           | `shipyard-a`, 13  | 61 x 62 |
+| `chibi-candy-forge` (`IMPROVEMENT:CANDY:FORGE`)             | a gingerbread house with a white frosting roof, a pink-striped candy-cane chimney, a warm oven glow, a caramel anvil on a gumdrop                 | `forge-a`, 0      | 54 x 58 |
+| `chibi-candy-workshop` (`IMPROVEMENT:CANDY:WORKSHOP`)       | a gingerbread house with two round peppermint cogwheels in cream and pink, a piping bag by the door, a wafer workbench                            | `workshop-a`, 2   | 62 x 64 |
+| `chibi-candy-port` (`IMPROVEMENT:CANDY:PORT`)               | a deck of pale biscuit wafers on peach-striped candy-cane posts, a gingerbread hut with a pale pink roof, a coil of caramel rope                  | `port-b`, 8       | 62 x 63 |
+| `chibi-candy-shipyard` (`IMPROVEMENT:CANDY:SHIPYARD`)       | a half-built hull of chocolate bar planks with wafer ribs, a pink-striped candy-cane crane, a gingerbread boathouse                               | `shipyard-a`, 0   | 62 x 62 |
+
+- **First sample of three**: the Dwarf Forge, the Candy Port and the
+  Martian Shipyard, reviewed at 1:1 and enlarged on their ground before the
+  rest. The Martian Shipyard failed as a sample and was redone before the
+  batch.
+- **PixelLab calls: 33** for the twenty-eight buildings (three redone) and
+  the two touch-ups below, all `generate-image-v2`. Why each other
+  candidate was passed over is in the records.
+- **Redone.** `shipyard-a` of the Martians came back as a sheet of sixteen
+  labelled parts with captions of pixel text; `shipyard-b` asks for "one
+  single building group" whose three things touch, and "no captions".
+  `shipyard-a` of the Goblins drew brown wooden yards on a plate of sand
+  (the word "sand" in its colour list); `shipyard-b` does not name it.
+  `port-a` of the Candy had 64 to 173 pixels of the owner key red in the
+  stripes of its posts; `port-b` gives them a pale peach by hex.
+- **No red.** None of the twenty-eight has a pixel of the owner key red.
+
+### Two touch-ups of section 12
+
+One attempt each, taken only if clearly better (the root, 2026-10-08).
+
+- **The Dwarf Lumber Camp is lighter**: `lumber-camp-b`, candidate 0, the
+  same plan with pines of the forest's mid green (`#3f7355`) where
+  `lumber-camp-a`'s were near-black. 62 x 62.
+- **The Undead Sawmill is unchanged.** `sawmill-b` has pale slate walls,
+  but its bone blade came out a low toothless half disc in fifteen of
+  sixteen; the round toothed blade of `sawmill-a` is what says sawmill, so
+  it stays.
+
+### In the game
+
+- `FACTION_IMPROVEMENT_LOOKS_V7` lists the four for every faction but the
+  Humans. The look follows the owner of the territory, as in section 12; a
+  dock's water tile belongs to its city's territory like any other tile. A
+  captured city's Forge, Workshop, Port and Shipyard change look with it.
+- **Technology cards.** The cards that show these buildings show the
+  viewer's own: Crafting the Workshop, Metallurgy the Forge, Shorecraft the
+  Port.
+- **Names** are unchanged ("Forge", "Workshop", "Port", "Shipyard"), with
+  no flavour line.
+- **Pennants.** The live look draws no pennant on a Port or a Shipyard
+  (`LIVE_DIRECTION_V7`), so the new pieces need no pennant anchor.
+- **Fallbacks.** The Classic look and the LEGACY art set draw the shared
+  four.
+- **Gallery.** The four rows of the Buildings tab have one cell per faction.
+
+### Evidence
+
+The scenes `trade-<faction>` of
+[`forest-building-scenes.ts`](../../scripts/art/faction-buildings/forest-building-scenes.ts):
+the Human territory with the shared four on the left, the faction's own on
+the right, each with a strip of Shallow Water for its Port and Shipyard.
+
+### Weak spots
+
+- **The Ice Folk Shipyard has no hoist**: no candidate had the shed, the
+  sled and the crane together. It reads as a boathouse with a sled.
+- **The Dinosaur Port has no fish rack** (the candidates had the tent or
+  the rack, never both), and its Workshop's stone wheel is the Grinding
+  Stone's idea again.
+- **The Candy Forge's anvil stands on a green and red gumdrop**, small but
+  the most saturated spot of the set; it is not the owner key red.
+- **The Goblin Workshop is the smallest** (48 x 50).
+- **The Dwarf pieces have a warm copper roof** close to the Human
+  terracotta; the grey stone, the steam and the brass carry the faction.
+- **The Martian pieces are near-white chrome** and the palest buildings on
+  the board; on the Martian ground they stand out more than the calm set.

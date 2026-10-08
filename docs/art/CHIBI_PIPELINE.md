@@ -1585,6 +1585,17 @@ buildings: thirteen `calm-feature` assets at 72 x 72 in the batches
   into the run (`ground/ice-folk-snow.png`), lifts the foliage toward it,
   and `check` (in `art:validate`) re-derives it.
 
+- **Stage 2** added a Forge, a Workshop, a Port and a Shipyard per faction
+  the same way (28 assets,
+  [section 13](FACTION_BUILDINGS.md#13-a-forge-a-workshop-a-port-and-a-shipyard-per-faction-bead-pulp_wars-2yc38-stage-2)).
+  Three more things `generate-image-v2` did: a subject that lists three
+  separate things without saying they are one group can come back as a
+  sheet of sixteen different labelled parts with captions (ask for "one
+  single building group" whose things touch, and "no captions"); a
+  material named in a colour list is drawn as ground ("sand" gave a beach
+  plate); and "pink" stripes can be the owner key red (give the pink or
+  peach by hex and say "never red").
+
 ## The Candy batches (bead `pulp_wars-jdb.5`)
 
 Batches `direction-candy` and `naval-candy` hold the direction and the

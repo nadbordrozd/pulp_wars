@@ -26,6 +26,9 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * (territoryTerrainSubjectV7). The Forest entries reuse the body layers of
  * the shared Forest.
  *
+ * Stage 2 of bead pulp_wars-2yc.38 adds a Forge, a Workshop, a Port and a
+ * Shipyard per faction the same way (twenty-eight masters).
+ *
  * The Lumber Camps and Sawmills (bead pulp_wars-2yc.38; the user,
  * 2026-10-07: "lumber camps should be different per faction - depending on
  * the native forest skin. ditto for sawmills") are thirteen more masters of
@@ -38,25 +41,42 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * (chibiDirectionArtRegistryV7), so the classic look and the LEGACY art set
  * draw the shared buildings and ground as before.
  */
-/** Every faction's Lumber Camp and Sawmill but the Dinosaur Sawmill. */
+/**
+ * Every faction's Lumber Camp, Sawmill, Forge, Workshop, Port and Shipyard
+ * (stage 2 of the bead added the last four). The Dinosaur Sawmill is the
+ * Chopping Block above.
+ */
+type SharedCanvasImprovement =
+  "LUMBER_CAMP" | "SAWMILL" | "FORGE" | "WORKSHOP" | "PORT" | "SHIPYARD";
+
+const SHARED_CANVAS_IMPROVEMENTS: readonly SharedCanvasImprovement[] = [
+  "LUMBER_CAMP",
+  "SAWMILL",
+  "FORGE",
+  "WORKSHOP",
+  "PORT",
+  "SHIPYARD",
+];
+
 const FOREST_BUILDINGS: readonly (readonly [
   slug: string,
   faction: Exclude<FactionIdV7, "ORIGINAL">,
-  improvements: readonly ("LUMBER_CAMP" | "SAWMILL")[],
 ])[] = [
-  ["undead", "UNDEAD", ["LUMBER_CAMP", "SAWMILL"]],
-  ["goblin", "GOBLIN", ["LUMBER_CAMP", "SAWMILL"]],
-  ["dinosaur", "DINOSAUR", ["LUMBER_CAMP"]],
-  ["martian", "MARTIAN", ["LUMBER_CAMP", "SAWMILL"]],
-  ["ice-folk", "ICE_FOLK", ["LUMBER_CAMP", "SAWMILL"]],
-  ["dwarf", "DWARF", ["LUMBER_CAMP", "SAWMILL"]],
-  ["candy", "CANDY", ["LUMBER_CAMP", "SAWMILL"]],
+  ["undead", "UNDEAD"],
+  ["goblin", "GOBLIN"],
+  ["dinosaur", "DINOSAUR"],
+  ["martian", "MARTIAN"],
+  ["ice-folk", "ICE_FOLK"],
+  ["dwarf", "DWARF"],
+  ["candy", "CANDY"],
 ];
 
 const FOREST_BUILDING_ASSETS: readonly ChibiArtAssetV7[] =
-  FOREST_BUILDINGS.flatMap(([slug, faction, improvements]) =>
-    improvements.map((improvement): ChibiArtAssetV7 => {
-      const id = `chibi-${slug}-${improvement === "SAWMILL" ? "sawmill" : "lumber-camp"}`;
+  FOREST_BUILDINGS.flatMap(([slug, faction]) =>
+    SHARED_CANVAS_IMPROVEMENTS.filter(
+      (improvement) => !(faction === "DINOSAUR" && improvement === "SAWMILL"),
+    ).map((improvement): ChibiArtAssetV7 => {
+      const id = `chibi-${slug}-${improvement.toLowerCase().replace("_", "-")}`;
       return {
         id,
         subject: `IMPROVEMENT:${faction}:${improvement}`,

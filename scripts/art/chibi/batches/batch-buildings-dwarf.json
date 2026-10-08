@@ -51,6 +51,50 @@
         "height": 72
       },
       "ownerColour": false
+    },
+    {
+      "id": "chibi-dwarf-forge",
+      "subject": "IMPROVEMENT:DWARF:FORGE",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dwarf-workshop",
+      "subject": "IMPROVEMENT:DWARF:WORKSHOP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dwarf-port",
+      "subject": "IMPROVEMENT:DWARF:PORT",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dwarf-shipyard",
+      "subject": "IMPROVEMENT:DWARF:SHIPYARD",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
     }
   ],
   "recipes": [
@@ -172,6 +216,61 @@
         "height": 72
       },
       "notes": "Bead pulp_wars-2yc.38 (the user, 2026-10-07: 'lumber camps should be different per faction - depending on the native forest skin. ditto for sawmills'). First sample of the DWARF Sawmill: class calm-feature at the 72 x 72 canvas of the shared building, from the faction's forest skin and building materials."
+    },
+    {
+      "id": "forge-a",
+      "asset": "chibi-dwarf-forge",
+      "endpoint": "generate-image-v2",
+      "seed": 23921,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the DWARF Forge: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "workshop-a",
+      "asset": "chibi-dwarf-workshop",
+      "endpoint": "generate-image-v2",
+      "seed": 23922,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the DWARF Workshop: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "port-a",
+      "asset": "chibi-dwarf-port",
+      "endpoint": "generate-image-v2",
+      "seed": 23923,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the DWARF Port: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "shipyard-a",
+      "asset": "chibi-dwarf-shipyard",
+      "endpoint": "generate-image-v2",
+      "seed": 23924,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2 (the user, 2026-10-07: 'forge, workshop, port and shipyard should be generated per faction'). First sample of the DWARF Shipyard: class calm-feature at the 72 x 72 canvas of the shared building, in the faction's materials."
+    },
+    {
+      "id": "lumber-camp-b",
+      "asset": "chibi-dwarf-lumber-camp",
+      "endpoint": "generate-image-v2",
+      "seed": 23932,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-2yc.38 stage 2, one attempt at a lighter Dwarf Lumber Camp: lumber-camp-a (candidate 1) has near-black pines beside the softened pines of the Dwarf forest. The subject now gives the pines the forest clump's mid green by hex."
     }
   ]
 }

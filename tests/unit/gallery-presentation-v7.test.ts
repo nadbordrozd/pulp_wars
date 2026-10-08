@@ -132,7 +132,18 @@ describe("Gallery presentation", () => {
     // and the Sawmill have a faction's own look, so their rows split; every
     // other improvement stays one shared cell.
     // Bead pulp_wars-2yc.38: the Lumber Camp splits too.
-    const split = ["FARM", "WINDMILL", "SAWMILL", "LUMBER_CAMP"];
+    // Stage 2: the Forge, the Workshop, the Port and the Shipyard too; the
+    // Mine, the Market and the Monuments stay one shared cell.
+    const split = [
+      "FARM",
+      "WINDMILL",
+      "SAWMILL",
+      "LUMBER_CAMP",
+      "FORGE",
+      "WORKSHOP",
+      "PORT",
+      "SHIPYARD",
+    ];
     for (const row of GALLERY_BUILDING_ROWS_V7.slice(3))
       expect(galleryBuildingPerFactionV7(row), row).toBe(split.includes(row));
     expect(galleryBuildingSubjectV7("MINE", "DWARF")).toBe(

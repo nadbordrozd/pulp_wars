@@ -134,21 +134,35 @@ const improvementEntries = (
 const lookOf = (entries: readonly BoardRenderPlanEntryV7[]) =>
   entries.map((entry) => [entry.artSubject, entry.label]);
 
+/**
+ * Bead pulp_wars-2yc.38: the six buildings every faction but the Humans
+ * draws in its own look and under the shared name (the Dinosaur Sawmill is
+ * the one that was named before).
+ */
+const SIX = [
+  "LUMBER_CAMP",
+  "SAWMILL",
+  "FORGE",
+  "WORKSHOP",
+  "PORT",
+  "SHIPYARD",
+] as const;
+
 describe("faction building subjects and names", () => {
   it("returns a faction subject only for the buildings the faction draws itself", () => {
     expect(FACTION_IMPROVEMENT_LOOKS_V7).toEqual({
-      UNDEAD: ["FARM", "WINDMILL", "LUMBER_CAMP", "SAWMILL"],
-      GOBLIN: ["LUMBER_CAMP", "SAWMILL"],
-      DINOSAUR: ["WINDMILL", "SAWMILL", "LUMBER_CAMP"],
-      MARTIAN: ["FARM", "WINDMILL", "LUMBER_CAMP", "SAWMILL"],
-      ICE_FOLK: ["FARM", "LUMBER_CAMP", "SAWMILL"],
-      DWARF: ["FARM", "WINDMILL", "LUMBER_CAMP", "SAWMILL"],
-      CANDY: ["LUMBER_CAMP", "SAWMILL"],
+      UNDEAD: ["FARM", "WINDMILL", ...SIX],
+      GOBLIN: SIX,
+      DINOSAUR: ["WINDMILL", ...SIX],
+      MARTIAN: ["FARM", "WINDMILL", ...SIX],
+      ICE_FOLK: ["FARM", ...SIX],
+      DWARF: ["FARM", "WINDMILL", ...SIX],
+      CANDY: SIX,
     });
     // Bead pulp_wars-2yc.38: the Lumber Camp and the Sawmill are every
     // faction's own but the Humans', who keep the shared pair.
     for (const faction of FACTION_IDS_V7)
-      for (const improvement of ["LUMBER_CAMP", "SAWMILL"] as const)
+      for (const improvement of SIX)
         expect(factionImprovementSubjectV7(improvement, faction)).toBe(
           faction === "ORIGINAL"
             ? `IMPROVEMENT:${improvement}`
@@ -195,12 +209,19 @@ describe("faction building subjects and names", () => {
         .filter(
           (key) =>
             key === "DINOSAUR:SAWMILL" ||
-            !/:(?:LUMBER_CAMP|SAWMILL)$/.test(key),
+            !/:(?:LUMBER_CAMP|SAWMILL|FORGE|WORKSHOP|PORT|SHIPYARD)$/.test(key),
         )
         .sort(),
     );
     for (const faction of FACTION_IDS_V7) {
-      expect(factionBuildingV7("LUMBER_CAMP", faction)).toBeNull();
+      for (const kept of [
+        "LUMBER_CAMP",
+        "FORGE",
+        "WORKSHOP",
+        "PORT",
+        "SHIPYARD",
+      ] as const)
+        expect(factionBuildingV7(kept, faction)).toBeNull();
       if (faction !== "DINOSAUR")
         expect(factionBuildingV7("SAWMILL", faction)).toBeNull();
     }
@@ -258,7 +279,16 @@ describe("faction building subjects and names", () => {
       "IMPROVEMENT:FARM",
     );
     expect(commandSubjectV7({ kind: "BUILD_FORGE", at }, "UNDEAD")).toBe(
+      "IMPROVEMENT:UNDEAD:FORGE",
+    );
+    expect(commandSubjectV7({ kind: "BUILD_PORT", at }, "ICE_FOLK")).toBe(
+      "IMPROVEMENT:ICE_FOLK:PORT",
+    );
+    expect(commandSubjectV7({ kind: "BUILD_FORGE", at }, "ORIGINAL")).toBe(
       "IMPROVEMENT:FORGE",
+    );
+    expect(commandSubjectV7({ kind: "BUILD_MARKET", at }, "UNDEAD")).toBe(
+      "IMPROVEMENT:MARKET",
     );
     expect(factionBuildCommandV7("BUILD_FARM", "UNDEAD")?.name).toBe(
       "Graveyard",
@@ -299,7 +329,7 @@ describe("the board plan follows the territory owner", () => {
       ["IMPROVEMENT:UNDEAD:WINDMILL", "Bone Mill"],
       // Its own look, the shared name (pulp_wars-2yc.38).
       ["IMPROVEMENT:UNDEAD:SAWMILL", "Sawmill"],
-      ["IMPROVEMENT:FORGE", "Forge"],
+      ["IMPROVEMENT:UNDEAD:FORGE", "Forge"],
     ]);
     // LEGACY draws by assetId, which no faction changes.
     const human = fixtureView("ORIGINAL", "GOBLIN", "VIEWER");
@@ -323,7 +353,7 @@ describe("the board plan follows the territory owner", () => {
       ["IMPROVEMENT:FARM", "Farm"],
       ["IMPROVEMENT:DINOSAUR:WINDMILL", "Grinding Stone"],
       ["IMPROVEMENT:DINOSAUR:SAWMILL", "Chopping Block"],
-      ["IMPROVEMENT:FORGE", "Forge"],
+      ["IMPROVEMENT:DINOSAUR:FORGE", "Forge"],
     ]);
     // Taken by the Human viewer, they are the shared buildings again.
     const taken = fixtureView("ORIGINAL", "DINOSAUR", "VIEWER");
@@ -368,18 +398,20 @@ describe("the board plan follows the territory owner", () => {
       if (entry.kind === "IMPROVEMENT")
         expect(entry.artSubject).toMatch(/^IMPROVEMENT:[A-Z_]+$/);
     }
-    // The shared buildings of a faction with looks are the same entries too:
-    // a Forge in Undead territory is the entry a Human Forge has.
+    // A faction look changes the art subject and nothing else: a Forge in
+    // Undead territory is the entry a Human Forge has, under its subject.
     const forge = (view: PlayerViewV7) =>
-      improvementEntries(view).find(
-        (entry) => entry.artSubject === "IMPROVEMENT:FORGE",
-      );
+      improvementEntries(view).find((entry) => entry.label === "Forge");
     const { ownerColor: _a, ...undeadForge } =
       forge(fixtureView("UNDEAD", "ORIGINAL", "VIEWER").view) ?? {};
     const { ownerColor: _b, ...humanForge } = forge(human.view) ?? {};
     void _a;
     void _b;
-    expect(undeadForge).toEqual(humanForge);
+    expect(humanForge).toMatchObject({ artSubject: "IMPROVEMENT:FORGE" });
+    expect(undeadForge).toEqual({
+      ...humanForge,
+      artSubject: "IMPROVEMENT:UNDEAD:FORGE",
+    });
     // And a match of factions without looks plans exactly what it planned
     // before the faction looks: no entry names a faction building.
     expect(JSON.stringify(entries)).not.toMatch(
