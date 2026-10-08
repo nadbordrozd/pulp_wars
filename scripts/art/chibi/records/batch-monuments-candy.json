@@ -1,0 +1,1677 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments-candy",
+  "recipes": {
+    "conqueror-a": {
+      "id": "conqueror-a",
+      "asset": "chibi-candy-monument-conqueror",
+      "jobId": "f0803d31-889b-4da9-ac01-2f5eed816247",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-candy",
+        "asset": "chibi-candy-monument-conqueror",
+        "subject": "IMPROVEMENT:MONUMENT:CANDY:CONQUEROR",
+        "faction": "CANDY",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22574,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Candy Conqueror's monument: one small triumphal arch of milk chocolate with cream frosting, two thick pillars and a heavy lintel with an open gateway between them that shows the transparent background, one big golden caramel laurel wreath on top of the lintel, and a crossed candy-cane sword and spear on its front. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Conqueror's monument: one small triumphal arch of milk chocolate with cream frosting, two thick pillars and a heavy lintel with an open gateway between them that shows the transparent background, one big golden caramel laurel wreath on top of the lintel, and a crossed candy-cane sword and spear on its front. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Conqueror's monument: one small triumphal arch of milk chocolate with cream frosting, two thick pillars and a heavy lintel with an open gateway between them that shows the transparent background, one big golden caramel laurel wreath on top of the lintel, and a crossed candy-cane sword and spear on its front. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:56:01.625Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-candy/conqueror-a.png",
+      "rawSheetSha256": "af3844d3802b29e265de9f807bdd8b1f1034b249e3169b73868d53e2fefb9f94",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.5853,
+          "footprintWidthShare": 0.6512,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0841,
+          "footprintWidthShare": 0.6744,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2172,
+          "footprintWidthShare": 0.6279,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0879,
+          "footprintWidthShare": 0.6512,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1438,
+          "footprintWidthShare": 0.6512,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0812,
+          "footprintWidthShare": 0.6905,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2007,
+          "footprintWidthShare": 0.6512,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.106,
+          "footprintWidthShare": 0.6512,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.6087,
+          "footprintWidthShare": 0.6512,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0847,
+          "footprintWidthShare": 0.6905,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.206,
+          "footprintWidthShare": 0.6512,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0803,
+          "footprintWidthShare": 0.6222,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2483,
+          "footprintWidthShare": 0.6512,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0638,
+          "footprintWidthShare": 0.6222,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.149,
+          "footprintWidthShare": 0.6512,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0502,
+          "footprintWidthShare": 0.6222,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:57:42.342Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a small triumphal arch of milk chocolate with cream frosting on its lintel and an open gateway, a big golden caramel laurel wreath on top and a crossed candy-cane sword and spear on its front; the Conqueror's arch and wreath in Candy chocolate and caramel, lit from the left. 1, 3, 9 and 15 dark chocolate; 2, 4 and 14 white; 7, 11 and 13 pink; 8, 11, 14 and 15 have owner key red pixels.",
+        "reviewedAt": "2026-10-08T14:02:04.839Z"
+      }
+    },
+    "engineer-a": {
+      "id": "engineer-a",
+      "asset": "chibi-candy-monument-engineer",
+      "jobId": "1608d482-4b57-4876-abf7-c9ddc0f4447e",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-candy",
+        "asset": "chibi-candy-monument-engineer",
+        "subject": "IMPROVEMENT:MONUMENT:CANDY:ENGINEER",
+        "faction": "CANDY",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22572,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Candy Engineer's monument: one tall square milk chocolate pillar rising straight out of the ground, topped by one big round peppermint cogwheel in cream with a pale pink swirl standing upright on its edge, with a crossed caramel hammer and spanner on its front. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Engineer's monument: one tall square milk chocolate pillar rising straight out of the ground, topped by one big round peppermint cogwheel in cream with a pale pink swirl standing upright on its edge, with a crossed caramel hammer and spanner on its front. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Engineer's monument: one tall square milk chocolate pillar rising straight out of the ground, topped by one big round peppermint cogwheel in cream with a pale pink swirl standing upright on its edge, with a crossed caramel hammer and spanner on its front. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:27:14.775Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-candy/engineer-a.png",
+      "rawSheetSha256": "5e48b81799416ce51ea29c1a04ae80163c73ed959cca23b1e6630a442b2bd55c",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.5615,
+          "footprintWidthShare": 0.8333,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.52,
+          "footprintWidthShare": 0.8667,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0512,
+          "footprintWidthShare": 0.8667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.565,
+          "footprintWidthShare": 0.8621,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5373,
+          "footprintWidthShare": 0.963,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3365,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4187,
+          "footprintWidthShare": 0.8333,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5494,
+          "footprintWidthShare": 0.8667,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4297,
+          "footprintWidthShare": 0.8667,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5685,
+          "footprintWidthShare": 0.8333,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2967,
+          "footprintWidthShare": 0.8333,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5472,
+          "footprintWidthShare": 0.8667,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3867,
+          "footprintWidthShare": 0.8667,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1903,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:28:42.238Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 3,
+        "notes": "Candidate 3 of 16: a square milk chocolate pillar topped by a big round peppermint cogwheel in cream with a pale pink swirl, a crossed caramel hammer and spanner on its front; the Engineer's cog and crossed tools in Candy chocolate and peppermint, lit from the left. 0, 9 and 13 are close; 4, 7 and 12 have 100 to 139 pixels of the owner key red in their swirls or gumdrops; 2, 8 and 14 a dark chocolate cog; 15 no cog.",
+        "reviewedAt": "2026-10-08T13:41:58.769Z"
+      }
+    },
+    "explorer-a": {
+      "id": "explorer-a",
+      "asset": "chibi-candy-monument-explorer",
+      "jobId": "1ae28017-9cc3-40d3-a4c5-38aeeb344484",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-candy",
+        "asset": "chibi-candy-monument-explorer",
+        "subject": "IMPROVEMENT:MONUMENT:CANDY:EXPLORER",
+        "faction": "CANDY",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22571,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Candy Explorer's monument: one tall slender milk chocolate obelisk with vanilla cream frosting dripping from its tip, rising straight out of the ground, with one big round caramel compass rose with a four-pointed star set on its front; a rolled wafer spyglass leans against its foot. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Explorer's monument: one tall slender milk chocolate obelisk with vanilla cream frosting dripping from its tip, rising straight out of the ground, with one big round caramel compass rose with a four-pointed star set on its front; a rolled wafer spyglass leans against its foot. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Explorer's monument: one tall slender milk chocolate obelisk with vanilla cream frosting dripping from its tip, rising straight out of the ground, with one big round caramel compass rose with a four-pointed star set on its front; a rolled wafer spyglass leans against its foot. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:16:48.704Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-candy/explorer-a.png",
+      "rawSheetSha256": "73d801c575c327a7ae395fe82aca5f890e1c45d8f1d422b16a69f0d2692acecd",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.5503,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0462,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.5612,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.6232,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.6686,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.454,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.3241,
+          "footprintWidthShare": 0.9714,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2427,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.3394,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.4533,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.245,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2515,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1376,
+          "footprintWidthShare": 0.9697,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.5976,
+          "footprintWidthShare": 0.9722,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.4553,
+          "footprintWidthShare": 0.9487,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.484,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-08T13:18:08.155Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 4,
+        "notes": "Candidate 4 of 16: a milk chocolate obelisk in three tiers with vanilla cream frosting dripping round each, a caramel compass rose on its front and a rolled wafer spyglass leaning at its foot; the Explorer's compass and spyglass in Candy chocolate. 12 and 10 have a clearer star but no spyglass; 0, 5 and 7 a loose star, no rose; 2, 3, 6, 9, 11 and 13 too pink or striped; 15 a gold star.",
+        "reviewedAt": "2026-10-08T13:21:34.272Z"
+      }
+    },
+    "land-baron-a": {
+      "id": "land-baron-a",
+      "asset": "chibi-candy-monument-land-baron",
+      "jobId": "46ceb1df-9ae0-4721-96ed-54ed551a91b2",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-candy",
+        "asset": "chibi-candy-monument-land-baron",
+        "subject": "IMPROVEMENT:MONUMENT:CANDY:LAND_BARON",
+        "faction": "CANDY",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22575,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Candy Land Baron's monument: one stout square boundary block of milk chocolate, a little wider at its foot, with a carved shield bearing a small cupcake on its front, one big golden caramel crown resting on its flat top and a small wafer signpost with two blank arrow boards beside it. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Land Baron's monument: one stout square boundary block of milk chocolate, a little wider at its foot, with a carved shield bearing a small cupcake on its front, one big golden caramel crown resting on its flat top and a small wafer signpost with two blank arrow boards beside it. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Land Baron's monument: one stout square boundary block of milk chocolate, a little wider at its foot, with a carved shield bearing a small cupcake on its front, one big golden caramel crown resting on its flat top and a small wafer signpost with two blank arrow boards beside it. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:57:42.355Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-candy/land-baron-a.png",
+      "rawSheetSha256": "5f1195021085f04df7bc85264ddf49cfdcf8a563ff86fa5c5068b8f8466c394d",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.7409,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2901,
+          "footprintWidthShare": 0.8605,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3144,
+          "footprintWidthShare": 0.9535,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.7192,
+          "footprintWidthShare": 0.75,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.25,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2765,
+          "footprintWidthShare": 0.9524,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3343,
+          "footprintWidthShare": 0.7917,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4569,
+          "footprintWidthShare": 0.75,
+          "suspect": true
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.3077,
+          "footprintWidthShare": 0.9762,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.6968,
+          "footprintWidthShare": 0.7292,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3539,
+          "footprintWidthShare": 0.7917,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.6214,
+          "footprintWidthShare": 0.7083,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.236,
+          "footprintWidthShare": 0.907,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.4119,
+          "footprintWidthShare": 0.8125,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3565,
+          "footprintWidthShare": 0.8125,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.6218,
+          "footprintWidthShare": 0.75,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-08T13:59:23.376Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Rejected: every candidate runs the wafer signpost into the canvas edge (3, 6, 7, 9 to 11, 13 to 15 are 48 px wide; 1 has a cut-off arrow tip at the left edge), and 0, 2, 4 to 8, 10, 12, 13 and 15 have owner key red pixels in their jewels or crowns. Redone as land-baron-b.",
+        "reviewedAt": "2026-10-08T14:08:15.251Z"
+      }
+    },
+    "land-baron-b": {
+      "id": "land-baron-b",
+      "asset": "chibi-candy-monument-land-baron",
+      "jobId": "d98d5659-1f39-45ba-a484-c21394bf0d1e",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-candy",
+        "asset": "chibi-candy-monument-land-baron",
+        "subject": "IMPROVEMENT:MONUMENT:CANDY:LAND_BARON",
+        "faction": "CANDY",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22646,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Candy Land Baron's monument: one stout square boundary block of milk chocolate, a little wider at its foot, with a carved shield bearing a small cupcake on its front, one big golden caramel crown resting on its flat top and a small wafer signpost with two blank arrow boards beside it. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; taller than it is wide. Monument only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Small signpost; nothing touches the edges."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Land Baron's monument: one stout square boundary block of milk chocolate, a little wider at its foot, with a carved shield bearing a small cupcake on its front, one big golden caramel crown resting on its flat top and a small wafer signpost with two blank arrow boards beside it. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; taller than it is wide. Monument only. Small signpost; nothing touches the edges.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Land Baron's monument: one stout square boundary block of milk chocolate, a little wider at its foot, with a carved shield bearing a small cupcake on its front, one big golden caramel crown resting on its flat top and a small wafer signpost with two blank arrow boards beside it. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; taller than it is wide. Monument only. Small signpost; nothing touches the edges. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T14:08:18.380Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-candy/land-baron-b.png",
+      "rawSheetSha256": "a19452e9ee28a1790ce235fe11b04994692120a196140a9d4ffa35a46319bad8",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.4769,
+          "footprintWidthShare": 0.9318,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4957,
+          "footprintWidthShare": 0.9318,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.7788,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5166,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.537,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5292,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2713,
+          "footprintWidthShare": 0.9524,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5212,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4645,
+          "footprintWidthShare": 0.9302,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.6152,
+          "footprintWidthShare": 0.9302,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5609,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5065,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4618,
+          "footprintWidthShare": 0.9524,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5079,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.6909,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.4664,
+          "footprintWidthShare": 0.8913,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-08T14:10:23.698Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a stout milk chocolate boundary block with a carved cupcake shield on its front, a golden caramel crown on its top and a small wafer signpost with two arrow boards beside it, all inside the canvas; the Land Baron's crowned boundary stone and signpost in Candy chocolate and caramel, lit from the left. 8 and 12 are close; 2, 4, 5, 7, 10 and 11 lose the signpost; 15 lies down.",
+        "reviewedAt": "2026-10-08T14:10:50.833Z"
+      }
+    },
+    "muster-a": {
+      "id": "muster-a",
+      "asset": "chibi-candy-monument-muster",
+      "jobId": "3be38fc8-bfd1-473d-82d4-c15509579506",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-candy",
+        "asset": "chibi-candy-monument-muster",
+        "subject": "IMPROVEMENT:MONUMENT:CANDY:MUSTER",
+        "faction": "CANDY",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22573,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Candy Muster monument, a trophy of many arms: one tall milk chocolate pillar with four different shields hung round it (a round biscuit cookie, a tall wafer kite shield, a square chocolate one, a small caramel buckler) and one big waffle cone horn lying across its flat top. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Muster monument, a trophy of many arms: one tall milk chocolate pillar with four different shields hung round it (a round biscuit cookie, a tall wafer kite shield, a square chocolate one, a small caramel buckler) and one big waffle cone horn lying across its flat top. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Muster monument, a trophy of many arms: one tall milk chocolate pillar with four different shields hung round it (a round biscuit cookie, a tall wafer kite shield, a square chocolate one, a small caramel buckler) and one big waffle cone horn lying across its flat top. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:28:42.252Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-candy/muster-a.png",
+      "rawSheetSha256": "afe36a8d09276b154f2a0ce2d2aa8c039eceb798ec3a9fae8414eac3ae97648d",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.5909,
+          "footprintWidthShare": 0.7333,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.624,
+          "footprintWidthShare": 0.7333,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.7562,
+          "footprintWidthShare": 0.7333,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.595,
+          "footprintWidthShare": 0.7333,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.6204,
+          "footprintWidthShare": 0.7333,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.7521,
+          "footprintWidthShare": 0.7333,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.7603,
+          "footprintWidthShare": 0.7333,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.6198,
+          "footprintWidthShare": 0.7333,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.6279,
+          "footprintWidthShare": 0.8,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.626,
+          "footprintWidthShare": 0.7333,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.593,
+          "footprintWidthShare": 0.8,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.7054,
+          "footprintWidthShare": 0.8,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.6978,
+          "footprintWidthShare": 0.8667,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.7053,
+          "footprintWidthShare": 0.8667,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.771,
+          "footprintWidthShare": 0.8,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.7552,
+          "footprintWidthShare": 0.9333,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-08T13:55:08.149Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 2,
+        "notes": "Candidate 2 of 16 (resumed after a dropped poll): a milk chocolate pillar hung with a round biscuit cookie, a wafer kite shield, a square chocolate shield and a caramel buckler, with a waffle cone horn across its top; the Muster's trophy of shields under a horn in Candy biscuit and chocolate, lit from the left. The sixteen are near twins; 1, 5 and 6 measure lit from the right; 10 and 14 a cream cone that reads as ice cream; 15 a pink cone.",
+        "reviewedAt": "2026-10-08T13:56:49.030Z"
+      }
+    },
+    "sea-dog-a": {
+      "id": "sea-dog-a",
+      "asset": "chibi-candy-monument-sea-dog",
+      "jobId": "a19d4c5d-f8b1-446f-a9d8-1027f610a59a",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-candy",
+        "asset": "chibi-candy-monument-sea-dog",
+        "subject": "IMPROVEMENT:MONUMENT:CANDY:SEA_DOG",
+        "faction": "CANDY",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22576,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Candy Sea Dog's monument: one tall milk chocolate column with cream frosting, with one big golden caramel ship's anchor standing upright against its front, a coil of caramel rope round its foot and one peppermint ship's steering wheel in cream and pale pink standing on its top. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Sea Dog's monument: one tall milk chocolate column with cream frosting, with one big golden caramel ship's anchor standing upright against its front, a coil of caramel rope round its foot and one peppermint ship's steering wheel in cream and pale pink standing on its top. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Sea Dog's monument: one tall milk chocolate column with cream frosting, with one big golden caramel ship's anchor standing upright against its front, a coil of caramel rope round its foot and one peppermint ship's steering wheel in cream and pale pink standing on its top. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:59:23.387Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-candy/sea-dog-a.png",
+      "rawSheetSha256": "670d718998a4cd3be14598a040f801e315b050761a35d53dbb2a5f731b817e3a",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.25,
+          "footprintWidthShare": 0.8919,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4083,
+          "footprintWidthShare": 0.963,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2667,
+          "footprintWidthShare": 0.9167,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2605,
+          "footprintWidthShare": 0.9211,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2333,
+          "footprintWidthShare": 0.8889,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2531,
+          "footprintWidthShare": 0.8889,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2971,
+          "footprintWidthShare": 0.9474,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.271,
+          "footprintWidthShare": 0.9189,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2788,
+          "footprintWidthShare": 0.8919,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2414,
+          "footprintWidthShare": 0.8889,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2816,
+          "footprintWidthShare": 0.8919,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2303,
+          "footprintWidthShare": 0.8919,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2778,
+          "footprintWidthShare": 0.8857,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.3344,
+          "footprintWidthShare": 0.9167,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.3621,
+          "footprintWidthShare": 0.8919,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.3301,
+          "footprintWidthShare": 0.9189,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-08T14:01:32.677Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 4,
+        "notes": "Candidate 4 of 16: a tall milk chocolate column with cream swirls, a golden caramel anchor standing against its front and a coil of caramel rope at its foot; the Sea Dog's anchor and rope in Candy chocolate and caramel, lit from the left. No candidate has both the anchor and the wheel: 3, 6, 8 to 11, 13 to 15 a peppermint wheel at the foot and no anchor; 0, 1, 5 and 12 the anchor.",
+        "reviewedAt": "2026-10-08T14:07:31.076Z"
+      }
+    },
+    "slayer-a": {
+      "id": "slayer-a",
+      "asset": "chibi-candy-monument-slayer",
+      "jobId": "ea382f03-22e4-4338-b84e-cf7917151e6b",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-candy",
+        "asset": "chibi-candy-monument-slayer",
+        "subject": "IMPROVEMENT:MONUMENT:CANDY:SLAYER",
+        "faction": "CANDY",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22577,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Candy Slayer's monument: one great sword of clear sugar glass with a caramel hilt plunged point-down into a rough block of chocolate fudge, the long blade upright and its hilt high in the air, one wreath of mint leaves on the hilt and one chocolate helmet resting beside the blade. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Slayer's monument: one great sword of clear sugar glass with a caramel hilt plunged point-down into a rough block of chocolate fudge, the long blade upright and its hilt high in the air, one wreath of mint leaves on the hilt and one chocolate helmet resting beside the blade. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Candy Slayer's monument: one great sword of clear sugar glass with a caramel hilt plunged point-down into a rough block of chocolate fudge, the long blade upright and its hilt high in the air, one wreath of mint leaves on the hilt and one chocolate helmet resting beside the blade. Milk chocolate (#7a4526) shaded darker on its right side, vanilla cream, golden caramel (#e0a040), pale pink (#f6c9d2, never red); rose-brown outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T14:01:32.681Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-candy/slayer-a.png",
+      "rawSheetSha256": "26eab5c8ace089e8e818a6844790fb73e53838f9333083a3ca94dd3ab03c61a7",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.7332,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.646,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.8418,
+          "footprintWidthShare": 0.9048,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.8494,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.6288,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.6373,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.6202,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.8509,
+          "footprintWidthShare": 0.875,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.8357,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1552,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0026,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.8497,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.6951,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.8235,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.8509,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.8533,
+          "footprintWidthShare": 0.9355,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-08T14:03:17.400Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 4,
+        "notes": "Candidate 4 of 16: a sword of clear sugar glass with a caramel hilt plunged into a rough block of chocolate fudge, a wreath of mint leaves round the hilt and a chocolate helmet beside the block; the Slayer's sword in the stone, wreath and helmet in Candy chocolate, sugar and mint, lit from the left. 0, 7 and 9 have the wreath and no helmet; 2 and 8 the helmet and no wreath; 5 and 13 a helmet on a stick.",
+        "reviewedAt": "2026-10-08T14:07:32.174Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-candy-monument": {
+      "id": "chibi-candy-monument",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "explorer-a",
+      "candidate": 2,
+      "candidateSha256": "28d61e524d8037dc6059e0b0d4952def7c2c669eff7f94b7333ac9c09215ae8b",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-candy-monument.png",
+        "sha256": "6a67bcf08481ac58c2bea12ed7072e52f390dd3a3c9e50b71f484b78ab39b3a3",
+        "pixelSha256": "b908f785c675de01b45bd4cd27621cb542796034e16ee471d550c86b4239ce56",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Reused candidate 2 of the Candy Explorer sheet (explorer-a), no new PixelLab job (the US$5 limit left no room for obelisk-a). A stepped milk chocolate obelisk dotted with pale pink sprinkles and one pale pink sparkle star on its front, on a low chocolate plinth: the sprinkles and star the obelisk recipe asked for, no compass rose. A small rolled wafer lies along the right of its plinth (the spyglass of the Explorer prompt, two pixels high at 1:1 and not read as one). Lit from the left. Every other piece carries a caramel rose, a sparkle beside a frosted tip with a leaning wafer spyglass, or a pink obelisk (11) with the spyglass leaning on it.",
+      "acceptedAt": "2026-10-08T14:44:53.982Z"
+    },
+    "chibi-candy-monument-conqueror": {
+      "id": "chibi-candy-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY:CONQUEROR",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "conqueror-a",
+      "candidate": 0,
+      "candidateSha256": "329743e2462849c7bea9ae318dc92638b4c96435d736315649784aed1178dc71",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-candy-monument-conqueror.png",
+        "sha256": "e33031265c7b4da9bf12d1718df727a6b2f4fd0bb2dd1678795a1260a05d94d5",
+        "pixelSha256": "2a5ab8429f3054845784373f5e96f54d4145432f1918582d073eec562012c37f",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a small triumphal arch of milk chocolate with cream frosting on its lintel and an open gateway, a big golden caramel laurel wreath on top and a crossed candy-cane sword and spear on its front; the Conqueror's arch and wreath in Candy chocolate and caramel, lit from the left. 1, 3, 9 and 15 dark chocolate; 2, 4 and 14 white; 7, 11 and 13 pink; 8, 11, 14 and 15 have owner key red pixels.",
+      "acceptedAt": "2026-10-08T14:02:04.839Z"
+    },
+    "chibi-candy-monument-engineer": {
+      "id": "chibi-candy-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY:ENGINEER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "engineer-a",
+      "candidate": 3,
+      "candidateSha256": "4feba6c8a8bdf8f7def4cdbbb61c45fa6538b812fb5677355d2322455c57e0d1",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-candy-monument-engineer.png",
+        "sha256": "cb18201cffe55f95dd8ef949356fec4f7e239951ad944fc922b070a45ec1f891",
+        "pixelSha256": "d90f10b5056c6c56767dc5a14df906f2e1703caf4b98c7f0b6a03de826fddc13",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 3 of 16: a square milk chocolate pillar topped by a big round peppermint cogwheel in cream with a pale pink swirl, a crossed caramel hammer and spanner on its front; the Engineer's cog and crossed tools in Candy chocolate and peppermint, lit from the left. 0, 9 and 13 are close; 4, 7 and 12 have 100 to 139 pixels of the owner key red in their swirls or gumdrops; 2, 8 and 14 a dark chocolate cog; 15 no cog.",
+      "acceptedAt": "2026-10-08T13:41:58.769Z"
+    },
+    "chibi-candy-monument-explorer": {
+      "id": "chibi-candy-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY:EXPLORER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "explorer-a",
+      "candidate": 4,
+      "candidateSha256": "855948c529aa84e11179bd90ebf9c366543b3cd57ed34ad46f99804b1f6070b8",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-candy-monument-explorer.png",
+        "sha256": "347ec8fb745f599be1413bbf73ca173f7f4c5c271d3e4ea956e7f9e0f271fb9b",
+        "pixelSha256": "903bfc9ff349bf3c207154ad7a393ea29fe54a5060508b1c6e74a8863bfa9ea9",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 4 of 16: a milk chocolate obelisk in three tiers with vanilla cream frosting dripping round each, a caramel compass rose on its front and a rolled wafer spyglass leaning at its foot; the Explorer's compass and spyglass in Candy chocolate. 12 and 10 have a clearer star but no spyglass; 0, 5 and 7 a loose star, no rose; 2, 3, 6, 9, 11 and 13 too pink or striped; 15 a gold star.",
+      "acceptedAt": "2026-10-08T13:21:34.272Z"
+    },
+    "chibi-candy-monument-land-baron": {
+      "id": "chibi-candy-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY:LAND_BARON",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "land-baron-b",
+      "candidate": 0,
+      "candidateSha256": "a6d8c2a72dea91e38ca5d251ec87f7237dde70da0079958a120c1002bd1c9f59",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-candy-monument-land-baron.png",
+        "sha256": "917750e97ef62754bd6e462f99ab1356429ecdc345495f58fba1d82a8813fff4",
+        "pixelSha256": "1f5d881d121b1fda1188d5a7eacd1ff04a4bb6b278a722b65ccd12fcb6122390",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a stout milk chocolate boundary block with a carved cupcake shield on its front, a golden caramel crown on its top and a small wafer signpost with two arrow boards beside it, all inside the canvas; the Land Baron's crowned boundary stone and signpost in Candy chocolate and caramel, lit from the left. 8 and 12 are close; 2, 4, 5, 7, 10 and 11 lose the signpost; 15 lies down.",
+      "acceptedAt": "2026-10-08T14:10:50.833Z"
+    },
+    "chibi-candy-monument-muster": {
+      "id": "chibi-candy-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY:MUSTER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "muster-a",
+      "candidate": 2,
+      "candidateSha256": "33b128729e75eec7df9f22c637c244e8ee9c8d0e37136a12d5160ba51d4b343d",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-candy-monument-muster.png",
+        "sha256": "80155e081cce61128966e8e614898a52eef7f56a2e66b09bf028ed24252add63",
+        "pixelSha256": "7e4d3a43664a6aad62ed9da1eff6c6f0df6fdea11da761c1219aa9762c47b05f",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 2 of 16 (resumed after a dropped poll): a milk chocolate pillar hung with a round biscuit cookie, a wafer kite shield, a square chocolate shield and a caramel buckler, with a waffle cone horn across its top; the Muster's trophy of shields under a horn in Candy biscuit and chocolate, lit from the left. The sixteen are near twins; 1, 5 and 6 measure lit from the right; 10 and 14 a cream cone that reads as ice cream; 15 a pink cone.",
+      "acceptedAt": "2026-10-08T13:56:49.030Z"
+    },
+    "chibi-candy-monument-sea-dog": {
+      "id": "chibi-candy-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY:SEA_DOG",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "sea-dog-a",
+      "candidate": 4,
+      "candidateSha256": "2455c433a42e600bb8e3e6d321e959289a6edc0b370501b1c84f337b703728b6",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-candy-monument-sea-dog.png",
+        "sha256": "32c85e3378ab18c79a66d919913a7f580b78098516efe3c79f71f00e5e5ca8a3",
+        "pixelSha256": "0704391ab6fa8672d7341a1190fb4ef09667ca7889c8807d2a3ac162a0339cdd",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 4 of 16: a tall milk chocolate column with cream swirls, a golden caramel anchor standing against its front and a coil of caramel rope at its foot; the Sea Dog's anchor and rope in Candy chocolate and caramel, lit from the left. No candidate has both the anchor and the wheel: 3, 6, 8 to 11, 13 to 15 a peppermint wheel at the foot and no anchor; 0, 1, 5 and 12 the anchor.",
+      "acceptedAt": "2026-10-08T14:07:31.076Z"
+    },
+    "chibi-candy-monument-slayer": {
+      "id": "chibi-candy-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY:SLAYER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "slayer-a",
+      "candidate": 4,
+      "candidateSha256": "8fa5c1fc9ad61b1fc22f67e136b8422cec0cc984c69006865644e83083b5f2dc",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-candy-monument-slayer.png",
+        "sha256": "3fc2da8f470d62a78273cbafd9b9745da3df10482c7dcb80ed512aedc4026c3e",
+        "pixelSha256": "d8237180c85a02f9dcd819e531d93a1f96e283d98a64050e6661903f49dd2e98",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 4 of 16: a sword of clear sugar glass with a caramel hilt plunged into a rough block of chocolate fudge, a wreath of mint leaves round the hilt and a chocolate helmet beside the block; the Slayer's sword in the stone, wreath and helmet in Candy chocolate, sugar and mint, lit from the left. 0, 7 and 9 have the wreath and no helmet; 2 and 8 the helmet and no wreath; 5 and 13 a helmet on a stick.",
+      "acceptedAt": "2026-10-08T14:07:32.174Z"
+    }
+  }
+}

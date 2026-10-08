@@ -867,6 +867,12 @@ export interface GenerationProvider {
     submitted: (jobId: string) => Promise<void>,
     colorImage?: Buffer,
   ): Promise<ProviderResult>;
+  /**
+   * Waits again for a job submitted by an earlier run whose wait failed
+   * (bead pulp_wars-eu3r.2: "fetch failed" while polling), without a new
+   * submission. Only the PixelLab provider has it.
+   */
+  resume?(recipe: ChibiRecipe, jobId: string): Promise<ProviderResult>;
 }
 
 function property(value: unknown, key: string): unknown {
@@ -946,37 +952,62 @@ export function pixelLabProvider(): GenerationProvider {
         );
       const jobId = synchronous ? `sync-${randomUUID()}` : asyncJobId;
       await submitted(jobId);
-      let job = start;
-      if (!synchronous) {
-        const deadline = Date.now() + MAX_POLL_MS;
-        for (;;) {
-          if (Date.now() > deadline)
-            throw new Error(`${recipe.id}: PixelLab job timed out`);
-          await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
-          const poll = await fetch(
-            `${CHIBI_API_BASE_URL}/background-jobs/${encodeURIComponent(jobId)}`,
-            { headers: { Authorization: `Bearer ${key}` } },
-          );
-          if (!poll.ok)
-            throw new Error(`PixelLab poll returned HTTP ${poll.status}`);
-          job = (await poll.json()) as unknown;
-          const status = property(job, "status");
-          if (status === "failed")
-            throw new Error(`${recipe.id}: PixelLab job failed`);
-          if (status === "completed") break;
-        }
-      }
-      const usage = property(property(job, "usage"), "usd");
-      const images = collectImages(property(job, "last_response") ?? job).map(
-        decodeImage,
-      );
-      return {
-        jobId,
-        images,
-        ...(typeof usage === "number" ? { usageUsd: usage } : {}),
-      };
+      return synchronous
+        ? jobResult(jobId, start)
+        : jobResult(jobId, await pollJob(key, recipe.id, jobId));
+    },
+    async resume(recipe, jobId) {
+      if (jobId.startsWith("sync-"))
+        throw new Error(`${recipe.id}: a synchronous job cannot be resumed`);
+      return jobResult(jobId, await pollJob(key, recipe.id, jobId));
     },
   };
+}
+
+function jobResult(jobId: string, job: unknown): ProviderResult {
+  const usage = property(property(job, "usage"), "usd");
+  const images = collectImages(property(job, "last_response") ?? job).map(
+    decodeImage,
+  );
+  return {
+    jobId,
+    images,
+    ...(typeof usage === "number" ? { usageUsd: usage } : {}),
+  };
+}
+
+/**
+ * Polls a background job until it completes. A poll that fails to connect
+ * ("fetch failed") or answers a 5xx is retried until the deadline: the job
+ * is already paid, so a dropped connection must not lose it.
+ */
+async function pollJob(
+  key: string,
+  recipeId: string,
+  jobId: string,
+): Promise<unknown> {
+  const deadline = Date.now() + MAX_POLL_MS;
+  for (;;) {
+    if (Date.now() > deadline)
+      throw new Error(`${recipeId}: PixelLab job timed out`);
+    await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+    let poll: Response;
+    try {
+      poll = await fetch(
+        `${CHIBI_API_BASE_URL}/background-jobs/${encodeURIComponent(jobId)}`,
+        { headers: { Authorization: `Bearer ${key}` } },
+      );
+    } catch {
+      continue;
+    }
+    if (poll.status >= 500) continue;
+    if (!poll.ok) throw new Error(`PixelLab poll returned HTTP ${poll.status}`);
+    const job = (await poll.json()) as unknown;
+    const status = property(job, "status");
+    if (status === "failed")
+      throw new Error(`${recipeId}: PixelLab job failed`);
+    if (status === "completed") return job;
+  }
 }
 
 /**
@@ -1248,7 +1279,49 @@ export async function generateRecipe(
     colorImage,
   );
   if (submission === undefined) throw new Error(`${recipeId}: no submission`);
-  const previous = submission;
+  await completeRecipe(context, recipe, submission, result);
+}
+
+/**
+ * Waits again for recipes whose submission was recorded but whose wait
+ * failed (the record has a job id and no candidates): the paid job's
+ * images are fetched without a new submission. The job must have its
+ * receipt, as `generate` writes it at submission.
+ */
+export async function resumeRecipe(
+  context: PipelineContext,
+  recipeId: string,
+): Promise<void> {
+  const recipe = findRecipe(context.manifest, recipeId);
+  const records = await loadRecords(context.layout, context.manifest.batch);
+  const submission = records.recipes[recipeId];
+  if (submission === undefined)
+    throw new Error(`${recipeId}: never submitted; use generate`);
+  if (submission.rawSheet !== undefined) {
+    context.log(`${recipeId}: already generated`);
+    return;
+  }
+  const receipt = await loadSubmissionReceipt(
+    context.layout.submissions,
+    submission.jobId,
+  );
+  if (receipt?.id !== recipeId)
+    throw new Error(`${recipeId}: no receipt for job ${submission.jobId}`);
+  if (context.provider.resume === undefined)
+    throw new Error(`${recipeId}: this provider cannot resume a job`);
+  context.log(`${recipeId}: resuming job ${submission.jobId}`);
+  const result = await context.provider.resume(recipe, submission.jobId);
+  await completeRecipe(context, recipe, submission, result);
+}
+
+/** Stores a finished job's candidates in the recipe's submitted record. */
+async function completeRecipe(
+  context: PipelineContext,
+  recipe: ChibiRecipe,
+  previous: RecipeRecord,
+  result: ProviderResult,
+): Promise<void> {
+  const recipeId = recipe.id;
   const stored = await storeCandidates(context, recipeId, result.images);
   const asset = findAsset(context.manifest, recipe.asset);
   const plateHints = CHIBI_CLASS_RECIPES[asset.recipeClass].noBackground
@@ -1767,7 +1840,10 @@ export async function acceptRecipe(
   candidate: number,
   notes: string,
   checks: ReviewChecks,
-  /** A terrain variant cropped from this recipe's field (asset.fieldRecipe). */
+  /**
+   * Another asset derived from this recipe: a terrain variant cropped from
+   * its field (asset.fieldRecipe), or a reused candidate (asset.fromRecipe).
+   */
   assetId?: string,
 ): Promise<AssetRecord> {
   if (notes.trim().length === 0) throw new Error("A review note is required");
@@ -1785,10 +1861,11 @@ export async function acceptRecipe(
     sharedField &&
     asset.fieldRecipe !== recipeId &&
     asset.paletteRecipe !== recipeId &&
-    asset.riftStrip?.recipe !== recipeId
+    asset.riftStrip?.recipe !== recipeId &&
+    asset.fromRecipe !== recipeId
   )
     throw new Error(
-      `${asset.id}: its fieldRecipe, paletteRecipe or rift strip recipe is not ${recipeId}, so it cannot be derived from it`,
+      `${asset.id}: its fieldRecipe, paletteRecipe, fromRecipe or rift strip recipe is not ${recipeId}, so it cannot be derived from it`,
     );
   // The lock is held from reading the records to writing them, so a verdict
   // or recipe written by another run is never lost and the master, mask and

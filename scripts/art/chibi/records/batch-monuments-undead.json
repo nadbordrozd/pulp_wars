@@ -1,0 +1,1505 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments-undead",
+  "recipes": {
+    "conqueror-a": {
+      "id": "conqueror-a",
+      "asset": "chibi-undead-monument-conqueror",
+      "jobId": "f64ca0a5-5c43-454d-9d02-c579328b0bd0",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-undead",
+        "asset": "chibi-undead-monument-conqueror",
+        "subject": "IMPROVEMENT:MONUMENT:UNDEAD:CONQUEROR",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22514,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Undead Conqueror's monument: one small triumphal arch of slate, two thick square pillars and a heavy lintel with an open gateway between them that shows the transparent background, one big wreath of ivory bone leaves standing on top of the lintel, and a small violet glowing skull on the front of the lintel. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Undead Conqueror's monument: one small triumphal arch of slate, two thick square pillars and a heavy lintel with an open gateway between them that shows the transparent background, one big wreath of ivory bone leaves standing on top of the lintel, and a small violet glowing skull on the front of the lintel. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Undead Conqueror's monument: one small triumphal arch of slate, two thick square pillars and a heavy lintel with an open gateway between them that shows the transparent background, one big wreath of ivory bone leaves standing on top of the lintel, and a small violet glowing skull on the front of the lintel. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:57:32.686Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-undead/conqueror-a.png",
+      "rawSheetSha256": "b61a2b328ea0b7b0bf882402c3e82ea9e98f24f455f580198cff7bc05e9e189f",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6944,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8718,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7714,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9429,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8056,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7895,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7429,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:59:08.306Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 3,
+        "notes": "Candidate 3 of 16: a small arch of pale slate on two thick pillars with an open gateway, a wreath of ivory bone leaves on its lintel and a small violet glowing skull on its front; the Conqueror's arch and wreath in Undead slate and bone, lit from the left. 1, 2 and 6 are close; 5, 9, 10, 12 and 15 have no wreath; 7 a chain of bones; 8 iron spikes.",
+        "reviewedAt": "2026-10-08T14:02:43.869Z"
+      }
+    },
+    "engineer-a": {
+      "id": "engineer-a",
+      "asset": "chibi-undead-monument-engineer",
+      "jobId": "0c6656c9-0c6a-4abd-aaaf-528e51fd0759",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-undead",
+        "asset": "chibi-undead-monument-engineer",
+        "subject": "IMPROVEMENT:MONUMENT:UNDEAD:ENGINEER",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22512,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Undead Engineer's monument: one tall square slate pillar rising straight out of the ground, topped by one big ivory bone cogwheel standing upright on its edge, with a crossed dark iron hammer and spanner on its front. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Undead Engineer's monument: one tall square slate pillar rising straight out of the ground, topped by one big ivory bone cogwheel standing upright on its edge, with a crossed dark iron hammer and spanner on its front. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Undead Engineer's monument: one tall square slate pillar rising straight out of the ground, topped by one big ivory bone cogwheel standing upright on its edge, with a crossed dark iron hammer and spanner on its front. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:29:06.498Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-undead/engineer-a.png",
+      "rawSheetSha256": "f660ac7c8fa12dd6213a224d888c70d0466900e9e08cc7fb28d6367cd26f898d",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8286,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9688,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8387,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8438,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9063,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7879,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9688,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7027,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9063,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:55:49.252Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16 (resumed after a dropped poll): a square pale slate pillar topped by a big ivory bone cogwheel standing on its edge, a crossed dark iron hammer and spanner on its front; the Engineer's cog and crossed tools in Undead slate and bone, lit from the left. 2, 8, 9 and 13 are close (13 with violet flames, 2 a violet gem); 3, 6 and 7 no tools; 4 violet crystals at its foot.",
+        "reviewedAt": "2026-10-08T13:56:54.810Z"
+      }
+    },
+    "explorer-a": {
+      "id": "explorer-a",
+      "asset": "chibi-undead-monument-explorer",
+      "jobId": "a90a7301-3b71-40b6-861a-f273dcf632d3",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-undead",
+        "asset": "chibi-undead-monument-explorer",
+        "subject": "IMPROVEMENT:MONUMENT:UNDEAD:EXPLORER",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22511,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Undead Explorer's monument: one tall slender slate obelisk rising straight out of the ground, with one big round ivory bone compass rose with a four-pointed star and a violet glowing centre set on its front, and a small bone skull on its tip; a spyglass of bone and dark iron leans against its foot. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Undead Explorer's monument: one tall slender slate obelisk rising straight out of the ground, with one big round ivory bone compass rose with a four-pointed star and a violet glowing centre set on its front, and a small bone skull on its tip; a spyglass of bone and dark iron leans against its foot. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Undead Explorer's monument: one tall slender slate obelisk rising straight out of the ground, with one big round ivory bone compass rose with a four-pointed star and a violet glowing centre set on its front, and a small bone skull on its tip; a spyglass of bone and dark iron leans against its foot. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:27:15.721Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-undead/explorer-a.png",
+      "rawSheetSha256": "77ac7d2622e10ef8429fd5a05a035e09ccf4e7378c3a867ad3555c419567ebc1",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0092,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9286,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9677,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0026,
+          "footprintWidthShare": 0.9535,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0041,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0056,
+          "footprintWidthShare": 0.8947,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:29:06.443Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 2,
+        "notes": "Candidate 2 of 16: a pale slate-blue obelisk with a round ivory bone compass rose with a violet glowing centre on its front, a dark iron spyglass and a few bones at its foot; the Explorer's compass and spyglass in Undead slate, bone and violet, lit from the left. 4 and 11 a loose violet star, not a rose; 1, 3 and 9 a skull and no rose; 12 a cage; the rest lose the rose or the spyglass.",
+        "reviewedAt": "2026-10-08T13:41:28.694Z"
+      }
+    },
+    "land-baron-a": {
+      "id": "land-baron-a",
+      "asset": "chibi-undead-monument-land-baron",
+      "jobId": "c8dc2a64-f0cb-4952-a5f6-2d7d8ab8f154",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-undead",
+        "asset": "chibi-undead-monument-land-baron",
+        "subject": "IMPROVEMENT:MONUMENT:UNDEAD:LAND_BARON",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22515,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Undead Land Baron's monument: one stout square boundary stone of slate, a little wider at its foot, with a carved shield bearing a small skull on its front, one big ivory bone crown with a violet gem resting on its flat top and a small crooked charcoal signpost with two blank arrow boards beside it. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Undead Land Baron's monument: one stout square boundary stone of slate, a little wider at its foot, with a carved shield bearing a small skull on its front, one big ivory bone crown with a violet gem resting on its flat top and a small crooked charcoal signpost with two blank arrow boards beside it. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Undead Land Baron's monument: one stout square boundary stone of slate, a little wider at its foot, with a carved shield bearing a small skull on its front, one big ivory bone crown with a violet gem resting on its flat top and a small crooked charcoal signpost with two blank arrow boards beside it. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:59:08.309Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-undead/land-baron-a.png",
+      "rawSheetSha256": "dec3871ca0bb1348eaf7bda8381c42ba9224f2cf4e44588e5be417e7554cf88c",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9556,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9767,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9556,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9773,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9767,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9348,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9773,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9149,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9524,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9767,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9362,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9535,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:00:54.584Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "Candidate 1 of 16: a stout slate boundary stone with a carved skull on its front, an ivory bone crown with a violet gem on its flat top and a crooked charcoal signpost with two arrow boards; the Land Baron's crowned boundary stone and signpost in Undead slate and bone, lit from the left. 10 is close; 2 and 7 carved bones or runes, not a shield; 5, 8 and 15 violet flames in the crown; 13 dark stone.",
+        "reviewedAt": "2026-10-08T14:06:20.669Z"
+      }
+    },
+    "muster-a": {
+      "id": "muster-a",
+      "asset": "chibi-undead-monument-muster",
+      "jobId": "a91fb49b-0e11-47bc-84c3-6a80e24401bb",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-undead",
+        "asset": "chibi-undead-monument-muster",
+        "subject": "IMPROVEMENT:MONUMENT:UNDEAD:MUSTER",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22513,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Undead Muster monument, a trophy of many arms: one tall slate pillar with four different shields hung round it (a round dark iron one, a tall charcoal kite shield, a square one rimmed with bone, a small bone buckler) and one big curved ivory bone war horn lying across its flat top. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Undead Muster monument, a trophy of many arms: one tall slate pillar with four different shields hung round it (a round dark iron one, a tall charcoal kite shield, a square one rimmed with bone, a small bone buckler) and one big curved ivory bone war horn lying across its flat top. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Undead Muster monument, a trophy of many arms: one tall slate pillar with four different shields hung round it (a round dark iron one, a tall charcoal kite shield, a square one rimmed with bone, a small bone buckler) and one big curved ivory bone war horn lying across its flat top. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:56:01.498Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-undead/muster-a.png",
+      "rawSheetSha256": "e77a75073ccf62264947c3cb2af4890bb090556d6a5f38c88575b48741a3a921",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8857,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8857,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9231,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8857,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8857,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8857,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8857,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8857,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:57:32.657Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 3,
+        "notes": "Candidate 3 of 16: a tall pale slate pillar hung with a round dark iron shield, a charcoal kite shield, a square shield rimmed with bone and a small bone buckler, with a curved ivory bone war horn at its foot; the Muster's four shields and horn in Undead slate, iron and bone, lit from the left. Every candidate puts the horn at the foot, not across the top; 6 and 10 have one or no shield.",
+        "reviewedAt": "2026-10-08T14:02:45.282Z"
+      }
+    },
+    "sea-dog-a": {
+      "id": "sea-dog-a",
+      "asset": "chibi-undead-monument-sea-dog",
+      "jobId": "1b0ae54d-a2f2-4fad-9f07-ccb7b8a93252",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-undead",
+        "asset": "chibi-undead-monument-sea-dog",
+        "subject": "IMPROVEMENT:MONUMENT:UNDEAD:SEA_DOG",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22516,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Undead Sea Dog's monument: one tall slate column rising straight out of the ground, with one big dark iron ship's anchor standing upright against its front, a coil of grey rope round its foot and one ivory bone ship's steering wheel standing on its top. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Undead Sea Dog's monument: one tall slate column rising straight out of the ground, with one big dark iron ship's anchor standing upright against its front, a coil of grey rope round its foot and one ivory bone ship's steering wheel standing on its top. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Undead Sea Dog's monument: one tall slate column rising straight out of the ground, with one big dark iron ship's anchor standing upright against its front, a coil of grey rope round its foot and one ivory bone ship's steering wheel standing on its top. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T14:00:54.590Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-undead/sea-dog-a.png",
+      "rawSheetSha256": "5f2882e99e1c876c15484d1d2c5aaf329768260ced89416e373c9a98d6340d0e",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9524,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9286,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9524,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9524,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9524,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.907,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9524,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9524,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9524,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9302,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9535,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9762,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9524,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9302,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9302,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9286,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:02:05.945Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "Candidate 1 of 16: a tall pale slate column with a bone ship's wheel on its top, a dark iron anchor against its front and a coil of grey rope at its foot; the Sea Dog's wheel, anchor and rope in Undead slate, iron and bone, lit from the left. Most others are 69 to 72 px tall and fill the canvas; 8 to 10 add violet smears; 12 is near white.",
+        "reviewedAt": "2026-10-08T14:06:21.390Z"
+      }
+    },
+    "slayer-a": {
+      "id": "slayer-a",
+      "asset": "chibi-undead-monument-slayer",
+      "jobId": "712930d8-8ec2-47f4-b6be-09c2a4064972",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-undead",
+        "asset": "chibi-undead-monument-slayer",
+        "subject": "IMPROVEMENT:MONUMENT:UNDEAD:SLAYER",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22517,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Undead Slayer's monument: one great dark iron sword with a bone hilt plunged point-down into a rough block of slate, the long blade upright and its crossguard high in the air with a violet gem, one wreath of pale grey leaves on the hilt and one dented dark iron helmet resting beside the blade. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Undead Slayer's monument: one great dark iron sword with a bone hilt plunged point-down into a rough block of slate, the long blade upright and its crossguard high in the air with a violet gem, one wreath of pale grey leaves on the hilt and one dented dark iron helmet resting beside the blade. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Undead Slayer's monument: one great dark iron sword with a bone hilt plunged point-down into a rough block of slate, the long blade upright and its crossguard high in the air with a violet gem, one wreath of pale grey leaves on the hilt and one dented dark iron helmet resting beside the blade. Pale slate-blue stone (#8b92a3) shaded on its right side, ivory bone, dark iron, small violet glows; no green, no red; dark slate outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T14:02:05.948Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-undead/slayer-a.png",
+      "rawSheetSha256": "e4996841b0ddced92d8bb9f156f350e81eceb9e3e08c25b5c6c6c19a3ae5f97b",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9487,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9487,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9744,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9487,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9512,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9512,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9744,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9487,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9512,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9512,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9737,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9744,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9737,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:03:44.223Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 10,
+        "notes": "Candidate 10 of 16: a dark iron sword with a bone hilt and a violet gem plunged into a block of pale slate, a wreath of pale grey leaves round the hilt and a dented dark iron helmet beside the block; the Slayer's sword in the stone, wreath and helmet in Undead slate, iron and bone, lit from the left. The sixteen are near twins; 0 has no wreath.",
+        "reviewedAt": "2026-10-08T14:06:22.102Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-undead-monument": {
+      "id": "chibi-undead-monument",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "explorer-a",
+      "candidate": 13,
+      "candidateSha256": "cedb0793a46b066ee87184cb15f08b8178fd5a3497f48d1e189dc126eb0cb892",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-undead-monument.png",
+        "sha256": "3685768e22d41b2b458240edfb802d812b1eb8d085ede54227c7e2f1fa3c614c",
+        "pixelSha256": "efd2d1106792772ee6824f32946b92ff0b274c50c40b0992e053dddcfbff2372",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Reused candidate 13 of the Undead Explorer sheet (explorer-a), no new PixelLab job: the obelisk recipe obelisk-a was not run, as the bead's US$5 limit left no room for another call. A tall slender pale slate obelisk on a low plinth, two columns of violet glowing gems up its faces and ivory bone trim round its foot; no compass rose, no spyglass and no other achievement's motif, so it shows the Undead builder and hides the achievement. Lit from the left. Other compass-free pieces of the sheet: 6 (a bone and scroll at its foot), 9 (carved runes and a skull, busier), 12 (a bone cage at its foot).",
+      "acceptedAt": "2026-10-08T14:44:32.163Z"
+    },
+    "chibi-undead-monument-conqueror": {
+      "id": "chibi-undead-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD:CONQUEROR",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "conqueror-a",
+      "candidate": 3,
+      "candidateSha256": "b3e1c97574b0e953e51f87b982ba220b9b5c39b434a4b2ee8ba3a094ecf50b26",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-undead-monument-conqueror.png",
+        "sha256": "a21e0b2e8e6eca7fc732362730fd4ae6df40ea790cdc76c446f7f0ae022dd166",
+        "pixelSha256": "d216eddf94743d6696fe6685a6d73012057dc553669e8a760bfea7a40efc28e3",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 3 of 16: a small arch of pale slate on two thick pillars with an open gateway, a wreath of ivory bone leaves on its lintel and a small violet glowing skull on its front; the Conqueror's arch and wreath in Undead slate and bone, lit from the left. 1, 2 and 6 are close; 5, 9, 10, 12 and 15 have no wreath; 7 a chain of bones; 8 iron spikes.",
+      "acceptedAt": "2026-10-08T14:02:43.869Z"
+    },
+    "chibi-undead-monument-engineer": {
+      "id": "chibi-undead-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD:ENGINEER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "engineer-a",
+      "candidate": 0,
+      "candidateSha256": "181f85b8fd7738dadcab2758ab8cc7c687d72846be01048c3cf424873e4355c8",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-undead-monument-engineer.png",
+        "sha256": "c7c5115ed3b0771b8e0e468beee9b4d84d572d447cf7fbd8ed658deb879524d7",
+        "pixelSha256": "ce632dbd2c8cb05e6db695dd35e6de04efb96d36d4dcff424eb8dfe0ac1e68bf",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16 (resumed after a dropped poll): a square pale slate pillar topped by a big ivory bone cogwheel standing on its edge, a crossed dark iron hammer and spanner on its front; the Engineer's cog and crossed tools in Undead slate and bone, lit from the left. 2, 8, 9 and 13 are close (13 with violet flames, 2 a violet gem); 3, 6 and 7 no tools; 4 violet crystals at its foot.",
+      "acceptedAt": "2026-10-08T13:56:54.810Z"
+    },
+    "chibi-undead-monument-explorer": {
+      "id": "chibi-undead-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD:EXPLORER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "explorer-a",
+      "candidate": 2,
+      "candidateSha256": "3d09fc03658ef1d463904cbbe7a79f3e586b0b82b5fc2ca362f37361fc8498b7",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-undead-monument-explorer.png",
+        "sha256": "cc5eb7dd8ea779f05e1eefa63c83f53a928b40011b72de24ee5e0e3fdd533cf7",
+        "pixelSha256": "ab05b6cfea2490fd33047c9e91d5712c57ac4a29a4db80b2932169456deac060",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 2 of 16: a pale slate-blue obelisk with a round ivory bone compass rose with a violet glowing centre on its front, a dark iron spyglass and a few bones at its foot; the Explorer's compass and spyglass in Undead slate, bone and violet, lit from the left. 4 and 11 a loose violet star, not a rose; 1, 3 and 9 a skull and no rose; 12 a cage; the rest lose the rose or the spyglass.",
+      "acceptedAt": "2026-10-08T13:41:28.694Z"
+    },
+    "chibi-undead-monument-land-baron": {
+      "id": "chibi-undead-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD:LAND_BARON",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "land-baron-a",
+      "candidate": 1,
+      "candidateSha256": "a4599e49011f01fbfbb6a38ead772fafcffb11fa4f158cac638a4f9d03f91b68",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-undead-monument-land-baron.png",
+        "sha256": "1a3006b7022aa4024bb7ff401fc3bf550a1645058b96aecc4ea884c163f75a50",
+        "pixelSha256": "dfcc4aeb9de4f19d474b9ba360075902ed637fd4bac8d7c987a9a1076787d17d",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 1 of 16: a stout slate boundary stone with a carved skull on its front, an ivory bone crown with a violet gem on its flat top and a crooked charcoal signpost with two arrow boards; the Land Baron's crowned boundary stone and signpost in Undead slate and bone, lit from the left. 10 is close; 2 and 7 carved bones or runes, not a shield; 5, 8 and 15 violet flames in the crown; 13 dark stone.",
+      "acceptedAt": "2026-10-08T14:06:20.669Z"
+    },
+    "chibi-undead-monument-muster": {
+      "id": "chibi-undead-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD:MUSTER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "muster-a",
+      "candidate": 3,
+      "candidateSha256": "c1acc9ebbcfe686eebadf419c217e5dbcc74908613713e8fca4e0c3650bff601",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-undead-monument-muster.png",
+        "sha256": "62667d4c3f76ad9f466b169bd12379db394359650ff07cd3ca4d7dd068624c09",
+        "pixelSha256": "9b18c43f17ad7082323d379409e02d31e573ab4ee3fc5ca8550ebd1fd8679da5",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 3 of 16: a tall pale slate pillar hung with a round dark iron shield, a charcoal kite shield, a square shield rimmed with bone and a small bone buckler, with a curved ivory bone war horn at its foot; the Muster's four shields and horn in Undead slate, iron and bone, lit from the left. Every candidate puts the horn at the foot, not across the top; 6 and 10 have one or no shield.",
+      "acceptedAt": "2026-10-08T14:02:45.282Z"
+    },
+    "chibi-undead-monument-sea-dog": {
+      "id": "chibi-undead-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD:SEA_DOG",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "sea-dog-a",
+      "candidate": 1,
+      "candidateSha256": "00ea9fc9eac8309b6a6f65f46a877f35284891bfb0c44700a562270c141c6b7d",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-undead-monument-sea-dog.png",
+        "sha256": "0e2d7225f11120396c32e3ec02ef98f4f6d0ac5d9b334cb8658dcb7cba618983",
+        "pixelSha256": "f72a8b746ad9572d854f98b8cf78bfa22b80ea39c3ce4da7a7b656c39c9a05b0",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 1 of 16: a tall pale slate column with a bone ship's wheel on its top, a dark iron anchor against its front and a coil of grey rope at its foot; the Sea Dog's wheel, anchor and rope in Undead slate, iron and bone, lit from the left. Most others are 69 to 72 px tall and fill the canvas; 8 to 10 add violet smears; 12 is near white.",
+      "acceptedAt": "2026-10-08T14:06:21.390Z"
+    },
+    "chibi-undead-monument-slayer": {
+      "id": "chibi-undead-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD:SLAYER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "slayer-a",
+      "candidate": 10,
+      "candidateSha256": "80dc24b98ecc68d119e684912d1088eee743d2ee43b940e942d1c1977e5a6250",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-undead-monument-slayer.png",
+        "sha256": "bcb2293cd68f8755f0ffc6c34ae8d0f59fa20555e6c18233fc7a8e9e6876c78b",
+        "pixelSha256": "7bd39c1c89ff6e2b59b5783a140838bc0caea688e19b898589a4303b32da8fed",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 10 of 16: a dark iron sword with a bone hilt and a violet gem plunged into a block of pale slate, a wreath of pale grey leaves round the hilt and a dented dark iron helmet beside the block; the Slayer's sword in the stone, wreath and helmet in Undead slate, iron and bone, lit from the left. The sixteen are near twins; 0 has no wreath.",
+      "acceptedAt": "2026-10-08T14:06:22.102Z"
+    }
+  }
+}

@@ -1,0 +1,1137 @@
+{
+  "ORIGINAL:EXPLORER": {
+    "id": "chibi-monument-explorer",
+    "file": "public/assets/chibi/buildings/chibi-monument-explorer.png",
+    "sha256": "2a0765ceed104e1000dc605103ef784ae3b54768e4e83c5b943a2ef2623faafe",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 7,
+      "right": 40,
+      "top": 2,
+      "bottom": 68
+    },
+    "faces": 33.3,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "ORIGINAL:ENGINEER": {
+    "id": "chibi-monument-engineer",
+    "file": "public/assets/chibi/buildings/chibi-monument-engineer.png",
+    "sha256": "7aa50ac11b9a3142033c88c45d99e8db510f86722ac9c63cf8dd4f9d058a9be1",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 8,
+      "right": 39,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": 16.4,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "ORIGINAL:MUSTER": {
+    "id": "chibi-monument-muster",
+    "file": "public/assets/chibi/buildings/chibi-monument-muster.png",
+    "sha256": "2e7d47bc93fd0b6734ae53366db0a9525505223d8a392a42842443f2d903e3ef",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 10,
+      "right": 37,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": 30.6,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "ORIGINAL:CONQUEROR": {
+    "id": "chibi-monument-conqueror",
+    "file": "public/assets/chibi/buildings/chibi-monument-conqueror.png",
+    "sha256": "469159d02e1b9f2f9db23ef65755130f93db534691e4a485aea45309e467c2e7",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 4,
+      "right": 42,
+      "top": 8,
+      "bottom": 68
+    },
+    "faces": 31.8,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "ORIGINAL:LAND_BARON": {
+    "id": "chibi-monument-land-baron",
+    "file": "public/assets/chibi/buildings/chibi-monument-land-baron.png",
+    "sha256": "9f2cc1ad4b75c3038e4d12f3435fa3d8de88c8fc655b21228e93fb31dfabdadb",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 2,
+      "right": 44,
+      "top": 8,
+      "bottom": 68
+    },
+    "faces": 19.9,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "ORIGINAL:SEA_DOG": {
+    "id": "chibi-monument-sea-dog",
+    "file": "public/assets/chibi/buildings/chibi-monument-sea-dog.png",
+    "sha256": "6a470c6e1e9900cfb25a262cd50c4dc6960994296610aaa46600ac73dd858e7b",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 4,
+      "right": 43,
+      "top": 3,
+      "bottom": 68
+    },
+    "faces": 27.4,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "ORIGINAL:SLAYER": {
+    "id": "chibi-monument-slayer",
+    "file": "public/assets/chibi/buildings/chibi-monument-slayer.png",
+    "sha256": "48528baaa8048ceafd93f11368b7c82ccd707da79dca33c3f693ebca69af4a9e",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 4,
+      "right": 42,
+      "top": 0,
+      "bottom": 69
+    },
+    "faces": 11.8,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "ORIGINAL:OBELISK": {
+    "id": "chibi-direction-monument",
+    "file": "public/assets/chibi/buildings/chibi-direction-monument.png",
+    "sha256": "2c52bdeb6fbc702e4af23dc2f25ad18e2c1229f81dc5b9848014405295a8caae",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 14,
+      "right": 32,
+      "top": 12,
+      "bottom": 68
+    },
+    "faces": -19.8,
+    "light": "RIGHT",
+    "keyColourPixels": 0
+  },
+  "UNDEAD:EXPLORER": {
+    "id": "chibi-undead-monument-explorer",
+    "file": "public/assets/chibi/buildings/chibi-undead-monument-explorer.png",
+    "sha256": "cc5eb7dd8ea779f05e1eefa63c83f53a928b40011b72de24ee5e0e3fdd533cf7",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 6,
+      "right": 41,
+      "top": 5,
+      "bottom": 68
+    },
+    "faces": 33.4,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "UNDEAD:ENGINEER": {
+    "id": "chibi-undead-monument-engineer",
+    "file": "public/assets/chibi/buildings/chibi-undead-monument-engineer.png",
+    "sha256": "c7c5115ed3b0771b8e0e468beee9b4d84d572d447cf7fbd8ed658deb879524d7",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 8,
+      "right": 39,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": 11.9,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "UNDEAD:MUSTER": {
+    "id": "chibi-undead-monument-muster",
+    "file": "public/assets/chibi/buildings/chibi-undead-monument-muster.png",
+    "sha256": "62667d4c3f76ad9f466b169bd12379db394359650ff07cd3ca4d7dd068624c09",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 6,
+      "right": 40,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": 11.5,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "UNDEAD:CONQUEROR": {
+    "id": "chibi-undead-monument-conqueror",
+    "file": "public/assets/chibi/buildings/chibi-undead-monument-conqueror.png",
+    "sha256": "a21e0b2e8e6eca7fc732362730fd4ae6df40ea790cdc76c446f7f0ae022dd166",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 6,
+      "right": 40,
+      "top": 8,
+      "bottom": 68
+    },
+    "faces": 38.9,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "UNDEAD:LAND_BARON": {
+    "id": "chibi-undead-monument-land-baron",
+    "file": "public/assets/chibi/buildings/chibi-undead-monument-land-baron.png",
+    "sha256": "1a3006b7022aa4024bb7ff401fc3bf550a1645058b96aecc4ea884c163f75a50",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 2,
+      "right": 44,
+      "top": 8,
+      "bottom": 68
+    },
+    "faces": 24.7,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "UNDEAD:SEA_DOG": {
+    "id": "chibi-undead-monument-sea-dog",
+    "file": "public/assets/chibi/buildings/chibi-undead-monument-sea-dog.png",
+    "sha256": "0e2d7225f11120396c32e3ec02ef98f4f6d0ac5d9b334cb8658dcb7cba618983",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 3,
+      "right": 44,
+      "top": 3,
+      "bottom": 68
+    },
+    "faces": 27.6,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "UNDEAD:SLAYER": {
+    "id": "chibi-undead-monument-slayer",
+    "file": "public/assets/chibi/buildings/chibi-undead-monument-slayer.png",
+    "sha256": "bcb2293cd68f8755f0ffc6c34ae8d0f59fa20555e6c18233fc7a8e9e6876c78b",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 5,
+      "right": 42,
+      "top": 10,
+      "bottom": 68
+    },
+    "faces": 25.2,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "UNDEAD:OBELISK": {
+    "id": "chibi-undead-monument",
+    "file": "public/assets/chibi/buildings/chibi-undead-monument.png",
+    "sha256": "3685768e22d41b2b458240edfb802d812b1eb8d085ede54227c7e2f1fa3c614c",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 8,
+      "right": 38,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": 32.5,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "GOBLIN:EXPLORER": {
+    "id": "chibi-goblin-monument-explorer",
+    "file": "public/assets/chibi/buildings/chibi-goblin-monument-explorer.png",
+    "sha256": "4f3c1855df16f3baec5a478ab36e651fb14f3798f2231ad82aad52aa5cf2c764",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 5,
+      "right": 41,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": 9.5,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "GOBLIN:ENGINEER": {
+    "id": "chibi-goblin-monument-engineer",
+    "file": "public/assets/chibi/buildings/chibi-goblin-monument-engineer.png",
+    "sha256": "da2ef95fad9bf976622277fcbad1a1353a93ab75ab786bc1bcc3f6386f57f93b",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 8,
+      "right": 38,
+      "top": 4,
+      "bottom": 68
+    },
+    "faces": 23.7,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "GOBLIN:MUSTER": {
+    "id": "chibi-goblin-monument-muster",
+    "file": "public/assets/chibi/buildings/chibi-goblin-monument-muster.png",
+    "sha256": "d41f433ac94ecdc92a98cd85aa3ca9d7df79e2279ba51c8633e1abdf81350011",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 9,
+      "right": 37,
+      "top": 4,
+      "bottom": 68
+    },
+    "faces": 22.6,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "GOBLIN:CONQUEROR": {
+    "id": "chibi-goblin-monument-conqueror",
+    "file": "public/assets/chibi/buildings/chibi-goblin-monument-conqueror.png",
+    "sha256": "2aa2bf2cb57046e0c466cacdb7dd2c4a79b155f765048ff25c91723fde974954",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 3,
+      "right": 44,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": 9.2,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "GOBLIN:LAND_BARON": {
+    "id": "chibi-goblin-monument-land-baron",
+    "file": "public/assets/chibi/buildings/chibi-goblin-monument-land-baron.png",
+    "sha256": "7443b6278b1923f65f84fcbc6e4e354380459026627748ad88fa309afd45782c",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 2,
+      "right": 45,
+      "top": 10,
+      "bottom": 68
+    },
+    "faces": 15.4,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "GOBLIN:SEA_DOG": {
+    "id": "chibi-goblin-monument-sea-dog",
+    "file": "public/assets/chibi/buildings/chibi-goblin-monument-sea-dog.png",
+    "sha256": "d4080399db02fbabf76d17c5ca13be3fb80c222186c66144f9aeb654d8cd1fdd",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 5,
+      "right": 41,
+      "top": 2,
+      "bottom": 68
+    },
+    "faces": 19.7,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "GOBLIN:SLAYER": {
+    "id": "chibi-goblin-monument-slayer",
+    "file": "public/assets/chibi/buildings/chibi-goblin-monument-slayer.png",
+    "sha256": "711d7c87ed6ca49759917995ba286e37658749a1d5bbd3824adf260300749be2",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 4,
+      "right": 43,
+      "top": 1,
+      "bottom": 68
+    },
+    "faces": 27.7,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "GOBLIN:OBELISK": {
+    "id": "chibi-goblin-monument",
+    "file": "public/assets/chibi/buildings/chibi-goblin-monument.png",
+    "sha256": "defb7c8a638c9dc2417d24b1a282774b4009e72750c3c6e2d71dd0a59e464f87",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 4,
+      "right": 42,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": 15.6,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "DINOSAUR:EXPLORER": {
+    "id": "chibi-dinosaur-monument-explorer",
+    "file": "public/assets/chibi/buildings/chibi-dinosaur-monument-explorer.png",
+    "sha256": "1e8ef2249071b8bcff1ce9475bbbda9d3c6e2ed70f325a0064b5301431e23ece",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 4,
+      "right": 43,
+      "top": 2,
+      "bottom": 68
+    },
+    "faces": 0.2,
+    "light": "FLAT",
+    "keyColourPixels": 0
+  },
+  "DINOSAUR:ENGINEER": {
+    "id": "chibi-dinosaur-monument-engineer",
+    "file": "public/assets/chibi/buildings/chibi-dinosaur-monument-engineer.png",
+    "sha256": "f0aa5304be290b702bb25e9e0088e98e57cba4e5351d7b38d6eb1a5cbdeaca69",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 8,
+      "right": 39,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": -0.2,
+    "light": "FLAT",
+    "keyColourPixels": 0
+  },
+  "DINOSAUR:MUSTER": {
+    "id": "chibi-dinosaur-monument-muster",
+    "file": "public/assets/chibi/buildings/chibi-dinosaur-monument-muster.png",
+    "sha256": "c4729aa5e5c2ad6b079a592d050ffbbf996ab07c522703e63e7c3c6651c6efd1",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 9,
+      "right": 37,
+      "top": 6,
+      "bottom": 68
+    },
+    "faces": -3,
+    "light": "RIGHT",
+    "keyColourPixels": 0
+  },
+  "DINOSAUR:CONQUEROR": {
+    "id": "chibi-dinosaur-monument-conqueror",
+    "file": "public/assets/chibi/buildings/chibi-dinosaur-monument-conqueror.png",
+    "sha256": "01640dd2eff05dc216ccdd34fb7fe9e0f46f77e1cf913382dc4f068a5c212806",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 5,
+      "right": 41,
+      "top": 8,
+      "bottom": 68
+    },
+    "faces": 4.6,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "DINOSAUR:LAND_BARON": {
+    "id": "chibi-dinosaur-monument-land-baron",
+    "file": "public/assets/chibi/buildings/chibi-dinosaur-monument-land-baron.png",
+    "sha256": "6b9905e84201ffccf00570759743580bee8c0b6080737f2102f292623b8957f1",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 4,
+      "right": 42,
+      "top": 8,
+      "bottom": 68
+    },
+    "faces": -2.1,
+    "light": "RIGHT",
+    "keyColourPixels": 0
+  },
+  "DINOSAUR:SEA_DOG": {
+    "id": "chibi-dinosaur-monument-sea-dog",
+    "file": "public/assets/chibi/buildings/chibi-dinosaur-monument-sea-dog.png",
+    "sha256": "de34b977e6f48e9eec6a87c2e86577df9a6a85fcc79e8af6822cd75f2d47770a",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 8,
+      "right": 38,
+      "top": 6,
+      "bottom": 68
+    },
+    "faces": 30.3,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "DINOSAUR:SLAYER": {
+    "id": "chibi-dinosaur-monument-slayer",
+    "file": "public/assets/chibi/buildings/chibi-dinosaur-monument-slayer.png",
+    "sha256": "31c2aada74d6627f9b4520735e915bfecdb981dbd7f03ccdd9d0551f50fd281b",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 6,
+      "right": 40,
+      "top": 8,
+      "bottom": 68
+    },
+    "faces": 6.7,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "DINOSAUR:OBELISK": {
+    "id": "chibi-dinosaur-monument",
+    "file": "public/assets/chibi/buildings/chibi-dinosaur-monument.png",
+    "sha256": "5aad961985e1a44c05f28630b38226a644b7419f2573eff436dcf07aa3edaf7f",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 6,
+      "right": 41,
+      "top": 3,
+      "bottom": 68
+    },
+    "faces": 20.2,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "MARTIAN:EXPLORER": {
+    "id": "chibi-martian-monument-explorer",
+    "file": "public/assets/chibi/buildings/chibi-martian-monument-explorer.png",
+    "sha256": "a3fc692da39316df2b8e34bd11049c2e25a041287576367e95f4f01905b45b9a",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 8,
+      "right": 38,
+      "top": 6,
+      "bottom": 68
+    },
+    "faces": 30,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "MARTIAN:ENGINEER": {
+    "id": "chibi-martian-monument-engineer",
+    "file": "public/assets/chibi/buildings/chibi-martian-monument-engineer.png",
+    "sha256": "8a5a13c8e0d1a3d845f821ef71a8a867b90059ec650fc7ab0138d2142b0c1eb4",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 10,
+      "right": 36,
+      "top": 1,
+      "bottom": 68
+    },
+    "faces": 28.2,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "MARTIAN:MUSTER": {
+    "id": "chibi-martian-monument-muster",
+    "file": "public/assets/chibi/buildings/chibi-martian-monument-muster.png",
+    "sha256": "4b4a46b4893ca323370999c8f28bc9e95c593426a2877de7b9edc8f8c6efbbd2",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 11,
+      "right": 35,
+      "top": 0,
+      "bottom": 68
+    },
+    "faces": 47.7,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "MARTIAN:CONQUEROR": {
+    "id": "chibi-martian-monument-conqueror",
+    "file": "public/assets/chibi/buildings/chibi-martian-monument-conqueror.png",
+    "sha256": "d22400e05cdd49f2d61c7517716d655b2b8fe4b2a9fb337fc82d114f2c93702c",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 5,
+      "right": 42,
+      "top": 8,
+      "bottom": 68
+    },
+    "faces": 37.8,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "MARTIAN:LAND_BARON": {
+    "id": "chibi-martian-monument-land-baron",
+    "file": "public/assets/chibi/buildings/chibi-martian-monument-land-baron.png",
+    "sha256": "6b7cd3bcea7432b0865018f3b35d456fd8d62e37ce91fa982311da0ebebbc7ff",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 3,
+      "right": 43,
+      "top": 8,
+      "bottom": 68
+    },
+    "faces": 31.5,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "MARTIAN:SEA_DOG": {
+    "id": "chibi-martian-monument-sea-dog",
+    "file": "public/assets/chibi/buildings/chibi-martian-monument-sea-dog.png",
+    "sha256": "b31b88266580060498173aae615f4fd7eb16339cbdfd6321d5b6c4a680070854",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 7,
+      "right": 39,
+      "top": 2,
+      "bottom": 68
+    },
+    "faces": 60.8,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "MARTIAN:SLAYER": {
+    "id": "chibi-martian-monument-slayer",
+    "file": "public/assets/chibi/buildings/chibi-martian-monument-slayer.png",
+    "sha256": "ff59781815d7498d4e9f9ce7d9ea28348b96c4314e272a8134c4735cd5ec8d90",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 4,
+      "right": 43,
+      "top": 5,
+      "bottom": 68
+    },
+    "faces": 13,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "MARTIAN:OBELISK": null,
+  "ICE_FOLK:EXPLORER": {
+    "id": "chibi-ice-folk-monument-explorer",
+    "file": "public/assets/chibi/buildings/chibi-ice-folk-monument-explorer.png",
+    "sha256": "565ab19b26a71ff00d9b9ac15ee68e95b4ad5122bf469451ad43f80cf384b810",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 4,
+      "right": 43,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": 22.6,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "ICE_FOLK:ENGINEER": {
+    "id": "chibi-ice-folk-monument-engineer",
+    "file": "public/assets/chibi/buildings/chibi-ice-folk-monument-engineer.png",
+    "sha256": "77e59feab498c82a5ee9736141407ea334729336293e7dcf681735def40078ac",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 8,
+      "right": 39,
+      "top": 5,
+      "bottom": 68
+    },
+    "faces": 17.1,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "ICE_FOLK:MUSTER": {
+    "id": "chibi-ice-folk-monument-muster",
+    "file": "public/assets/chibi/buildings/chibi-ice-folk-monument-muster.png",
+    "sha256": "4191a1f16b3c8631f7fd0d66d03c819084e17430da588388b2f77a2d913f587b",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 5,
+      "right": 42,
+      "top": 8,
+      "bottom": 68
+    },
+    "faces": 28.6,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "ICE_FOLK:CONQUEROR": {
+    "id": "chibi-ice-folk-monument-conqueror",
+    "file": "public/assets/chibi/buildings/chibi-ice-folk-monument-conqueror.png",
+    "sha256": "28b123bfc51491fcaf5f1ab7e00b3898bcf0a402a6437d5cb3ed6afdb50218fb",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 6,
+      "right": 40,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": 57.4,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "ICE_FOLK:LAND_BARON": {
+    "id": "chibi-ice-folk-monument-land-baron",
+    "file": "public/assets/chibi/buildings/chibi-ice-folk-monument-land-baron.png",
+    "sha256": "977afe935927387cebf592b89aa14f6194ef52cd1e98e94d1346257afc0d21bf",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 4,
+      "right": 43,
+      "top": 12,
+      "bottom": 68
+    },
+    "faces": 22.2,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "ICE_FOLK:SEA_DOG": {
+    "id": "chibi-ice-folk-monument-sea-dog",
+    "file": "public/assets/chibi/buildings/chibi-ice-folk-monument-sea-dog.png",
+    "sha256": "edaccf24feead7c0cc4451a21826e3890ce97a6c365a62be1c123fd78d718bc9",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 4,
+      "right": 42,
+      "top": 1,
+      "bottom": 68
+    },
+    "faces": 30,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "ICE_FOLK:SLAYER": {
+    "id": "chibi-ice-folk-monument-slayer",
+    "file": "public/assets/chibi/buildings/chibi-ice-folk-monument-slayer.png",
+    "sha256": "6210fe9951e0e68c8aa12b0c151feeea500ace934504a6fa0b56e34e59e1ec1a",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 7,
+      "right": 39,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": 32.9,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "ICE_FOLK:OBELISK": {
+    "id": "chibi-ice-folk-monument",
+    "file": "public/assets/chibi/buildings/chibi-ice-folk-monument.png",
+    "sha256": "94bc02bc49e03241fd5990574fc02737de40dc0ab3c05bedc66c6c55784db599",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 11,
+      "right": 35,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": 49.6,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "DWARF:EXPLORER": {
+    "id": "chibi-dwarf-monument-explorer",
+    "file": "public/assets/chibi/buildings/chibi-dwarf-monument-explorer.png",
+    "sha256": "585964e5627c5a0ba413c57e20e93426416a28e0765169a7a717e877edb25fa8",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 5,
+      "right": 41,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": 29.9,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "DWARF:ENGINEER": {
+    "id": "chibi-dwarf-monument-engineer",
+    "file": "public/assets/chibi/buildings/chibi-dwarf-monument-engineer.png",
+    "sha256": "b82de6601e4ebd019ebb8d5bd608b73a0f0c7c6240b5a6f537b9def9b1af0ccc",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 5,
+      "right": 42,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": -0.6,
+    "light": "FLAT",
+    "keyColourPixels": 0
+  },
+  "DWARF:MUSTER": {
+    "id": "chibi-dwarf-monument-muster",
+    "file": "public/assets/chibi/buildings/chibi-dwarf-monument-muster.png",
+    "sha256": "87dca808335e490de70146f0fd38e9817c9758cbfbf950ebf6671635a8692196",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 4,
+      "right": 42,
+      "top": 6,
+      "bottom": 68
+    },
+    "faces": 15.1,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "DWARF:CONQUEROR": {
+    "id": "chibi-dwarf-monument-conqueror",
+    "file": "public/assets/chibi/buildings/chibi-dwarf-monument-conqueror.png",
+    "sha256": "30a4c4f4eb6ff7c87a0e4821f65aa9104dfed1ba16095728fe15e3d3449bcbb1",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 3,
+      "right": 44,
+      "top": 8,
+      "bottom": 68
+    },
+    "faces": 1.4,
+    "light": "FLAT",
+    "keyColourPixels": 0
+  },
+  "DWARF:LAND_BARON": {
+    "id": "chibi-dwarf-monument-land-baron",
+    "file": "public/assets/chibi/buildings/chibi-dwarf-monument-land-baron.png",
+    "sha256": "ca355ad37c8862e05419b10aa0a12542e0e241adc96eea325673eafd1bf4c0dc",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 3,
+      "right": 44,
+      "top": 9,
+      "bottom": 68
+    },
+    "faces": 16.7,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "DWARF:SEA_DOG": {
+    "id": "chibi-dwarf-monument-sea-dog",
+    "file": "public/assets/chibi/buildings/chibi-dwarf-monument-sea-dog.png",
+    "sha256": "ff4db7d99897b2b3d8a03e4c85e1d81004382ac6cdd10a18d1a784505018c02c",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 4,
+      "right": 43,
+      "top": 8,
+      "bottom": 68
+    },
+    "faces": 34.4,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "DWARF:SLAYER": {
+    "id": "chibi-dwarf-monument-slayer",
+    "file": "public/assets/chibi/buildings/chibi-dwarf-monument-slayer.png",
+    "sha256": "8b4bda2104adeec945ff2905e18a5291181068f2761fb9e6e7bbfd6ddfaeed40",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 8,
+      "right": 38,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": 42.3,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "DWARF:OBELISK": {
+    "id": "chibi-dwarf-monument",
+    "file": "public/assets/chibi/buildings/chibi-dwarf-monument.png",
+    "sha256": "5f2c1742d345d749270fc358760b6d8eac0180ff397ca9fd11660a9d6c69935e",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 7,
+      "right": 39,
+      "top": 9,
+      "bottom": 68
+    },
+    "faces": 16.7,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "CANDY:EXPLORER": {
+    "id": "chibi-candy-monument-explorer",
+    "file": "public/assets/chibi/buildings/chibi-candy-monument-explorer.png",
+    "sha256": "347ec8fb745f599be1413bbf73ca173f7f4c5c271d3e4ea956e7f9e0f271fb9b",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 5,
+      "right": 41,
+      "top": 6,
+      "bottom": 68
+    },
+    "faces": 24.1,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "CANDY:ENGINEER": {
+    "id": "chibi-candy-monument-engineer",
+    "file": "public/assets/chibi/buildings/chibi-candy-monument-engineer.png",
+    "sha256": "cb18201cffe55f95dd8ef949356fec4f7e239951ad944fc922b070a45ec1f891",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 9,
+      "right": 37,
+      "top": 7,
+      "bottom": 68
+    },
+    "faces": 17,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "CANDY:MUSTER": {
+    "id": "chibi-candy-monument-muster",
+    "file": "public/assets/chibi/buildings/chibi-candy-monument-muster.png",
+    "sha256": "80155e081cce61128966e8e614898a52eef7f56a2e66b09bf028ed24252add63",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 9,
+      "right": 38,
+      "top": 6,
+      "bottom": 68
+    },
+    "faces": 21.9,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "CANDY:CONQUEROR": {
+    "id": "chibi-candy-monument-conqueror",
+    "file": "public/assets/chibi/buildings/chibi-candy-monument-conqueror.png",
+    "sha256": "e33031265c7b4da9bf12d1718df727a6b2f4fd0bb2dd1678795a1260a05d94d5",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 2,
+      "right": 44,
+      "top": 8,
+      "bottom": 68
+    },
+    "faces": 2.4,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "CANDY:LAND_BARON": {
+    "id": "chibi-candy-monument-land-baron",
+    "file": "public/assets/chibi/buildings/chibi-candy-monument-land-baron.png",
+    "sha256": "917750e97ef62754bd6e462f99ab1356429ecdc345495f58fba1d82a8813fff4",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 2,
+      "right": 45,
+      "top": 11,
+      "bottom": 68
+    },
+    "faces": 10.9,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "CANDY:SEA_DOG": {
+    "id": "chibi-candy-monument-sea-dog",
+    "file": "public/assets/chibi/buildings/chibi-candy-monument-sea-dog.png",
+    "sha256": "32c85e3378ab18c79a66d919913a7f580b78098516efe3c79f71f00e5e5ca8a3",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 6,
+      "right": 41,
+      "top": 6,
+      "bottom": 68
+    },
+    "faces": 47.2,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "CANDY:SLAYER": {
+    "id": "chibi-candy-monument-slayer",
+    "file": "public/assets/chibi/buildings/chibi-candy-monument-slayer.png",
+    "sha256": "3fc2da8f470d62a78273cbafd9b9745da3df10482c7dcb80ed512aedc4026c3e",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 3,
+      "right": 44,
+      "top": 4,
+      "bottom": 68
+    },
+    "faces": 5.7,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  },
+  "CANDY:OBELISK": {
+    "id": "chibi-candy-monument",
+    "file": "public/assets/chibi/buildings/chibi-candy-monument.png",
+    "sha256": "6a67bcf08481ac58c2bea12ed7072e52f390dd3a3c9e50b71f484b78ab39b3a3",
+    "size": [
+      48,
+      72
+    ],
+    "box": {
+      "left": 5,
+      "right": 41,
+      "top": 6,
+      "bottom": 68
+    },
+    "faces": 20.2,
+    "light": "LEFT",
+    "keyColourPixels": 0
+  }
+}

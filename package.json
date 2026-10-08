@@ -93,6 +93,7 @@
     "art:unit-shadows-measure": "tsx scripts/art/unit-shadow-measure.ts",
     "art:unit-shadows-review": "tsx scripts/art/unit-shadows-review.ts",
     "art:faction-buildings-review": "tsx scripts/art/faction-buildings-review.ts",
+    "art:faction-monuments-review": "tsx scripts/art/faction-monuments-review.ts",
     "art:curiosities-review": "tsx scripts/art/curiosities-review.ts",
     "art:validate": "tsx scripts/art/pixellab.ts validate",
     "diagnose:mountain-live": "tsx scripts/browser-smoke-v6.ts --mountain-live",

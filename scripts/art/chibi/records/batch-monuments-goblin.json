@@ -1,0 +1,1505 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments-goblin",
+  "recipes": {
+    "conqueror-a": {
+      "id": "conqueror-a",
+      "asset": "chibi-goblin-monument-conqueror",
+      "jobId": "d8fa44a5-a7a3-4d1e-a3f7-3e99bd8cb088",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-goblin",
+        "asset": "chibi-goblin-monument-conqueror",
+        "subject": "IMPROVEMENT:MONUMENT:GOBLIN:CONQUEROR",
+        "faction": "GOBLIN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22524,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Goblin Conqueror's monument: one small crooked triumphal arch of riveted tin sheets and planks, two thick posts and a heavy beam with an open gateway between them that shows the transparent background, one big hazard yellow laurel wreath standing on top of the beam, and a crossed cleaver and spear on its front. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Goblin Conqueror's monument: one small crooked triumphal arch of riveted tin sheets and planks, two thick posts and a heavy beam with an open gateway between them that shows the transparent background, one big hazard yellow laurel wreath standing on top of the beam, and a crossed cleaver and spear on its front. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Goblin Conqueror's monument: one small crooked triumphal arch of riveted tin sheets and planks, two thick posts and a heavy beam with an open gateway between them that shows the transparent background, one big hazard yellow laurel wreath standing on top of the beam, and a crossed cleaver and spear on its front. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:58:03.916Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-goblin/conqueror-a.png",
+      "rawSheetSha256": "b5cb815d07a1b2f5d448086cc5fb93f9a178f8fda1496b66d9ad96bbcb49ed75",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8293,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8293,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8537,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8049,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0091,
+          "footprintWidthShare": 0.825,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3631,
+          "footprintWidthShare": 0.825,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8205,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0301,
+          "footprintWidthShare": 0.825,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8049,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8049,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8095,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7805,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6429,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7857,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7442,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8095,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:59:55.014Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 10,
+        "notes": "Candidate 10 of 16: a small arch of riveted light grey tin plates and grey-tan planks with an open gateway, a big hazard yellow laurel wreath on its top and a crossed cleaver and spear on its front; the Conqueror's arch and wreath as Goblin scrap, lit from the left. 13 to 15 are close; 0 to 9 and 11 measure lit from the right; 4, 5 and 7 have hazard yellow panels that crowd the wreath.",
+        "reviewedAt": "2026-10-08T14:02:09.501Z"
+      }
+    },
+    "engineer-a": {
+      "id": "engineer-a",
+      "asset": "chibi-goblin-monument-engineer",
+      "jobId": "28a55e51-ed06-4f89-bc72-7e78ddd172c8",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-goblin",
+        "asset": "chibi-goblin-monument-engineer",
+        "subject": "IMPROVEMENT:MONUMENT:GOBLIN:ENGINEER",
+        "faction": "GOBLIN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22522,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Goblin Engineer's monument: one tall crooked pillar of riveted tin and planks rising straight out of the ground, topped by one big hazard yellow cogwheel standing upright on its edge, with a crossed big spanner and hammer nailed on its front. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Goblin Engineer's monument: one tall crooked pillar of riveted tin and planks rising straight out of the ground, topped by one big hazard yellow cogwheel standing upright on its edge, with a crossed big spanner and hammer nailed on its front. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Goblin Engineer's monument: one tall crooked pillar of riveted tin and planks rising straight out of the ground, topped by one big hazard yellow cogwheel standing upright on its edge, with a crossed big spanner and hammer nailed on its front. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:28:59.542Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-goblin/engineer-a.png",
+      "rawSheetSha256": "3b010ec1a5be10c51306d52a9719a46e3fbc936b030c5f35492acbfcbdbac9a6",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.02,
+          "footprintWidthShare": 0.9677,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9583,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9063,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9429,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0038,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9429,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:55:33.962Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16 (resumed after a dropped poll): a crooked pillar of riveted light grey tin with hazard yellow stripes, a big tin cogwheel standing at its top, a smaller one at its foot and a spanner bolted on; the Engineer's cogwheel in Goblin scrap, lit from the left. A weak row: most candidates are plain plank or tin pillars with no cog; 7 has a hazard yellow cog on top but no tools; 3, 11 and 15 heaps of grey cogs.",
+        "reviewedAt": "2026-10-08T14:07:33.472Z"
+      }
+    },
+    "explorer-a": {
+      "id": "explorer-a",
+      "asset": "chibi-goblin-monument-explorer",
+      "jobId": "74c40f2f-da49-4851-bc4b-6d6a8248b530",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-goblin",
+        "asset": "chibi-goblin-monument-explorer",
+        "subject": "IMPROVEMENT:MONUMENT:GOBLIN:EXPLORER",
+        "faction": "GOBLIN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22521,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Goblin Explorer's monument: one tall crooked junk obelisk of riveted tin sheets rising straight out of the ground, with one big round hazard yellow compass rose with a four-pointed star bolted on its front and a dented tin spyglass leaning against its foot. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Goblin Explorer's monument: one tall crooked junk obelisk of riveted tin sheets rising straight out of the ground, with one big round hazard yellow compass rose with a four-pointed star bolted on its front and a dented tin spyglass leaning against its foot. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Goblin Explorer's monument: one tall crooked junk obelisk of riveted tin sheets rising straight out of the ground, with one big round hazard yellow compass rose with a four-pointed star bolted on its front and a dented tin spyglass leaning against its foot. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:27:14.112Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-goblin/explorer-a.png",
+      "rawSheetSha256": "aec6ffc703217eab789a5d2e91926b28ffe3d0947a7e8269d69f38516a123d69",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.973,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0714,
+          "footprintWidthShare": 0.9737,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.011,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.05,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0028,
+          "footprintWidthShare": 0.975,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0085,
+          "footprintWidthShare": 0.9487,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0055,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1201,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0114,
+          "footprintWidthShare": 0.975,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.973,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0211,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9512,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0206,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0366,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0434,
+          "footprintWidthShare": 0.9524,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:28:59.272Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 8,
+        "notes": "Candidate 8 of 16: a crooked obelisk of riveted light grey tin sheets with a big hazard yellow compass dial bolted on its front and a dented tin spyglass at its foot; the Explorer's compass and spyglass as Goblin scrap, lit from the left. 13 is close in grey planks; 0, 1, 6, 11 and 14 a loose yellow star; 4 and 7 buff hide patches; 12 and 15 heaps of planks.",
+        "reviewedAt": "2026-10-08T13:41:31.334Z"
+      }
+    },
+    "land-baron-a": {
+      "id": "land-baron-a",
+      "asset": "chibi-goblin-monument-land-baron",
+      "jobId": "85a6d722-0c7a-45cc-80a8-5f9d7ba027f9",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-goblin",
+        "asset": "chibi-goblin-monument-land-baron",
+        "subject": "IMPROVEMENT:MONUMENT:GOBLIN:LAND_BARON",
+        "faction": "GOBLIN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22525,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Goblin Land Baron's monument: one stout square boundary block of riveted tin plates, a little wider at its foot, with a painted hazard yellow shield on its front, one big dented hazard yellow tin crown resting on its flat top and a small crooked plank signpost with two blank arrow boards beside it. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Goblin Land Baron's monument: one stout square boundary block of riveted tin plates, a little wider at its foot, with a painted hazard yellow shield on its front, one big dented hazard yellow tin crown resting on its flat top and a small crooked plank signpost with two blank arrow boards beside it. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Goblin Land Baron's monument: one stout square boundary block of riveted tin plates, a little wider at its foot, with a painted hazard yellow shield on its front, one big dented hazard yellow tin crown resting on its flat top and a small crooked plank signpost with two blank arrow boards beside it. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:59:55.017Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-goblin/land-baron-a.png",
+      "rawSheetSha256": "6046c369a9dba7382b41fae44f16c344c12248403080af122970ade1a330449c",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0365,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0055,
+          "footprintWidthShare": 0.9091,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0389,
+          "footprintWidthShare": 0.8667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0028,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0083,
+          "footprintWidthShare": 0.8667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9111,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9762,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:01:42.175Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 5,
+        "notes": "Candidate 5 of 16: a stout boundary block of riveted light grey tin plates with a hazard yellow shield bearing a grinning face, a dented hazard yellow tin crown on its top and a crooked plank signpost with two arrow boards; the Land Baron's crowned boundary stone and signpost as Goblin scrap, lit from the left. Most others (1 to 3, 6, 7, 9 to 11, 13) run the signpost into the canvas edge (48 px wide); 14 has a skull.",
+        "reviewedAt": "2026-10-08T14:06:22.854Z"
+      }
+    },
+    "muster-a": {
+      "id": "muster-a",
+      "asset": "chibi-goblin-monument-muster",
+      "jobId": "bb5cd05a-b53e-4618-8d04-da7ca233b928",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-goblin",
+        "asset": "chibi-goblin-monument-muster",
+        "subject": "IMPROVEMENT:MONUMENT:GOBLIN:MUSTER",
+        "faction": "GOBLIN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22523,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Goblin Muster monument, a trophy of many arms: one tall crooked plank post rising straight out of the ground, with four mismatched shields nailed round it (a dented tin pot lid, a plank shield, a hide shield, a small hazard yellow buckler) and one big curved horn lying across its flat top. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Goblin Muster monument, a trophy of many arms: one tall crooked plank post rising straight out of the ground, with four mismatched shields nailed round it (a dented tin pot lid, a plank shield, a hide shield, a small hazard yellow buckler) and one big curved horn lying across its flat top. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Goblin Muster monument, a trophy of many arms: one tall crooked plank post rising straight out of the ground, with four mismatched shields nailed round it (a dented tin pot lid, a plank shield, a hide shield, a small hazard yellow buckler) and one big curved horn lying across its flat top. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:56:01.206Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-goblin/muster-a.png",
+      "rawSheetSha256": "08d205b0378fabc1ded79f354f313c50e2f33ebbe7f9d8cda9b9378e9cdf8632",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6207,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6296,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5714,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0838,
+          "footprintWidthShare": 0.6552,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0526,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0606,
+          "footprintWidthShare": 0.8929,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7241,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0054,
+          "footprintWidthShare": 0.7037,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6207,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6429,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0393,
+          "footprintWidthShare": 0.5862,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0597,
+          "footprintWidthShare": 0.7931,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0113,
+          "footprintWidthShare": 0.5517,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5517,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.026,
+          "footprintWidthShare": 0.7241,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5517,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:58:03.910Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 11,
+        "notes": "Candidate 11 of 16: a crooked plank post hung with a dented tin pot lid, plank shields and a round wooden one, tied with rope, under a big curved horn across its top; the Muster's trophy of shields under a horn as Goblin scrap, lit from the left. The sixteen are near twins; 2, 6, 9 and 10 have a buff hide patch in place of a shield.",
+        "reviewedAt": "2026-10-08T14:02:10.971Z"
+      }
+    },
+    "sea-dog-a": {
+      "id": "sea-dog-a",
+      "asset": "chibi-goblin-monument-sea-dog",
+      "jobId": "7ef55f8e-eaf7-4b23-9ccc-53f97bba956a",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-goblin",
+        "asset": "chibi-goblin-monument-sea-dog",
+        "subject": "IMPROVEMENT:MONUMENT:GOBLIN:SEA_DOG",
+        "faction": "GOBLIN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22526,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Goblin Sea Dog's monument: one tall crooked post of riveted tin and planks rising straight out of the ground, with one big dented tin ship's anchor standing upright against its front, a coil of thick rope round its foot and one hazard yellow ship's steering wheel standing on its top. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Goblin Sea Dog's monument: one tall crooked post of riveted tin and planks rising straight out of the ground, with one big dented tin ship's anchor standing upright against its front, a coil of thick rope round its foot and one hazard yellow ship's steering wheel standing on its top. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Goblin Sea Dog's monument: one tall crooked post of riveted tin and planks rising straight out of the ground, with one big dented tin ship's anchor standing upright against its front, a coil of thick rope round its foot and one hazard yellow ship's steering wheel standing on its top. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T14:01:42.178Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-goblin/sea-dog-a.png",
+      "rawSheetSha256": "3643108a9b6a8dcbe598ffe14d66160cf0d4709ce2dfd402fa9d0b578318a5f1",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.14,
+          "footprintWidthShare": 0.9459,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0529,
+          "footprintWidthShare": 0.9333,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0024,
+          "footprintWidthShare": 0.9024,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1299,
+          "footprintWidthShare": 0.9318,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0271,
+          "footprintWidthShare": 0.9545,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0075,
+          "footprintWidthShare": 0.9767,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0293,
+          "footprintWidthShare": 0.9762,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0264,
+          "footprintWidthShare": 0.95,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.003,
+          "footprintWidthShare": 0.9706,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0356,
+          "footprintWidthShare": 0.9722,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0703,
+          "footprintWidthShare": 0.9302,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0297,
+          "footprintWidthShare": 0.9302,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1526,
+          "footprintWidthShare": 0.9762,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1067,
+          "footprintWidthShare": 0.925,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0267,
+          "footprintWidthShare": 0.975,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0327,
+          "footprintWidthShare": 0.9737,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:03:24.258Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a crooked post of riveted tin and planks with a hazard yellow ship's wheel on its top, a dented tin anchor against its front and a coil of rope at its foot; the Sea Dog's wheel, anchor and rope as Goblin scrap, lit from the left. 2, 6 and 13 are close; 7 a tiny wheel; 9 a ring.",
+        "reviewedAt": "2026-10-08T14:06:23.561Z"
+      }
+    },
+    "slayer-a": {
+      "id": "slayer-a",
+      "asset": "chibi-goblin-monument-slayer",
+      "jobId": "234e05d0-9a2c-487b-bc4e-cdd752d1e2d7",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-goblin",
+        "asset": "chibi-goblin-monument-slayer",
+        "subject": "IMPROVEMENT:MONUMENT:GOBLIN:SLAYER",
+        "faction": "GOBLIN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22527,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Goblin Slayer's monument: one great chunky cleaver sword plunged point-down into a heap of riveted tin scrap, the broad blade upright and its hazard yellow crossguard and grip high in the air, one laurel wreath hanging on the hilt and one dented tin helmet with two horns resting beside the blade. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Goblin Slayer's monument: one great chunky cleaver sword plunged point-down into a heap of riveted tin scrap, the broad blade upright and its hazard yellow crossguard and grip high in the air, one laurel wreath hanging on the hilt and one dented tin helmet with two horns resting beside the blade. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Goblin Slayer's monument: one great chunky cleaver sword plunged point-down into a heap of riveted tin scrap, the broad blade upright and its hazard yellow crossguard and grip high in the air, one laurel wreath hanging on the hilt and one dented tin helmet with two horns resting beside the blade. Light grey riveted tin (#9aa5a8), grey-tan planks, pale buff hide and hazard yellow paint (#fdd20f) only; dark brown outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T14:03:24.262Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-goblin/slayer-a.png",
+      "rawSheetSha256": "f46ecb86ec85b7d39154b764bf08b7065fbbae13cdbeff5c1117c3a285b4231f",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0023,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.1947,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0137,
+          "footprintWidthShare": 0.9348,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9286,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9574,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0084,
+          "footprintWidthShare": 0.8974,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0068,
+          "footprintWidthShare": 0.9643,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0119,
+          "footprintWidthShare": 0.9348,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.009,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9787,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0064,
+          "footprintWidthShare": 0.725,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.015,
+          "footprintWidthShare": 0.9545,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:05:11.340Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 2,
+        "notes": "Candidate 2 of 16: a great chunky cleaver sword with a hazard yellow crossguard plunged into a heap of riveted tin scrap, a laurel wreath hanging on the hilt and a dented tin helmet beside the blade; the Slayer's sword in the stone, wreath and helmet as Goblin scrap, lit from the left. 10 is a cleaner sword with a horned helmet but no heap; 14 has stray pixels; 0, 3, 5, 8 and 13 run to the canvas edge.",
+        "reviewedAt": "2026-10-08T14:06:24.293Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-goblin-monument": {
+      "id": "chibi-goblin-monument",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "explorer-a",
+      "candidate": 14,
+      "candidateSha256": "f9792998d5a691a59390f09c62e582484abd05a2e133125611b48210a9692499",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-goblin-monument.png",
+        "sha256": "defb7c8a638c9dc2417d24b1a282774b4009e72750c3c6e2d71dd0a59e464f87",
+        "pixelSha256": "05074fd18ce3e15f3ad87eacb271b46771cb10fc93f74b0019bbbd12c70d944a",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Reused candidate 14 of the Goblin Explorer sheet (explorer-a), no new PixelLab job (the US$5 limit left no room for obelisk-a). A crooked junk obelisk of riveted grey tin with a torn buff hide skirt round its foot and one hazard yellow four-pointed star on its front: the star the obelisk recipe asked for, with no compass ring and no spyglass, so it shows the Goblin builder and hides the achievement. Lit from the left. Engineer-a 2 (a tin and plank pillar) is the only other motif-free piece and has no hazard yellow; 0, 1 and 6 carry a spyglass or a ringed rose.",
+      "acceptedAt": "2026-10-08T14:44:37.984Z"
+    },
+    "chibi-goblin-monument-conqueror": {
+      "id": "chibi-goblin-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN:CONQUEROR",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "conqueror-a",
+      "candidate": 10,
+      "candidateSha256": "19e63bc0217d147ddf18a07e11674d534274000aa7289e0d0fe033275c211e95",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-goblin-monument-conqueror.png",
+        "sha256": "2aa2bf2cb57046e0c466cacdb7dd2c4a79b155f765048ff25c91723fde974954",
+        "pixelSha256": "e8b0f0293977016cceea8e2b48885051f9c9f82d00351b93e0068c798a443586",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 10 of 16: a small arch of riveted light grey tin plates and grey-tan planks with an open gateway, a big hazard yellow laurel wreath on its top and a crossed cleaver and spear on its front; the Conqueror's arch and wreath as Goblin scrap, lit from the left. 13 to 15 are close; 0 to 9 and 11 measure lit from the right; 4, 5 and 7 have hazard yellow panels that crowd the wreath.",
+      "acceptedAt": "2026-10-08T14:02:09.501Z"
+    },
+    "chibi-goblin-monument-engineer": {
+      "id": "chibi-goblin-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN:ENGINEER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "engineer-a",
+      "candidate": 0,
+      "candidateSha256": "6aa189b61a5420f95afd7ac57dee207d8101296be197b481ab73881bd02b7ad4",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-goblin-monument-engineer.png",
+        "sha256": "da2ef95fad9bf976622277fcbad1a1353a93ab75ab786bc1bcc3f6386f57f93b",
+        "pixelSha256": "972038540ef37b42228daa1590d6bf7606cfc4da16af1182402532c3b2496944",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16 (resumed after a dropped poll): a crooked pillar of riveted light grey tin with hazard yellow stripes, a big tin cogwheel standing at its top, a smaller one at its foot and a spanner bolted on; the Engineer's cogwheel in Goblin scrap, lit from the left. A weak row: most candidates are plain plank or tin pillars with no cog; 7 has a hazard yellow cog on top but no tools; 3, 11 and 15 heaps of grey cogs.",
+      "acceptedAt": "2026-10-08T14:07:33.472Z"
+    },
+    "chibi-goblin-monument-explorer": {
+      "id": "chibi-goblin-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN:EXPLORER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "explorer-a",
+      "candidate": 8,
+      "candidateSha256": "78188843b424642fa8cf78ed4b10471cfdc147369cca6cf7c78dd976383b902f",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-goblin-monument-explorer.png",
+        "sha256": "4f3c1855df16f3baec5a478ab36e651fb14f3798f2231ad82aad52aa5cf2c764",
+        "pixelSha256": "097fbd698d86827218a9042fa66c5382e1227b0de5cfeca383b512baa5c67bb6",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 8 of 16: a crooked obelisk of riveted light grey tin sheets with a big hazard yellow compass dial bolted on its front and a dented tin spyglass at its foot; the Explorer's compass and spyglass as Goblin scrap, lit from the left. 13 is close in grey planks; 0, 1, 6, 11 and 14 a loose yellow star; 4 and 7 buff hide patches; 12 and 15 heaps of planks.",
+      "acceptedAt": "2026-10-08T13:41:31.334Z"
+    },
+    "chibi-goblin-monument-land-baron": {
+      "id": "chibi-goblin-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN:LAND_BARON",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "land-baron-a",
+      "candidate": 5,
+      "candidateSha256": "1a3203b31e6dc027ce75d9ab6ab38145556bbeeb45164919d4782f3fd2b5621c",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-goblin-monument-land-baron.png",
+        "sha256": "7443b6278b1923f65f84fcbc6e4e354380459026627748ad88fa309afd45782c",
+        "pixelSha256": "6ddc503bdaff7c8ec57286ca56d8e55fe2b05c8fd56b9a8cfad3a7d9f2267852",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 5 of 16: a stout boundary block of riveted light grey tin plates with a hazard yellow shield bearing a grinning face, a dented hazard yellow tin crown on its top and a crooked plank signpost with two arrow boards; the Land Baron's crowned boundary stone and signpost as Goblin scrap, lit from the left. Most others (1 to 3, 6, 7, 9 to 11, 13) run the signpost into the canvas edge (48 px wide); 14 has a skull.",
+      "acceptedAt": "2026-10-08T14:06:22.854Z"
+    },
+    "chibi-goblin-monument-muster": {
+      "id": "chibi-goblin-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN:MUSTER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "muster-a",
+      "candidate": 11,
+      "candidateSha256": "dcf880337f473247896d92adb9339452136acd92a9a9d4e085931366edc65ae1",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-goblin-monument-muster.png",
+        "sha256": "d41f433ac94ecdc92a98cd85aa3ca9d7df79e2279ba51c8633e1abdf81350011",
+        "pixelSha256": "65b2b52e93f4972ff8803c7d0d59dff9b7cc656cf46c9a60481d858df6bda269",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 11 of 16: a crooked plank post hung with a dented tin pot lid, plank shields and a round wooden one, tied with rope, under a big curved horn across its top; the Muster's trophy of shields under a horn as Goblin scrap, lit from the left. The sixteen are near twins; 2, 6, 9 and 10 have a buff hide patch in place of a shield.",
+      "acceptedAt": "2026-10-08T14:02:10.971Z"
+    },
+    "chibi-goblin-monument-sea-dog": {
+      "id": "chibi-goblin-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN:SEA_DOG",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "sea-dog-a",
+      "candidate": 0,
+      "candidateSha256": "8f848677dc8717186f1e9443d00453d8cf62dd8a8329acb8144d8c95f583422f",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-goblin-monument-sea-dog.png",
+        "sha256": "d4080399db02fbabf76d17c5ca13be3fb80c222186c66144f9aeb654d8cd1fdd",
+        "pixelSha256": "aea26ffa57fbc428db6b74e3b4f4640041c327d3f0da9440b0b897f2da41846c",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a crooked post of riveted tin and planks with a hazard yellow ship's wheel on its top, a dented tin anchor against its front and a coil of rope at its foot; the Sea Dog's wheel, anchor and rope as Goblin scrap, lit from the left. 2, 6 and 13 are close; 7 a tiny wheel; 9 a ring.",
+      "acceptedAt": "2026-10-08T14:06:23.561Z"
+    },
+    "chibi-goblin-monument-slayer": {
+      "id": "chibi-goblin-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN:SLAYER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "slayer-a",
+      "candidate": 2,
+      "candidateSha256": "6d336da63a32015d33fa5e67180019099a1abc3a4739e93f84b9fa155cc0293e",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-goblin-monument-slayer.png",
+        "sha256": "711d7c87ed6ca49759917995ba286e37658749a1d5bbd3824adf260300749be2",
+        "pixelSha256": "d28ad5317bd967ce810fb806d219fe443668b5cc015490a388d3241633fe94f8",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 2 of 16: a great chunky cleaver sword with a hazard yellow crossguard plunged into a heap of riveted tin scrap, a laurel wreath hanging on the hilt and a dented tin helmet beside the blade; the Slayer's sword in the stone, wreath and helmet as Goblin scrap, lit from the left. 10 is a cleaner sword with a horned helmet but no heap; 14 has stray pixels; 0, 3, 5, 8 and 13 run to the canvas edge.",
+      "acceptedAt": "2026-10-08T14:06:24.293Z"
+    }
+  }
+}

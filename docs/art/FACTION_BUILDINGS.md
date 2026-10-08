@@ -15,7 +15,9 @@ Mushroom Farm were redrawn, and the shared Sawmill was redone. Rule 3's
 history. **Section 12 supersedes the "same" of the Lumber Camp and the
 Sawmill** (bead `pulp_wars-2yc.38`): every faction but the Humans draws its
 own pair, **section 13 the "same" of the Forge, the Workshop, the Port
-and the Shipyard, and section 14 the "same" of the Market**.
+and the Shipyard, and section 14 the "same" of the Market**. **Section 15
+adds a Monument per achievement and faction** (art only; the board does
+not draw them yet).
 
 The user's request (2026-10-03): some, not all, building sprites and
 descriptions become faction specific. When the Undead take a city, the
@@ -987,3 +989,149 @@ Market's row.
   blue-slate outline keeps it apart.
 - **No candidate drew the Martian crate hovering**; it stands on the
   ground.
+
+## 15. Faction Monuments (bead `pulp_wars-eu3r.2`)
+
+The user, 2026-10-08, approved this plan: the seven achievement Monuments of
+[section 11](#11-achievement-monuments-a-richer-graveyard-the-frost-garden-plot-and-the-soil-of-fertile-ground-bead-pulp_wars-2yc15)
+are the **Human** look; every other faction gets the seven in its own
+materials (49 masters), plus **one faction obelisk** each (7) for a viewer
+who sees only the building, so the builder's faction is public and the
+achievement stays hidden as today. **Art only:** nothing draws them yet. The
+skin rule (the builder's faction is recorded and kept after capture) is bead
+`pulp_wars-eu3r.3`, which also wires the subjects to the board.
+
+**What each must say, in every faction** (the motif of the Human one):
+Explorer, an obelisk with a compass rose and a spyglass; Engineer, a pillar
+under a cogwheel with a crossed hammer and spanner; Muster, a pillar hung
+with shields under a war horn; Conqueror, a small arch with a laurel wreath;
+Land Baron, a boundary stone with a carved shield, a crown and a signpost;
+Sea Dog, a column with an anchor, a coil of rope and a ship's wheel; Slayer,
+a sword in a stone with a wreath and a helmet. The Ice Folk keep the anchor
+although they have no ship: their Sea Dog counts land units on ice
+([RULESET_7_CURRENT.md](../product/RULESET_7_CURRENT.md)), and the anchor is
+what reads as the achievement.
+
+### The art
+
+Batches `monuments-<faction>` (one per faction), class `calm-feature`
+(`generate-image-v2`, 16 candidates a call), on the 48 x 72 canvas, anchor
+and seat of the shared Monument, no owner colour, no mask. Subjects
+`IMPROVEMENT:MONUMENT:<FACTION>:<ACHIEVEMENT>` (asset
+`chibi-<faction>-monument-<achievement>`) and `IMPROVEMENT:MONUMENT:<FACTION>`
+(asset `chibi-<faction>-monument`). Their subject texts are in
+[`SHARED.json`](../../scripts/art/chibi/subjects/SHARED.json) beside the
+Human ones: the achievement's motif, then the faction's materials as one
+palette line (Undead pale slate `#8b92a3`, ivory bone, dark iron, violet
+glows; Goblin riveted tin `#9aa5a8`, planks, buff hide, hazard yellow
+`#fdd20f`; Dinosaur dark basalt, cream bone, hide, vine, orange feathers,
+no metal; Martian chrome, gunmetal, magenta lights; Ice Folk pale stone,
+snow, bone, one ice blue; Dwarf warm grey stone, soot-black iron, copper
+`#c27c3a`, brass; Candy milk chocolate `#7a4526`, cream, caramel `#e0a040`,
+pale pink `#f6c9d2`, never red). Every accepted candidate and why the others
+were passed over is in the records.
+
+| Faction  | Explorer        | Engineer        | Muster        | Conqueror        | Land Baron        | Sea Dog       | Slayer        | Obelisk                  |
+| -------- | --------------- | --------------- | ------------- | ---------------- | ----------------- | ------------- | ------------- | ------------------------ |
+| Undead   | `explorer-a` 2  | `engineer-a` 0  | `muster-a` 3  | `conqueror-a` 3  | `land-baron-a` 1  | `sea-dog-a` 1 | `slayer-a` 10 | `explorer-a` 13 (reused) |
+| Goblin   | `explorer-a` 8  | `engineer-a` 0  | `muster-a` 11 | `conqueror-a` 10 | `land-baron-a` 5  | `sea-dog-a` 0 | `slayer-a` 2  | `explorer-a` 14 (reused) |
+| Dinosaur | `explorer-a` 5  | `engineer-a` 12 | `muster-a` 12 | `conqueror-a` 10 | `land-baron-a` 6  | `sea-dog-a` 3 | `slayer-a` 7  | `obelisk-a` 5            |
+| Martian  | `explorer-a` 10 | `engineer-a` 0  | `muster-a` 8  | `conqueror-a` 0  | `land-baron-a` 10 | `sea-dog-a` 5 | `slayer-a` 8  | not made (pending)       |
+| Ice Folk | `explorer-a` 1  | `engineer-b` 6  | `muster-a` 13 | `conqueror-a` 0  | `land-baron-a` 13 | `sea-dog-a` 6 | `slayer-a` 9  | `explorer-a` 9 (reused)  |
+| Dwarf    | `explorer-a` 4  | `engineer-a` 6  | `muster-a` 13 | `conqueror-a` 15 | `land-baron-a` 2  | `sea-dog-a` 9 | `slayer-a` 9  | `explorer-a` 2 (reused)  |
+| Candy    | `explorer-a` 4  | `engineer-a` 3  | `muster-a` 2  | `conqueror-a` 0  | `land-baron-b` 0  | `sea-dog-a` 4 | `slayer-a` 4  | `explorer-a` 2 (reused)  |
+
+- **Sample first**: the Dinosaur set (the hardest: no metal, so a stone
+  wheel, a bone spyglass, a trilithon, a stone anchor) and the Martian and
+  Candy Explorers were reviewed at 1:1 and enlarged before the other
+  factions were batched.
+- **PixelLab calls: 52** (US$4.94; 0.095 each): 49 first recipes, the
+  Dinosaur obelisk and two redone recipes. Six calls lost their poll
+  connection ("fetch failed") after the job was paid; `art:chibi -- resume`
+  (below) fetched their candidates without a new job.
+- **Redone.** `land-baron-a` of the Candy ran its wafer signpost into the
+  canvas edge in every candidate and had owner key red in most jewels;
+  `land-baron-b` adds "Small signpost; nothing touches the edges."
+  `engineer-a` of the Ice Folk was lit from the right in all sixteen;
+  `engineer-b` adds "Its left face is pale, its right face shaded."
+- **Five obelisks are reused candidates, no new job.** Generation stopped
+  at US$4.94: one more call (US$0.095) would pass the bead's US$5 limit.
+  Every Explorer sheet is sixteen obelisks of the faction's materials, and
+  some lost the compass rose and the spyglass the prompt asked for; such a
+  piece is exactly a faction obelisk. The batch manifest names the recipe
+  on the asset (`"fromRecipe": "explorer-a"`), and
+  `art:chibi -- accept --id explorer-a --candidate K --asset chibi-<faction>-monument`
+  derives the obelisk's master from that candidate; the Explorer keeps its
+  own verdict on the sheet. Rule for taking one: **no achievement's motif**
+  (rose, spyglass or telescope, cogwheel or tools, shields and horn, arch
+  and wreath, crown and signpost, anchor and wheel, sword) and the
+  faction's materials. Taken: Undead 13 (slate, violet gems, bone trim),
+  Goblin 14 (crooked tin, hide skirt, one hazard yellow star, the star the
+  obelisk recipe asked for), Ice Folk 9 (clear ice blue), Dwarf 2 (runic
+  stone, copper bands, a lantern), Candy 2 (stepped chocolate, pink
+  sprinkles and star; a two-pixel wafer spyglass on its plinth is the one
+  trace of the Explorer prompt). Each obelisk keeps its own `obelisk-a`
+  recipe; a later dedicated generation supersedes the reuse when
+  accepted.
+- **Not made: the Martian obelisk.** Every Martian candidate either
+  carries a motif (all sixteen Explorers stand by a telescope) or is the
+  Sea Dog's column without its anchor, which would read as the Sea Dog.
+  `obelisk-a` is pending (one call, about US$0.095, needs the user's
+  approval above the limit); until then a Martian Monument a viewer may
+  not identify falls back to the shared obelisk.
+- **No red, inside the canvas.** None of the fifty-five has a pixel of the owner
+  key red; each is seated 3 px above the bottom and inside x 1 to 46.
+
+### In the game
+
+Nothing changes on screen yet. The list is
+[`chibi-faction-monuments-art-manifest.ts`](../../src/assets/chibi-faction-monuments-art-manifest.ts)
+(`CHIBI_FACTION_MONUMENT_ART_ASSETS_V7`), registered in the direction
+registry (`chibiDirectionArtAssetsV7`), so the live look resolves the
+subjects and the preload fetches each faction's Monuments with that
+faction's art (every manifest raster is in the inventory). Nothing asks for
+the subjects: the board, the dock, the build buttons, the Achievements
+screen and the Gallery ask for the Human or the shared subject as before,
+and `chibiFallbackSubjectV7` maps every new subject to the shared Monument.
+Bead `pulp_wars-eu3r.3` asks for them (a FULL viewer
+`IMPROVEMENT:MONUMENT:<FACTION>:<ACHIEVEMENT>`, everyone else
+`IMPROVEMENT:MONUMENT:<FACTION>`; the Humans keep today's subjects).
+
+### Evidence
+
+`npm run art:faction-monuments-review` writes
+`art/pixellab/reviews/faction-monuments/`: `sheet-<faction>.png` (the Human
+seven and the shared obelisk above the faction's, x4 on their ground, then
+1:1 on 80 x 80 tiles placed by the anchor), `overview-1x.png` and
+`overview-x2.png` (every faction by every Monument on its ground), and
+`index.json` (size, box, faces lighting, key-colour pixels, hash). A slot
+not made is a dashed "missing" cell. Tests:
+`tests/unit/chibi-faction-monuments-assets.test.ts`.
+
+![Every faction's Monuments on its ground](../../art/pixellab/reviews/faction-monuments/overview-x2.png)
+
+### Weak spots
+
+- **Weakest motifs**: the Goblin Engineer (a tin pillar with two grey cogs
+  and a spanner; the cog is not on top and there is no crossed pair), the
+  Martian Sea Dog (an anchor and cable on a chrome column, no wheel; no
+  candidate had both) and the Candy Sea Dog (an anchor and rope, no wheel).
+  The Ice Folk and Undead Musters carry the horn at the foot, not on top;
+  the Ice Folk Muster has two shields, not four.
+- **The Dinosaur basalt is near-black**, the darkest set on the board. The
+  faces measure counts most of it as outline, so the Muster (-3.0) and the
+  Land Baron (-2.1) read as lit from the right although their stone's front
+  face is the lit one; the test lists both. The Dwarf Engineer and Conqueror
+  are flat (-0.6, +1.4): every other Dwarf candidate of those two was lit
+  from the right.
+- **The Dinosaur obelisk's tusk and painted spiral can read as a face** at
+  x4 (a tusk like an eyebrow); at 1:1 it is a standing stone.
+- **The Candy Explorer's rose looks like a biscuit** with a bolt, and the
+  Candy Slayer has a rose-brown halo round its whole outline.
+- **The reused obelisks resemble their faction's Explorer** in outline
+  (they come from its sheet), as the Human obelisk resembles the Human
+  Explorer; none carries the rose. The Ice Folk one is ice, not the snowy
+  stone of its set, and the Goblin star sits where the Goblin Explorer
+  bolts its dial.
+- **The Martian Muster and Sea Dog are tall grey columns**, the least
+  saturated of the Martian set; the Dwarf Slayer has no helmet.

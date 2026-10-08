@@ -597,3 +597,9 @@ Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-wor
 - **Market** (`chibi-ice-folk-market`, `market-a` candidate 2): two pale timber stalls under snow-heaped cream hide awnings, rows of silver fish and blocks of ice-blue ice, a small sled of sacks.
 
 Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-faction-bead-pulp_wars-eu3r1). Name unchanged; drawn by the owner of the territory; the shared Market in the Classic look and the LEGACY art set.
+
+## Monuments (bead `pulp_wars-eu3r.2`)
+
+The seven achievement Monuments and the faction obelisk in Ice Folk materials. Pale grey stone, white snow, ivory bone and one ice blue (`chibi-ice-folk-monument-<achievement>`): the Explorer a snow-capped obelisk with a bone compass rose; the Engineer a snowy pillar under a bone cogwheel; the Muster a snowy pillar with a timber and a hide shield and a tusk horn at its foot; the Conqueror an arch of snow blocks with an ice-crystal wreath; the Land Baron a boundary stone with a mammoth shield and an ice-crystal crown; the Sea Dog a snowy column with a bone anchor and a bone wheel (the anchor stays: their Sea Dog counts units on ice); the Slayer an ice-blade sword with a fur-lined helmet. **Obelisk** (`chibi-ice-folk-monument`): a clear ice-blue obelisk, candidate 9 of the Explorer sheet reused (no new PixelLab job). Art only: the board still draws the Human (achievement) Monument or the shared obelisk until bead `pulp_wars-eu3r.3` wires the skin rule.
+
+Record: [faction buildings, section 15](../FACTION_BUILDINGS.md#15-faction-monuments-bead-pulp_wars-eu3r2).

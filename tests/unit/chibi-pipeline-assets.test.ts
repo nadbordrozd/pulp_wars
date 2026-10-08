@@ -49,6 +49,7 @@ import {
   recordsLockPath,
   registryEntry,
   rejectRecipe,
+  resumeRecipe,
   retireAsset,
   sha256,
   tallTerrainLayerPaths,
@@ -56,6 +57,7 @@ import {
   withRecordsLock,
   type GenerationProvider,
   type PipelineContext,
+  type ProviderResult,
 } from "../../scripts/art/chibi/pipeline";
 import {
   bestSeamlessWindow,
@@ -1036,6 +1038,143 @@ describe("chibi concurrent record writes (pulp_wars-28w)", () => {
       Object.keys(records.recipes).sort((a, b) => a.localeCompare(b)),
     );
     expect(text).toBe(`${JSON.stringify(records, null, 2)}\n`);
+  }, 60_000);
+
+  it("resumes a paid job whose wait failed, without a new submission (pulp_wars-eu3r.2)", async () => {
+    let paid: ProviderResult | undefined;
+    let submissions = 0;
+    const context = await scratch((inner) => ({
+      kind: inner.kind,
+      async generate(recipe, request, source, submitted, colour) {
+        // The job is submitted and finishes, but the poll connection drops.
+        paid = await inner.generate(
+          recipe,
+          request,
+          source,
+          async (jobId) => {
+            submissions += 1;
+            await submitted(jobId);
+          },
+          colour,
+        );
+        throw new Error("fetch failed");
+      },
+    }));
+    await expect(generateRecipe(context, "dry-city-a")).rejects.toThrow(
+      /fetch failed/,
+    );
+    const lost = (await loadRecords(context.layout, "0")).recipes["dry-city-a"];
+    expect(lost?.jobId).toBeDefined();
+    expect(lost?.rawSheet).toBeUndefined();
+    // generate never submits the recipe again.
+    await generateRecipe(context, "dry-city-a");
+    expect(submissions).toBe(1);
+    // A provider without resume refuses; the PixelLab one waits again.
+    await expect(resumeRecipe(context, "dry-city-a")).rejects.toThrow(
+      /cannot resume/,
+    );
+    const resumed: string[] = [];
+    await resumeRecipe(
+      {
+        ...context,
+        provider: {
+          ...context.provider,
+          async resume(recipe, jobId) {
+            resumed.push(`${recipe.id} ${jobId}`);
+            if (paid === undefined) throw new Error("nothing paid");
+            return { ...paid, jobId };
+          },
+        },
+      },
+      "dry-city-a",
+    );
+    expect(resumed).toEqual([`dry-city-a ${lost?.jobId}`]);
+    expect(submissions).toBe(1);
+    const record = (await loadRecords(context.layout, "0")).recipes[
+      "dry-city-a"
+    ];
+    expect(record?.jobId).toBe(lost?.jobId);
+    expect(record?.submittedAt).toBe(lost?.submittedAt);
+    expect(record?.rawSheet).toBeDefined();
+    expect(record?.candidateCount).toBe(paid?.images.length);
+    // A finished recipe is not resumed again, and an unsubmitted one is
+    // left to generate.
+    await resumeRecipe(context, "dry-city-a");
+    await expect(resumeRecipe(context, "dry-fighter-a")).rejects.toThrow(
+      /never submitted/,
+    );
+  }, 60_000);
+
+  it("accepts a reused candidate of another asset's recipe only when the asset names it (pulp_wars-eu3r.2)", async () => {
+    const context = await scratch();
+    await generateRecipe(context, "dry-fighter-a");
+    await acceptRecipe(context, "dry-fighter-a", 0, "Fighter.", ALL_PASS);
+    // Without fromRecipe the marksman cannot take the fighter's candidate.
+    await expect(
+      acceptRecipe(
+        context,
+        "dry-fighter-a",
+        0,
+        "Marksman.",
+        ALL_PASS,
+        "chibi-dry-marksman",
+      ),
+    ).rejects.toThrow(/fromRecipe/);
+    const reusing: PipelineContext = {
+      ...context,
+      manifest: {
+        ...context.manifest,
+        // The fixture's hand-made mask is for the marksman's own master.
+        assets: context.manifest.assets.map((asset) => {
+          if (asset.id !== "chibi-dry-marksman") return asset;
+          const { maskOverride, ...rest } = asset;
+          void maskOverride;
+          return { ...rest, fromRecipe: "dry-fighter-a" };
+        }),
+      },
+    };
+    expect(
+      batchManifestProblems(reusing.manifest, context.fragments, "0").filter(
+        (line) => line.includes("reused recipe"),
+      ),
+    ).toEqual([]);
+    const marksman = await acceptRecipe(
+      reusing,
+      "dry-fighter-a",
+      0,
+      "Marksman from the fighter sheet (the fixture sheet has one candidate).",
+      ALL_PASS,
+      "chibi-dry-marksman",
+    );
+    expect(marksman.id).toBe("chibi-dry-marksman");
+    expect(marksman.recipe).toBe("dry-fighter-a");
+    expect(marksman.candidate).toBe(0);
+    expect(marksman.master.path).toContain("chibi-dry-marksman");
+    const records = await loadRecords(context.layout, "0");
+    // The fighter keeps its asset and the recipe keeps the fighter's verdict.
+    expect(records.assets["chibi-dry-fighter"]?.candidate).toBe(0);
+    expect(records.recipes["dry-fighter-a"]?.review?.candidate).toBe(0);
+    // A reused recipe must exist and belong to another asset of the same
+    // class and canvas.
+    const broken: ChibiBatchManifest = {
+      ...context.manifest,
+      assets: context.manifest.assets.map((asset) =>
+        asset.id === "chibi-dry-city-1"
+          ? { ...asset, fromRecipe: "dry-fighter-a" }
+          : asset.id === "chibi-dry-marksman"
+            ? { ...asset, fromRecipe: "dry-nothing-a" }
+            : asset,
+      ),
+    };
+    const problems = batchManifestProblems(broken, context.fragments, "0").join(
+      "\n",
+    );
+    expect(problems).toContain(
+      "chibi-dry-city-1: a reused recipe must belong to another asset of the same class and canvas",
+    );
+    expect(problems).toContain(
+      "chibi-dry-marksman: unknown reused recipe dry-nothing-a",
+    );
   }, 60_000);
 
   it("retires an asset removed from the manifest and keeps its recipes as history (pulp_wars-9s0.7)", async () => {

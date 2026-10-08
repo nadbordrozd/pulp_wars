@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments-dwarf",
+  "title": "Dwarf Monuments: the seven achievement Monuments and the faction obelisk in Dwarf materials",
+  "bead": "pulp_wars-eu3r.2",
+  "faction": "DWARF",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-dwarf-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF:EXPLORER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dwarf-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF:ENGINEER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dwarf-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF:MUSTER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dwarf-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF:CONQUEROR",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dwarf-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF:LAND_BARON",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dwarf-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF:SEA_DOG",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dwarf-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF:SLAYER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dwarf-monument",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false,
+      "fromRecipe": "explorer-a"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "explorer-a",
+      "asset": "chibi-dwarf-monument-explorer",
+      "endpoint": "generate-image-v2",
+      "seed": 22561,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dwarf Explorer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "engineer-a",
+      "asset": "chibi-dwarf-monument-engineer",
+      "endpoint": "generate-image-v2",
+      "seed": 22562,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dwarf Engineer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "muster-a",
+      "asset": "chibi-dwarf-monument-muster",
+      "endpoint": "generate-image-v2",
+      "seed": 22563,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dwarf Muster Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "conqueror-a",
+      "asset": "chibi-dwarf-monument-conqueror",
+      "endpoint": "generate-image-v2",
+      "seed": 22564,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dwarf Conqueror Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "land-baron-a",
+      "asset": "chibi-dwarf-monument-land-baron",
+      "endpoint": "generate-image-v2",
+      "seed": 22565,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dwarf Land Baron Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "sea-dog-a",
+      "asset": "chibi-dwarf-monument-sea-dog",
+      "endpoint": "generate-image-v2",
+      "seed": 22566,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dwarf Sea Dog Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "slayer-a",
+      "asset": "chibi-dwarf-monument-slayer",
+      "endpoint": "generate-image-v2",
+      "seed": 22567,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dwarf Slayer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "obelisk-a",
+      "asset": "chibi-dwarf-monument",
+      "endpoint": "generate-image-v2",
+      "seed": 22568,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dwarf obelisk, the Monument a viewer sees when its achievement is hidden, on the 48 x 72 canvas and recipe class of batch monuments."
+    }
+  ]
+}

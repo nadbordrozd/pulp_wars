@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments-undead",
+  "title": "Undead Monuments: the seven achievement Monuments and the faction obelisk in Undead materials",
+  "bead": "pulp_wars-eu3r.2",
+  "faction": "UNDEAD",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-undead-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD:EXPLORER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-undead-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD:ENGINEER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-undead-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD:MUSTER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-undead-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD:CONQUEROR",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-undead-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD:LAND_BARON",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-undead-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD:SEA_DOG",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-undead-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD:SLAYER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-undead-monument",
+      "subject": "IMPROVEMENT:MONUMENT:UNDEAD",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false,
+      "fromRecipe": "explorer-a"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "explorer-a",
+      "asset": "chibi-undead-monument-explorer",
+      "endpoint": "generate-image-v2",
+      "seed": 22511,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Undead Explorer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "engineer-a",
+      "asset": "chibi-undead-monument-engineer",
+      "endpoint": "generate-image-v2",
+      "seed": 22512,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Undead Engineer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "muster-a",
+      "asset": "chibi-undead-monument-muster",
+      "endpoint": "generate-image-v2",
+      "seed": 22513,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Undead Muster Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "conqueror-a",
+      "asset": "chibi-undead-monument-conqueror",
+      "endpoint": "generate-image-v2",
+      "seed": 22514,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Undead Conqueror Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "land-baron-a",
+      "asset": "chibi-undead-monument-land-baron",
+      "endpoint": "generate-image-v2",
+      "seed": 22515,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Undead Land Baron Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "sea-dog-a",
+      "asset": "chibi-undead-monument-sea-dog",
+      "endpoint": "generate-image-v2",
+      "seed": 22516,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Undead Sea Dog Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "slayer-a",
+      "asset": "chibi-undead-monument-slayer",
+      "endpoint": "generate-image-v2",
+      "seed": 22517,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Undead Slayer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "obelisk-a",
+      "asset": "chibi-undead-monument",
+      "endpoint": "generate-image-v2",
+      "seed": 22518,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Undead obelisk, the Monument a viewer sees when its achievement is hidden, on the 48 x 72 canvas and recipe class of batch monuments."
+    }
+  ]
+}

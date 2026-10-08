@@ -482,3 +482,9 @@ Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-wor
 - **Market** (`chibi-dinosaur-market`, `market-a` candidate 9): one long log stall under a roof of spotted hide on four big tusks, heaped with yellow and orange fruit and stone tools, a bundle of spears and a woven basket.
 
 Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-faction-bead-pulp_wars-eu3r1). Name unchanged; drawn by the owner of the territory; the shared Market in the Classic look and the LEGACY art set.
+
+## Monuments (bead `pulp_wars-eu3r.2`)
+
+The seven achievement Monuments and the faction obelisk in Dinosaur materials. Dark basalt with cream bone, hide, green vine and orange feathers, no metal (`chibi-dinosaur-monument-<achievement>`): the Explorer a standing stone with a carved compass rose and a bone spyglass; the Engineer a pillar under a stone wheel with a bone pick and stone hammer; the Muster a pillar with turtle-shell and hide shields under a tusk horn; the Conqueror a trilithon with a fern wreath; the Land Baron a boundary stone with a tusk crown and a stick signpost; the Sea Dog a column with a stone anchor and a wood and bone wheel; the Slayer a flint sword with a horned skull helmet. **Obelisk** (`chibi-dinosaur-monument`): a standing stone with an orange spiral, two tusks and orange feathers (`obelisk-a`). Art only: the board still draws the Human (achievement) Monument or the shared obelisk until bead `pulp_wars-eu3r.3` wires the skin rule.
+
+Record: [faction buildings, section 15](../FACTION_BUILDINGS.md#15-faction-monuments-bead-pulp_wars-eu3r2).

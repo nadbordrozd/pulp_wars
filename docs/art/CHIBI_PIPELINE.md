@@ -1603,6 +1603,36 @@ buildings: thirteen `calm-feature` assets at 72 x 72 in the batches
   session, or Node's built-in `fetch` bypasses the egress proxy and is
   refused with HTTP 403.
 
+### Faction Monuments and resuming a job (bead `pulp_wars-eu3r.2`)
+
+Every achievement Monument in each non-Human faction's materials, and one
+obelisk per faction
+([what and why](FACTION_BUILDINGS.md#15-faction-monuments-bead-pulp_wars-eu3r2)):
+batches `monuments-<faction>`, `calm-feature` at 48 x 72, subjects
+`IMPROVEMENT:MONUMENT:<FACTION>:<ACHIEVEMENT>` and
+`IMPROVEMENT:MONUMENT:<FACTION>` (texts in `SHARED.json`; the manifest
+subject pattern accepts both).
+
+- **A dropped poll no longer loses a paid job.** A poll of a background
+  job that fails to connect ("fetch failed") or answers 5xx is retried
+  until the deadline. A run that still died after submitting leaves a
+  record with a job id and no candidates; `generate` skips such a recipe
+  ("already generated"), and
+  `npm run art:chibi -- resume --batch N --ids a,b` waits for that job
+  again (it needs the job's receipt) and stores its candidates, with no new
+  PixelLab job. Six Monument jobs were recovered this way.
+- **A reused candidate.** An asset may name `"fromRecipe": "<recipe>"`, a
+  recipe of another asset of the same batch, class and canvas; then
+  `accept --id <recipe> --candidate K --asset <asset>` derives its master
+  from that sheet with no new PixelLab job, and the recipe keeps its own
+  asset's verdict. Five faction obelisks are pieces of their Explorer
+  sheets taken this way (no rose, no spyglass). The asset may keep a recipe
+  of its own; accepting that later supersedes the reuse.
+- **Node's fetch and the agent proxy.** In a session whose outbound HTTPS
+  goes through a proxy, run PixelLab commands with `NODE_USE_ENV_PROXY=1`:
+  Node's built-in fetch ignores `HTTPS_PROXY` otherwise, and the egress
+  answers 403 "Host not in allowlist".
+
 ## The Candy batches (bead `pulp_wars-jdb.5`)
 
 Batches `direction-candy` and `naval-candy` hold the direction and the

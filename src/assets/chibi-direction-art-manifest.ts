@@ -15,6 +15,7 @@ import {
   CHIBI_FACTION_BUILDING_ART_ASSETS_V7,
   CHIBI_UNDEAD_GROUND_ART_ASSETS_V7,
 } from "./chibi-faction-buildings-art-manifest";
+import { CHIBI_FACTION_MONUMENT_ART_ASSETS_V7 } from "./chibi-faction-monuments-art-manifest";
 import { CHIBI_MONUMENT_ART_ASSETS_V7 } from "./chibi-monuments-art-manifest";
 import { CHIBI_RANGE_MINED_MOUNTAIN_ART_ASSETS_V7 } from "./chibi-mountain-ranges-manifest";
 import { CHIBI_NAVAL_FACTION_ART_ASSETS_V7 } from "./chibi-naval-faction-art-manifest";
@@ -623,6 +624,9 @@ export function chibiDirectionArtAssetsV7(): readonly ChibiArtAssetV7[] {
     ...CHIBI_FACTION_BUILDING_ART_ASSETS_V7,
     // --- One Monument look per achievement (pulp_wars-2yc.15) ---
     ...CHIBI_MONUMENT_ART_ASSETS_V7,
+    // --- The faction Monuments (pulp_wars-eu3r.2): registered, but nothing
+    // asks for their subjects until the skin rule (pulp_wars-eu3r.3) ---
+    ...CHIBI_FACTION_MONUMENT_ART_ASSETS_V7,
     // --- The range-style mined mountain (pulp_wars-6kn) ---
     ...CHIBI_RANGE_MINED_MOUNTAIN_ART_ASSETS_V7,
     ...CHIBI_UNDEAD_GROUND_ART_ASSETS_V7,

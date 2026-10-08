@@ -1,0 +1,1677 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments-ice-folk",
+  "recipes": {
+    "conqueror-a": {
+      "id": "conqueror-a",
+      "asset": "chibi-ice-folk-monument-conqueror",
+      "jobId": "61398257-71db-4d53-8a1a-1ae1e81b6ba9",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-ice-folk",
+        "asset": "chibi-ice-folk-monument-conqueror",
+        "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:CONQUEROR",
+        "faction": "ICE_FOLK",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22554,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Ice Folk Conqueror's monument: one small triumphal arch of white snow blocks, two thick square pillars and a heavy lintel with an open gateway between them that shows the transparent background, one big laurel wreath of ice-blue ice crystals standing on top of the lintel, and a crossed bone spear and harpoon on its front. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Conqueror's monument: one small triumphal arch of white snow blocks, two thick square pillars and a heavy lintel with an open gateway between them that shows the transparent background, one big laurel wreath of ice-blue ice crystals standing on top of the lintel, and a crossed bone spear and harpoon on its front. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Conqueror's monument: one small triumphal arch of white snow blocks, two thick square pillars and a heavy lintel with an open gateway between them that shows the transparent background, one big laurel wreath of ice-blue ice crystals standing on top of the lintel, and a crossed bone spear and harpoon on its front. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:31:31.397Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-ice-folk/conqueror-a.png",
+      "rawSheetSha256": "610943f9308a729cdfe3aace43b10a6b108814069a71fd6079982e82aea6e4a9",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8857,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9143,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9143,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9143,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8857,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:32:57.437Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a small arch of white snow blocks with an open gateway, a big laurel wreath of ice-blue crystal leaves on its lintel and a crossed bone spear and harpoon on its front; the Conqueror's arch and wreath in Ice Folk snow and ice, lit from the left. The sixteen are near twins; 6, 7 and 11 have a crown of ice shards or a skull in place of the wreath or the weapons.",
+        "reviewedAt": "2026-10-08T13:40:21.630Z"
+      }
+    },
+    "engineer-a": {
+      "id": "engineer-a",
+      "asset": "chibi-ice-folk-monument-engineer",
+      "jobId": "1fa1064b-9097-45b1-b9af-625b86b14679",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-ice-folk",
+        "asset": "chibi-ice-folk-monument-engineer",
+        "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:ENGINEER",
+        "faction": "ICE_FOLK",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22552,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Ice Folk Engineer's monument: one tall square stone pillar rising straight out of the ground, topped by one big ivory bone cogwheel dusted with snow standing upright on its edge, with a crossed bone hammer and ice pick with an ice-blue head on its front. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Engineer's monument: one tall square stone pillar rising straight out of the ground, topped by one big ivory bone cogwheel dusted with snow standing upright on its edge, with a crossed bone hammer and ice pick with an ice-blue head on its front. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Engineer's monument: one tall square stone pillar rising straight out of the ground, topped by one big ivory bone cogwheel dusted with snow standing upright on its edge, with a crossed bone hammer and ice pick with an ice-blue head on its front. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:28:29.168Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-ice-folk/engineer-a.png",
+      "rawSheetSha256": "a04ee69b39fa802eb537d63e21bb16bcedf86274d80b95867ba293ce41eec32c",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0082,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7576,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8182,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7813,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8276,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8485,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:30:19.910Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Rejected: all sixteen are lit from the right (faces -2.7 to -27.2; the pillar's right face is the pale one), against the light rule. The bone cogwheel and the crossed hammer and ice pick were right (3 and 11 the best). Redone as engineer-b.",
+        "reviewedAt": "2026-10-08T14:08:16.408Z"
+      }
+    },
+    "engineer-b": {
+      "id": "engineer-b",
+      "asset": "chibi-ice-folk-monument-engineer",
+      "jobId": "f3597de6-7a35-4784-bf56-6471337adc48",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-ice-folk",
+        "asset": "chibi-ice-folk-monument-engineer",
+        "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:ENGINEER",
+        "faction": "ICE_FOLK",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22652,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Ice Folk Engineer's monument: one tall square stone pillar rising straight out of the ground, topped by one big ivory bone cogwheel dusted with snow standing upright on its edge, with a crossed bone hammer and ice pick with an ice-blue head on its front. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Its left face is pale, its right face shaded."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Engineer's monument: one tall square stone pillar rising straight out of the ground, topped by one big ivory bone cogwheel dusted with snow standing upright on its edge, with a crossed bone hammer and ice pick with an ice-blue head on its front. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only. Its left face is pale, its right face shaded.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Engineer's monument: one tall square stone pillar rising straight out of the ground, topped by one big ivory bone cogwheel dusted with snow standing upright on its edge, with a crossed bone hammer and ice pick with an ice-blue head on its front. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only. Its left face is pale, its right face shaded. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T14:08:18.642Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-ice-folk/engineer-b.png",
+      "rawSheetSha256": "0a4098cacbd81cd0ff5681665a8e9d1bf03de690a7184935e98f81db4294a316",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:09:42.025Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 6,
+        "notes": "Candidate 6 of 16: a square pale grey stone pillar dusted with snow, lit on its left face, topped by a big ivory bone cogwheel standing on its edge, with a crossed bone hammer and ice pick with an ice-blue head on its front; the Engineer's cog and crossed tools in Ice Folk stone, bone and ice. All sixteen are now lit from the left; 0, 4, 7 and 12 have a pink pillar, 1, 5, 9 and 13 a blue one, off the faction's palette.",
+        "reviewedAt": "2026-10-08T14:10:51.917Z"
+      }
+    },
+    "explorer-a": {
+      "id": "explorer-a",
+      "asset": "chibi-ice-folk-monument-explorer",
+      "jobId": "992d2ea8-364d-4dc0-8337-9e2c85cf1c6b",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-ice-folk",
+        "asset": "chibi-ice-folk-monument-explorer",
+        "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:EXPLORER",
+        "faction": "ICE_FOLK",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22551,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Ice Folk Explorer's monument: one tall slender stone obelisk rising straight out of the ground with snow on its top, with one big round ivory bone compass rose with a four-pointed star and an ice-blue crystal centre set on its front; a bone spyglass leans against its foot. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Explorer's monument: one tall slender stone obelisk rising straight out of the ground with snow on its top, with one big round ivory bone compass rose with a four-pointed star and an ice-blue crystal centre set on its front; a bone spyglass leans against its foot. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Explorer's monument: one tall slender stone obelisk rising straight out of the ground with snow on its top, with one big round ivory bone compass rose with a four-pointed star and an ice-blue crystal centre set on its front; a bone spyglass leans against its foot. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:27:14.042Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-ice-folk/explorer-a.png",
+      "rawSheetSha256": "096a53319b9819c0d304dd11a31033feb5b06ec5a7cebe0daf4cd518176e7ac0",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.016,
+          "footprintWidthShare": 0.9583,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0065,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0132,
+          "footprintWidthShare": 0.9756,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9737,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.026,
+          "footprintWidthShare": 0.9355,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0084,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0067,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0087,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:28:29.150Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "Candidate 1 of 16: a pale grey stone obelisk under a thick snow cap, a bone compass rose with an ice-blue star on its front and a bone spyglass at its foot; the Explorer's compass and spyglass in Ice Folk stone, snow and bone, lit from the left. 5 and 12 have the rose but no spyglass; 0, 2, 9, 14 a small rose on a thin needle; 4 and 7 dark stone; 8, 10 and 13 lose the snow or the rose.",
+        "reviewedAt": "2026-10-08T13:40:18.321Z"
+      }
+    },
+    "land-baron-a": {
+      "id": "land-baron-a",
+      "asset": "chibi-ice-folk-monument-land-baron",
+      "jobId": "153261c7-c0a1-4c57-b7d9-a5bf71503487",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-ice-folk",
+        "asset": "chibi-ice-folk-monument-land-baron",
+        "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:LAND_BARON",
+        "faction": "ICE_FOLK",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22555,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Ice Folk Land Baron's monument: one stout square boundary stone, a little wider at its foot, with snow on its flat top, a carved shield bearing a small mammoth on its front, one big crown of ice-blue ice crystals resting on the snow and a small bone signpost with two blank arrow boards beside it. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Land Baron's monument: one stout square boundary stone, a little wider at its foot, with snow on its flat top, a carved shield bearing a small mammoth on its front, one big crown of ice-blue ice crystals resting on the snow and a small bone signpost with two blank arrow boards beside it. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Land Baron's monument: one stout square boundary stone, a little wider at its foot, with snow on its flat top, a carved shield bearing a small mammoth on its front, one big crown of ice-blue ice crystals resting on the snow and a small bone signpost with two blank arrow boards beside it. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:32:57.440Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-ice-folk/land-baron-a.png",
+      "rawSheetSha256": "f4294ec94fa020adc350cdcbd22ec8b0c2abaf5ac48f126aca3f392a923d3515",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8537,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9024,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.907,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8372,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8537,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8049,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8947,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9048,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8974,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8718,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.878,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.875,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8286,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9318,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:34:14.580Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 13,
+        "notes": "Candidate 13 of 16: a stout pale stone boundary stone with a carved shield bearing a mammoth, a crown of ice-blue crystals on its snowy top and a bone signpost with two arrow boards; the Land Baron's crowned boundary stone and signpost in Ice Folk stone and ice, lit from the left. 0, 2, 8 and 15 are close; 1, 5, 9 tall crystal heaps that read less as a crown; 4, 6, 11 no crown.",
+        "reviewedAt": "2026-10-08T13:40:23.355Z"
+      }
+    },
+    "muster-a": {
+      "id": "muster-a",
+      "asset": "chibi-ice-folk-monument-muster",
+      "jobId": "02603125-0f2c-472f-bf9e-63f7d67c6a90",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-ice-folk",
+        "asset": "chibi-ice-folk-monument-muster",
+        "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:MUSTER",
+        "faction": "ICE_FOLK",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22553,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Ice Folk Muster monument, a trophy of many arms: one tall stone pillar with four different shields hung round it (a round cream hide one, a tall bone-rimmed timber one, a square brown hide one, a small ice-blue buckler) and one big curved mammoth tusk horn lying across its snowy top. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Muster monument, a trophy of many arms: one tall stone pillar with four different shields hung round it (a round cream hide one, a tall bone-rimmed timber one, a square brown hide one, a small ice-blue buckler) and one big curved mammoth tusk horn lying across its snowy top. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Muster monument, a trophy of many arms: one tall stone pillar with four different shields hung round it (a round cream hide one, a tall bone-rimmed timber one, a square brown hide one, a small ice-blue buckler) and one big curved mammoth tusk horn lying across its snowy top. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:30:19.923Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-ice-folk/muster-a.png",
+      "rawSheetSha256": "af5da93a262751cc2a5dddc9c8d913e6c9f4c069862afba27895fc5ab0cb0bab",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8788,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8929,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.875,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9429,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8824,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0921,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9706,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.875,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9677,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8824,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9063,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9737,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:31:31.391Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 13,
+        "notes": "Candidate 13 of 16: a snow-capped pale stone pillar hung with a tall bone-rimmed timber shield and a small hide buckler, with a curved mammoth tusk horn at its foot; the Muster's shields and horn in Ice Folk timber, hide and tusk. The weakest of the set: no candidate has four shields or the horn on top; 0, 4, 8 and 12 have one round shield, 3 and 7 a tusk only, 9 one shield and a tusk.",
+        "reviewedAt": "2026-10-08T13:40:19.826Z"
+      }
+    },
+    "sea-dog-a": {
+      "id": "sea-dog-a",
+      "asset": "chibi-ice-folk-monument-sea-dog",
+      "jobId": "9df2cd68-8886-4d3f-9656-b31618b8d71e",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-ice-folk",
+        "asset": "chibi-ice-folk-monument-sea-dog",
+        "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:SEA_DOG",
+        "faction": "ICE_FOLK",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22556,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Ice Folk Sea Dog's monument: one tall stone column rising straight out of the ground with snow on its top, with one big ivory bone anchor standing upright against its front, a coil of brown hide rope round its foot and one bone ship's steering wheel standing on its top. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Sea Dog's monument: one tall stone column rising straight out of the ground with snow on its top, with one big ivory bone anchor standing upright against its front, a coil of brown hide rope round its foot and one bone ship's steering wheel standing on its top. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Sea Dog's monument: one tall stone column rising straight out of the ground with snow on its top, with one big ivory bone anchor standing upright against its front, a coil of brown hide rope round its foot and one bone ship's steering wheel standing on its top. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:34:14.585Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-ice-folk/sea-dog-a.png",
+      "rawSheetSha256": "d50890ef2c48b3c625b75e7833e8573bd1dc8dd760189e565a38af892ed79050",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9524,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.975,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9024,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9231,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.95,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9512,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9024,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8889,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9286,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9459,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8974,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.95,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:35:38.504Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 6,
+        "notes": "Candidate 6 of 16: a snow-capped pale stone column with an ice-blue band, a big ivory bone anchor standing against its front, a coil of hide rope at its foot and a bone ship's wheel on its top; the Sea Dog's anchor, rope and wheel in Ice Folk stone and bone, lit from the left. 11 is close with a thinner column; 2 and 12 lose the column under heaped ice; 9 has a flag.",
+        "reviewedAt": "2026-10-08T13:40:24.951Z"
+      }
+    },
+    "slayer-a": {
+      "id": "slayer-a",
+      "asset": "chibi-ice-folk-monument-slayer",
+      "jobId": "4dbda512-5fbc-4d90-9f38-5b5b5cb24c3d",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-ice-folk",
+        "asset": "chibi-ice-folk-monument-slayer",
+        "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:SLAYER",
+        "faction": "ICE_FOLK",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22557,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Ice Folk Slayer's monument: one great sword with an ice-blue ice blade and a bone hilt plunged point-down into a rough block of stone capped with snow, the long blade upright and its hilt high in the air, one wreath of dark fir sprigs hanging on the hilt and one fur-lined bone helmet resting beside the blade. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Slayer's monument: one great sword with an ice-blue ice blade and a bone hilt plunged point-down into a rough block of stone capped with snow, the long blade upright and its hilt high in the air, one wreath of dark fir sprigs hanging on the hilt and one fur-lined bone helmet resting beside the blade. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Ice Folk Slayer's monument: one great sword with an ice-blue ice blade and a bone hilt plunged point-down into a rough block of stone capped with snow, the long blade upright and its hilt high in the air, one wreath of dark fir sprigs hanging on the hilt and one fur-lined bone helmet resting beside the blade. Pale grey stone shaded on its right side, white snow shaded blue-grey, ivory bone, cream hide, one ice-blue accent; dark blue-slate outline; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:35:38.507Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-ice-folk/slayer-a.png",
+      "rawSheetSha256": "9f94ccbb9b996e4ae55597dc905f2e9265218f19c5e43b8089e1b54f35829628",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9688,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1329,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9722,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9394,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9394,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9394,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9394,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9394,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9394,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:37:07.212Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 9,
+        "notes": "Candidate 9 of 16: a sword with an ice-blue blade and a bone hilt plunged into a snow-capped block of stone, a wreath of dark fir sprigs on the hilt and a fur-lined bone helmet beside it; the Slayer's sword in the stone with wreath and helmet in Ice Folk ice and bone, lit from the left. 8 and 11 have no helmet; 2 dark stone; 12 a red-brown helmet; 3 and 10 a timber blade.",
+        "reviewedAt": "2026-10-08T13:40:26.943Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-ice-folk-monument": {
+      "id": "chibi-ice-folk-monument",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "explorer-a",
+      "candidate": 9,
+      "candidateSha256": "248aa97aa9da5ce77e7105ecc412869dbcd2e08751491887e7a796769cff01d0",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-ice-folk-monument.png",
+        "sha256": "94bc02bc49e03241fd5990574fc02737de40dc0ab3c05bedc66c6c55784db599",
+        "pixelSha256": "43795db2694d966c4834f2c28f8016d970d75cebce5571620d97b0400a569d66",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Reused candidate 9 of the Ice Folk Explorer sheet (explorer-a), no new PixelLab job (the US$5 limit left no room for obelisk-a). A tall slender obelisk of clear pale ice blue on a low square foot, shaded on its right; no compass rose, no spyglass, no other motif, so it shows the Ice Folk builder and hides the achievement. It is ice rather than snow-capped stone: the snowy stone pieces of the sheet (0, 1, 2, 3, 5, 8, 12, 14) all carry the rose. Muster-a 8 (a bare snowy stone post) was the other choice and reads as a stub at 1:1.",
+      "acceptedAt": "2026-10-08T14:44:44.125Z"
+    },
+    "chibi-ice-folk-monument-conqueror": {
+      "id": "chibi-ice-folk-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:CONQUEROR",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "conqueror-a",
+      "candidate": 0,
+      "candidateSha256": "a2d4e0e4f6ae74845b442b2a8f778dce0134e148332d6828089259327c5094de",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-ice-folk-monument-conqueror.png",
+        "sha256": "28b123bfc51491fcaf5f1ab7e00b3898bcf0a402a6437d5cb3ed6afdb50218fb",
+        "pixelSha256": "8f971ff8718a5061f632821b9948ec4b5d4a29bb745899c788845099da46346e",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a small arch of white snow blocks with an open gateway, a big laurel wreath of ice-blue crystal leaves on its lintel and a crossed bone spear and harpoon on its front; the Conqueror's arch and wreath in Ice Folk snow and ice, lit from the left. The sixteen are near twins; 6, 7 and 11 have a crown of ice shards or a skull in place of the wreath or the weapons.",
+      "acceptedAt": "2026-10-08T13:40:21.630Z"
+    },
+    "chibi-ice-folk-monument-engineer": {
+      "id": "chibi-ice-folk-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:ENGINEER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "engineer-b",
+      "candidate": 6,
+      "candidateSha256": "6b0d660480c54f8968e3a895d7974c4ea80e0601f2aed0b521d6296a47c491f9",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-ice-folk-monument-engineer.png",
+        "sha256": "77e59feab498c82a5ee9736141407ea334729336293e7dcf681735def40078ac",
+        "pixelSha256": "9e785432e9f1e2b22aea974dc8b5967a82a2bf8349d1d1c84e94400c7cff85fb",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 6 of 16: a square pale grey stone pillar dusted with snow, lit on its left face, topped by a big ivory bone cogwheel standing on its edge, with a crossed bone hammer and ice pick with an ice-blue head on its front; the Engineer's cog and crossed tools in Ice Folk stone, bone and ice. All sixteen are now lit from the left; 0, 4, 7 and 12 have a pink pillar, 1, 5, 9 and 13 a blue one, off the faction's palette.",
+      "acceptedAt": "2026-10-08T14:10:51.917Z"
+    },
+    "chibi-ice-folk-monument-explorer": {
+      "id": "chibi-ice-folk-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:EXPLORER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "explorer-a",
+      "candidate": 1,
+      "candidateSha256": "1bf4f9a463c6d931e4478dab0e75480312dfc1727df8c8fa906bfe4a64e205f4",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-ice-folk-monument-explorer.png",
+        "sha256": "565ab19b26a71ff00d9b9ac15ee68e95b4ad5122bf469451ad43f80cf384b810",
+        "pixelSha256": "2711bc89dfa9679f4822496c5e3e0d412fc8a69c72aa04ac97495b0d79867766",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 1 of 16: a pale grey stone obelisk under a thick snow cap, a bone compass rose with an ice-blue star on its front and a bone spyglass at its foot; the Explorer's compass and spyglass in Ice Folk stone, snow and bone, lit from the left. 5 and 12 have the rose but no spyglass; 0, 2, 9, 14 a small rose on a thin needle; 4 and 7 dark stone; 8, 10 and 13 lose the snow or the rose.",
+      "acceptedAt": "2026-10-08T13:40:18.321Z"
+    },
+    "chibi-ice-folk-monument-land-baron": {
+      "id": "chibi-ice-folk-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:LAND_BARON",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "land-baron-a",
+      "candidate": 13,
+      "candidateSha256": "31a0a3fbe5639f73d32e9e388fba348c03fef9eafc30c3c9336e49e315b0a9ad",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-ice-folk-monument-land-baron.png",
+        "sha256": "977afe935927387cebf592b89aa14f6194ef52cd1e98e94d1346257afc0d21bf",
+        "pixelSha256": "74eca058e0c0154e5c9b6a3c2a02cde4b51ced2de1eddcf803f29d982f3833f3",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 13 of 16: a stout pale stone boundary stone with a carved shield bearing a mammoth, a crown of ice-blue crystals on its snowy top and a bone signpost with two arrow boards; the Land Baron's crowned boundary stone and signpost in Ice Folk stone and ice, lit from the left. 0, 2, 8 and 15 are close; 1, 5, 9 tall crystal heaps that read less as a crown; 4, 6, 11 no crown.",
+      "acceptedAt": "2026-10-08T13:40:23.355Z"
+    },
+    "chibi-ice-folk-monument-muster": {
+      "id": "chibi-ice-folk-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:MUSTER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "muster-a",
+      "candidate": 13,
+      "candidateSha256": "3bca5f60edae0b91a3813366e7d5575480d358fbe95c0006396e9f05254de4c1",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-ice-folk-monument-muster.png",
+        "sha256": "4191a1f16b3c8631f7fd0d66d03c819084e17430da588388b2f77a2d913f587b",
+        "pixelSha256": "6df8aa3c619e65595a353c858f89f95b13217944f579b3f4193a9d59b1a1cbb1",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 13 of 16: a snow-capped pale stone pillar hung with a tall bone-rimmed timber shield and a small hide buckler, with a curved mammoth tusk horn at its foot; the Muster's shields and horn in Ice Folk timber, hide and tusk. The weakest of the set: no candidate has four shields or the horn on top; 0, 4, 8 and 12 have one round shield, 3 and 7 a tusk only, 9 one shield and a tusk.",
+      "acceptedAt": "2026-10-08T13:40:19.826Z"
+    },
+    "chibi-ice-folk-monument-sea-dog": {
+      "id": "chibi-ice-folk-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:SEA_DOG",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "sea-dog-a",
+      "candidate": 6,
+      "candidateSha256": "f330b3d5db9f4c0c12b39ca446f44984ae44e8f2a0b70ebca28ae181e3079f10",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-ice-folk-monument-sea-dog.png",
+        "sha256": "edaccf24feead7c0cc4451a21826e3890ce97a6c365a62be1c123fd78d718bc9",
+        "pixelSha256": "860b1b02bdb3ea46f6a4d82f1d8f5d1f6645f727d4fb6ab0d2463578639106fb",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 6 of 16: a snow-capped pale stone column with an ice-blue band, a big ivory bone anchor standing against its front, a coil of hide rope at its foot and a bone ship's wheel on its top; the Sea Dog's anchor, rope and wheel in Ice Folk stone and bone, lit from the left. 11 is close with a thinner column; 2 and 12 lose the column under heaped ice; 9 has a flag.",
+      "acceptedAt": "2026-10-08T13:40:24.951Z"
+    },
+    "chibi-ice-folk-monument-slayer": {
+      "id": "chibi-ice-folk-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:SLAYER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "slayer-a",
+      "candidate": 9,
+      "candidateSha256": "7fdb689ef3100c0dcb4cdfc8873b27f401a985cfe324998f326c7e70422c0926",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-ice-folk-monument-slayer.png",
+        "sha256": "6210fe9951e0e68c8aa12b0c151feeea500ace934504a6fa0b56e34e59e1ec1a",
+        "pixelSha256": "2392bc79e252317f96fb275b4fd3c4a41da0450a46c783a96c64caa93bac2609",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 9 of 16: a sword with an ice-blue blade and a bone hilt plunged into a snow-capped block of stone, a wreath of dark fir sprigs on the hilt and a fur-lined bone helmet beside it; the Slayer's sword in the stone with wreath and helmet in Ice Folk ice and bone, lit from the left. 8 and 11 have no helmet; 2 dark stone; 12 a red-brown helmet; 3 and 10 a timber blade.",
+      "acceptedAt": "2026-10-08T13:40:26.943Z"
+    }
+  }
+}

@@ -332,3 +332,9 @@ Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-wor
 - **Market** (`chibi-undead-market`, `market-b` candidate 10): two pale slate stalls under ragged ivory and pale violet striped awnings, violet glowing jars, pale bones, a crate of herbs, an ashen barrel and a violet lantern. `market-a` (one near-black stall) was rejected as too dark on the ashen ground.
 
 Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-faction-bead-pulp_wars-eu3r1). Name unchanged; drawn by the owner of the territory; the shared Market in the Classic look and the LEGACY art set.
+
+## Monuments (bead `pulp_wars-eu3r.2`)
+
+The seven achievement Monuments and the faction obelisk in Undead materials. Pale slate (`#8b92a3`) with ivory bone, dark iron and small violet glows (`chibi-undead-monument-<achievement>`): the Explorer an obelisk with a bone compass rose; the Engineer a pillar under a bone cogwheel; the Muster a pillar hung with iron and bone shields, its bone horn at the foot; the Conqueror an arch with a bone wreath and a violet skull; the Land Baron a boundary stone with a skull, a bone crown and a crooked signpost; the Sea Dog a column with an iron anchor and a bone wheel; the Slayer an iron sword in slate in a grey wreath. **Obelisk** (`chibi-undead-monument`): a slate obelisk with violet gems and bone trim, candidate 13 of the Explorer sheet reused (no new PixelLab job). Art only: the board still draws the Human (achievement) Monument or the shared obelisk until bead `pulp_wars-eu3r.3` wires the skin rule.
+
+Record: [faction buildings, section 15](../FACTION_BUILDINGS.md#15-faction-monuments-bead-pulp_wars-eu3r2).

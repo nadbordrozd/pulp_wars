@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments-goblin",
+  "title": "Goblin Monuments: the seven achievement Monuments and the faction obelisk in Goblin materials",
+  "bead": "pulp_wars-eu3r.2",
+  "faction": "GOBLIN",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-goblin-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN:EXPLORER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-goblin-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN:ENGINEER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-goblin-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN:MUSTER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-goblin-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN:CONQUEROR",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-goblin-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN:LAND_BARON",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-goblin-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN:SEA_DOG",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-goblin-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN:SLAYER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-goblin-monument",
+      "subject": "IMPROVEMENT:MONUMENT:GOBLIN",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false,
+      "fromRecipe": "explorer-a"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "explorer-a",
+      "asset": "chibi-goblin-monument-explorer",
+      "endpoint": "generate-image-v2",
+      "seed": 22521,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Goblin Explorer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "engineer-a",
+      "asset": "chibi-goblin-monument-engineer",
+      "endpoint": "generate-image-v2",
+      "seed": 22522,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Goblin Engineer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "muster-a",
+      "asset": "chibi-goblin-monument-muster",
+      "endpoint": "generate-image-v2",
+      "seed": 22523,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Goblin Muster Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "conqueror-a",
+      "asset": "chibi-goblin-monument-conqueror",
+      "endpoint": "generate-image-v2",
+      "seed": 22524,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Goblin Conqueror Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "land-baron-a",
+      "asset": "chibi-goblin-monument-land-baron",
+      "endpoint": "generate-image-v2",
+      "seed": 22525,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Goblin Land Baron Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "sea-dog-a",
+      "asset": "chibi-goblin-monument-sea-dog",
+      "endpoint": "generate-image-v2",
+      "seed": 22526,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Goblin Sea Dog Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "slayer-a",
+      "asset": "chibi-goblin-monument-slayer",
+      "endpoint": "generate-image-v2",
+      "seed": 22527,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Goblin Slayer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "obelisk-a",
+      "asset": "chibi-goblin-monument",
+      "endpoint": "generate-image-v2",
+      "seed": 22528,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Goblin obelisk, the Monument a viewer sees when its achievement is hidden, on the 48 x 72 canvas and recipe class of batch monuments."
+    }
+  ]
+}

@@ -1,0 +1,1464 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments-martian",
+  "recipes": {
+    "conqueror-a": {
+      "id": "conqueror-a",
+      "asset": "chibi-martian-monument-conqueror",
+      "jobId": "7b9ed5a5-23e8-449a-b589-889f460ac75a",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-martian",
+        "asset": "chibi-martian-monument-conqueror",
+        "subject": "IMPROVEMENT:MONUMENT:MARTIAN:CONQUEROR",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22544,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Martian Conqueror's monument: one small triumphal arch of chrome, two thick round pylons and a heavy lintel with an open gateway between them that shows the transparent background, one big chrome laurel wreath with a magenta light standing on top of the lintel, and two crossed chrome ray guns on its front. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Conqueror's monument: one small triumphal arch of chrome, two thick round pylons and a heavy lintel with an open gateway between them that shows the transparent background, one big chrome laurel wreath with a magenta light standing on top of the lintel, and two crossed chrome ray guns on its front. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Conqueror's monument: one small triumphal arch of chrome, two thick round pylons and a heavy lintel with an open gateway between them that shows the transparent background, one big chrome laurel wreath with a magenta light standing on top of the lintel, and two crossed chrome ray guns on its front. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:56:00.934Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-martian/conqueror-a.png",
+      "rawSheetSha256": "63795fbef85703db7427792f8c56c4c129e93c80dc28e77cc56ef8d4b2e7bc38",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6316,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7692,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.625,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6304,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5652,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7568,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7857,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7632,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7714,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8108,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6857,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7647,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8056,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7561,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:57:28.019Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a small triumphal arch of silver-white chrome on round pylons with an open gateway, a big chrome laurel wreath with hot magenta lights on its top and two crossed chrome ray guns on its lintel; the Conqueror's arch and wreath in Martian chrome, lit from the left. 3, 8, 9, 12 and 14 are close without magenta; 2, 6, 10 and 11 a magenta orb in place of the wreath; 4 a ring.",
+        "reviewedAt": "2026-10-08T14:02:41.219Z"
+      }
+    },
+    "engineer-a": {
+      "id": "engineer-a",
+      "asset": "chibi-martian-monument-engineer",
+      "jobId": "7500e44b-1cf4-4312-bbed-627f732efcb0",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-martian",
+        "asset": "chibi-martian-monument-engineer",
+        "subject": "IMPROVEMENT:MONUMENT:MARTIAN:ENGINEER",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22542,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Martian Engineer's monument: one tall square gunmetal pillar rising straight out of the ground, topped by one big chrome cogwheel with a magenta hub standing upright on its edge, with a crossed chrome spanner and ray tool on its front. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Engineer's monument: one tall square gunmetal pillar rising straight out of the ground, topped by one big chrome cogwheel with a magenta hub standing upright on its edge, with a crossed chrome spanner and ray tool on its front. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Engineer's monument: one tall square gunmetal pillar rising straight out of the ground, topped by one big chrome cogwheel with a magenta hub standing upright on its edge, with a crossed chrome spanner and ray tool on its front. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:27:14.057Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-martian/engineer-a.png",
+      "rawSheetSha256": "cb27cecd2ff2deb1e55317c14af2ebb504ad3fa548f9879af4a5d2260d5383f4",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8148,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8519,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6286,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8649,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7879,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6061,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7857,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5152,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7333,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:28:59.328Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: a square gunmetal pillar topped by a big chrome cogwheel standing on its edge with a hot magenta hub, a crossed chrome spanner and ray tool on its front; the Engineer's cog and crossed tools in Martian metal, lit from the left. 9 and 10 are close with huge crossed spanners; 1, 5 and 7 stacks of rings; 4, 11 and 14 a cog lying flat; 6 an arch; 8 and 12 a lattice tower.",
+        "reviewedAt": "2026-10-08T13:41:56.475Z"
+      }
+    },
+    "explorer-a": {
+      "id": "explorer-a",
+      "asset": "chibi-martian-monument-explorer",
+      "jobId": "1a6dbc9c-a811-427b-b121-44f147315bed",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-martian",
+        "asset": "chibi-martian-monument-explorer",
+        "subject": "IMPROVEMENT:MONUMENT:MARTIAN:EXPLORER",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22541,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Martian Explorer's monument: one tall slender chrome needle obelisk rising straight out of the ground, with one big round compass rose with a four-pointed star glowing hot magenta set on its front and a small glass globe on its tip; a chrome telescope on three gunmetal legs stands at its foot. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Explorer's monument: one tall slender chrome needle obelisk rising straight out of the ground, with one big round compass rose with a four-pointed star glowing hot magenta set on its front and a small glass globe on its tip; a chrome telescope on three gunmetal legs stands at its foot. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Explorer's monument: one tall slender chrome needle obelisk rising straight out of the ground, with one big round compass rose with a four-pointed star glowing hot magenta set on its front and a small glass globe on its tip; a chrome telescope on three gunmetal legs stands at its foot. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:16:46.987Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-martian/explorer-a.png",
+      "rawSheetSha256": "d3bb205535800e68d01d4f9c0f9c1441ed02a6550372ee0e4f8342e3c7e4af32",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:18:45.806Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 10,
+        "notes": "Candidate 10 of 16: a silver-white chrome needle obelisk with a glass ball on its tip, a hot magenta compass rose on its front and a chrome telescope on a gunmetal tripod at its foot; the Explorer's compass and spyglass in Martian chrome, lit from the left. The sixteen are near twins; 0, 5 and 8 have green pixels in the rose, 11 has no rose, 12 and 15 turn it sideways.",
+        "reviewedAt": "2026-10-08T13:21:31.321Z"
+      }
+    },
+    "land-baron-a": {
+      "id": "land-baron-a",
+      "asset": "chibi-martian-monument-land-baron",
+      "jobId": "9a448bee-4ff9-43ad-a085-21e282b8d5ae",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-martian",
+        "asset": "chibi-martian-monument-land-baron",
+        "subject": "IMPROVEMENT:MONUMENT:MARTIAN:LAND_BARON",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22545,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Martian Land Baron's monument: one stout square boundary block of gunmetal with chrome edges, a little wider at its foot, with a chrome shield bearing a small flying saucer on its front, one big chrome crown with a magenta light resting on its flat top and a small chrome signpost with two blank arrow plates beside it. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Land Baron's monument: one stout square boundary block of gunmetal with chrome edges, a little wider at its foot, with a chrome shield bearing a small flying saucer on its front, one big chrome crown with a magenta light resting on its flat top and a small chrome signpost with two blank arrow plates beside it. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Land Baron's monument: one stout square boundary block of gunmetal with chrome edges, a little wider at its foot, with a chrome shield bearing a small flying saucer on its front, one big chrome crown with a magenta light resting on its flat top and a small chrome signpost with two blank arrow plates beside it. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:57:28.024Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-martian/land-baron-a.png",
+      "rawSheetSha256": "6c9db48857964967c562dd6ac768f63b29b7f8fd63043b402845955938bab134",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.95,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9268,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.925,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9091,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.925,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9091,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9268,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9268,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.925,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9268,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:59:01.722Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 10,
+        "notes": "Candidate 10 of 16: a stout gunmetal boundary block with chrome edges, a chrome shield bearing a small flying saucer on its front, a chrome crown with a hot magenta gem on its top and a small chrome signpost with two arrow plates; the Land Baron's crowned boundary stone and signpost in Martian metal, lit from the left. The sixteen are near twins; 1, 5 and 6 hide the signpost behind the block.",
+        "reviewedAt": "2026-10-08T14:02:42.513Z"
+      }
+    },
+    "muster-a": {
+      "id": "muster-a",
+      "asset": "chibi-martian-monument-muster",
+      "jobId": "fe51e5a9-389c-4b58-b505-8f22665183bd",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-martian",
+        "asset": "chibi-martian-monument-muster",
+        "subject": "IMPROVEMENT:MONUMENT:MARTIAN:MUSTER",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22543,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Martian Muster monument, a trophy of many arms: one tall chrome pylon rising straight out of the ground, with four different shields hung round it (a round chrome disc, a tall gunmetal kite shield, a square chrome one, a small buckler with a magenta light) and one big chrome horn loudspeaker lying across its flat top. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Muster monument, a trophy of many arms: one tall chrome pylon rising straight out of the ground, with four different shields hung round it (a round chrome disc, a tall gunmetal kite shield, a square chrome one, a small buckler with a magenta light) and one big chrome horn loudspeaker lying across its flat top. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Muster monument, a trophy of many arms: one tall chrome pylon rising straight out of the ground, with four different shields hung round it (a round chrome disc, a tall gunmetal kite shield, a square chrome one, a small buckler with a magenta light) and one big chrome horn loudspeaker lying across its flat top. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:28:59.333Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-martian/muster-a.png",
+      "rawSheetSha256": "fdb0d2187c2134883e8ceedb537d0a8b5096eccf89ce0084baf3256197bf4288",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6154,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4706,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6818,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5333,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9259,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.913,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8519,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9167,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9615,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9583,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.84,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9615,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:55:41.852Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 8,
+        "notes": "Candidate 8 of 16 (resumed after a dropped poll): a tall chrome pylon hung with four shields (a round chrome disc and three chrome and gunmetal kite shields) under two chrome horn loudspeakers on its top; the Muster's shields under a horn in Martian chrome. A weak row: most candidates are tall columns that touch the top edge with small plates; 9 and 11 are close; no candidate shows the magenta light on a shield clearly.",
+        "reviewedAt": "2026-10-08T13:56:51.598Z"
+      }
+    },
+    "sea-dog-a": {
+      "id": "sea-dog-a",
+      "asset": "chibi-martian-monument-sea-dog",
+      "jobId": "052735e2-a507-4f50-9458-1505e22f193d",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-martian",
+        "asset": "chibi-martian-monument-sea-dog",
+        "subject": "IMPROVEMENT:MONUMENT:MARTIAN:SEA_DOG",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22546,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Martian Sea Dog's monument: one tall chrome column rising straight out of the ground, with one big gunmetal ship's anchor standing upright against its front, a coil of thick grey cable round its foot and one chrome ship's steering wheel with a magenta hub standing on its top. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Sea Dog's monument: one tall chrome column rising straight out of the ground, with one big gunmetal ship's anchor standing upright against its front, a coil of thick grey cable round its foot and one chrome ship's steering wheel with a magenta hub standing on its top. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Sea Dog's monument: one tall chrome column rising straight out of the ground, with one big gunmetal ship's anchor standing upright against its front, a coil of thick grey cable round its foot and one chrome ship's steering wheel with a magenta hub standing on its top. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:59:01.726Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-martian/sea-dog-a.png",
+      "rawSheetSha256": "0dda8b20177f8a62c7fe4132d6a1214c937e60407ff88da34aa0c4a1099bdb98",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3333,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3103,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9697,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9667,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9667,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9677,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:02:05.242Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 5,
+        "notes": "Candidate 5 of 16: a tall chrome column with gunmetal bands and small magenta lights, a big gunmetal anchor against its foot and a turn of grey cable; the Sea Dog's anchor in Martian metal, lit from the left. A weak row: the anchor and the wheel never come together (0 to 6 the anchor, 7, 11, 12 and 15 a small bronze-coloured wheel), and 0, 1, 3, 12 to 15 fill the canvas to its top edge.",
+        "reviewedAt": "2026-10-08T14:07:28.752Z"
+      }
+    },
+    "slayer-a": {
+      "id": "slayer-a",
+      "asset": "chibi-martian-monument-slayer",
+      "jobId": "a60b2793-3928-463a-a41f-1c2ae94906e0",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-martian",
+        "asset": "chibi-martian-monument-slayer",
+        "subject": "IMPROVEMENT:MONUMENT:MARTIAN:SLAYER",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22547,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Martian Slayer's monument: one great chrome sword plunged point-down into a block of gunmetal, the long blade upright and its crossguard with a magenta light high in the air, one chrome laurel wreath hanging on the hilt and one round glass space helmet with a chrome collar resting beside the blade. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Slayer's monument: one great chrome sword plunged point-down into a block of gunmetal, the long blade upright and its crossguard with a magenta light high in the air, one chrome laurel wreath hanging on the hilt and one round glass space helmet with a chrome collar resting beside the blade. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Slayer's monument: one great chrome sword plunged point-down into a block of gunmetal, the long blade upright and its crossguard with a magenta light high in the air, one chrome laurel wreath hanging on the hilt and one round glass space helmet with a chrome collar resting beside the blade. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T14:02:05.252Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-martian/slayer-a.png",
+      "rawSheetSha256": "e8ecbae1a2b5b41c8bb7e1518e56a4276fbd4decd3ccae1da44ec233362ed394",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.95,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9744,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8788,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.95,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7949,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7949,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.775,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:03:58.957Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 8,
+        "notes": "Candidate 8 of 16: a great chrome sword with a hot magenta light on its crossguard plunged into a gunmetal block, a chrome laurel wreath round the hilt and a round glass space helmet beside the block; the Slayer's sword in the stone, wreath and helmet in Martian chrome and glass, lit from the left. 9, 11, 13 and 15 are close; 0, 3 and 7 no helmet; 5 a hook; 14 a crystal block.",
+        "reviewedAt": "2026-10-08T14:07:29.883Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-martian-monument-conqueror": {
+      "id": "chibi-martian-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:MARTIAN:CONQUEROR",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "conqueror-a",
+      "candidate": 0,
+      "candidateSha256": "d4b5f8bcc9c06f9e13c6f813507249e2fedae6172d06f0cdb716dfefc7cb6e08",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-monument-conqueror.png",
+        "sha256": "d22400e05cdd49f2d61c7517716d655b2b8fe4b2a9fb337fc82d114f2c93702c",
+        "pixelSha256": "cb9aa124b69a00bc76f97ef4e3fdac637d2c2f17982edc8714225143be7a9296",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a small triumphal arch of silver-white chrome on round pylons with an open gateway, a big chrome laurel wreath with hot magenta lights on its top and two crossed chrome ray guns on its lintel; the Conqueror's arch and wreath in Martian chrome, lit from the left. 3, 8, 9, 12 and 14 are close without magenta; 2, 6, 10 and 11 a magenta orb in place of the wreath; 4 a ring.",
+      "acceptedAt": "2026-10-08T14:02:41.219Z"
+    },
+    "chibi-martian-monument-engineer": {
+      "id": "chibi-martian-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:MARTIAN:ENGINEER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "engineer-a",
+      "candidate": 0,
+      "candidateSha256": "a81cdc2add9134a60a96b5ec5e06a51f59eec5043877cfc74b44490df55d78eb",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-monument-engineer.png",
+        "sha256": "8a5a13c8e0d1a3d845f821ef71a8a867b90059ec650fc7ab0138d2142b0c1eb4",
+        "pixelSha256": "b34dfcb44de982a3387c0133e9fa88d9170e2357634eae5702a32869b208c463",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: a square gunmetal pillar topped by a big chrome cogwheel standing on its edge with a hot magenta hub, a crossed chrome spanner and ray tool on its front; the Engineer's cog and crossed tools in Martian metal, lit from the left. 9 and 10 are close with huge crossed spanners; 1, 5 and 7 stacks of rings; 4, 11 and 14 a cog lying flat; 6 an arch; 8 and 12 a lattice tower.",
+      "acceptedAt": "2026-10-08T13:41:56.475Z"
+    },
+    "chibi-martian-monument-explorer": {
+      "id": "chibi-martian-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:MARTIAN:EXPLORER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "explorer-a",
+      "candidate": 10,
+      "candidateSha256": "42814da99f8f31bb2468c5c0e29827b58c5946056480c7cf3479f2c948522bde",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-monument-explorer.png",
+        "sha256": "a3fc692da39316df2b8e34bd11049c2e25a041287576367e95f4f01905b45b9a",
+        "pixelSha256": "755fb01a6c05aa32e4489340047558b9f69aa5048209466220d71e174fbc83d0",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 10 of 16: a silver-white chrome needle obelisk with a glass ball on its tip, a hot magenta compass rose on its front and a chrome telescope on a gunmetal tripod at its foot; the Explorer's compass and spyglass in Martian chrome, lit from the left. The sixteen are near twins; 0, 5 and 8 have green pixels in the rose, 11 has no rose, 12 and 15 turn it sideways.",
+      "acceptedAt": "2026-10-08T13:21:31.321Z"
+    },
+    "chibi-martian-monument-land-baron": {
+      "id": "chibi-martian-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:MARTIAN:LAND_BARON",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "land-baron-a",
+      "candidate": 10,
+      "candidateSha256": "a56d6134a0b32925f7e32bbf3c2875627f853506b040214e32ea99078c817bbd",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-monument-land-baron.png",
+        "sha256": "6b7cd3bcea7432b0865018f3b35d456fd8d62e37ce91fa982311da0ebebbc7ff",
+        "pixelSha256": "6561ea7557c7ca9afb8815b0257e5e1a8debde844a01735c2976df33716d289a",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 10 of 16: a stout gunmetal boundary block with chrome edges, a chrome shield bearing a small flying saucer on its front, a chrome crown with a hot magenta gem on its top and a small chrome signpost with two arrow plates; the Land Baron's crowned boundary stone and signpost in Martian metal, lit from the left. The sixteen are near twins; 1, 5 and 6 hide the signpost behind the block.",
+      "acceptedAt": "2026-10-08T14:02:42.513Z"
+    },
+    "chibi-martian-monument-muster": {
+      "id": "chibi-martian-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:MARTIAN:MUSTER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "muster-a",
+      "candidate": 8,
+      "candidateSha256": "c1e1af486fca2e645d218777faefabd406ff980d9d6cc939ca3a8b3061a295a0",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-monument-muster.png",
+        "sha256": "4b4a46b4893ca323370999c8f28bc9e95c593426a2877de7b9edc8f8c6efbbd2",
+        "pixelSha256": "8a8be8993634a097ddd0fcc98d56ebeba1ba70cca8c5c7da082cc56ec827a547",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 8 of 16 (resumed after a dropped poll): a tall chrome pylon hung with four shields (a round chrome disc and three chrome and gunmetal kite shields) under two chrome horn loudspeakers on its top; the Muster's shields under a horn in Martian chrome. A weak row: most candidates are tall columns that touch the top edge with small plates; 9 and 11 are close; no candidate shows the magenta light on a shield clearly.",
+      "acceptedAt": "2026-10-08T13:56:51.598Z"
+    },
+    "chibi-martian-monument-sea-dog": {
+      "id": "chibi-martian-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:MARTIAN:SEA_DOG",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "sea-dog-a",
+      "candidate": 5,
+      "candidateSha256": "a96b4ad5f5f96df0ac88b325f8147d18ab59b2b335d4ec62682fa88bb9aec3ca",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-monument-sea-dog.png",
+        "sha256": "b31b88266580060498173aae615f4fd7eb16339cbdfd6321d5b6c4a680070854",
+        "pixelSha256": "b0d051bd6915578a27e78fc6addb65399a3707975142c1c235ba8425af605cf6",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 5 of 16: a tall chrome column with gunmetal bands and small magenta lights, a big gunmetal anchor against its foot and a turn of grey cable; the Sea Dog's anchor in Martian metal, lit from the left. A weak row: the anchor and the wheel never come together (0 to 6 the anchor, 7, 11, 12 and 15 a small bronze-coloured wheel), and 0, 1, 3, 12 to 15 fill the canvas to its top edge.",
+      "acceptedAt": "2026-10-08T14:07:28.752Z"
+    },
+    "chibi-martian-monument-slayer": {
+      "id": "chibi-martian-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:MARTIAN:SLAYER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "slayer-a",
+      "candidate": 8,
+      "candidateSha256": "7e9f8bed0ecab96ede477d526e3e964d4bba5f9630ad17321a94dc3a8e989ddd",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-monument-slayer.png",
+        "sha256": "ff59781815d7498d4e9f9ce7d9ea28348b96c4314e272a8134c4735cd5ec8d90",
+        "pixelSha256": "d15c73aaf7ec74953137faa7b8bf5ee16ee5770586f215e955411f0ab7e6c51b",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 8 of 16: a great chrome sword with a hot magenta light on its crossguard plunged into a gunmetal block, a chrome laurel wreath round the hilt and a round glass space helmet beside the block; the Slayer's sword in the stone, wreath and helmet in Martian chrome and glass, lit from the left. 9, 11, 13 and 15 are close; 0, 3 and 7 no helmet; 5 a hook; 14 a crystal block.",
+      "acceptedAt": "2026-10-08T14:07:29.882Z"
+    }
+  }
+}

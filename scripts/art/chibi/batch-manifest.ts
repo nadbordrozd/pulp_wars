@@ -793,6 +793,15 @@ export interface ChibiAssetSpec {
    */
   readonly paletteRecipe?: string;
   /**
+   * A reused candidate (bead pulp_wars-eu3r.2): the recipe of another asset
+   * of this batch, of the same class and canvas, whose candidate sheet holds
+   * a reviewed piece that fits this asset too. `accept --id <fromRecipe>
+   * --asset <this asset>` takes it, so no new PixelLab job is needed. The
+   * asset may keep a recipe of its own; accepting that one later supersedes
+   * the reuse.
+   */
+  readonly fromRecipe?: string;
+  /**
    * A named accent preset (scripts/art/chibi/accent.ts) applied after the
    * class derivation: the sprite's accent pixels, found by colour, are
    * recoloured (bead pulp_wars-3tq.12, the Undead violet).
@@ -1272,7 +1281,7 @@ export function requestBody(
 }
 
 const SUBJECT_PATTERN =
-  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT|IMPROVEMENT):(UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:|DINOSAUR:|MARTIAN:|ICE_FOLK:|DWARF:|CANDY:)?[A-Z_]+$|^ICON:STATUS:(SHIELD|COOLING|CHILLED|FROZEN|CLOCKWORK|DUG_IN|RUSHED|CRASHED|SPLATTED)$|^CITY:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^CRUMBS$|^STATUS:(PLAGUED|BITTEN|PROVOKED)$|^EFFECT:[A-Z_]+$|^CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK)$|^ICON:CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK|BOUNTY)$|^OVERLAY:ICEBOUND$|^IMPROVEMENT:MONUMENT:(EXPLORER|ENGINEER|MUSTER|CONQUEROR|LAND_BARON|SEA_DOG|SLAYER)$/;
+  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT|IMPROVEMENT):(UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:|DINOSAUR:|MARTIAN:|ICE_FOLK:|DWARF:|CANDY:)?[A-Z_]+$|^ICON:STATUS:(SHIELD|COOLING|CHILLED|FROZEN|CLOCKWORK|DUG_IN|RUSHED|CRASHED|SPLATTED)$|^CITY:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^CRUMBS$|^STATUS:(PLAGUED|BITTEN|PROVOKED)$|^EFFECT:[A-Z_]+$|^CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK)$|^ICON:CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK|BOUNTY)$|^OVERLAY:ICEBOUND$|^IMPROVEMENT:MONUMENT:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY)(:(EXPLORER|ENGINEER|MUSTER|CONQUEROR|LAND_BARON|SEA_DOG|SLAYER))?|EXPLORER|ENGINEER|MUSTER|CONQUEROR|LAND_BARON|SEA_DOG|SLAYER)$/;
 const ID_PATTERN = /^chibi-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RECIPE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA_PATTERN = /^[a-f0-9]{64}$/;
@@ -1779,6 +1788,26 @@ export function batchManifestProblems(
     recipeIds.push(recipe.id);
   }
   for (const asset of manifest.assets) {
+    if (asset.fromRecipe !== undefined) {
+      const label = `${at} asset ${asset.id}`;
+      const reused = manifest.recipes.find(
+        (recipe) => recipe.id === asset.fromRecipe,
+      );
+      const owner = manifest.assets.find((entry) => entry.id === reused?.asset);
+      if (reused === undefined || owner === undefined)
+        problems.push(`${label}: unknown reused recipe ${asset.fromRecipe}`);
+      else if (
+        owner.id === asset.id ||
+        owner.recipeClass !== asset.recipeClass ||
+        owner.assetClass !== asset.assetClass ||
+        owner.canvas.width !== asset.canvas.width ||
+        owner.canvas.height !== asset.canvas.height
+      )
+        problems.push(
+          `${label}: a reused recipe must belong to another asset of the same class and canvas`,
+        );
+      continue;
+    }
     if (asset.fieldRecipe !== undefined) {
       const label = `${at} asset ${asset.id}`;
       const field = manifest.recipes.find(

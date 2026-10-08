@@ -1,0 +1,52 @@
+{
+  "id": "conqueror-a",
+  "jobId": "7b9ed5a5-23e8-449a-b589-889f460ac75a",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "batch": "monuments-martian",
+    "asset": "chibi-martian-monument-conqueror",
+    "subject": "IMPROVEMENT:MONUMENT:MARTIAN:CONQUEROR",
+    "faction": "MARTIAN",
+    "recipeClass": "calm-feature",
+    "requestSize": {
+      "width": 48,
+      "height": 72
+    },
+    "seed": 22544,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "light",
+        "source": "scripts/art/chibi/fragments/light-south-west.txt",
+        "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+        "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+        "negative": "ground plate, platform, grass square, isometric block, background, people"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/SHARED.json",
+        "text": "Subject: the Martian Conqueror's monument: one small triumphal arch of chrome, two thick round pylons and a heavy lintel with an open gateway between them that shows the transparent background, one big chrome laurel wreath with a magenta light standing on top of the lintel, and two crossed chrome ray guns on its front. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; taller than it is wide. Monument only."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Conqueror's monument: one small triumphal arch of chrome, two thick round pylons and a heavy lintel with an open gateway between them that shows the transparent background, one big chrome laurel wreath with a magenta light standing on top of the lintel, and two crossed chrome ray guns on its front. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; taller than it is wide. Monument only.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Martian Conqueror's monument: one small triumphal arch of chrome, two thick round pylons and a heavy lintel with an open gateway between them that shows the transparent background, one big chrome laurel wreath with a magenta light standing on top of the lintel, and two crossed chrome ray guns on its front. Silver-white chrome shaded soft blue-grey, dark gunmetal and small hot magenta lights only; no stone, no wood, no green, no red; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+  }
+}

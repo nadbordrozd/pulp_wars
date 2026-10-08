@@ -772,3 +772,9 @@ Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-wor
 - **Market** (`chibi-candy-market`, `market-a` candidate 0): two gingerbread stalls under cream and pale peach striped awnings on candy-cane posts, lollipops, pink-frosted cupcakes, a gumdrop jar and a caramel barrel; no pixel of the owner key red.
 
 Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-faction-bead-pulp_wars-eu3r1). Name unchanged; drawn by the owner of the territory; the shared Market in the Classic look and the LEGACY art set.
+
+## Monuments (bead `pulp_wars-eu3r.2`)
+
+The seven achievement Monuments and the faction obelisk in Candy materials. Milk chocolate (`#7a4526`), vanilla cream, golden caramel (`#e0a040`) and pale pink (`#f6c9d2`), never red (`chibi-candy-monument-<achievement>`): the Explorer a frosted chocolate obelisk with a caramel compass rose and a wafer spyglass; the Engineer a chocolate pillar under a peppermint cogwheel; the Muster a pillar hung with cookie and wafer shields under a waffle cone horn; the Conqueror a chocolate arch with a caramel wreath; the Land Baron a chocolate block with a cupcake shield, a caramel crown and a wafer signpost; the Sea Dog a chocolate column with a caramel anchor and rope (no wheel); the Slayer a sugar-glass sword in fudge with a mint wreath. **Obelisk** (`chibi-candy-monument`): a stepped chocolate obelisk with pink sprinkles and a pink star, candidate 2 of the Explorer sheet reused (no new PixelLab job). Art only: the board still draws the Human (achievement) Monument or the shared obelisk until bead `pulp_wars-eu3r.3` wires the skin rule.
+
+Record: [faction buildings, section 15](../FACTION_BUILDINGS.md#15-faction-monuments-bead-pulp_wars-eu3r2).

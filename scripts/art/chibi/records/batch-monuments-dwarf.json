@@ -1,0 +1,1505 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments-dwarf",
+  "recipes": {
+    "conqueror-a": {
+      "id": "conqueror-a",
+      "asset": "chibi-dwarf-monument-conqueror",
+      "jobId": "1ec61c43-ebe1-424e-ae00-e7e62e3ca0aa",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dwarf",
+        "asset": "chibi-dwarf-monument-conqueror",
+        "subject": "IMPROVEMENT:MONUMENT:DWARF:CONQUEROR",
+        "faction": "DWARF",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22564,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dwarf Conqueror's monument: one small heavy triumphal arch of grey stone blocks, two thick square pillars and a lintel banded with dark iron with an open gateway between them that shows the transparent background, one big brass laurel wreath standing on top of the lintel, and a crossed iron axe and hammer on its front. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dwarf Conqueror's monument: one small heavy triumphal arch of grey stone blocks, two thick square pillars and a lintel banded with dark iron with an open gateway between them that shows the transparent background, one big brass laurel wreath standing on top of the lintel, and a crossed iron axe and hammer on its front. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dwarf Conqueror's monument: one small heavy triumphal arch of grey stone blocks, two thick square pillars and a lintel banded with dark iron with an open gateway between them that shows the transparent background, one big brass laurel wreath standing on top of the lintel, and a crossed iron axe and hammer on its front. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:57:38.344Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dwarf/conqueror-a.png",
+      "rawSheetSha256": "cdf4ef39a5e7d3680ac4119f4e7baebd256e9fc0f8fe8b6e565a4d1f04108bba",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.878,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8913,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.5544,
+          "footprintWidthShare": 0.8837,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.881,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8837,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8605,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8095,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9231,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8043,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8864,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8605,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8889,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7805,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7391,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8095,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:00:14.006Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 15,
+        "notes": "Candidate 15 of 16: a heavy round arch of soot-dark stone blocks banded with dark iron, an open gateway, and a copper laurel wreath round a crossed axe and hammer on its front; the Conqueror's arch and wreath in Dwarf stone and iron. The only one of sixteen not lit from the right by the faces measure (+1.4, flat): every square arch (0 to 14) is shaded on its left; the wreath sits on the lintel's face, not on top.",
+        "reviewedAt": "2026-10-08T14:02:06.085Z"
+      }
+    },
+    "engineer-a": {
+      "id": "engineer-a",
+      "asset": "chibi-dwarf-monument-engineer",
+      "jobId": "efd67c77-36b2-4619-856c-e0f790266e47",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dwarf",
+        "asset": "chibi-dwarf-monument-engineer",
+        "subject": "IMPROVEMENT:MONUMENT:DWARF:ENGINEER",
+        "faction": "DWARF",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22562,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dwarf Engineer's monument: one tall square grey stone pillar rising straight out of the ground, topped by one big brass cogwheel standing upright on its edge, a copper pipe with one small white steam puff up its side and a crossed dark iron hammer and spanner on its front. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dwarf Engineer's monument: one tall square grey stone pillar rising straight out of the ground, topped by one big brass cogwheel standing upright on its edge, a copper pipe with one small white steam puff up its side and a crossed dark iron hammer and spanner on its front. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dwarf Engineer's monument: one tall square grey stone pillar rising straight out of the ground, topped by one big brass cogwheel standing upright on its edge, a copper pipe with one small white steam puff up its side and a crossed dark iron hammer and spanner on its front. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:28:42.846Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dwarf/engineer-a.png",
+      "rawSheetSha256": "4e87ae3cb0760f154aaa3f6a5b3de7de62548edf0978dec7a2d04246ce167246",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0688,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0151,
+          "footprintWidthShare": 0.9762,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8158,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0182,
+          "footprintWidthShare": 0.9744,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5017,
+          "footprintWidthShare": 0.8462,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0065,
+          "footprintWidthShare": 0.9211,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0514,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0139,
+          "footprintWidthShare": 0.7273,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.003,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0735,
+          "footprintWidthShare": 0.8387,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0065,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0203,
+          "footprintWidthShare": 0.8947,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8919,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0036,
+          "footprintWidthShare": 0.8649,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.036,
+          "footprintWidthShare": 0.7297,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:55:26.041Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 6,
+        "notes": "Candidate 6 of 16 (resumed after a dropped poll): a square pillar of soot-dark stone under a big brass cogwheel standing on its edge, copper pipes up both sides and a crossed hammer and spanner on its front; the Engineer's cog and crossed tools in Dwarf iron, copper and brass. It is the only one of sixteen whose faces measure is not lit from the right (-0.6, flat); 3 and 7 have warmer grey stone but are shaded on their left.",
+        "reviewedAt": "2026-10-08T13:56:52.935Z"
+      }
+    },
+    "explorer-a": {
+      "id": "explorer-a",
+      "asset": "chibi-dwarf-monument-explorer",
+      "jobId": "2e43daec-aa54-462f-b6e0-011b09053bc9",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dwarf",
+        "asset": "chibi-dwarf-monument-explorer",
+        "subject": "IMPROVEMENT:MONUMENT:DWARF:EXPLORER",
+        "faction": "DWARF",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22561,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dwarf Explorer's monument: one tall slender obelisk of grey stone blocks banded with copper rising straight out of the ground, with one big round brass compass rose with a four-pointed star set on its front; a brass telescope on a small dark iron tripod stands at its foot. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dwarf Explorer's monument: one tall slender obelisk of grey stone blocks banded with copper rising straight out of the ground, with one big round brass compass rose with a four-pointed star set on its front; a brass telescope on a small dark iron tripod stands at its foot. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dwarf Explorer's monument: one tall slender obelisk of grey stone blocks banded with copper rising straight out of the ground, with one big round brass compass rose with a four-pointed star set on its front; a brass telescope on a small dark iron tripod stands at its foot. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:27:15.667Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dwarf/explorer-a.png",
+      "rawSheetSha256": "f8f61d1bcab2e0624f02f1501c9c8a8b36c9539ffbb3c7936399d3933a1bb021",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8611,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9706,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9394,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0328,
+          "footprintWidthShare": 0.8378,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8649,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1049,
+          "footprintWidthShare": 0.8857,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.03,
+          "footprintWidthShare": 0.7949,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8611,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0463,
+          "footprintWidthShare": 0.8857,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8108,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1245,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0833,
+          "footprintWidthShare": 0.7561,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8378,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0676,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:28:42.835Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 4,
+        "notes": "Candidate 4 of 16: an obelisk of warm grey stone blocks banded with copper, a big brass compass rose with a four-pointed star on its front and a brass telescope on a dark iron tripod at its foot; the Explorer's compass and spyglass in Dwarf stone, copper and brass, lit from the left. 3 and 7 a smaller star; 0, 1, 5, 8 and 11 no rose; 10 a cairn; 13 and 14 a lantern.",
+        "reviewedAt": "2026-10-08T13:41:33.566Z"
+      }
+    },
+    "land-baron-a": {
+      "id": "land-baron-a",
+      "asset": "chibi-dwarf-monument-land-baron",
+      "jobId": "a5eb6e2e-a2d1-4e92-96dd-df484a2ccebe",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dwarf",
+        "asset": "chibi-dwarf-monument-land-baron",
+        "subject": "IMPROVEMENT:MONUMENT:DWARF:LAND_BARON",
+        "faction": "DWARF",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22565,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dwarf Land Baron's monument: one stout square boundary stone of grey stone blocks, a little wider at its foot, with a carved shield bearing a small anvil on its front, one big brass crown resting on its flat top and a small dark iron signpost with two blank arrow boards beside it. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dwarf Land Baron's monument: one stout square boundary stone of grey stone blocks, a little wider at its foot, with a carved shield bearing a small anvil on its front, one big brass crown resting on its flat top and a small dark iron signpost with two blank arrow boards beside it. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dwarf Land Baron's monument: one stout square boundary stone of grey stone blocks, a little wider at its foot, with a carved shield bearing a small anvil on its front, one big brass crown resting on its flat top and a small dark iron signpost with two blank arrow boards beside it. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T14:00:14.010Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dwarf/land-baron-a.png",
+      "rawSheetSha256": "a95e46275d57fbc39b733890e63b5fecbf08cc121875483b8b265b3c72cf6400",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.907,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9048,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9524,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0629,
+          "footprintWidthShare": 0.9286,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9535,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0381,
+          "footprintWidthShare": 0.9268,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9756,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0557,
+          "footprintWidthShare": 0.9535,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9318,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8478,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.975,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9286,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0409,
+          "footprintWidthShare": 0.9756,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0497,
+          "footprintWidthShare": 0.8667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0273,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0209,
+          "footprintWidthShare": 0.9302,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:02:10.792Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 2,
+        "notes": "Candidate 2 of 16: a stout boundary stone of warm grey stone blocks with a carved shield on its front, a big brass crown on its flat top and a dark iron signpost with two arrow boards; the Land Baron's crowned boundary stone and signpost in Dwarf stone, iron and brass, lit from the left. 0, 4 and 6 are close with a smaller crown; 3, 7 and 15 dark stone; 9 and 12 no shield; 13 an iron crown.",
+        "reviewedAt": "2026-10-08T14:07:25.178Z"
+      }
+    },
+    "muster-a": {
+      "id": "muster-a",
+      "asset": "chibi-dwarf-monument-muster",
+      "jobId": "cb797058-b154-44f7-ae6e-708aa4a11731",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dwarf",
+        "asset": "chibi-dwarf-monument-muster",
+        "subject": "IMPROVEMENT:MONUMENT:DWARF:MUSTER",
+        "faction": "DWARF",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22563,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dwarf Muster monument, a trophy of many arms: one tall grey stone pillar rising straight out of the ground, with four different shields hung round it (a round copper one, a tall dark iron kite shield, a square riveted one, a small brass buckler) and one big brass war horn lying across its flat top. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dwarf Muster monument, a trophy of many arms: one tall grey stone pillar rising straight out of the ground, with four different shields hung round it (a round copper one, a tall dark iron kite shield, a square riveted one, a small brass buckler) and one big brass war horn lying across its flat top. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dwarf Muster monument, a trophy of many arms: one tall grey stone pillar rising straight out of the ground, with four different shields hung round it (a round copper one, a tall dark iron kite shield, a square riveted one, a small brass buckler) and one big brass war horn lying across its flat top. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:56:01.819Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dwarf/muster-a.png",
+      "rawSheetSha256": "4dc48375bda4e456c2fa94a02ffbce25d66823056ce60f986aa9f01d11192a58",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.1491,
+          "footprintWidthShare": 0.973,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0278,
+          "footprintWidthShare": 0.9429,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0089,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1115,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6809,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0687,
+          "footprintWidthShare": 0.9444,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1694,
+          "footprintWidthShare": 0.7442,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1047,
+          "footprintWidthShare": 0.9697,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1046,
+          "footprintWidthShare": 0.8889,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9211,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2919,
+          "footprintWidthShare": 0.8293,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1797,
+          "footprintWidthShare": 0.8205,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8205,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0432,
+          "footprintWidthShare": 0.9722,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:57:38.340Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 13,
+        "notes": "Candidate 13 of 16: a warm grey stone pillar with two round copper shields at its foot and a big brass war horn across its flat top; the Muster's shields under a horn in Dwarf stone, copper and brass, lit from the left. 5 and 9 are close with one shield; 1, 4 and 14 dark iron pillars; 7, 11 and 15 a plain stone with one kite shield.",
+        "reviewedAt": "2026-10-08T14:02:07.619Z"
+      }
+    },
+    "sea-dog-a": {
+      "id": "sea-dog-a",
+      "asset": "chibi-dwarf-monument-sea-dog",
+      "jobId": "62c2f9e1-1f91-47b4-8113-2da1722ab14b",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dwarf",
+        "asset": "chibi-dwarf-monument-sea-dog",
+        "subject": "IMPROVEMENT:MONUMENT:DWARF:SEA_DOG",
+        "faction": "DWARF",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22566,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dwarf Sea Dog's monument: one tall grey stone column banded with copper rising straight out of the ground, with one big dark iron ship's anchor standing upright against its front, a coil of dark iron chain round its foot and one brass ship's steering wheel standing on its top. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dwarf Sea Dog's monument: one tall grey stone column banded with copper rising straight out of the ground, with one big dark iron ship's anchor standing upright against its front, a coil of dark iron chain round its foot and one brass ship's steering wheel standing on its top. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dwarf Sea Dog's monument: one tall grey stone column banded with copper rising straight out of the ground, with one big dark iron ship's anchor standing upright against its front, a coil of dark iron chain round its foot and one brass ship's steering wheel standing on its top. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T14:02:10.795Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dwarf/sea-dog-a.png",
+      "rawSheetSha256": "981a4efd055fd76295b7cb385c0ca770fa325e85dac0e0406e8d32b377d42583",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0197,
+          "footprintWidthShare": 0.878,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2115,
+          "footprintWidthShare": 0.9,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9286,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9268,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1464,
+          "footprintWidthShare": 0.9268,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9474,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9024,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9459,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1818,
+          "footprintWidthShare": 0.925,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0053,
+          "footprintWidthShare": 0.95,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9286,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1641,
+          "footprintWidthShare": 0.9459,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9231,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9744,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:03:41.765Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 9,
+        "notes": "Candidate 9 of 16: a warm grey stone column banded with copper, a brass ship's wheel on its top, a big dark iron anchor against its front and a coil of dark iron chain at its foot; the Sea Dog's wheel, anchor and chain in Dwarf stone, copper and iron, lit from the left. 0 to 2, 12 and 15 are close; 6 white stone; 7 and 14 dark iron; 8 a gold ring.",
+        "reviewedAt": "2026-10-08T14:07:26.418Z"
+      }
+    },
+    "slayer-a": {
+      "id": "slayer-a",
+      "asset": "chibi-dwarf-monument-slayer",
+      "jobId": "62286e36-357a-47a8-b4d9-930c61a9f8dd",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dwarf",
+        "asset": "chibi-dwarf-monument-slayer",
+        "subject": "IMPROVEMENT:MONUMENT:DWARF:SLAYER",
+        "faction": "DWARF",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22567,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dwarf Slayer's monument: one great dark iron sword plunged point-down into a rough block of grey stone, the long blade upright and its brass crossguard and pommel high in the air, one brass laurel wreath hanging on the hilt and one horned dark iron helmet with copper trim resting on the stone beside the blade. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dwarf Slayer's monument: one great dark iron sword plunged point-down into a rough block of grey stone, the long blade upright and its brass crossguard and pommel high in the air, one brass laurel wreath hanging on the hilt and one horned dark iron helmet with copper trim resting on the stone beside the blade. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dwarf Slayer's monument: one great dark iron sword plunged point-down into a rough block of grey stone, the long blade upright and its brass crossguard and pommel high in the air, one brass laurel wreath hanging on the hilt and one horned dark iron helmet with copper trim resting on the stone beside the blade. Warm grey stone shaded on its right side, soot-black iron with light edges, polished copper (#c27c3a), brass; dark outline, never black; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T14:03:41.772Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dwarf/slayer-a.png",
+      "rawSheetSha256": "4c379397b03ec04d6641e6693d1d40203ffc4d694cb448f0aadee3a2691c637a",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9688,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9688,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9688,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9688,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:05:22.809Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 9,
+        "notes": "Candidate 9 of 16: a great dark iron sword with a brass crossguard and pommel plunged into a rough block of grey stone, a brass laurel wreath hanging on its hilt; the Slayer's sword in the stone and wreath in Dwarf iron and brass, lit from the left. No helmet: the candidates with the horned iron helmet (4 to 7, 12 to 15) either drop the wreath or set the helmet on the hilt, which hides the sword.",
+        "reviewedAt": "2026-10-08T14:07:27.693Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-dwarf-monument": {
+      "id": "chibi-dwarf-monument",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "explorer-a",
+      "candidate": 2,
+      "candidateSha256": "96b7904a519ad120be8b8f7c5a93ef48f9839660591afcb728f9ab43e8b29a34",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dwarf-monument.png",
+        "sha256": "5f2c1742d345d749270fc358760b6d8eac0180ff397ca9fd11660a9d6c69935e",
+        "pixelSha256": "66b5317c3429f1207294c49fd08563d69e29ce431b52669bd04d6005f106e460",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Reused candidate 2 of the Dwarf Explorer sheet (explorer-a), no new PixelLab job (the US$5 limit left no room for obelisk-a). A tall obelisk of warm grey stone blocks carved with runes, banded with two copper rings, a small iron lantern hanging from its upper left; no compass rose, no telescope, so it shows the Dwarf builder and hides the achievement. Lit from the left. 15 has a copper dial that reads like a rose; 0, 8 and 13 stand by a telescope.",
+      "acceptedAt": "2026-10-08T14:44:49.338Z"
+    },
+    "chibi-dwarf-monument-conqueror": {
+      "id": "chibi-dwarf-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF:CONQUEROR",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "conqueror-a",
+      "candidate": 15,
+      "candidateSha256": "c847575594d191357ed87d35c76ef2062ff3d3fc579591b28febf4a8235703b5",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dwarf-monument-conqueror.png",
+        "sha256": "30a4c4f4eb6ff7c87a0e4821f65aa9104dfed1ba16095728fe15e3d3449bcbb1",
+        "pixelSha256": "5a0bedcd1f3cce4a5040fe757d81e5b39a3a5f333da1c2ce1fe3361a6608a0cf",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 15 of 16: a heavy round arch of soot-dark stone blocks banded with dark iron, an open gateway, and a copper laurel wreath round a crossed axe and hammer on its front; the Conqueror's arch and wreath in Dwarf stone and iron. The only one of sixteen not lit from the right by the faces measure (+1.4, flat): every square arch (0 to 14) is shaded on its left; the wreath sits on the lintel's face, not on top.",
+      "acceptedAt": "2026-10-08T14:02:06.085Z"
+    },
+    "chibi-dwarf-monument-engineer": {
+      "id": "chibi-dwarf-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF:ENGINEER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "engineer-a",
+      "candidate": 6,
+      "candidateSha256": "06b619beabfc4d740fd65301cd95c889bd7fba351bb244572506b2aa23e566e8",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dwarf-monument-engineer.png",
+        "sha256": "b82de6601e4ebd019ebb8d5bd608b73a0f0c7c6240b5a6f537b9def9b1af0ccc",
+        "pixelSha256": "7c1d2dd4b70916ed7c6f8550007740beeae636c81f1a24e53b2b04a329d541c3",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 6 of 16 (resumed after a dropped poll): a square pillar of soot-dark stone under a big brass cogwheel standing on its edge, copper pipes up both sides and a crossed hammer and spanner on its front; the Engineer's cog and crossed tools in Dwarf iron, copper and brass. It is the only one of sixteen whose faces measure is not lit from the right (-0.6, flat); 3 and 7 have warmer grey stone but are shaded on their left.",
+      "acceptedAt": "2026-10-08T13:56:52.935Z"
+    },
+    "chibi-dwarf-monument-explorer": {
+      "id": "chibi-dwarf-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF:EXPLORER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "explorer-a",
+      "candidate": 4,
+      "candidateSha256": "3990ef4021886a611d5a86edf8531794d864e686638d4eb655b93ada4e049f41",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dwarf-monument-explorer.png",
+        "sha256": "585964e5627c5a0ba413c57e20e93426416a28e0765169a7a717e877edb25fa8",
+        "pixelSha256": "3a445e0bb1fb396486c7d901de156de3d916e0c6cb8260e3aa3b02306adc25fb",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 4 of 16: an obelisk of warm grey stone blocks banded with copper, a big brass compass rose with a four-pointed star on its front and a brass telescope on a dark iron tripod at its foot; the Explorer's compass and spyglass in Dwarf stone, copper and brass, lit from the left. 3 and 7 a smaller star; 0, 1, 5, 8 and 11 no rose; 10 a cairn; 13 and 14 a lantern.",
+      "acceptedAt": "2026-10-08T13:41:33.566Z"
+    },
+    "chibi-dwarf-monument-land-baron": {
+      "id": "chibi-dwarf-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF:LAND_BARON",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "land-baron-a",
+      "candidate": 2,
+      "candidateSha256": "e42ca39ff46d00d99e2d620bcb908570b80fb0c78327b290086067e192276183",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dwarf-monument-land-baron.png",
+        "sha256": "ca355ad37c8862e05419b10aa0a12542e0e241adc96eea325673eafd1bf4c0dc",
+        "pixelSha256": "8ab3a7e1995c6dab7febbd496a038dda75e95e0cd88b0a6ada0cddc2865f1b15",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 2 of 16: a stout boundary stone of warm grey stone blocks with a carved shield on its front, a big brass crown on its flat top and a dark iron signpost with two arrow boards; the Land Baron's crowned boundary stone and signpost in Dwarf stone, iron and brass, lit from the left. 0, 4 and 6 are close with a smaller crown; 3, 7 and 15 dark stone; 9 and 12 no shield; 13 an iron crown.",
+      "acceptedAt": "2026-10-08T14:07:25.178Z"
+    },
+    "chibi-dwarf-monument-muster": {
+      "id": "chibi-dwarf-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF:MUSTER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "muster-a",
+      "candidate": 13,
+      "candidateSha256": "3f0c87343e1ce14232cb5e07be3daedef11ef8076496bfe0a68f1917f42fd8d2",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dwarf-monument-muster.png",
+        "sha256": "87dca808335e490de70146f0fd38e9817c9758cbfbf950ebf6671635a8692196",
+        "pixelSha256": "c18aba273897fefdf48232e856b0aabb6e70c14dabad5353f3f4e6c90e997a84",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 13 of 16: a warm grey stone pillar with two round copper shields at its foot and a big brass war horn across its flat top; the Muster's shields under a horn in Dwarf stone, copper and brass, lit from the left. 5 and 9 are close with one shield; 1, 4 and 14 dark iron pillars; 7, 11 and 15 a plain stone with one kite shield.",
+      "acceptedAt": "2026-10-08T14:02:07.619Z"
+    },
+    "chibi-dwarf-monument-sea-dog": {
+      "id": "chibi-dwarf-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF:SEA_DOG",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "sea-dog-a",
+      "candidate": 9,
+      "candidateSha256": "6fe1449809a691b64a4eba2c81768c10c0a3bb37e49fef2360206672d5d3b3a1",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dwarf-monument-sea-dog.png",
+        "sha256": "ff4db7d99897b2b3d8a03e4c85e1d81004382ac6cdd10a18d1a784505018c02c",
+        "pixelSha256": "998f345cf63081b766ffdbefa2f306c44fdd57ff688a339b857fec20993c7fd5",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 9 of 16: a warm grey stone column banded with copper, a brass ship's wheel on its top, a big dark iron anchor against its front and a coil of dark iron chain at its foot; the Sea Dog's wheel, anchor and chain in Dwarf stone, copper and iron, lit from the left. 0 to 2, 12 and 15 are close; 6 white stone; 7 and 14 dark iron; 8 a gold ring.",
+      "acceptedAt": "2026-10-08T14:07:26.418Z"
+    },
+    "chibi-dwarf-monument-slayer": {
+      "id": "chibi-dwarf-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:DWARF:SLAYER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "slayer-a",
+      "candidate": 9,
+      "candidateSha256": "d998bb65c5739c11d46c7d5157a8a86a77aeefab8b1b38b504928d3efbf5dc1e",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dwarf-monument-slayer.png",
+        "sha256": "8b4bda2104adeec945ff2905e18a5291181068f2761fb9e6e7bbfd6ddfaeed40",
+        "pixelSha256": "93b5144ce96c82c65a19e330d20f440b42104f7478fffcc84e6d54923b1e5c59",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 9 of 16: a great dark iron sword with a brass crossguard and pommel plunged into a rough block of grey stone, a brass laurel wreath hanging on its hilt; the Slayer's sword in the stone and wreath in Dwarf iron and brass, lit from the left. No helmet: the candidates with the horned iron helmet (4 to 7, 12 to 15) either drop the wreath or set the helmet on the hilt, which hides the sword.",
+      "acceptedAt": "2026-10-08T14:07:27.693Z"
+    }
+  }
+}

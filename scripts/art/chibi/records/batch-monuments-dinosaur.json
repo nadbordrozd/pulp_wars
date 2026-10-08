@@ -1,0 +1,1672 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments-dinosaur",
+  "recipes": {
+    "conqueror-a": {
+      "id": "conqueror-a",
+      "asset": "chibi-dinosaur-monument-conqueror",
+      "jobId": "d4faa815-6e1d-4aa4-a612-7811144a979a",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dinosaur",
+        "asset": "chibi-dinosaur-monument-conqueror",
+        "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:CONQUEROR",
+        "faction": "DINOSAUR",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22534,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dinosaur Conqueror's monument: one small arch of three basalt stones, two thick standing stones and a heavy lintel stone with an open gateway between them that shows the transparent background, one big wreath of green fern leaves and orange feathers standing on top of the lintel, and a crossed stone spear and bone club on its front. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur Conqueror's monument: one small arch of three basalt stones, two thick standing stones and a heavy lintel stone with an open gateway between them that shows the transparent background, one big wreath of green fern leaves and orange feathers standing on top of the lintel, and a crossed stone spear and bone club on its front. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur Conqueror's monument: one small arch of three basalt stones, two thick standing stones and a heavy lintel stone with an open gateway between them that shows the transparent background, one big wreath of green fern leaves and orange feathers standing on top of the lintel, and a crossed stone spear and bone club on its front. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:21:59.134Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dinosaur/conqueror-a.png",
+      "rawSheetSha256": "e26a1f001df9ed0e3b1f4dd9bbfd8f50bcf5860e1fbad653ddf028bebd356a66",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.1376,
+          "footprintWidthShare": 0.9231,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0475,
+          "footprintWidthShare": 0.9,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0441,
+          "footprintWidthShare": 0.9231,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.25,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2601,
+          "footprintWidthShare": 0.973,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.339,
+          "footprintWidthShare": 0.9231,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1118,
+          "footprintWidthShare": 0.973,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1234,
+          "footprintWidthShare": 0.9268,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1554,
+          "footprintWidthShare": 0.9474,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2835,
+          "footprintWidthShare": 0.973,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0478,
+          "footprintWidthShare": 0.973,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2901,
+          "footprintWidthShare": 0.973,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0788,
+          "footprintWidthShare": 0.973,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2603,
+          "footprintWidthShare": 0.973,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4144,
+          "footprintWidthShare": 0.973,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2799,
+          "footprintWidthShare": 0.973,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-08T13:23:11.059Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 10,
+        "notes": "Candidate 10 of 16: a small arch of three dark basalt stones (two standing stones and a lintel) with an open gateway, a ring wreath of green fern leaves on the lintel and a crossed stone spear and bone club on its front; the Conqueror's arch and wreath as a Dinosaur trilithon, lit from the left. 2, 6 and 8 have a wreath of orange feathers that reads as a flower; 3, 4, 5, 9 and 13 mossy olive stone; 0 and 1 a grass tuft, not a wreath.",
+        "reviewedAt": "2026-10-08T13:26:39.041Z"
+      }
+    },
+    "engineer-a": {
+      "id": "engineer-a",
+      "asset": "chibi-dinosaur-monument-engineer",
+      "jobId": "9c869a90-ef98-4954-91d5-ecce643695a8",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dinosaur",
+        "asset": "chibi-dinosaur-monument-engineer",
+        "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:ENGINEER",
+        "faction": "DINOSAUR",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22532,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dinosaur Engineer's monument: one tall square basalt pillar rising straight out of the ground, topped by one big round stone wheel with notched teeth standing upright on its edge, with a crossed stone hammer and bone pick lashed with vine on its front. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur Engineer's monument: one tall square basalt pillar rising straight out of the ground, topped by one big round stone wheel with notched teeth standing upright on its edge, with a crossed stone hammer and bone pick lashed with vine on its front. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur Engineer's monument: one tall square basalt pillar rising straight out of the ground, topped by one big round stone wheel with notched teeth standing upright on its edge, with a crossed stone hammer and bone pick lashed with vine on its front. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:18:07.278Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dinosaur/engineer-a.png",
+      "rawSheetSha256": "a9f858837bdd50d5ea34900268585b9972889e5c724e3ee31923a7f19b9d4d0c",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7059,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7742,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7273,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:19:37.480Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 12,
+        "notes": "Candidate 12 of 16: a square basalt pillar under a big grey stone cogwheel standing on its edge, a crossed bone pick and wooden stone hammer lashed with green vine and two orange feathers on its front; the Engineer's cog and crossed tools in Dinosaur stone. The sixteen are near twins; 0 to 2 and 4 have no feathers, 5 a dimmer pick.",
+        "reviewedAt": "2026-10-08T13:21:40.333Z"
+      }
+    },
+    "explorer-a": {
+      "id": "explorer-a",
+      "asset": "chibi-dinosaur-monument-explorer",
+      "jobId": "7568ff8b-d72e-41e1-858d-40119e985d32",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dinosaur",
+        "asset": "chibi-dinosaur-monument-explorer",
+        "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:EXPLORER",
+        "faction": "DINOSAUR",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22531,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dinosaur Explorer's monument: one tall slender standing stone of basalt rising straight out of the ground, with one big round compass rose with a four-pointed star carved and painted cream on its front and a tuft of orange feathers on its tip; a spyglass made of a hollow bone tusk leans against its foot. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur Explorer's monument: one tall slender standing stone of basalt rising straight out of the ground, with one big round compass rose with a four-pointed star carved and painted cream on its front and a tuft of orange feathers on its tip; a spyglass made of a hollow bone tusk leans against its foot. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur Explorer's monument: one tall slender standing stone of basalt rising straight out of the ground, with one big round compass rose with a four-pointed star carved and painted cream on its front and a tuft of orange feathers on its tip; a spyglass made of a hollow bone tusk leans against its foot. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:16:47.969Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dinosaur/explorer-a.png",
+      "rawSheetSha256": "2a7786c209ea1b061c2daaabf31270980c6fce04f46cf4452fcf804b26b58c6b",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.0233,
+          "footprintWidthShare": 0.9429,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1945,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1563,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1697,
+          "footprintWidthShare": 0.9063,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1053,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1565,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2458,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2099,
+          "footprintWidthShare": 0.9714,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0833,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0936,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.2184,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1522,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0214,
+          "footprintWidthShare": 0.8947,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.081,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.271,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0734,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:18:07.266Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 5,
+        "notes": "Candidate 5 of 16: a dark basalt standing stone with a big cream compass rose carved on its front, a tuft of orange feathers on its tip, a bone spyglass and green vine at its foot; the Explorer's compass and spyglass in Dinosaur stone and bone. 10 and 13 are close (10 has stray pixels under it, 13 a smaller spyglass); 0 and 4 a tusk instead of a spyglass; 2 and 9 a stepped pillar, not a standing stone; 3 and 14 small roses.",
+        "reviewedAt": "2026-10-08T13:21:37.075Z"
+      }
+    },
+    "land-baron-a": {
+      "id": "land-baron-a",
+      "asset": "chibi-dinosaur-monument-land-baron",
+      "jobId": "3393cfcc-2e62-4703-bc83-9fd6faa36dc2",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dinosaur",
+        "asset": "chibi-dinosaur-monument-land-baron",
+        "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:LAND_BARON",
+        "faction": "DINOSAUR",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22535,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dinosaur Land Baron's monument: one stout square boundary stone of basalt, a little wider at its foot, with a carved shield bearing a small dinosaur skull on its front, one big crown of cream tusks and teeth resting on its flat top and a small signpost of lashed sticks with two blank arrow boards beside it. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur Land Baron's monument: one stout square boundary stone of basalt, a little wider at its foot, with a carved shield bearing a small dinosaur skull on its front, one big crown of cream tusks and teeth resting on its flat top and a small signpost of lashed sticks with two blank arrow boards beside it. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur Land Baron's monument: one stout square boundary stone of basalt, a little wider at its foot, with a carved shield bearing a small dinosaur skull on its front, one big crown of cream tusks and teeth resting on its flat top and a small signpost of lashed sticks with two blank arrow boards beside it. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:23:11.068Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dinosaur/land-baron-a.png",
+      "rawSheetSha256": "3c12206d5963fc3a5f33861c115675b24739d8530809b43389b3606abb2901b8",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.1101,
+          "footprintWidthShare": 0.9487,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0753,
+          "footprintWidthShare": 0.8718,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1137,
+          "footprintWidthShare": 0.881,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0341,
+          "footprintWidthShare": 0.9714,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0906,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1272,
+          "footprintWidthShare": 0.9744,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1366,
+          "footprintWidthShare": 0.9744,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1006,
+          "footprintWidthShare": 0.9714,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1207,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1101,
+          "footprintWidthShare": 0.9048,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.1026,
+          "footprintWidthShare": 0.881,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.122,
+          "footprintWidthShare": 0.9048,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1499,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1272,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1341,
+          "footprintWidthShare": 0.9048,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0828,
+          "footprintWidthShare": 0.9211,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:24:28.283Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 6,
+        "notes": "Candidate 6 of 16: a stout dark basalt boundary stone with a carved shield bearing a dinosaur skull, a crown of cream tusks on its top, a signpost of two wooden arrow boards on lashed sticks, green vine and an orange feather; the Land Baron's crowned boundary stone and signpost in Dinosaur stone and tusk. The sixteen are near twins; 3, 7 and 15 lose the signpost boards. The faces measure reads -2.1 (dark basalt counts as outline); the front face is the lit one.",
+        "reviewedAt": "2026-10-08T13:26:41.168Z"
+      }
+    },
+    "muster-a": {
+      "id": "muster-a",
+      "asset": "chibi-dinosaur-monument-muster",
+      "jobId": "e5ecbf54-23ce-489c-8f38-d0b1023e7e14",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dinosaur",
+        "asset": "chibi-dinosaur-monument-muster",
+        "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:MUSTER",
+        "faction": "DINOSAUR",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22533,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dinosaur Muster monument, a trophy of many arms: one tall basalt pillar rising straight out of the ground, with four different shields hung round it (a round turtle shell, a tall spotted hide shield, a square wooden one, a small bone buckler) and one big curved cream tusk horn lying across its flat top. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur Muster monument, a trophy of many arms: one tall basalt pillar rising straight out of the ground, with four different shields hung round it (a round turtle shell, a tall spotted hide shield, a square wooden one, a small bone buckler) and one big curved cream tusk horn lying across its flat top. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur Muster monument, a trophy of many arms: one tall basalt pillar rising straight out of the ground, with four different shields hung round it (a round turtle shell, a tall spotted hide shield, a square wooden one, a small bone buckler) and one big curved cream tusk horn lying across its flat top. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:19:37.484Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dinosaur/muster-a.png",
+      "rawSheetSha256": "e0e41400228321845b5f5e9c8dfc375f396639dcf5bff9fdc4f2c8052912b8c9",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.0047,
+          "footprintWidthShare": 0.7241,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0141,
+          "footprintWidthShare": 0.6897,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0189,
+          "footprintWidthShare": 0.6897,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0103,
+          "footprintWidthShare": 0.6897,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0052,
+          "footprintWidthShare": 0.7241,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0049,
+          "footprintWidthShare": 0.6897,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0146,
+          "footprintWidthShare": 0.6897,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0194,
+          "footprintWidthShare": 0.6897,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7241,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0144,
+          "footprintWidthShare": 0.6897,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0192,
+          "footprintWidthShare": 0.6897,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0144,
+          "footprintWidthShare": 0.6897,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0047,
+          "footprintWidthShare": 0.7241,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0385,
+          "footprintWidthShare": 0.6897,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0193,
+          "footprintWidthShare": 0.6897,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.029,
+          "footprintWidthShare": 0.6897,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:21:59.131Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 12,
+        "notes": "Candidate 12 of 16: a square basalt pillar with a curved cream tusk horn across its top, a turtle-shell shield, a spotted hide shield and two more at its back, tied on with green vine, and a tuft of orange feathers; the Muster's trophy of shields under a horn in Dinosaur shell, hide and bone. All sixteen share the plan; 1, 5, 9 and 13 have no turtle shell, 3, 11 and 15 mossy green shields that sink into the grass. The faces measure reads -3.0 (the dark basalt is mostly outline-dark, so the pale shields weigh in); the pillar's left face is the lit one.",
+        "reviewedAt": "2026-10-08T13:26:36.209Z"
+      }
+    },
+    "obelisk-a": {
+      "id": "obelisk-a",
+      "asset": "chibi-dinosaur-monument",
+      "jobId": "b45f0448-d411-4878-8406-58365e324c54",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dinosaur",
+        "asset": "chibi-dinosaur-monument",
+        "subject": "IMPROVEMENT:MONUMENT:DINOSAUR",
+        "faction": "DINOSAUR",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22538,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dinosaur monument: one tall slender standing stone of basalt rising straight out of the ground with no plinth and no steps, an orange painted spiral on its front and a tuft of orange feathers and two cream tusks on its tip. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur monument: one tall slender standing stone of basalt rising straight out of the ground with no plinth and no steps, an orange painted spiral on its front and a tuft of orange feathers and two cream tusks on its tip. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur monument: one tall slender standing stone of basalt rising straight out of the ground with no plinth and no steps, an orange painted spiral on its front and a tuft of orange feathers and two cream tusks on its tip. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:57:31.758Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dinosaur/obelisk-a.png",
+      "rawSheetSha256": "5dad3036caae62ed8f688eeb7521e2e5318e76fad610066ebf43d6aeacc005f8",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.875,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0435,
+          "footprintWidthShare": 0.5484,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.7614,
+          "footprintWidthShare": 0.8788,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1182,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1361,
+          "footprintWidthShare": 0.9667,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.7215,
+          "footprintWidthShare": 0.8286,
+          "suspect": true
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9667,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9333,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0118,
+          "footprintWidthShare": 0.8529,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.7312,
+          "footprintWidthShare": 0.8529,
+          "suspect": true
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0431,
+          "footprintWidthShare": 0.9355,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8485,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0478,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.793,
+          "footprintWidthShare": 0.7838,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-08T13:58:55.120Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 5,
+        "notes": "Candidate 5 of 16: a tall standing stone of dark green-grey basalt with an orange painted spiral on its front, two cream tusks at its top and a tuft of orange feathers on its tip; the Dinosaur Monument for a viewer who may not see the achievement, lit from the left. 0 and 8 are darker but measure lit from the right; 1, 13 and 15 a brown stone; 2 and 10 lose the feathers.",
+        "reviewedAt": "2026-10-08T14:02:03.657Z"
+      }
+    },
+    "sea-dog-a": {
+      "id": "sea-dog-a",
+      "asset": "chibi-dinosaur-monument-sea-dog",
+      "jobId": "26a76b9e-58c9-4036-bf8f-988ad9612adc",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dinosaur",
+        "asset": "chibi-dinosaur-monument-sea-dog",
+        "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:SEA_DOG",
+        "faction": "DINOSAUR",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22536,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dinosaur Sea Dog's monument: one tall basalt column rising straight out of the ground, with one big anchor of grey stone lashed with vine standing upright against its front, a coil of thick vine rope round its foot and one round ship's steering wheel of lashed wood and bone standing on its top. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur Sea Dog's monument: one tall basalt column rising straight out of the ground, with one big anchor of grey stone lashed with vine standing upright against its front, a coil of thick vine rope round its foot and one round ship's steering wheel of lashed wood and bone standing on its top. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur Sea Dog's monument: one tall basalt column rising straight out of the ground, with one big anchor of grey stone lashed with vine standing upright against its front, a coil of thick vine rope round its foot and one round ship's steering wheel of lashed wood and bone standing on its top. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:24:28.289Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dinosaur/sea-dog-a.png",
+      "rawSheetSha256": "7cdfdccb405eaec813b5da1245cf041b3e9b086cf7581bf40ef19a4e9d5f0fbe",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.1096,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0632,
+          "footprintWidthShare": 0.9167,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.3544,
+          "footprintWidthShare": 0.9677,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0141,
+          "footprintWidthShare": 0.9677,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0544,
+          "footprintWidthShare": 0.973,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0567,
+          "footprintWidthShare": 0.9459,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0442,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0035,
+          "footprintWidthShare": 0.9677,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2553,
+          "footprintWidthShare": 0.9429,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0635,
+          "footprintWidthShare": 0.9722,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0547,
+          "footprintWidthShare": 0.9677,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0119,
+          "footprintWidthShare": 0.8611,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.2427,
+          "footprintWidthShare": 0.9394,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0754,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3367,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0346,
+          "footprintWidthShare": 0.9333,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:55:17.620Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 3,
+        "notes": "Candidate 3 of 16 (resumed after a dropped poll): a dark basalt column with a round wheel of lashed wood and bone on its top, a grey stone anchor against its front, a coil of vine rope at its foot and orange feathers; the Sea Dog's wheel, anchor and rope in Dinosaur stone, wood and vine, lit from the left. 7 is close; 4, 5 and 9 a cluster of basalt columns with no wheel; 12 no anchor; 6, 8, 9, 10 and 13 measure lit from the right.",
+        "reviewedAt": "2026-10-08T13:56:50.124Z"
+      }
+    },
+    "slayer-a": {
+      "id": "slayer-a",
+      "asset": "chibi-dinosaur-monument-slayer",
+      "jobId": "48466c3e-f0c8-4380-9dd1-858bcd29104d",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-dinosaur",
+        "asset": "chibi-dinosaur-monument-slayer",
+        "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:SLAYER",
+        "faction": "DINOSAUR",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 22537,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the Dinosaur Slayer's monument: one great flint stone sword with a bone hilt plunged point-down into a rough block of basalt, the long blade upright and its hilt high in the air, one wreath of green fern leaves hanging on the hilt and one horned dinosaur skull helmet resting on the stone beside the blade. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur Slayer's monument: one great flint stone sword with a bone hilt plunged point-down into a rough block of basalt, the long blade upright and its hilt high in the air, one wreath of green fern leaves hanging on the hilt and one horned dinosaur skull helmet resting on the stone beside the blade. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: the Dinosaur Slayer's monument: one great flint stone sword with a bone hilt plunged point-down into a rough block of basalt, the long blade upright and its hilt high in the air, one wreath of green fern leaves hanging on the hilt and one horned dinosaur skull helmet resting on the stone beside the blade. Dark basalt shaded on its right side, cream bone, tawny hide, brown wood, green vine, a few orange feathers (never red); no metal; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:56:01.619Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-dinosaur/slayer-a.png",
+      "rawSheetSha256": "534e14e556cfb5a1989c2c40961491ec7ae825591cb4e9febf8b71de83058550",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0065,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0031,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9722,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0424,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.973,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:57:31.750Z",
+      "usageUsd": 0.095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 7,
+        "notes": "Candidate 7 of 16: a great grey flint sword with a bone hilt plunged into a block of dark basalt, a horned dinosaur skull helmet resting beside it and orange feathers tied at the hilt in place of the wreath; the Slayer's sword in the stone and helmet in Dinosaur stone and bone, lit from the left. 12 has the fern wreath and the skull but measures lit from the right; 0, 4 and 6 a wreath and no helmet on a big rough rock; 13 and 15 a skull on a post, not a sword.",
+        "reviewedAt": "2026-10-08T14:02:02.274Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-dinosaur-monument": {
+      "id": "chibi-dinosaur-monument",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "obelisk-a",
+      "candidate": 5,
+      "candidateSha256": "0720f542737f0426e26dc890dda0b83cb8a70163618f6676e38b08e9eaa03842",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dinosaur-monument.png",
+        "sha256": "5aad961985e1a44c05f28630b38226a644b7419f2573eff436dcf07aa3edaf7f",
+        "pixelSha256": "253aff352a2b404d6081338879eff91a11f0e82267768e31fdb671184efe622f",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 5 of 16: a tall standing stone of dark green-grey basalt with an orange painted spiral on its front, two cream tusks at its top and a tuft of orange feathers on its tip; the Dinosaur Monument for a viewer who may not see the achievement, lit from the left. 0 and 8 are darker but measure lit from the right; 1, 13 and 15 a brown stone; 2 and 10 lose the feathers.",
+      "acceptedAt": "2026-10-08T14:02:03.657Z"
+    },
+    "chibi-dinosaur-monument-conqueror": {
+      "id": "chibi-dinosaur-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:CONQUEROR",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "conqueror-a",
+      "candidate": 10,
+      "candidateSha256": "65c12a2853332140d0dc158409c27f64e605bfcac132e0760483447b5fde0308",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dinosaur-monument-conqueror.png",
+        "sha256": "01640dd2eff05dc216ccdd34fb7fe9e0f46f77e1cf913382dc4f068a5c212806",
+        "pixelSha256": "f761ec645ab849b2f2972b2c08cf1ef5b4cefeca9f85598327d6a71b54b445f8",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 10 of 16: a small arch of three dark basalt stones (two standing stones and a lintel) with an open gateway, a ring wreath of green fern leaves on the lintel and a crossed stone spear and bone club on its front; the Conqueror's arch and wreath as a Dinosaur trilithon, lit from the left. 2, 6 and 8 have a wreath of orange feathers that reads as a flower; 3, 4, 5, 9 and 13 mossy olive stone; 0 and 1 a grass tuft, not a wreath.",
+      "acceptedAt": "2026-10-08T13:26:39.041Z"
+    },
+    "chibi-dinosaur-monument-engineer": {
+      "id": "chibi-dinosaur-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:ENGINEER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "engineer-a",
+      "candidate": 12,
+      "candidateSha256": "3e23cdac118151b8964c3dadfcaaf25147c51f643c0e022097280383a7ec3f20",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dinosaur-monument-engineer.png",
+        "sha256": "f0aa5304be290b702bb25e9e0088e98e57cba4e5351d7b38d6eb1a5cbdeaca69",
+        "pixelSha256": "b54726341b38f6494614cbbf7db630573e586d7374f5347b13ed9e8d1b6ebb36",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 12 of 16: a square basalt pillar under a big grey stone cogwheel standing on its edge, a crossed bone pick and wooden stone hammer lashed with green vine and two orange feathers on its front; the Engineer's cog and crossed tools in Dinosaur stone. The sixteen are near twins; 0 to 2 and 4 have no feathers, 5 a dimmer pick.",
+      "acceptedAt": "2026-10-08T13:21:40.333Z"
+    },
+    "chibi-dinosaur-monument-explorer": {
+      "id": "chibi-dinosaur-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:EXPLORER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "explorer-a",
+      "candidate": 5,
+      "candidateSha256": "e3d1ddf82dad5010a4bfbd0d65ef521826728671d2d03195029f9e200d4988ba",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dinosaur-monument-explorer.png",
+        "sha256": "1e8ef2249071b8bcff1ce9475bbbda9d3c6e2ed70f325a0064b5301431e23ece",
+        "pixelSha256": "08a084d987e769daf255e0641c272e23d4f7889b1063e14111c55719ccff8e3b",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 5 of 16: a dark basalt standing stone with a big cream compass rose carved on its front, a tuft of orange feathers on its tip, a bone spyglass and green vine at its foot; the Explorer's compass and spyglass in Dinosaur stone and bone. 10 and 13 are close (10 has stray pixels under it, 13 a smaller spyglass); 0 and 4 a tusk instead of a spyglass; 2 and 9 a stepped pillar, not a standing stone; 3 and 14 small roses.",
+      "acceptedAt": "2026-10-08T13:21:37.075Z"
+    },
+    "chibi-dinosaur-monument-land-baron": {
+      "id": "chibi-dinosaur-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:LAND_BARON",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "land-baron-a",
+      "candidate": 6,
+      "candidateSha256": "e759e1763b9430663db6d05356cc964be1d7c013441f45f12fe1ee23e75be62f",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dinosaur-monument-land-baron.png",
+        "sha256": "6b9905e84201ffccf00570759743580bee8c0b6080737f2102f292623b8957f1",
+        "pixelSha256": "7cce44e464501471de3788445a62b21942735d156f85ce22389041eb90d1f473",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 6 of 16: a stout dark basalt boundary stone with a carved shield bearing a dinosaur skull, a crown of cream tusks on its top, a signpost of two wooden arrow boards on lashed sticks, green vine and an orange feather; the Land Baron's crowned boundary stone and signpost in Dinosaur stone and tusk. The sixteen are near twins; 3, 7 and 15 lose the signpost boards. The faces measure reads -2.1 (dark basalt counts as outline); the front face is the lit one.",
+      "acceptedAt": "2026-10-08T13:26:41.168Z"
+    },
+    "chibi-dinosaur-monument-muster": {
+      "id": "chibi-dinosaur-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:MUSTER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "muster-a",
+      "candidate": 12,
+      "candidateSha256": "ea57759306b26bf083774b25fd1c053415e2ae7affd7c200ba9d8b560844a92f",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dinosaur-monument-muster.png",
+        "sha256": "c4729aa5e5c2ad6b079a592d050ffbbf996ab07c522703e63e7c3c6651c6efd1",
+        "pixelSha256": "b6fd95240732a76ec953c8af1d29b029322a7fd65a68336494ea457473e46cb8",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 12 of 16: a square basalt pillar with a curved cream tusk horn across its top, a turtle-shell shield, a spotted hide shield and two more at its back, tied on with green vine, and a tuft of orange feathers; the Muster's trophy of shields under a horn in Dinosaur shell, hide and bone. All sixteen share the plan; 1, 5, 9 and 13 have no turtle shell, 3, 11 and 15 mossy green shields that sink into the grass. The faces measure reads -3.0 (the dark basalt is mostly outline-dark, so the pale shields weigh in); the pillar's left face is the lit one.",
+      "acceptedAt": "2026-10-08T13:26:36.209Z"
+    },
+    "chibi-dinosaur-monument-sea-dog": {
+      "id": "chibi-dinosaur-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:SEA_DOG",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "sea-dog-a",
+      "candidate": 3,
+      "candidateSha256": "f8e753586ea0eec4a320f316f35c18ef10f205607d6ea01a2bc8b9b8669d4e05",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dinosaur-monument-sea-dog.png",
+        "sha256": "de34b977e6f48e9eec6a87c2e86577df9a6a85fcc79e8af6822cd75f2d47770a",
+        "pixelSha256": "cf3bbeb01630c96b8fc61799f014ae4a57f7dc8f408257e4a07ca7831186e315",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 3 of 16 (resumed after a dropped poll): a dark basalt column with a round wheel of lashed wood and bone on its top, a grey stone anchor against its front, a coil of vine rope at its foot and orange feathers; the Sea Dog's wheel, anchor and rope in Dinosaur stone, wood and vine, lit from the left. 7 is close; 4, 5 and 9 a cluster of basalt columns with no wheel; 12 no anchor; 6, 8, 9, 10 and 13 measure lit from the right.",
+      "acceptedAt": "2026-10-08T13:56:50.124Z"
+    },
+    "chibi-dinosaur-monument-slayer": {
+      "id": "chibi-dinosaur-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:SLAYER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "slayer-a",
+      "candidate": 7,
+      "candidateSha256": "12e7c425b90ffca5649994000fbd4ec30f08628d6302b59f389aa0738371797b",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dinosaur-monument-slayer.png",
+        "sha256": "31c2aada74d6627f9b4520735e915bfecdb981dbd7f03ccdd9d0551f50fd281b",
+        "pixelSha256": "8aed992e3826ff8be67e0b79d1cf00614297249dd4b14cd531f4b50e35e623f0",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 7 of 16: a great grey flint sword with a bone hilt plunged into a block of dark basalt, a horned dinosaur skull helmet resting beside it and orange feathers tied at the hilt in place of the wreath; the Slayer's sword in the stone and helmet in Dinosaur stone and bone, lit from the left. 12 has the fern wreath and the skull but measures lit from the right; 0, 4 and 6 a wreath and no helmet on a big rough rock; 13 and 15 a skull on a post, not a sword.",
+      "acceptedAt": "2026-10-08T14:02:02.274Z"
+    }
+  }
+}

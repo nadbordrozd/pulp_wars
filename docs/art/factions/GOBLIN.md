@@ -911,3 +911,9 @@ Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-wor
 - **Market** (`chibi-goblin-market`, `market-a` candidate 0): two rickety plank stalls under patched sand-buff hide awnings with a hazard yellow patch, a cog and dented tin pots, an old barrel and a sack.
 
 Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-faction-bead-pulp_wars-eu3r1). Name unchanged; drawn by the owner of the territory; the shared Market in the Classic look and the LEGACY art set.
+
+## Monuments (bead `pulp_wars-eu3r.2`)
+
+The seven achievement Monuments and the faction obelisk in Goblin materials. Riveted light grey tin (`#9aa5a8`), grey-tan planks, buff hide and hazard yellow (`#fdd20f`) (`chibi-goblin-monument-<achievement>`): the Explorer a crooked tin obelisk with a yellow compass dial; the Engineer a tin pillar with tin cogwheels; the Muster a plank post hung with a pot lid and plank shields under a horn; the Conqueror a tin and plank arch with a yellow wreath; the Land Baron a tin block with a yellow crown and a grinning shield; the Sea Dog a crooked post with a yellow wheel and a tin anchor; the Slayer a cleaver sword in tin scrap. **Obelisk** (`chibi-goblin-monument`): a crooked tin obelisk with a hide skirt and one yellow star, candidate 14 of the Explorer sheet reused (no new PixelLab job). Art only: the board still draws the Human (achievement) Monument or the shared obelisk until bead `pulp_wars-eu3r.3` wires the skin rule.
+
+Record: [faction buildings, section 15](../FACTION_BUILDINGS.md#15-faction-monuments-bead-pulp_wars-eu3r2).

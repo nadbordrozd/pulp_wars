@@ -632,3 +632,9 @@ Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-wor
 - **Market** (`chibi-dwarf-market`, `market-a` candidate 7): two grey stone stalls under copper canopies banded with dark iron, brass ingots and brass cogs, sacks and an iron-banded ale keg.
 
 Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-faction-bead-pulp_wars-eu3r1). Name unchanged; drawn by the owner of the territory; the shared Market in the Classic look and the LEGACY art set.
+
+## Monuments (bead `pulp_wars-eu3r.2`)
+
+The seven achievement Monuments and the faction obelisk in Dwarf materials. Warm grey stone, soot-black iron, copper (`#c27c3a`) and brass (`chibi-dwarf-monument-<achievement>`): the Explorer a block obelisk with a brass compass rose and a telescope; the Engineer an iron and stone pillar under a brass cogwheel with copper pipes; the Muster a pillar with copper shields under a big horn; the Conqueror a heavy iron-banded arch with a brass wreath; the Land Baron a boundary stone with a brass crown and an iron signpost; the Sea Dog a copper-banded column with a brass wheel, an iron anchor and a chain; the Slayer an iron sword in stone with a brass wreath. **Obelisk** (`chibi-dwarf-monument`): a runic stone obelisk with two copper bands and a hanging lantern, candidate 2 of the Explorer sheet reused (no new PixelLab job). Art only: the board still draws the Human (achievement) Monument or the shared obelisk until bead `pulp_wars-eu3r.3` wires the skin rule.
+
+Record: [faction buildings, section 15](../FACTION_BUILDINGS.md#15-faction-monuments-bead-pulp_wars-eu3r2).

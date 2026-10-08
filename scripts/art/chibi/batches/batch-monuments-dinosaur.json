@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments-dinosaur",
+  "title": "Dinosaur Monuments: the seven achievement Monuments and the faction obelisk in Dinosaur materials",
+  "bead": "pulp_wars-eu3r.2",
+  "faction": "DINOSAUR",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-dinosaur-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:EXPLORER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dinosaur-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:ENGINEER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dinosaur-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:MUSTER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dinosaur-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:CONQUEROR",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dinosaur-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:LAND_BARON",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dinosaur-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:SEA_DOG",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dinosaur-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR:SLAYER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dinosaur-monument",
+      "subject": "IMPROVEMENT:MONUMENT:DINOSAUR",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    }
+  ],
+  "recipes": [
+    {
+      "id": "explorer-a",
+      "asset": "chibi-dinosaur-monument-explorer",
+      "endpoint": "generate-image-v2",
+      "seed": 22531,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dinosaur Explorer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "engineer-a",
+      "asset": "chibi-dinosaur-monument-engineer",
+      "endpoint": "generate-image-v2",
+      "seed": 22532,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dinosaur Engineer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "muster-a",
+      "asset": "chibi-dinosaur-monument-muster",
+      "endpoint": "generate-image-v2",
+      "seed": 22533,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dinosaur Muster Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "conqueror-a",
+      "asset": "chibi-dinosaur-monument-conqueror",
+      "endpoint": "generate-image-v2",
+      "seed": 22534,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dinosaur Conqueror Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "land-baron-a",
+      "asset": "chibi-dinosaur-monument-land-baron",
+      "endpoint": "generate-image-v2",
+      "seed": 22535,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dinosaur Land Baron Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "sea-dog-a",
+      "asset": "chibi-dinosaur-monument-sea-dog",
+      "endpoint": "generate-image-v2",
+      "seed": 22536,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dinosaur Sea Dog Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "slayer-a",
+      "asset": "chibi-dinosaur-monument-slayer",
+      "endpoint": "generate-image-v2",
+      "seed": 22537,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dinosaur Slayer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "obelisk-a",
+      "asset": "chibi-dinosaur-monument",
+      "endpoint": "generate-image-v2",
+      "seed": 22538,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Dinosaur obelisk, the Monument a viewer sees when its achievement is hidden, on the 48 x 72 canvas and recipe class of batch monuments."
+    }
+  ]
+}

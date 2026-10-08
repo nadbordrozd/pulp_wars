@@ -512,7 +512,21 @@ export function factionHasImprovementLookV7(
  * (chibiFallbackSubjectV7), which also draws a Monument whose achievement
  * the viewer may not see: another player's.
  */
-export type MonumentArtSubjectV7 = `IMPROVEMENT:MONUMENT:${AchievementIdV7}`;
+export type MonumentArtSubjectV7 =
+  `IMPROVEMENT:MONUMENT:${AchievementIdV7}` | FactionMonumentArtSubjectV7;
+
+/**
+ * The faction Monuments (bead pulp_wars-eu3r.2, FACTION_BUILDINGS.md,
+ * "Faction Monuments"): every achievement's Monument in each non-Human faction's
+ * materials (`IMPROVEMENT:MONUMENT:<FACTION>:<ACHIEVEMENT>`; the seven
+ * above are the Human ones) and the faction's own obelisk
+ * (`IMPROVEMENT:MONUMENT:<FACTION>`) for a viewer who may not see the
+ * achievement. Art only: nothing asks for them yet (the skin rule is bead
+ * pulp_wars-eu3r.3), and each falls back to the shared Monument.
+ */
+export type FactionMonumentArtSubjectV7 =
+  | `IMPROVEMENT:MONUMENT:${Exclude<FactionIdV7, "ORIGINAL">}:${AchievementIdV7}`
+  | `IMPROVEMENT:MONUMENT:${Exclude<FactionIdV7, "ORIGINAL">}`;
 
 /** The subject of a Monument: its achievement's look, or the shared one. */
 export function monumentArtSubjectV7(

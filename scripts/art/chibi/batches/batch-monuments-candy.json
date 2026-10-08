@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments-candy",
+  "title": "Candy Monuments: the seven achievement Monuments and the faction obelisk in Candy materials",
+  "bead": "pulp_wars-eu3r.2",
+  "faction": "CANDY",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-candy-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY:EXPLORER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-candy-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY:ENGINEER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-candy-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY:MUSTER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-candy-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY:CONQUEROR",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-candy-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY:LAND_BARON",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-candy-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY:SEA_DOG",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-candy-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY:SLAYER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-candy-monument",
+      "subject": "IMPROVEMENT:MONUMENT:CANDY",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false,
+      "fromRecipe": "explorer-a"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "explorer-a",
+      "asset": "chibi-candy-monument-explorer",
+      "endpoint": "generate-image-v2",
+      "seed": 22571,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Candy Explorer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "engineer-a",
+      "asset": "chibi-candy-monument-engineer",
+      "endpoint": "generate-image-v2",
+      "seed": 22572,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Candy Engineer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "muster-a",
+      "asset": "chibi-candy-monument-muster",
+      "endpoint": "generate-image-v2",
+      "seed": 22573,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Candy Muster Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "conqueror-a",
+      "asset": "chibi-candy-monument-conqueror",
+      "endpoint": "generate-image-v2",
+      "seed": 22574,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Candy Conqueror Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "land-baron-a",
+      "asset": "chibi-candy-monument-land-baron",
+      "endpoint": "generate-image-v2",
+      "seed": 22575,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Candy Land Baron Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "sea-dog-a",
+      "asset": "chibi-candy-monument-sea-dog",
+      "endpoint": "generate-image-v2",
+      "seed": 22576,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Candy Sea Dog Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "slayer-a",
+      "asset": "chibi-candy-monument-slayer",
+      "endpoint": "generate-image-v2",
+      "seed": 22577,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Candy Slayer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "obelisk-a",
+      "asset": "chibi-candy-monument",
+      "endpoint": "generate-image-v2",
+      "seed": 22578,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Candy obelisk, the Monument a viewer sees when its achievement is hidden, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "land-baron-b",
+      "asset": "chibi-candy-monument-land-baron",
+      "endpoint": "generate-image-v2",
+      "seed": 22646,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "promptAddendum": "Small signpost; nothing touches the edges.",
+      "notes": "land-baron-a ran its wafer signpost into the canvas edge in every candidate (48 px wide or a cut-off arrow tip), and 0, 2, 4 to 8, 10, 12, 13 and 15 had owner key red pixels in their jewels."
+    }
+  ]
+}

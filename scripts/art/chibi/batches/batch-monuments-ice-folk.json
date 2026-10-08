@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments-ice-folk",
+  "title": "Ice Folk Monuments: the seven achievement Monuments and the faction obelisk in Ice Folk materials",
+  "bead": "pulp_wars-eu3r.2",
+  "faction": "ICE_FOLK",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-ice-folk-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:EXPLORER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-ice-folk-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:ENGINEER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-ice-folk-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:MUSTER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-ice-folk-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:CONQUEROR",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-ice-folk-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:LAND_BARON",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-ice-folk-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:SEA_DOG",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-ice-folk-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK:SLAYER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-ice-folk-monument",
+      "subject": "IMPROVEMENT:MONUMENT:ICE_FOLK",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false,
+      "fromRecipe": "explorer-a"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "explorer-a",
+      "asset": "chibi-ice-folk-monument-explorer",
+      "endpoint": "generate-image-v2",
+      "seed": 22551,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Ice Folk Explorer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "engineer-a",
+      "asset": "chibi-ice-folk-monument-engineer",
+      "endpoint": "generate-image-v2",
+      "seed": 22552,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Ice Folk Engineer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "muster-a",
+      "asset": "chibi-ice-folk-monument-muster",
+      "endpoint": "generate-image-v2",
+      "seed": 22553,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Ice Folk Muster Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "conqueror-a",
+      "asset": "chibi-ice-folk-monument-conqueror",
+      "endpoint": "generate-image-v2",
+      "seed": 22554,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Ice Folk Conqueror Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "land-baron-a",
+      "asset": "chibi-ice-folk-monument-land-baron",
+      "endpoint": "generate-image-v2",
+      "seed": 22555,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Ice Folk Land Baron Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "sea-dog-a",
+      "asset": "chibi-ice-folk-monument-sea-dog",
+      "endpoint": "generate-image-v2",
+      "seed": 22556,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Ice Folk Sea Dog Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "slayer-a",
+      "asset": "chibi-ice-folk-monument-slayer",
+      "endpoint": "generate-image-v2",
+      "seed": 22557,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Ice Folk Slayer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "obelisk-a",
+      "asset": "chibi-ice-folk-monument",
+      "endpoint": "generate-image-v2",
+      "seed": 22558,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.2 (the user, 2026-10-08: faction Monuments; today's seven are the Human skin): the Ice Folk obelisk, the Monument a viewer sees when its achievement is hidden, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "engineer-b",
+      "asset": "chibi-ice-folk-monument-engineer",
+      "endpoint": "generate-image-v2",
+      "seed": 22652,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "promptAddendum": "Its left face is pale, its right face shaded.",
+      "notes": "engineer-a was lit from the right in all sixteen candidates (faces -2.7 to -27.2): the right face of the pillar is the pale one."
+    }
+  ]
+}

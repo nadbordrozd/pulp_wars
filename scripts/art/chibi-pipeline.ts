@@ -4,9 +4,14 @@
  *   npm run art:chibi -- plan --batch N
  *   npm run art:chibi -- prompts --batch N [--id RECIPE]
  *   npm run art:chibi -- generate --batch N --ids a,b      (PixelLab calls)
+ *   npm run art:chibi -- resume --batch N --ids a,b
+ *       (no new PixelLab job: waits again for a recorded submission whose
+ *       wait failed, and stores its candidates)
  *   npm run art:chibi -- accept --batch N --id RECIPE --candidate K
  *       --notes TEXT --native-pass --enlarged-pass --owners-pass
- *       --no-plate-pass --camera-pass [--asset VARIANT]
+ *       --no-plate-pass --camera-pass [--asset ID]
+ *       (--asset: a terrain variant of RECIPE's field, or an asset whose
+ *       fromRecipe is RECIPE: a reused candidate, no new PixelLab job)
  *   npm run art:chibi -- reject --batch N --id RECIPE --notes TEXT
  *   npm run art:chibi -- import --batch N --from art/explorations/<run>
  *       --ids a,b      (no PixelLab call: copies an exploration recipe's
@@ -50,6 +55,7 @@ import {
   retireAsset,
   generateRecipe,
   importRecipe,
+  resumeRecipe,
   writeTallTerrainBodies,
   type PipelineContext,
 } from "./chibi/pipeline";
@@ -176,6 +182,12 @@ async function main(): Promise<void> {
     const context = await runContext(true);
     const ids = required("--ids").split(",").filter(Boolean);
     for (const id of ids) await generateRecipe(context, id);
+    return;
+  }
+  if (command === "resume") {
+    const context = await runContext(true);
+    const ids = required("--ids").split(",").filter(Boolean);
+    for (const id of ids) await resumeRecipe(context, id);
     return;
   }
   if (command === "import") {
