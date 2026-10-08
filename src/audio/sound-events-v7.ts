@@ -43,6 +43,8 @@ const ATTACK_EFFECT_SOUNDS: Readonly<
   HARPOON: { launch: "attack.ranged", impact: "impact.hit" },
   PIE_THROW: { launch: "attack.siege", impact: "impact.splat" },
   GUMBALL_SHOT: { launch: "attack.pop", impact: "impact.hit" },
+  // Bead pulp_wars-eu3r.4: the Battleship's broadside and its area blast.
+  BROADSIDE: { launch: "attack.cannon", impact: "impact.explosion" },
 };
 
 const SUPPORT_SOUNDS: Readonly<Record<SupportEffectV7, SoundIdV1>> = {

@@ -22,7 +22,12 @@ import {
   CANDY_EFFECT_DURATIONS_V7,
   type CandyFeedbackEffectV7,
 } from "./candy-effects-v7";
-import { attackEffectForV7, type AttackEffectIdV7 } from "./attack-effects-v7";
+import {
+  attackEffectForV7,
+  broadsideShellForV7,
+  type AttackEffectIdV7,
+  type BroadsideShellV7,
+} from "./attack-effects-v7";
 import { playerFactionColourV7 } from "./faction-colours-v7";
 
 export type CorePresentationStepV7 =
@@ -150,6 +155,13 @@ export type CorePresentationStepV7 =
        * boulder, the harpoon) instead of the arrow or the grey stone.
        */
       readonly attackEffect?: AttackEffectIdV7;
+      /**
+       * Bead pulp_wars-eu3r.4: a Battleship's BROADSIDE fires its faction's
+       * shell and bursts on the cells of the units its splash hits (the
+       * DAMAGE steps that follow shake them).
+       */
+      readonly shell?: BroadsideShellV7;
+      readonly splash?: readonly CoordV7[];
       /**
        * The Ice Folk revision: the target shatters, so the hit keeps it on
        * the board (no impact) for the Shatter step that follows.
@@ -1104,6 +1116,19 @@ export function corePresentationPlanV7(
               : {}),
           ...(shatters ? { holdTarget: true as const } : {}),
           ...(attackEffect === null ? {} : { attackEffect }),
+          // Bead pulp_wars-eu3r.4: the broadside's shell, and the splashed
+          // units it bursts on (the ones the viewer sees).
+          ...(attackEffect === "BROADSIDE"
+            ? {
+                shell: broadsideShellForV7(attackerFaction),
+                splash: event.preview.splash.flatMap((splash) => {
+                  const victim = before.units.find(
+                    (unit) => unit.id === splash.unitId,
+                  );
+                  return victim === undefined ? [] : [victim.at];
+                }),
+              }
+            : {}),
         });
       // The Ice Folk revision: a Mammoth's Sweep arcs over its three tiles
       // (the flank hits follow as damage cues); a Shatter freezes, cracks and

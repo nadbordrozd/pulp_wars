@@ -89,11 +89,10 @@ other attack keeps its feedback. No rule, engine or sprite changed.
 | Dwarf    | Steam Tank           | melee                 | lunge                         | no  | its cannon snout is a range 1 ram; a blast on every melee hit would be noise                                |
 | Dwarf    | Brass Titan          | melee, Push           | lunge, push slide             | no  | a fist                                                                                                      |
 | All      | Patrol Boat          | melee                 | lunge                         | no  | a ram, the same for every faction                                                                           |
-| All      | Battleship           | ranged 1-3            | arrow                         | no  | one rule for seven hulls (carrack, ghost galleon, ironclad, hover-cruiser): no one shot fits them all       |
+| All      | **Battleship**       | ranged 1-3, splash    | arrow                         | yes | the arrow looked puny; now a broadside with each faction's own shell and an area blast (see below)          |
 
-The Battleship's arrow is the weakest match left. A per-faction ship shot
-(cannon for the Dwarf ironclad, a beam for the Martian cruiser, a ballista
-bolt for the carracks) would be a separate bead if the user wants it.
+The Battleship's arrow was the weakest match left; the user found it puny,
+and bead `pulp_wars-eu3r.4` replaced it with the broadside below.
 
 ## The six cues
 
@@ -144,6 +143,51 @@ Unlike the six cues above they draw the Candy art's own sprites where the
 look has them (`EFFECT:PIE`, `EFFECT:SPLAT`, `EFFECT:GUMBALL_SHOT`), and the
 same shapes in code in the Classic look and LEGACY.
 
+## The Battleship broadside (bead `pulp_wars-eu3r.4`)
+
+Every faction's Battleship has splash (`combat.ts`: the hostile units within
+one tile of the target), yet it shot the archer's arrow. Now it fires
+`BROADSIDE`, one cue for every hull, flavoured by the shooter's faction
+(`broadsideShellForV7`, by its kind, so a Mind Controlled ship keeps its
+own):
+
+| Faction  | Shell        | In flight                                                      | Blast colours                              |
+| -------- | ------------ | -------------------------------------------------------------- | ------------------------------------------ |
+| Human    | `CANNONBALL` | an iron ball with a gold fuse spark                            | gold fire, grey gunsmoke, iron and wood    |
+| Undead   | `GHOST_FIRE` | a burning orb with flame tongues                               | the Undead violet (classic pale blue)      |
+| Goblin   | `SCRAP`      | a tumbling bundle: a tin gear, a rusty drum with hazard yellow | hazard yellow fire, soot, tin and rust     |
+| Dinosaur | `BOULDER`    | a basalt boulder with a red-orange war-paint stripe            | sand and hide dust, basalt chips           |
+| Martian  | `PLASMA`     | a magenta bolt with a white core and glass-cyan crackle        | magenta energy, glass vapour, motes        |
+| Ice Folk | `ICE`        | a cluster of ice crystals                                      | ice-blue burst, snow, ice shards           |
+| Dwarf    | `STEAM`      | an iron ball with a copper band                                | copper fire, steam, earth and iron         |
+| Candy    | `CANDY`      | a dark chocolate truffle with a caramel drizzle and a shine    | caramel fire, cream, mint/cherry sprinkles |
+
+The Ice Folk own no ships (they walk the frozen sea; the state schema
+refuses an Ice Folk ship), so their shell is drawn only by the review.
+
+**Timeline** (580 ms, the heaviest cue; the fast speed halves it):
+
+- three guns flash along the hull, 5% apart, and gunsmoke rolls out toward
+  the target and up;
+- the middle gun's shell arcs over (76 world units high) and lands at 50%,
+  where the board shows the result with the usual 100 ms shake;
+- the target bursts: a white-hot twelve-point star, a seven-lobed fireball,
+  smoke rising and debris flung out;
+- a shock ring, a rounded square, runs out from the target's tile over the
+  3 x 3 tiles of the splash, the area flushing with the ring's colour; at
+  59% it reaches the splash tiles and each splashed unit (the step's
+  `splash` cells, the units the viewer sees) bursts with a smaller blast.
+  The DAMAGE cues of the splashed units follow the cue as before.
+
+The ring shows the whole splash area even when no other unit stands in it.
+The sound is the cannon and an explosion at the hit.
+
+**Reduced motion** holds one frame for 220 ms like the other cues, but the
+broadside's frame is after the hit (`attackReducedMotionProgressV7` 0.64):
+the blast, the ring over the splash tiles and the splash bursts, since the
+area is what the frame must say. High contrast changes nothing, as for the
+other cues.
+
 ## Evidence
 
 `npm run art:attack-effects-review` (with `CHROME_PATH` set) draws each cue
@@ -151,10 +195,18 @@ with the real board host over its shooter and an enemy Human Fighter
 (`scripts/art/attack-effects/scene.ts`) at progress 0.15, 0.35, 0.5, 0.65
 and 0.85, at zoom steps 1 and 0.75 on desktop (1440 x 900) and phone
 (390 x 844, DPR 3), plus the reduced-motion frame and the Classic and
-LEGACY looks, with one contact sheet per viewport and zoom.
+LEGACY looks, with one contact sheet per viewport and zoom. The
+broadside is one case per faction (`broadside-<faction>-*.png`): the
+faction's Battleship on a strip of Shallow Water at range 2 from an enemy
+Fighter, with two more Fighters in its splash, one beside the target and
+one diagonal to it.
 
 Tests: `tests/unit/attack-effects-render-v7.test.ts` (which attacks map to a
 cue, through the presentation plan from real attacks; the plan's geometry;
 the drawing) and `tests/integration/attack-effects-canvas.test.ts` (the
 board host plays the Lich's bolt instead of the stone, and holds a frame
-under reduced motion).
+under reduced motion). The broadside's tests sit in the same files: every
+faction's Battleship maps to it, its plan step carries the shell and the
+splashed units' cells, the guns, ring and splash bursts are timed, each
+shell draws its own colours, and the board host plays it instead of the
+arrow, in full and reduced motion.

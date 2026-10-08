@@ -2,8 +2,10 @@
  * Attack effects review (bead pulp_wars-b5f.5, docs/art/ATTACK_EFFECTS.md):
  * every attack cue of attack-effects-v7 drawn by the real board host over a
  * shooter and its target (scripts/art/attack-effects/scene.ts), pinned at
- * several points of its timeline. It captures, at desktop (1440 x 900,
- * DPR 1) and phone (390 x 844, DPR 3):
+ * several points of its timeline; the Battleship's broadside (bead
+ * pulp_wars-eu3r.4) once per faction (`broadside-<faction>`), with two
+ * more units in its splash. It captures, at desktop (1440 x 900, DPR 1) and
+ * phone (390 x 844, DPR 3):
  *
  *   <effect>-<viewport>-zoom-<step>-p<progress>.png   the live look at zoom
  *       steps 1 and 0.75, at progress 0.15, 0.35, 0.5, 0.65 and 0.85
@@ -16,7 +18,10 @@
  *   contact-<viewport>-zoom-<step>-x2.png            the same at 2x
  *
  * Usage: npm run art:attack-effects-review -- [--out DIR] [--port 6547]
- *   [--url http://localhost:PORT/] [--only=NECRO_BOLT,HARPOON]
+ *   [--url http://localhost:PORT/] [--only=NECRO_BOLT,HARPOON,BROADSIDE]
+ *
+ * `--only` takes cue ids (BROADSIDE is every faction's case) or case ids
+ * (BROADSIDE-DWARF).
  *
  * Captures go to --out (default <tmp>/pulp-wars-attack-effects), written
  * after the browser closes. It starts Vite on --port (never the user's
@@ -30,11 +35,13 @@ import path from "node:path";
 import process from "node:process";
 import sharp, { type OverlayOptions } from "sharp";
 import {
-  ATTACK_EFFECT_IDS_V7,
   ATTACK_EFFECT_HIT_V7,
   attackReducedMotionProgressV7,
-  type AttackEffectIdV7,
 } from "../../src/render/canvas/attack-effects-v7";
+import {
+  ATTACK_EFFECTS_CASES_V7,
+  type AttackEffectsCaseV7,
+} from "./attack-effects/cases";
 
 const ROOT = process.cwd();
 
@@ -52,8 +59,11 @@ const OUT = path.resolve(
   option("--out") ?? path.join(tmpdir(), "pulp-wars-attack-effects"),
 );
 const ONLY = option("--only");
-const EFFECTS = ATTACK_EFFECT_IDS_V7.filter(
-  (effect) => ONLY === undefined || ONLY.split(",").includes(effect),
+const EFFECTS: readonly AttackEffectsCaseV7[] = ATTACK_EFFECTS_CASES_V7.filter(
+  (entry) =>
+    ONLY === undefined ||
+    ONLY.split(",").includes(entry.id) ||
+    ONLY.split(",").includes(entry.effect),
 );
 
 const VIEWPORTS = [
@@ -239,11 +249,11 @@ async function launchShowcase(
 async function showScene(
   connection: Connection,
   look: "LIVE" | "CLASSIC" | "LEGACY",
-  effect: AttackEffectIdV7,
+  caseId: string,
 ): Promise<void> {
   await evaluate(
     connection,
-    `(async () => { const module = await import('/scripts/art/attack-effects/scene.ts'); ${SCENE}?.host.destroy(); ${SCENE} = module.showAttackEffectsSceneV7(globalThis.__PULP_WARS_APP__.controller.snapshot().view, ${JSON.stringify({ look, effect })}); return true; })()`,
+    `(async () => { const module = await import('/scripts/art/attack-effects/scene.ts'); ${SCENE}?.host.destroy(); ${SCENE} = module.showAttackEffectsSceneV7(globalThis.__PULP_WARS_APP__.controller.snapshot().view, ${JSON.stringify({ look, caseId })}); return true; })()`,
   );
   // The unit rasters load on the first frames.
   await delay(900);
@@ -347,9 +357,10 @@ async function captureAll(baseUrl: string): Promise<void> {
     for (const size of VIEWPORTS) {
       await viewport(connection, size);
       await launchShowcase(connection, chibi.href);
-      for (const effect of EFFECTS) {
-        const name = effect.toLowerCase().replaceAll("_", "-");
-        await showScene(connection, "LIVE", effect);
+      for (const reviewed of EFFECTS) {
+        const effect = reviewed.effect;
+        const name = reviewed.id.toLowerCase().replaceAll("_", "-");
+        await showScene(connection, "LIVE", reviewed.id);
         for (const step of STEPS) {
           await sceneZoom(connection, step);
           await pin(connection, null);
@@ -360,7 +371,7 @@ async function captureAll(baseUrl: string): Promise<void> {
             const file = `${name}-${size.name}-zoom-${step}-p${progress}.png`;
             shots.push({ name: file, png });
             crops.set(
-              `${size.name}|${step}|${effect}|${progress}`,
+              `${size.name}|${step}|${reviewed.id}|${progress}`,
               await cropPair(png, size),
             );
             console.log(`captured ${file}`);
@@ -375,7 +386,7 @@ async function captureAll(baseUrl: string): Promise<void> {
         await hideScene(connection);
         if (size.name === "desktop")
           for (const look of ["CLASSIC", "LEGACY"] as const) {
-            await showScene(connection, look, effect);
+            await showScene(connection, look, reviewed.id);
             await sceneZoom(connection, 1);
             for (const progress of [
               ATTACK_EFFECT_HIT_V7[effect] - 0.05,
@@ -404,19 +415,20 @@ async function contactSheets(): Promise<void> {
   for (const size of VIEWPORTS)
     for (const step of STEPS) {
       const first = crops.get(
-        `${size.name}|${step}|${EFFECTS[0] ?? "NECRO_BOLT"}|${PROGRESS[0]}`,
+        `${size.name}|${step}|${EFFECTS[0]?.id ?? "NECRO_BOLT"}|${PROGRESS[0]}`,
       );
       if (first === undefined) continue;
       const meta = await sharp(first).metadata();
       const cellWidth = meta.width ?? 1;
       const cellHeight = meta.height ?? 1;
       const gap = 6;
-      const label = 150;
+      const label = 170;
       const overlays: OverlayOptions[] = [];
-      EFFECTS.forEach((effect, row) => {
+      EFFECTS.forEach((reviewed, row) => {
+        const effect = reviewed.id;
         overlays.push({
           input: Buffer.from(
-            `<svg xmlns="http://www.w3.org/2000/svg" width="${label}" height="${cellHeight}"><text x="8" y="${cellHeight / 2}" font-family="sans-serif" font-size="14" fill="#f4efe2">${effect}</text></svg>`,
+            `<svg xmlns="http://www.w3.org/2000/svg" width="${label}" height="${cellHeight}"><text x="8" y="${cellHeight / 2}" font-family="sans-serif" font-size="13" fill="#f4efe2">${effect}</text></svg>`,
           ),
           left: 0,
           top: row * (cellHeight + gap) + 24,

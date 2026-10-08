@@ -12,91 +12,44 @@
  * (1 + range, 2): range 2 for the Lich, the Gunner, the Boulder Yeti and the
  * Snow Hunter, range 3 for the Rocket Cart and the Steam Cannon. The board
  * is just wide enough that the camera centres the pair.
+ *
+ * The Battleship's broadside (bead pulp_wars-eu3r.4) has one case per
+ * faction (`BROADSIDE-<FACTION>`): the faction's Battleship on a Shallow
+ * Water tile, range 2, and two more enemy Fighters in its splash, one beside
+ * the target and one diagonal to it, each with its own burst.
  */
 import type {
   BoardSizeV7,
   CoordV7,
-  FactionIdV7,
   PlayerId,
   PlayerViewV7,
   UnitRoleIdV7,
 } from "../../../src/engine/index";
-import type { AttackEffectIdV7 } from "../../../src/render/canvas/attack-effects-v7";
+import {
+  broadsideShellForV7,
+  type AttackFeedbackV7,
+} from "../../../src/render/canvas/attack-effects-v7";
 import { CanvasBoardHostV7 } from "../../../src/render/canvas/board-host-v7";
 import { liveBoardLookV7 } from "../../../src/render/canvas/live-board-look-v7";
+import { attackEffectsCaseV7 } from "./cases";
 
 export type AttackEffectsLookV7 = "LIVE" | "CLASSIC" | "LEGACY";
-
-/** The shooter of each cue: faction, role and range to its target. */
-export const ATTACK_EFFECTS_SCENE_SHOOTERS_V7: Readonly<
-  Record<
-    AttackEffectIdV7,
-    {
-      readonly faction: FactionIdV7;
-      readonly role: UnitRoleIdV7;
-      readonly range: number;
-      readonly label: string;
-    }
-  >
-> = {
-  NECRO_BOLT: { faction: "UNDEAD", role: "CATAPULT", range: 2, label: "Lich" },
-  FIREWORK_ROCKET: {
-    faction: "GOBLIN",
-    role: "CATAPULT",
-    range: 3,
-    label: "Rocket Cart",
-  },
-  GATLING_BURST: {
-    faction: "DWARF",
-    role: "MARKSMAN",
-    range: 2,
-    label: "Clockwork Gunner",
-  },
-  CANNON_BLAST: {
-    faction: "DWARF",
-    role: "CATAPULT",
-    range: 3,
-    label: "Steam Cannon",
-  },
-  ICE_BOULDER: {
-    faction: "ICE_FOLK",
-    role: "CATAPULT",
-    range: 2,
-    label: "Boulder Yeti",
-  },
-  HARPOON: {
-    faction: "ICE_FOLK",
-    role: "MARKSMAN",
-    range: 2,
-    label: "Snow Hunter",
-  },
-  // The Candy revision (bead pulp_wars-jdb.6).
-  PIE_THROW: {
-    faction: "CANDY",
-    role: "CATAPULT",
-    range: 3,
-    label: "Pie Launcher",
-  },
-  GUMBALL_SHOT: {
-    faction: "CANDY",
-    role: "MARKSMAN",
-    range: 2,
-    label: "Gumball Gunner",
-  },
-};
 
 const ROW = 2;
 const HEIGHT = 5;
 
 export function attackEffectsSceneViewV7(
   live: PlayerViewV7,
-  effect: AttackEffectIdV7,
+  caseId: string,
 ): {
   readonly view: PlayerViewV7;
   readonly from: CoordV7;
   readonly to: CoordV7;
+  /** The splashed units' cells (the broadside only). */
+  readonly splash: readonly CoordV7[];
 } {
-  const shooter = ATTACK_EFFECTS_SCENE_SHOOTERS_V7[effect];
+  const scene = attackEffectsCaseV7(caseId);
+  const shooter = scene.shooter;
   const template = live.units.find((unit) => unit.ownerId === live.viewer.id);
   const viewer = live.players.find((player) => player.id === live.viewer.id);
   if (template === undefined || viewer === undefined)
@@ -116,14 +69,21 @@ export function attackEffectsSceneViewV7(
   const width = 3 + shooter.range;
   const from = { x: 1, y: ROW };
   const to = { x: 1 + shooter.range, y: ROW };
+  const splash = scene.naval
+    ? [
+        { x: to.x, y: ROW - 1 },
+        { x: to.x + 1, y: ROW + 1 },
+      ]
+    : [];
   const tiles: PlayerViewV7["board"]["tiles"][number][] = [];
   for (let y = 0; y < HEIGHT; y += 1)
     for (let x = 0; x < width; x += 1)
       tiles.push({
         at: { x, y },
         explored: true,
-        biome: "PLAINS",
-        terrain: "GRASS",
+        // The Battleship sails on a strip of sea along the left edge.
+        biome: scene.naval && x <= 1 ? null : "PLAINS",
+        terrain: scene.naval && x <= 1 ? "SHALLOW_WATER" : "GRASS",
         resource: null,
         improvement: null,
         road: false,
@@ -145,7 +105,7 @@ export function attackEffectsSceneViewV7(
     id: id as typeof template.id,
     ownerId,
     role,
-    form: "LAND",
+    form: role === "BATTLESHIP" ? "NAVAL" : "LAND",
     at,
     hp: template.maxHp,
     activation: { ...template.activation, handled: true },
@@ -153,6 +113,7 @@ export function attackEffectsSceneViewV7(
   return {
     from,
     to,
+    splash,
     view: {
       ...live,
       viewer: { ...live.viewer, faction: shooter.faction },
@@ -168,6 +129,9 @@ export function attackEffectsSceneViewV7(
       units: [
         unit(9200, live.viewer.id, shooter.role, from),
         unit(9201, enemyId, "FIGHTER", to),
+        ...splash.map((at, index) =>
+          unit(9202 + index, enemyId, "FIGHTER", at),
+        ),
       ],
       treasureChests: [],
       graves: [],
@@ -180,14 +144,14 @@ export function attackEffectsSceneViewV7(
 }
 
 /**
- * Mounts a full-screen board host over the page showing the scene of
- * `effect` in the look asked for; `pin(progress)` then pins the cue.
+ * Mounts a full-screen board host over the page showing the scene of the
+ * case `caseId` in the look asked for; `pin(progress)` then pins the cue.
  */
 export function showAttackEffectsSceneV7(
   live: PlayerViewV7,
   options: {
     readonly look: AttackEffectsLookV7;
-    readonly effect: AttackEffectIdV7;
+    readonly caseId: string;
   },
 ): {
   readonly host: CanvasBoardHostV7;
@@ -212,9 +176,17 @@ export function showAttackEffectsSceneV7(
     onCommand: () => undefined,
   });
   const artSet = options.look === "LEGACY" ? "LEGACY" : "CHIBI";
-  const scene = attackEffectsSceneViewV7(live, options.effect);
+  const scene = attackEffectsSceneViewV7(live, options.caseId);
+  const reviewed = attackEffectsCaseV7(options.caseId);
+  const broadside: Pick<AttackFeedbackV7, "shell" | "splash"> =
+    reviewed.effect === "BROADSIDE"
+      ? {
+          shell: broadsideShellForV7(reviewed.shooter.faction),
+          splash: scene.splash,
+        }
+      : {};
   host.update({
-    matchInstanceId: `attack-effects-${options.look}-${options.effect}`,
+    matchInstanceId: `attack-effects-${options.look}-${options.caseId}`,
     view: scene.view,
     offeredCommands: [],
     interaction: {
@@ -242,10 +214,11 @@ export function showAttackEffectsSceneV7(
           ? []
           : [
               {
-                effect: options.effect,
+                effect: reviewed.effect,
                 from: scene.from,
                 to: scene.to,
                 progress,
+                ...broadside,
               },
             ],
       ),

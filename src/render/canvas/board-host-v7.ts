@@ -1102,6 +1102,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             step.from,
             step.to,
             attackReducedMotionProgressV7(effect),
+            broadsideOf(step),
           );
           this.#drawSupportOverlay();
           await this.#animate(220 * durationScale, () => undefined);
@@ -1462,6 +1463,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             after,
             step.holdTarget === true,
             durationScale,
+            broadsideOf(step),
           );
           if (token !== this.#presentationToken) return;
           continue;
@@ -2187,23 +2189,32 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         entry.from,
         entry.to,
         entry.progress,
+        {
+          ...(entry.shell === undefined ? {} : { shell: entry.shell }),
+          ...(entry.splash === undefined ? {} : { splash: entry.splash }),
+        },
       ),
     );
     this.#drawSupportOverlay();
   }
 
-  /** An attack cue at `progress`, in the look's Undead accent. */
+  /**
+   * An attack cue at `progress`, in the look's Undead accent; a broadside
+   * with its shell and splash cells.
+   */
   #attackFeedbackOf(
     effect: AttackEffectIdV7,
     from: CoordV7,
     to: CoordV7,
     progress: number,
+    broadside: BroadsideFeedbackV7 = {},
   ): AttackFeedbackV7 {
     return {
       effect,
       from,
       to,
       progress,
+      ...broadside,
       ...(this.#model?.visualDirection?.undeadAccent === "VIOLET"
         ? { undeadViolet: true }
         : {}),
@@ -3018,6 +3029,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     after: PlayerViewV7,
     holdTarget: boolean,
     durationScale: number,
+    broadside: BroadsideFeedbackV7,
   ): Promise<void> {
     const duration = ATTACK_EFFECT_DURATIONS_V7[effect] * durationScale;
     const hit = ATTACK_EFFECT_HIT_V7[effect];
@@ -3028,7 +3040,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       // The cue keeps its own timeline: #animate's cubic ease-out would
       // spend a quarter of the time on the flight and the rest on the burst.
       const progress = 1 - Math.cbrt(1 - eased);
-      this.#attackFeedback = this.#attackFeedbackOf(effect, from, to, progress);
+      this.#attackFeedback = this.#attackFeedbackOf(
+        effect,
+        from,
+        to,
+        progress,
+        broadside,
+      );
       // The board repaints from the hit until the shake settles; otherwise
       // only the overlay does.
       if (
@@ -3214,6 +3232,16 @@ type ShotStepV7 = Extract<
   CorePresentationStepV7,
   { readonly kind: "MELEE" | "RANGED" | "CATAPULT" }
 >;
+
+/** A broadside's shell and splash cells (bead pulp_wars-eu3r.4). */
+type BroadsideFeedbackV7 = Pick<AttackFeedbackV7, "shell" | "splash">;
+
+function broadsideOf(step: ShotStepV7): BroadsideFeedbackV7 {
+  return {
+    ...(step.shell === undefined ? {} : { shell: step.shell }),
+    ...(step.splash === undefined ? {} : { splash: step.splash }),
+  };
+}
 
 /** The attack cue of a shot step (bead pulp_wars-b5f.5), or null. */
 function attackEffectOf(step: CorePresentationStepV7): AttackEffectIdV7 | null {

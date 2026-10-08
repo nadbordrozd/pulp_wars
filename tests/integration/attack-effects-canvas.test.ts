@@ -6,10 +6,15 @@ import {
   projectEventsV7,
   viewForV7,
   type CoordV7,
+  type GameStateV7,
   type PlayerViewV7,
 } from "../../src/engine/index";
-import { ATTACK_EFFECT_DURATIONS_V7 } from "../../src/render/canvas/attack-effects-v7";
+import {
+  ATTACK_EFFECT_DURATIONS_V7,
+  attackReducedMotionProgressV7,
+} from "../../src/render/canvas/attack-effects-v7";
 import { CanvasBoardHostV7 } from "../../src/render/canvas/board-host-v7";
+import { martianFieldV7 } from "../fixtures/v7-martian";
 import {
   UNDEAD_SHOWCASE_V7,
   undeadShowcaseFixtureV7,
@@ -18,7 +23,8 @@ import {
 /**
  * Bead pulp_wars-b5f.5: a Lich's attack plays its bolt on the effects
  * overlay (never the grey catapult stone), the board shows the result once
- * the bolt lands, and reduced motion holds one frame of the cue.
+ * the bolt lands, and reduced motion holds one frame of the cue. Bead
+ * pulp_wars-eu3r.4: a Battleship fires its broadside instead of the arrow.
  */
 
 afterEach(() => {
@@ -38,13 +44,36 @@ function unitAt(
 }
 
 function lichShot() {
-  const state = undeadShowcaseFixtureV7();
+  return shotOf(
+    undeadShowcaseFixtureV7(),
+    UNDEAD_SHOWCASE_V7.lich,
+    UNDEAD_SHOWCASE_V7.lichTarget,
+  );
+}
+
+/** A Dwarf Battleship at sea fires on a Guard with a Fighter beside it. */
+function battleshipShot() {
+  return shotOf(
+    martianFieldV7(
+      [
+        { seat: 0, role: "BATTLESHIP", at: { x: 5, y: 1 }, form: "NAVAL" },
+        { seat: 1, role: "GUARD", at: { x: 5, y: 3 } },
+        { seat: 1, role: "FIGHTER", at: { x: 5, y: 4 } },
+      ],
+      { factions: ["DWARF", "ORIGINAL"], water: [{ x: 5, y: 1 }] },
+    ),
+    { x: 5, y: 1 },
+    { x: 5, y: 3 },
+  );
+}
+
+function shotOf(state: GameStateV7, from: CoordV7, to: CoordV7) {
   const actor = state.humanPlayerId;
   const before = viewForV7(state, actor);
   const result = applyCommandV7(state, actor, {
     kind: "ATTACK",
-    unitId: unitAt(before, UNDEAD_SHOWCASE_V7.lich).id,
-    targetUnitId: unitAt(before, UNDEAD_SHOWCASE_V7.lichTarget).id,
+    unitId: unitAt(before, from).id,
+    targetUnitId: unitAt(before, to).id,
   });
   if (!result.accepted) throw new Error(result.error.code);
   return {
@@ -54,7 +83,10 @@ function lichShot() {
   };
 }
 
-function setUp(motion: "FULL" | "REDUCED") {
+function setUp(
+  motion: "FULL" | "REDUCED",
+  shot: ReturnType<typeof shotOf> = lichShot(),
+) {
   let now = 0;
   vi.spyOn(window.performance, "now").mockImplementation(() => now);
   let nextFrame = 1;
@@ -72,11 +104,19 @@ function setUp(motion: "FULL" | "REDUCED") {
     configurable: true,
     value: vi.fn((id: number) => frames.delete(id)),
   });
-  // The grey catapult stone is the only fill of that colour.
+  // The grey catapult stone is the only fill of that colour, and the
+  // arrow's cream shaft the only stroke of its.
   const stoneFills: number[] = [];
-  const target: Record<PropertyKey, unknown> = { fillStyle: "" };
+  const arrowStrokes: number[] = [];
+  const target: Record<PropertyKey, unknown> = {
+    fillStyle: "",
+    strokeStyle: "",
+  };
   target.fill = vi.fn(() => {
     if (target.fillStyle === "#6d665e") stoneFills.push(now);
+  });
+  target.stroke = vi.fn(() => {
+    if (target.strokeStyle === "#f4d291") arrowStrokes.push(now);
   });
   const context = new Proxy(target, {
     get: (object, key) => (key in object ? object[key] : vi.fn()),
@@ -98,7 +138,6 @@ function setUp(motion: "FULL" | "REDUCED") {
     }),
   });
   document.body.append(container);
-  const shot = lichShot();
   const host = new CanvasBoardHostV7(document);
   host.mount(container, { onSelection: vi.fn(), onCommand: vi.fn() });
   host.update({
@@ -125,6 +164,7 @@ function setUp(motion: "FULL" | "REDUCED") {
     shot,
     effects,
     stoneFills,
+    arrowStrokes,
     frames,
     /** Runs the next animation frame at `time` ms. */
     step(time: number) {
@@ -185,6 +225,48 @@ describe("Attack cues on the board host", () => {
     scene.host.finishPresentations();
     await presentation;
     expect(scene.stoneFills).toEqual([]);
+    scene.host.destroy();
+  });
+
+  it("plays a Battleship's broadside instead of the arrow, then the splash", async () => {
+    const scene = setUp("FULL", battleshipShot());
+    const presentation = scene.host.presentBoundary(
+      scene.shot.before,
+      scene.shot.after,
+      scene.shot.envelope,
+    );
+    const duration = ATTACK_EFFECT_DURATIONS_V7.BROADSIDE;
+    scene.step(duration * 0.25);
+    expect(scene.effects.dataset.attackEffect).toBe("BROADSIDE");
+    scene.step(duration * 0.75);
+    expect(Number(scene.effects.dataset.attackProgress)).toBeCloseTo(0.75, 2);
+    scene.step(duration);
+    // The splashed Fighter's damage cue follows the broadside.
+    await waitUntil(() => scene.frames.size === 1);
+    expect(scene.effects.dataset.attackEffect).toBeUndefined();
+    scene.host.finishPresentations();
+    await presentation;
+    expect(scene.arrowStrokes).toEqual([]);
+    scene.host.destroy();
+  });
+
+  it("holds one frame of the broadside under reduced motion", async () => {
+    const scene = setUp("REDUCED", battleshipShot());
+    const presentation = scene.host.presentBoundary(
+      scene.shot.before,
+      scene.shot.after,
+      scene.shot.envelope,
+    );
+    expect(scene.effects.dataset.attackEffect).toBe("BROADSIDE");
+    expect(Number(scene.effects.dataset.attackProgress)).toBeCloseTo(
+      attackReducedMotionProgressV7("BROADSIDE"),
+      3,
+    );
+    scene.step(1_000);
+    await waitUntil(() => scene.effects.dataset.attackEffect === undefined);
+    scene.host.finishPresentations();
+    await presentation;
+    expect(scene.arrowStrokes).toEqual([]);
     scene.host.destroy();
   });
 });

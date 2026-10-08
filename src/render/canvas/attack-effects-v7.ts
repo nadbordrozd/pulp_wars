@@ -2,8 +2,14 @@ import type { CoordV7, FactionIdV7, UnitRoleIdV7 } from "../../engine/index";
 import { DWARF_PALETTE_V7 } from "../../assets/chibi-direction-dwarf-presentation";
 import { ICE_FOLK_PALETTE_V7 } from "../../assets/chibi-direction-ice-folk-presentation";
 import { CANDY_PALETTE_V7 } from "../../assets/chibi-direction-candy-presentation";
+import { MARTIAN_PALETTE_V7 } from "../../assets/chibi-direction-martian-presentation";
 import { GOBLIN_BLAST_PALETTE_V7 } from "./goblin-explosion-v7";
-import { projectGrid, worldToScreen, type CameraState } from "./geometry";
+import {
+  TILE_WIDTH,
+  projectGrid,
+  worldToScreen,
+  type CameraState,
+} from "./geometry";
 import type { SupportEffectArtV7 } from "./support-presentation-v7";
 
 /**
@@ -23,6 +29,12 @@ import type { SupportEffectArtV7 } from "./support-presentation-v7";
  * and the classic pale blue elsewhere, as the other Undead cues do. The
  * two Candy cues (bead pulp_wars-jdb.6) draw the pie, splat and gumball
  * sprites of the Candy art where the look has them, and code elsewhere.
+ *
+ * The Battleship's broadside (bead pulp_wars-eu3r.4) is one cue for every
+ * faction, flavoured by its shell (`BroadsideShellV7`): three guns flash
+ * along the hull, a heavy shell arcs over, the target bursts, and a shock
+ * ring spreads over the 3 x 3 tiles of the Battleship's splash, bursting
+ * again on each splashed unit.
  */
 export type AttackEffectIdV7 =
   /** The Lich (Undead CATAPULT): a necromantic orb with a wisp tail. */
@@ -40,7 +52,12 @@ export type AttackEffectIdV7 =
   /** The Pie Launcher (Candy CATAPULT): a cream pie, lobbed, and its splat. */
   | "PIE_THROW"
   /** The Gumball Gunner (Candy MARKSMAN): a gumball and a sugar pop. */
-  | "GUMBALL_SHOT";
+  | "GUMBALL_SHOT"
+  /**
+   * The Battleship (every faction, bead pulp_wars-eu3r.4): a broadside, a
+   * heavy shell of the faction's own and an area blast over its splash.
+   */
+  | "BROADSIDE";
 
 export const ATTACK_EFFECT_IDS_V7: readonly AttackEffectIdV7[] = [
   "NECRO_BOLT",
@@ -51,7 +68,44 @@ export const ATTACK_EFFECT_IDS_V7: readonly AttackEffectIdV7[] = [
   "HARPOON",
   "PIE_THROW",
   "GUMBALL_SHOT",
+  "BROADSIDE",
 ];
+
+/**
+ * The Battleship's shell, by the shooter's faction (bead pulp_wars-eu3r.4):
+ * a Human iron cannonball, Undead ghost fire, a Goblin bundle of scrap, a
+ * Dinosaur basalt boulder, a Martian plasma bolt, an Ice Folk ice chunk, a
+ * Dwarf steam-shot iron ball and a Candy chocolate truffle.
+ */
+export type BroadsideShellV7 =
+  | "CANNONBALL"
+  | "GHOST_FIRE"
+  | "SCRAP"
+  | "BOULDER"
+  | "PLASMA"
+  | "ICE"
+  | "STEAM"
+  | "CANDY";
+
+export const BROADSIDE_SHELLS_V7: Readonly<
+  Record<FactionIdV7, BroadsideShellV7>
+> = {
+  ORIGINAL: "CANNONBALL",
+  UNDEAD: "GHOST_FIRE",
+  GOBLIN: "SCRAP",
+  DINOSAUR: "BOULDER",
+  MARTIAN: "PLASMA",
+  ICE_FOLK: "ICE",
+  DWARF: "STEAM",
+  CANDY: "CANDY",
+};
+
+/** The shell of a faction's Battleship; the Human cannonball without one. */
+export function broadsideShellForV7(
+  faction: FactionIdV7 | undefined,
+): BroadsideShellV7 {
+  return faction === undefined ? "CANNONBALL" : BROADSIDE_SHELLS_V7[faction];
+}
 
 export interface AttackFeedbackV7 {
   readonly effect: AttackEffectIdV7;
@@ -60,8 +114,18 @@ export interface AttackFeedbackV7 {
   /** The target's cell. */
   readonly to: CoordV7;
   readonly progress: number;
-  /** NECRO_BOLT: the live look's violet (else the classic pale blue). */
+  /**
+   * NECRO_BOLT and the BROADSIDE's GHOST_FIRE: the live look's violet (else
+   * the classic pale blue).
+   */
   readonly undeadViolet?: boolean;
+  /** BROADSIDE: the shell (the Human cannonball when omitted). */
+  readonly shell?: BroadsideShellV7;
+  /**
+   * BROADSIDE: the cells of the units its splash hits; each bursts as the
+   * shock ring reaches it.
+   */
+  readonly splash?: readonly CoordV7[];
   /**
    * Drawn size per world unit, over the camera zoom: the CHIBI board's
    * ATTACK_EFFECT_SCALE_V7 when omitted; LEGACY, whose stand-in units are
@@ -82,6 +146,8 @@ export const ATTACK_EFFECT_DURATIONS_V7: Readonly<
   HARPOON: 380,
   PIE_THROW: 460,
   GUMBALL_SHOT: 380,
+  // The heaviest shot in the game: a broadside, a long arc, an area blast.
+  BROADSIDE: 580,
 };
 
 /**
@@ -98,7 +164,11 @@ export const ATTACK_EFFECT_HIT_V7: Readonly<Record<AttackEffectIdV7, number>> =
     HARPOON: 0.5,
     PIE_THROW: 0.58,
     GUMBALL_SHOT: 0.52,
+    BROADSIDE: 0.5,
   };
+
+/** BROADSIDE: the three guns fire this far apart (share of the cue). */
+const BROADSIDE_GUN_GAP = 0.05;
 
 /** Flight windows (share of the cue): the shot leaves, then lands. */
 const FLIGHT: Readonly<
@@ -113,7 +183,15 @@ const FLIGHT: Readonly<
   HARPOON: { from: 0, to: ATTACK_EFFECT_HIT_V7.HARPOON },
   PIE_THROW: { from: 0, to: ATTACK_EFFECT_HIT_V7.PIE_THROW },
   GUMBALL_SHOT: { from: 0, to: ATTACK_EFFECT_HIT_V7.GUMBALL_SHOT },
+  // The middle gun's shell leaves with its flash.
+  BROADSIDE: { from: BROADSIDE_GUN_GAP, to: ATTACK_EFFECT_HIT_V7.BROADSIDE },
 };
+
+/**
+ * BROADSIDE: the shock ring reaches the splash tiles this long after the hit
+ * (share of the cue); each splashed unit bursts from then.
+ */
+export const BROADSIDE_SPLASH_DELAY_V7 = 0.09;
 
 /** The gatling's rounds leave this far apart (share of the cue). */
 export const GATLING_ROUND_GAP_V7 = 0.12;
@@ -128,16 +206,25 @@ const ARC: Readonly<Record<AttackEffectIdV7, number>> = {
   HARPOON: 14,
   PIE_THROW: 64,
   GUMBALL_SHOT: 10,
+  BROADSIDE: 76,
 };
 
 /**
  * The frame reduced motion holds: the shot close to its target with its
- * whole trail behind it (the gatling with one round landed).
+ * whole trail behind it (the gatling with one round landed). The broadside
+ * holds its blast instead, with the shock ring over the splash tiles and
+ * each splashed unit bursting: the area is what the frame must say.
  */
 export function attackReducedMotionProgressV7(
   effect: AttackEffectIdV7,
 ): number {
-  return effect === "GATLING_BURST" ? 0.45 : effect === "HARPOON" ? 0.42 : 0.48;
+  return effect === "GATLING_BURST"
+    ? 0.45
+    : effect === "HARPOON"
+      ? 0.42
+      : effect === "BROADSIDE"
+        ? 0.64
+        : 0.48;
 }
 
 /**
@@ -161,6 +248,8 @@ export function attackEffectForV7(
   // The Candy revision (bead pulp_wars-jdb.6): the pie and the gumball.
   if (faction === "CANDY" && role === "CATAPULT") return "PIE_THROW";
   if (faction === "CANDY" && role === "MARKSMAN") return "GUMBALL_SHOT";
+  // Bead pulp_wars-eu3r.4: every faction's Battleship fires a broadside.
+  if (role === "BATTLESHIP") return "BROADSIDE";
   return null;
 }
 
@@ -184,6 +273,28 @@ export interface AttackShotPlanV7 {
 export interface AttackImpactPlanV7 {
   readonly at: Point;
   readonly local: number;
+  /** BROADSIDE: a splashed unit's smaller burst. */
+  readonly splash?: true;
+}
+
+/** BROADSIDE: one gun along the hull, and 0 to 1 through its flash. */
+export interface AttackGunPlanV7 {
+  readonly at: Point;
+  readonly local: number;
+}
+
+/**
+ * BROADSIDE: the shock ring, a rounded square round the target's cell
+ * growing to the edge of the 3 x 3 splash tiles.
+ */
+export interface AttackRingPlanV7 {
+  /** The target cell's centre (on the ground). */
+  readonly at: Point;
+  /** Half the square's side, in screen pixels. */
+  readonly halfSize: number;
+  /** Half the side of the whole splash area (three tiles). */
+  readonly areaHalfSize: number;
+  readonly local: number;
 }
 
 /** What one frame of a cue draws, in screen pixels. */
@@ -204,6 +315,10 @@ export interface AttackEffectPlanV7 {
   readonly muzzle: number | null;
   /** HARPOON: 0 to 1 opacity of the line back to the hunter. */
   readonly line: number;
+  /** BROADSIDE: the guns firing along the hull (else empty). */
+  readonly guns: readonly AttackGunPlanV7[];
+  /** BROADSIDE: the shock ring over the splash tiles, or null. */
+  readonly ring: AttackRingPlanV7 | null;
 }
 
 function clamp01(value: number): number {
@@ -215,6 +330,9 @@ function phase(progress: number, from: number, to: number): number | null {
     ? null
     : (progress - from) / (to - from);
 }
+
+/** BROADSIDE: world units between the guns along the hull. */
+const BROADSIDE_GUN_SPACING = 24;
 
 /** Lifts the aim point to the target's chest (world units). */
 const BODY_LIFT = 18;
@@ -247,14 +365,17 @@ export function attackEffectPlanV7(
   const direction = { x: dx / length, y: dy / length };
   // The weapon: the Lich's raised orb, the cannon's and the gun's muzzle,
   // the rocket's cone, the boulder over the Yeti's head, the hunter's hand.
+  // The Battleship's middle gun port, on the hull below the sails.
   const reach =
-    effect === "CANNON_BLAST"
-      ? 50
-      : effect === "GATLING_BURST"
-        ? 24
-        : effect === "NECRO_BOLT"
-          ? 4
-          : 14;
+    effect === "BROADSIDE"
+      ? 6
+      : effect === "CANNON_BLAST"
+        ? 50
+        : effect === "GATLING_BURST"
+          ? 24
+          : effect === "NECRO_BOLT"
+            ? 4
+            : 14;
   const lift =
     effect === "ICE_BOULDER"
       ? 62
@@ -264,7 +385,9 @@ export function attackEffectPlanV7(
           ? 30
           : effect === "CANNON_BLAST"
             ? -12
-            : 22;
+            : effect === "BROADSIDE"
+              ? 2
+              : 22;
   const source = {
     x: fromCentre.x + direction.x * reach * zoom,
     y: fromCentre.y + direction.y * reach * zoom - lift * zoom,
@@ -347,13 +470,64 @@ export function attackEffectPlanV7(
               ? 8
               : effect === "PIE_THROW"
                 ? 3
-                : 6,
+                : effect === "BROADSIDE"
+                  ? 7
+                  : 6,
         ),
       );
     const impact = phase(progress, window.to, 1);
     if (impact !== null && progress > window.to)
       impacts.push({ at: target, local: impact });
+    // The broadside's splash: each splashed unit bursts as the ring
+    // reaches it.
+    if (effect === "BROADSIDE") {
+      const splashFrom = window.to + BROADSIDE_SPLASH_DELAY_V7;
+      const local = phase(progress, splashFrom, 1);
+      if (local !== null && progress > splashFrom)
+        for (const at of feedback.splash ?? []) {
+          const centre = cellCentre(at);
+          impacts.push({
+            at: { x: centre.x, y: centre.y - BODY_LIFT * zoom },
+            local,
+            splash: true,
+          });
+        }
+    }
   }
+  // Three guns along the hull, fired one after another from the stern.
+  const guns: AttackGunPlanV7[] = [];
+  if (effect === "BROADSIDE")
+    for (let gun = 0; gun < 3; gun += 1) {
+      const local = phase(
+        progress,
+        gun * BROADSIDE_GUN_GAP,
+        gun * BROADSIDE_GUN_GAP + 0.42,
+      );
+      if (local !== null)
+        guns.push({
+          at: {
+            x: source.x + (gun - 1) * BROADSIDE_GUN_SPACING * zoom,
+            y: source.y + (gun === 1 ? 0 : 3 * zoom),
+          },
+          local,
+        });
+    }
+  const ringLocal =
+    effect === "BROADSIDE" ? phase(progress, window.to, 1) : null;
+  const areaHalfSize = 1.5 * TILE_WIDTH * zoom;
+  const ring: AttackRingPlanV7 | null =
+    ringLocal === null || progress <= window.to
+      ? null
+      : {
+          at: toCentre,
+          // The ring reaches the splash tiles' centres with the splash
+          // bursts, and the area's edge as it fades.
+          halfSize:
+            areaHalfSize *
+            (0.25 + 0.67 * easeOut(Math.min(1, ringLocal / 0.55))),
+          areaHalfSize,
+          local: ringLocal,
+        };
   const muzzle =
     effect === "GATLING_BURST"
       ? phase(progress, 0, 0.46)
@@ -381,6 +555,8 @@ export function attackEffectPlanV7(
     impacts,
     muzzle,
     line,
+    guns,
+    ring,
   };
 }
 
@@ -419,6 +595,7 @@ const ROCKET_CREAM = "#fee388";
 const GOBLIN = GOBLIN_BLAST_PALETTE_V7;
 const DWARF = DWARF_PALETTE_V7;
 const ICE = ICE_FOLK_PALETTE_V7;
+const MARTIAN = MARTIAN_PALETTE_V7;
 /** The Snow Hunter's ivory harpoon shaft. */
 const IVORY = "#efe6c8";
 /** The muzzle flash's hot core and the gatling tracer. */
@@ -469,6 +646,16 @@ export function drawAttackFeedbackV7(
       break;
     case "GUMBALL_SHOT":
       drawGumballShot(context, plan, art);
+      break;
+    case "BROADSIDE":
+      drawBroadside(
+        context,
+        plan,
+        broadsideLookV7(
+          feedback.shell ?? "CANNONBALL",
+          feedback.undeadViolet === true,
+        ),
+      );
       break;
   }
   context.restore();
@@ -1390,5 +1577,757 @@ function drawGumballShot(
       context.fill();
     }
     context.globalAlpha = 1;
+  }
+}
+
+/**
+ * The colours of one Battleship broadside (bead pulp_wars-eu3r.4), from the
+ * faction palettes: the muzzle flash, the gunsmoke, the blast's fireball,
+ * the shock ring and the debris flung out.
+ */
+export interface BroadsideLookV7 {
+  readonly shell: BroadsideShellV7;
+  readonly flashCore: string;
+  readonly flash: string;
+  readonly flashRim: string;
+  readonly smoke: string;
+  readonly smokeLight: string;
+  readonly smokeRim: string;
+  readonly fire: string;
+  readonly fireLight: string;
+  readonly fireRim: string;
+  readonly ring: string;
+  readonly ringDark: string;
+  readonly debris: readonly string[];
+  /** Square chips, ice shards, candy sprinkles or glowing motes. */
+  readonly debrisShape: "CHIP" | "SHARD" | "SPRINKLE" | "MOTE";
+}
+
+/** The Human gold (docs/art/NAVAL_FACTIONS.md) and gunpowder smoke. */
+const HUMAN_GOLD = "#fddb21";
+const HUMAN_GOLD_LIGHT = "#ffdb6a";
+const HUMAN_HULL = "#aa6b27";
+/** The Goblin hazard yellow and tin (docs/art/NAVAL_FACTIONS.md). */
+const GOBLIN_HAZARD = "#fcd701";
+const GOBLIN_TIN = "#899a9c";
+const GOBLIN_RUST = "#ac6f41";
+/** The Dinosaur basalt, hide sails and red-orange accent. */
+const DINOSAUR_BASALT = "#5b616c";
+const DINOSAUR_CHARCOAL = "#33363d";
+const DINOSAUR_SAND = "#debb78";
+const DINOSAUR_HIDE = "#cda461";
+const DINOSAUR_WOOD = "#5d351b";
+const DINOSAUR_ACCENT = "#fe7500";
+/** The Martian glass. */
+const MARTIAN_GLASS = "#acf1ec";
+const MARTIAN_GUNMETAL = "#3d4c61";
+/** Candy: vanilla cream and the small cherry accent (docs/art/factions/CANDY.md). */
+const CANDY_VANILLA = "#fff1d0";
+const CANDY_CHERRY = "#e8506e";
+
+/** The look of a broadside's shell; GHOST_FIRE takes the Undead accent. */
+export function broadsideLookV7(
+  shell: BroadsideShellV7,
+  undeadViolet: boolean,
+): BroadsideLookV7 {
+  switch (shell) {
+    case "CANNONBALL":
+      return {
+        shell,
+        flashCore: "#ffffff",
+        flash: MUZZLE_HOT,
+        flashRim: "#5a3a12",
+        smoke: "#d8d4cc",
+        smokeLight: "#ffffff",
+        smokeRim: "#5f5a52",
+        fire: HUMAN_GOLD,
+        fireLight: MUZZLE_HOT,
+        fireRim: "#7a3e0c",
+        ring: "#fff3d0",
+        ringDark: "#5a3a12",
+        debris: [DWARF.iron, "#6d665e", HUMAN_HULL, HUMAN_GOLD_LIGHT],
+        debrisShape: "CHIP",
+      };
+    case "GHOST_FIRE": {
+      const palette = undeadViolet
+        ? NECRO_BOLT_VIOLET_V7
+        : NECRO_BOLT_CLASSIC_V7;
+      return {
+        shell,
+        flashCore: "#ffffff",
+        flash: palette.pale,
+        flashRim: palette.outline,
+        smoke: "#535353",
+        smokeLight: "#737473",
+        smokeRim: "#1b1a1d",
+        fire: palette.mid,
+        fireLight: palette.lit,
+        fireRim: palette.outline,
+        ring: palette.lit,
+        ringDark: palette.outline,
+        debris: [palette.pale, palette.lit, "#e8dfc8"],
+        debrisShape: "MOTE",
+      };
+    }
+    case "SCRAP":
+      return {
+        shell,
+        flashCore: GOBLIN.white,
+        flash: GOBLIN.spark,
+        flashRim: GOBLIN.charcoal,
+        smoke: GOBLIN.soot,
+        smokeLight: GOBLIN.lightGrey,
+        smokeRim: GOBLIN.charcoal,
+        fire: GOBLIN_HAZARD,
+        fireLight: GOBLIN.spark,
+        fireRim: GOBLIN.charcoal,
+        ring: GOBLIN.cream,
+        ringDark: GOBLIN.charcoal,
+        debris: [GOBLIN_TIN, GOBLIN_HAZARD, GOBLIN_RUST, GOBLIN.charcoal],
+        debrisShape: "CHIP",
+      };
+    case "BOULDER":
+      return {
+        shell,
+        flashCore: "#ffffff",
+        flash: "#efe6c8",
+        flashRim: DINOSAUR_WOOD,
+        smoke: DINOSAUR_HIDE,
+        smokeLight: DINOSAUR_SAND,
+        smokeRim: DINOSAUR_WOOD,
+        fire: DINOSAUR_SAND,
+        fireLight: "#efe6c8",
+        fireRim: DINOSAUR_WOOD,
+        ring: "#efe6c8",
+        ringDark: DINOSAUR_WOOD,
+        debris: [
+          DINOSAUR_BASALT,
+          DINOSAUR_CHARCOAL,
+          DINOSAUR_ACCENT,
+          "#ab8344",
+        ],
+        debrisShape: "CHIP",
+      };
+    case "PLASMA":
+      return {
+        shell,
+        flashCore: "#ffffff",
+        flash: MARTIAN.magentaPale,
+        flashRim: MARTIAN.magentaDark,
+        smoke: MARTIAN_GLASS,
+        smokeLight: "#ffffff",
+        smokeRim: MARTIAN_GUNMETAL,
+        fire: MARTIAN.magenta,
+        fireLight: MARTIAN.magentaGlow,
+        fireRim: MARTIAN.magentaDark,
+        ring: MARTIAN.magentaGlow,
+        ringDark: MARTIAN.magentaDark,
+        debris: [MARTIAN.magentaPale, MARTIAN_GLASS, "#ffffff"],
+        debrisShape: "MOTE",
+      };
+    case "ICE":
+      return {
+        shell,
+        flashCore: "#ffffff",
+        flash: ICE.icePale,
+        flashRim: ICE.iceDark,
+        smoke: ICE.snow,
+        smokeLight: "#ffffff",
+        smokeRim: ICE.snowRim,
+        fire: ICE.iceGlow,
+        fireLight: ICE.icePale,
+        fireRim: ICE.iceDark,
+        ring: ICE.icePale,
+        ringDark: ICE.iceDark,
+        debris: [ICE.ice, ICE.icePale, ICE.iceGlow],
+        debrisShape: "SHARD",
+      };
+    case "STEAM":
+      return {
+        shell,
+        flashCore: "#ffffff",
+        flash: MUZZLE_HOT,
+        flashRim: DWARF.outline,
+        smoke: DWARF.steam,
+        smokeLight: "#ffffff",
+        smokeRim: DWARF.ironRim,
+        fire: DWARF.copper,
+        fireLight: MUZZLE_HOT,
+        fireRim: DWARF.copperShade,
+        ring: DWARF.steam,
+        ringDark: DWARF.outline,
+        debris: [DWARF.earthDark, DWARF.iron, DWARF.copper, DWARF.earthLight],
+        debrisShape: "CHIP",
+      };
+    case "CANDY":
+      return {
+        shell,
+        flashCore: CANDY.white,
+        flash: CANDY_VANILLA,
+        flashRim: CANDY.milkChocolate,
+        smoke: CANDY.cream,
+        smokeLight: CANDY.white,
+        smokeRim: CANDY.milkChocolate,
+        fire: CANDY.caramel,
+        fireLight: CANDY_VANILLA,
+        fireRim: CANDY.chocolate,
+        ring: CANDY.caramel,
+        ringDark: CANDY.chocolate,
+        debris: [CANDY.mint, CANDY.caramel, CANDY.white, CANDY_CHERRY],
+        debrisShape: "SPRINKLE",
+      };
+  }
+}
+
+/** A rounded square path centred on a point. */
+function roundedSquare(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  half: number,
+  corner: number,
+): void {
+  const radius = Math.max(0, Math.min(corner, half));
+  context.beginPath();
+  context.moveTo(x - half + radius, y - half);
+  context.arcTo(x + half, y - half, x + half, y + half, radius);
+  context.arcTo(x + half, y + half, x - half, y + half, radius);
+  context.arcTo(x - half, y + half, x - half, y - half, radius);
+  context.arcTo(x - half, y - half, x + half, y - half, radius);
+  context.closePath();
+}
+
+/** One piece of debris at a point, turned by `spin`. */
+function debrisPiece(
+  context: CanvasRenderingContext2D,
+  look: BroadsideLookV7,
+  x: number,
+  y: number,
+  size: number,
+  spin: number,
+  colour: string,
+  zoom: number,
+): void {
+  context.fillStyle = colour;
+  switch (look.debrisShape) {
+    case "CHIP":
+      context.save();
+      context.translate(x, y);
+      context.rotate(spin);
+      context.fillRect(-size / 2, -size / 2, size, size);
+      context.strokeStyle = look.fireRim;
+      context.lineWidth = Math.max(1, 1.2 * zoom);
+      context.strokeRect(-size / 2, -size / 2, size, size);
+      context.restore();
+      return;
+    case "SHARD":
+      context.save();
+      context.translate(x, y);
+      context.rotate(spin);
+      context.beginPath();
+      context.moveTo(size * 1.1, 0);
+      context.lineTo(-size * 0.6, -size * 0.55);
+      context.lineTo(-size * 0.6, size * 0.55);
+      context.closePath();
+      context.fill();
+      context.strokeStyle = look.fireRim;
+      context.lineWidth = Math.max(1, 1.3 * zoom);
+      context.stroke();
+      context.restore();
+      return;
+    case "SPRINKLE":
+      context.strokeStyle = colour;
+      context.lineWidth = Math.max(1, size * 0.6);
+      context.beginPath();
+      context.moveTo(x - Math.cos(spin) * size, y - Math.sin(spin) * size);
+      context.lineTo(x + Math.cos(spin) * size, y + Math.sin(spin) * size);
+      context.stroke();
+      return;
+    case "MOTE":
+      circle(context, x, y, size * 0.6);
+      context.fill();
+      return;
+  }
+}
+
+/**
+ * One blast: a hot flash, a fireball of the shell's colours, smoke rising
+ * from it and debris flung out. `size` is 1 for the target's blast and
+ * smaller for a splashed unit's.
+ */
+function broadsideBlast(
+  context: CanvasRenderingContext2D,
+  look: BroadsideLookV7,
+  x: number,
+  y: number,
+  local: number,
+  size: number,
+  zoom: number,
+): void {
+  const z = zoom * size;
+  const grow = easeOut(Math.min(1, local / 0.5));
+  // Smoke rising behind the fireball.
+  if (local > 0.18) {
+    const smoke = (local - 0.18) / 0.82;
+    context.globalAlpha = Math.max(0, 0.85 * (1 - smoke * smoke));
+    for (let index = 0; index < 3; index += 1) {
+      const dx = (index - 1) * 14 * z;
+      puff(
+        context,
+        x + dx * (0.6 + smoke * 0.6),
+        y - (10 + 34 * easeOut(smoke)) * z - (index === 1 ? 8 * z : 0),
+        (9 + 9 * easeOut(smoke)) * z,
+        look.smoke,
+        look.smokeLight,
+        look.smokeRim,
+        zoom,
+      );
+    }
+  }
+  // The fireball: seven lobes swelling out round the hit.
+  const fireAlpha = local < 0.45 ? 1 : 1 - (local - 0.45) / 0.55;
+  context.globalAlpha = Math.max(0, fireAlpha);
+  for (let index = 0; index < 7; index += 1) {
+    const angle = (index / 7) * Math.PI * 2 - Math.PI / 2 + 0.3;
+    const distance = (5 + 22 * grow) * z;
+    puff(
+      context,
+      x + Math.cos(angle) * distance,
+      y + Math.sin(angle) * distance * 0.8 - local * 8 * z,
+      (8 + 9 * grow) * z * (1 - 0.35 * Math.max(0, local - 0.5)),
+      look.fire,
+      look.fireLight,
+      look.fireRim,
+      zoom,
+    );
+  }
+  circle(context, x, y - local * 8 * z, (10 + 10 * grow) * z);
+  context.fillStyle = look.fireLight;
+  context.fill();
+  // The flash: a big star, white hot, gone by a third of the burst.
+  if (local < 0.34) {
+    const flash = 1 - local / 0.34;
+    const swell = easeOut(Math.min(1, local / 0.12));
+    context.globalAlpha = flash;
+    starPath(
+      context,
+      x,
+      y,
+      (22 + 20 * swell) * z,
+      (11 + 8 * swell) * z,
+      12,
+      0.13,
+    );
+    context.fillStyle = look.flash;
+    context.fill();
+    context.strokeStyle = look.flashRim;
+    context.lineWidth = Math.max(1, 2.6 * zoom);
+    context.stroke();
+    circle(context, x, y, (8 + 9 * swell) * z);
+    context.fillStyle = look.flashCore;
+    context.fill();
+  }
+  // Debris flung out in every direction, falling.
+  context.globalAlpha = Math.max(0, local < 0.6 ? 1 : 1 - (local - 0.6) / 0.4);
+  const pieces = size < 1 ? 5 : 10;
+  for (let piece = 0; piece < pieces; piece += 1) {
+    const angle = (piece / pieces) * Math.PI * 2 + 0.4;
+    const distance = (12 + (size < 1 ? 26 : 46) * easeOut(local)) * z;
+    const colour = look.debris[piece % look.debris.length] ?? look.fire;
+    debrisPiece(
+      context,
+      look,
+      x + Math.cos(angle) * distance,
+      y +
+        Math.sin(angle) * distance * 0.75 -
+        14 * z * Math.sin(Math.PI * Math.min(1, local * 1.4)) +
+        local * local * 26 * z,
+      (piece % 3 === 0 ? 6 : 4.5) * z,
+      angle + local * 9 * (piece % 2 === 0 ? 1 : -1),
+      colour,
+      zoom,
+    );
+  }
+  context.globalAlpha = 1;
+}
+
+/** The shell in flight, at the origin, heading along +x. */
+function broadsideShell(
+  context: CanvasRenderingContext2D,
+  look: BroadsideLookV7,
+  flight: number,
+  angle: number,
+  zoom: number,
+): void {
+  const radius = 13 * zoom;
+  const line = Math.max(1, 2.4 * zoom);
+  const spin = flight * Math.PI * 2.5;
+  const ball = (fill: string, rim: string, light: string): void => {
+    circle(context, 0, 0, radius);
+    context.fillStyle = fill;
+    context.fill();
+    context.strokeStyle = rim;
+    context.lineWidth = line;
+    context.stroke();
+    context.beginPath();
+    context.arc(0, 0, radius * 0.62, Math.PI * 1.05, Math.PI * 1.6);
+    context.strokeStyle = light;
+    context.lineWidth = Math.max(1, 2.4 * zoom);
+    context.stroke();
+  };
+  switch (look.shell) {
+    case "CANNONBALL":
+      ball(DWARF.iron, DWARF.outline, "#8d8c8a");
+      // A lit fuse spark at the back.
+      starPath(
+        context,
+        -Math.cos(angle) * radius,
+        -Math.sin(angle) * radius,
+        5 * zoom,
+        2 * zoom,
+        5,
+        flight * 9,
+      );
+      context.fillStyle = HUMAN_GOLD;
+      context.fill();
+      return;
+    case "STEAM":
+      ball(DWARF.iron, DWARF.outline, DWARF.ironRim);
+      // A riveted copper band.
+      context.save();
+      context.rotate(spin);
+      context.strokeStyle = DWARF.copper;
+      context.lineWidth = Math.max(1, 3 * zoom);
+      context.beginPath();
+      context.moveTo(0, -radius + 1.5 * zoom);
+      context.lineTo(0, radius - 1.5 * zoom);
+      context.stroke();
+      context.restore();
+      return;
+    case "GHOST_FIRE": {
+      // Flame tongues trailing behind a burning orb.
+      context.save();
+      context.rotate(angle + Math.PI);
+      for (const [colour, scale] of [
+        [look.fireRim, 1.25],
+        [look.fire, 1],
+        [look.fireLight, 0.62],
+      ] as const) {
+        context.beginPath();
+        context.moveTo(0, -radius * scale);
+        context.quadraticCurveTo(
+          radius * 1.4 * scale,
+          -radius * 0.5 * scale + Math.sin(flight * 30) * 3 * zoom,
+          radius * 2.4 * scale,
+          0,
+        );
+        context.quadraticCurveTo(
+          radius * 1.4 * scale,
+          radius * 0.5 * scale - Math.sin(flight * 30) * 3 * zoom,
+          0,
+          radius * scale,
+        );
+        context.closePath();
+        context.fillStyle = colour;
+        context.fill();
+      }
+      context.restore();
+      context.globalAlpha = 0.5;
+      circle(context, 0, 0, radius * 1.45);
+      context.fillStyle = look.fireLight;
+      context.fill();
+      context.globalAlpha = 1;
+      circle(context, 0, 0, radius * 0.85);
+      context.fillStyle = look.fire;
+      context.fill();
+      context.strokeStyle = look.fireRim;
+      context.lineWidth = line;
+      context.stroke();
+      circle(context, -2 * zoom, -2 * zoom, radius * 0.45);
+      context.fillStyle = look.flash;
+      context.fill();
+      return;
+    }
+    case "SCRAP": {
+      // A tumbling bundle of junk: a tin drum, a gear, a hazard plate.
+      context.save();
+      context.rotate(spin);
+      context.lineWidth = line;
+      context.strokeStyle = GOBLIN.charcoal;
+      starPath(
+        context,
+        radius * 0.35,
+        -radius * 0.2,
+        radius * 0.8,
+        radius * 0.55,
+        8,
+      );
+      context.fillStyle = GOBLIN_TIN;
+      context.fill();
+      context.stroke();
+      circle(context, radius * 0.35, -radius * 0.2, radius * 0.22);
+      context.fillStyle = GOBLIN.charcoal;
+      context.fill();
+      context.beginPath();
+      context.rect(-radius * 0.95, -radius * 0.5, radius * 1.1, radius * 1.15);
+      context.fillStyle = GOBLIN_RUST;
+      context.fill();
+      context.stroke();
+      context.beginPath();
+      context.rect(-radius * 0.95, -radius * 0.05, radius * 1.1, radius * 0.3);
+      context.fillStyle = GOBLIN_HAZARD;
+      context.fill();
+      context.restore();
+      return;
+    }
+    case "BOULDER": {
+      context.save();
+      context.rotate(spin * 0.6);
+      const rock = (scale: number): void => {
+        context.beginPath();
+        ROCK_SHAPE.forEach((lump, index) => {
+          const turn = (index / ROCK_SHAPE.length) * Math.PI * 2;
+          const px = Math.cos(turn) * radius * 1.2 * lump * scale;
+          const py = Math.sin(turn) * radius * 1.2 * lump * scale;
+          if (index === 0) context.moveTo(px, py);
+          else context.lineTo(px, py);
+        });
+        context.closePath();
+      };
+      rock(1);
+      context.fillStyle = DINOSAUR_BASALT;
+      context.fill();
+      context.strokeStyle = DINOSAUR_CHARCOAL;
+      context.lineWidth = line;
+      context.stroke();
+      context.restore();
+      context.save();
+      context.translate(-radius * 0.22, -radius * 0.25);
+      circle(context, 0, 0, radius * 0.5);
+      context.fillStyle = "#7d8592";
+      context.fill();
+      context.restore();
+      // A red-orange war-paint stripe.
+      context.save();
+      context.rotate(spin * 0.6);
+      context.strokeStyle = DINOSAUR_ACCENT;
+      context.lineWidth = Math.max(1, 2.6 * zoom);
+      context.beginPath();
+      context.moveTo(-radius * 0.5, radius * 0.45);
+      context.lineTo(radius * 0.5, -radius * 0.1);
+      context.stroke();
+      context.restore();
+      return;
+    }
+    case "PLASMA": {
+      context.globalAlpha = 0.45;
+      circle(context, 0, 0, radius * 1.7);
+      context.fillStyle = MARTIAN.magentaGlow;
+      context.fill();
+      context.globalAlpha = 1;
+      circle(context, 0, 0, radius);
+      context.fillStyle = MARTIAN.magenta;
+      context.fill();
+      context.strokeStyle = MARTIAN.magentaDark;
+      context.lineWidth = line;
+      context.stroke();
+      circle(context, 0, 0, radius * 0.55);
+      context.fillStyle = "#ffffff";
+      context.fill();
+      // Crackling arcs round the bolt.
+      context.strokeStyle = MARTIAN_GLASS;
+      context.lineWidth = Math.max(1, 1.8 * zoom);
+      for (let arc = 0; arc < 3; arc += 1) {
+        const turn = spin * 2 + (arc * Math.PI * 2) / 3;
+        context.beginPath();
+        context.arc(0, 0, radius * 1.35, turn, turn + 0.9);
+        context.stroke();
+      }
+      return;
+    }
+    case "ICE": {
+      // A cluster of ice crystals, turning.
+      context.save();
+      context.rotate(spin * 0.7);
+      for (const [cx, cy, scale] of [
+        [0, 0, 1.2],
+        [-0.55, -0.45, 0.7],
+        [0.6, 0.35, 0.75],
+      ] as const) {
+        const s = radius * scale;
+        context.beginPath();
+        context.moveTo(radius * cx, radius * cy - s);
+        context.lineTo(radius * cx + s * 0.62, radius * cy);
+        context.lineTo(radius * cx, radius * cy + s);
+        context.lineTo(radius * cx - s * 0.62, radius * cy);
+        context.closePath();
+        context.fillStyle = ICE.ice;
+        context.fill();
+        context.strokeStyle = ICE.iceDark;
+        context.lineWidth = line;
+        context.stroke();
+        context.fillStyle = ICE.icePale;
+        context.fillRect(
+          radius * cx - s * 0.22,
+          radius * cy - s * 0.55,
+          Math.max(1, s * 0.3),
+          Math.max(1, s * 0.4),
+        );
+      }
+      context.restore();
+      return;
+    }
+    case "CANDY": {
+      // A chocolate truffle with a caramel drizzle and a hard shine.
+      circle(context, 0, 0, radius);
+      context.fillStyle = CANDY.chocolate;
+      context.fill();
+      context.strokeStyle = CANDY.outline;
+      context.lineWidth = line;
+      context.stroke();
+      context.save();
+      context.rotate(spin);
+      context.strokeStyle = CANDY.caramel;
+      context.lineWidth = Math.max(1, 2.4 * zoom);
+      context.beginPath();
+      for (let step = 0; step <= 4; step += 1) {
+        const px = -radius * 0.7 + (step / 4) * radius * 1.4;
+        const py = (step % 2 === 0 ? -0.25 : 0.25) * radius;
+        if (step === 0) context.moveTo(px, py);
+        else context.lineTo(px, py);
+      }
+      context.stroke();
+      context.restore();
+      circle(context, -radius * 0.38, -radius * 0.4, radius * 0.22);
+      context.fillStyle = CANDY.white;
+      context.fill();
+      return;
+    }
+  }
+}
+
+/**
+ * The Battleship's broadside (bead pulp_wars-eu3r.4): three guns flash
+ * along the hull with gunsmoke rolling out, a heavy shell of the faction's
+ * own arcs over, the target bursts, and a shock ring spreads over the
+ * splash tiles while each splashed unit bursts in turn.
+ */
+function drawBroadside(
+  context: CanvasRenderingContext2D,
+  plan: AttackEffectPlanV7,
+  look: BroadsideLookV7,
+): void {
+  const zoom = plan.zoom * plan.scale;
+  // The shock ring under the blasts: the splash area flushes, and a ring
+  // runs out over it to the edge of the 3 x 3 tiles.
+  const ring = plan.ring;
+  if (ring !== null) {
+    const { x, y } = ring.at;
+    const fade = 1 - ring.local;
+    context.globalAlpha = 0.3 * fade * fade;
+    roundedSquare(
+      context,
+      x,
+      y,
+      Math.min(ring.areaHalfSize, ring.halfSize * 1.05),
+      ring.halfSize * 0.35,
+    );
+    context.fillStyle = look.ring;
+    context.fill();
+    context.globalAlpha = Math.min(1, fade * 1.6);
+    roundedSquare(context, x, y, ring.halfSize, ring.halfSize * 0.35);
+    context.strokeStyle = look.ringDark;
+    context.lineWidth = Math.max(1.5, (7 * fade + 2) * zoom);
+    context.stroke();
+    context.strokeStyle = look.ring;
+    context.lineWidth = Math.max(1, (4 * fade + 1) * zoom);
+    context.stroke();
+    context.globalAlpha = 1;
+  }
+  // Each splashed unit's burst, then the target's.
+  for (const impact of plan.impacts)
+    if (impact.splash === true)
+      broadsideBlast(
+        context,
+        look,
+        impact.at.x,
+        impact.at.y,
+        impact.local,
+        0.62,
+        zoom,
+      );
+  for (const impact of plan.impacts)
+    if (impact.splash !== true)
+      broadsideBlast(
+        context,
+        look,
+        impact.at.x,
+        impact.at.y,
+        impact.local,
+        1,
+        zoom,
+      );
+  // The guns: a flash at each port, then gunsmoke rolling out toward the
+  // target and up.
+  for (const gun of plan.guns) {
+    const { x, y } = gun.at;
+    const local = gun.local;
+    const smokeAlpha = local < 0.35 ? 1 : 1 - (local - 0.35) / 0.65;
+    context.globalAlpha = Math.max(0, smokeAlpha) * 0.95;
+    for (let index = 0; index < 2; index += 1) {
+      const distance = (6 + (index === 0 ? 14 : 26) * easeOut(local)) * zoom;
+      puff(
+        context,
+        x + plan.direction.x * distance,
+        y + plan.direction.y * distance - (4 + 18 * local) * zoom,
+        (5 + 8 * easeOut(local)) * zoom,
+        look.smoke,
+        look.smokeLight,
+        look.smokeRim,
+        zoom,
+      );
+    }
+    if (local < 0.36) {
+      const flash = 1 - local / 0.36;
+      context.globalAlpha = flash;
+      starPath(
+        context,
+        x + plan.direction.x * 6 * zoom,
+        y + plan.direction.y * 6 * zoom,
+        (11 + 9 * flash) * zoom,
+        5 * zoom,
+        8,
+        0.2,
+      );
+      context.fillStyle = look.flash;
+      context.fill();
+      context.strokeStyle = look.flashRim;
+      context.lineWidth = Math.max(1, 2.2 * zoom);
+      context.stroke();
+      circle(
+        context,
+        x + plan.direction.x * 6 * zoom,
+        y + plan.direction.y * 6 * zoom,
+        5 * zoom,
+      );
+      context.fillStyle = look.flashCore;
+      context.fill();
+    }
+    context.globalAlpha = 1;
+  }
+  // The shell: a smoky trail, then the shell itself.
+  for (const shot of plan.shots) {
+    shot.trail.forEach((point, index) => {
+      const age = (index + 1) / (shot.trail.length + 1);
+      context.globalAlpha = 0.75 * (1 - age);
+      circle(context, point.x, point.y - age * 4 * zoom, (3 + 6 * age) * zoom);
+      context.fillStyle = index % 2 === 0 ? look.smoke : look.fireLight;
+      context.fill();
+    });
+    context.globalAlpha = 1;
+    context.save();
+    context.translate(shot.at.x, shot.at.y);
+    broadsideShell(context, look, shot.flight, shot.angle, zoom);
+    context.restore();
   }
 }
