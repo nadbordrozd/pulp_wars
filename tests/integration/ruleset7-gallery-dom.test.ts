@@ -543,7 +543,7 @@ describe("Ruleset 7 Gallery", () => {
     expect(document.querySelector(".v7-gallery-demo")).toBeNull();
     expect(required(".v7-gallery-detail").dataset.preview).toBe("false");
     expect(required(".v7-gallery-ability").textContent).toBe(
-      "At seaA land unit crossing water. It cannot fight until it lands on a shore.",
+      "At seaA transport carries a land unit across water. The unit cannot fight until it lands on a shore.",
     );
     // Down from the Martian transport: no Martian Egg, so no next unit.
     expect(

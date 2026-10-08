@@ -418,8 +418,11 @@ describe("Revision 17 Goblin presentation text", () => {
       "PORTRAIT:GOBLIN:BATTLESHIP",
     );
     expect(portraitSubjectV7("FIGHTER", "ORIGINAL")).toBe("PORTRAIT:FIGHTER");
-    // (The root's card is the Workshop since the Industry reshuffle, 7r56.)
-    expect(technologySubjectV7("DRILL", "GOBLIN")).toBe("IMPROVEMENT:WORKSHOP");
+    // (The root's card is the Workshop since the Industry reshuffle, 7r56;
+    // the Goblins' own Workshop since bead pulp_wars-2yc.38, stage 2.)
+    expect(technologySubjectV7("DRILL", "GOBLIN")).toBe(
+      "IMPROVEMENT:GOBLIN:WORKSHOP",
+    );
     expect(technologySubjectV7("CHIVALRY", "GOBLIN")).toBe(
       "UNIT:GOBLIN:KNIGHT",
     );

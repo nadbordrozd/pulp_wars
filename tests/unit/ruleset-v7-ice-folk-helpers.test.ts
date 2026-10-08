@@ -18,6 +18,7 @@ import {
   type PlayerId,
   type UnitRoleIdV7,
 } from "../../src/engine/index";
+import { kindReaderScopeTextV7 } from "../fixtures/v7-kind-readers";
 
 /**
  * The two engine-wide helpers of the Ice Folk revision
@@ -228,10 +229,13 @@ const RUNTIME_V7_SOURCES = [
 
 describe("source audits", () => {
   // Section 5.3: every read of `mayUsePrimaryActionAfterMove` for a concrete
-  // unit goes through `unitMayActAfterMoveV7`. The only other read is the
-  // role-level recruitment table of the DOM ("Can't attack after moving."),
-  // which describes a role, not a unit.
-  it("reads the role flag only in the helper and in the role-level recruitment table", () => {
+  // unit goes through `unitMayActAfterMoveV7`. The only other reads are
+  // role-level tables, which describe a role, not a unit: the recruitment
+  // table of the DOM ("Can't attack after moving.") and the unit glossary's
+  // "Slow to strike" trait (bead pulp_wars-2yc.39: `roleTraitGlossaryIdsV7`
+  // takes a role and a faction and no unit; a sluggish unit is explained by
+  // its Chill status line, not by a trait).
+  it("reads the role flag only in the helper and in the role-level tables", () => {
     const reads: Record<string, number> = {};
     for (const path of RUNTIME_V7_SOURCES) {
       const count =
@@ -242,7 +246,16 @@ describe("source audits", () => {
     expect(reads).toEqual({
       "src/engine/rules/ruleset-v7.ts": 1,
       "src/render/role-presentation-v7.ts": 1,
+      "src/render/unit-glossary-v7.ts": 1,
     });
+    // The glossary's one read is in its role-level trait list.
+    expect(
+      kindReaderScopeTextV7(
+        process.cwd(),
+        "src/render/unit-glossary-v7.ts",
+        "roleTraitGlossaryIdsV7",
+      ),
+    ).toMatch(/\.mayUsePrimaryActionAfterMove\b/);
   });
 
   // Section 7.1: no unit-entry rule tests Engineering against a Mountain

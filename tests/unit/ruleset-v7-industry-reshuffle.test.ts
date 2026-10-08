@@ -305,14 +305,20 @@ describe("the Industry reshuffle: the tree of every faction", () => {
     });
   });
 
-  it("shows the root as Crafting for every faction, and its card as the Workshop", () => {
+  it("shows the root as Crafting for every faction, and its card as the faction's own Workshop", () => {
     expect(TECHNOLOGY_SHARED_DISPLAY_NAMES_V7.DRILL).toBe("Crafting");
     for (const faction of FACTION_IDS_V7) {
       expect(technologyDisplayNameV7("DRILL", faction), faction).toBe(
         "Crafting",
       );
+      // The card is the Workshop for every faction, never a defender. Since
+      // bead pulp_wars-2yc.38 (stage 2) every faction but the Humans draws
+      // the Workshop in a look of its own, and a technology card shows the
+      // viewer faction's look.
       expect(technologySubjectV7("DRILL", faction), faction).toBe(
-        technologySubjectV7("DRILL", "ORIGINAL"),
+        faction === "ORIGINAL"
+          ? "IMPROVEMENT:WORKSHOP"
+          : `IMPROVEMENT:${faction}:WORKSHOP`,
       );
       expect(technologySubjectV7("ENGINEERING", faction), faction).toBe(
         "TERRAIN:MINED_MOUNTAIN",

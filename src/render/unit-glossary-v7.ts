@@ -154,7 +154,7 @@ const ENTRIES = {
   ],
   AT_SEA: [
     "At sea",
-    "A land unit crossing water. It cannot fight until it lands on a shore.",
+    "A transport carries a land unit across water. The unit cannot fight until it lands on a shore.",
   ],
 
   // ------------------------------------------------------- generic traits

@@ -45,6 +45,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/unit-turn-state-v7.ts::unitTurnStatesV7": "BOARD",
     "src/render/feedback-plan-v7.ts::feedbackPlanV7": "BOARD",
     "src/render/feedback-plan-v7.ts::promotionReadyUnitIdsV7": "BOARD",
+    // Bead pulp_wars-2yc.39 (classified by pulp_wars-2yc.40): the
+    // first-steps coach reads the view's units for the unit a marker stands
+    // over and for the units that still have a Move the engine offers. A
+    // burrowed unit is not drawn and is offered no Move or Capture, so the
+    // coach has nothing to point at underground.
+    "src/render/first-steps-v7.ts::chooseFirstStepV7": "BOARD",
     // Bead pulp_wars-2yc.10 (classified by pulp_wars-2yp): the boundary
     // sounds read the views' units only to ask whether a promoted unit is
     // the viewer's (`UNIT_PROMOTED`, the level-up sound). A unit is promoted

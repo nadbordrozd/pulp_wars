@@ -675,7 +675,7 @@ async function captureMountedUiEvidence(
       const dockArt = dock?.querySelector('[data-asset-id="unit-shared-embarked-transport"]');
       const dialog = document.querySelector('[data-v7-region="unit-help"][aria-modal="true"]');
       const helpArt = dialog?.querySelector('[data-asset-id="unit-shared-embarked-transport"]');
-      const passenger = dialog?.querySelector('.v7-transport-passenger');
+      const passenger = dialog?.querySelector('.v7-unit-ability[data-glossary="AT_SEA"] span');
       if (!(dock instanceof HTMLElement) || !(dialog instanceof HTMLElement))
         throw new Error('transport dock missing');
       if (unit?.form !== 'EMBARKED' || unit.role !== 'FIGHTER')
@@ -684,7 +684,7 @@ async function captureMountedUiEvidence(
         throw new Error('transport compact identity missing');
       if (!(dockArt instanceof HTMLImageElement) || !(helpArt instanceof HTMLImageElement) || !dockArt.complete || dockArt.naturalWidth <= 0 || !helpArt.complete || helpArt.naturalWidth <= 0)
         throw new Error('accepted transport art missing');
-      if (passenger?.textContent !== 'Carrying troops. Pick a highlighted shore tile to land.')
+      if (passenger?.textContent !== 'A transport carries a land unit across water. The unit cannot fight until it lands on a shore.')
         throw new Error('transport passenger help missing');
       return {
         text: dock.textContent,

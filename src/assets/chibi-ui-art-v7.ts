@@ -209,7 +209,8 @@ export const ICE_FOLK_NAVAL_TECH_SUBJECTS_V7: Readonly<
  * `EXPLOSIVES`) their own technology icons (bead pulp_wars-7g3.6), and so
  * do the Dwarf Dig In and Blasting Charges (bead pulp_wars-78i.6). Since the
  * Industry reshuffle (7r56) no card shows a faction's defender: the root
- * shows the Workshop for every faction.
+ * shows the Workshop for every faction, in the viewer faction's own look of
+ * it (bead pulp_wars-2yc.38).
  */
 export function technologySubjectV7(
   tech: TechnologyIdV7,

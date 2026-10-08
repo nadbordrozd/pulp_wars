@@ -2423,9 +2423,7 @@
   gap: 0.1rem;
 }
 
-.v7-unit-ability span,
-.v7-transport-passenger,
-.v7-transport-move {
+.v7-unit-ability span {
   color: var(--pw-text-2);
 }
 

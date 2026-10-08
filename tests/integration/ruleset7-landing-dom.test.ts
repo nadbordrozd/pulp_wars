@@ -84,6 +84,42 @@ describe("Ruleset 7 revision-16 landing preview in the DOM app", () => {
     app.destroy();
   });
 
+  it("explains in the embarked unit's '?' that a transport carries it", () => {
+    // Bead pulp_wars-2yc.40: since the unit glossary (bead pulp_wars-2yc.39)
+    // the one line of an embarked unit's "?" is the "At sea" entry, and it
+    // still says that a transport carries the unit and that it must land.
+    const fixture = embarkedLandingV7();
+    const port = new FixturePort(fixture.state);
+    const host = new CapturingBoardHost();
+    const app = new Ruleset7DomAppView(document, requiredRoot(), port, {
+      boardHost: host,
+      settingsStorage: null,
+    });
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: fixture.unitId });
+    const help = document.querySelector('[data-action="unit-help"]');
+    if (!(help instanceof HTMLButtonElement))
+      throw new Error("unit help button missing");
+    help.click();
+    const lines = Array.from(
+      document.querySelectorAll(
+        '[data-v7-region="unit-help"][aria-modal="true"] .v7-unit-ability',
+      ),
+      (line) => [
+        (line as HTMLElement).dataset.glossary,
+        line.querySelector("strong")?.textContent,
+        line.querySelector("span")?.textContent,
+      ],
+    );
+    expect(lines).toEqual([
+      [
+        "AT_SEA",
+        "At sea",
+        "A transport carries a land unit across water. The unit cannot fight until it lands on a shore.",
+      ],
+    ]);
+    app.destroy();
+  });
+
   it("does not send DISEMBARK when the Move is interrupted before its water cell", async () => {
     const fixture = embarkedLandingV7();
     // A hidden embarked hostile on the first water cell stops the Move at

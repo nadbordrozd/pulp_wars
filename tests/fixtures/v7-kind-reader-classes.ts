@@ -276,8 +276,23 @@ export const KIND_READER_CLASSES_V7: Readonly<
     "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#dock": "KIND",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#commandButtons": "SEAT",
-  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#help": "SEAT",
+  // Bead pulp_wars-2yc.39: Help is the same for every faction and reads
+  // none (`#help` has no class any more).
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#recruitHelp": "SEAT",
+  // Bead pulp_wars-2yc.39 (classified by pulp_wars-2yc.40): the unit
+  // glossary reads the registration of the faction its caller passes, for a
+  // role. The unit "?" dialog passes the unit's kind
+  // (`presentedUnitFactionV7`, which goes through `unitFactionV7`), so a
+  // mind-controlled unit is explained as what it is; the recruit "?" dialog
+  // passes the seat's own faction, and the Gallery a column's.
+  "src/render/unit-glossary-v7.ts::abilityGlossaryIdV7": "KIND_RESOLVED",
+  "src/render/unit-glossary-v7.ts::roleTraitGlossaryIdsV7": "KIND_RESOLVED",
+  "src/render/unit-glossary-v7.ts::roleGlossaryV7": "KIND_RESOLVED",
+  // Bead pulp_wars-2yc.39 (classified by pulp_wars-2yc.40): the first-steps
+  // coach names a technology the viewer can research in the viewer's own
+  // faction's words ("Research Gathering to harvest your fruit"); research
+  // is seat-level and no unit's kind is read.
+  "src/render/first-steps-v7.ts::chooseFirstStepV7": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#leaderboard": "SEAT",
   // The Goblin pass: the Scouts reward names the seat's own Raider-role
   // unit (a Goblin city's Wolf Rider).
