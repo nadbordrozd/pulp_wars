@@ -5,8 +5,16 @@ import { chibiDirectionArtAssetsV7 } from "../../src/assets/chibi-direction-art-
 import { CHIBI_FOREST_ART_SET_V7 } from "../../src/assets/chibi-forest-pieces-manifest";
 import { CHIBI_MOUNTAIN_ART_SET_V7 } from "../../src/assets/chibi-mountain-ranges-manifest";
 import { FACTION_IDS_V7 } from "../../src/engine/index";
+import {
+  COAST_E,
+  COAST_N,
+  COAST_S,
+  COAST_W,
+  coastLayerPixelsV7,
+} from "../../src/render/canvas/coast-sand-v7";
 import { titleSceneScaleV7 } from "../../src/render/dom/title-scene-view-v7";
 import {
+  CITY_CLEARING_V7,
   titleSceneRasterUrlsV7,
   titleSceneSubjectsV7,
   titleSceneV7,
@@ -66,7 +74,7 @@ describe("title scene", () => {
           expect(item.cx).toBeLessThanOrEqual(scene.width - 20);
           expect(item.cy).toBeLessThan(scene.height);
         }
-      // Ground comes first, so everything stands on it.
+      // Ground (and its shoreline) comes first, so everything stands on it.
       const firstPiece = scene.items.findIndex(
         (item) => item.kind === "RASTER",
       );
@@ -75,10 +83,187 @@ describe("title scene", () => {
           .slice(0, firstPiece)
           .every(
             (item) =>
-              item.kind === "SUBJECT" && item.subject.startsWith("TERRAIN:"),
+              item.kind === "COAST" ||
+              (item.kind === "SUBJECT" && item.subject.startsWith("TERRAIN:")),
           ),
       ).toBe(true);
+      expect(
+        scene.items.slice(firstPiece).every((item) => item.kind !== "COAST"),
+      ).toBe(true);
       expect(scene.clouds.length).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  /** Sizes the scene is drawn at: desktop, tablet and phone, with a menu. */
+  const sizes = [
+    { width: 480, height: 333, clearLeft: 163 },
+    { width: 640, height: 400, clearLeft: 205 },
+    { width: 640, height: 360 },
+    { width: 640, height: 360, clearLeft: 220 },
+    { width: 900, height: 420 },
+    { width: 256, height: 341 },
+    { width: 390, height: 844 },
+    { width: 320, height: 720 },
+    { width: 844, height: 390, clearLeft: 360 },
+    { width: 512, height: 300, clearLeft: 310 },
+  ];
+
+  it("stands the city on open ground, the woods right up to it on both sides", () => {
+    for (const size of sizes) {
+      const scene = titleSceneV7(size);
+      const city = scene.items.find(
+        (item) => item.kind === "SUBJECT" && item.subject === "CITY:3",
+      );
+      if (city?.kind !== "SUBJECT") throw new Error("no city");
+      const woods = scene.items.flatMap((item) =>
+        item.kind === "RASTER" && item.url.includes("forest") ? [item] : [],
+      );
+      // No forest piece overlaps the city's cell and walls.
+      for (const piece of woods)
+        expect(
+          piece.x + piece.width <= city.cx - CITY_CLEARING_V7 ||
+            piece.x >= city.cx + CITY_CLEARING_V7,
+          `${JSON.stringify(size)} ${piece.x}`,
+        ).toBe(true);
+      expect(CITY_CLEARING_V7).toBeGreaterThanOrEqual(52);
+      // The woods come right up to the clearing on the west, and on the
+      // east wherever a piece fits before the shore.
+      expect(
+        woods.some(
+          (piece) => piece.x + piece.width === city.cx - CITY_CLEARING_V7,
+        ),
+        JSON.stringify(size),
+      ).toBe(true);
+      const shore = Math.min(
+        ...scene.items.flatMap((item) =>
+          item.kind === "SUBJECT" && item.subject.endsWith("_WATER")
+            ? [item.cx - 40]
+            : [],
+        ),
+      );
+      if (shore - (city.cx + CITY_CLEARING_V7) >= 59)
+        expect(
+          woods.some((piece) => piece.x === city.cx + CITY_CLEARING_V7),
+          JSON.stringify(size),
+        ).toBe(true);
+      // ...and fill the land up to the shore, but for a strip too narrow
+      // for even a clump of trees.
+      const eastEnd = Math.max(
+        city.cx + CITY_CLEARING_V7,
+        ...woods
+          .filter((piece) => piece.x > city.cx)
+          .map((piece) => piece.x + piece.width - 6),
+      );
+      const narrowest = Math.min(
+        ...CHIBI_FOREST_ART_SET_V7.clumps.map((clump) => clump.width),
+      );
+      expect(shore - eastEnd, JSON.stringify(size)).toBeLessThan(narrowest + 6);
+      // Grass round the city: no Farm or other building beside it.
+      expect(
+        scene.items.some(
+          (item) =>
+            item.kind === "SUBJECT" && item.subject.startsWith("IMPROVEMENT:"),
+        ),
+      ).toBe(false);
+      // The city is drawn before the ranks stand in front.
+      const firstUnit = scene.items.findIndex(
+        (item) => item.kind === "SUBJECT" && item.unit !== undefined,
+      );
+      expect(scene.items.indexOf(city)).toBeLessThan(firstUnit);
+    }
+    // The woods band still spans the land of a wide scene.
+    const wide = titleSceneV7({ width: 900, height: 420 });
+    const covered = wide.items
+      .flatMap((item) =>
+        item.kind === "RASTER" && item.url.includes("forest")
+          ? [item.width - 6]
+          : [],
+      )
+      .reduce((sum, width) => sum + width, 0);
+    expect(covered).toBeGreaterThanOrEqual(900 - 160 - 120 - 80);
+  });
+
+  it("draws the board's shoreline round the bay: sand on the land, surf on the water", () => {
+    for (const size of sizes) {
+      const scene = titleSceneV7(size);
+      const ground = scene.items.flatMap((item) =>
+        item.kind === "SUBJECT" && item.subject.startsWith("TERRAIN:")
+          ? [item]
+          : [],
+      );
+      const shore = Math.min(
+        ...ground.flatMap((item) =>
+          item.subject === "TERRAIN:GRASS" ? [] : [item.cx - 40],
+        ),
+      );
+      const top = Math.min(
+        ...ground.flatMap((item) =>
+          item.subject === "TERRAIN:GRASS" ? [] : [item.cy - 40],
+        ),
+      );
+      // The sea's columns are whole: the shore is a whole column (or two)
+      // from the east edge, so the ship rides clear of it.
+      expect([80, 160]).toContain(scene.width - shore);
+      const ship = scene.items.find(
+        (item) => item.kind === "SUBJECT" && item.unit?.afloat === true,
+      );
+      if (ship?.kind !== "SUBJECT") throw new Error("no ship");
+      expect(ship.cx - 30).toBeGreaterThanOrEqual(shore + 6);
+      expect(ship.cx + 40).toBeLessThanOrEqual(scene.width);
+      const coast = scene.items.flatMap((item) =>
+        item.kind === "COAST" ? [item] : [],
+      );
+      // Land west of the shore has sand on its east side; the first sea
+      // column has the waterline on its west side; land over the bay has
+      // sand at its foot and the bay's top row its waterline above.
+      const at = (x: number, y: number) =>
+        coast.find((item) => item.x === x && item.y === y);
+      const below = (item: (typeof coast)[number]) => item.y + 80 > top;
+      expect(
+        coast.some(
+          (item) =>
+            item.layer === "SAND" &&
+            item.x === shore - 80 &&
+            (item.neighbours & COAST_E) !== 0 &&
+            below(item),
+        ),
+      ).toBe(true);
+      expect(
+        coast.some(
+          (item) =>
+            item.layer === "SURF" &&
+            item.x === shore &&
+            (item.neighbours & COAST_W) !== 0,
+        ),
+      ).toBe(true);
+      const surfTop = at(shore, top);
+      expect(surfTop?.layer).toBe("SURF");
+      expect((surfTop?.neighbours ?? 0) & COAST_N).toBe(COAST_N);
+      expect(
+        coast.some(
+          (item) =>
+            item.layer === "SAND" &&
+            item.x === shore &&
+            item.y < top &&
+            (item.neighbours & COAST_S) !== 0,
+        ),
+      ).toBe(true);
+      // Only cells at the coast carry a layer, and each is a real one.
+      for (const item of coast) {
+        expect(item.x).toBeGreaterThanOrEqual(shore - 80);
+        expect(item.y).toBeGreaterThanOrEqual(top - 80);
+        expect(item.rows).toBeGreaterThanOrEqual(24);
+        expect(item.rows).toBeLessThanOrEqual(80);
+        expect(
+          coastLayerPixelsV7(item.layer, item.neighbours, item.phase).some(
+            (value) => value > 0,
+          ),
+        ).toBe(true);
+      }
+      // No tree stands in the water: the woods end at the shore.
+      for (const item of scene.items)
+        if (item.kind === "RASTER" && item.url.includes("forest"))
+          expect(item.x + item.width).toBeLessThanOrEqual(shore);
     }
   });
 
@@ -170,6 +355,7 @@ describe("title scene", () => {
       [
         ...CHIBI_MOUNTAIN_ART_SET_V7.pieces,
         ...CHIBI_FOREST_ART_SET_V7.pieces,
+        ...CHIBI_FOREST_ART_SET_V7.clumps,
       ].map((piece) => piece.url),
     );
     const scene = titleSceneV7({ width: 900, height: 420 });

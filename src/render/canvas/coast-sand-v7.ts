@@ -59,6 +59,11 @@ export function coastSandEnabledV7(search?: string): boolean {
 const CELL = 80;
 /** The band's width wave repeats every this many cells. */
 export const COAST_PHASES_V7 = 3;
+/**
+ * Nothing of a coast layer lies farther than this from the cell's edge
+ * (px): a layer's middle is empty, so the title scene can leave it out.
+ */
+export const COAST_LAYER_REACH_V7 = 12;
 
 /** Neighbour bits of a coast layer. */
 export const COAST_N = 1;
@@ -149,7 +154,7 @@ export function coastLayerPixelsV7(
         distance = Math.min(distance, Math.hypot(px, CELL - py));
       if ((neighbours & COAST_NW) !== 0)
         distance = Math.min(distance, Math.hypot(px, py));
-      if (distance > 12) continue;
+      if (distance > COAST_LAYER_REACH_V7) continue;
       const wx = originX + px;
       const wy = originY + py;
       if (kind === "SAND") {

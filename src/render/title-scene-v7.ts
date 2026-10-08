@@ -6,6 +6,11 @@ import {
 } from "../assets/chibi-art-v7";
 import { CHIBI_FOREST_ART_SET_V7 } from "../assets/chibi-forest-pieces-manifest";
 import { CHIBI_MOUNTAIN_ART_SET_V7 } from "../assets/chibi-mountain-ranges-manifest";
+import {
+  coastCellsV7,
+  type CoastEntryV7,
+  type CoastLayerKindV7,
+} from "./canvas/coast-sand-v7";
 
 /**
  * The title scene (bead pulp_wars-2yc.4): a small diorama behind the logo,
@@ -25,6 +30,14 @@ import { CHIBI_MOUNTAIN_ART_SET_V7 } from "../assets/chibi-mountain-ranges-manif
  * The main menu stands over the scene (bead pulp_wars-2yc.18): `clearLeft`
  * is the width at the west edge its buttons cover, and the ranks and the
  * city keep east of it, on the land that is left.
+ *
+ * Bead pulp_wars-eu3r.6: the city stands on open ground (no tree overlaps
+ * its cell; the woods come right up to it on both sides), and the bay has
+ * the board's shoreline: the sand and surf of
+ * src/render/canvas/coast-sand-v7.ts, cut from the same distance field
+ * over the scene's grid of ground cells. The grid is flush with the east
+ * edge, so the sea's columns are whole and the ship rides clear of the
+ * shore; the woods stop at the coast, so no tree stands in the water.
  */
 export type TitleSceneItemV7 =
   /** A registered raster, its owning cell's centre at (`cx`, `cy`). */
@@ -47,6 +60,22 @@ export type TitleSceneItemV7 =
       readonly y: number;
       readonly width: number;
       readonly height: number;
+    }
+  /**
+   * The board's shoreline over a ground cell (coast-sand-v7): sand on land,
+   * the waterline and surf on water. The cell's top-left is (`x`, `y`);
+   * only its top `rows` show (a nearer row covers the rest), so the view
+   * draws the layer's far band at the bottom of that strip and leaves out
+   * its middle, which is empty but for the bands at the sides.
+   */
+  | {
+      readonly kind: "COAST";
+      readonly layer: CoastLayerKindV7;
+      readonly neighbours: number;
+      readonly phase: number;
+      readonly x: number;
+      readonly y: number;
+      readonly rows: number;
     };
 
 export interface TitleSceneCloudV7 {
@@ -71,6 +100,12 @@ export interface TitleSceneV7 {
 
 const CELL = 80;
 const HALF = CELL / 2;
+/**
+ * Half the width of the open ground round the city: no forest piece
+ * overlaps its cell, and a strip of grass shows beside its walls (which
+ * reach 45 px either side of its centre).
+ */
+export const CITY_CLEARING_V7 = 56;
 
 const clamp = (value: number, low: number, high: number): number =>
   Math.min(high, Math.max(low, value));
@@ -105,7 +140,9 @@ export function titleSceneV7(size: {
     number,
   ];
   const columns = Math.ceil(width / CELL);
-  const offset = Math.round((columns * CELL - width) / 2);
+  // The grid is flush with the east edge, so the sea's columns are whole
+  // and the ship rides in water at any width; the edge cuts the west one.
+  const offset = columns * CELL - width;
   const columnCentre = (column: number): number =>
     column * CELL - offset + HALF;
   const wanted = Math.max(0, Math.floor(size.clearLeft ?? 0));
@@ -121,27 +158,48 @@ export function titleSceneV7(size: {
   const rankWidth = landWidth - west;
 
   const items: TitleSceneItemV7[] = [];
-  const ground = (subject: ArtSubjectV7, column: number, cy: number): void => {
-    items.push({
-      kind: "SUBJECT",
-      subject,
-      at: { x: column, y: Math.round(cy / step) },
-      cx: columnCentre(column),
-      cy,
-    });
-  };
   // Ground, far to near; one more row under the front rank fills the edge.
-  for (const [index, cy] of [...rows, front + step, front + 2 * step].entries())
+  const groundRows = [...rows, front + step, front + 2 * step];
+  const groundSubject = (column: number, row: number): ArtSubjectV7 =>
+    column >= firstSea && row >= 2
+      ? column === firstSea
+        ? "TERRAIN:SHALLOW_WATER"
+        : "TERRAIN:DEEP_WATER"
+      : "TERRAIN:GRASS";
+  // The shoreline of that grid, as the board cuts it (row index as y).
+  const coast = coastCellsV7(
+    groundRows.flatMap((_, row) =>
+      Array.from({ length: columns }, (_, column): CoastEntryV7 => ({
+        kind: "TERRAIN",
+        at: { x: column, y: row },
+        artSubject: groundSubject(column, row),
+      })),
+    ),
+  );
+  for (const [row, cy] of groundRows.entries()) {
     for (let column = 0; column < columns; column += 1)
-      ground(
-        column >= firstSea && index >= 2
-          ? column === firstSea
-            ? "TERRAIN:SHALLOW_WATER"
-            : "TERRAIN:DEEP_WATER"
-          : "TERRAIN:GRASS",
-        column,
+      items.push({
+        kind: "SUBJECT",
+        subject: groundSubject(column, row),
+        at: { x: column, y: Math.round(cy / step) },
+        cx: columnCentre(column),
         cy,
-      );
+      });
+    // Over the row's ground, under the next row (which covers its foot).
+    for (let column = 0; column < columns; column += 1) {
+      const cell = coast.get(`${column},${row}`);
+      if (cell === undefined) continue;
+      items.push({
+        kind: "COAST",
+        layer: cell.layer,
+        neighbours: cell.neighbours,
+        phase: cell.phase,
+        x: columnCentre(column) - HALF,
+        y: cy - HALF,
+        rows: row < groundRows.length - 1 ? Math.min(step, CELL) : CELL,
+      });
+    }
+  }
 
   // The range on the horizon: tall massif pieces side by side.
   const tall = CHIBI_MOUNTAIN_ART_SET_V7.pieces.filter((piece) => piece.tall);
@@ -160,13 +218,12 @@ export function titleSceneV7(size: {
     x += piece.width;
   }
 
-  // Woods at both ends of the second row, the city between them.
+  // Woods along the second row, the city in a clearing between them.
   const woods = CHIBI_FOREST_ART_SET_V7.pieces.filter(
     (piece) => piece.height <= 110,
   );
-  const wood = (x: number, index: number): number => {
-    const piece = woods[index % Math.max(1, woods.length)];
-    if (piece === undefined) return 0;
+  const narrowest = Math.min(...woods.map((piece) => piece.width));
+  const placeWood = (x: number, piece: (typeof woods)[number]): void => {
     items.push({
       kind: "RASTER",
       url: piece.url,
@@ -175,7 +232,54 @@ export function titleSceneV7(size: {
       width: piece.width,
       height: piece.height,
     });
-    return piece.width;
+  };
+  /**
+   * The piece next in turn, or the narrowest where it does not fit in
+   * `room` (none when not even that fits).
+   */
+  const pick = (order: readonly number[], index: number, room: number) => {
+    const next = woods[order[index % order.length] ?? 0];
+    if (next !== undefined && next.width <= room) return next;
+    return narrowest <= room
+      ? woods.find((each) => each.width === narrowest)
+      : undefined;
+  };
+  /** Woods westwards from `to`, until past the canvas's west edge. */
+  const woodsWestOf = (to: number, order: readonly number[]): void => {
+    for (let end = to, index = 0; end > -offset && index < 16; index += 1) {
+      const piece = pick(order, index, Infinity);
+      if (piece === undefined) break;
+      placeWood(end - piece.width, piece);
+      end -= piece.width - 6;
+    }
+  };
+  /** Woods eastwards from `from` to `to`, each piece whole inside. */
+  const woodsEastOf = (
+    from: number,
+    to: number,
+    order: readonly number[],
+  ): void => {
+    let x = from;
+    for (let index = 0; index < 16; index += 1) {
+      const piece = pick(order, index, to - x);
+      if (piece === undefined) break;
+      placeWood(x, piece);
+      x += piece.width - 6;
+    }
+    // Room left before the shore for no piece: one clump (a single group
+    // of the same trees, its foot on the pieces' tree line).
+    const clump = [...CHIBI_FOREST_ART_SET_V7.clumps]
+      .sort((one, other) => other.width - one.width)
+      .find((each) => each.width <= to - x);
+    if (clump !== undefined)
+      items.push({
+        kind: "RASTER",
+        url: clump.url,
+        x,
+        y: forestRow + HALF - 3 - clump.height,
+        width: clump.width,
+        height: clump.height,
+      });
   };
   // Two ranks: the flagships behind, the Fighters in front.
   // Beside the menu a short rank may be one flagship and two Fighters.
@@ -192,25 +296,19 @@ export function titleSceneV7(size: {
   const gap = Math.floor((flagships.length - 2) / 2);
   const cityX = Math.round(
     flagships.length < 2
-      ? west + rankWidth * 0.22
+      ? // Its walls east of the menu, however short the strip.
+        west + Math.max(rankWidth * 0.22, 32)
       : west +
           FLAGSHIP_MARGIN +
           ((rankWidth - 2 * FLAGSHIP_MARGIN) * (gap + 0.5)) /
             (flagships.length - 1),
   );
-  const woodWidth = Math.max(0, cityX - 56);
-  for (
-    let x = -offset - 8, index = 0;
-    x + 60 < woodWidth && index < 6 + Math.ceil(west / 60);
-    index += 1
-  )
-    x += wood(x, woods.length - 1 - index) - 6;
-  for (
-    let x = cityX + 56, index = 0;
-    x + 40 < width && index < 6 && woods.length > 0;
-    index += 1
-  )
-    x += wood(x, index + 1) - 6;
+  // The city stands on open ground: no tree overlaps its cell; the woods
+  // come right up to it on both sides, and stop at the coast, whose sand
+  // and surf they would stand in.
+  const turns = woods.map((_, index) => index);
+  woodsWestOf(cityX - CITY_CLEARING_V7, [...turns].reverse());
+  woodsEastOf(cityX + CITY_CLEARING_V7, landWidth, [...turns.slice(1), 0]);
   items.push({
     kind: "SUBJECT",
     subject: "CITY:3",
@@ -251,9 +349,9 @@ export function titleSceneV7(size: {
     kind: "SUBJECT",
     subject: navalArtSubjectV7("ORIGINAL", "UNIT", "BATTLESHIP"),
     at: { x: 0, y: 0 },
-    // Whole on a narrow canvas, whose last column is cut by the edge.
+    // Clear of the shore, its bowsprit inside the east edge.
     cx: Math.min(
-      columnCentre(firstSea) + (seaColumns > 1 ? HALF : 6),
+      columnCentre(firstSea) + (seaColumns > 1 ? HALF : 0),
       width - 42,
     ),
     cy: backRow + Math.round(step / 2) - 8,
@@ -282,6 +380,7 @@ export function titleSceneRasterUrlsV7(): string[] {
   return [
     ...CHIBI_MOUNTAIN_ART_SET_V7.pieces,
     ...CHIBI_FOREST_ART_SET_V7.pieces,
+    ...CHIBI_FOREST_ART_SET_V7.clumps,
   ].map((piece) => piece.url);
 }
 

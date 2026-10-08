@@ -72,8 +72,10 @@ and Candy, each with a Port on the coast.
 
 ## Known limits
 
-- **The title scene** draws its own coast (a column of sea beside the
-  diorama) with its own code and does not use this module.
+- **The title scene** (`pulp_wars-eu3r.6`) draws this shoreline round its
+  bay, from the same layers. Its rows overlap (each shows only its top
+  strip), so a cell's far band is drawn at the foot of the strip that
+  shows and the layer's empty middle is left out.
 - **The Gallery's terrain tab and the tile dock** show tiles one at a time
   and have no coast.
 - **Sand has one colour** on every ground. On Snow it is drawn over the

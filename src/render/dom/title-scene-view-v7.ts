@@ -4,6 +4,12 @@ import {
   type ChibiBoardArtV7,
   type ChibiRasterEnvironmentV7,
 } from "../canvas/chibi-art-resolver-v7";
+import {
+  COAST_LAYER_REACH_V7,
+  coastSandEnabledV7,
+  createCoastSandArtV7,
+  type CoastSandArtV7,
+} from "../canvas/coast-sand-v7";
 import { factionColourV7 } from "../canvas/faction-colours-v7";
 import {
   GALLERY_TILE_BOX_V7,
@@ -20,6 +26,8 @@ import { titleSceneV7, type TitleSceneV7 } from "../title-scene-v7";
  * art pixel. With full motion the clouds drift and the units bob by one
  * art pixel, at ten frames a second; with reduced motion it is a still
  * picture and no frame is requested. It makes no sound and takes no input.
+ * The coast's sand and surf are the board's (bead pulp_wars-eu3r.6), drawn
+ * by code and switched off with the board's (`?coast-sand=0`).
  */
 export type TitleSceneStateV7 = "EMPTY" | "LOADING" | "READY";
 
@@ -58,6 +66,7 @@ export class TitleSceneViewV7 {
   readonly #canvas: HTMLCanvasElement;
   readonly #environment: ChibiRasterEnvironmentV7;
   readonly #art: ChibiBoardArtV7;
+  readonly #coastArt: CoastSandArtV7 | null;
   readonly #rasters = new Map<
     string,
     { ready: boolean; image: CanvasImageSource | null }
@@ -96,6 +105,9 @@ export class TitleSceneViewV7 {
     this.#art = createGalleryArtV7(options.environment, () =>
       this.#queueRedraw(),
     );
+    this.#coastArt = coastSandEnabledV7()
+      ? createCoastSandArtV7(options.environment)
+      : null;
     const Observer = documentRoot.defaultView?.ResizeObserver;
     if (Observer !== undefined) {
       this.#observer = new Observer(() => this.#queueRedraw());
@@ -206,26 +218,30 @@ export class TitleSceneViewV7 {
         menu > 0 && menu <= cssWidth * MENU_CLEAR_LIMIT ? menu / scale : 0,
     });
     // Resolve everything first: a context is asked for only with something
-    // to draw (a DOM without canvas support draws nothing).
+    // to draw (a DOM without canvas support draws nothing). The coast is
+    // drawn by code: it never waits and does not count as art.
     const resolved = scene.items.map((item) =>
-      item.kind === "RASTER"
-        ? this.#raster(item.url)
-        : resolveChibiWithFallbackV7(this.#art, {
-            subject: item.subject,
-            at: item.at,
-            ownerColor:
-              item.faction === undefined
-                ? undefined
-                : factionColourV7(item.faction),
-            deviceScale,
-          }).resolution,
+      item.kind === "COAST"
+        ? null
+        : item.kind === "RASTER"
+          ? this.#raster(item.url)
+          : resolveChibiWithFallbackV7(this.#art, {
+              subject: item.subject,
+              at: item.at,
+              ownerColor:
+                item.faction === undefined
+                  ? undefined
+                  : factionColourV7(item.faction),
+              deviceScale,
+            }).resolution,
     );
     const ready = resolved.filter(
       (entry) =>
         entry !== null && (!("kind" in entry) || entry.kind === "READY"),
     ).length;
+    const art = scene.items.filter((item) => item.kind !== "COAST").length;
     const state: TitleSceneStateV7 =
-      ready === 0 ? "EMPTY" : ready < resolved.length ? "LOADING" : "READY";
+      ready === 0 ? "EMPTY" : ready < art ? "LOADING" : "READY";
     this.root.dataset.state = state.toLowerCase();
     if (ready === 0) return;
     let context: CanvasRenderingContext2D | null | undefined;
@@ -246,6 +262,10 @@ export class TitleSceneViewV7 {
     context.imageSmoothingEnabled = !Number.isInteger(deviceScale);
     this.#clouds(context, scene, seconds);
     scene.items.forEach((item, index) => {
+      if (item.kind === "COAST") {
+        this.#coast(context, item);
+        return;
+      }
       const entry = resolved[index];
       if (entry === null || entry === undefined) return;
       if (item.kind === "RASTER") {
@@ -293,6 +313,42 @@ export class TitleSceneViewV7 {
         entry.asset.height,
       );
     });
+  }
+
+  /**
+   * A cell's shoreline layer, as the board draws it; where the nearer row
+   * covers the cell's foot, its far band is drawn at the foot of the strip
+   * that shows and the empty middle is left out.
+   */
+  #coast(
+    context: CanvasRenderingContext2D,
+    item: Extract<TitleSceneV7["items"][number], { kind: "COAST" }>,
+  ): void {
+    const image = this.#coastArt?.layer(
+      item.layer,
+      item.neighbours,
+      item.phase,
+    );
+    if (image === null || image === undefined) return;
+    const cell = 80;
+    const band = Math.min(COAST_LAYER_REACH_V7, Math.floor(item.rows / 2));
+    if (item.rows >= cell) {
+      context.drawImage(image, item.x, item.y, cell, cell);
+      return;
+    }
+    const top = item.rows - band;
+    context.drawImage(image, 0, 0, cell, top, item.x, item.y, cell, top);
+    context.drawImage(
+      image,
+      0,
+      cell - band,
+      cell,
+      band,
+      item.x,
+      item.y + top,
+      cell,
+      band,
+    );
   }
 
   /** Soft clouds, drawn in code; they wrap round the canvas. */

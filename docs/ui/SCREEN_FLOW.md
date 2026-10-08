@@ -1802,7 +1802,10 @@ the screens it opens (new game, campaign, Settings, save recovery). Ruleset
 - **Title scene.** A diorama drawn on a canvas from the game's art by the
   board's own art chain, behind every front screen: a sky with drifting
   clouds, the mountain range (the massif pieces), woods (the composed
-  Forest pieces), a Human city, Grass, a coast with a Battleship, and two
+  Forest pieces), a Human city on open ground (no tree overlaps its cell;
+  the woods come up to a strip of grass on either side), Grass, a bay
+  with the board's sand line and surf and a Battleship riding clear of the
+  shore (the sea's columns are whole; no tree stands in the water), and two
   ranks of units, the flagship (Juggernaut) and the Fighter of the factions,
   read from the faction list. It re-flows with its size instead of scaling:
   a wide scene shows more factions in both ranks and two columns of sea, a
