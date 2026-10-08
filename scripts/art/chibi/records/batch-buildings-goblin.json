@@ -336,6 +336,173 @@
         "reviewedAt": "2026-10-07T23:07:00.405Z"
       }
     },
+    "market-a": {
+      "id": "market-a",
+      "asset": "chibi-goblin-market",
+      "jobId": "0f635b5f-6fa7-43c6-8763-3ef328a9261d",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-goblin",
+        "asset": "chibi-goblin-market",
+        "subject": "IMPROVEMENT:GOBLIN:MARKET",
+        "faction": "GOBLIN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 24102,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: a goblin scrap bazaar: two rickety open market stalls side by side, each a crooked plank counter under a patched sand-buff hide awning with one hazard yellow patch on crooked poles, no walls, no house; the counters heaped with junk for sale: loose cogs, dented tin pots, a coil of wire, a crate of brown mushrooms; an old barrel and a lumpy sack in front; wide and low. Light grey tin, grey-tan wood, sand-buff hide, hazard yellow; dark brown outline. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a goblin scrap bazaar: two rickety open market stalls side by side, each a crooked plank counter under a patched sand-buff hide awning with one hazard yellow patch on crooked poles, no walls, no house; the counters heaped with junk for sale: loose cogs, dented tin pots, a coil of wire, a crate of brown mushrooms; an old barrel and a lumpy sack in front; wide and low. Light grey tin, grey-tan wood, sand-buff hide, hazard yellow; dark brown outline. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a goblin scrap bazaar: two rickety open market stalls side by side, each a crooked plank counter under a patched sand-buff hide awning with one hazard yellow patch on crooked poles, no walls, no house; the counters heaped with junk for sale: loose cogs, dented tin pots, a coil of wire, a crate of brown mushrooms; an old barrel and a lumpy sack in front; wide and low. Light grey tin, grey-tan wood, sand-buff hide, hazard yellow; dark brown outline. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:34:30.338Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-goblin/market-a.png",
+      "rawSheetSha256": "6c270c3fd47a9ded668cf8b0d57b2d8bc6e0e0cf3b75113bc38fab5ee06b8144",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0.1913,
+          "footprintWidthShare": 0.7903,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.306,
+          "footprintWidthShare": 0.5968,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.3136,
+          "footprintWidthShare": 0.5323,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.1886,
+          "footprintWidthShare": 0.6452,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6129,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.2909,
+          "footprintWidthShare": 0.5968,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.4316,
+          "footprintWidthShare": 0.629,
+          "suspect": true
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.4397,
+          "footprintWidthShare": 0.8065,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.2345,
+          "footprintWidthShare": 0.6613,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.5238,
+          "footprintWidthShare": 0.5161,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6452,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.4286,
+          "footprintWidthShare": 0.5902,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.1847,
+          "footprintWidthShare": 0.6129,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.3046,
+          "footprintWidthShare": 0.7097,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3271,
+          "footprintWidthShare": 0.6613,
+          "suspect": true
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.5381,
+          "footprintWidthShare": 0.4194,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:37:33.063Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: two rickety open stalls of grey-tan planks under patched sand-buff hide awnings with one hazard yellow patch, the counters holding a loose cog and dented tin pots, an old barrel and a lumpy sack in front; no pixel of the owner key red. 11 is close but crowded; 12 spills loose pebbles; 13 has a mushroom crate and no barrel; 14 has tent-shaped roofs; 5 a whole yellow awning; the rest show bare counters. The plate hint on 6, 7, 13 and 14 is their dark shade under the counters, not a plate.",
+        "reviewedAt": "2026-10-08T13:37:56.754Z"
+      }
+    },
     "port-a": {
       "id": "port-a",
       "asset": "chibi-goblin-port",
@@ -1254,6 +1421,47 @@
       },
       "notes": "Candidate 4 of 16: a crooked half-dead scrub tree with a few olive-yellow leaves, three sawn stumps with a cleaver axe in the front one, and a patched sand-buff lean-to with a tin sheet and a hazard yellow patch: scrap and stumps, the Goblin scrub cut down. 8 and 14 are the same plan with a paler patch; 12 adds a log but has no yellow; 0 has no lean-to; 1 no third stump; 2, 3, 5 to 7, 9 to 11, 13 and 15 have neat log stacks and no axe, which read as the Human camp.",
       "acceptedAt": "2026-10-07T23:07:00.405Z"
+    },
+    "chibi-goblin-market": {
+      "id": "chibi-goblin-market",
+      "subject": "IMPROVEMENT:GOBLIN:MARKET",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "market-a",
+      "candidate": 0,
+      "candidateSha256": "c07c2cdaded63d70271ac1c6f4bd5a8d90a9f09e2b9b24f42a7d03aaa03e96b8",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-goblin-market.png",
+        "sha256": "9944f50629c437379f4a3a7b8917e02ba1739ffe02102fe22caddf10fc1dbd8f",
+        "pixelSha256": "ca814ca6d09f26edc49df420b3a196aea816188bbfe476a1fcfa94dada6643d1",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: two rickety open stalls of grey-tan planks under patched sand-buff hide awnings with one hazard yellow patch, the counters holding a loose cog and dented tin pots, an old barrel and a lumpy sack in front; no pixel of the owner key red. 11 is close but crowded; 12 spills loose pebbles; 13 has a mushroom crate and no barrel; 14 has tent-shaped roofs; 5 a whole yellow awning; the rest show bare counters. The plate hint on 6, 7, 13 and 14 is their dark shade under the counters, not a plate.",
+      "acceptedAt": "2026-10-08T13:37:56.754Z"
     },
     "chibi-goblin-port": {
       "id": "chibi-goblin-port",

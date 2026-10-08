@@ -642,3 +642,9 @@ Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, sectio
 - **Shipyard** (`chibi-martian-shipyard`, `shipyard-b` candidate 14): a chrome boat hull on gunmetal cradles, a chrome crane with a magenta light, a tall chrome dome hangar with a magenta band.
 
 Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-workshop-a-port-and-a-shipyard-per-faction-bead-pulp_wars-2yc38-stage-2). Names unchanged; drawn by the owner of the territory; the shared four in the Classic look and the LEGACY art set.
+
+## Market (bead `pulp_wars-eu3r.1`)
+
+- **Market** (`chibi-martian-market`, `market-b` candidate 2): two chrome kiosks under curved chrome canopies with hot magenta trim, jars of glowing magenta orbs, gunmetal boxes and a chrome crate. `market-a` was cut off while polling and stays recorded as submitted.
+
+Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-faction-bead-pulp_wars-eu3r1). Name unchanged; drawn by the owner of the territory; the shared Market in the Classic look and the LEGACY art set.

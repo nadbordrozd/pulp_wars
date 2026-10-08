@@ -603,12 +603,10 @@ describe("Ruleset 7 Gallery", () => {
       cell("CITY_2", "MARTIAN").querySelector("canvas")?.dataset.subject,
     ).toBe("CITY:MARTIAN:2");
     // A shared improvement is one cell across every faction.
-    const market = rows[11]?.querySelectorAll<HTMLElement>(".v7-gallery-cell");
-    expect(market).toHaveLength(1);
-    expect(market?.[0]?.getAttribute("aria-label")).toBe(
-      "Market, every faction",
-    );
-    expect(market?.[0]?.closest("td")?.getAttribute("colspan")).toBe("8");
+    const mine = rows[6]?.querySelectorAll<HTMLElement>(".v7-gallery-cell");
+    expect(mine).toHaveLength(1);
+    expect(mine?.[0]?.getAttribute("aria-label")).toBe("Mine, every faction");
+    expect(mine?.[0]?.closest("td")?.getAttribute("colspan")).toBe("8");
     // Faction building looks (bead pulp_wars-xdh.2): the Farm, Windmill and
     // Sawmill rows have one cell per faction, named as that faction has it.
     const cellNames = (row: number) =>
@@ -651,8 +649,9 @@ describe("Ruleset 7 Gallery", () => {
     expect(
       cell("SAWMILL", "ICE_FOLK").querySelector("canvas")?.dataset.subject,
     ).toBe("IMPROVEMENT:ICE_FOLK:SAWMILL");
-    // Stage 2: the Forge, Workshop, Port and Shipyard rows too.
-    for (const row of [9, 10, 20, 21])
+    // Stage 2: the Forge, Workshop, Port and Shipyard rows too, and the
+    // Market row (pulp_wars-eu3r.1).
+    for (const row of [9, 10, 11, 20, 21])
       expect(rows[row]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(8);
     expect(cellNames(9)).toEqual(Array.from({ length: 8 }, () => "Forge"));
     expect(
@@ -661,7 +660,14 @@ describe("Ruleset 7 Gallery", () => {
     expect(
       cell("PORT", "ORIGINAL").querySelector("canvas")?.dataset.subject,
     ).toBe("IMPROVEMENT:PORT");
-    for (const row of [6, 11, 12, 13, 14])
+    expect(cellNames(11)).toEqual(Array.from({ length: 8 }, () => "Market"));
+    expect(
+      cell("MARKET", "CANDY").querySelector("canvas")?.dataset.subject,
+    ).toBe("IMPROVEMENT:CANDY:MARKET");
+    expect(
+      cell("MARKET", "ORIGINAL").querySelector("canvas")?.dataset.subject,
+    ).toBe("IMPROVEMENT:MARKET");
+    for (const row of [6, 12, 13, 14])
       expect(rows[row]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(1);
     const graveyard = cell("FARM", "UNDEAD");
     expect(graveyard.getAttribute("aria-label")).toBe("Graveyard, Undead");

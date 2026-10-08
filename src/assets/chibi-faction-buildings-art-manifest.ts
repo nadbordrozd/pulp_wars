@@ -27,7 +27,8 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * the shared Forest.
  *
  * Stage 2 of bead pulp_wars-2yc.38 adds a Forge, a Workshop, a Port and a
- * Shipyard per faction the same way (twenty-eight masters).
+ * Shipyard per faction the same way (twenty-eight masters), and bead
+ * pulp_wars-eu3r.1 a Market (seven more).
  *
  * The Lumber Camps and Sawmills (bead pulp_wars-2yc.38; the user,
  * 2026-10-07: "lumber camps should be different per faction - depending on
@@ -42,12 +43,19 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * draw the shared buildings and ground as before.
  */
 /**
- * Every faction's Lumber Camp, Sawmill, Forge, Workshop, Port and Shipyard
- * (stage 2 of the bead added the last four). The Dinosaur Sawmill is the
- * Chopping Block above.
+ * Every faction's Lumber Camp, Sawmill, Forge, Workshop, Port, Shipyard
+ * and Market (stage 2 of the bead added the Forge to the Shipyard, bead
+ * pulp_wars-eu3r.1 the Market). The Dinosaur Sawmill is the Chopping Block
+ * above.
  */
 type SharedCanvasImprovement =
-  "LUMBER_CAMP" | "SAWMILL" | "FORGE" | "WORKSHOP" | "PORT" | "SHIPYARD";
+  | "LUMBER_CAMP"
+  | "SAWMILL"
+  | "FORGE"
+  | "WORKSHOP"
+  | "PORT"
+  | "SHIPYARD"
+  | "MARKET";
 
 const SHARED_CANVAS_IMPROVEMENTS: readonly SharedCanvasImprovement[] = [
   "LUMBER_CAMP",
@@ -56,6 +64,7 @@ const SHARED_CANVAS_IMPROVEMENTS: readonly SharedCanvasImprovement[] = [
   "WORKSHOP",
   "PORT",
   "SHIPYARD",
+  "MARKET",
 ];
 
 const FOREST_BUILDINGS: readonly (readonly [

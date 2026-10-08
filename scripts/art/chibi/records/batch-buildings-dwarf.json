@@ -503,6 +503,173 @@
         "reviewedAt": "2026-10-08T00:21:34.630Z"
       }
     },
+    "market-a": {
+      "id": "market-a",
+      "asset": "chibi-dwarf-market",
+      "jobId": "0179f2da-514a-4157-907c-767e02853bc8",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-dwarf",
+        "asset": "chibi-dwarf-market",
+        "subject": "IMPROVEMENT:DWARF:MARKET",
+        "faction": "DWARF",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 24106,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DWARF.json",
+            "text": "Subject: a dwarf market: two open market stalls side by side, each a warm grey stone block counter under a muted copper canopy on dark iron posts, no walls, no house; the counters heaped with goods: a stack of shining brass ingots, loose brass cogs, a small brass scale, a round wheel of cheese; an iron-banded ale keg and a sack in front; wide and low. Grey stone, muted copper, brass, dark iron, timber; dark outline, never black. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a dwarf market: two open market stalls side by side, each a warm grey stone block counter under a muted copper canopy on dark iron posts, no walls, no house; the counters heaped with goods: a stack of shining brass ingots, loose brass cogs, a small brass scale, a round wheel of cheese; an iron-banded ale keg and a sack in front; wide and low. Grey stone, muted copper, brass, dark iron, timber; dark outline, never black. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a dwarf market: two open market stalls side by side, each a warm grey stone block counter under a muted copper canopy on dark iron posts, no walls, no house; the counters heaped with goods: a stack of shining brass ingots, loose brass cogs, a small brass scale, a round wheel of cheese; an iron-banded ale keg and a sack in front; wide and low. Grey stone, muted copper, brass, dark iron, timber; dark outline, never black. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:44:38.721Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dwarf/market-a.png",
+      "rawSheetSha256": "ff9afb19d86aa383e85ef74136eb75c9bfe2788065f704aeed630edf62de3b3c",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.2849,
+          "footprintWidthShare": 0.7903,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.5612,
+          "footprintWidthShare": 0.8871,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0815,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1746,
+          "footprintWidthShare": 0.6613,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3711,
+          "footprintWidthShare": 0.871,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4305,
+          "footprintWidthShare": 0.8871,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3059,
+          "footprintWidthShare": 0.7742,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4176,
+          "footprintWidthShare": 0.6452,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4409,
+          "footprintWidthShare": 0.5246,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4137,
+          "footprintWidthShare": 0.8689,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0742,
+          "footprintWidthShare": 0.623,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3524,
+          "footprintWidthShare": 0.9032,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3374,
+          "footprintWidthShare": 0.6393,
+          "suspect": true
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.593,
+          "footprintWidthShare": 0.9839,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2456,
+          "footprintWidthShare": 0.8852,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3099,
+          "footprintWidthShare": 0.6429,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-08T13:46:57.365Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 7,
+        "notes": "Candidate 7 of 16: two open stalls of warm grey stone blocks under muted copper canopies banded with dark iron on dark iron posts, one counter stacked with brass ingots, the other with brass cogs, two sacks and an iron-banded ale keg in front; no pixel of the owner key red. The iron bands and the cogs carry the faction; 0, 4 and 8 have ingots and cheese under plain copper roofs that read as the Human terracotta; 10 an iron roof frame and fewer goods; 6 stone pillars like a house; 13 no roof; 14 shields on the roofs; 5 and 9 brown goods. The plate hints are the stone counters' bottom rows, not a plate.",
+        "reviewedAt": "2026-10-08T13:47:19.053Z"
+      }
+    },
     "mushroom-flux-b": {
       "id": "mushroom-flux-b",
       "asset": "chibi-dwarf-mushroom-farm",
@@ -1808,6 +1975,47 @@
       },
       "notes": "Candidate 0 of 16, the one attempt at a lighter camp, taken: the same plan as lumber-camp-a (two pines, a mossy boulder, logs in an iron band, an iron axe in a stump, a copper lantern) with the pines a mid green that sits with the softened pines of the Dwarf forest, where lumber-camp-a's were near-black. The sixteen are one plan; 0 has the banded logs and the clearest boulder. 9 and 11 to 15 have three pines and hide the boulder; 1 to 8 and 10 differ by a few pixels.",
       "acceptedAt": "2026-10-08T00:21:34.630Z"
+    },
+    "chibi-dwarf-market": {
+      "id": "chibi-dwarf-market",
+      "subject": "IMPROVEMENT:DWARF:MARKET",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "market-a",
+      "candidate": 7,
+      "candidateSha256": "cac8036fcd8f7de5344ef635cb7bd5734511ec71fae3c001a0b3c3267ed7df87",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dwarf-market.png",
+        "sha256": "ab579f3e729bbf55954b71fc2a2e649c0eb6fb821445f100311a46e4ff4cec50",
+        "pixelSha256": "affeb21e8531eec81ed92edb4635be23068901eebbb5c4458563aebb186f2124",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 7 of 16: two open stalls of warm grey stone blocks under muted copper canopies banded with dark iron on dark iron posts, one counter stacked with brass ingots, the other with brass cogs, two sacks and an iron-banded ale keg in front; no pixel of the owner key red. The iron bands and the cogs carry the faction; 0, 4 and 8 have ingots and cheese under plain copper roofs that read as the Human terracotta; 10 an iron roof frame and fewer goods; 6 stone pillars like a house; 13 no roof; 14 shields on the roofs; 5 and 9 brown goods. The plate hints are the stone counters' bottom rows, not a plate.",
+      "acceptedAt": "2026-10-08T13:47:19.053Z"
     },
     "chibi-dwarf-mushroom-farm": {
       "id": "chibi-dwarf-mushroom-farm",

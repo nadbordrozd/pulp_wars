@@ -464,6 +464,8 @@ export type MartianArtRoleV7 = UndeadArtRoleV7;
  * generated per faction") adds those four the same way, names unchanged. The
  * Ice Folk, who have no ships, have a Port and a Shipyard like every seat
  * (docs/product/RULESET_7_CURRENT.md, section 21.16); theirs show no boat.
+ * Bead pulp_wars-eu3r.1 adds the Market the same way: two open stalls
+ * heaped with goods in the faction's materials, name unchanged.
  */
 const FOREST_AND_TRADE_LOOKS: readonly ImprovementIdV7[] = [
   "LUMBER_CAMP",
@@ -472,6 +474,7 @@ const FOREST_AND_TRADE_LOOKS: readonly ImprovementIdV7[] = [
   "WORKSHOP",
   "PORT",
   "SHIPYARD",
+  "MARKET",
 ];
 
 export const FACTION_IMPROVEMENT_LOOKS_V7: Readonly<

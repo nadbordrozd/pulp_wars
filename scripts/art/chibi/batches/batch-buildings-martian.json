@@ -94,6 +94,17 @@
         "height": 72
       },
       "ownerColour": false
+    },
+    {
+      "id": "chibi-martian-market",
+      "subject": "IMPROVEMENT:MARTIAN:MARKET",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
     }
   ],
   "recipes": [
@@ -257,6 +268,28 @@
         "height": 72
       },
       "notes": "shipyard-a came back as a sheet of sixteen labelled parts with captions. The subject now asks for one single building group whose three things touch and fill the image, in silver-white chrome, and for no captions."
+    },
+    {
+      "id": "market-a",
+      "asset": "chibi-martian-market",
+      "endpoint": "generate-image-v2",
+      "seed": 24104,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.1 (the user, 2026-10-08: faction Markets in the polish batch). First sample of the MARTIAN Market: class calm-feature at the 72 x 72 canvas of the shared building, two open stalls heaped with goods in the faction's materials, like the shared Market."
+    },
+    {
+      "id": "market-b",
+      "asset": "chibi-martian-market",
+      "endpoint": "generate-image-v2",
+      "seed": 24114,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "market-a was submitted (job 90b7a90b-da62-4a6b-8f4e-c8d44cd81b9d) but its polling was cut off by a network failure, so it stays recorded as submitted with its receipt; the pipeline has no resume. The same plan again under a new recipe id and seed."
     }
   ]
 }

@@ -326,3 +326,9 @@ Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, sectio
 One attempt at a lighter Sawmill (`sawmill-b`) was not taken: its bone blade lost its teeth.
 
 Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-workshop-a-port-and-a-shipyard-per-faction-bead-pulp_wars-2yc38-stage-2). Names unchanged; drawn by the owner of the territory; the shared four in the Classic look and the LEGACY art set.
+
+## Market (bead `pulp_wars-eu3r.1`)
+
+- **Market** (`chibi-undead-market`, `market-b` candidate 10): two pale slate stalls under ragged ivory and pale violet striped awnings, violet glowing jars, pale bones, a crate of herbs, an ashen barrel and a violet lantern. `market-a` (one near-black stall) was rejected as too dark on the ashen ground.
+
+Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-faction-bead-pulp_wars-eu3r1). Name unchanged; drawn by the owner of the territory; the shared Market in the Classic look and the LEGACY art set.

@@ -14,8 +14,8 @@ Mushroom Farm were redrawn, and the shared Sawmill was redone. Rule 3's
 "seamless `crop-rows` field" and the row looks of sections 3, 5 and 6 are
 history. **Section 12 supersedes the "same" of the Lumber Camp and the
 Sawmill** (bead `pulp_wars-2yc.38`): every faction but the Humans draws its
-own pair, **and section 13 the "same" of the Forge, the Workshop, the Port
-and the Shipyard**.
+own pair, **section 13 the "same" of the Forge, the Workshop, the Port
+and the Shipyard, and section 14 the "same" of the Market**.
 
 The user's request (2026-10-03): some, not all, building sprites and
 descriptions become faction specific. When the Undead take a city, the
@@ -898,3 +898,92 @@ the right, each with a strip of Shallow Water for its Port and Shipyard.
   terracotta; the grey stone, the steam and the brass carry the faction.
 - **The Martian pieces are near-white chrome** and the palest buildings on
   the board; on the Martian ground they stand out more than the calm set.
+
+## 14. A Market per faction (bead `pulp_wars-eu3r.1`)
+
+The user's polish batch (2026-10-08): faction Markets. Purely visual: no
+rule, number, command, save, name or identity changed. This supersedes the
+"same" of the Market row of section 3. The Humans keep the shared Market.
+
+**What each must say, in every faction.** Like the shared Market: open
+stalls with no walls and no house, under an awning or a canopy, heaped
+with goods, wide and low, so it never reads as a small city
+([buildings class](classes/buildings.md): "Market cannot look like a
+generic city").
+
+### The art
+
+All `calm-feature` (`generate-image-v2`, 16 candidates a call), on the
+72 x 72 canvas and the anchor of the shared Market, seated 3 px above the
+bottom edge, no owner colour, no mask. Each is a recipe `market-<x>` of the
+faction's `buildings-<faction>` batch (a batch has one faction layer and
+one faction's subject texts, so the seven do not share one batch), with
+its subject line `IMPROVEMENT:<FACTION>:MARKET` in
+`scripts/art/chibi/subjects/<FACTION>.json`.
+
+| Asset (subject)                                         | Shows                                                                                                                                                   | Recipe, candidate | Sprite  |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | ------- |
+| `chibi-undead-market` (`IMPROVEMENT:UNDEAD:MARKET`)     | two pale slate stalls under ragged ivory and pale violet striped awnings, violet glowing jars, pale bones, a crate of herbs, a barrel, a violet lantern | `market-b`, 10    | 60 x 61 |
+| `chibi-goblin-market` (`IMPROVEMENT:GOBLIN:MARKET`)     | two rickety plank stalls under patched sand-buff hide awnings with a hazard yellow patch, a cog and tin pots, a barrel and a sack                       | `market-a`, 0     | 62 x 55 |
+| `chibi-dinosaur-market` (`IMPROVEMENT:DINOSAUR:MARKET`) | one long log stall under a roof of spotted hide on four big tusks, yellow and orange fruit and stone tools, a bundle of spears, a woven basket          | `market-a`, 9     | 60 x 59 |
+| `chibi-martian-market` (`IMPROVEMENT:MARTIAN:MARKET`)   | two chrome kiosks under curved chrome canopies with hot magenta trim and ribs, jars of glowing magenta orbs, gunmetal boxes, a chrome crate             | `market-b`, 2     | 60 x 59 |
+| `chibi-ice-folk-market` (`IMPROVEMENT:ICE_FOLK:MARKET`) | two pale timber stalls under snow-heaped cream hide awnings, rows of silver fish, blocks of ice-blue ice, a small sled of sacks                         | `market-a`, 2     | 62 x 62 |
+| `chibi-dwarf-market` (`IMPROVEMENT:DWARF:MARKET`)       | two grey stone stalls under copper canopies banded with dark iron, brass ingots and brass cogs, sacks and an iron-banded ale keg                        | `market-a`, 7     | 62 x 62 |
+| `chibi-candy-market` (`IMPROVEMENT:CANDY:MARKET`)       | two gingerbread stalls under cream and pale peach striped awnings on candy-cane posts, lollipops, pink-frosted cupcakes, a gumdrop jar, a barrel        | `market-a`, 0     | 62 x 62 |
+
+- **First sample of three**: the Undead, Martian and Candy Markets,
+  reviewed at 1:1 and enlarged on their ground before the other four.
+- **PixelLab calls: 9**, all `generate-image-v2`, $0.125 each ($1.125):
+  one per Market and two more.
+- **Redone.** `market-a` of the Undead drew one stall of near-black timber
+  under charcoal stripes in all sixteen candidates: a dark mass on the
+  ashen ground, its goods lost (rejected). `market-b` asks for two touching
+  stalls of pale slate-blue stone (`#8b92a3`) under ivory and pale violet
+  stripes, as the stage-2 Undead buildings did. `market-a` of the Martians
+  was submitted, but the network failed while it was being polled; it stays
+  recorded as submitted with its receipt (the pipeline has no resume), and
+  `market-b` is the same plan under a new id and seed.
+- **No red.** None of the seven has a pixel of the owner key red. The
+  Candy subject gives the peach (`#f0b99a`) and the pink (`#f6c9d2`) by hex;
+  twelve of its sixteen candidates still had 8 to 23 key pixels in the post
+  stripes or the frosting, and the chosen one has none.
+- **Size.** The shared Market is 47 x 60 in the same canvas; the faction
+  Markets are 60 to 62 px wide, like the other faction buildings. They stay
+  inside the cell and are seated like the shared one.
+
+### In the game
+
+- `FACTION_IMPROVEMENT_LOOKS_V7` lists `MARKET` for every faction but the
+  Humans. The look follows the owner of the territory (the board and the
+  tile dock), as in sections 12 and 13; a captured city's Markets change
+  look with it.
+- **Build button and technology card.** The Market build button and the
+  Commerce card show the viewer's own Market.
+- **Name** unchanged ("Market"), with no flavour line.
+- **Fallbacks.** The Classic look and the LEGACY art set draw the shared
+  Market.
+- **Gallery.** The Market row of the Buildings tab has one cell per
+  faction; the Mine and the Monuments stay one shared cell.
+
+### Evidence
+
+The scenes `trade-<faction>` of
+[`forest-building-scenes.ts`](../../scripts/art/faction-buildings/forest-building-scenes.ts)
+have a Market on Grass in both territories (the shared one on the left,
+the faction's on the right), and their 3x zoom is taller so it shows the
+Market's row.
+
+### Weak spots
+
+- **The Dinosaur Market is one stall**, a long counter under one hide
+  roof on tusks: the two-stall candidates read as plain wooden stalls, and
+  the tusks are what says Dinosaur.
+- **The Dwarf Market's copper canopies** are close to the Human terracotta,
+  as in section 13; the iron bands, the brass ingots and the cogs carry
+  the faction.
+- **The Goblin Market's sand-buff hide** is close to the olive Goblin
+  ground; the dark outline and the yellow patch carry it.
+- **The Ice Folk Market is the palest** piece on a snowy tile; its dark
+  blue-slate outline keeps it apart.
+- **No candidate drew the Martian crate hovering**; it stands on the
+  ground.

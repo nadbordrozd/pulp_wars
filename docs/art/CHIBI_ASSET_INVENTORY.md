@@ -810,3 +810,14 @@ and two touch-up recipes (the Dwarf Lumber Camp redone, an Undead Sawmill
 attempt not taken): 33 PixelLab calls. The Human four
 (`chibi-direction-forge`, `-workshop`, `-port`, `-shipyard`) are unchanged
 and are the fallback of every faction subject.
+
+### The Market (bead `pulp_wars-eu3r.1`)
+
+| Subjects                                                                                     | Assets                   | Class and canvas                                                               |
+| -------------------------------------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------ |
+| `IMPROVEMENT:<FACTION>:MARKET` for Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, Candy | `chibi-<faction>-market` | `BUILDING`, 72 x 72, seated 3 px, no owner colour (the shared Market's canvas) |
+
+7 building masters from 9 recipes of the batches `buildings-<faction>` (an
+Undead redo, and a Martian job whose polling was cut off): 9 PixelLab calls.
+The Human `chibi-direction-market` is unchanged and is the fallback of every
+faction subject.

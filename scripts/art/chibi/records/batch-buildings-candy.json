@@ -336,6 +336,173 @@
         "reviewedAt": "2026-10-07T23:02:42.641Z"
       }
     },
+    "market-a": {
+      "id": "market-a",
+      "asset": "chibi-candy-market",
+      "jobId": "dd94cca2-832a-4a1f-8508-ec172d944ce0",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-candy",
+        "asset": "chibi-candy-market",
+        "subject": "IMPROVEMENT:CANDY:MARKET",
+        "faction": "CANDY",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 24107,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: a sweet shop market: two open market stalls side by side, each a gingerbread counter under an awning of wide cream and pale peach (#f0b99a) stripes on candy-cane posts, no walls, no house; the counters heaped with goods: swirl lollipops, cupcakes with pale pink (#f6c9d2) frosting, wrapped sweets, a jar of gumdrops; a caramel barrel in front; wide and low. Biscuit, cream, pale peach, pale pink, caramel, a little mint; nothing red or deep pink; rose-brown outline. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a sweet shop market: two open market stalls side by side, each a gingerbread counter under an awning of wide cream and pale peach (#f0b99a) stripes on candy-cane posts, no walls, no house; the counters heaped with goods: swirl lollipops, cupcakes with pale pink (#f6c9d2) frosting, wrapped sweets, a jar of gumdrops; a caramel barrel in front; wide and low. Biscuit, cream, pale peach, pale pink, caramel, a little mint; nothing red or deep pink; rose-brown outline. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a sweet shop market: two open market stalls side by side, each a gingerbread counter under an awning of wide cream and pale peach (#f0b99a) stripes on candy-cane posts, no walls, no house; the counters heaped with goods: swirl lollipops, cupcakes with pale pink (#f6c9d2) frosting, wrapped sweets, a jar of gumdrops; a caramel barrel in front; wide and low. Biscuit, cream, pale peach, pale pink, caramel, a little mint; nothing red or deep pink; rose-brown outline. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:25:58.630Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-candy/market-a.png",
+      "rawSheetSha256": "2c464561b43e5023c563df3bd6ff4e5ab721a213633b5993fdfe4b4b08cb744e",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0037,
+          "footprintWidthShare": 0.5806,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0305,
+          "footprintWidthShare": 0.8548,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0244,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7419,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0606,
+          "footprintWidthShare": 0.5806,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0643,
+          "footprintWidthShare": 0.5902,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1607,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.0036,
+          "footprintWidthShare": 0.8871,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4839,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.1262,
+          "footprintWidthShare": 0.9516,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.0346,
+          "footprintWidthShare": 0.9677,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0263,
+          "footprintWidthShare": 0.8387,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0431,
+          "footprintWidthShare": 0.6613,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0065,
+          "footprintWidthShare": 0.8387,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.012,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.3043,
+          "footprintWidthShare": 0.5645,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:28:55.191Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Candidate 0 of 16: two open gingerbread stalls under awnings of wide cream and pale peach stripes on candy-cane posts, the counters heaped with swirl lollipops, pink-frosted cupcakes and a jar of gumdrops, a caramel barrel in front; no pixel of the owner key red. 1, 6 and 8 also have none but their goods are a brown blur (1 has the jar beside the stalls); the other twelve have 8 to 23 key pixels in the post stripes or the frosting.",
+        "reviewedAt": "2026-10-08T13:34:35.634Z"
+      }
+    },
     "port-a": {
       "id": "port-a",
       "asset": "chibi-candy-port",
@@ -1254,6 +1421,47 @@
       },
       "notes": "Candidate 4 of 16: a pink-striped candy cane and two peach swirl lollipops standing behind a stack of cut striped candy logs with swirl ends, a caramel gumdrop stump with a little axe in it and a wafer lean-to; the grove's sweets, in its warm pastels, with the cane's stripes the clearest of the sheet. 5, 6, 7, 9, 14 have a cane with mint stripes or stripes too pale to read; 8, 10, 11 an axe lying loose; 1 and 3 no log stack; 0 and 2 no stump; 12, 13 and 15 no axe.",
       "acceptedAt": "2026-10-07T23:02:42.641Z"
+    },
+    "chibi-candy-market": {
+      "id": "chibi-candy-market",
+      "subject": "IMPROVEMENT:CANDY:MARKET",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "market-a",
+      "candidate": 0,
+      "candidateSha256": "eb3b5dd9247ade21fe5587b7411f602c696cfd033c53841262dc7548993d9e1e",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-candy-market.png",
+        "sha256": "c9c6da3db1f9c7e709ef3f1d81d47fd1e4eeab247bea6cf5ecfc9970deb243a0",
+        "pixelSha256": "d4c0bad2341b1549f5a52f50da4c5eaa633af803e6ab155e3e935712c36a7b8f",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 0 of 16: two open gingerbread stalls under awnings of wide cream and pale peach stripes on candy-cane posts, the counters heaped with swirl lollipops, pink-frosted cupcakes and a jar of gumdrops, a caramel barrel in front; no pixel of the owner key red. 1, 6 and 8 also have none but their goods are a brown blur (1 has the jar beside the stalls); the other twelve have 8 to 23 key pixels in the post stripes or the frosting.",
+      "acceptedAt": "2026-10-08T13:34:35.634Z"
     },
     "chibi-candy-port": {
       "id": "chibi-candy-port",

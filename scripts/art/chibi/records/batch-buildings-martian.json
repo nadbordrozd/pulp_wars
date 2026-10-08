@@ -575,6 +575,227 @@
         "reviewedAt": "2026-10-07T23:16:43.314Z"
       }
     },
+    "market-a": {
+      "id": "market-a",
+      "asset": "chibi-martian-market",
+      "jobId": "90b7a90b-da62-4a6b-8f4e-c8d44cd81b9d",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-martian",
+        "asset": "chibi-martian-market",
+        "subject": "IMPROVEMENT:MARTIAN:MARKET",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 24104,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/MARTIAN.json",
+            "text": "Subject: an alien trading post: two open market kiosks side by side, each a silver-white chrome counter under a curved chrome canopy with a hot magenta trim on thin gunmetal posts, no walls, no house; the counters heaped with goods: pale glass jars of glowing magenta orbs, small chrome canisters, a stack of gunmetal boxes; one hovering chrome crate in front; wide and low. Chrome, gunmetal, hot magenta, pale glass; no wood, no stone, no green, no red. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien trading post: two open market kiosks side by side, each a silver-white chrome counter under a curved chrome canopy with a hot magenta trim on thin gunmetal posts, no walls, no house; the counters heaped with goods: pale glass jars of glowing magenta orbs, small chrome canisters, a stack of gunmetal boxes; one hovering chrome crate in front; wide and low. Chrome, gunmetal, hot magenta, pale glass; no wood, no stone, no green, no red. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien trading post: two open market kiosks side by side, each a silver-white chrome counter under a curved chrome canopy with a hot magenta trim on thin gunmetal posts, no walls, no house; the counters heaped with goods: pale glass jars of glowing magenta orbs, small chrome canisters, a stack of gunmetal boxes; one hovering chrome crate in front; wide and low. Chrome, gunmetal, hot magenta, pale glass; no wood, no stone, no green, no red. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:22:46.913Z"
+    },
+    "market-b": {
+      "id": "market-b",
+      "asset": "chibi-martian-market",
+      "jobId": "23ccae06-294e-4150-bf14-7ce3db4dbe94",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-martian",
+        "asset": "chibi-martian-market",
+        "subject": "IMPROVEMENT:MARTIAN:MARKET",
+        "faction": "MARTIAN",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 24114,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/MARTIAN.json",
+            "text": "Subject: an alien trading post: two open market kiosks side by side, each a silver-white chrome counter under a curved chrome canopy with a hot magenta trim on thin gunmetal posts, no walls, no house; the counters heaped with goods: pale glass jars of glowing magenta orbs, small chrome canisters, a stack of gunmetal boxes; one hovering chrome crate in front; wide and low. Chrome, gunmetal, hot magenta, pale glass; no wood, no stone, no green, no red. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien trading post: two open market kiosks side by side, each a silver-white chrome counter under a curved chrome canopy with a hot magenta trim on thin gunmetal posts, no walls, no house; the counters heaped with goods: pale glass jars of glowing magenta orbs, small chrome canisters, a stack of gunmetal boxes; one hovering chrome crate in front; wide and low. Chrome, gunmetal, hot magenta, pale glass; no wood, no stone, no green, no red. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: an alien trading post: two open market kiosks side by side, each a silver-white chrome counter under a curved chrome canopy with a hot magenta trim on thin gunmetal posts, no walls, no house; the counters heaped with goods: pale glass jars of glowing magenta orbs, small chrome canisters, a stack of gunmetal boxes; one hovering chrome crate in front; wide and low. Chrome, gunmetal, hot magenta, pale glass; no wood, no stone, no green, no red. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-08T13:30:22.251Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-martian/market-b.png",
+      "rawSheetSha256": "583093f47b87191818ace168f459ac071cef9846c2a05e4aff7f9a34d8262851",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.65,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.65,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5833,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5932,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6207,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6102,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6207,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5254,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5254,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5345,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6034,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T13:32:14.006Z",
+      "usageUsd": 0.125,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 2,
+        "notes": "Candidate 2 of 16: two touching kiosks of silver-white chrome under curved chrome canopies with hot magenta trim and ribs on thin gunmetal posts, the counters heaped with pale glass jars of glowing magenta orbs and gunmetal boxes, a chrome crate in front; no pixel of the owner key red. 4 and 5 are close with fewer jars; 0, 1, 6, 8, 9, 12 and 13 have a magenta trim only; 3, 7, 10, 11, 14 and 15 are mauve, not chrome. No candidate drew the crate hovering.",
+        "reviewedAt": "2026-10-08T13:34:33.898Z"
+      }
+    },
     "port-a": {
       "id": "port-a",
       "asset": "chibi-martian-port",
@@ -1926,6 +2147,47 @@
       },
       "notes": "Candidate 0 of 16: a tall ochre fungal stalk with a teal cap and two smaller ones, a stack of cut ochre stalk logs, a cut stump, and a chrome harvester pod with a glass dome on three gunmetal legs, its magenta beam on the logs; the forest's ochre and teal, no red. 3 is close (the beam hides the pod's legs); 11, 12 and 14 have a long beam that leaves the group; 1, 2, 4, 6 to 10, 13 and 15 have no beam; 5 a short one under the pod.",
       "acceptedAt": "2026-10-07T23:16:43.314Z"
+    },
+    "chibi-martian-market": {
+      "id": "chibi-martian-market",
+      "subject": "IMPROVEMENT:MARTIAN:MARKET",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "market-b",
+      "candidate": 2,
+      "candidateSha256": "1c971301583901ae172f4e0e59013d47db0f63d59444cba282c2ca96a7af4c79",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-market.png",
+        "sha256": "588cf6961db8639d3715adbfcd4e5865760ce7243952c1b3209df0165252f5f9",
+        "pixelSha256": "7621825c98eb92c4134ba01ac3698cd27cc77935f56a25f469bc5452dcea5d83",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Candidate 2 of 16: two touching kiosks of silver-white chrome under curved chrome canopies with hot magenta trim and ribs on thin gunmetal posts, the counters heaped with pale glass jars of glowing magenta orbs and gunmetal boxes, a chrome crate in front; no pixel of the owner key red. 4 and 5 are close with fewer jars; 0, 1, 6, 8, 9, 12 and 13 have a magenta trim only; 3, 7, 10, 11, 14 and 15 are mauve, not chrome. No candidate drew the crate hovering.",
+      "acceptedAt": "2026-10-08T13:34:33.898Z"
     },
     "chibi-martian-port": {
       "id": "chibi-martian-port",

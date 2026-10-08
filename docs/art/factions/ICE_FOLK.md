@@ -591,3 +591,9 @@ Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, sectio
 The Ice Folk have no ships and never embark, but they build both docks (a Port keeps its population, Fish and sea trade, and upgrades to a Shipyard), so neither piece shows a boat.
 
 Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-workshop-a-port-and-a-shipyard-per-faction-bead-pulp_wars-2yc38-stage-2). Names unchanged; drawn by the owner of the territory; the shared four in the Classic look and the LEGACY art set.
+
+## Market (bead `pulp_wars-eu3r.1`)
+
+- **Market** (`chibi-ice-folk-market`, `market-a` candidate 2): two pale timber stalls under snow-heaped cream hide awnings, rows of silver fish and blocks of ice-blue ice, a small sled of sacks.
+
+Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-faction-bead-pulp_wars-eu3r1). Name unchanged; drawn by the owner of the territory; the shared Market in the Classic look and the LEGACY art set.

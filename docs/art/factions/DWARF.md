@@ -626,3 +626,9 @@ Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, sectio
 The Lumber Camp was lightened in the same stage (`lumber-camp-b`, candidate 0: pines of the forest's mid green).
 
 Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-workshop-a-port-and-a-shipyard-per-faction-bead-pulp_wars-2yc38-stage-2). Names unchanged; drawn by the owner of the territory; the shared four in the Classic look and the LEGACY art set.
+
+## Market (bead `pulp_wars-eu3r.1`)
+
+- **Market** (`chibi-dwarf-market`, `market-a` candidate 7): two grey stone stalls under copper canopies banded with dark iron, brass ingots and brass cogs, sacks and an iron-banded ale keg.
+
+Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-faction-bead-pulp_wars-eu3r1). Name unchanged; drawn by the owner of the territory; the shared Market in the Classic look and the LEGACY art set.

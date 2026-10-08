@@ -71,6 +71,17 @@
         "height": 72
       },
       "ownerColour": false
+    },
+    {
+      "id": "chibi-goblin-market",
+      "subject": "IMPROVEMENT:GOBLIN:MARKET",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
     }
   ],
   "recipes": [
@@ -150,6 +161,17 @@
         "height": 72
       },
       "notes": "shipyard-a drew brown wooden yards on a plate of sand. The subject no longer names sand, gives the hull as tin sheets with rivets and the shed a hazard yellow door, and says no beach."
+    },
+    {
+      "id": "market-a",
+      "asset": "chibi-goblin-market",
+      "endpoint": "generate-image-v2",
+      "seed": 24102,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.1 (the user, 2026-10-08: faction Markets in the polish batch). First sample of the GOBLIN Market: class calm-feature at the 72 x 72 canvas of the shared building, two open stalls heaped with goods in the faction's materials, like the shared Market."
     }
   ]
 }

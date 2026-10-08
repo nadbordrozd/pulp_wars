@@ -476,3 +476,9 @@ Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, sectio
 - **Shipyard** (`chibi-dinosaur-shipyard`, `shipyard-a` candidate 8): a big dugout canoe half carved from a log, on trestles with wood chips, a tripod hoist of poles and tusks, a hide lean-to.
 
 Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-workshop-a-port-and-a-shipyard-per-faction-bead-pulp_wars-2yc38-stage-2). Names unchanged; drawn by the owner of the territory; the shared four in the Classic look and the LEGACY art set.
+
+## Market (bead `pulp_wars-eu3r.1`)
+
+- **Market** (`chibi-dinosaur-market`, `market-a` candidate 9): one long log stall under a roof of spotted hide on four big tusks, heaped with yellow and orange fruit and stone tools, a bundle of spears and a woven basket.
+
+Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-faction-bead-pulp_wars-eu3r1). Name unchanged; drawn by the owner of the territory; the shared Market in the Classic look and the LEGACY art set.

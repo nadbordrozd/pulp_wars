@@ -95,6 +95,17 @@
         "height": 72
       },
       "ownerColour": false
+    },
+    {
+      "id": "chibi-dwarf-market",
+      "subject": "IMPROVEMENT:DWARF:MARKET",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
     }
   ],
   "recipes": [
@@ -271,6 +282,17 @@
         "height": 72
       },
       "notes": "Bead pulp_wars-2yc.38 stage 2, one attempt at a lighter Dwarf Lumber Camp: lumber-camp-a (candidate 1) has near-black pines beside the softened pines of the Dwarf forest. The subject now gives the pines the forest clump's mid green by hex."
+    },
+    {
+      "id": "market-a",
+      "asset": "chibi-dwarf-market",
+      "endpoint": "generate-image-v2",
+      "seed": 24106,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-eu3r.1 (the user, 2026-10-08: faction Markets in the polish batch). First sample of the DWARF Market: class calm-feature at the 72 x 72 canvas of the shared building, two open stalls heaped with goods in the faction's materials, like the shared Market."
     }
   ]
 }

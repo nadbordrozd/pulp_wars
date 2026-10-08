@@ -135,9 +135,9 @@ const lookOf = (entries: readonly BoardRenderPlanEntryV7[]) =>
   entries.map((entry) => [entry.artSubject, entry.label]);
 
 /**
- * Bead pulp_wars-2yc.38: the six buildings every faction but the Humans
- * draws in its own look and under the shared name (the Dinosaur Sawmill is
- * the one that was named before).
+ * Bead pulp_wars-2yc.38: the buildings every faction but the Humans draws in
+ * its own look and under the shared name (the Dinosaur Sawmill is the one
+ * that was named before); bead pulp_wars-eu3r.1 added the Market.
  */
 const SIX = [
   "LUMBER_CAMP",
@@ -146,6 +146,7 @@ const SIX = [
   "WORKSHOP",
   "PORT",
   "SHIPYARD",
+  "MARKET",
 ] as const;
 
 describe("faction building subjects and names", () => {
@@ -209,7 +210,9 @@ describe("faction building subjects and names", () => {
         .filter(
           (key) =>
             key === "DINOSAUR:SAWMILL" ||
-            !/:(?:LUMBER_CAMP|SAWMILL|FORGE|WORKSHOP|PORT|SHIPYARD)$/.test(key),
+            !/:(?:LUMBER_CAMP|SAWMILL|FORGE|WORKSHOP|PORT|SHIPYARD|MARKET)$/.test(
+              key,
+            ),
         )
         .sort(),
     );
@@ -220,6 +223,7 @@ describe("faction building subjects and names", () => {
         "WORKSHOP",
         "PORT",
         "SHIPYARD",
+        "MARKET",
       ] as const)
         expect(factionBuildingV7(kept, faction)).toBeNull();
       if (faction !== "DINOSAUR")
@@ -287,7 +291,11 @@ describe("faction building subjects and names", () => {
     expect(commandSubjectV7({ kind: "BUILD_FORGE", at }, "ORIGINAL")).toBe(
       "IMPROVEMENT:FORGE",
     );
+    // The Market follows the viewer's faction too (pulp_wars-eu3r.1).
     expect(commandSubjectV7({ kind: "BUILD_MARKET", at }, "UNDEAD")).toBe(
+      "IMPROVEMENT:UNDEAD:MARKET",
+    );
+    expect(commandSubjectV7({ kind: "BUILD_MARKET", at }, "ORIGINAL")).toBe(
       "IMPROVEMENT:MARKET",
     );
     expect(factionBuildCommandV7("BUILD_FARM", "UNDEAD")?.name).toBe(
@@ -312,7 +320,11 @@ describe("faction building subjects and names", () => {
       "IMPROVEMENT:WINDMILL",
     );
     expect(technologySubjectV7("FARMING", "ORIGINAL")).toBe("IMPROVEMENT:FARM");
+    // Commerce shows the viewer's own Market (pulp_wars-eu3r.1).
     expect(technologySubjectV7("COMMERCE", "UNDEAD")).toBe(
+      "IMPROVEMENT:UNDEAD:MARKET",
+    );
+    expect(technologySubjectV7("COMMERCE", "ORIGINAL")).toBe(
       "IMPROVEMENT:MARKET",
     );
   });

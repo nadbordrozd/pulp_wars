@@ -1596,6 +1596,13 @@ buildings: thirteen `calm-feature` assets at 72 x 72 in the batches
   plate); and "pink" stripes can be the owner key red (give the pink or
   peach by hex and say "never red").
 
+- **The Market** (bead `pulp_wars-eu3r.1`) followed in the same batches
+  (7 assets,
+  [section 14](FACTION_BUILDINGS.md#14-a-market-per-faction-bead-pulp_wars-eu3r1)).
+  A run of PixelLab commands needs `NODE_USE_ENV_PROXY=1` in a cloud
+  session, or Node's built-in `fetch` bypasses the egress proxy and is
+  refused with HTTP 403.
+
 ## The Candy batches (bead `pulp_wars-jdb.5`)
 
 Batches `direction-candy` and `naval-candy` hold the direction and the

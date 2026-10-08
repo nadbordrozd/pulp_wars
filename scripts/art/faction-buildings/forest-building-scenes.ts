@@ -112,14 +112,15 @@ export const sceneCandy = scene("CANDY");
 /**
  * Stage 2 of the bead: the border scene with a strip of Shallow Water down
  * the outer edge of each territory. `~` water, `P` a Port and `Y` a
- * Shipyard on water, `F` a Forge and `K` a Workshop on Grass, `T` Forest,
- * `U` a faction unit, `.` as the border scene has it.
+ * Shipyard on water, `F` a Forge, `K` a Workshop and `M` a Market on
+ * Grass (bead pulp_wars-eu3r.1 added the Market), `T` Forest, `U` a faction
+ * unit, `.` as the border scene has it.
  */
 const TRADE_OVERLAY = [
   "~....TT....~",
   "P..F....F..P",
   "~..K....K..~",
-  "Y..........Y",
+  "Y..M....M..Y",
   "~......U...~",
   "~....TT....~",
   "~..........~",
@@ -138,6 +139,7 @@ function traded(state: GameStateV7): GameStateV7 {
     Y: "SHIPYARD",
     F: "FORGE",
     K: "WORKSHOP",
+    M: "MARKET",
   };
   const tiles = state.board.tiles.map((tile) => {
     const mark = code(tile.at);
@@ -237,8 +239,11 @@ export const SWITCH_PARAMETER = "faction-forests";
 const CROP = [240, 200, 960, 590] as const;
 /** The faction's wood with its Lumber Camp and Sawmill, shown again at 3x. */
 const ZOOM = [880, 500, 320, 260] as const;
-/** The faction's Forge, Workshop, Port and Shipyard, shown again at 3x. */
-const TRADE_ZOOM = [820, 240, 380, 280] as const;
+/**
+ * The faction's Forge, Workshop, Market, Port and Shipyard, shown again at
+ * 3x (taller since bead pulp_wars-eu3r.1, for the Market's row).
+ */
+const TRADE_ZOOM = [820, 240, 380, 330] as const;
 const shot = (name: string, sceneName: string): LookSwitchShot => ({
   name,
   scene: sceneName,

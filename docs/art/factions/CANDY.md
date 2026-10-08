@@ -766,3 +766,9 @@ Records: [faction forests](../FACTION_FORESTS.md) and [faction buildings, sectio
 - **Shipyard** (`chibi-candy-shipyard`, `shipyard-a` candidate 0): a half-built hull of chocolate bar planks with wafer ribs, a pink-striped candy-cane crane, a gingerbread boathouse.
 
 Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-workshop-a-port-and-a-shipyard-per-faction-bead-pulp_wars-2yc38-stage-2). Names unchanged; drawn by the owner of the territory; the shared four in the Classic look and the LEGACY art set.
+
+## Market (bead `pulp_wars-eu3r.1`)
+
+- **Market** (`chibi-candy-market`, `market-a` candidate 0): two gingerbread stalls under cream and pale peach striped awnings on candy-cane posts, lollipops, pink-frosted cupcakes, a gumdrop jar and a caramel barrel; no pixel of the owner key red.
+
+Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-faction-bead-pulp_wars-eu3r1). Name unchanged; drawn by the owner of the territory; the shared Market in the Classic look and the LEGACY art set.
