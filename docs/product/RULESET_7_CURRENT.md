@@ -5656,6 +5656,28 @@ Harbours from it.
   a threatened city yields to a Bomb Chucker as a Human seat's does to a
   Marksman.
   [Normal AI, step two of the Goblin pass](../architecture/NORMAL_AI.md#step-two-of-the-goblin-pass-pulp_wars-w4923).
+- **Step two of the Dinosaur pass** (`pulp_wars-w49.26`, `7r58`, no rule
+  and no identity change). Eight things in the play of a Dinosaur seat that
+  plays the army rules. Its order of units is the Ankylosaurus, the Spitter,
+  the Raptor, the Triceratops, the Stegosaurus, the Shaman, the T-Rex (the
+  Triceratops was second). Like an Undead and a Martian seat it trains
+  before it researches while it fields fewer units that capture than its
+  cities and two more (an Egg counts as the unit inside; a Triceratops, a
+  Stegosaurus, and a T-Rex do not count), buys one growth technology before
+  Nesting's two while no enemy unit is within six tiles of one of its
+  cities, Nesting also with an enemy at its gates, and a technology that is
+  due before a capture that would raise its price. It keeps the price of a
+  due technology it can pay until it is bought (a threatened city laid an
+  Egg with those Coins first). A Caveman or a Raptor does not step beside an
+  enemy unit where it would die unless a dinosaur of its side stands beside
+  that enemy, another unit has it in range with its attack to make, or one
+  can still come into range this turn. It knows that a Triceratops charges
+  with its run-up after a Move it has yet to make, and that a unit a
+  Stegosaurus has shot is Cracked. And its combined kills count the Crack
+  of a Stegosaurus's shot and the Pack Hunt a dinosaur's blow gives its
+  Cavemen, and fall in that order: the Stegosaurus, the other dinosaurs,
+  the Cavemen
+  ([Normal AI](../architecture/NORMAL_AI.md#step-two-of-the-dinosaur-pass-pulp_wars-w4926)).
 - **Campaign** (`pulp_wars-9s0.1`): every land unit has one job and walks
   the land route to it: the nearest unclaimed village, an invader next to an
   own city, the unexplored frontier (two scouts and the group behind the
@@ -10823,6 +10845,7 @@ first guesses.
 | Tuning        | `pulp-wars-poc-7r56` | `pulp_wars-w49.23` [step two of the Goblin pass](RULESET_7_TUNING_GOBLIN.md#14-step-two) after three hand-played games as the Humans against the Goblin AI, two as the Goblins, and the lab, no rule and no identity change: a Goblin seat of the Normal AI plans its combined kills with Gang Up and moves its helpers beside the target before the first blow, sends no unit into contact alone to die, researches the Ogre third and the Orc Brute's technology once Knights or Raiders are in sight, and trains a Bomb Chucker in a threatened city while its army is short of them; both chests of the benchmark map (Dry Land 14, seed 11) lie beside the Goblin capital                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | Tuning        | `pulp-wars-poc-7r57` | `pulp_wars-w49.24` [step two of the Undead pass](RULESET_7_TUNING_UNDEAD.md#15-step-two) after two hand-played games as the Undead, three as the Humans against the Undead AI, the lab, and six diagnostic matches: a Zombie that rises (Infect or Bitten) has 12 of its 18 HP (10 before: 17 of 23 risings in two passes died within one enemy turn); an Undead seat of the Normal AI trains before it researches while it is short of units, takes the free Ghoul and the Militia, buys one growth technology before the Zombie's two, a due technology before a capture, trains Banshees, Liches, and a Necromancer in a war; a unit of any army seat stays on its Field Defense                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Tuning        | `pulp-wars-poc-7r58` | `pulp_wars-w49.25` [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two) after a hand-played game as the Humans against the Martian AI before the change and one after it, two as the Martians (against the Undead AI, replayed after the change, and against three AIs), the lab, and six diagnostic matches: City Walls hold a unit on its own city center against a Saucer's Tractor Beam (a Mothership's Heavy Tractor Beam pulls it; a free Saucer pulled the garrison of a walled, fortified capital into two shots every turn); a Martian seat of the Normal AI trains before it researches while it is short of units, takes the free Saucer, researches the Brain third, the Tripod before the Shock Trooper unless the enemy fights hand to hand, Heat Sinks after its second Ray Gunner and the Disintegrator against Walls, keeps one Shock Trooper for two Grunts, and no longer walks its Tripods out in front of its line for a shot at half power                                                                                                                                                                   |
+| Tuning        | `pulp-wars-poc-7r58` | `pulp_wars-w49.26` [step two of the Dinosaur pass](RULESET_7_TUNING_DINOSAUR.md#14-step-two) after a hand-played game as the Humans against the Dinosaur AI before the change and one after it, two as the Dinosaurs (against the Goblin AI and against three AIs), the lab, and six diagnostic matches, no rule and no identity change: a Dinosaur seat of the Normal AI researches the Spitter and the Raptor before the Triceratops, trains before it researches while it is short of units, keeps the price of a due technology it can pay, sends no Caveman or Raptor into contact alone to die, counts a Triceratops's run-up before its Move and the Crack of a Stegosaurus's shot, and strikes with the Stegosaurus first, then its dinosaurs, then its Cavemen                                                                                                                                                                                                                                                                                                                                                                               |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

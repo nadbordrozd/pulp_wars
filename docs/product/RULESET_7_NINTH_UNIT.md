@@ -505,7 +505,16 @@ set up the charge, or is a 7-Coin, 12-HP Egg-laid shooter never worth its
 turns? The faction had "nothing that attacks from three tiles" and now
 has: does that remove a weakness that mattered? Should the Triceratops
 take War Drums now that it is a line unit (decision 10)? Are the new
-purchase shares sensible?
+purchase shares sensible? **Played** (bead `pulp_wars-w49.26`, two hand
+games as the Dinosaurs, two as the Humans against them, and the lab; no
+rule changed): the answers are in
+[the Dinosaur pass, section 14](RULESET_7_TUNING_DINOSAUR.md#14-step-two).
+In short: the Triceratops is a unit of round 16 for a player and later for
+the AI, and dies the turn after its first kill because it must advance; a
+Stegosaurus's shot leaves its target Cracked and hunted, and a 2-Coin
+Caveman then kills a Champion or a Guard in the open; War Drums stay off
+the Triceratops (Attack 5 is what Wallbreaker is for); the AI researches
+the Spitter and the Raptor before it.
 
 **Ice Folk (Mammoth, Musk Ox).** The largest change to an existing
 faction: the Ice Folk lose their 6-Coin beast in the first ten rounds and

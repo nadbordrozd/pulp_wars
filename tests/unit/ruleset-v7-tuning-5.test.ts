@@ -745,10 +745,10 @@ describe("Normal AI army play: units before research and buildings", () => {
         // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the seat owns
         // Fortification, its defender's technology (Force Fields for a
         // Martian seat, which researched it here as its next step before).
-      ).toEqual({
-        kind: "RESEARCH",
-        tech: faction === "DINOSAUR" ? "ENGINEERING" : "MARKSMANSHIP",
-      });
+        // Step two of the Dinosaur pass (`pulp_wars-w49.26`): the Spitter
+        // is second in a Dinosaur seat's order, so it researches Spitters
+        // like the others.
+      ).toEqual({ kind: "RESEARCH", tech: "MARKSMANSHIP" });
     }
   });
 

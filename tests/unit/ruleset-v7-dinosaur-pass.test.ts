@@ -904,14 +904,16 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     expect(armyPlayFactionV7("DINOSAUR")).toBe(true);
     for (const faction of ["ICE_FOLK", "DWARF", "CANDY"] as const)
       expect(armyPlayFactionV7(faction), faction).toBe(false);
-    // Ankylosaurus, Triceratops, Raptor, Spitter, Stegosaurus, Shaman,
+    // Ankylosaurus, Spitter, Raptor, Triceratops, Stegosaurus, Shaman,
     // T-Rex (the ninth unit, 7r55: the Triceratops is the heavy role and
-    // the Stegosaurus the siege role).
+    // the Stegosaurus the siege role; step two of the Dinosaur pass,
+    // `pulp_wars-w49.26`: the Spitter and the Raptor before the
+    // Triceratops, which was second).
     expect(ARMY_RESEARCH_ROLES_V7.DINOSAUR).toEqual([
       "GUARD",
-      "SWORDSMAN",
-      "RAIDER",
       "MARKSMAN",
+      "RAIDER",
+      "SWORDSMAN",
       "CATAPULT",
       "CAPTAIN",
       "KNIGHT",
@@ -1022,7 +1024,7 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       ),
     ).research;
 
-  it("researches the Ankylosaurus, the Triceratops, the Raptor, the Spitter, the Shaman, Planning, the T-Rex", () => {
+  it("researches the Ankylosaurus, the Spitter, the Raptor, the Triceratops, the Stegosaurus, the Shaman, Planning, the T-Rex", () => {
     // The field's land has nothing to build on, so the order alone decides.
     const order: TechnologyIdV7[] = [];
     let owned: readonly TechnologyIdV7[] = techsOf("GATHERING");
@@ -1037,14 +1039,17 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     // Spitter.
     // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Ankylosaurus
     // is at Nesting (Fortification), one technology behind the root.
+    // Step two of the Dinosaur pass (`pulp_wars-w49.26`): the Spitter
+    // (Hunting, Spitters) and the Raptor (Scouting) before the
+    // Triceratops's Engineering and Armoury.
     expect(order).toEqual([
       "DRILL",
       "FORTIFICATION",
-      "ENGINEERING",
-      "METALLURGY",
-      "SCOUTING",
       "HUNTING",
       "MARKSMANSHIP",
+      "SCOUTING",
+      "ENGINEERING",
+      "METALLURGY",
       "FORESTRY",
       "SAWMILLING",
       "ADMINISTRATION",
@@ -1062,7 +1067,17 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       unlocks: "GUARD",
     });
     expect(
-      research(techsOf("GATHERING", "DRILL", "FORTIFICATION", "ENGINEERING")),
+      research(
+        techsOf(
+          "GATHERING",
+          "DRILL",
+          "FORTIFICATION",
+          "HUNTING",
+          "MARKSMANSHIP",
+          "SCOUTING",
+          "ENGINEERING",
+        ),
+      ),
     ).toMatchObject({ tech: "METALLURGY", unlocks: "SWORDSMAN" });
   });
 
@@ -1078,8 +1093,10 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     expect(research(early, [own("GUARD", 7, 7)])).toMatchObject({
       tech: "FORTIFICATION",
     });
+    // (Step two of the Dinosaur pass: then the Spitter's Hunting; it was
+    // the Triceratops's Engineering.)
     expect(research(techsOf(...early, "FORTIFICATION"))).toMatchObject({
-      tech: "ENGINEERING",
+      tech: "HUNTING",
     });
     const late = techsOf(
       "GATHERING",
@@ -1131,10 +1148,12 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       growth: true,
     });
     // Then the order again, up to the Triceratops (the first unit of two
-    // slots), and then Planning, through Administration.
+    // slots), and then Planning, through Administration. (Step two of the
+    // Dinosaur pass: the order's next step is the Spitter's technology; it
+    // was the Triceratops's Engineering.)
     const nested = techsOf(...early, "FORTIFICATION");
     expect(research(nested, crowd.slice(1))).toMatchObject({
-      tech: "ENGINEERING",
+      tech: "MARKSMANSHIP",
       growth: false,
     });
     const charging = techsOf(...nested, "ENGINEERING", "METALLURGY");
@@ -1174,8 +1193,19 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
           foe("FIGHTER", 5, 8),
         ],
         {
+          // (Step two of the Dinosaur pass, `pulp_wars-w49.26`: the seat
+          // owns Spitters and Scouting too, so that Engineering is still
+          // its next technology. Spitters itself, one step to a class the
+          // army has none of, is not held by a war.)
           techs: {
-            0: techsOf("GATHERING", "DRILL", "FORTIFICATION", "HUNTING"),
+            0: techsOf(
+              "GATHERING",
+              "DRILL",
+              "FORTIFICATION",
+              "HUNTING",
+              "MARKSMANSHIP",
+              "SCOUTING",
+            ),
             1: [],
           },
           coins,
@@ -2295,7 +2325,9 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
     // Before the correction this was Scouting: Wallbreaker waited for the
     // T-Rex's step, four technologies later, and a seat never reached it.
     expect(target(base, 2)).toBe("EXPLOSIVES");
-    expect(target(base, 1)).toBe("SCOUTING");
+    // (Step two of the Dinosaur pass: with one Triceratops the order goes
+    // on to the Spitter's Hunting; it was the Raptor's Scouting.)
+    expect(target(base, 1)).toBe("HUNTING");
     // Without Nesting it researches Nesting first (Wallbreaker needs it).
     expect(
       target(techsOf("GATHERING", "DRILL", "ENGINEERING", "METALLURGY"), 2),

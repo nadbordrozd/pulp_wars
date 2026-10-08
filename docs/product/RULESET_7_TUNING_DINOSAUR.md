@@ -60,6 +60,8 @@ does. No AI-against-AI result was counted as evidence of balance.
 
 **Superseded in part at `pulp-wars-poc-7r56`** ([the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md), `pulp_wars-w49.21`): The Ankylosaurus Egg is unlocked by Nesting, one technology behind the root, which is shown as Crafting and unlocks the Workshop; Engineering no longer does. The games recorded here were played with the Ankylosaurus at the root. Nothing else here changed, and no number did.
 
+**Step two** (`pulp_wars-w49.26`, [section 14](#14-step-two)): the faction's first hand-played pass since the ninth unit and the Industry reshuffle. No rule and no number changed and the identity stays `pulp-wars-poc-7r58`; the Normal AI of a Dinosaur seat changed in eight places, and its research order is Ankylosaurus, Spitter, Raptor, Triceratops, Stegosaurus, Shaman, T-Rex.
+
 ## 1. The changes
 
 | #   | Change             | Before (`7r52`)                                                                                                                | Now (`7r53`)                                                                                                                                                                                                       | Other factions                                                                      |
@@ -1934,3 +1936,412 @@ Ankylosaurus is now filtered out of a city's production
 (`armyDinosaurDefenderHeldV7`), and Wallbreaker is not held by a war once
 two Triceratops are fielded (`armyWallbreakerDueV7`). The readings above
 are therefore of the seat without those two fixes.
+
+## 14. Step two
+
+The second pass over the Dinosaurs, on `pulp-wars-poc-7r58` (the
+[ninth unit](RULESET_7_NINTH_UNIT.md): the Triceratops at Armoury and the
+Stegosaurus at Timber; the
+[Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md): the Ankylosaurus at
+Nesting, the Workshop at the root), bead `pulp_wars-w49.26`. Step two is
+"iterate on each faction including playing games manually to rejig the
+balance better and improve the AI for each faction". It is the faction's
+first hand-played pass since the ninth unit. **No rule and no number
+changed, and the identity stays `pulp-wars-poc-7r58`.** The Normal AI of a
+Dinosaur seat changed in eight places
+([section 14.4](#144-the-dinosaur-normal-ai)). The bar was the user's: "the
+faction is not crazy op or crazy weak and that all the tech branches are
+useful and that units are differentiated from other factions by more than
+stats".
+
+### 14.1 The games
+
+All in text mode against the Normal AI, on Dry Land.
+
+| Game  | Played as | Against                | Map         | Route                                                                                        | Result                                                                                                 |
+| ----- | --------- | ---------------------- | ----------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `a`   | Human     | Dinosaur (before)      | 14, seed 9  | Mobility: Hunting 1, Scouting 7, Gathering 9, Raiding 12, Chivalry 15                        | stopped in round 19 with the Dinosaur capital taken: 10 cities and 19 units against 3 and 12           |
+| `b`   | Dinosaur  | Goblin                 | 14, seed 19 | Industry: Hunting 1, Crafting 3, Nesting 6, Engineering 9, Armoury 13, Scouting 17           | stopped in round 18, ahead: 5 cities and 10 units against 3 and 9; 10 kills for 8 lost                 |
+| `c`   | Dinosaur  | Martian, Undead, Human | 16, seed 14 | Wilds: Gathering 1, Hunting 3, Spitters 7, Forestry 13; Timber was 18 Coins away in round 15 | stopped in round 15, holding: 4 cities and 10 units, the smallest seat of four; 5 kills for 3 lost     |
+| `lab` | Dinosaur  | Human                  | the lab     | `LAB_DINOSAUR_MID`, four rounds: Wallbreaker, two Stegosaurus Eggs                           | a Stegosaurus and a Triceratops killed a Champion in a Forest; both Triceratops were dead a turn later |
+| `a2`  | Human     | Dinosaur (after)       | 14, seed 9  | the same route                                                                               | stopped in round 16: 9 cities and 17 units against 4 and 12; the Dinosaur seat had lost no city        |
+
+The numbers after a technology are the rounds it was bought in. "Before"
+and "after" are the Dinosaur AI before and after
+[section 14.4](#144-the-dinosaur-normal-ai).
+
+**The maps.** Of seeds 1 to 20 on Dry Land 14, seeds 9 and 19 have no chest
+within three tiles of either capital and at most five Mountains within two
+tiles of one (the two traps the Goblin and the Undead pass found; the
+Martian pass used the same two). On seed 9 the Dinosaur AI's seat has six
+villages within five tiles of its capital and the player's has three. On
+seed 19 the player's capital stands in Forest: every step ends a Move, and
+its villages are four tiles away. On Dry Land 16 with four seats, seed 14
+has no chest by the player's capital.
+
+What each seat held at the start of its turn (Coins, income, cities, units;
+lost and killed are totals):
+
+| Round | `a` Human     | `a` Dinosaur AI | `a2` Human    | `a2` Dinosaur AI | `b` Dinosaur  | `b` lost, killed | `c` Dinosaur | `c` lost, killed |
+| ----- | ------------- | --------------- | ------------- | ---------------- | ------------- | ---------------- | ------------ | ---------------- |
+| 3     | 5, 3, 1, 3    | 1 city, 3       | 5, 3, 1, 3    | 1 city, 3        | 5, 3, 1, 3    | 0, 0             | 5, 3, 1, 3   | 0, 0             |
+| 6     | 7, 6, 3, 5    | 3, 4            | 7, 6, 3, 5    | 3, 5             | 9, 3, 1, 3    | 0, 0             | 7, 6, 3, 4   | 0, 0             |
+| 9     | 13, 12, 6, 11 | 4, 7            | 12, 11, 6, 9  | 4, 7             | 11, 5, 2, 6   | 1, 0             | 7, 7, 4, 5   | 2, 1             |
+| 12    | 25, 15, 8, 15 | 4, 10           | 22, 15, 8, 14 | 4, 9             | 13, 7, 4, 9   | 1, 1             | 12, 7, 4, 8  | 2, 3             |
+| 15    | 33, 16, 9, 20 | 4, 12           | 36, 16, 9, 17 | 4, 13            | 7, 7, 4, 6    | 5, 5             | 12, 9, 4, 10 | 3, 4             |
+| 18    | 23, 17, 9, 18 | 4, 15           |               |                  | 11, 11, 5, 10 | 8, 10            |              |                  |
+
+**Eggs.** In `b` four were laid (an Ankylosaurus in round 10, a Triceratops
+in 14, an Ankylosaurus in 15, a Raptor in 17) and four hatched; the
+Triceratops Egg took two Bomb Chucker splashes (10 to 4 HP) and would have
+died without Nesting's 4 HP. In `c` three Spitter Eggs of 6 HP were laid
+and hatched a turn later, out of every enemy's reach. The AI's Eggs: one
+Ankylosaurus Egg destroyed in `a` (a Raider's charge deals a 10-HP Egg 10);
+none in `a2`, where two stood behind Cavemen and Ankylosauruses.
+
+### 14.2 The questions
+
+**(i) Nesting is not an automatic second technology. Left as it is.** It
+was the second purchase of `b` (round 6, 7 Coins) and was not bought in
+fifteen rounds of `c`.
+
+- In `b` it was bought for the unit slot: the capital of level 2 held a
+  Caveman, the Scouts Raptor, and a second Caveman (three of three) and
+  could train nothing in rounds 3 to 5, with no village in reach through the
+  Forest. It cost the tempo of the opening: the Coins were gone in the
+  round two Goblins killed the Caveman on the first village, and the first
+  Ankylosaurus hatched in round 12.
+- In `c` the slots came from growth instead: a harvest (2 Coins) or a
+  Lumber Camp (3) that levels a village is a unit slot and, at level 2, a
+  free Raptor. Seven units stood on four cities in round 10 with one city
+  able to produce; two Lumber Camps in round 14 opened two more and gave two
+  Raptors. The Ankylosaurus was not missed against Skeletons and Grunts.
+- What it is for, as played: the wall. In `a` a Fighter dealt an
+  Ankylosaurus 3 and took 8, a Raider 3 and 8, and one grown to 24 HP held
+  the center of a city the player had just taken until it was retaken. It
+  is the faction's answer to a Human that walks up with Fighters and
+  Raiders, and to Knights; and its slot is worth most late (the lab: eight
+  free slots where it had three).
+- So the node is strong and its three parts fit one another (the slot is
+  what lets a city lay the unit of two slots), but the opening has two
+  other second purchases that were as good: Spitters (`c`) and Scouting.
+  Moving the slot or the Egg HP off it was not built.
+
+**(ii) The Triceratops arrives late and does its job once. No number
+changed; War Drums stay off it.**
+
+- _When._ `b`: Crafting 3, Engineering 9, Armoury 13 (5, 9, and 21 Coins),
+  the Egg in round 14, the unit in round 16. That is 43 Coins before it
+  moves, on an income of 3 to 10. Engineering gave nothing on the turn it
+  was bought (no Ore in reach). The AI's first came in round 21 to 23.
+- _What it did._ `b`: it charged a Goblin (dead), a Bomb Chucker (dead, and
+  the Chucker's blast killed a second Goblin), grew to 24 HP, and was dead
+  in round 17 to a bomb, a Wolf Rider, and a second bomb: three kills worth
+  8 Coins for an 8-Coin unit, because **the advance after its kill is
+  forced** and carries it out of its own line. The lab: both Triceratops
+  were dead the turn after the first charged (a Knight, a Marksman, and two
+  Fighters dealt 24; a Catapult and a Champion 20 to the one that had not
+  moved). The first pass saw the same (8 of 10 died the turn after
+  charging).
+- _Over a T-Rex or two Raptors?_ Against a mob of 6-HP units two Raptors
+  (one technology of 5 to 9 Coins, 8 Coins, one turn in the Egg) do more.
+  Against Fortification the Triceratops is the unit: it deals a Guard on a
+  walled center 10 where a Raptor deals 6 and a T-Rex 8, and pushes it
+  off. It is a situational unit three technologies deep,
+  which is what the heavy of a faction with a 20-HP, 5-Coin defender can
+  be.
+- _War Drums._ No. A Triceratops charges at Attack 4 after a Move and at 5
+  after two tiles with Wallbreaker; Attack 5 kills a full Champion in the
+  open (15 of 15, `scen-dino.ts` and the lab). War Drums on it would give
+  Attack 5 for a 5-Coin Shaman one technology behind the opener, which is
+  the number the first pass put behind Wallbreaker (21 to 30 Coins).
+
+**(iii) The Stegosaurus is worth it, Cracked matters, and it is not a
+Catapult.** From the public preview on constructed positions
+(`scen-dino.ts` in the scratch folder: a full attacker on a full target; a
+Caveman's numbers are with Pack Hunt), damage dealt / taken:
+
+| Target                         | Stegosaurus from 3 | Catapult from 3 | Caveman alone | Caveman after the shot | Raptor alone | Raptor after | Triceratops (one tile) alone | after  |
+| ------------------------------ | ------------------ | --------------- | ------------- | ---------------------- | ------------ | ------------ | ---------------------------- | ------ |
+| Fighter (12 HP)                | 6                  | 8               | 8 / 4         | a kill                 | 10 / 3       | a kill       | a kill                       | a kill |
+| Champion (15)                  | 6                  | 7               | 7 / 5         | 9, a kill              | 9 / 5        | a kill       | 11 / 4                       | a kill |
+| Champion in a Forest           | 5                  | 6               | 6 / 5         | 9 / 2 of 10            | 8 / 5        | a kill       | 9 / 4                        | a kill |
+| Guard (17)                     | 8                  | 10              | 7 / 7         | 9, a kill              | 8 / 6        | a kill       | 10 / 6                       | a kill |
+| Guard on a walled center       | 5                  | 7               | 5 / 7         | 7 / 3 of 12            | 6 / 6        | 9 / 3        | 10 / 6                       | a kill |
+| Zombie on a walled center (18) | 4                  | 6               | 6 / 4         | 8 / 1 of 14            | 7 / 3        | 9 / 1        | 12 / 3                       | a kill |
+| Wight (14)                     | 6                  | 7               | 7 / 5         | 8, a kill              | 9 / 5        | a kill       | 11 / 4                       | a kill |
+| Ogre (16)                      | 6                  | 8               | 8 / 4         | 10, a kill             | 10 / 3       | a kill       | 12 / 3                       | a kill |
+| Shock Trooper, Shield 3 (12)   | 3                  | 5               | 5 / 7         | 9, a kill              | 7 / 6        | a kill       | 9 / 6                        | a kill |
+| Shield Projector, Shield 4     | 2                  | 3               | 3 / 5         | 10, a kill             | 5 / 5        | a kill       | 7 / 4                        | a kill |
+
+- **Its own shot is weaker than a Catapult's** (Attack 2.5 against 3: 6 on
+  a Fighter where a Catapult deals 8), and it has 12 HP and Defense 1.
+- **What it does that no Catapult does** is make the blow after it. The
+  target is Cracked (1 Defense less against every later blow of the turn,
+  and in its own strike back) and, because a Stegosaurus is a dinosaur, it
+  is **hunted**: a Caveman anywhere beside it has Pack Hunt. A Stegosaurus
+  and one 2-Coin Caveman kill a Champion, a Guard, a Wight, an Ogre, or a
+  Shielded Shock Trooper in the open in one turn and take nothing back. A
+  Catapult's shot leaves the next blow as it was.
+- **Played** (the lab, round 3): a Champion in a Forest, 15 HP. The
+  Stegosaurus dealt 5 from three tiles; a Triceratops with two tiles of
+  run-up then dealt 10 and killed it with no strike back (11 and 4 back
+  without the shot). Round 4: a Fighter in a Forest shot to 7 HP was killed
+  by a Spitter from two tiles (7), which does not advance; the Caveman
+  beside it had the same kill with Pack Hunt.
+- **Price.** 7 Coins, two turns in the Egg, and Hunting, Forestry, and
+  Timber: 31 Coins of research from the opener on four cities in `c`,
+  where it would have hatched in round 18. It is a middle-game unit, as a
+  Catapult is.
+- The combination is strong and has plain counters (a 12-HP shooter that
+  cannot move and fire dies to anything that reaches it; a Knight kills it
+  in one attack). It is a situational blowout of the kind the standing
+  rulings keep.
+
+**(iv) The opening keeps up against one neighbour and holds against three;
+Eggs are not sniped when they are laid behind the city.**
+
+- Against the Goblin rush (`b`) the first village fell in round 6 to two
+  Goblins with Gang Up (7 on a wounded Caveman) and was retaken twice. A
+  Caveman kills a Goblin in one blow (Defense 0.5) and a Goblin with one
+  helper kills a wounded Caveman; a Bomb Chucker's splash hit four and five
+  units a turn for 3 each. Ten kills for eight losses, and the seat was
+  ahead on cities from round 16. The Coins that did it were Cavemen, an
+  Ankylosaurus that grew to 24 HP on its first kill, and free Raptors, not
+  the technologies.
+- Against Martian Grunts, Skeletons, and a Human seat at once (`c`) the
+  seat held four cities with Spitters and Cavemen. Two Spitters killed a
+  Skeleton from two tiles in each of three rounds (Acid does not care for
+  Bones' cover; the shot still meets Defense 3) and grew to 14 HP. A Saucer
+  pulled a Caveman off a village and two Grunts killed it, as in the
+  Martian pass.
+- The first Egg in both games was laid in round 8 to 10: the opening is
+  Cavemen and the free Raptor of each level-2 city, which is the tempo of
+  every other faction.
+
+**(v) No best unit. The Caveman does not go obsolete; the Raptor is the
+fragile one.**
+
+| Unit         | Fielded by hand                        | What it did                                                                                                                    |
+| ------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Caveman      | 11 in `b`, 6 in `c`                    | every capture; with Pack Hunt 8 on a Wolf Rider and the kills after an Ankylosaurus's or a Spitter's blow                      |
+| Raptor       | 3 in `b` (2 free), 4 in `c` (all free) | took the villages and two held centers by a kill and the forced advance; four of the seven died, each within a turn of contact |
+| Spitter      | 3 in `c`                               | six shots, three kills, no loss: the unit of that game                                                                         |
+| Ankylosaurus | 2 in `b`                               | took a walled center by a kill, held it under two Bomb Chuckers' fire, and took the city; grew to 24 HP on its first kill      |
+| Triceratops  | 1 in `b`, 2 in the lab                 | (ii)                                                                                                                           |
+| Stegosaurus  | 2 in the lab                           | (iii)                                                                                                                          |
+| Shaman       | the lab                                | hatched the T-Rex in round 1                                                                                                   |
+| T-Rex        | the lab                                | not brought into contact in four rounds                                                                                        |
+
+| Branch      | Bought                                               | Verdict                                                                                                                                                                               |
+| ----------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Wilds       | Hunting, Spitters, Forestry (`c`); Timber in the lab | the strongest for its price: Hunting levels the capital for the free Raptor, Spitters are 4-Coin units that kill from two tiles, Forestry is growth and cover, Timber the Stegosaurus |
+| Industry    | Crafting, Nesting, Engineering, Armoury (`b`)        | Nesting is worth its 7 to 13 Coins; Engineering and Armoury are 30 Coins for one situational unit, and Crafting and Engineering give nothing on the turn they are bought              |
+| Mobility    | Scouting (`b`, round 17)                             | Raptors come free; the technology is for the third and fourth. Raiding and the T-Rex were not reached by hand                                                                         |
+| Settlement  | Gathering as an opener (`c`)                         | two Fruit took the capital to level 2 in round 1. The Shaman was not bought                                                                                                           |
+| Wallbreaker | the lab, round 1                                     | the second tile of the run-up: a Champion in the open dies to the charge (15) where it is left at 4. It is the answer to Champions and is 21 to 30 Coins                              |
+| Naval       | Dry Land only                                        | not tested                                                                                                                                                                            |
+
+- **Coins** were short for the whole of `b` (0 to 6 at the end of sixteen
+  turns of seventeen) and `c` (never above 15): every Coin a unit, a
+  harvest, or a technology. The attrition economy as ruled.
+- **The Raptor.** Defense 1 and no Escape: a Raptor that kills advances
+  beside what is left and dies to the next two blows (a 16-HP grown one to
+  a bomb and a Goblin with two helpers). The first pass's open idea
+  (Defense 1.5, or 14 HP) stands as an idea; in these games the Raptor was
+  free and paid for itself by the village or center it took.
+
+**(vi) A Charge! on a walled garrison is no free city. No rule added.** A
+Triceratops pushes a Guard off a walled center and follows onto it (the
+Guard takes 10 and strikes back 6, `scen-dino.ts`; with the Stegosaurus's
+shot first it dies). That is the displacement the Tractor Beam had until
+`7r58`, and it differs in every way that made the beam a free city: the
+unit is 8 Coins and three technologies deep and has to stand beside the
+garrison and take its strike back; it then stands on the center itself,
+where it captures nothing and is in reach of the whole city; and a Caveman
+can step on only after it has moved off, two turns later. No game of this
+pass or the first lost or took a city that way. The Stegosaurus has no
+push.
+
+### 14.3 What was not changed
+
+Every number of the roster and every technology. The forks of
+[section 1.1](#11-decisions-that-are-forks-for-the-user-to-overrule) stand
+as they were. The open ideas of
+[section 13.6](#136-left-as-it-was-with-the-evidence) (the Triceratops's
+growth heal, the Raptor's Defense, the road to the T-Rex) were not met
+again by hand in a way that decides them.
+
+### 14.4 The Dinosaur Normal AI
+
+Read in `a`, in six diagnostic matches (seed 9 against the Human AI four
+times, the lab twice; not a balance measurement), and on recorded positions
+of them. Details and function names:
+[Normal AI, step two of the Dinosaur pass](../architecture/NORMAL_AI.md#step-two-of-the-dinosaur-pass-pulp_wars-w4926).
+
+**What was wrong.** In `a` the seat held four cities from round 6 to the
+end, fielded Cavemen and Ankylosauruses only for eighteen rounds (its
+technologies: Gathering, Crafting, Nesting, Farming, and Engineering in
+round 15, toward a Triceratops it never reached), and never left its land.
+It sent single Cavemen up beside two and three of the player's units (two
+in round 12, the capital's garrison in rounds 16 and 17): each struck once
+for 5 to 7 and was dead a turn later. Its capital fell in round 19 to a
+Knight that rode through two Cavemen. Against the Human AI it bought
+Nesting, Farming, and Engineering (43 Coins) in rounds 8 to 11 with one Egg
+laid, Armoury in round 18, and its first Raptor Egg in round 19 and Spitter
+in round 23. What it did well: Ankylosauruses and Cavemen with Pack Hunt
+killed whatever stood beside its cities (a Fighter on a center it had just
+lost, and three units in one turn of round 17).
+
+**What it does now.**
+
+- _The order:_ Ankylosaurus, **Spitter, Raptor**, Triceratops, Stegosaurus,
+  Shaman, T-Rex (the Triceratops was second).
+- _Bodies first_, as an Undead and a Martian seat: with fewer units that
+  capture than its cities and two more (an Egg counts as the unit inside; a
+  Triceratops, a Stegosaurus, and a T-Rex do not count), a city that can
+  train does so before any research, and no Coins are kept.
+- _One growth technology before Nesting's two_ while no enemy unit is within
+  six tiles of one of its cities; with one there, Crafting and Nesting
+  first, also with an enemy at its gates, and a due technology before a
+  capture that would raise its price.
+- _The price of a due technology is kept_ once the seat can pay it. The
+  Coins were kept only while they were short, so a seat at war with 16
+  Coins and Spitters due at 15 laid an Egg in a threatened city first and
+  stood there again a turn later.
+- _Into contact with company._ A Caveman or a Raptor makes no Move that
+  ends beside an enemy where the enemies in sight kill it unless a dinosaur
+  of its own stands beside that enemy (Pack Hunt), another unit has the
+  enemy in range with its attack to make, or one can still come. A kill of
+  its own, a combined kill, and a Move onto a center or a village are made
+  as before.
+- _The run-up is counted._ A Triceratops that has yet to move was read at
+  the Attack it has standing still: 8 on a Fighter where the charge after a
+  Move deals 12 and kills.
+- _Cracked is counted_ in every estimate of a blow on a unit a Stegosaurus
+  has shot.
+- _The order of blows._ A combined kill is planned with what the units do
+  for each other (the Crack of a Stegosaurus's shot, the Pack Hunt a
+  dinosaur's blow gives the Cavemen), and its blows fall in that order: the
+  Stegosaurus, the other dinosaurs, the Cavemen. A Caveman whose target
+  stands beside a dinosaur already does not wait.
+
+**Before and after.**
+
+| Where                                          | Before                                                                                                                                     | After                                                                                                                                                          |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Against the Human AI, seed 9, the technologies | Crafting 5, Nesting 8, Farming 9, Engineering 11, Armoury 18, Scouting 19, Hunting 20, Spitters 23                                         | Farming 6, Crafting 7, Nesting 9, Hunting 10, Spitters 13, Scouting 16, Engineering 19                                                                         |
+| The same match, the units                      | Cavemen and Ankylosauruses until round 17; a Raptor Egg in 19, a Triceratops Egg in 21, a Spitter Egg in 23                                | three Spitter Eggs in round 14, Raptor Eggs from 17; no Triceratops by round 25                                                                                |
+| The same match, round 25                       | 4 cities and 13 units against 5 and 12; 33 attacks, 16 kills, 20 lost                                                                      | 7 cities and 29 units against 3 and 5; 61 attacks, 28 kills, 19 lost; two Human cities taken in round 22                                                       |
+| The hand-played Human, seed 9 (`a`, `a2`)      | two Cavemen sent up alone in round 12 and the capital's garrison in 16 and 17; 21 attacks, 7 kills, 15 lost; the capital taken in round 19 | no blow alone at a loss; its four free Raptors killed three Raiders two at a time in rounds 7, 8, and 13 (and were dead by round 14); no city lost by round 16 |
+| The recorded round 12 of `a`                   | two attacks by lone Cavemen (7 and 5), both dead in the player's turn                                                                      | neither moves into contact                                                                                                                                     |
+| The recorded round 17 of `a`                   | six attacks, three kills, and a Caveman that walked up to a Knight alone                                                                   | five attacks, the same three kills                                                                                                                             |
+| The lab, both seats the AI, twelve rounds      | Wallbreaker in round 11; 51 attacks, 32 kills, 25 lost                                                                                     | Wallbreaker in round 1; 52 attacks, 32 kills, 26 lost                                                                                                          |
+
+The match on seed 9 "after" is the third of the four. The fourth, and the
+second lab match, were run with a fault in the order of blows that was then
+corrected (a Caveman waited for a dinosaur's blow it had no use for, and
+another Caveman struck in its place and died): the final policy plays every
+one of the twenty-five recorded turns of the third match, and the fifteen
+of `a2`, as they were played (`turnsame.mts` in the scratch folder). No
+error and no stall in any of the six.
+
+**What the changed AI did to a hand player** (`a2`): two Raptors killed a
+Raider in round 7 (8 and 4) and another on a village center in round 8, and
+a Caveman and a Raptor a third in round 13; the player lost three Raiders
+and killed four Raptors and three Cavemen by round 16. The seat laid two
+Ankylosaurus Eggs behind its front city, moved its Ankylosauruses up as a
+screen from round 15, bought Spitters in round 15, and held all four cities
+where it had lost one in round 15 of `a`.
+
+**Seen and left.**
+
+- **It does not attack a player's land.** With 12 units against 17 it holds
+  its cities; the positions of the army rules ask for numbers it does not
+  have. It took two cities from the Human AI on the same map.
+- **The Triceratops comes late or not at all in a generated match** (round
+  21 before, after round 25 now): two dear technologies on the research
+  tempo every army seat has. In the lab it uses every unit.
+- **Its Raptors die young.** Four free Raptors in `a2` for three kills.
+- **An Egg laid beside a front city** is still laid in a Raider's reach
+  when an own unit stands beside the nest tile; the player destroyed one in
+  `a`.
+- **A winning seat researches slowly**, as the Martian pass saw.
+
+### 14.5 Open, for the user
+
+1. **The Triceratops's place.** Three technologies deep it is a unit of
+   round 16 for a player and of round 21 or later for the AI, and it dies
+   the turn after its first kill because its advance is forced. If it
+   should be the faction's line unit and not a siege tool, the levers
+   inside the rulings are its price (8 to 7) or its hatch time (2 turns to
+   1); neither was tried.
+2. **Nesting's three parts.** Not automatic in two games
+   ([section 14.2](#142-the-questions), (i)). If later play shows it bought
+   second in every game, the unit slot is the part to move (to Planning's
+   neighbour, or to Armoury with the unit that needs it).
+3. **The Raptor** (Defense 1, no Escape): the open idea of the first pass.
+4. **The Stegosaurus and one Caveman kill most heavy units in a turn.**
+   Kept as a situational blowout. If it proves to be the whole army, the
+   lever is that only the Stegosaurus's own tile neighbours get Pack Hunt
+   from its shot (it would hunt by standing beside, like every dinosaur,
+   and not from three tiles).
+5. **The T-Rex and the Shaman** were not played by hand in this pass.
+
+### 14.6 For the Ice Folk pass
+
+- Ice Folk, Dwarf, and Candy seats still play the older policy, and every
+  seat of a match with one of them does: none of the army rules of the five
+  passes applies there. The first reading of an Ice Folk AI game is against
+  that policy.
+- The two map traps (a chest by one capital, a capital boxed by Mountains)
+  matter more for a Mountain-born faction: probe the seed first
+  (`probe-land.mts`).
+- A projection that reads a unit's published Attack from a tile it has not
+  reached was wrong for Martian rays (too high) and for the Triceratops
+  (too low). The Sled's and the Mammoth's Attack after a Move, and anything
+  with Sluggish, are the next candidates.
+- "Bodies first" and "the price of a due technology is kept" are a seat's
+  opening and its research in a war; the second is a Dinosaur seat's only
+  and may be every army seat's (a threatened city trains at 1260, above a
+  due technology's 1219, so a seat with exactly the price in hand spends it
+  first).
+- The Musk Ox's Frostbite and the Stegosaurus's Crack are both effects of
+  one blow on the blows after it: the order of blows
+  (`dinosaurPackHuntV7`) is the pattern.
+
+### 14.7 Tests
+
+`tests/unit/ruleset-v7-dinosaur-step2.test.ts`: the identity is unchanged;
+the order (the Spitter and the Raptor before the Triceratops, technology by
+technology); bodies first for a Dinosaur seat, in peace and in a war, with
+an Egg counted and a Triceratops not; the growth technology before
+Nesting's two, and the Ankylosaurus first with an enemy in sight; the
+recorded position of seed 9, round 13
+(`tests/fixtures/ruleset-v7-dinosaur-spitters-due.json`: Spitters bought
+where an Egg was laid, and the Caveman beside a Raptor strikes at once);
+the recorded round 12 of `a`
+(`tests/fixtures/ruleset-v7-dinosaur-lone-cavemen.json`: neither Caveman
+goes into contact) and its round 17
+(`tests/fixtures/ruleset-v7-dinosaur-company.json`: the three kills are
+made); the run-up of a Triceratops that has yet to move, one tile and two
+with Wallbreaker, equal to the engine's preview after the Move; the Crack
+in the estimate, equal to the preview; and the order of blows (the
+Stegosaurus's shot before the Caveman's kill of a Champion, and the
+Caveman's blow no candidate while the shot is to come).
+
+**Tests that moved.** The Dinosaur research order where a test states it
+(`ruleset-v7-dinosaur-pass`, `ruleset-v7-tuning-6`), and in
+`ruleset-v7-dinosaur-pass` the sequence of technologies that follows from
+it and the technologies of a fixture whose next step had to be
+Engineering. One fixture of `ruleset-v7-industry-reshuffle` got the two
+Cavemen that keep a Dinosaur seat from being short of units. The source
+audits: four more land-form tests in `src/ai/v7.ts`
+(`ruleset-v7-dinosaur-form-audit`), and three new readers classified
+(`tests/fixtures/v7-unit-reader-classes.ts`,
+`tests/fixtures/v7-kind-reader-classes.ts`). The command and event hashes of the Pangea pin
+of `ruleset-v7-curiosities.test.ts`, the one with a Dinosaur seat (12 rounds
+still; the map and the PRNG are unchanged). `ruleset-v7-tuning-5`: a
+Dinosaur seat with Nesting and Hunting researches Spitters next, like the
+other seats. `ruleset-v7-normal-policy`: the policy imports the two Cracked
+helpers of `src/engine/v7/ninth-unit.ts`.

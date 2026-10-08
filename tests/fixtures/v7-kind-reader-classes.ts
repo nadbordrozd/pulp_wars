@@ -200,6 +200,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // decides is a Martian one (the viewer's faction), and the order in which
   // that seat researches toward its own units.
   "src/ai/v7.ts::armyMartianSeatV7": "SEAT",
+  // Step two of the Dinosaur pass (`pulp_wars-w49.26`): the seat that
+  // decides is a Dinosaur one (the viewer's faction).
+  "src/ai/v7.ts::armyDinosaurSeatV7": "SEAT",
   "src/ai/v7.ts::armyMartianResearchRolesV7": "SEAT",
   "src/ai/v7.ts::armyShootsBiterFirstV7": "SEAT",
   "src/ai/v7.ts::armyCureDueV7": "SEAT",

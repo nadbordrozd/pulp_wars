@@ -78,6 +78,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "../engine/rules/ruleset-v7",
       "../engine/v7/commands",
       "../engine/v7/dwarf",
+      // Step two of the Dinosaur pass (`pulp_wars-w49.26`): the Cracked
+      // Defense of a unit a Stegosaurus has shot (two pure rule helpers).
+      "../engine/v7/ninth-unit",
       // Tuning 3: `publicUnitHasTerrainCoverV7` (a pure public-view read).
       "../engine/v7/units",
       "../engine/v7/economy",

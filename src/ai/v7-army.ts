@@ -375,11 +375,20 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
   // heavy line role now (Drill, Engineering, Metallurgy) and keeps its
   // place in the order; the Stegosaurus (the `CATAPULT` role, at
   // Sawmilling) comes after the Spitter.
+  // Step two of the Dinosaur pass (`pulp_wars-w49.26`,
+  // docs/product/RULESET_7_TUNING_DINOSAUR.md section 14): the Spitter and
+  // the Raptor before the Triceratops (it was second). The Triceratops is
+  // two dear technologies behind the root (Engineering and Armoury: 30 to
+  // 40 Coins on four cities), and with it second a seat fielded Cavemen and
+  // Ankylosauruses only until round 21 of a diagnostic match and for all
+  // eighteen rounds of a hand-played game: an army that cannot attack (an
+  // Ankylosaurus does not move and strike). The Spitter is Hunting and one
+  // technology, the Raptor one technology, and both hatch in a turn.
   DINOSAUR: Object.freeze([
     "GUARD",
-    "SWORDSMAN",
-    "RAIDER",
     "MARKSMAN",
+    "RAIDER",
+    "SWORDSMAN",
     "CATAPULT",
     "CAPTAIN",
     "KNIGHT",

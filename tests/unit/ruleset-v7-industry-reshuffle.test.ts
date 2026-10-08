@@ -573,10 +573,10 @@ describe("the Industry reshuffle: the Normal AI", () => {
       // two Skeletons more, with no home city. Step two of the Martian
       // pass (`pulp_wars-w49.25`): a Martian seat too
       // (`tests/unit/ruleset-v7-martian-step2.test.ts`): two Grunts more.
-      const spare =
-        faction === "UNDEAD" || faction === "MARTIAN"
-          ? [at(9, 9), at(9, 7)]
-          : [];
+      // Step two of the Dinosaur pass (`pulp_wars-w49.26`): a Dinosaur seat
+      // too (`tests/unit/ruleset-v7-dinosaur-step2.test.ts`): two Cavemen
+      // more.
+      const spare = [at(9, 9), at(9, 7)];
       const seat = (coins: number): GameStateV7 => {
         const state = field(
           [

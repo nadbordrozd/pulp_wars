@@ -39,6 +39,7 @@ import {
   unitRoleMechanicsV7,
   factionRulesV7,
   unitFactionV7,
+  unitGrowsV7,
   unitIsBlastProofV7,
   roleDefense2AtDistanceV7,
   unitRoleRuleV7,
@@ -52,6 +53,7 @@ import {
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import { knockbackDestinationV7 } from "../engine/v7/dwarf";
+import { crackedDefense2V7, unitIsCrackedV7 } from "../engine/v7/ninth-unit";
 import { publicUnitHasTerrainCoverV7 } from "../engine/v7/units";
 import { cooperativeAlliesV7, marketCoinsV7 } from "../engine/v7/economy";
 import { forbiddenTechnologiesV7 } from "../engine/v7/forbidden-technologies";
@@ -4210,7 +4212,22 @@ function armyMartianSeatV7(context: PolicyContextV7): boolean {
  * capture that would raise its price.
  */
 function armyBodiesSeatV7(context: PolicyContextV7): boolean {
-  return armyUndeadSeatV7(context) || armyMartianSeatV7(context);
+  return (
+    armyUndeadSeatV7(context) ||
+    armyMartianSeatV7(context) ||
+    // Step two of the Dinosaur pass (`pulp_wars-w49.26`,
+    // docs/product/RULESET_7_TUNING_DINOSAUR.md section 14): and a Dinosaur
+    // seat. Its Ankylosaurus is two technologies away too (the root, then
+    // Nesting): a seat with five cities bought Nesting, Farming, and
+    // Engineering (43 Coins) in rounds 8 to 11 of a diagnostic match and
+    // produced one Egg in those four rounds.
+    armyDinosaurSeatV7(context)
+  );
+}
+
+/** A Dinosaur seat of the army play. */
+function armyDinosaurSeatV7(context: PolicyContextV7): boolean {
+  return context.army && context.view.viewer.faction === "DINOSAUR";
 }
 
 // ---------------------------------------------------------------------------
@@ -4273,12 +4290,19 @@ function armyUndeadShortOfUnitsV7(context: PolicyContextV7): boolean {
   // Trooper). Its free Saucers are carriers: a seat with three Grunts and
   // four Saucers on four cities was not short of units by the plain count.
   const martian = armyMartianSeatV7(context);
+  // Step two of the Dinosaur pass: a Dinosaur seat counts its Eggs as the
+  // units inside (an Egg holds its unit slot from the turn it is laid, and
+  // a seat that did not count them would lay until its Coins were gone),
+  // and only the units that capture: a Triceratops, a Stegosaurus, and a
+  // T-Rex take no village and hold no center.
+  const dinosaur = armyDinosaurSeatV7(context);
   let units = 0;
   for (const unit of view.units)
     if (
       unit.ownerId === view.viewer.id &&
-      unit.form === "LAND" &&
-      (!martian || unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"))
+      (unit.form === "LAND" || (dinosaur && unit.form === "EGG")) &&
+      (!(martian || dinosaur) ||
+        unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"))
     )
       units += 1;
   return units < cities + ARMY_UNDEAD_SPARE_UNITS_V7;
@@ -5751,6 +5775,131 @@ function armyGoblinContactHeldV7(
   // (Nor the Move to a Kaboom worth making: it is why the unit goes.)
   if (kaboomSetupValueV7(context, actor, to) > 0) return false;
   return !goblinContactCompanyV7(context, actor, to);
+}
+
+/**
+ * Step two of the Dinosaur pass (`pulp_wars-w49.26`,
+ * docs/product/RULESET_7_TUNING_DINOSAUR.md section 14): a Dinosaur seat's
+ * Caveman or Raptor goes into contact with company, as a Goblin does
+ * (`armyGoblinContactHeldV7`). A Move of its melee unit that may attack after
+ * it and has neither Charge! nor Rampage (a Caveman, a Raptor; a
+ * Triceratops has `armyChargeHeldV7`) is not made when it ends next to an
+ * enemy unit from a tile next to none, the visible enemies kill the unit
+ * there, and it has no company (`dinosaurContactCompanyV7`).
+ * In a hand-played game two Cavemen walked up alone in one turn, one beside
+ * three Raiders and one beside two Fighters, struck for 7 and 5, and were
+ * dead a turn later; the capital's garrison did the same twice. Exempt: a
+ * hunter's Move of a combined kill, a Move after which the unit's own attack
+ * kills, and a Move onto a center or a village.
+ */
+function armyDinosaurContactHeldV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  if (!armyDinosaurSeatV7(context)) return false;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const to = command.path.at(-1);
+  if (
+    actor === undefined ||
+    to === undefined ||
+    actor.ownerId !== view.viewer.id ||
+    actor.form !== "LAND" ||
+    !unitMayActAfterMoveV7(view, actor)
+  )
+    return false;
+  const facts = publicCombatFacts(view, actor, context.lookup);
+  if (
+    !facts.abilities.includes("ATTACK") ||
+    facts.attack2 <= 0 ||
+    facts.maximumRange > 1 ||
+    facts.abilities.includes("OVERRUN") ||
+    facts.abilities.includes("LINEBREAKER")
+  )
+    return false;
+  const hostiles = armyHostilesV7(context);
+  if (
+    !hostiles.some((unit) => distance(unit.at, to) === 1) ||
+    hostiles.some((unit) => distance(unit.at, actor.at) === 1)
+  )
+    return false;
+  const tile = findPublicTileV7(view, to);
+  if (
+    context.lookup.citiesByKey.has(coordKey(to)) ||
+    (tile?.explored === true && tile.site !== null)
+  )
+    return false;
+  if (visibleImmediateDamage(view, actor, to, context) < actor.hp) return false;
+  const plan = huntOfV7(context, actor.id);
+  if (
+    plan !== undefined &&
+    plan.hunters.get(actor.id) === false &&
+    distance(to, plan.target.at) === 1
+  )
+    return false;
+  if (armyEngagementsForV7(context, actor).get(coordKey(to))?.kills === true)
+    return false;
+  return !dinosaurContactCompanyV7(context, actor, to);
+}
+
+/**
+ * Step two of the Dinosaur pass: whether a Dinosaur seat's unit that ends
+ * its Move on `to`, next to an enemy unit, has company there. For one of
+ * the enemy units it would touch: a hatched dinosaur of its own stands
+ * beside that enemy and the mover has Pack Hunt (its blow has the +1 now);
+ * or another own unit has that enemy in its range and its attack still to
+ * make; or another own unit that has not moved, may attack after a Move,
+ * has its attack, and does not hold a center can still be offered a tile
+ * from which it has (the tile the mover leaves counts). A Goblin's company
+ * (`goblinContactCompanyV7`) is any own unit beside the enemy, because it
+ * gives Gang Up whatever it has done; a Caveman beside a Raider that has
+ * struck already gives a second Caveman nothing, and on a recorded position
+ * one walked up between a Knight and that Raider on its strength.
+ */
+function dinosaurContactCompanyV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): boolean {
+  const view = context.view;
+  const pack = unitRoleMechanicsV7(view, actor).packHuntBonus2 > 0;
+  for (const hostile of armyHostilesV7(context)) {
+    if (distance(hostile.at, to) !== 1) continue;
+    for (const unit of view.units) {
+      if (
+        unit.id === actor.id ||
+        unit.ownerId !== view.viewer.id ||
+        unit.form !== "LAND"
+      )
+        continue;
+      const gap = distance(unit.at, hostile.at);
+      if (pack && gap === 1 && unitGrowsV7(view, unit)) return true;
+      const facts = publicCombatFacts(view, unit, context.lookup);
+      if (
+        !facts.abilities.includes("ATTACK") ||
+        facts.attack2 <= 0 ||
+        !primaryReadyForPolicyV7(unit)
+      )
+        continue;
+      const reaches = (range: number): boolean =>
+        range >= facts.minimumRange && range <= facts.maximumRange;
+      if (reaches(gap)) return true;
+      if (
+        unit.activation.moved ||
+        !unitMayActAfterMoveV7(view, unit) ||
+        context.lookup.citiesByKey.has(coordKey(unit.at))
+      )
+        continue;
+      if (
+        distance(unit.at, actor.at) <= facts.move &&
+        reaches(distance(actor.at, hostile.at))
+      )
+        return true;
+      for (const at of context.lookup.moveDestinationsByUnit.get(unit.id) ?? [])
+        if (!same(at, to) && reaches(distance(at, hostile.at))) return true;
+    }
+  }
+  return false;
 }
 
 /** The own units with an offered attack now. */
@@ -7919,6 +8068,26 @@ function armyResearchFloorV7(context: PolicyContextV7): number {
   ) {
     if (target !== null && context.view.viewer.coins < target.cost)
       floor = Math.max(0, target.cost - armyIncomeV7(context));
+    // Step two of the Dinosaur pass (`pulp_wars-w49.26`): a Dinosaur seat
+    // that can pay for the due technology keeps its price until it is
+    // bought. The Coins were kept only while they were short: a seat at war
+    // came to its turn with 16 Coins and Spitters due at 15, laid an Egg in
+    // a threatened city first (1260, above the technology's 1219), kept 5
+    // of the 11 left, and stood there again a turn later: Hunting in round
+    // 10 and Spitters in round 17 of a diagnostic match, with an Egg laid
+    // in every one of those rounds. A city with an enemy at its gates
+    // still lays regardless (`armyFloorHoldsTrainingV7`).
+    // Only while that research is on offer, so that the Coins are never
+    // kept for a purchase that cannot be made.
+    else if (
+      target !== null &&
+      armyDinosaurSeatV7(context) &&
+      context.commands.some(
+        (offered) =>
+          offered.kind === "RESEARCH" && offered.tech === target.tech,
+      )
+    )
+      floor = target.cost;
   }
   context.armyResearchFloor = floor;
   return floor;
@@ -9693,6 +9862,10 @@ function isPolicyCandidate(
   // contact with company.
   if (command.kind === "MOVE" && armyGoblinContactHeldV7(context, command))
     return false;
+  // Step two of the Dinosaur pass (`pulp_wars-w49.26`): and a Caveman or a
+  // Raptor.
+  if (command.kind === "MOVE" && armyDinosaurContactHeldV7(context, command))
+    return false;
   // Tuning 6 (`pulp_wars-w49.6`): so does a unit on a village it will
   // capture next turn.
   if (
@@ -9785,6 +9958,10 @@ function isPolicyCandidate(
     return false;
   // Step two of the Goblin pass (`pulp_wars-w49.23`): the helpers first.
   if (command.kind === "ATTACK" && goblinMobWaitsV7(context, command))
+    return false;
+  // Step two of the Dinosaur pass (`pulp_wars-w49.26`): the Stegosaurus,
+  // then the dinosaurs, then the Cavemen.
+  if (command.kind === "ATTACK" && dinosaurPackWaitsV7(context, command))
     return false;
   if (command.kind === "ATTACK" && isLowValueAttackV7(context, command)) {
     // pulp_wars-9s0.8: a hunter's share of a planned kill is not low value.
@@ -14088,7 +14265,22 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
       for (const [id, tile] of mob.tiles) tiles.set(id, tile);
       left = 0;
     }
-    for (const candidate of mob !== null || gated ? [] : candidates) {
+    // Step two of the Dinosaur pass (`pulp_wars-w49.26`): a Dinosaur seat
+    // counts the Crack of its Stegosaurus's shot and the Pack Hunt its
+    // dinosaurs give its Cavemen (`dinosaurPackHuntV7`). Where no group
+    // kills, the plan of tuning 5 is tried as before.
+    const pack =
+      army && armyDinosaurSeatV7(context)
+        ? dinosaurPackHuntV7(context, target, candidates)
+        : null;
+    if (pack !== null) {
+      for (const [id, stays] of pack.hunters) hunters.set(id, stays);
+      for (const [id, tile] of pack.tiles) tiles.set(id, tile);
+      left = 0;
+    }
+    for (const candidate of mob !== null || gated || pack !== null
+      ? []
+      : candidates) {
       if (left <= 0 || hunters.size >= HUNT_MAXIMUM_HUNTERS_V7) break;
       if (!candidate.stays) {
         const tile = candidate.tiles.find((key) => !usedTiles.has(key));
@@ -14282,6 +14474,206 @@ function goblinMobWaitsV7(
         isPolicyCandidate(context, move)
       )
         return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Step two of the Dinosaur pass (`pulp_wars-w49.26`,
+ * docs/product/RULESET_7_TUNING_DINOSAUR.md section 14): where a unit of a
+ * Dinosaur seat stands in the order of blows on one target. A Stegosaurus
+ * first (0): the unit it hits is Cracked for the rest of the turn, 1 Defense
+ * less against every later blow and in its strike back. Then the other
+ * dinosaurs (1): a unit a dinosaur has attacked is hunted, and a Caveman has
+ * Pack Hunt against it wherever the dinosaur stands. The Cavemen and the
+ * Shaman last (2).
+ */
+function dinosaurBlowRankV7(view: PlayerViewV7, unit: PublicUnitV7): 0 | 1 | 2 {
+  if (unit.form !== "LAND") return 2;
+  if (unitRoleMechanicsV7(view, unit).cracksArmour) return 0;
+  return unitGrowsV7(view, unit) ? 1 : 2;
+}
+
+/**
+ * Step two of the Dinosaur pass: the combined kill of a Dinosaur seat, with
+ * what its units do for each other. The hunt of tuning 5 projects every
+ * hunter's hit as if it struck alone, strongest first: a Stegosaurus and a
+ * Caveman beside a full Champion were no plan (6 and 4 of its 15 HP),
+ * though the shot leaves it Cracked and hunted and the Caveman's blow then
+ * deals the 9 it has left.
+ *
+ * As for a Goblin seat (`goblinMobHuntV7`) the smallest group of the
+ * strongest candidates that kills is taken: for one hunter, then two, up to
+ * `HUNT_MAXIMUM_HUNTERS_V7`. The blows of a group are projected in the order
+ * of `dinosaurBlowRankV7`, each on the HP the earlier ones leave: after a
+ * Stegosaurus's shot that does not kill the target is Cracked, and after any
+ * dinosaur's blow that does not kill a Caveman has Pack Hunt. Null when no
+ * group kills.
+ */
+function dinosaurPackHuntV7(
+  context: PolicyContextV7,
+  target: PublicUnitV7,
+  candidates: readonly {
+    readonly unit: PublicUnitV7;
+    readonly stays: boolean;
+    readonly tiles: readonly string[];
+    readonly from: CoordV7;
+    readonly places: readonly CoordV7[];
+  }[],
+): {
+  readonly hunters: ReadonlyMap<UnitId, boolean>;
+  readonly tiles: ReadonlyMap<UnitId, string>;
+} | null {
+  const view = context.view;
+  const limit = Math.min(HUNT_MAXIMUM_HUNTERS_V7, candidates.length);
+  // (An Egg and the Monster are never Cracked.)
+  const cracks =
+    target.form === "LAND" &&
+    context.curiosities?.monsterById.has(target.id) !== true;
+  for (let size = 1; size <= limit; size += 1) {
+    const group: {
+      readonly unit: PublicUnitV7;
+      readonly from: CoordV7;
+      readonly rank: 0 | 1 | 2;
+      readonly index: number;
+    }[] = [];
+    const hunters = new Map<UnitId, boolean>();
+    const tiles = new Map<UnitId, string>();
+    const usedTiles = new Set<string>();
+    for (const candidate of candidates) {
+      if (group.length >= size) break;
+      let from = candidate.from;
+      if (!candidate.stays) {
+        const index = candidate.tiles.findIndex((key) => !usedTiles.has(key));
+        const tile = candidate.tiles[index];
+        const place = candidate.places[index];
+        if (tile === undefined || place === undefined) continue;
+        usedTiles.add(tile);
+        tiles.set(candidate.unit.id, tile);
+        from = place;
+      }
+      hunters.set(candidate.unit.id, candidate.stays);
+      group.push({
+        unit: candidate.unit,
+        from,
+        rank: dinosaurBlowRankV7(view, candidate.unit),
+        index: group.length,
+      });
+    }
+    if (group.length < size) return null;
+    group.sort(
+      (left, right) => left.rank - right.rank || left.index - right.index,
+    );
+    let left = target.hp;
+    let cracked = false;
+    let hunted = false;
+    for (const member of group) {
+      if (left <= 0) break;
+      const struck = { ...member.unit, at: member.from };
+      const pack2 = unitRoleMechanicsV7(view, member.unit).packHuntBonus2;
+      left -= publicProjectedDamageWithLookupV7(
+        view,
+        struck,
+        { ...target, hp: left },
+        target.at,
+        {
+          // (Not twice: the projection counts the Pack Hunt of the board as
+          // it is, a dinosaur beside the target or a target hunted already.)
+          bonusAttack2:
+            hunted &&
+            pack2 > 0 &&
+            packHuntForPolicyV7(view, struck, target, target.at) === 0
+              ? pack2
+              : 0,
+          cracked,
+        },
+        context.lookup,
+      );
+      if (left <= 0) break;
+      if (member.rank === 0 && cracks) cracked = true;
+      if (member.rank <= 1) hunted = true;
+    }
+    if (left <= 0) return { hunters, tiles };
+  }
+  return null;
+}
+
+/**
+ * Step two of the Dinosaur pass: the blows of a Dinosaur seat's combined
+ * kill fall in the order of `dinosaurBlowRankV7`. A hunter's hit that does
+ * not kill waits while a hunter of the same plan with a lower rank (the
+ * Stegosaurus before every other unit, a dinosaur before a Caveman) still
+ * has its blow on the target to make: its attack is on offer, or it has not
+ * moved and its Move to the tile the plan counted is, and that command
+ * passes the candidate filter, so that the wait always ends. (Hits ranked
+ * by their own value, and a Caveman struck a full Champion for 4 before the
+ * Stegosaurus behind it had shot.) Its hit on another unit waits too: it has
+ * one attack.
+ */
+function dinosaurPackWaitsV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+): boolean {
+  if (!armyDinosaurSeatV7(context)) return false;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  if (actor === undefined || actor.form !== "LAND") return false;
+  const rank = dinosaurBlowRankV7(view, actor);
+  if (rank === 0) return false;
+  const plan = huntOfV7(context, command.unitId);
+  if (plan === undefined || !plan.army) return false;
+  const preview = queryCombatPreviewV7(
+    view,
+    command.unitId,
+    command.targetUnitId,
+  );
+  if (preview === null || preview.defenderDies) return false;
+  // What the wait is for: the Crack of a Stegosaurus's shot (a target that
+  // is not Cracked yet), or the Pack Hunt of a Caveman that has none on the
+  // target now (no dinosaur beside it, and not hunted). A Caveman whose
+  // target stands beside a dinosaur already strikes at once.
+  const target = plan.target;
+  const wantsCrack =
+    target.form === "LAND" &&
+    context.curiosities?.monsterById.has(target.id) !== true &&
+    !unitIsCrackedV7(view, target.id);
+  const wantsPack =
+    unitRoleMechanicsV7(view, actor).packHuntBonus2 > 0 &&
+    packHuntForPolicyV7(view, actor, target, target.at) === 0;
+  if (!wantsCrack && !wantsPack) return false;
+  for (const [id, stays] of plan.hunters) {
+    if (id === actor.id) continue;
+    const other = context.lookup.unitsById.get(id);
+    if (other === undefined) continue;
+    const otherRank = dinosaurBlowRankV7(view, other);
+    if (
+      otherRank >= rank ||
+      !(otherRank === 0 ? wantsCrack || wantsPack : wantsPack)
+    )
+      continue;
+    const tile = plan.tiles.get(id);
+    for (const offered of context.commands) {
+      if (
+        offered.kind === "ATTACK" &&
+        offered.unitId === id &&
+        offered.targetUnitId === plan.target.id
+      ) {
+        if (isPolicyCandidate(context, offered)) return true;
+      } else if (
+        !stays &&
+        tile !== undefined &&
+        offered.kind === "MOVE" &&
+        offered.unitId === id
+      ) {
+        const to = offered.path.at(-1);
+        if (
+          to !== undefined &&
+          coordKey(to) === tile &&
+          isPolicyCandidate(context, offered)
+        )
+          return true;
+      }
     }
   }
   return false;
@@ -21461,6 +21853,38 @@ function movedRayAttack2V7(
   return Math.floor(full2 / 2) + (published2 - full2);
 }
 
+/**
+ * Step two of the Dinosaur pass (`pulp_wars-w49.26`,
+ * docs/product/RULESET_7_TUNING_DINOSAUR.md section 14): the Charge! run-up
+ * of the viewer's own Triceratops projected from a tile it has not reached
+ * yet. The projection read the unit's published Attack, which has no run-up
+ * before the Move, so a combined kill counted a Triceratops that walks up
+ * and charges at 8 on a Fighter where it deals 12 (the twin of
+ * `movedRayAttack2V7`, the other way round). The tiles are the distance to
+ * the tile, as many as count for the viewer (`chargeRunUpForPolicyV7`: one,
+ * or two with Wallbreaker). 0 for every other attacker, for a unit projected
+ * from its own tile, and for one that has moved or attacked (its published
+ * Attack has the run-up already, or it has none).
+ */
+function movedRunUpAttack2V7(
+  view: PlayerViewV7,
+  attacker: PublicUnitV7,
+  lookup?: PolicyLookupV7,
+): number {
+  if (attacker.ownerId !== view.viewer.id || !linebreakerV7(view, attacker))
+    return 0;
+  const real =
+    lookup?.unitsById.get(attacker.id) ??
+    view.units.find((unit) => unit.id === attacker.id);
+  if (
+    real === undefined ||
+    real.activation.moved ||
+    real.activation.attacksUsed > 0
+  )
+    return 0;
+  return chargeRunUpForPolicyV7(view, attacker, distance(real.at, attacker.at));
+}
+
 function publicProjectedDamageWithLookupV7(
   view: PlayerViewV7,
   attacker: PublicUnitV7,
@@ -21470,6 +21894,11 @@ function publicProjectedDamageWithLookupV7(
     readonly maximumCharge?: boolean;
     /** Revision 17 Gang Up estimate (Goblin matches only). */
     readonly bonusAttack2?: number;
+    /**
+     * Step two of the Dinosaur pass: the target is taken as Cracked (an own
+     * Stegosaurus strikes it earlier in the same combined kill).
+     */
+    readonly cracked?: boolean;
     /**
      * The Martian revision: a heat ray's `attack2` at the power it fires
      * with (full or half), instead of the published Attack.
@@ -21499,6 +21928,10 @@ function publicProjectedDamageWithLookupV7(
         )
       : publishedAttack2) +
     (options.bonusAttack2 ?? 0) +
+    // Step two of the Dinosaur pass (`pulp_wars-w49.26`): the run-up of an
+    // own Triceratops projected from a tile it has not reached (0 for every
+    // other unit).
+    movedRunUpAttack2V7(view, attacker, lookup) +
     // The Dinosaur pass, correction (`pulp_wars-w49.15`): a Caveman's Pack
     // Hunt (0 for every other unit).
     packHuntForPolicyV7(view, attacker, defender, defenderAt);
@@ -21574,26 +22007,35 @@ function publicProjectedDamageWithLookupV7(
                 : 0,
             )
           : tileFortification;
+  // Step two of the Dinosaur pass (`pulp_wars-w49.26`): a Cracked unit (a
+  // Stegosaurus's shot this turn, public in `ninthUnit.crackedThisTurn`; or
+  // one an own Stegosaurus strikes earlier in the same combined kill,
+  // `options.cracked`) has 1 Defense less, never below 0.5, under its
+  // fortification. The projection read the role's Defense, so every blow
+  // planned after the shot was counted against an uncracked target. The
+  // list is empty in a match without a Dinosaur seat.
+  const cracked =
+    options.cracked === true || unitIsCrackedV7(view, defender.id);
+  // Tuning 5: the Human Guard is open to ranged attacks.
+  const roleDefense2 = roleDefense2AtDistanceV7(
+    defenseRule,
+    unitRoleMechanicsV7(view, defender),
+    // A unit that reaches only one tile strikes from there wherever it
+    // stands now (a threat estimate); a ranged unit from where it stands,
+    // or from its range.
+    attackFacts.maximumRange <= 1
+      ? 1
+      : distance(attacker.at, defenderAt) === 1 && attackFacts.minimumRange <= 1
+        ? 1
+        : 2,
+  );
   // Revision 19: an Egg defends with a fixed 1, like an embarked unit.
   const defense2 =
     defender.form === "EMBARKED"
       ? 2
       : defender.form === "EGG"
         ? EGG_DEFENSE2_V7
-        : // Tuning 5: the Human Guard is open to ranged attacks.
-          roleDefense2AtDistanceV7(
-            defenseRule,
-            unitRoleMechanicsV7(view, defender),
-            // A unit that reaches only one tile strikes from there
-            // wherever it stands now (a threat estimate); a ranged unit
-            // from where it stands, or from its range.
-            attackFacts.maximumRange <= 1
-              ? 1
-              : distance(attacker.at, defenderAt) === 1 &&
-                  attackFacts.minimumRange <= 1
-                ? 1
-                : 2,
-          ) +
+        : (cracked ? crackedDefense2V7(roleDefense2) : roleDefense2) +
           fortificationLevel * 2;
   // The Dwarf revision (`pulp_wars-78i.4`): a construct attacks with its
   // maximum HP (Unflinching; on attack only).

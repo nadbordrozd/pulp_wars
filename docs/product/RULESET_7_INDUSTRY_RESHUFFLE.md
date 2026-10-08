@@ -276,7 +276,13 @@ third in its order.
 **Dinosaurs.** Nesting now carries the Ankylosaurus Egg, +4 HP for Eggs,
 and a slot in every city: three good things on one tier-2 node. Is it the
 obvious second technology every game? The AI's two reasons for Nesting
-(the defender, and a crowded city) now point at one node.
+(the defender, and a crowded city) now point at one node. **Played** (bead
+`pulp_wars-w49.26`, no rule changed): the answer is in
+[the Dinosaur pass, section 14.2](RULESET_7_TUNING_DINOSAUR.md#142-the-questions).
+In short: it was the second purchase of one hand-played game, for the unit
+slot, and was not bought in fifteen rounds of another, where harvests and
+Lumber Camps bought the slots and Spitters held the land; the node was left
+whole.
 
 **Martians.** The first Shield Projector always arrives with Force
 Fields, so a Projector without its field is no longer seen in ordinary

@@ -1,5 +1,150 @@
 # Greedy Normal AI
 
+## Step two of the Dinosaur pass (`pulp_wars-w49.26`)
+
+[Step two of the Dinosaur pass](../product/RULESET_7_TUNING_DINOSAUR.md#14-step-two)
+changed no rule (the identity stays `pulp-wars-poc-7r58`) and eight things
+in the policy of a Dinosaur seat that plays the army rules
+(`armyDinosaurSeatV7`: `context.army` and a Dinosaur viewer). A seat of
+another faction decides as before, except where an Undead and a Martian
+seat's rule was widened to it (`armyBodiesSeatV7`), which changes nothing
+for those two. Everything reads the viewer's `PlayerViewV7` and the public
+previews.
+
+**What was seen** (a hand-played game as the Humans on seed 9, four
+diagnostic matches on that seed, two in the lab, and recorded positions of
+them). The Triceratops was second in the order and is two dear
+technologies behind the root since the ninth unit: the seat fielded Cavemen
+and Ankylosauruses only for the eighteen rounds of the hand-played game
+(Engineering in round 15) and until round 19 against the Human AI, bought
+43 Coins of technology in rounds 8 to 11 there with one Egg laid, and never
+left its land. It sent single Cavemen up beside two and three enemy units
+(four times in the hand-played game), each for one blow and its death. In
+a war it came to its turn with 16 Coins and Spitters due at 15, laid an Egg
+in a threatened city first, and bought the technology four rounds later.
+
+**1. The order** (`ARMY_RESEARCH_ROLES_V7.DINOSAUR`). Ankylosaurus,
+**Spitter, Raptor**, Triceratops, Stegosaurus, Shaman, T-Rex: from a
+Gathering opener Crafting, Nesting, Hunting, Spitters, Scouting,
+Engineering, Armoury, Forestry, Timber, Leadership, Land Grants, Raiding,
+T-Rex. The rules that name a position in the order follow it: Wallbreaker
+is the target at the first role after the Ankylosaurus once two Triceratops
+are fielded, as before.
+
+**2. Bodies first** (`armyBodiesSeatV7`, in `armyUndeadShortOfUnitsV7` and
+so in `armyUndeadBodiesFirstV7`, `preferredReward`). The rule of step two
+of the Undead pass holds for a Dinosaur seat: with fewer units than its
+cities and `ARMY_UNDEAD_SPARE_UNITS_V7` (2) more, the Coins for a Caveman,
+and a city that can train, training comes first, no technology is due, and
+no Coins are kept; in a war until the research clock is a whole technology
+behind. A Dinosaur seat counts the units that capture, in land form or as
+an Egg (an Egg holds its slot from the turn it is laid): a Triceratops, a
+Stegosaurus, and a T-Rex take no village. Short of units it also takes the
+Militia of a city that is not threatened (it took Scouts at level 2
+already).
+
+**3. One growth technology before Nesting's two**
+(`armyUndeadGrowthFirstV7`, `armyDefenderResearchV7`,
+`ARMY_RESEARCH_BEFORE_CAPTURE_PRIORITY_V7`). As for an Undead and a Martian
+seat: while the seat cannot lay the Ankylosaurus, owns at most its opener
+beside the root, and no hostile land unit is visible within
+`ARMY_ALERT_RADIUS_V7` of one of its centers, the growth technology of its
+land is the target; with contact Crafting and Nesting come first. Nesting
+is a due research also with an enemy at a gate, and a due research is made
+before a Capture offered in the same turn.
+
+**4. The price of a due technology is kept** (`armyResearchFloorV7`). The
+floor of tuning 8 keeps the price less one turn's income while the seat
+cannot pay. For a Dinosaur seat that can pay, and to which the research is
+offered, the floor is the price itself until it is bought: a threatened
+city produces at 1260, above a due technology's 1219, and spent the Coins
+first (Hunting in round 10 and Spitters in round 17 of a diagnostic match,
+with an Egg laid in every round between). A city with an enemy at its
+gates still produces regardless (`armyFloorHoldsTrainingV7`).
+
+**5. Into contact with company** (`armyDinosaurContactHeldV7`, a candidate
+filter; `dinosaurContactCompanyV7`). A Move of a Dinosaur seat's melee unit
+that may attack after it and has neither Charge! nor Rampage (a Caveman, a
+Raptor) is not made when it ends beside an enemy unit from a tile beside
+none, the visible enemies kill the unit there
+(`visibleImmediateDamage`), and it has no company. Company, for one of the
+enemy units it would touch: a hatched dinosaur of its own stands beside
+that enemy and the mover has Pack Hunt; or another own unit has that enemy
+in range and its attack still to make; or another own unit that has not
+moved, may attack after a Move, has its attack, and holds no center can
+still be offered a tile from which it has (the tile the mover leaves
+counts). It is stricter than a Goblin's (`goblinContactCompanyV7`: any own
+unit beside the enemy, which gives Gang Up whatever it has done). Exempt,
+as for a Goblin: a hunter's Move of a combined kill, a Move after which the
+unit's own attack kills, and a Move onto a center or a village. A
+Triceratops keeps `armyChargeHeldV7`.
+
+**6. The run-up of a Triceratops that has yet to move**
+(`movedRunUpAttack2V7`, in `publicProjectedDamageWithLookupV7`). The
+projection took the attacker's published Attack, which has no run-up
+before the Move. For the viewer's own Triceratops that has neither moved
+nor attacked, projected from a tile it does not stand on, the run-up of
+the distance to that tile is added (`chargeRunUpForPolicyV7`: one tile, or
+two with Wallbreaker). The twin of the Martian pass's `movedRayAttack2V7`,
+the other way round: a combined kill counted a charging Triceratops at 8 on
+a Fighter where it deals 12. `chargeFromV7` (the approach Move of revision 20) passes its own run-up and projects the unit where it stands, so nothing
+is counted twice.
+
+**7. Cracked is counted** (`publicProjectedDamageWithLookupV7`,
+`unitIsCrackedV7`, `crackedDefense2V7`). A unit listed in the view's
+`ninthUnit.crackedThisTurn` defends with 1 Defense less, never below 0.5,
+under its fortification, as the engine has it. The projection read the
+role's Defense; the exact preview of an offered attack always had it.
+
+**8. The order of blows** (`dinosaurBlowRankV7`, `dinosaurPackHuntV7` in
+`huntPlansV7`, `dinosaurPackWaitsV7`, a candidate filter). The combined
+kill of tuning 5 projects every hunter's hit alone, strongest first. For a
+Dinosaur seat the group is the smallest prefix of the candidates that
+kills when the blows are projected in the order Stegosaurus (0), other
+dinosaurs (1), Cavemen and Shaman (2), each on the HP the earlier ones
+leave, with the target Cracked after a Stegosaurus's blow that does not
+kill (`cracked` of the projection) and a Caveman's Pack Hunt after any
+dinosaur's (`bonusAttack2`, unless the board gives it already). Where no
+group kills, the plan of tuning 5 is tried as before. A hunter's hit that
+does not kill then waits while a hunter of the same plan with a lower rank
+still has its blow to make (its attack on the target is on offer, or it has
+not moved and its Move to the tile the plan counted is, and that command
+passes the candidate filter), but only for what the wait gives it: a
+target that is not Cracked yet (the Stegosaurus first), or a Caveman with
+no Pack Hunt on the target now. A Caveman whose target stands beside a
+dinosaur already strikes at once.
+
+**Before and after.** Not a balance measurement.
+
+| Where                                          | Before                                                                                                                       | After                                                                                  |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Against the Human AI, seed 9, the technologies | Crafting 5, Nesting 8, Farming 9, Engineering 11, Armoury 18, Scouting 19, Hunting 20, Spitters 23                           | Farming 6, Crafting 7, Nesting 9, Hunting 10, Spitters 13, Scouting 16, Engineering 19 |
+| The same match, round 25                       | 4 cities and 13 units against 5 and 12; 33 attacks, 16 kills, 20 lost                                                        | 7 cities and 29 units against 3 and 5; 61 attacks, 28 kills, 19 lost                   |
+| The hand-played Human, seed 9                  | four lone Cavemen sent into contact; 21 attacks, 7 kills, 15 lost in 18 rounds; one city lost in round 15, the capital in 19 | none; its Raptors killed three Raiders two at a time; no city lost in 16 rounds        |
+| The lab, both seats the AI, twelve rounds      | Wallbreaker in round 11; 51 attacks, 32 kills, 25 lost                                                                       | Wallbreaker in round 1; 52 attacks, 32 kills, 26 lost                                  |
+
+No error and no stall in any of the six matches. The final policy plays
+every recorded turn of the "after" match on seed 9 and of the second
+hand-played game as it was played; the fourth match on seed 9 and the
+second lab match were run before a correction to rule 8.
+
+**Not changed, and seen.** The seat does not attack a player's land with
+fewer units than the player has. Its Triceratops comes after round 25 of a
+generated match (two dear technologies on the research tempo of every army
+seat). Its free Raptors die within a turn of their first kill. It lays an
+Egg beside a front city in a fast unit's reach when an own unit stands
+beside the nest tile.
+
+**Pins that moved**, each with a note at the test: the Pangea pin of the curiosities parity
+matches (the one with a Dinosaur seat: commands and events, 12 rounds still;
+the map and the PRNG are unchanged); the Dinosaur research order where a
+test states it, and the technology a Dinosaur seat with Nesting researches
+next; one fixture with the Cavemen that keep a Dinosaur seat from being
+short of units; the policy's import list (the Cracked helpers of
+`src/engine/v7/ninth-unit.ts`); the source audits (four land-form tests in
+`src/ai/v7.ts`; three readers classified). The list is in
+[section 14.7](../product/RULESET_7_TUNING_DINOSAUR.md#147-tests).
+
 ## Step two of the Martian pass (`pulp_wars-w49.25`)
 
 [Step two of the Martian pass](../product/RULESET_7_TUNING_MARTIAN.md#14-step-two)

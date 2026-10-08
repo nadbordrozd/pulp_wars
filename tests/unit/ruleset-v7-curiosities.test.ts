@@ -501,6 +501,13 @@ describe("headless parity and the CLI flag", () => {
         // and the final PRNG state are unchanged. The Archipelago pin, the
         // other one with a Martian seat, was recomputed too; the three
         // pins without one are unchanged.
+        // Step two of the Dinosaur pass (`pulp_wars-w49.26`, no rule and
+        // no identity change: the Dinosaur seat researches the Spitter and
+        // the Raptor before the Triceratops and trains before it researches
+        // while it is short of units): 12 rounds still, recomputed (the
+        // commands and the events); the board and the final PRNG state are
+        // unchanged, and so are the other four pins, which have no
+        // Dinosaur seat.
         rounds: 12,
         commandHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
@@ -511,7 +518,9 @@ describe("headless parity and the CLI flag", () => {
           // ed5934…6bf4).
           // Step two of the Martian pass (`pulp_wars-w49.25`): recomputed (was
           // c99053…81a8).
-          "8bce76d959a9f6a8dd98a2d68cf971a48f955a8cb33d05680f8b82e9d484e78f",
+          // Step two of the Dinosaur pass (`pulp_wars-w49.26`): recomputed
+          // (was 8bce76…e78f).
+          "600a5bac1a9b86e076841ea8399d05072f13d2ab259a898623bca6da2b113373",
         eventHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // 6f55cd…6484).
@@ -521,7 +530,9 @@ describe("headless parity and the CLI flag", () => {
           // bde7a3…b117).
           // Step two of the Martian pass (`pulp_wars-w49.25`): recomputed (was
           // ac5451…4589).
-          "e0c73dddab1d7339d2707898ad90618930991feb388df652f57492aab5e0a617",
+          // Step two of the Dinosaur pass (`pulp_wars-w49.26`): recomputed
+          // (was e0c73d…a617).
+          "11b11fcf758fee4206ee635dce06d5fd00f48c3e0ab74a503ae0fd7b28cf7cc1",
         mapHash:
           "5b286bbe8cdb2f8a339cd7a74ba219bc2b57a4322370548442b3c8f26bef4ad9",
         finalPrngHash:

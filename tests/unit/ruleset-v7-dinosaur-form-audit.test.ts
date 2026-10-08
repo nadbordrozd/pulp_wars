@@ -651,7 +651,12 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Step two of the Undead pass (`pulp_wars-w49.24`): the unit that stays
     // on its Field Defense is a land-form unit (an Egg makes no Move, and
     // an embarked unit stands on no Field Defense).
-    "src/ai/v7.ts": 44,
+    // Step two of the Dinosaur pass (`pulp_wars-w49.26`): the Caveman or
+    // Raptor that goes into contact, the place of a unit in the order of
+    // blows (an Egg and an embarked unit strike nobody: last), its company
+    // beside an enemy, and the hit that waits for the Stegosaurus are a
+    // land-form unit's.
+    "src/ai/v7.ts": 48,
     // Tuning 5: the army count takes land-form units only (an Egg and an
     // embarked unit are in no fighting class).
     "src/ai/v7-army.ts": 1,

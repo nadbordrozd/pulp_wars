@@ -875,11 +875,13 @@ describe("research toward the army", () => {
       ],
       // The Dinosaur pass (`pulp_wars-w49.15`): the Ankylosaurus, the
       // Triceratops, the Raptor, the Spitter, the Shaman, the T-Rex.
+      // Step two of the Dinosaur pass (`pulp_wars-w49.26`): the Spitter and
+      // the Raptor before the Triceratops.
       DINOSAUR: [
         "GUARD",
-        "SWORDSMAN",
-        "RAIDER",
         "MARKSMAN",
+        "RAIDER",
+        "SWORDSMAN",
         "CATAPULT",
         "CAPTAIN",
         "KNIGHT",
