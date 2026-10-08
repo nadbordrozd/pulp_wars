@@ -488,7 +488,14 @@ Martian army fights, or is a Move-1 unit left behind by walkers and
 flyers? Under a Force Field its Shield is 4 and refilled each turn: is the
 shock up too often? Does a Human player learn "shoot the Shield off, then
 go in" from the preview? Is Engineering on the way now worth its Mines to
-a Martian seat?
+a Martian seat? **Played** (bead `pulp_wars-w49.25`, two hand games as the
+Martians, two as the Humans against them, and the lab; one rule changed,
+which is not the Trooper's): the answers are in
+[the Martian pass, section 14](RULESET_7_TUNING_MARTIAN.md#14-step-two).
+In short: the shock is paid by the first unit that strikes hand to hand
+in a turn and by no unit that shoots first; a Saucer sets a Trooper down
+in the line the turn it is trained; the AI fields one for every two
+Grunts.
 
 **Dinosaur (Triceratops, Stegosaurus).** Does the Triceratops, three
 technologies from the start on a branch away from the Chopping Block,

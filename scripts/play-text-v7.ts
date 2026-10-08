@@ -787,6 +787,15 @@ export const FORCE_FIELD_NEEDS_NOTE_V7 =
 /** The Martian pass, correction (`pulp_wars-w49.14`). */
 export const PSYCHIC_COOLDOWN_TEXT_V7 =
   "Psychic Command every second turn (the Brain is Cooling in between)";
+/**
+ * Step two of the Martian pass (`pulp_wars-w49.25`): the Shock Trooper's
+ * rule on its own line (the `tech` and train lines listed it as a unit with
+ * "abilities CAPTURE" and nothing else; only its attacker's preview named
+ * the Shock Field).
+ */
+export function shockFieldTextV7(damage: number): string {
+  return `Shock Field: while it has Shield, a unit that attacks it from the next tile takes ${damage}`;
+}
 export const BEAM_DOWN_TEXT_V7 = `Beam Down: sets one of your units down beside itself, lifted from on or beside ANY of your city centers or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away (the unit may still attack, not move)`;
 
 function roleNotesV7(
@@ -805,6 +814,7 @@ function roleNotesV7(
     | "armourReduction"
     | "capacitySlots"
     | "hatchTurns"
+    | "shockFieldDamage"
   > | null = null,
 ): readonly string[] {
   const rangedDefense2 = mechanics?.rangedDefense2 ?? null;
@@ -843,6 +853,8 @@ function roleNotesV7(
     notes.push(PSYCHIC_COOLDOWN_TEXT_V7);
   if ((rule.abilities as readonly string[]).includes("BEAM_DOWN"))
     notes.push(BEAM_DOWN_TEXT_V7);
+  if (mechanics !== null && mechanics.shockFieldDamage > 0)
+    notes.push(shockFieldTextV7(mechanics.shockFieldDamage));
   // The Dinosaur pass (`pulp_wars-w49.15`, 7r53): the Dinosaur unit rules
   // in the sentences of the unit card (only a Dinosaur role has them).
   if (rule.abilities.includes("LINEBREAKER"))

@@ -141,7 +141,7 @@ function without(...missing: readonly TechnologyIdV7[]): TechnologyIdV7[] {
 
 describe("step two of the Goblin pass: no rule changed", () => {
   it("kept the identity (7r56 then; 7r57 since step two of the Undead pass)", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r57");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r58");
   });
 });
 

@@ -444,7 +444,9 @@ describe("Tractor Beam aiming", () => {
     const saucer = effectiveRoleRuleV7("RAIDER", "MARTIAN").label;
     const mothership = effectiveRoleRuleV7("KNIGHT", "MARTIAN").label;
     expect(help.get("Tractor Beam")).toBe(
-      `a ${saucer} pulls a unit two tiles away one tile closer; a ${mothership} pulls a unit two or three tiles away up to two tiles closer, once a turn, and can still act.`,
+      // (Step two of the Martian pass, 7r58: City Walls hold a unit
+      // against the Saucer's beam.)
+      `a ${saucer} pulls a unit two tiles away one tile closer, but not a unit on its own city center with City Walls; a ${mothership} pulls a unit two or three tiles away up to two tiles closer, also off City Walls, once a turn, and can still act.`,
     );
     expect(help.get("Beam Down")).toBe(
       `a ${saucer} or ${mothership} brings one of your units, from on or next to any of your city centers or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away, next to itself; the unit can still attack but not move.`,
@@ -702,10 +704,10 @@ describe("Gallery: the balance round's cues and details", () => {
       )?.description;
     };
     expect(abilityOf("RAIDER")).toBe(
-      "Pulls a unit 2 tiles away one tile closer. That is its action for the turn.",
+      "Pulls a unit 2 tiles away one tile closer, as its action for the turn. City Walls hold a unit on its own city.",
     );
     expect(abilityOf("KNIGHT")).toBe(
-      "Pulls a distant unit closer, once a turn. It can still move and attack afterwards.",
+      "Pulls a distant unit closer once a turn, even off City Walls. It can still move and attack afterwards.",
     );
     const yeti = galleryUnitCellV7("FIGHTER", "ICE_FOLK");
     if (yeti?.kind !== "UNIT") throw new Error("no cell");

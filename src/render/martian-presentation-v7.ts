@@ -164,7 +164,9 @@ export const TRACTOR_BEAM_LABEL_V7 = "Tractor Beam";
 // `pulp_wars-1wy.3`: the Saucer's pull and the Mothership's Heavy Tractor
 // Beam, in one text, for a reader without a unit (the per-unit texts are
 // `tractorBeamTooltipV7`).
-export const TRACTOR_BEAM_TOOLTIP_V7 = `A Saucer pulls a unit ${TRACTOR_BEAM_RANGE_V7} tiles away one tile closer. A Mothership pulls a unit ${TRACTOR_BEAM_RANGE_V7} or ${HEAVY_TRACTOR_RANGE_V7} tiles away up to ${HEAVY_TRACTOR_PULL_V7} tiles closer, once a turn, and can still act.`;
+// Step two of the Martian pass (`pulp_wars-w49.25`, `7r58`): City Walls
+// hold a unit against a Saucer's beam, not against a Mothership's.
+export const TRACTOR_BEAM_TOOLTIP_V7 = `A Saucer pulls a unit ${TRACTOR_BEAM_RANGE_V7} tiles away one tile closer, but not a unit behind its City Walls. A Mothership pulls a unit ${TRACTOR_BEAM_RANGE_V7} or ${HEAVY_TRACTOR_RANGE_V7} tiles away up to ${HEAVY_TRACTOR_PULL_V7} tiles closer, once a turn, also off City Walls, and can still act.`;
 export const TRACTOR_BEAM_NO_TARGET_V7 = "No unit in reach can be pulled";
 
 /**
@@ -173,8 +175,8 @@ export const TRACTOR_BEAM_NO_TARGET_V7 = "No unit in reach can be pulled";
  */
 export function tractorBeamTooltipV7(heavy: boolean): string {
   return heavy
-    ? `Pull a unit ${TRACTOR_BEAM_RANGE_V7} or ${HEAVY_TRACTOR_RANGE_V7} tiles away up to ${HEAVY_TRACTOR_PULL_V7} tiles closer. Free once a turn: it can still move and act.`
-    : `Pull a unit ${TRACTOR_BEAM_RANGE_V7} tiles away one tile closer. Uses this unit's action.`;
+    ? `Pull a unit ${TRACTOR_BEAM_RANGE_V7} or ${HEAVY_TRACTOR_RANGE_V7} tiles away up to ${HEAVY_TRACTOR_PULL_V7} tiles closer, also off City Walls. Free once a turn: it can still move and act.`
+    : `Pull a unit ${TRACTOR_BEAM_RANGE_V7} tiles away one tile closer, but not a unit behind its City Walls. Uses this unit's action.`;
 }
 
 /** Whether a role's Tractor Beam is the heavy, free one (the Mothership's). */
@@ -460,7 +462,7 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       TRACTOR_BEAM_LABEL_V7,
-      `a ${joinOr(lightPullers)} pulls a unit ${numberWord(TRACTOR_BEAM_RANGE_V7)} tiles away one tile closer; a ${joinOr(heavyPullers)} pulls a unit ${numberWord(TRACTOR_BEAM_RANGE_V7)} or ${numberWord(HEAVY_TRACTOR_RANGE_V7)} tiles away up to ${numberWord(HEAVY_TRACTOR_PULL_V7)} tiles closer, once a turn, and can still act.`,
+      `a ${joinOr(lightPullers)} pulls a unit ${numberWord(TRACTOR_BEAM_RANGE_V7)} tiles away one tile closer, but not a unit on its own city center with City Walls; a ${joinOr(heavyPullers)} pulls a unit ${numberWord(TRACTOR_BEAM_RANGE_V7)} or ${numberWord(HEAVY_TRACTOR_RANGE_V7)} tiles away up to ${numberWord(HEAVY_TRACTOR_PULL_V7)} tiles closer, also off City Walls, once a turn, and can still act.`,
     ],
     [
       `${PSYCHIC_COMMAND_LABEL_V7}, ${STRAFE_LABEL_V7}`,

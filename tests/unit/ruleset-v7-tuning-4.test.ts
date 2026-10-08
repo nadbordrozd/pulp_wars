@@ -108,7 +108,7 @@ const moveTargets = (state: GameStateV7, from: CoordV7): readonly string[] => {
 
 describe("tuning 4 keeps the unpublished identity", () => {
   it("is 7r47", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r57");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r58");
   });
 });
 

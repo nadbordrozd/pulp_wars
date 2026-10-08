@@ -121,7 +121,7 @@ import {
   walledV7,
 } from "../fixtures/v7-revision20";
 
-// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r57`,
+// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r58`,
 // docs/product/RULESET_7_TUNING_DINOSAUR.md): Scouts for a Dinosaur city (a
 // free Raptor); a Triceratops's run-up counts one tile, two with
 // Wallbreaker; the Caveman's Pack Hunt; a Dinosaur Market hires a dinosaur
@@ -206,15 +206,15 @@ describe("the Dinosaur pass: identity", () => {
   // The economy rejig (tests/unit/ruleset-v7-economy-rejig.test.ts) took
   // 7r54, so 7r53 is the last prior identity.
   it("was 7r53 after 7r52, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r57");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r57.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r58");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r58.current");
     // The ninth unit (`pulp_wars-w49.17`) took 7r55, so 7r54 is prior too.
-    expect(PRIOR_RULESET_7_IDS.slice(-5, -2)).toEqual([
+    expect(PRIOR_RULESET_7_IDS.slice(-6, -3)).toEqual([
       "pulp-wars-poc-7r52",
       "pulp-wars-poc-7r53",
       "pulp-wars-poc-7r54",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-5, -2)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -3)).toEqual([
       "pulpWars.save.v7r52.current",
       "pulpWars.save.v7r53.current",
       "pulpWars.save.v7r54.current",
@@ -917,7 +917,9 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       "KNIGHT",
     ]);
     // The Human order is as the Martian pass left it; the Martian order
-    // has the Shock Trooper after the Ray Gunner (7r55).
+    // has the Brain third and the Shock Trooper after it (step two of the
+    // Martian pass, `pulp_wars-w49.25`; the Trooper followed the Ray Gunner
+    // from 7r55).
     expect(ARMY_RESEARCH_ROLES_V7.ORIGINAL).toEqual([
       "MARKSMAN",
       "GUARD",
@@ -929,9 +931,9 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     expect(ARMY_RESEARCH_ROLES_V7.MARTIAN).toEqual([
       "GUARD",
       "MARKSMAN",
+      "CAPTAIN",
       "SWORDSMAN",
       "CATAPULT",
-      "CAPTAIN",
       "RAIDER",
       "KNIGHT",
     ]);

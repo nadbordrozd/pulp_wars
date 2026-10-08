@@ -339,14 +339,26 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
   // two Ray Gunners are (`armyResearchTargetV7`). (With the Saucer second
   // a seat owned six technologies in thirty rounds, none of them toward a
   // Tripod, and lost three Saucers for two pulls.)
+  // Step two of the Martian pass (`pulp_wars-w49.25`,
+  // docs/product/RULESET_7_TUNING_MARTIAN.md section 14): the Brain third
+  // (it was fifth). Its Leadership is one technology behind the Gathering
+  // most seats open with, where the Shock Trooper and the Tripod are two
+  // each, and it is Psychic Command for the firing line and Mind Control.
+  // (A seat with the Shock Trooper third bought Engineering in round 16 and
+  // Armoury in round 24 of two diagnostic matches, and fielded no Tripod,
+  // no Brain, and no Mothership in 25 rounds.) The Tripod comes before the
+  // Shock Trooper unless the enemy in sight fights hand to hand
+  // (`armyMartianResearchRolesV7` in `src/ai/v7.ts`), and Heat Sinks right
+  // after the second Ray Gunner (it was before the Mothership, the last
+  // unit, which no seat reached).
   MARTIAN: Object.freeze([
     "GUARD",
     "MARKSMAN",
+    "CAPTAIN",
     // The ninth unit (7r55): the Shock Trooper, the body in front of the
     // rays (through Engineering, a growth technology).
     "SWORDSMAN",
     "CATAPULT",
-    "CAPTAIN",
     "RAIDER",
     "KNIGHT",
   ] as const),
@@ -826,6 +838,24 @@ export const ARMY_MARTIAN_SKIRMISHER_MAXIMUM_V7 = 2;
  */
 export const ARMY_MARTIAN_FRONT_LINE_VALUE_V7 = 200;
 export const ARMY_MARTIAN_FRONT_DEFENDER_VALUE_V7 = 100;
+/**
+ * Step two of the Martian pass (`pulp_wars-w49.25`,
+ * docs/product/RULESET_7_TUNING_MARTIAN.md section 14): a Martian army has
+ * one Shock Trooper for every two Grunts, no more. Both are its line class,
+ * and a class the army is short of is bought in its dearest unit: in the
+ * lab a seat with Armoury trained seven Shock Troopers in nine rounds and
+ * fielded no Grunt at the end. The Grunt is the line that shoots from two
+ * tiles; the Trooper is the body that stands in front of it. A capped
+ * Trooper costs `ARMY_MARTIAN_HEAVY_CAP_COST_V7` of training score (more
+ * than the garrison bonus of a threatened center leaves a Grunt behind).
+ */
+export const ARMY_MARTIAN_HEAVY_CAP_COST_V7 = 600;
+export function armyMartianHeavyCappedV7(
+  troopers: number,
+  grunts: number,
+): boolean {
+  return troopers * 2 >= grunts;
+}
 /** A Goblin army has one Wolf Rider per this many units (at most three). */
 export const ARMY_GOBLIN_SKIRMISHER_PER_UNITS_V7 = 4;
 export const ARMY_GOBLIN_SKIRMISHER_MAXIMUM_V7 = 3;

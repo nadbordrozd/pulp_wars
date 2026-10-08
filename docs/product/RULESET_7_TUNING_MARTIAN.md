@@ -60,6 +60,8 @@ evidence of balance.
 
 **Superseded in part at `pulp-wars-poc-7r56`** ([the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md), `pulp_wars-w49.21`): The Shield Projector is unlocked by Force Fields, one technology behind the root, which is shown as Crafting and unlocks the Workshop; Engineering no longer does. The games recorded here were played with the Projector at the root and Force Fields as its later upgrade. Nothing else here changed, and no number did.
 
+**Step two** ([section 14](#14-step-two), `pulp-wars-poc-7r58`, `pulp_wars-w49.25`): the first hand-played pass since the Shock Trooper and the reshuffle. City Walls hold a unit on its own center against a Saucer's Tractor Beam; the Martian seat of the Normal AI trains before it researches, takes its free Saucers, and no longer wastes its Tripods. Where the sections below say that a Saucer pulls a unit off a walled center, that a Martian seat researches the Shock Trooper third or Heat Sinks before the Mothership, or that the seat's Tripods walk to the front, section 14 has what holds now.
+
 ## 1. The changes
 
 | #   | Change            | Before (`7r51`)                                                                                                    | Now (`7r52`)                                                                                                                                                                                                                         | Other factions                                                                              |
@@ -1784,3 +1786,378 @@ walk toward an empty center, growth at war that leaves the Coins for a
 unit). `tests/scripts/play-text-v7.test.ts` asserts the new lines of the
 lab's start text and the Martian map codes. The estimate under
 `options --unit` has no test of its own.
+
+## 14. Step two
+
+The second pass over the Martians, on `pulp-wars-poc-7r57` (the
+[ninth unit](RULESET_7_NINTH_UNIT.md): the Shock Trooper at Armoury; the
+[Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md): the Shield Projector
+at Force Fields with its field, the Workshop at the root), bead
+`pulp_wars-w49.25`. Step two is "iterate on each faction including playing
+games manually to rejig the balance better and improve the AI for each
+faction". It is the faction's first hand-played pass since the ninth unit.
+**One rule changed: City Walls hold a unit on its own city center against a
+Saucer's Tractor Beam; a Mothership's Heavy Tractor Beam still pulls it.
+The identity is `pulp-wars-poc-7r58`.** No number of the roster changed.
+The Normal AI of a Martian seat changed in ten places
+([section 14.5](#145-the-martian-normal-ai)). The bar was the user's: "the
+faction is not crazy op or crazy weak and that all the tech branches are
+useful and that units are differentiated from other factions by more than
+stats".
+
+### 14.1 The games
+
+All in text mode against the Normal AI, on Dry Land.
+
+| Game  | Played as | Against                         | Map         | Route                                                                         | Result                                                                                          |
+| ----- | --------- | ------------------------------- | ----------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `a`   | Human     | Martian (before)                | 14, seed 9  | Mobility: Hunting 1, Scouting 6, Raiding 8                                    | stopped in round 13, the map won: 8 cities, 16 units, income 15 against 4 cities and 4 units    |
+| `b`   | Martian   | Undead                          | 14, seed 19 | Hunting 1, Ray Gunners 3, Crafting 7, Force Fields 10, Heat Sinks 13          | stopped in round 16 with the Undead capital taken: 10 cities, 16 units, no unit lost            |
+| `c`   | Martian   | Human, Goblin, Undead           | 16, seed 14 | Industry: Gathering 1, Crafting 4; Force Fields was never affordable          | stopped in round 12, lost: 4 cities (two besieged) and 3 units; 8 Grunts and a Saucer lost      |
+| `lab` | Martian   | Human                           | the lab     | `LAB_MARTIAN_MID`, two rounds, three Shock Troopers bought and beamed forward | a Trooper and two Grunts killed a Champion in a Forest; the Human AI answered with a Catapult   |
+| `a2`  | Human     | Martian (after the first rules) | 14, seed 9  | the same route                                                                | stopped in round 14, behind in the fight: 6 cities and 8 units against 5 cities and 11 units    |
+| `b2`  | Martian   | Undead, at `7r58`               | 14, seed 19 | the commands of `b` to round 13, then the siege by hand                       | stopped in round 17: 9 cities, 15 units against 2 and 6; the walled capital held for two rounds |
+
+The numbers after a technology are the rounds it was bought in. "Before"
+and "after" are the Martian AI before and after section 14.5; `a2` was
+played after its first five rules, and the later ones (the rays, the Shock
+Trooper, the order from the third unit on) do not act in the thirteen
+rounds it lasted: the final policy plays the recorded turns of `a2` as they
+were played.
+
+**The maps.** Of seeds 1 to 20 on Dry Land 14, seeds 9 and 19 have no chest
+within three tiles of either capital and at most five Mountains within two
+tiles of one (the two traps the Goblin and the Undead pass found). On Dry
+Land 16 with four seats, seed 14 has no chest by the player's capital (the
+Human and the Goblin seat have one each) and 5, 2, 0, and 2 Mountains.
+
+What each seat held at the start of its turn (Coins, income, cities,
+units; lost and killed are totals):
+
+| Round | `a` Human     | `a` Martian AI | `a2` Human   | `a2` Martian AI | `b` Martian   | `b` lost, killed | `c` Martian | `c` lost, killed |
+| ----- | ------------- | -------------- | ------------ | --------------- | ------------- | ---------------- | ----------- | ---------------- |
+| 3     | 5, 3, 1, 3    | 1 city, 3      | 5, 3, 1, 3   | 1 city, 2       | 4, 3, 1, 3    | 0, 0             | 4, 3, 1, 3  | 0, 0             |
+| 6     | 7, 6, 3, 6    | 3, 3           | 7, 6, 3, 6   | 2, 6            | 7, 7, 3, 5    | 0, 0             | 5, 5, 3, 4  | 0, 0             |
+| 9     | 12, 11, 6, 8  | 4, 6           | 11, 10, 6, 8 | 4, 7            | 11, 10, 5, 10 | 0, 2             | 10, 7, 4, 5 | 3, 2             |
+| 12    | 24, 15, 8, 15 | 4, 5           | 14, 10, 5, 9 | 5, 12           | 19, 12, 7, 13 | 0, 5             | 12, 4, 4, 3 | 9, 10            |
+| 15    |               |                |              |                 | 18, 12, 7, 16 | 0, 7             |             |                  |
+
+### 14.2 The questions
+
+**(i) The Shock Trooper: wanted, and not a wall that cannot be broken.**
+From the public preview (`scen-shock.ts` in the scratch folder of the
+pass; a full attacker on a full Trooper, on open ground):
+
+| Attacker             | Shield 0: deals / takes | Shield 3: deals / takes (of it the shock) | Shield 4, beside a Projector |
+| -------------------- | ----------------------- | ----------------------------------------- | ---------------------------- |
+| Fighter, Skeleton    | 5 / 5                   | 2 / 8 (3)                                 | 1 / 8                        |
+| Champion             | 10 / 3                  | 7 / 6 (3)                                 | 6 / 6                        |
+| Knight               | 12, a kill / 0          | 9 / 6 (3)                                 | 8 / 6                        |
+| Wight, Ghoul charge  | 8 / 4                   | 5 / 7 (3)                                 | 4 / 7                        |
+| Goblin, two helpers  | 10 / 3                  | 7 / 6, the Goblin dies                    | 6 / 6, it dies               |
+| Wolf Rider, a helper | 12, a kill / 0          | 9 / 6 (3)                                 | 8 / 6                        |
+| Triceratops charging | 12, a kill / 0          | 12, a kill / 3                            | 11 / 6                       |
+| Marksman, a bomb     | 5 / 0                   | 2 / 0                                     | 1 / 0                        |
+| Catapult, Lich       | 8 / 0                   | 5 / 0                                     | 4 / 0                        |
+| Rocket Cart          | 10 / 0                  | 7 / 0                                     | 6 / 0                        |
+
+The shock is paid by the **first** unit that strikes from the next tile:
+that hit empties the Shield, so the second striker meets a 12-HP body with
+Defense 2 and pays nothing. Two Champions kill a Trooper for 6 damage to
+one of them; three Fighters kill one and the first loses 8 of its 12 HP.
+With Force Fields the Shield is back at the end of the Martian turn, so the
+price is paid once in every enemy turn, never twice. The counters are the
+ones the brief named, and each works at once: any shot (a Marksman's, a
+bomb's, a Catapult's) takes the Shield off for nothing and then the melee
+units go in; a Wail strips 2; a Catapult, a Lich, or a Rocket Cart never
+touches it. In the lab the Human AI answered three Troopers in a line with
+a Catapult from three tiles and no blow. So "Shock Troopers beside a
+Projector" costs a melee army one unit's HP a turn and stops nothing that
+shoots first.
+
+**It keeps up.** A Trooper moves one tile, and a Saucer or a Mothership
+sets it down beside itself from any city center: the three of the lab
+stood in the line, three and four tiles from where they were trained, in
+the turn they were bought. It attacks after it is set down (a Champion in
+a Forest: 6, and 1 back through the Shield).
+
+**The Normal AI must be kept from fielding nothing else**
+([section 14.5](#145-the-martian-normal-ai)): a Trooper is the dearer unit
+of the line class, and the seat of the lab trained seven and no Grunt.
+
+**(ii) The Shield Projector and its field on one node: left together.**
+Force Fields was the best purchase of `b` (15 Coins in round 10: a Grunt
+on the enemy's capital lived through two Skeletons' blows with 2 HP) and
+was never affordable in `c` (11, then 13 Coins on an income of 4 to 7,
+every Coin going to the Grunt that had just died). So the node is strong
+and it is two technologies deep, the first of which (Crafting) gives a
+Martian seat nothing on the turn it is bought. Splitting the field off to
+a tier-3 node would put the faction's answer to melee later still, which
+is the side on which the opening is already weak (iii). Not built, and not
+proposed.
+
+**(iii) The opening with Grunts only: strong against one slow enemy, weak
+against two that walk up. No number changed.**
+
+- In `b` (one Undead AI seat that took three cities) Grunts and three free
+  Saucers took seven cities by round 11 and lost nothing: a Skeleton's blow
+  costs a Grunt 3 HP and the Skeleton 3 or 4, a Grunt's shot from two tiles
+  costs a Skeleton 4 for nothing, and two Grunts set down by Saucers killed
+  a Ghoul in the turn they arrived.
+- In `c` three AI seats reached the player's land in rounds 5 to 8. Every
+  Grunt that two melee units reached died in that turn (8 HP and a Shield
+  of 2: a Fighter's 5 and 5, a Skeleton's 3 and 5, a Goblin with a helper
+  7): eight of them and a Saucer by round 11, two of them on the turn they
+  were trained onto a center. The Grunts made 10 kills (a Goblin dies to
+  one shot) and it was not enough: the Projector was 11 to 13 Coins away
+  from round 5 on.
+- So the faction is as [section 20](RULESET_7_CURRENT.md#20-martian-faction-rules)
+  describes it: "weak when rushed and focus-fired". That is its shape and
+  not a fault to tune away; what it wants is that a player sees Force
+  Fields as the second purchase when a neighbour is close. The AI was
+  taught that (section 14.5).
+
+**Martians against the Undead: one-sided against the AI, and the Undead
+have the tools.** `b` was never in doubt. A Wail deals a shielded unit
+nothing; a Zombie bites only when its hit costs HP (1 through a field of
+4); Skeletons trade 3 for 3 or 4. What works is in the Undead pass's
+table: a Lich (5 to 7 through a Shield, from three tiles), a charging
+Ghoul or a Wight (7 through a Shield of 2), and numbers of Skeletons with
+Bones against shots. The Undead AI seat of `b` fielded none of the first
+three in sixteen rounds and attacked nine times. In `b2` it showed the
+fourth: a Zombie bit the Grunt on its capital for 1 HP, a Skeleton killed
+it, and it rose as the garrison.
+
+**(iv) The Saucer's pull on a garrison: it was a free kill every turn
+against a walled capital. Changed** ([section 14.3](#143-city-walls-hold)).
+
+**(v) Mind Control that keeps the unit: no abuse seen, and not met by
+hand.** No game of this pass reached a Brain by hand. The AI used it once
+in each lab match (a Fighter both times). Not changed.
+
+**(vi) One best unit? No. Every branch?**
+
+| Branch     | Bought                                                                     | Verdict                                                                                                                                                                                                          |
+| ---------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Wilds      | Hunting, Ray Gunners, Heat Sinks (`b`)                                     | the strongest. Two hunts took every village to level 2 for a free Saucer. With Heat Sinks two Ray Gunners that stand still deal 8 and 10 every turn: a full Zombie off its Walls in one turn                     |
+| Industry   | Crafting, Force Fields (`b`), the Disintegrator (`b2`); Armoury in the lab | Force Fields is the faction's second purchase under pressure. The Disintegrator had no buyer while a Saucer emptied walled centers; since `7r58` it is what kills a Zombie behind Walls (8 and 10 where 5 and 5) |
+| Mobility   | not bought: every Saucer was free (Scouts at level 2), five in `b` and `c` | Saucers are the faction's best unit for their price, which is nothing. The Mothership had no job a Saucer did not do; since `7r58` it is the pull that works on a walled center                                  |
+| Settlement | Gathering as an opener (`c`)                                               | the Brain was not reached by hand. The AI now researches it third: Leadership is one technology behind Gathering                                                                                                 |
+| Naval      | Dry Land only                                                              | not tested                                                                                                                                                                                                       |
+
+- **The Grunt does not go obsolete.** It is the unit that takes centers,
+  and seven of sixteen units in round 15 of `b`.
+- **The Saucer is the unit to watch.** It is never bought and never
+  short: a village with two Fruit or two Game is a free Saucer, and a
+  Saucer sets a Grunt down three tiles away, where it shoots at full
+  Attack in the same turn. That is the reach of the whole faction, and it
+  is what the improved AI beat the player's Raiders with in `a2`.
+- **Coins.** Short in `c` (never above 12; every Coin a Grunt). Not short
+  in `b` (19 to 32 from round 12, every unit slot full, nothing died):
+  the attrition economy as ruled, and Shields that recharge mean a winning
+  Martian army replaces nothing.
+
+### 14.3 City Walls hold
+
+**The evidence** (`b`, rounds 14 to 16). The Undead capital had City Walls
+and a Field Defense: a Zombie on it had Defense 6, a Grunt's shot dealt it
+2 and a Ray Gunner's 5. A Saucer flew to two tiles from the center and
+pulled the Zombie one tile off it; two Ray Gunners dealt 8 and 10, and it
+was dead with no bite. The seat trained another; the same Saucer, which
+had not moved, pulled that one too, and it died the same way. A Grunt
+walked onto the empty center and took the capital in round 16. Two Zombies
+and a capital for no loss and no Coin: the Saucer was a free unit of round 5. The counters the first pass named do not hold against a player: "a
+second unit beside the target" blocks one of eight directions, and
+"shooting the Saucer" asks a seat with five units to leave its center. In
+`a2` the AI did the same to the player (a Raider pulled off the center it
+stood on, then killed).
+
+**The rule.** A land-form unit that stands on the center of a city of its
+own owner which has City Walls is not a legal target of a Saucer's Tractor
+Beam. The Mothership's Heavy Tractor Beam pulls it as before.
+
+- It is a gate, not a nerf: the trick is whole against every center
+  without Walls, against a Field Defense, against cover, and against a
+  line; and against Walls it belongs to the tier-3 unit that was built for
+  it and had no buyer.
+- It gives the defender a counter it can choose: Walls are a level-3
+  reward (against Militia).
+- It gives the Disintegrator its purpose (section 14.2, (vi)).
+
+**Replayed** (`b2`: the commands of `b` to round 13, the same game, then
+by hand). Round 14: the pull is not offered; a Ray Gunner and a Grunt deal
+the Zombie 5 and 3, it steps off and a Skeleton is trained onto the
+center. Round 15: two Ray Gunners kill the Skeleton through Walls, a Field
+Defense, and Bones (4 and 6); a Grunt walks up beside the center. Round 16:
+a Zombie stands there again; the Disintegrator (27 Coins) and the two rays
+kill it (8 and 10), and the Grunt steps on. The Undead turn: the wounded
+Zombie bites the Grunt through its field, a Skeleton kills it, and it
+rises as the garrison. The capital that fell in round 16 of `b` stood in
+round 17 of `b2`, and had cost a technology and a unit.
+
+**Where a player sees it.** The Saucer's unit card and its Tractor Beam
+tooltip ("but not a unit behind its City Walls"), the Mothership's ("also
+off City Walls"), the Help page, and the board, which offers no pull on a
+held unit.
+
+### 14.4 What was not changed
+
+Every number of the roster; the Grunt (3 Coins, 8 HP, a pistol at two
+tiles after a Move); Beam Down (from any own center, and the unit may
+attack); the Saucer of Scouts; the Force Field and where it is; the Brain;
+the Tripod; the Mothership; the Shock Trooper; Heat Sinks; the
+Disintegrator.
+
+### 14.5 The Martian Normal AI
+
+Read in `a`, in six diagnostic matches (seed 9 against the Human AI four
+times, the lab twice; not a balance measurement), and on recorded
+positions of them. Details and function names:
+[Normal AI, step two of the Martian pass](../architecture/NORMAL_AI.md#step-two-of-the-martian-pass-pulp_wars-w4925).
+
+**What was wrong.** Since the reshuffle the Projector is two technologies
+away, and the seat kept its Coins for them and for its growth technology:
+in `a` and on the same map against the Human AI it trained no unit from
+round 3 to round 9 (three Grunts on four cities). It took Stockpile in
+round 1 where a free Saucer was offered. Its order put the Shock Trooper
+third, so Engineering came in round 16 and Armoury in round 24, and it
+fielded no Tripod, no Brain, and no Mothership in 25 rounds; Heat Sinks
+stood behind the Mothership, so five and six Ray Gunners fired every
+second ray at half power. In the lab it read a Tripod's shot after a Move
+at full power (12 where it is 5), walked three Tripods two tiles ahead of
+its Grunts for "kills" that were not, and lost four of its five in the
+Human turn that followed; and it trained seven Shock Troopers and no
+Grunt.
+
+**What it does now.**
+
+- _Bodies first_, as an Undead seat since its step two: with fewer units
+  that capture than its cities and two more (Saucers do not count), a city
+  that can train does so before any research, and no Coins are kept.
+- _The free Saucer_ at level 2, whatever its Coins; and the opening
+  harvest is made with the Coins it keeps for a technology.
+- _One growth technology before the Projector's two_ while no enemy unit
+  is within six tiles of one of its cities; with one there, Crafting and
+  Force Fields first, also with an enemy at its gates, and before a
+  capture that would raise the price.
+- _The order:_ Shield Projector, Ray Gunner, **Brain**, then the Tripod and
+  the Shock Trooper (the Trooper first when three or more enemy units are
+  in sight and at most half of them shoot; a chain that is begun is
+  finished), Saucer, Mothership. **Heat Sinks** right after the second Ray
+  Gunner, and the **Disintegrator** after that once a garrison behind City
+  Walls is in sight.
+- _One Shock Trooper for every two Grunts._
+- _A ray after a Move is at half power_ in every estimate, and a Tripod or
+  a Ray Gunner makes no Move to a tile a melee unit can reach with none of
+  its own line, defender, or breakthrough units nearer the enemy, unless
+  its shot from there kills.
+
+**Before and after.**
+
+| Where                                        | Before                                                                                                                                            | After                                                                                                                                                                      |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Against the Human AI, seed 9, rounds 1 to 10 | Stockpile in round 1; no unit trained in rounds 3 to 9; three Grunts on four cities; Crafting 4, Force Fields 8, Farming 9                        | a Saucer in round 1; four Grunts in round 5, five cities in round 8; Crafting 7, Force Fields 9, Farming 10                                                                |
+| The same match, round 25                     | six cities and 21 units against six and 14; 30 kills for 9 lost; Armoury in round 24, no Brain                                                    | nine cities and 32 units against one and 3; 36 kills for 6 lost; a Brain in round 17 and three Psychic Commands                                                            |
+| The hand-played Human, seed 9 (`a`, `a2`)    | four cities from round 6; five Grunts trained in twelve rounds; 10 attacks, 2 kills, 5 lost; the player had eight cities and 16 units in round 13 | four Grunts in round 5 and four Saucers by round 9; a city of the player taken in round 10; 20 attacks, 8 kills, 4 lost; the player had six cities and 8 units in round 14 |
+| The lab, both seats the AI, twelve rounds    | four of five Tripods dead in round 3; seven Shock Troopers and no Grunt by round 9; Heat Sinks in round 11; 23 kills for 30 lost                  | four to six Tripods on the board throughout; six Grunts and three Troopers; Heat Sinks in round 7, the Disintegrator in 8; 29 kills for 19 lost                            |
+| The recorded round 3 of that lab match       | three Tripods moved two tiles and fired for 2, 4, and 5                                                                                           | one moves, for the kill of a Champion with 3 HP                                                                                                                            |
+
+No error and no stall in any match.
+
+**What the changed AI did to a hand player** (`a2`, rounds 6 to 13): a
+Grunt and a Saucer killed the first Raider; a Grunt in place and one set
+down by a Saucer killed the second (6 and 6 from two tiles); four Grunts
+came to a village the player had just taken, two of them by Saucer, and
+took it back in round 10; a Saucer pulled a Raider off the center it stood
+on and three units killed it; a Saucer pulled a Fighter one tile into a
+Grunt's range and a second Saucer finished it; a wounded Grunt was pulled
+back beside a Projector. Eight of the player's units for three Grunts and
+a Saucer.
+
+**Seen and left.**
+
+- It researches slowly once it is winning: no technology from round 17 to
+  round 22 on seed 9 while it trained to 22 units against 3, and Roads (by
+  Scouting) before Heat Sinks once the war was over. It fields Grunts,
+  Projectors, Ray Gunners, and Brains by round 25 of a generated match; a
+  Tripod, a Shock Trooper, and a Mothership only in the lab.
+- Its Saucers end their turn beside the enemy after a kill and die to a
+  charge (two in `a`, one in `a2`).
+- Mind Control: once in each lab match. A Brain in a generated match used
+  Psychic Command and took nothing.
+- A unit set down or pulled keeps its full-power ray; the estimate above
+  now reads a pulled own ray unit at half power. Not corrected.
+
+### 14.6 Open, for the user
+
+1. **The free Saucer of every level-2 village.** Five Saucers in the two
+   hand-played Martian games and four for the AI seat of `a2` by round 9,
+   none bought; each is the reach of a Grunt set down three tiles away
+   that shoots at once. If the faction proves too strong
+   in a player's hands one on one, this is the first lever, and it gates
+   well: Beam Down for the Scouts Saucer only once Saucers (Scouting) is
+   researched, or one Scouts Saucer a player.
+2. **The Grunt-only opening under a rush** (`c`): Force Fields is 12 to 18
+   Coins away when it is needed. The smallest change inside the rulings
+   would be a Martian Militia of a Shield Projector (a level-3 reward, with
+   no field until the technology). Not built: one game.
+3. **Banshees against Martians** (the Undead pass's item 5): a Wail still
+   deals a shielded unit nothing.
+4. **The Mothership.** With `7r58` it has a job. Whether 8 Coins, two unit
+   slots, and three technologies are its right price was not played.
+5. **Mind Control** was not met by hand in this pass.
+6. **The research tempo of a winning seat** (above) is every army seat's.
+
+### 14.7 For the Dinosaur pass
+
+- A Tractor Beam never moved a two-slot dinosaur or an Egg and still does
+  not; an Ankylosaurus on its walled center is now held against a Saucer.
+- A Triceratops charging kills a Shielded Shock Trooper outright (12) and
+  takes 3; a Raptor deals it 7 and takes 6. The Martian AI researches the
+  Shock Trooper before the Tripod against an army that fights hand to
+  hand: is that right against dinosaurs that kill it in one charge?
+- The projection bug of this pass (an own unit's attack after a Move read
+  at its strength before the Move) may have a twin: check what the AI
+  believes a Triceratops's Charge! deals from a tile it has not reached,
+  and a Stegosaurus that cannot fire after a Move.
+- "Bodies first" is now an Undead and a Martian seat's rule; a Dinosaur
+  seat lays Eggs that take two turns, and the same count may fit it.
+- Seeds: check the chests and the Mountains before choosing a map (9 and
+  19 on Dry Land 14 are clean for two seats).
+
+### 14.8 Tests
+
+`tests/unit/ruleset-v7-martian-step2.test.ts`: the identity; City Walls
+hold (a Saucer's pull is offered and accepted without Walls, is not
+offered, has no path, and is refused with them; the Mothership's is
+accepted; only the owner's units on the center itself are held; the
+glossary texts); bodies first for a Martian seat, with Saucers not
+counted, in peace and in a war; the growth technology before the
+Projector's two, and the Projector first with an enemy in sight; Force
+Fields as a due technology with an enemy at the gates and before a
+capture; the opening harvest with kept Coins and the free Saucer; the
+recorded opening of seed 9, round 8
+(`tests/fixtures/ruleset-v7-martian-opening.json`: three Grunts where it
+bought Force Fields and nothing else); the order (the Brain third, the
+Tripod or the Shock Trooper by the enemy in sight, a begun chain finished,
+Heat Sinks after the second Ray Gunner, the Disintegrator for a garrison
+behind Walls); one Shock Trooper for two Grunts; a ray at half power after
+a Move, no Move to a firing tile out in front, the Move for a kill and the
+Move behind a body; the recorded lab position
+(`tests/fixtures/ruleset-v7-martian-tripods.json`); the Shock Field's line
+in the text harness.
+
+**Pins and fixtures that moved.** Every test that named `7r57` as the
+current identity names `7r58`. The Tractor Beam's glossary, tooltip, and
+Help texts where a test states them. The Martian research order where a
+test states it (`ruleset-v7-martian-pass`, `ruleset-v7-dinosaur-pass`,
+`ruleset-v7-tuning-6`), and in `ruleset-v7-martian-pass` the sequence of
+technologies that follows from it. Two fixtures got the Grunts that keep a
+Martian seat from being short of units (the Industry reshuffle's
+"Fortification before its units", the Martian pass's "Coins kept for the
+economy technology"). The command and event hashes of the Pangea pin of
+`ruleset-v7-curiosities.test.ts`, the one with a Martian seat (12 rounds,
+13 before). The source audits: one more land-form test in
+`src/engine/v7/martian.ts`, and three new readers classified
+(`tests/fixtures/v7-unit-reader-classes.ts`,
+`tests/fixtures/v7-kind-reader-classes.ts`).

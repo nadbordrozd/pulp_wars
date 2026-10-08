@@ -196,6 +196,11 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // seat's own Skeleton, and the Zombie's technology in its own tree.
   "src/ai/v7.ts::armyUndeadBodiesFirstV7": "SEAT",
   "src/ai/v7.ts::armyUndeadGrowthFirstV7": "SEAT",
+  // Step two of the Martian pass (`pulp_wars-w49.25`): the seat that
+  // decides is a Martian one (the viewer's faction), and the order in which
+  // that seat researches toward its own units.
+  "src/ai/v7.ts::armyMartianSeatV7": "SEAT",
+  "src/ai/v7.ts::armyMartianResearchRolesV7": "SEAT",
   "src/ai/v7.ts::armyShootsBiterFirstV7": "SEAT",
   "src/ai/v7.ts::armyCureDueV7": "SEAT",
   "src/ai/v7.ts::armyCureResearchV7": "SEAT",

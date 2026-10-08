@@ -78,7 +78,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r57`;
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r58`;
  * docs/product/RULESET_7_ECONOMY_REJIG.md, and Part C of
  * docs/product/RULESET_7_DESIGN_HEAVY_SLOT_AND_ECONOMY.md): mills count
  * contributors across their owner's cities, Monuments give 3, research is
@@ -380,11 +380,11 @@ function harvest(state: GameStateV7, where: CoordV7): Step {
 
 describe("the economy rejig: identity", () => {
   it("is 7r54, with 7r53 the last prior identity and an obsolete save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r57");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r57.current");
-    expect(PRIOR_RULESET_7_IDS.at(-4)).toBe("pulp-wars-poc-7r53");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r58");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r58.current");
+    expect(PRIOR_RULESET_7_IDS.at(-5)).toBe("pulp-wars-poc-7r53");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-4)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-5)).toBe(
       "pulpWars.save.v7r53.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);

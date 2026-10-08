@@ -28,6 +28,7 @@ import {
   tractorBeamDestinationV7,
   tractorBeamRuleV7,
   tractorBeamTargetBlockV7,
+  unitHeldByCityWallsV7,
 } from "../engine/v7/martian";
 import { queryTractorBeamPathV7 } from "../engine/v7/query";
 import type { CoordV7, TechnologyIdV7, UnitRoleIdV7 } from "../engine/v7/types";
@@ -440,6 +441,19 @@ export function shieldMaximumForPolicyV7(
   unit: PublicUnitV7,
 ): number {
   return unitRoleMechanicsV7(view, unit).shield;
+}
+
+/**
+ * Step two of the Martian pass (`pulp_wars-w49.25`, 7r58): a visible unit
+ * that City Walls hold against a Saucer's Tractor Beam: it stands on the
+ * center of a city of its own owner that has Walls (public: the engine's
+ * own test on the view's cities).
+ */
+export function heldByCityWallsForPolicyV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): boolean {
+  return unitHeldByCityWallsV7(view.cities, unit);
 }
 
 /** A land-form unit with a heat ray (Ray Gunner, Tripod, Colossus). */
@@ -1388,7 +1402,16 @@ export function pullCaptureMoveV7(
     if (
       defender === undefined ||
       !tools.isHostile(defender.ownerId) ||
-      tractorBeamTargetBlockV7(view, rule, { at: to }, defender) !== null
+      tractorBeamTargetBlockV7(
+        view,
+        rule,
+        { at: to },
+        defender,
+        // Step two of the Martian pass (`7r58`): City Walls hold the
+        // defender against a Saucer's beam, so a Saucer flies up to no
+        // walled center for a siege pull.
+        unitHeldByCityWallsV7(view.cities, defender),
+      ) !== null
     )
       continue;
     if (

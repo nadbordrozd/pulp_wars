@@ -961,9 +961,45 @@ export function tractorBeamActorReadyV7(
 export type TractorBeamTargetBlockV7 = "TARGET_IMMUNE" | "OUT_OF_RANGE";
 
 /**
+ * Step two of the Martian pass (`pulp_wars-w49.25`, `7r58`): City Walls
+ * hold. A land-form unit that stands on the center of a city of its own
+ * owner which has City Walls is held against the ordinary Tractor Beam (the
+ * Saucer's); the Heavy Tractor Beam (the Mothership's) pulls it as before.
+ * The one test of the reducer, the public query, and the Normal AI.
+ */
+export function unitHeldByCityWallsV7(
+  cities: readonly {
+    readonly ownerId: PlayerId;
+    readonly at: CoordV7;
+    readonly rewards: readonly {
+      readonly reachedLevel: number;
+      readonly reward: string;
+    }[];
+  }[],
+  unit: {
+    readonly ownerId: PlayerId;
+    readonly form: UnitStateV7["form"];
+    readonly at: CoordV7;
+  },
+): boolean {
+  if (unit.form !== "LAND") return false;
+  return cities.some(
+    (city) =>
+      city.ownerId === unit.ownerId &&
+      city.at.x === unit.at.x &&
+      city.at.y === unit.at.y &&
+      city.rewards.some(
+        (record) => record.reachedLevel === 3 && record.reward === "WALLS",
+      ),
+  );
+}
+
+/**
  * The per-target Tractor Beam conditions, in the reducer's rejection order:
  * `TARGET_IMMUNE` for an Egg, a `JUGGERNAUT`-role unit, the neutral Monster,
- * or a two-slot unit; `OUT_OF_RANGE` outside the rule's reach.
+ * or a two-slot unit, and (`7r58`) for a unit City Walls hold
+ * (`unitHeldByCityWallsV7`, passed as `heldByWalls`) against a beam that is
+ * not the Heavy one; `OUT_OF_RANGE` outside the rule's reach.
  */
 export function tractorBeamTargetBlockV7(
   roster: FactionRosterV7 & IceLookupV7,
@@ -976,8 +1012,13 @@ export function tractorBeamTargetBlockV7(
     readonly form: UnitStateV7["form"];
     readonly at: CoordV7;
   },
+  heldByWalls: boolean,
 ): TractorBeamTargetBlockV7 | null {
   if (
+    // Step two of the Martian pass (`7r58`): City Walls hold a unit against
+    // the ordinary beam; the Heavy Tractor Beam (free, the Mothership's)
+    // pulls it.
+    (heldByWalls && !rule.free) ||
     target.form === "EGG" ||
     target.role === "JUGGERNAUT" ||
     isNeutralOwnerV7(target.ownerId) ||

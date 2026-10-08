@@ -263,6 +263,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // Undead seat has no burrowed unit).
     "src/ai/v7.ts::armyUndeadShortOfUnitsV7": "BOARD",
     "src/ai/v7.ts::armyNecromancerDueV7": "BOARD",
+    // Step two of the Martian pass (`pulp_wars-w49.25`): the viewer's own
+    // ray unit where it stands on the board (a ray is fired in land form).
+    "src/ai/v7.ts::movedRayAttack2V7": "BOARD",
     "src/ai/v7.ts::goblinContactCompanyV7": "BOARD",
     "src/ai/v7.ts::goblinMobHuntV7": "BOARD",
     "src/ai/v7.ts::vampireAttackAcceptableV7": "BOARD",

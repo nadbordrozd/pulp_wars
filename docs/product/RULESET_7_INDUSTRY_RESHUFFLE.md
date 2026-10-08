@@ -281,7 +281,12 @@ obvious second technology every game? The AI's two reasons for Nesting
 **Martians.** The first Shield Projector always arrives with Force
 Fields, so a Projector without its field is no longer seen in ordinary
 play. Is that wanted, or should the unit and its upgrade sit on different
-nodes again?
+nodes again? **Played** (bead `pulp_wars-w49.25`): left together; the
+answer is in
+[the Martian pass, section 14.2](RULESET_7_TUNING_MARTIAN.md#142-the-questions).
+In short: the node is the faction's second purchase under pressure and is
+already two technologies deep; a split would put the answer to melee
+later on the side where the opening is weak.
 
 **Ice Folk.** The Musk Ox arrives with Deep Winter (wider Snow, the
 stronger Recover). The Ice Folk's hold on its own land gets all three at

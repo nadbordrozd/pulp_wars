@@ -204,7 +204,9 @@ import {
   ARMY_CURE_TRAINING_VALUE_V7,
   ARMY_PESTILENCE_LICHES_V7,
   ARMY_FORCE_FIELDS_PROJECTORS_V7,
+  ARMY_MARTIAN_HEAVY_CAP_COST_V7,
   ARMY_MARTIAN_STURDY_V7,
+  armyMartianHeavyCappedV7,
   ARMY_DINOSAUR_ALONE_RADIUS_V7,
   ARMY_DINOSAUR_CENTER_FAST_RADIUS_V7,
   ARMY_DINOSAUR_CHARGER_REACH_V7,
@@ -416,6 +418,7 @@ import {
   hasAbilityV7,
   hostileRayAttack2V7,
   isRayUnitV7,
+  heldByCityWallsForPolicyV7,
   martianArmyCountsV7,
   martianFactsV7,
   martianMatchForPolicyV7,
@@ -3663,7 +3666,8 @@ function armyResearchTargetV7(
         chosen = toward(blocker.technology, "GUARD") ?? chosen;
     }
     let unlocked = 0;
-    for (const role of ARMY_RESEARCH_ROLES_V7[faction] ?? []) {
+    const armyHostiles = armyHostilesV7(context);
+    for (const role of armyMartianResearchRolesV7(context)) {
       if (chosen !== null) break;
       if (roads && unlocked === ARMY_ROADS_AFTER_ROLES_V7)
         chosen = toward("ROADS");
@@ -3703,11 +3707,27 @@ function armyResearchTargetV7(
           fielded("FORCE_FIELD") >= ARMY_FORCE_FIELDS_PROJECTORS_V7
         )
           chosen = toward("FORTIFICATION");
+        // Step two of the Martian pass (`pulp_wars-w49.25`): at the first
+        // unit of the order after the Ray Gunner, not at the Mothership
+        // (the last). A seat fielded five and six Ray Gunners from round
+        // 17 to round 25 of two diagnostic matches without Heat Sinks:
+        // every second ray at half power.
         else if (
-          role === "KNIGHT" &&
+          role !== "GUARD" &&
+          role !== "MARKSMAN" &&
           fielded("HEAT_RAY") >= ARMY_HEAT_SINKS_RAY_GUNNERS_V7
         )
-          chosen = toward("FIELDCRAFT");
+          chosen =
+            toward("FIELDCRAFT") ??
+            // Step two of the Martian pass (7r58): City Walls hold a
+            // garrison against a Saucer's Tractor Beam, so the seat that
+            // sees one behind Walls researches the Disintegrator (its
+            // rays ignore Walls and Field Defense) once its Ray Gunners
+            // have their Heat Sinks. (It was the last of the late
+            // technologies, after every unit of the order.)
+            (armyHostiles.some((unit) => heldByCityWallsForPolicyV7(view, unit))
+              ? toward("EXPLOSIVES")
+              : null);
       }
       if (chosen !== null) break;
       // The Dinosaur pass (`pulp_wars-w49.15`): Nesting (a unit slot in
@@ -3771,6 +3791,49 @@ function armyResearchTargetV7(
   }
   context.armyResearch = chosen;
   return context.armyResearch;
+}
+
+/**
+ * Step two of the Martian pass (`pulp_wars-w49.25`,
+ * docs/product/RULESET_7_TUNING_MARTIAN.md section 14): the order in which
+ * a seat researches toward its units (`ARMY_RESEARCH_ROLES_V7`), and for a
+ * Martian seat the Tripod before the Shock Trooper unless the enemy in
+ * sight fights hand to hand: with `ARMY_RANGED_ENEMY_UNITS_V7` visible
+ * hostile land units or more, at most half of them attacking from two
+ * tiles or more, the Shock Trooper keeps its place (its Shock Field is for
+ * units that strike from the next tile, and it is the body a Projector's
+ * line has none of). Against shooters, and with no enemy in sight, the
+ * Tripod is the unit that kills from two tiles. The two chains are two
+ * technologies each.
+ */
+function armyMartianResearchRolesV7(
+  context: PolicyContextV7,
+): readonly UnitRoleIdV7[] {
+  const view = context.view;
+  const order = ARMY_RESEARCH_ROLES_V7[view.viewer.faction] ?? [];
+  if (!armyMartianSeatV7(context)) return order;
+  const hostiles = armyHostilesV7(context);
+  const shooters = hostiles.filter(
+    (unit) => publicCombatFacts(view, unit, context.lookup).maximumRange >= 2,
+  ).length;
+  const melee =
+    hostiles.length >= ARMY_RANGED_ENEMY_UNITS_V7 &&
+    shooters * 2 <= hostiles.length;
+  // A chain that is begun is finished first (one of its two technologies
+  // is owned, the other chain's is not), so that the enemy walking in and
+  // out of sight does not buy half of each.
+  const owns = (technology: TechnologyIdV7): boolean =>
+    view.viewer.researchedTechs.includes(technology);
+  const heavyBegun = owns("ENGINEERING") && !owns("METALLURGY");
+  const siegeBegun = owns("FORESTRY") && !owns("SAWMILLING");
+  if (heavyBegun !== siegeBegun ? heavyBegun : melee) return order;
+  const heavy = order.indexOf("SWORDSMAN");
+  const siege = order.indexOf("CATAPULT");
+  if (heavy < 0 || siege < 0 || siege < heavy) return order;
+  const swapped = order.slice();
+  swapped[heavy] = "CATAPULT";
+  swapped[siege] = "SWORDSMAN";
+  return swapped;
 }
 
 /**
@@ -4124,6 +4187,32 @@ function armyUndeadSeatV7(context: PolicyContextV7): boolean {
   return context.army && context.view.viewer.faction === "UNDEAD";
 }
 
+/** A Martian seat of the army play. */
+function armyMartianSeatV7(context: PolicyContextV7): boolean {
+  return context.army && context.view.viewer.faction === "MARTIAN";
+}
+
+/**
+ * Step two of the Martian pass (`pulp_wars-w49.25`,
+ * docs/product/RULESET_7_TUNING_MARTIAN.md section 14): the seats that play
+ * "bodies first" (`armyUndeadBodiesFirstV7`): an Undead seat and, since this
+ * pass, a Martian one. Both have their defender two technologies away since
+ * the Industry reshuffle and kept the Coins for it: a Martian seat trained
+ * no unit from round 3 to round 9 of a hand-played game and of a diagnostic
+ * match (three Grunts on four cities, with 31 Coins of research), and took
+ * Stockpile in round 1 where the free Saucer of Scouts was offered. The
+ * rules of step two of the Undead pass that are a seat's opening hold for
+ * both: the units before the technology while it is short of them
+ * (`armyUndeadShortOfUnitsV7`), the free unit of a city level, one growth
+ * technology before the defender's two while no enemy is in sight
+ * (`armyUndeadGrowthFirstV7`), the defender's technology with an enemy at
+ * the gates (`armyDefenderResearchV7`), and a due technology before a
+ * capture that would raise its price.
+ */
+function armyBodiesSeatV7(context: PolicyContextV7): boolean {
+  return armyUndeadSeatV7(context) || armyMartianSeatV7(context);
+}
+
 // ---------------------------------------------------------------------------
 // Step two of the Undead pass (`pulp_wars-w49.24`,
 // docs/product/RULESET_7_TUNING_UNDEAD.md section 15). Since the Industry
@@ -4169,7 +4258,8 @@ function armyUndeadContactV7(context: PolicyContextV7): boolean {
  */
 function armyUndeadShortOfUnitsV7(context: PolicyContextV7): boolean {
   if (
-    !armyUndeadSeatV7(context) ||
+    // Step two of the Martian pass: and a Martian seat (`armyBodiesSeatV7`).
+    !armyBodiesSeatV7(context) ||
     context.naval.active ||
     context.openingGrowthHarvest
   )
@@ -4178,9 +4268,19 @@ function armyUndeadShortOfUnitsV7(context: PolicyContextV7): boolean {
   let cities = 0;
   for (const city of view.cities)
     if (city.ownerId === view.viewer.id) cities += 1;
+  // Step two of the Martian pass: a Martian seat counts the units that take
+  // a village or hold a center (a Grunt, a Ray Gunner, a Projector, a Shock
+  // Trooper). Its free Saucers are carriers: a seat with three Grunts and
+  // four Saucers on four cities was not short of units by the plain count.
+  const martian = armyMartianSeatV7(context);
   let units = 0;
   for (const unit of view.units)
-    if (unit.ownerId === view.viewer.id && unit.form === "LAND") units += 1;
+    if (
+      unit.ownerId === view.viewer.id &&
+      unit.form === "LAND" &&
+      (!martian || unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"))
+    )
+      units += 1;
   return units < cities + ARMY_UNDEAD_SPARE_UNITS_V7;
 }
 
@@ -4254,7 +4354,10 @@ function armyUndeadBodiesFirstV7(context: PolicyContextV7): boolean {
  * the Zombie comes first, as before.
  */
 function armyUndeadGrowthFirstV7(context: PolicyContextV7): boolean {
-  if (!armyUndeadSeatV7(context) || context.naval.active) return false;
+  // Step two of the Martian pass: and a Martian seat (`armyBodiesSeatV7`):
+  // the Shield Projector's two technologies wait for its growth technology
+  // while no enemy is in sight of its cities.
+  if (!armyBodiesSeatV7(context) || context.naval.active) return false;
   const view = context.view;
   const zombie = effectiveRoleRuleV7("GUARD", view.viewer.faction).technology;
   return (
@@ -4520,7 +4623,11 @@ function armyDefenderResearchV7(
   // root in round 8 fielded thirteen Skeletons against Goblin mobs and
   // bought Fortification in round 14. The city at whose gates the enemy
   // stands trains regardless of the Coins kept (`armyFloorHoldsTrainingV7`).
-  if (armyUndeadSeatV7(context)) return true;
+  // Step two of the Martian pass (`pulp_wars-w49.25`): a Martian seat too.
+  // A Grunt trained onto a center two enemy units reach is dead in their
+  // turn (8 HP and a Shield of 2: a Fighter's 5 and 5, a Skeleton's 3 and
+  // 5); the Projector (12 HP, Shield 3) is what holds it.
+  if (armyBodiesSeatV7(context)) return true;
   return !view.cities.some(
     (city) =>
       city.ownerId === view.viewer.id && armyAtTheGatesV7(context, city.id),
@@ -5800,6 +5907,41 @@ function armyHoldsFieldDefenseV7(
   );
 }
 
+/**
+ * Step two of the Martian pass (`pulp_wars-w49.25`,
+ * docs/product/RULESET_7_TUNING_MARTIAN.md section 14): a Martian seat's
+ * Tripod or Ray Gunner does not walk out in front of its line. `to` is a
+ * tile a visible hostile melee unit can attack next turn (`meleeReach`),
+ * no own line, defender, or breakthrough unit stands nearer to the nearest
+ * enemy than `to` (`armyScreenedV7`), and the unit is not under such a
+ * reach where it stands (then the step-back rules move it). A ray after a
+ * Move is at half power, the machine has no cover, and a Tripod has
+ * Defense 1: in the lab three Tripods walked two tiles ahead of their
+ * Grunts in one turn, fired for 2, 4, and 5, and four of the seat's five
+ * were dead after the Human turn that followed (36 Coins). Held back, the
+ * unit fires at full power at what comes into its range. The Move from
+ * which its shot kills, the Move onto a village or a center, and the hunt,
+ * the storm, and the extraction (which come in above
+ * `ARMY_ROUTINE_MOVE_MAXIMUM_V7`) are as before.
+ */
+function armyRayOutFrontV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  meleeReach: number,
+): boolean {
+  if (!armyMartianSeatV7(context) || meleeReach <= 0) return false;
+  const view = context.view;
+  if (!isRayUnitV7(view, actor)) return false;
+  const unitClass = armyClassV7(unitRoleRuleV7(view, actor));
+  if (unitClass !== "SIEGE" && unitClass !== "RANGED") return false;
+  if ((armyMeleeReachV7(context).get(coordKey(actor.at)) ?? 0) > 0)
+    return false;
+  if (context.lookup.citiesByKey.has(coordKey(to))) return false;
+  if (armyVillageMoveV7(context, actor, to)) return false;
+  return !armyScreenedV7(context, actor, to);
+}
+
 function armyPlainMoveValueV7(
   context: PolicyContextV7,
   actor: PublicUnitV7,
@@ -5905,6 +6047,16 @@ function armyPlainMoveValueV7(
     if (prey !== undefined && armyWeakGarrisonV7(context, prey))
       mode = "COMMIT";
   }
+  // Step two of the Martian pass (`pulp_wars-w49.25`): a ray unit does not
+  // walk out in front of its line (`armyRayOutFrontV7`).
+  if (
+    !same(actor.at, to) &&
+    // (A hunt, a storm, and a step back come with their own priority.)
+    priority <= ARMY_ROUTINE_MOVE_MAXIMUM_V7 &&
+    engagement?.kills !== true &&
+    armyRayOutFrontV7(context, actor, to, meleeReach)
+  )
+    return { priority: -1, strategic: 0 };
   // (Tuning 8: a spent fast unit moves in only for a kill; it pulls back.)
   if (
     engagement !== undefined &&
@@ -9890,6 +10042,13 @@ function isPolicyCandidate(
     economic.preview.cost > 0 &&
     economic.preview.levelsReached.length === 0 &&
     context.army &&
+    // Step two of the Martian pass (`pulp_wars-w49.25`): nor the opening
+    // growth harvest of the level-1 capital (as for the savings plan,
+    // above). A Martian seat whose first target is its growth technology
+    // (`armyUndeadGrowthFirstV7`) kept its 5 Coins for it in round 1 and
+    // harvested nothing; the two harvests are its city level and its
+    // free Saucer.
+    !openingGrowthHarvestV7(context.view, command) &&
     context.view.viewer.coins - economic.preview.cost <
       armyResearchFloorV7(context)
   )
@@ -11095,7 +11254,18 @@ function* sharedCityContextWorkV7(
                 threatened ||
                   (city !== undefined && armyFrontCenterV7(context, city.at)),
               ) +
-              trainingAdjustment(command.role) +
+              trainingAdjustment(command.role) -
+              // Step two of the Martian pass (`pulp_wars-w49.25`): a Shock
+              // Trooper for every two Grunts, no more
+              // (`armyMartianHeavyCappedV7`).
+              (view.viewer.faction === "MARTIAN" &&
+              command.role === "SWORDSMAN" &&
+              armyMartianHeavyCappedV7(
+                ownedRoleCounts.get("SWORDSMAN") ?? 0,
+                ownedRoleCounts.get("FIGHTER") ?? 0,
+              )
+                ? ARMY_MARTIAN_HEAVY_CAP_COST_V7
+                : 0) +
               // Step two of the Undead pass: the Necromancer for the
               // Graves beside this city (`armyNecromancerDueV7`).
               (necromancerDue &&
@@ -11815,7 +11985,8 @@ function scoreCommandWithContext(
     // city, could not pay 17, and bought it four rounds later for 19.
     if (
       priority === ARMY_DUE_RESEARCH_PRIORITY_V7 &&
-      armyUndeadSeatV7(context) &&
+      // (Step two of the Martian pass: and a Martian seat.)
+      armyBodiesSeatV7(context) &&
       context.commands.some((offered) => offered.kind === "CAPTURE")
     )
       priority = ARMY_RESEARCH_BEFORE_CAPTURE_PRIORITY_V7;
@@ -20630,10 +20801,17 @@ function preferredReward(
   // moves two tiles and takes villages, and needs no technology. (With
   // Stockpile in round 1 the seat of the first diagnostic match took three
   // villages with Cavemen by round 11 and no more.)
+  // Step two of the Martian pass (`pulp_wars-w49.25`): and a Martian army
+  // seat. The free Saucer is a 4-Coin unit that sets a Grunt down beside a
+  // village three tiles away in the turn it is trained: a hand-played
+  // Martian seat with three of them owned five cities in round 8 and seven
+  // in round 11. (The seat took Stockpile in round 1 with 1 Coin in hand
+  // and held four cities from round 6 to round 12.)
   if (
     command.reachedLevel === 2 &&
     context.army &&
-    context.view.viewer.faction === "DINOSAUR" &&
+    (context.view.viewer.faction === "DINOSAUR" ||
+      context.view.viewer.faction === "MARTIAN") &&
     offered.includes("SURVEY")
   )
     return "SURVEY";
@@ -21247,6 +21425,42 @@ export function publicProjectedDamageForPolicyV7(
   );
 }
 
+/**
+ * Step two of the Martian pass (`pulp_wars-w49.25`,
+ * docs/product/RULESET_7_TUNING_MARTIAN.md section 14): the `attack2` of
+ * the viewer's own ray unit projected from a tile it does not stand on. A
+ * heat ray after a Move is at half power, and the projection read the
+ * unit's published Attack, which is the full power of a ray unit that has
+ * not moved: a Tripod two tiles from a firing tile was told its shot deals
+ * a Fighter 12 where it deals 5, and walked out in front of its line for
+ * "kills" that were not (three Tripods in one turn of the lab, dealing 2,
+ * 4, and 5; four of the seat's five were dead a turn later). Undefined for
+ * every other attacker, for a unit projected from its own tile, and for
+ * one that has moved or is Cooling (its published Attack is the half
+ * already). Psychic Command's +1 Attack is kept.
+ */
+function movedRayAttack2V7(
+  view: PlayerViewV7,
+  attacker: PublicUnitV7,
+  published2: number,
+  lookup?: PolicyLookupV7,
+): number | undefined {
+  if (attacker.ownerId !== view.viewer.id || !isRayUnitV7(view, attacker))
+    return undefined;
+  const real =
+    lookup?.unitsById.get(attacker.id) ??
+    view.units.find((unit) => unit.id === attacker.id);
+  if (
+    real === undefined ||
+    real.activation.moved ||
+    (real.at.x === attacker.at.x && real.at.y === attacker.at.y)
+  )
+    return undefined;
+  const full2 = unitRoleRuleV7(view, attacker).attack2;
+  if (published2 < full2) return undefined;
+  return Math.floor(full2 / 2) + (published2 - full2);
+}
+
 function publicProjectedDamageWithLookupV7(
   view: PlayerViewV7,
   attacker: PublicUnitV7,
@@ -21269,7 +21483,10 @@ function publicProjectedDamageWithLookupV7(
   const attackRule = unitRoleRuleV7(view, attacker);
   const defenseRule = unitRoleRuleV7(view, defender);
   const attackFacts = publicCombatFacts(view, attacker, lookup);
-  const publishedAttack2 = options.rayAttack2 ?? attackFacts.attack2;
+  const publishedAttack2 =
+    options.rayAttack2 ??
+    movedRayAttack2V7(view, attacker, attackFacts.attack2, lookup) ??
+    attackFacts.attack2;
   // Revision 19: an Alpha's +1 Attack is part of its published Attack; the
   // Pounce estimate adds it to the role's base (0 for every other unit).
   const attack2 =

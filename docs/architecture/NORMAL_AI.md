@@ -1,5 +1,137 @@
 # Greedy Normal AI
 
+## Step two of the Martian pass (`pulp_wars-w49.25`)
+
+[Step two of the Martian pass](../product/RULESET_7_TUNING_MARTIAN.md#14-step-two)
+changed one rule (City Walls hold a unit on its own city center against a
+Saucer's Tractor Beam, identity `pulp-wars-poc-7r58`) and ten things in
+the policy of a Martian seat that plays the army rules
+(`armyMartianSeatV7`: `context.army` and a Martian viewer). A seat of
+another faction decides as before, except where an Undead seat's rule was
+widened to both (`armyBodiesSeatV7`), which changes nothing for the Undead
+seat. Everything reads the viewer's `PlayerViewV7` and the public previews.
+
+**What was seen** (a hand-played game as the Humans on seed 9, four
+diagnostic matches on that seed, two in the lab, and recorded positions of
+them). Since the Industry reshuffle the Projector is two technologies
+away, and the seat kept its Coins for them and for its growth technology:
+it trained no unit from round 3 to round 9 (three Grunts on four cities).
+It took Stockpile in round 1 where a free Saucer was offered. Its order
+had the Shock Trooper third: Engineering in round 16, Armoury in round 24,
+and no Tripod, Brain, or Mothership in 25 rounds; Heat Sinks stood behind
+the Mothership. In the lab it read a Tripod's shot after a Move at full
+power, walked three Tripods out in front of its Grunts in one turn, lost
+four of five in the next Human turn, and trained seven Shock Troopers and
+no Grunt.
+
+**1. Bodies first** (`armyBodiesSeatV7`, in `armyUndeadShortOfUnitsV7`
+and so in `armyUndeadBodiesFirstV7`, `preferredReward`). The rule of step
+two of the Undead pass holds for a Martian seat: with fewer units than its
+cities and `ARMY_UNDEAD_SPARE_UNITS_V7` (2) more, the Coins for a Grunt,
+and a city that can train, training comes first, no technology is due, and
+no Coins are kept; in a war until the research clock is a whole technology
+behind. A Martian seat counts the units that capture (a Grunt, a Ray
+Gunner, a Projector, a Shock Trooper): its Saucers come free with every
+level-2 city and take no village. Short of units it also takes the Militia
+of a city that is not threatened.
+
+**2. The free Saucer** (`preferredReward`). A Martian army seat takes
+Scouts at level 2 whatever its Coins, as a Dinosaur seat does (it took
+Stockpile below 4 Coins, which is what the opening harvest leaves).
+
+**3. The opening harvest** (`isPolicyCandidate`). The Coins kept for a due
+technology (`armyResearchFloorV7`) do not hold a growth harvest of the
+level-1 capital (`openingGrowthHarvestV7`), as the savings plan never did.
+With its growth technology as the first target a Martian seat kept its 5
+Coins in round 1 and harvested nothing.
+
+**4. One growth technology before the Projector's two**
+(`armyUndeadGrowthFirstV7`, `armyDefenderResearchV7`,
+`ARMY_RESEARCH_BEFORE_CAPTURE_PRIORITY_V7`). As for an Undead seat: while
+the seat cannot train its defender, owns at most its opener beside the
+root, and no hostile land unit is visible within `ARMY_ALERT_RADIUS_V7` of
+one of its centers, the growth technology of its land is the target; with
+contact Crafting and Force Fields come first. Force Fields is a due
+research also with an enemy at a gate, and a due research is made before a
+Capture offered in the same turn.
+
+**5. The order** (`ARMY_RESEARCH_ROLES_V7.MARTIAN`,
+`armyMartianResearchRolesV7`). Shield Projector, Ray Gunner, **Brain**,
+Shock Trooper, Tripod, Saucer, Mothership: Leadership is one technology
+behind the Gathering most seats open with. For a Martian seat the loop of
+`armyResearchTargetV7` reads the order through
+`armyMartianResearchRolesV7`, which puts the Tripod before the Shock
+Trooper unless `ARMY_RANGED_ENEMY_UNITS_V7` (3) hostile land units or more
+are visible and at most half of them attack from two tiles or more. A
+chain that is begun (Engineering without Armoury, or Forestry without
+Tripods) is finished first, so the enemy walking in and out of sight does
+not buy half of each.
+
+**6. Heat Sinks after the second Ray Gunner** (`armyResearchTargetV7`).
+At the first unit of the order after the Ray Gunner (it was at the
+Mothership, the last).
+
+**7. The Disintegrator against City Walls** (`armyResearchTargetV7`,
+`heldByCityWallsForPolicyV7`). With Heat Sinks owned and two Ray Gunners
+fielded, the Disintegrator is the target while a visible hostile unit
+stands on its own walled center: since `7r58` a Saucer does not pull it
+off, and a ray without the technology deals a Zombie there 5 where it
+deals 8.
+
+**8. One Shock Trooper for two Grunts** (`armyMartianHeavyCappedV7`,
+`ARMY_MARTIAN_HEAVY_CAP_COST_V7` = 600, in `sharedCityContextWorkV7`).
+Both are the line class, and a class the army is short of is bought in its
+dearest unit. A Trooper beyond half the Grunts costs 600 of training
+score. The garrison value of a threatened center (5,000) still trains the
+sturdier body there.
+
+**9. A ray after a Move is at half power** (`movedRayAttack2V7`, in
+`publicProjectedDamageWithLookupV7`). The projection took the attacker's
+published Attack, which for a ray unit that has not moved is its full
+power, whatever tile it was projected from. For the viewer's own ray unit
+projected from a tile it does not stand on, the half is used (plus the +1
+of Psychic Command where it shows). This is every estimate of the policy:
+engagements, hunts, positions. An own ray unit moved by a Tractor Beam
+keeps its full power in the rules and is read at half here; not corrected.
+
+**10. Not out in front** (`armyRayOutFrontV7`, in
+`armyPlainMoveValueV7`). A Martian seat's Tripod or Ray Gunner makes no
+Move of routine priority (`ARMY_ROUTINE_MOVE_MAXIMUM_V7` or less coming
+in) to a tile a visible hostile melee unit can attack next turn
+(`armyMeleeReachV7`) unless an own line, defender, or breakthrough unit is
+nearer to the nearest enemy than the tile (`armyScreenedV7`), the shot
+from there kills, the tile is a center or a village, or the unit already
+stands in such a reach (the step-back rules move it then).
+
+**The rule in the policy** (`pullCaptureMoveV7`). A Saucer flies up to no
+walled center for a siege pull: the engine's target test takes
+`unitHeldByCityWallsV7`, and the offered commands hold no such pull.
+
+**Before and after.** Not a balance measurement.
+
+| Where                                        | Before                                                                                                   | After                                                                                                                         |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Against the Human AI, seed 9, rounds 1 to 10 | Stockpile in round 1; no unit in rounds 3 to 9; three Grunts on four cities; Crafting 4, Force Fields 8  | a Saucer in round 1; four Grunts in round 5, five cities in round 8; Crafting 7, Force Fields 9                               |
+| The same match, round 25                     | six cities and 21 units against six and 14; 30 kills for 9 lost; Armoury in round 24, no Brain           | nine cities and 32 units against one and 3; 36 kills for 6 lost; two Brains in round 17                                       |
+| The hand-played Human, seed 9                | five Grunts trained in twelve rounds; 10 attacks, 2 kills, 5 lost                                        | four Grunts in round 5, four Saucers by round 9, a city of the player taken in round 10; 20 attacks, 8 kills, 4 lost          |
+| The lab, both seats the AI, twelve rounds    | four of five Tripods dead in round 3; seven Shock Troopers and no Grunt by round 9; 23 kills for 30 lost | four to six Tripods throughout; six Grunts and three Troopers; Heat Sinks in round 7, the Disintegrator in 8; 29 kills for 19 |
+
+No error and no stall in any of the six matches.
+
+**Not changed, and seen.** A winning seat researches slowly (no
+technology from round 17 to round 22 on seed 9, and Roads by Scouting
+before Heat Sinks once the war was over); a Saucer ends its turn beside
+the enemy after its kill; a Brain in a generated match took no unit.
+
+**Pins that moved**, each with a note at the test: the Pangea pin of the
+curiosities parity matches (the one with a Martian seat: commands and
+events, 12 rounds, 13 before; the map and the PRNG are unchanged); the
+Martian research order where a test states it; two fixtures with the
+Grunts that keep a Martian seat from being short of units; the source
+audits (one land-form test in `src/engine/v7/martian.ts`; three readers
+classified). The list is in
+[section 14.8](../product/RULESET_7_TUNING_MARTIAN.md#148-tests).
+
 ## Step two of the Undead pass (`pulp_wars-w49.24`)
 
 [Step two of the Undead pass](../product/RULESET_7_TUNING_UNDEAD.md#15-step-two)

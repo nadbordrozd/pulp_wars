@@ -97,7 +97,7 @@ import {
   withoutTechsV7,
 } from "../fixtures/v7-revision20";
 
-// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r57`,
+// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r58`,
 // docs/product/RULESET_7_TUNING_MARTIAN.md): a unit pulled by the Tractor
 // Beam explores for its owner from the tile it lands on; Scouts for a
 // Martian city (a free Saucer); the Shield Projector's Force Field needs
@@ -205,13 +205,13 @@ describe("the Martian pass: identity", () => {
   // The Dinosaur pass (tests/unit/ruleset-v7-dinosaur-pass.test.ts) took
   // 7r53 and the economy rejig 7r54, so 7r52 is a prior identity.
   it("was 7r52 after 7r51, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r57");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r57.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-6, -4)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r58");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r58.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-7, -5)).toEqual([
       "pulp-wars-poc-7r51",
       "pulp-wars-poc-7r52",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -4)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-7, -5)).toEqual([
       "pulpWars.save.v7r51.current",
       "pulpWars.save.v7r52.current",
     ]);
@@ -978,14 +978,15 @@ describe("the Martian pass: Martian seats play the army rules", () => {
     ]);
     expect(armyPlayFactionV7("MARTIAN")).toBe(true);
     expect(armyPlayFactionV7("ICE_FOLK")).toBe(false);
-    // Shield Projector, Ray Gunner, Shock Trooper (the ninth unit, 7r55),
-    // Tripod, Brain, Saucer, Mothership.
+    // Shield Projector, Ray Gunner, Brain (third since step two of the
+    // Martian pass, `pulp_wars-w49.25`; it was fifth), Shock Trooper (the
+    // ninth unit, 7r55), Tripod, Saucer, Mothership.
     expect(ARMY_RESEARCH_ROLES_V7.MARTIAN).toEqual([
       "GUARD",
       "MARKSMAN",
+      "CAPTAIN",
       "SWORDSMAN",
       "CATAPULT",
-      "CAPTAIN",
       "RAIDER",
       "KNIGHT",
     ]);
@@ -1077,7 +1078,7 @@ describe("the Martian pass: Martian seats play the army rules", () => {
       ),
     ).research;
 
-  it("researches the Projector, the Ray Gunner, the Tripod, the Brain, the Saucer, the Mothership", () => {
+  it("researches the Projector, the Ray Gunner, the Brain, the Tripod, the Shock Trooper, the Saucer, the Mothership", () => {
     // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Projector is
     // at Force Fields, one technology behind the root.
     expect(research(techsOf("GATHERING"))).toMatchObject({
@@ -1088,59 +1089,50 @@ describe("the Martian pass: Martian seats play the army rules", () => {
       tech: "FORTIFICATION",
       unlocks: "GUARD",
     });
-    // The ninth unit (7r55): the Shock Trooper, at Metallurgy, follows the
-    // Ray Gunner.
-    expect(
-      research(
-        techsOf(
-          "GATHERING",
-          "FARMING",
-          "DRILL",
-          "FORTIFICATION",
-          "ENGINEERING",
-          "HUNTING",
-          "MARKSMANSHIP",
-        ),
-      ),
-    ).toMatchObject({ tech: "METALLURGY", unlocks: "SWORDSMAN" });
-    // Every growth technology owned, so the order alone decides.
-    const grown = [
-      "GATHERING",
-      "FARMING",
-      "DRILL",
-      "FORTIFICATION",
-      "ENGINEERING",
-      "METALLURGY",
-    ] as const;
+    // One growth technology owned, so the order alone decides.
+    const grown = ["GATHERING", "FARMING", "DRILL", "FORTIFICATION"] as const;
     expect(research(techsOf(...grown))).toMatchObject({ tech: "HUNTING" });
     expect(research(techsOf(...grown, "HUNTING"))).toMatchObject({
       tech: "MARKSMANSHIP",
       unlocks: "MARKSMAN",
     });
-    expect(
-      research(techsOf(...grown, "HUNTING", "MARKSMANSHIP")),
-    ).toMatchObject({ tech: "FORESTRY" });
-    expect(
-      research(techsOf(...grown, "HUNTING", "MARKSMANSHIP", "FORESTRY")),
-    ).toMatchObject({ tech: "SAWMILLING", unlocks: "CATAPULT" });
-    const tripod = [
-      ...grown,
-      "HUNTING",
-      "MARKSMANSHIP",
-      "FORESTRY",
-      "SAWMILLING",
-    ] as const;
-    expect(research(techsOf(...tripod))).toMatchObject({
+    // Step two of the Martian pass (`pulp_wars-w49.25`): the Brain third
+    // (the Shock Trooper followed the Ray Gunner from 7r55, and the Brain
+    // came after the Tripod).
+    const rays = [...grown, "HUNTING", "MARKSMANSHIP"] as const;
+    expect(research(techsOf(...rays))).toMatchObject({
       tech: "ADMINISTRATION",
       unlocks: "CAPTAIN",
     });
-    expect(research(techsOf(...tripod, "ADMINISTRATION"))).toMatchObject({
+    // Then the Tripod (one Fighter in sight is no melee army:
+    // `tests/unit/ruleset-v7-martian-step2.test.ts` has the other case),
+    // then the Shock Trooper.
+    const brain = [...rays, "ADMINISTRATION"] as const;
+    expect(research(techsOf(...brain))).toMatchObject({ tech: "FORESTRY" });
+    expect(research(techsOf(...brain, "FORESTRY"))).toMatchObject({
+      tech: "SAWMILLING",
+      unlocks: "CATAPULT",
+    });
+    const tripod = [...brain, "FORESTRY", "SAWMILLING"] as const;
+    expect(research(techsOf(...tripod))).toMatchObject({ tech: "ENGINEERING" });
+    expect(research(techsOf(...tripod, "ENGINEERING"))).toMatchObject({
+      tech: "METALLURGY",
+      unlocks: "SWORDSMAN",
+    });
+    // A Shock Trooper's chain that is begun is finished before the
+    // Tripod's is started.
+    expect(research(techsOf(...brain, "ENGINEERING"))).toMatchObject({
+      tech: "METALLURGY",
+      unlocks: "SWORDSMAN",
+    });
+    const heavy = [...tripod, "ENGINEERING", "METALLURGY"] as const;
+    expect(research(techsOf(...heavy))).toMatchObject({
       tech: "SCOUTING",
       unlocks: "RAIDER",
     });
-    expect(
-      research(techsOf(...tripod, "ADMINISTRATION", "SCOUTING")),
-    ).toMatchObject({ tech: "RAIDING" });
+    expect(research(techsOf(...heavy, "SCOUTING"))).toMatchObject({
+      tech: "RAIDING",
+    });
   });
 
   it("researches Force Fields once it fields a Projector, and Heat Sinks with two Ray Gunners", () => {
@@ -1164,10 +1156,17 @@ describe("the Martian pass: Martian seats play the army rules", () => {
     expect(research(techsOf(...grown), [own("GUARD", 7, 7)])).toMatchObject({
       tech: "FORTIFICATION",
     });
-    // With it: on to the Tripod.
+    // With it: on to the Brain (the Tripod until step two of the Martian
+    // pass, `pulp_wars-w49.25`), and with two Ray Gunners Heat Sinks first.
     expect(research(techsOf(...grown, "FORTIFICATION"))).toMatchObject({
-      tech: "FORESTRY",
+      tech: "ADMINISTRATION",
     });
+    expect(
+      research(techsOf(...grown, "FORTIFICATION"), [
+        own("MARKSMAN", 7, 7),
+        own("MARKSMAN", 9, 7),
+      ]),
+    ).toMatchObject({ tech: "FIELDCRAFT" });
     const late = [
       ...grown,
       "FORTIFICATION",
@@ -1991,11 +1990,23 @@ describe("the Martian pass, correction: the Martian seat of the Normal AI", () =
         ? techsOf("GATHERING", "DRILL", "FORTIFICATION")
         : techsOf("GATHERING", "HUNTING", "MARKSMANSHIP");
     const base = orphaned(
-      martianFieldV7([own("FIGHTER", 8, 7), foe("FIGHTER", 2, 2)], {
-        factions: [faction, faction === "MARTIAN" ? "ORIGINAL" : "MARTIAN"],
-        techs: { 0: techs, 1: [] },
-        coins,
-      }),
+      martianFieldV7(
+        [
+          own("FIGHTER", 8, 7),
+          // Step two of the Martian pass (`pulp_wars-w49.25`): three
+          // Grunts, so that a Martian seat is not short of units (short
+          // of them it trains before it researches and keeps no Coins).
+          ...(faction === "MARTIAN"
+            ? [own("FIGHTER", 9, 7), own("FIGHTER", 7, 7)]
+            : []),
+          foe("FIGHTER", 2, 2),
+        ],
+        {
+          factions: [faction, faction === "MARTIAN" ? "ORIGINAL" : "MARTIAN"],
+          techs: { 0: techs, 1: [] },
+          coins,
+        },
+      ),
     );
     return {
       ...base,

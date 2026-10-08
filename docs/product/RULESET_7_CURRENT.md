@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r57`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r58`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -199,6 +199,13 @@ balance on water maps, `pulp_wars-5ti.8`; and the polish items of
 a unit on ice has no fortification, so a Dwarf Hammerer or Steam Mole is
 never dug in on an ice tile ([section 22.7](#227-dig-in)). No shape changed,
 and a match without both a Dwarf and an Ice Folk seat plays as at `7r44`.
+`pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
+[step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
+**City Walls hold a unit on its own city center against a Saucer's Tractor
+Beam** (a Mothership's Heavy Tractor Beam pulls it as before;
+[section 20.10](#2010-tractor-beam)), and nothing else in the rules
+changed. A save, replay, or setup of `7r57` is rejected, and the browser
+autosave has a new key.
 `pulp-wars-poc-7r57` (`pulp_wars-w49.24`) is
 [step two of the Undead pass](RULESET_7_TUNING_UNDEAD.md#15-step-two): **a
 Zombie that rises, by Infect or from a Bitten unit, has 12 of its 18 HP**
@@ -641,7 +648,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r57`.
+resolved ones as of `pulp-wars-poc-7r58`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -742,10 +749,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r57`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r58`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r57.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r58.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -757,7 +764,7 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r56`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r57`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
   and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
   Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
@@ -5599,6 +5606,23 @@ Harbours from it.
   Marksman that does not (it trained nothing). A Human seat with
   Marksmanship now fields Marksmen in a war.
   [Normal AI, step two of the Human pass](../architecture/NORMAL_AI.md#step-two-of-the-human-pass-pulp_wars-w4922).
+- **Step two of the Martian pass** (`pulp_wars-w49.25`, `7r58`). A Martian
+  seat that plays the army rules trains before it researches while it
+  fields fewer units that capture than its cities and two more (its
+  Saucers do not count), takes the free Saucer at level 2 whatever its
+  Coins, makes its opening harvest with the Coins it keeps for a
+  technology, buys one growth technology before the Shield Projector's two
+  while no enemy unit is within six tiles of one of its cities, Force
+  Fields also with an enemy at its gates, and a technology that is due
+  before a capture that would raise its price. Its order of units is the
+  Shield Projector, the Ray Gunner, the Brain, then the Tripod and the
+  Shock Trooper (the Trooper first when most of the enemy in sight fights
+  hand to hand), the Saucer, the Mothership; Heat Sinks comes right after
+  its second Ray Gunner, and the Disintegrator after that once it sees a
+  garrison behind City Walls. It keeps one Shock Trooper for every two
+  Grunts. It knows that a heat ray after a Move is at half power, and its
+  Tripods and Ray Gunners do not walk out in front of their line
+  ([Normal AI](../architecture/NORMAL_AI.md#step-two-of-the-martian-pass-pulp_wars-w4925)).
 - **Step two of the Undead pass** (`pulp_wars-w49.24`, `7r57`). An Undead
   seat that plays the army rules and has fewer land units than its cities
   and two more trains before it researches and keeps no Coins for a
@@ -8245,6 +8269,16 @@ cost.
   (never allied), within the puller's reach, in any form, that is not an
   Egg, whose role is not `JUGGERNAUT`, that is not the Giant Spider, and
   that uses one slot. A construct is a legal target.
+- **City Walls hold** (step two of the Martian pass, `7r58`;
+  `unitHeldByCityWallsV7`). A land-form unit that stands on the center of
+  a city of its own owner which has City Walls (the level-3 reward) is
+  **not a legal target of a Saucer's Tractor Beam**. The Heavy Tractor
+  Beam of a Mothership pulls it as before. A unit beside the center, a
+  unit of another owner standing on the center, and an embarked unit are
+  not held, and Field Defense holds nothing. Before `7r58` a Saucer (one
+  comes free with Scouts at level 2) pulled the garrison of a walled,
+  fortified capital one tile into the open every turn, where two shots
+  killed it.
 - **Path.** Repeat at most as many times as the puller pulls: the next tile
   is the target's tile plus `(sign(dx), sign(dy))` of the offset from where
   the target then stands toward the puller; the step is taken only if that
@@ -8283,7 +8317,8 @@ cost.
   it (above) → `UNIT_ALREADY_ACTED`; embarked →
   `TRACTOR_BEAM_NOT_LEGAL { reason: "EMBARKED" }`; unknown, dead, or unseen
   target → `TARGET_NOT_FOUND`; allied target → `TARGET_ALLIED`; an Egg, a
-  `JUGGERNAUT`-role unit, the Giant Spider, or a two-slot unit →
+  `JUGGERNAUT`-role unit, the Giant Spider, a two-slot unit, or (for a
+  Saucer) a unit City Walls hold →
   `TRACTOR_BEAM_NOT_LEGAL { reason: "TARGET_IMMUNE" }`; a distance outside
   the reach → `TRACTOR_BEAM_NOT_LEGAL { reason: "OUT_OF_RANGE" }`; no legal
   first step → `TRACTOR_BEAM_NOT_LEGAL { reason: "BLOCKED" }`. Such a
@@ -8295,9 +8330,10 @@ cost.
   (`to` is the final tile and `path` the one or two tiles crossed, ending
   with it), `TILES_REVEALED`, the tail, and the naval blockade and
   sea-network events (a pull can take a blockader off a dock).
-- A defender pulled off a city center leaves the Walls and the center
-  empty, a defender pulled off Field Defense loses it, and a besieger pulled
-  off an own center lifts the siege. There is no capture in the same turn: a
+- A defender pulled off a city center leaves the center empty (off a
+  walled one only a Mothership pulls it, and it leaves the Walls), a
+  defender pulled off Field Defense loses it, and a besieger pulled off an
+  own center lifts the siege. There is no capture in the same turn: a
   capture needs a unit that began its owner's turn on the center. A Heavy
   pull from three tiles sets a center's defender down two tiles from it,
   so a Move-1 defender cannot walk back in one turn.
@@ -10786,6 +10822,7 @@ first guesses.
 | Tuning        | `pulp-wars-poc-7r56` | `pulp_wars-w49.22` [step two of the Human pass](RULESET_7_TUNING_HUMAN.md#17-step-two) after four hand-played games as the Humans and two as the Goblins against the Human AI, no rule and no identity change: a Human seat of the Normal AI trains a ranged unit onto the center of a threatened city while its army is short of one (the garrison rule decided every training), and a city chooses among the units the Coins kept for a due technology allow                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | Tuning        | `pulp-wars-poc-7r56` | `pulp_wars-w49.23` [step two of the Goblin pass](RULESET_7_TUNING_GOBLIN.md#14-step-two) after three hand-played games as the Humans against the Goblin AI, two as the Goblins, and the lab, no rule and no identity change: a Goblin seat of the Normal AI plans its combined kills with Gang Up and moves its helpers beside the target before the first blow, sends no unit into contact alone to die, researches the Ogre third and the Orc Brute's technology once Knights or Raiders are in sight, and trains a Bomb Chucker in a threatened city while its army is short of them; both chests of the benchmark map (Dry Land 14, seed 11) lie beside the Goblin capital                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | Tuning        | `pulp-wars-poc-7r57` | `pulp_wars-w49.24` [step two of the Undead pass](RULESET_7_TUNING_UNDEAD.md#15-step-two) after two hand-played games as the Undead, three as the Humans against the Undead AI, the lab, and six diagnostic matches: a Zombie that rises (Infect or Bitten) has 12 of its 18 HP (10 before: 17 of 23 risings in two passes died within one enemy turn); an Undead seat of the Normal AI trains before it researches while it is short of units, takes the free Ghoul and the Militia, buys one growth technology before the Zombie's two, a due technology before a capture, trains Banshees, Liches, and a Necromancer in a war; a unit of any army seat stays on its Field Defense                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Tuning        | `pulp-wars-poc-7r58` | `pulp_wars-w49.25` [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two) after a hand-played game as the Humans against the Martian AI before the change and one after it, two as the Martians (against the Undead AI, replayed after the change, and against three AIs), the lab, and six diagnostic matches: City Walls hold a unit on its own city center against a Saucer's Tractor Beam (a Mothership's Heavy Tractor Beam pulls it; a free Saucer pulled the garrison of a walled, fortified capital into two shots every turn); a Martian seat of the Normal AI trains before it researches while it is short of units, takes the free Saucer, researches the Brain third, the Tripod before the Shock Trooper unless the enemy fights hand to hand, Heat Sinks after its second Ray Gunner and the Disintegrator against Walls, keeps one Shock Trooper for two Grunts, and no longer walks its Tripods out in front of its line for a shot at half power                                                                                                                                                                   |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

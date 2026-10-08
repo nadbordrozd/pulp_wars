@@ -550,7 +550,11 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // embarked unit, and a boat must fail it).
     // Tuning 5 (`pulp_wars-w49.4`) removed Drill and its land-form gate.
     "src/engine/v7/reducer.ts": 17,
-    "src/engine/v7/martian.ts": 1,
+    // Step two of the Martian pass (`pulp_wars-w49.25`, 7r58): City Walls
+    // hold a land-form unit on its own center against a Saucer's Tractor
+    // Beam (`unitHeldByCityWallsV7`; an Egg, an embarked unit, and a boat
+    // are never held: Walls fortify land-form units only).
+    "src/engine/v7/martian.ts": 2,
     // `pulp_wars-9s0.5`: only a land-form flyer stands on a Rift (an Egg,
     // an embarked unit, and a boat must fail the state check).
     // `pulp_wars-737.3`: a Giant Spider is a land-form unit (an Egg, an

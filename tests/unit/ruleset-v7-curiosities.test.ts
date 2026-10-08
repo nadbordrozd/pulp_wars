@@ -494,7 +494,14 @@ describe("headless parity and the CLI flag", () => {
         // The economy rejig (`pulp_wars-w49.16`, 7r54; research priced by
         // the cities owned, Monuments +3, the harder achievements):
         // recomputed for every pin of this list, 13 rounds here.
-        rounds: 13,
+        // Step two of the Martian pass (`pulp_wars-w49.25`, 7r58: the
+        // Martian seat trains before it researches while it is short of
+        // units, takes the free Saucer, and researches in a new order):
+        // 12 rounds, recomputed (the commands and the events); the board
+        // and the final PRNG state are unchanged. The Archipelago pin, the
+        // other one with a Martian seat, was recomputed too; the three
+        // pins without one are unchanged.
+        rounds: 12,
         commandHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // b030da…af4c).
@@ -502,7 +509,9 @@ describe("headless parity and the CLI flag", () => {
           // 4bc504…6f14).
           // Step two of the Goblin pass (`pulp_wars-w49.23`): recomputed (was
           // ed5934…6bf4).
-          "c99053334c9a3b5745fbb2a088b597882dff8aeb3d480488d13843b018be81a8",
+          // Step two of the Martian pass (`pulp_wars-w49.25`): recomputed (was
+          // c99053…81a8).
+          "8bce76d959a9f6a8dd98a2d68cf971a48f955a8cb33d05680f8b82e9d484e78f",
         eventHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // 6f55cd…6484).
@@ -510,7 +519,9 @@ describe("headless parity and the CLI flag", () => {
           // 3d8b8f…1845).
           // Step two of the Goblin pass (`pulp_wars-w49.23`): recomputed (was
           // bde7a3…b117).
-          "ac54511f8150efc52b8ee49223e7088bd11491956238d117ee0cd4e18f0e4589",
+          // Step two of the Martian pass (`pulp_wars-w49.25`): recomputed (was
+          // ac5451…4589).
+          "e0c73dddab1d7339d2707898ad90618930991feb388df652f57492aab5e0a617",
         mapHash:
           "5b286bbe8cdb2f8a339cd7a74ba219bc2b57a4322370548442b3c8f26bef4ad9",
         finalPrngHash:
@@ -561,13 +572,17 @@ describe("headless parity and the CLI flag", () => {
           // 45d7b1…eb56).
           // Step two of the Goblin pass (`pulp_wars-w49.23`): recomputed (was
           // 7d40e5…b72f).
-          "57e0368dcd6b08c3d8e407f70e2f3a02a4bbcbd8355a7de13ffb6974e9f16414",
+          // Step two of the Martian pass (`pulp_wars-w49.25`): recomputed (was
+          // 57e036…6414), 13 rounds still.
+          "b00168751856bb84b4441b40da7185cb007eb6071ab03ce0ffb46c325d9972a2",
         eventHash:
           // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
           // a2cb57…32ab).
           // Step two of the Goblin pass (`pulp_wars-w49.23`): recomputed (was
           // e15c18…2a2b).
-          "696f38f3b5ee50dc1b922895d6107c154881ced9a6bb0b8570af23ac047073b8",
+          // Step two of the Martian pass (`pulp_wars-w49.25`): recomputed (was
+          // 696f38…73b8).
+          "30224e6b16a03d38ffb233de427b967290767e6544d0e1a1cafd9e757be2ba2d",
         mapHash:
           "be112bd78cfeb3f5ae72a6b67f8f91bd45b81814c5d0cdad9abe7f31f221be5d",
         finalPrngHash:

@@ -303,11 +303,11 @@ const ENTRIES = {
   ],
   TRACTOR_BEAM: [
     "Tractor Beam",
-    "Pulls a unit 2 tiles away one tile closer. That is its action for the turn.",
+    "Pulls a unit 2 tiles away one tile closer, as its action for the turn. City Walls hold a unit on its own city.",
   ],
   TRACTOR_BEAM_HEAVY: [
     "Tractor Beam",
-    "Pulls a distant unit closer, once a turn. It can still move and attack afterwards.",
+    "Pulls a distant unit closer once a turn, even off City Walls. It can still move and attack afterwards.",
   ],
   MIND_CONTROL: [
     "Mind Control",

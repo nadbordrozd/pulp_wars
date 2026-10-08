@@ -199,6 +199,7 @@ import {
   tractorBeamRuleV7,
   tractorBeamStepLegalV7,
   tractorBeamTargetBlockV7,
+  unitHeldByCityWallsV7,
   type PlacementTileFactsV7,
   type TractorBeamRuleV7,
 } from "./martian";
@@ -2407,7 +2408,13 @@ function publicTractorBeamPathV7(
   if (
     target.hp <= 0 ||
     publicAllied(view, mothership.ownerId, target.ownerId) ||
-    tractorBeamTargetBlockV7(view, rule, mothership, target) !== null
+    tractorBeamTargetBlockV7(
+      view,
+      rule,
+      mothership,
+      target,
+      unitHeldByCityWallsV7(view.cities, target),
+    ) !== null
   )
     return null;
   // The technology the pull assumes for the target is read once, from the

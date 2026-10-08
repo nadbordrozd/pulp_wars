@@ -555,7 +555,8 @@ describe("Martian mobility UI", () => {
         '.v7-unit-ability[data-glossary="TRACTOR_BEAM_HEAVY"] span',
       )?.textContent,
     ).toBe(
-      "Pulls a distant unit closer, once a turn. It can still move and attack afterwards.",
+      // (Step two of the Martian pass, 7r58: "even off City Walls".)
+      "Pulls a distant unit closer once a turn, even off City Walls. It can still move and attack afterwards.",
     );
     expect(
       document.querySelector('.v7-unit-ability[data-glossary="TRACTOR_BEAM"]'),

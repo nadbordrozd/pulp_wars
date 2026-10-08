@@ -189,6 +189,17 @@ build_workshop`, 4 Coins); on a Mountain it still needs Engineering.
   `LAB_LATE` are unchanged. The lab table below was written before
   these revisions.
 
+**Step two of the Martian pass (`pulp-wars-poc-7r58`,
+[its record](../product/RULESET_7_TUNING_MARTIAN.md#14-step-two)).**
+
+- **City Walls hold.** A Saucer's `uN.tractor.uM` is not offered against a
+  unit that stands on its own city center with City Walls (`WALLS` in the
+  city's line under `KNOWN OTHER CITIES`); a Mothership's is. A unit beside
+  the center, or on a center without Walls, is pulled as before.
+- **The Shock Trooper's line.** Its `tech`, train, and unit lines end with
+  `Shock Field: while it has Shield, a unit that attacks it from the next
+tile takes 3` (they listed it with `abilities CAPTURE` and nothing else).
+
 `???????` is an unexplored tile. The game has no re-fog: once a tile is
 explored, you see every unit on it for the rest of the match. A unit on an
 unexplored tile, and a city whose center is unexplored, never appear in any

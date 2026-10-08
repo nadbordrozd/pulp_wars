@@ -210,6 +210,7 @@ import {
   tractorBeamRuleV7,
   tractorBeamStepLegalV7,
   tractorBeamTargetBlockV7,
+  unitHeldByCityWallsV7,
   withFiredRayV7,
   withFullShieldsV7,
   withShieldDamageV7,
@@ -3092,7 +3093,13 @@ function applyTractorBeam(
     });
   if (arePlayersAlliedV7(state, actor, target.ownerId))
     return rejected(original, "TARGET_ALLIED");
-  const block = tractorBeamTargetBlockV7(state, rule, mothership, target);
+  const block = tractorBeamTargetBlockV7(
+    state,
+    rule,
+    mothership,
+    target,
+    unitHeldByCityWallsV7(state.cities, target),
+  );
   if (block !== null)
     return rejected(original, "TRACTOR_BEAM_NOT_LEGAL", { reason: block });
   const player = requirePlayer(state, actor);

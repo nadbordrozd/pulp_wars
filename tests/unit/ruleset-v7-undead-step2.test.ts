@@ -181,14 +181,19 @@ function recorded(name: string): GameStateV7 {
 const UNDEAD: readonly FactionIdV7[] = ["UNDEAD", "ORIGINAL"];
 
 describe("step two of the Undead pass: the identity", () => {
-  it("is 7r57, with 7r56 the last prior identity and an obsolete save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r57");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r57.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r56");
+  it("was 7r57 after 7r56, with both save keys obsolete now", () => {
+    // (Step two of the Martian pass, `pulp_wars-w49.25`, took 7r58.)
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r58");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r58.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r56",
+      "pulp-wars-poc-7r57",
+    ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r56.current",
-    );
+      "pulpWars.save.v7r57.current",
+    ]);
   });
 });
 
