@@ -487,6 +487,17 @@ portraits, 3 command icons, City 1 to 3), every unit, portrait and city
   whose polling was cut off.
 - The prompt notes are in the
   [production section](VISUAL_DIRECTION_2026-10.md#what-was-made-2).
+- **A unit generated smaller than its canvas** (bead `pulp_wars-eu3r.8`).
+  Pixen fills whatever canvas it is given, so a unit meant to read smaller
+  than its class is generated at a smaller request. An unowned as-is asset
+  that names a `bottomMargin` may take a request no larger than its canvas
+  in either direction: the candidate is padded with transparency
+  (bottom-centred, `paddedRaster`) and then seated like any as-is asset
+  with a margin, so the canvas, anchor and overflow stay the class's. Without
+  a margin the request must still equal the canvas, and no request is ever
+  larger than it. `art:validate` re-derives such a master like any seated
+  one. The Spitter's recipes `spitter-small-*` (44 x 64 and 48 x 68 in the
+  56 x 80 standard canvas) use it.
 
 ## Terrain palettes and variants
 

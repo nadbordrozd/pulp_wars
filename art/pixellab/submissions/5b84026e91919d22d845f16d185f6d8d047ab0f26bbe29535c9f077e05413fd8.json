@@ -1,0 +1,36 @@
+{
+  "id": "spitter-small-a-frill",
+  "jobId": "521ba569-5ce1-46cb-be95-8c3cca0710dc",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-spitter",
+    "subject": "UNIT:DINOSAUR:MARKSMAN",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 44,
+      "height": 64
+    },
+    "seed": 238111,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only. The red frill becomes a dark navy blue frill, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes, navy between them. The dark slate hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only. The red frill becomes a dark navy blue frill, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes, navy between them. The dark slate hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only. The red frill becomes a dark navy blue frill, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes, navy between them. The dark slate hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only. The red frill becomes a dark navy blue frill, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes, navy between them. The dark slate hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "spitter-small-a",
+      "candidate": 0,
+      "sha256": "94f19e6cc78e97fd36ee7c91b5929f74a8ab7f31515e9012174485147af213c4"
+    }
+  }
+}

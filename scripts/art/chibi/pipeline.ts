@@ -76,6 +76,7 @@ import {
   riftGuideRaster,
   riftPieceWindow,
   riftStripRaster,
+  paddedRaster,
   seatedRaster,
   transparentPixels,
   type CropRowsSpec,
@@ -1629,6 +1630,23 @@ async function checkedPalette(
   return paletteColours(await readRaster(bytes));
 }
 
+/**
+ * The raster a seated master is cut from. An as-is asset seated by its
+ * bottom margin may be generated smaller than its canvas (bead
+ * pulp_wars-eu3r.8: the Dinosaur Spitter, drawn smaller than the other
+ * standard units): its candidate is padded with transparency to the canvas
+ * first. The calm seated classes are generated at least as large as their
+ * master, so their candidates are used as they are.
+ */
+function seatedSource(
+  asset: ChibiAssetSpec,
+  candidate: RgbaRaster,
+): RgbaRaster {
+  return CHIBI_CLASS_RECIPES[asset.recipeClass].derivation === "as-is"
+    ? paddedRaster(candidate, asset.canvas)
+    : candidate;
+}
+
 async function deriveClassMaster(
   context: PipelineContext,
   records: BatchRecords,
@@ -1673,7 +1691,11 @@ async function deriveClassMaster(
   if (kind === "seated") {
     const bottomMargin = asset.bottomMargin ?? SEATED_BOTTOM_MARGIN;
     return {
-      raster: seatedRaster(candidate, asset.canvas, bottomMargin),
+      raster: seatedRaster(
+        seatedSource(asset, candidate),
+        asset.canvas,
+        bottomMargin,
+      ),
       derivation: { kind, seat: { bottomMargin } },
     };
   }
@@ -2251,7 +2273,7 @@ async function rederivedMasterProblems(
   try {
     if (kind === "seated")
       derived = seatedRaster(
-        candidate,
+        seatedSource(asset, candidate),
         asset.canvas,
         asset.bottomMargin ?? SEATED_BOTTOM_MARGIN,
       );

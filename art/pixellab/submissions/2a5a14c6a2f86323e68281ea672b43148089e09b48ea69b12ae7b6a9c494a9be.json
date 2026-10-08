@@ -1,0 +1,64 @@
+{
+  "id": "brontosaurus-bulk-a",
+  "jobId": "sync-50cd28dd-b110-4ebf-92e5-4c8cf89c933f",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-brontosaurus",
+    "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 238201,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+        "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint.",
+        "negative": "metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+        "text": "Subject: Brontosaurus, a huge heavy cute giant long-necked dinosaur seen from the side, the biggest animal of the army: one enormous round barrel body, four very thick short pillar legs, a thick neck rising from the front of the body to a big round smiling head with sleepy friendly eyes, and a long thick tail; deep blue hide with a dark navy back, a cream belly and throat, and big solid bright orange blotches along the back and down the back of the neck; no neck bands, no blanket, no red and no player colour."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Its huge round body and tail fill the whole width of the image, and its neck is thick and short enough that the head stays inside the image. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+        "negative": "rider, person, saddle, blanket, neck bands, collar, standing upright, two legs, arms, hands, horns, spikes, plates on the back, two animals"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Brontosaurus, a huge heavy cute giant long-necked dinosaur seen from the side, the biggest animal of the army: one enormous round barrel body, four very thick short pillar legs, a thick neck rising from the front of the body to a big round smiling head with sleepy friendly eyes, and a long thick tail; deep blue hide with a dark navy back, a cream belly and throat, and big solid bright orange blotches along the back and down the back of the neck; no neck bands, no blanket, no red and no player colour. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Its huge round body and tail fill the whole width of the image, and its neck is thick and short enough that the head stays inside the image. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, neck bands, collar, standing upright, two legs, arms, hands, horns, spikes, plates on the back, two animals",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Brontosaurus, a huge heavy cute giant long-necked dinosaur seen from the side, the biggest animal of the army: one enormous round barrel body, four very thick short pillar legs, a thick neck rising from the front of the body to a big round smiling head with sleepy friendly eyes, and a long thick tail; deep blue hide with a dark navy back, a cream belly and throat, and big solid bright orange blotches along the back and down the back of the neck; no neck bands, no blanket, no red and no player colour. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Its huge round body and tail fill the whole width of the image, and its neck is thick and short enough that the head stays inside the image. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, neck bands, collar, standing upright, two legs, arms, hands, horns, spikes, plates on the back, two animals."
+  }
+}

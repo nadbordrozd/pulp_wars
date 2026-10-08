@@ -45,7 +45,8 @@
         "height": 80
       },
       "ownerColour": false,
-      "subjectKey": "UNIT:DINOSAUR:MARKSMAN/PRIMAL"
+      "subjectKey": "UNIT:DINOSAUR:MARKSMAN/PRIMAL",
+      "bottomMargin": 2
     },
     {
       "id": "chibi-direction-dinosaur-ankylosaurus",
@@ -113,7 +114,8 @@
         "height": 104
       },
       "ownerColour": false,
-      "subjectKey": "UNIT:DINOSAUR:JUGGERNAUT/PRIMAL"
+      "subjectKey": "UNIT:DINOSAUR:JUGGERNAUT/PRIMAL",
+      "bottomMargin": 6
     },
     {
       "id": "chibi-direction-dinosaur-egg",
@@ -1326,6 +1328,224 @@
       },
       "editInstruction": "Recolour only the fins along the back: the pale peach fins become bright saturated orange, colour #f47b20, with a darker orange #c9540f shadow side, not red and not pale. Do not change any shape and do not redraw anything else: keep the plain deep blue hide, the head, eye, mouth, the cream belly, the raised tail with its cream spikes, the legs, pose, thick black outline and art style exactly the same, on a transparent background.",
       "notes": "Bead pulp_wars-2yc.34: stegosaurus-a-neck has the plain blue neck (1.2% in the owner key's band), but the edit paled the back fins to peach: the roster's bright orange, shaded in orange and not red."
+    },
+    {
+      "id": "spitter-small-a",
+      "asset": "chibi-direction-dinosaur-spitter",
+      "endpoint": "create-image-pixen",
+      "seed": 238101,
+      "requestSize": {
+        "width": 44,
+        "height": 64
+      },
+      "promptAddendum": "It stands upright on its two legs and holds nothing: the spit blob is its only weapon. It is small and slim, never chunky or fat. It is lit from the left.",
+      "negativeAddendum": "poncho, cloth, cape, blanket, rider, weapon in hand, four legs, fat belly, two animals",
+      "notes": "Bead pulp_wars-eu3r.8: a smaller-looking Spitter, a fresh creation generated at 44 x 64 and seated in the 56 x 80 standard canvas (bottomMargin 2, the old sprite's foot line), so it reads smaller than the Raptor-class units."
+    },
+    {
+      "id": "spitter-small-b",
+      "asset": "chibi-direction-dinosaur-spitter",
+      "endpoint": "create-image-pixen",
+      "seed": 238102,
+      "requestSize": {
+        "width": 44,
+        "height": 64
+      },
+      "promptAddendum": "It stands upright on its two legs and holds nothing: the spit blob is its only weapon. It is small and slim, never chunky or fat. It is lit from the left.",
+      "negativeAddendum": "poncho, cloth, cape, blanket, rider, weapon in hand, four legs, fat belly, two animals",
+      "notes": "Bead pulp_wars-eu3r.8: a smaller-looking Spitter, a fresh creation generated at 44 x 64 and seated in the 56 x 80 standard canvas (bottomMargin 2, the old sprite's foot line), so it reads smaller than the Raptor-class units."
+    },
+    {
+      "id": "spitter-small-c",
+      "asset": "chibi-direction-dinosaur-spitter",
+      "endpoint": "create-image-pixen",
+      "seed": 238103,
+      "requestSize": {
+        "width": 48,
+        "height": 68
+      },
+      "promptAddendum": "It stands upright on its two legs and holds nothing: the spit blob is its only weapon. It is small and slim, never chunky or fat. It is lit from the left.",
+      "negativeAddendum": "poncho, cloth, cape, blanket, rider, weapon in hand, four legs, fat belly, two animals",
+      "notes": "Bead pulp_wars-eu3r.8: a smaller-looking Spitter, a fresh creation generated at 48 x 68 and seated in the 56 x 80 standard canvas (bottomMargin 2, the old sprite's foot line), so it reads smaller than the Raptor-class units."
+    },
+    {
+      "id": "brontosaurus-bulk-a",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 238201,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Its huge round body and tail fill the whole width of the image, and its neck is thick and short enough that the head stays inside the image. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+      "negativeAddendum": "rider, person, saddle, blanket, neck bands, collar, standing upright, two legs, arms, hands, horns, spikes, plates on the back, two animals",
+      "notes": "Bead pulp_wars-eu3r.8: a bulkier Brontosaurus, a fresh creation in the side view the Dinosaur quadrupeds use, with a body using the giant canvas's width (about 84 px) so it reads as the biggest Dinosaur."
+    },
+    {
+      "id": "brontosaurus-bulk-b",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 238202,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Its huge round body and tail fill the whole width of the image, and its neck is thick and short enough that the head stays inside the image. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+      "negativeAddendum": "rider, person, saddle, blanket, neck bands, collar, standing upright, two legs, arms, hands, horns, spikes, plates on the back, two animals",
+      "notes": "Bead pulp_wars-eu3r.8: a bulkier Brontosaurus, a fresh creation in the side view the Dinosaur quadrupeds use, with a body using the giant canvas's width (about 84 px) so it reads as the biggest Dinosaur."
+    },
+    {
+      "id": "brontosaurus-bulk-c",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 238203,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Its huge round body and tail fill the whole width of the image, and its neck is thick and short enough that the head stays inside the image. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+      "negativeAddendum": "rider, person, saddle, blanket, neck bands, collar, standing upright, two legs, arms, hands, horns, spikes, plates on the back, two animals",
+      "notes": "Bead pulp_wars-eu3r.8: a bulkier Brontosaurus, a fresh creation in the side view the Dinosaur quadrupeds use, with a body using the giant canvas's width (about 84 px) so it reads as the biggest Dinosaur."
+    },
+    {
+      "id": "brontosaurus-bulk-edit-a",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 238211,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "brontosaurus-spots-edit-a",
+        "candidate": 1
+      },
+      "editInstruction": "Make the animal much heavier and bulkier: the body becomes a huge round barrel that reaches from the left edge to the right edge of the image, the four legs become very thick short pillars, and the neck becomes thicker and a little shorter so the head is lower. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, the head, eyes, smile, side view, thick black outline and art style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-eu3r.8: the accepted Brontosaurus made bulkier by an edit, keeping its look."
+    },
+    {
+      "id": "brontosaurus-bulk-edit-b",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 238212,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "brontosaurus-spots-edit-a",
+        "candidate": 1
+      },
+      "editInstruction": "Make the animal much heavier and bulkier: the body becomes a huge round barrel that reaches from the left edge to the right edge of the image, the four legs become very thick short pillars, and the neck becomes thicker and a little shorter so the head is lower. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, the head, eyes, smile, side view, thick black outline and art style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-eu3r.8: the retry of brontosaurus-bulk-edit-a, whose polling was cut off by a network failure (recorded as submitted). The fresh creations brontosaurus-bulk-a to -c drew upright crested beasts with short necks, not a Brontosaurus."
+    },
+    {
+      "id": "brontosaurus-bulk-edit-c",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 238213,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "brontosaurus-spots-edit-a",
+        "candidate": 1
+      },
+      "editInstruction": "Redraw the body twice as fat: a huge round belly and back that bulge out wide on both sides, nearly filling the image from left to right, on four very thick stumpy legs, with a thick heavy tail. Keep the long neck rising to the same small smiling head. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, side view, thick black outline and art style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-eu3r.8: a second wording of the bulkier Brontosaurus edit, keeping the long neck that tells it apart."
+    },
+    {
+      "id": "spitter-small-a-frill",
+      "asset": "chibi-direction-dinosaur-spitter",
+      "endpoint": "edit-image-pixen",
+      "seed": 238111,
+      "requestSize": {
+        "width": 44,
+        "height": 64
+      },
+      "source": {
+        "recipe": "spitter-small-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only. The red frill becomes a dark navy blue frill, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes, navy between them. The dark slate hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-eu3r.8: spitter-small-a has the right size (42 x 62) and pose, but a red frill and a near-black slate hide: the roster's navy frill with orange rays and the deep blue hide."
+    },
+    {
+      "id": "spitter-small-c-plain",
+      "asset": "chibi-direction-dinosaur-spitter",
+      "endpoint": "edit-image-pixen",
+      "seed": 238112,
+      "requestSize": {
+        "width": 48,
+        "height": 68
+      },
+      "source": {
+        "recipe": "spitter-small-c",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only. Erase the brown and red spots on the body: plain hide. The hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. The frill becomes dark navy blue, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-eu3r.8: spitter-small-c is closest to the old look (a round frill with an orange rim) but has a spotted body and a red-orange frill field: a plain deep blue body and the navy frill with orange rays."
+    },
+    {
+      "id": "brontosaurus-bulk-tail-a",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 238214,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "brontosaurus-bulk-edit-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the tail: it becomes long and thick and stretches straight out behind the body, low and level, all the way to the left edge of the image, with two more big solid orange blotches on it. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-eu3r.8: brontosaurus-bulk-edit-c is heavy and keeps the long neck, but is no wider (74 px): a long level tail to use the giant canvas's width. brontosaurus-bulk-edit-b lost the neck and tail (a round blob)."
+    },
+    {
+      "id": "brontosaurus-bulk-wide-a",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 238215,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "brontosaurus-bulk-edit-c",
+        "candidate": 0
+      },
+      "editInstruction": "Make the animal longer from tail to chest: the round body stretches wider to the left and the thick tail sweeps out level behind it to the left edge of the image, so the whole animal fills the image from the left edge to the right edge. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-eu3r.8: the same aim as brontosaurus-bulk-tail-a, a wider body and tail."
+    },
+    {
+      "id": "brontosaurus-bulk-tip-a",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 238216,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "brontosaurus-bulk-wide-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the end of the tail: it is cut off flat at the left edge of the image; make it end in a rounded pointed tip with a black outline, three pixels inside the left edge. Keep everything else exactly the same: the head, neck, round body, legs, the rest of the tail, the deep blue hide, navy back, cream belly and throat, orange blotches, side view, thick black outline and art style, on a transparent background.",
+      "notes": "Bead pulp_wars-eu3r.8: brontosaurus-bulk-wide-a is the heavy long-necked Brontosaurus across the giant canvas (85 px), but its tail is cut off flat at the canvas edge: a tapered, outlined tip."
     }
   ]
 }

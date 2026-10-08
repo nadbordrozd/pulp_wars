@@ -1,0 +1,36 @@
+{
+  "id": "brontosaurus-bulk-tip-a",
+  "jobId": "200719d0-1e8e-4392-9f4c-4d544fc42d19",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-brontosaurus",
+    "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 238216,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the end of the tail: it is cut off flat at the left edge of the image; make it end in a rounded pointed tip with a black outline, three pixels inside the left edge. Keep everything else exactly the same: the head, neck, round body, legs, the rest of the tail, the deep blue hide, navy back, cream belly and throat, orange blotches, side view, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the end of the tail: it is cut off flat at the left edge of the image; make it end in a rounded pointed tip with a black outline, three pixels inside the left edge. Keep everything else exactly the same: the head, neck, round body, legs, the rest of the tail, the deep blue hide, navy back, cream belly and throat, orange blotches, side view, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the end of the tail: it is cut off flat at the left edge of the image; make it end in a rounded pointed tip with a black outline, three pixels inside the left edge. Keep everything else exactly the same: the head, neck, round body, legs, the rest of the tail, the deep blue hide, navy back, cream belly and throat, orange blotches, side view, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only the end of the tail: it is cut off flat at the left edge of the image; make it end in a rounded pointed tip with a black outline, three pixels inside the left edge. Keep everything else exactly the same: the head, neck, round body, legs, the rest of the tail, the deep blue hide, navy back, cream belly and throat, orange blotches, side view, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "brontosaurus-bulk-wide-a",
+      "candidate": 0,
+      "sha256": "4cc89dd892bbee8db74b7fd5a92d4a3a379cec2ebc4a93e9a7fa35d54ddd4695"
+    }
+  }
+}

@@ -201,6 +201,643 @@
         "reviewedAt": "2026-10-02T20:52:15.445Z"
       }
     },
+    "brontosaurus-bulk-a": {
+      "id": "brontosaurus-bulk-a",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "jobId": "sync-50cd28dd-b110-4ebf-92e5-4c8cf89c933f",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-dinosaur",
+        "asset": "chibi-direction-dinosaur-brontosaurus",
+        "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+        "faction": "DINOSAUR",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 238201,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+            "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint.",
+            "negative": "metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: Brontosaurus, a huge heavy cute giant long-necked dinosaur seen from the side, the biggest animal of the army: one enormous round barrel body, four very thick short pillar legs, a thick neck rising from the front of the body to a big round smiling head with sleepy friendly eyes, and a long thick tail; deep blue hide with a dark navy back, a cream belly and throat, and big solid bright orange blotches along the back and down the back of the neck; no neck bands, no blanket, no red and no player colour."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Its huge round body and tail fill the whole width of the image, and its neck is thick and short enough that the head stays inside the image. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+            "negative": "rider, person, saddle, blanket, neck bands, collar, standing upright, two legs, arms, hands, horns, spikes, plates on the back, two animals"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Brontosaurus, a huge heavy cute giant long-necked dinosaur seen from the side, the biggest animal of the army: one enormous round barrel body, four very thick short pillar legs, a thick neck rising from the front of the body to a big round smiling head with sleepy friendly eyes, and a long thick tail; deep blue hide with a dark navy back, a cream belly and throat, and big solid bright orange blotches along the back and down the back of the neck; no neck bands, no blanket, no red and no player colour. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Its huge round body and tail fill the whole width of the image, and its neck is thick and short enough that the head stays inside the image. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, neck bands, collar, standing upright, two legs, arms, hands, horns, spikes, plates on the back, two animals",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Brontosaurus, a huge heavy cute giant long-necked dinosaur seen from the side, the biggest animal of the army: one enormous round barrel body, four very thick short pillar legs, a thick neck rising from the front of the body to a big round smiling head with sleepy friendly eyes, and a long thick tail; deep blue hide with a dark navy back, a cream belly and throat, and big solid bright orange blotches along the back and down the back of the neck; no neck bands, no blanket, no red and no player colour. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Its huge round body and tail fill the whole width of the image, and its neck is thick and short enough that the head stays inside the image. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, neck bands, collar, standing upright, two legs, arms, hands, horns, spikes, plates on the back, two animals."
+      },
+      "submittedAt": "2026-10-08T14:37:56.501Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dinosaur/brontosaurus-bulk-a.png",
+      "rawSheetSha256": "d4179c95af88ade81fb8a102b872c9f8d56c07561ad71de839e5e54a083a40db",
+      "plateHints": [
+        {
+          "bandRows": 19,
+          "groundShare": 0.0955,
+          "footprintWidthShare": 0.5647,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:38:56.640Z",
+      "usageUsd": 0.010742837773429024,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Not a Brontosaurus: an upright crested beast with horns and a short neck.",
+        "reviewedAt": "2026-10-08T14:52:15.661Z"
+      }
+    },
+    "brontosaurus-bulk-b": {
+      "id": "brontosaurus-bulk-b",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "jobId": "sync-3aa5ddbf-ad3e-4b12-a00e-0edf0a35c7c3",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-dinosaur",
+        "asset": "chibi-direction-dinosaur-brontosaurus",
+        "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+        "faction": "DINOSAUR",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 238202,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+            "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint.",
+            "negative": "metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: Brontosaurus, a huge heavy cute giant long-necked dinosaur seen from the side, the biggest animal of the army: one enormous round barrel body, four very thick short pillar legs, a thick neck rising from the front of the body to a big round smiling head with sleepy friendly eyes, and a long thick tail; deep blue hide with a dark navy back, a cream belly and throat, and big solid bright orange blotches along the back and down the back of the neck; no neck bands, no blanket, no red and no player colour."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Its huge round body and tail fill the whole width of the image, and its neck is thick and short enough that the head stays inside the image. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+            "negative": "rider, person, saddle, blanket, neck bands, collar, standing upright, two legs, arms, hands, horns, spikes, plates on the back, two animals"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Brontosaurus, a huge heavy cute giant long-necked dinosaur seen from the side, the biggest animal of the army: one enormous round barrel body, four very thick short pillar legs, a thick neck rising from the front of the body to a big round smiling head with sleepy friendly eyes, and a long thick tail; deep blue hide with a dark navy back, a cream belly and throat, and big solid bright orange blotches along the back and down the back of the neck; no neck bands, no blanket, no red and no player colour. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Its huge round body and tail fill the whole width of the image, and its neck is thick and short enough that the head stays inside the image. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, neck bands, collar, standing upright, two legs, arms, hands, horns, spikes, plates on the back, two animals",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Brontosaurus, a huge heavy cute giant long-necked dinosaur seen from the side, the biggest animal of the army: one enormous round barrel body, four very thick short pillar legs, a thick neck rising from the front of the body to a big round smiling head with sleepy friendly eyes, and a long thick tail; deep blue hide with a dark navy back, a cream belly and throat, and big solid bright orange blotches along the back and down the back of the neck; no neck bands, no blanket, no red and no player colour. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Its huge round body and tail fill the whole width of the image, and its neck is thick and short enough that the head stays inside the image. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, neck bands, collar, standing upright, two legs, arms, hands, horns, spikes, plates on the back, two animals."
+      },
+      "submittedAt": "2026-10-08T14:38:56.650Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dinosaur/brontosaurus-bulk-b.png",
+      "rawSheetSha256": "b3ee1a84ef8f15ad2a45398f7af5c397931fd70bb4ebb8e68ba7bc0eb358a533",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.1504,
+          "footprintWidthShare": 0.7662,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:39:55.304Z",
+      "usageUsd": 0.010642922719319662,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Not a Brontosaurus: an upright crested beast with horns and a short neck.",
+        "reviewedAt": "2026-10-08T14:52:16.374Z"
+      }
+    },
+    "brontosaurus-bulk-c": {
+      "id": "brontosaurus-bulk-c",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "jobId": "sync-0e96be65-7c5b-4d12-9a60-cd270fbdf1b5",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-dinosaur",
+        "asset": "chibi-direction-dinosaur-brontosaurus",
+        "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+        "faction": "DINOSAUR",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 238203,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+            "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint.",
+            "negative": "metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: Brontosaurus, a huge heavy cute giant long-necked dinosaur seen from the side, the biggest animal of the army: one enormous round barrel body, four very thick short pillar legs, a thick neck rising from the front of the body to a big round smiling head with sleepy friendly eyes, and a long thick tail; deep blue hide with a dark navy back, a cream belly and throat, and big solid bright orange blotches along the back and down the back of the neck; no neck bands, no blanket, no red and no player colour."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Its huge round body and tail fill the whole width of the image, and its neck is thick and short enough that the head stays inside the image. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+            "negative": "rider, person, saddle, blanket, neck bands, collar, standing upright, two legs, arms, hands, horns, spikes, plates on the back, two animals"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Brontosaurus, a huge heavy cute giant long-necked dinosaur seen from the side, the biggest animal of the army: one enormous round barrel body, four very thick short pillar legs, a thick neck rising from the front of the body to a big round smiling head with sleepy friendly eyes, and a long thick tail; deep blue hide with a dark navy back, a cream belly and throat, and big solid bright orange blotches along the back and down the back of the neck; no neck bands, no blanket, no red and no player colour. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Its huge round body and tail fill the whole width of the image, and its neck is thick and short enough that the head stays inside the image. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, neck bands, collar, standing upright, two legs, arms, hands, horns, spikes, plates on the back, two animals",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Brontosaurus, a huge heavy cute giant long-necked dinosaur seen from the side, the biggest animal of the army: one enormous round barrel body, four very thick short pillar legs, a thick neck rising from the front of the body to a big round smiling head with sleepy friendly eyes, and a long thick tail; deep blue hide with a dark navy back, a cream belly and throat, and big solid bright orange blotches along the back and down the back of the neck; no neck bands, no blanket, no red and no player colour. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Its huge round body and tail fill the whole width of the image, and its neck is thick and short enough that the head stays inside the image. It holds nothing and carries no rider, no saddle and no blanket. It is lit from the left. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, neck bands, collar, standing upright, two legs, arms, hands, horns, spikes, plates on the back, two animals."
+      },
+      "submittedAt": "2026-10-08T14:39:55.312Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dinosaur/brontosaurus-bulk-c.png",
+      "rawSheetSha256": "888743b75969916a178d8d6eca7915adb242a4e5599fca3d8c12c34e3c5f3b03",
+      "plateHints": [
+        {
+          "bandRows": 17,
+          "groundShare": 0.0841,
+          "footprintWidthShare": 0.55,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:41:08.829Z",
+      "usageUsd": 0.012606773906283909,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Not a Brontosaurus: an upright crested beast with horns and a short neck.",
+        "reviewedAt": "2026-10-08T14:52:17.070Z"
+      }
+    },
+    "brontosaurus-bulk-edit-a": {
+      "id": "brontosaurus-bulk-edit-a",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "jobId": "398ebe15-6e6d-447f-80f1-e64fe0c4e1c0",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-dinosaur",
+        "asset": "chibi-direction-dinosaur-brontosaurus",
+        "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+        "faction": "DINOSAUR",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 238211,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make the animal much heavier and bulkier: the body becomes a huge round barrel that reaches from the left edge to the right edge of the image, the four legs become very thick short pillars, and the neck becomes thicker and a little shorter so the head is lower. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, the head, eyes, smile, side view, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Make the animal much heavier and bulkier: the body becomes a huge round barrel that reaches from the left edge to the right edge of the image, the four legs become very thick short pillars, and the neck becomes thicker and a little shorter so the head is lower. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, the head, eyes, smile, side view, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make the animal much heavier and bulkier: the body becomes a huge round barrel that reaches from the left edge to the right edge of the image, the four legs become very thick short pillars, and the neck becomes thicker and a little shorter so the head is lower. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, the head, eyes, smile, side view, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Make the animal much heavier and bulkier: the body becomes a huge round barrel that reaches from the left edge to the right edge of the image, the four legs become very thick short pillars, and the neck becomes thicker and a little shorter so the head is lower. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, the head, eyes, smile, side view, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "recipe": "brontosaurus-spots-edit-a",
+          "candidate": 1,
+          "sha256": "4963721f48fea5373518dc3e1bb1daae7f31a1bfeb94fc3b51e03bff3f3a041d"
+        }
+      },
+      "submittedAt": "2026-10-08T14:41:08.843Z"
+    },
+    "brontosaurus-bulk-edit-b": {
+      "id": "brontosaurus-bulk-edit-b",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "jobId": "60042fa1-9f00-4759-bd91-91d543168832",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-dinosaur",
+        "asset": "chibi-direction-dinosaur-brontosaurus",
+        "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+        "faction": "DINOSAUR",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 238212,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make the animal much heavier and bulkier: the body becomes a huge round barrel that reaches from the left edge to the right edge of the image, the four legs become very thick short pillars, and the neck becomes thicker and a little shorter so the head is lower. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, the head, eyes, smile, side view, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Make the animal much heavier and bulkier: the body becomes a huge round barrel that reaches from the left edge to the right edge of the image, the four legs become very thick short pillars, and the neck becomes thicker and a little shorter so the head is lower. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, the head, eyes, smile, side view, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make the animal much heavier and bulkier: the body becomes a huge round barrel that reaches from the left edge to the right edge of the image, the four legs become very thick short pillars, and the neck becomes thicker and a little shorter so the head is lower. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, the head, eyes, smile, side view, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Make the animal much heavier and bulkier: the body becomes a huge round barrel that reaches from the left edge to the right edge of the image, the four legs become very thick short pillars, and the neck becomes thicker and a little shorter so the head is lower. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, the head, eyes, smile, side view, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "recipe": "brontosaurus-spots-edit-a",
+          "candidate": 1,
+          "sha256": "4963721f48fea5373518dc3e1bb1daae7f31a1bfeb94fc3b51e03bff3f3a041d"
+        }
+      },
+      "submittedAt": "2026-10-08T14:42:35.878Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dinosaur/brontosaurus-bulk-edit-b.png",
+      "rawSheetSha256": "65cf9cbaaac1f0c46931bc79b14ea5067397f7f92dcd1f7d69cefed9b0209a0f",
+      "plateHints": [
+        {
+          "bandRows": 18,
+          "groundShare": 0.0605,
+          "footprintWidthShare": 0.7403,
+          "suspect": false
+        },
+        {
+          "bandRows": 18,
+          "groundShare": 0.0605,
+          "footprintWidthShare": 0.7403,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:43:35.256Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bulky, but the neck and tail are gone: a round blob, not the long-necked silhouette.",
+        "reviewedAt": "2026-10-08T14:52:17.763Z"
+      }
+    },
+    "brontosaurus-bulk-edit-c": {
+      "id": "brontosaurus-bulk-edit-c",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "jobId": "947b2890-5e38-4a06-884d-aaa76954344c",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-dinosaur",
+        "asset": "chibi-direction-dinosaur-brontosaurus",
+        "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+        "faction": "DINOSAUR",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 238213,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw the body twice as fat: a huge round belly and back that bulge out wide on both sides, nearly filling the image from left to right, on four very thick stumpy legs, with a thick heavy tail. Keep the long neck rising to the same small smiling head. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, side view, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Redraw the body twice as fat: a huge round belly and back that bulge out wide on both sides, nearly filling the image from left to right, on four very thick stumpy legs, with a thick heavy tail. Keep the long neck rising to the same small smiling head. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, side view, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Redraw the body twice as fat: a huge round belly and back that bulge out wide on both sides, nearly filling the image from left to right, on four very thick stumpy legs, with a thick heavy tail. Keep the long neck rising to the same small smiling head. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, side view, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Redraw the body twice as fat: a huge round belly and back that bulge out wide on both sides, nearly filling the image from left to right, on four very thick stumpy legs, with a thick heavy tail. Keep the long neck rising to the same small smiling head. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, side view, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "recipe": "brontosaurus-spots-edit-a",
+          "candidate": 1,
+          "sha256": "4963721f48fea5373518dc3e1bb1daae7f31a1bfeb94fc3b51e03bff3f3a041d"
+        }
+      },
+      "submittedAt": "2026-10-08T14:43:35.269Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dinosaur/brontosaurus-bulk-edit-c.png",
+      "rawSheetSha256": "bea1d75578764be5379a67a362c4c2e830721b4ea5120e4f8ec1b55d1f08b1ea",
+      "plateHints": [
+        {
+          "bandRows": 18,
+          "groundShare": 0.0656,
+          "footprintWidthShare": 0.7297,
+          "suspect": false
+        },
+        {
+          "bandRows": 18,
+          "groundShare": 0.0656,
+          "footprintWidthShare": 0.7297,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:44:32.892Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Heavier with the long neck kept, but no wider (74 px). Source of the tail and wide edits.",
+        "reviewedAt": "2026-10-08T14:52:18.428Z"
+      }
+    },
+    "brontosaurus-bulk-tail-a": {
+      "id": "brontosaurus-bulk-tail-a",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "jobId": "11226294-c8f4-4b1d-86c6-35bb62c74498",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-dinosaur",
+        "asset": "chibi-direction-dinosaur-brontosaurus",
+        "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+        "faction": "DINOSAUR",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 238214,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the tail: it becomes long and thick and stretches straight out behind the body, low and level, all the way to the left edge of the image, with two more big solid orange blotches on it. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the tail: it becomes long and thick and stretches straight out behind the body, low and level, all the way to the left edge of the image, with two more big solid orange blotches on it. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the tail: it becomes long and thick and stretches straight out behind the body, low and level, all the way to the left edge of the image, with two more big solid orange blotches on it. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the tail: it becomes long and thick and stretches straight out behind the body, low and level, all the way to the left edge of the image, with two more big solid orange blotches on it. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "brontosaurus-bulk-edit-c",
+          "candidate": 0,
+          "sha256": "a8863dd421e2a57388d761afb1432087807ced5c976bb9938cf86ed09b6c8b95"
+        }
+      },
+      "submittedAt": "2026-10-08T14:48:36.498Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dinosaur/brontosaurus-bulk-tail-a.png",
+      "rawSheetSha256": "2e279c8592ba7cc599ce4cada38a3f596ecfd89978f2ef52dcfcb9b279f18565",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.1468,
+          "footprintWidthShare": 0.9157,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.1468,
+          "footprintWidthShare": 0.9157,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:49:46.568Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Long tapered tail, but shorter (76 px) with a smaller head than brontosaurus-bulk-wide-a.",
+        "reviewedAt": "2026-10-08T14:52:19.160Z"
+      }
+    },
+    "brontosaurus-bulk-tip-a": {
+      "id": "brontosaurus-bulk-tip-a",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "jobId": "200719d0-1e8e-4392-9f4c-4d544fc42d19",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-dinosaur",
+        "asset": "chibi-direction-dinosaur-brontosaurus",
+        "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+        "faction": "DINOSAUR",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 238216,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the end of the tail: it is cut off flat at the left edge of the image; make it end in a rounded pointed tip with a black outline, three pixels inside the left edge. Keep everything else exactly the same: the head, neck, round body, legs, the rest of the tail, the deep blue hide, navy back, cream belly and throat, orange blotches, side view, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the end of the tail: it is cut off flat at the left edge of the image; make it end in a rounded pointed tip with a black outline, three pixels inside the left edge. Keep everything else exactly the same: the head, neck, round body, legs, the rest of the tail, the deep blue hide, navy back, cream belly and throat, orange blotches, side view, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the end of the tail: it is cut off flat at the left edge of the image; make it end in a rounded pointed tip with a black outline, three pixels inside the left edge. Keep everything else exactly the same: the head, neck, round body, legs, the rest of the tail, the deep blue hide, navy back, cream belly and throat, orange blotches, side view, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Change only the end of the tail: it is cut off flat at the left edge of the image; make it end in a rounded pointed tip with a black outline, three pixels inside the left edge. Keep everything else exactly the same: the head, neck, round body, legs, the rest of the tail, the deep blue hide, navy back, cream belly and throat, orange blotches, side view, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "brontosaurus-bulk-wide-a",
+          "candidate": 0,
+          "sha256": "4cc89dd892bbee8db74b7fd5a92d4a3a379cec2ebc4a93e9a7fa35d54ddd4695"
+        }
+      },
+      "submittedAt": "2026-10-08T14:50:58.417Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dinosaur/brontosaurus-bulk-tip-a.png",
+      "rawSheetSha256": "e9e7f90a731d05dc7f4558e2e8654054f081c4f182293562e3ca99015723c79b",
+      "plateHints": [
+        {
+          "bandRows": 17,
+          "groundShare": 0.0815,
+          "footprintWidthShare": 0.7529,
+          "suspect": false
+        },
+        {
+          "bandRows": 17,
+          "groundShare": 0.0815,
+          "footprintWidthShare": 0.7529,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:51:51.687Z",
+      "usageUsd": 0.009560706430011326,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-eu3r.8: a bulkier Brontosaurus (85 x 83 visible on the 88 x 104 giant canvas, on the old foot line, bottomMargin 6): a heavy barrel body on pillar legs, the long neck and head kept, a long tail curled up at the tip; deep blue hide, navy back, cream belly and throat, big solid orange blotches. The biggest Dinosaur on the board.",
+        "reviewedAt": "2026-10-08T14:52:46.910Z"
+      }
+    },
+    "brontosaurus-bulk-wide-a": {
+      "id": "brontosaurus-bulk-wide-a",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "jobId": "3b82768c-903b-4ea5-8c6c-e29a7ec502c3",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-dinosaur",
+        "asset": "chibi-direction-dinosaur-brontosaurus",
+        "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+        "faction": "DINOSAUR",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 238215,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make the animal longer from tail to chest: the round body stretches wider to the left and the thick tail sweeps out level behind it to the left edge of the image, so the whole animal fills the image from the left edge to the right edge. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Make the animal longer from tail to chest: the round body stretches wider to the left and the thick tail sweeps out level behind it to the left edge of the image, so the whole animal fills the image from the left edge to the right edge. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make the animal longer from tail to chest: the round body stretches wider to the left and the thick tail sweeps out level behind it to the left edge of the image, so the whole animal fills the image from the left edge to the right edge. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Make the animal longer from tail to chest: the round body stretches wider to the left and the thick tail sweeps out level behind it to the left edge of the image, so the whole animal fills the image from the left edge to the right edge. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "brontosaurus-bulk-edit-c",
+          "candidate": 0,
+          "sha256": "a8863dd421e2a57388d761afb1432087807ced5c976bb9938cf86ed09b6c8b95"
+        }
+      },
+      "submittedAt": "2026-10-08T14:49:46.582Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dinosaur/brontosaurus-bulk-wide-a.png",
+      "rawSheetSha256": "fb9cda422b894c435c73a790383ee3cad8eb8578a5a1ebb5d45f56320d16b0b1",
+      "plateHints": [
+        {
+          "bandRows": 17,
+          "groundShare": 0.0787,
+          "footprintWidthShare": 0.7529,
+          "suspect": false
+        },
+        {
+          "bandRows": 17,
+          "groundShare": 0.0787,
+          "footprintWidthShare": 0.7529,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:50:27.708Z",
+      "usageUsd": 0.00873741316795349,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Heavy and 85 px wide, but the tail is cut off flat at the canvas edge. Source of brontosaurus-bulk-tip-a.",
+        "reviewedAt": "2026-10-08T14:52:19.894Z"
+      }
+    },
     "brontosaurus-hide-edit-a": {
       "id": "brontosaurus-hide-edit-a",
       "asset": "chibi-direction-dinosaur-brontosaurus",
@@ -394,9 +1031,9 @@
       ],
       "completedAt": "2026-10-02T20:29:08.405Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 1,
-        "notes": "Deep blue hide, cream throat and belly, big solid orange blotches on the neck, back, flank and tail; candidate 1 has fewer on the legs.",
+        "notes": "Deep blue hide, cream throat and belly, big solid orange blotches on the neck, back, flank and tail; candidate 1 has fewer on the legs. Superseded by brontosaurus-bulk-tip-a.",
         "reviewedAt": "2026-10-02T20:51:57.009Z"
       }
     },
@@ -3163,9 +3800,9 @@
       ],
       "completedAt": "2026-10-02T20:05:58.265Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "Deep blue hide, cream belly, a navy frill with an orange rim and orange ray stripes; the frill is not a solid accent disc.",
+        "notes": "Deep blue hide, cream belly, a navy frill with an orange rim and orange ray stripes; the frill is not a solid accent disc. Superseded by spitter-small-a-frill.",
         "reviewedAt": "2026-10-02T20:51:53.987Z"
       }
     },
@@ -3235,6 +3872,377 @@
         "notes": "Step: the right frill, on a dull slate hide; hide-edit-a deepens it.",
         "reviewedAt": "2026-10-02T20:52:11.516Z"
       }
+    },
+    "spitter-small-a": {
+      "id": "spitter-small-a",
+      "asset": "chibi-direction-dinosaur-spitter",
+      "jobId": "sync-1b5fa683-27a2-4bff-8d86-8bb80f14f499",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-dinosaur",
+        "asset": "chibi-direction-dinosaur-spitter",
+        "subject": "UNIT:DINOSAUR:MARKSMAN",
+        "faction": "DINOSAUR",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 44,
+          "height": 64
+        },
+        "seed": 238101,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+            "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint.",
+            "negative": "metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: Spitter, a cute small slim upright frilled spitting dinosaur, lighter built than a raptor: a round head on a slim body, two thin legs, small clawed arms and a thin tail; deep blue hide with a cream belly, a round neck frill in dark navy with a thin bright orange rim and thick bright orange ray stripes like spokes, two small cream crests, big round eyes and puffed cheeks spitting one small pale cream blob; no poncho, no red and no player colour; the frill is never a solid orange disc."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It stands upright on its two legs and holds nothing: the spit blob is its only weapon. It is small and slim, never chunky or fat. It is lit from the left.",
+            "negative": "poncho, cloth, cape, blanket, rider, weapon in hand, four legs, fat belly, two animals"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Spitter, a cute small slim upright frilled spitting dinosaur, lighter built than a raptor: a round head on a slim body, two thin legs, small clawed arms and a thin tail; deep blue hide with a cream belly, a round neck frill in dark navy with a thin bright orange rim and thick bright orange ray stripes like spokes, two small cream crests, big round eyes and puffed cheeks spitting one small pale cream blob; no poncho, no red and no player colour; the frill is never a solid orange disc. It stands upright on its two legs and holds nothing: the spit blob is its only weapon. It is small and slim, never chunky or fat. It is lit from the left.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, poncho, cloth, cape, blanket, rider, weapon in hand, four legs, fat belly, two animals",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Spitter, a cute small slim upright frilled spitting dinosaur, lighter built than a raptor: a round head on a slim body, two thin legs, small clawed arms and a thin tail; deep blue hide with a cream belly, a round neck frill in dark navy with a thin bright orange rim and thick bright orange ray stripes like spokes, two small cream crests, big round eyes and puffed cheeks spitting one small pale cream blob; no poncho, no red and no player colour; the frill is never a solid orange disc. It stands upright on its two legs and holds nothing: the spit blob is its only weapon. It is small and slim, never chunky or fat. It is lit from the left. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, poncho, cloth, cape, blanket, rider, weapon in hand, four legs, fat belly, two animals."
+      },
+      "submittedAt": "2026-10-08T14:36:06.588Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 44,
+        "height": 64
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dinosaur/spitter-small-a.png",
+      "rawSheetSha256": "94f19e6cc78e97fd36ee7c91b5929f74a8ab7f31515e9012174485147af213c4",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.619,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:36:47.237Z",
+      "usageUsd": 0.008278282562891643,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Right size and pose, but a red frill and a near-black slate hide. Source of spitter-small-a-frill.",
+        "reviewedAt": "2026-10-08T14:52:13.556Z"
+      }
+    },
+    "spitter-small-a-frill": {
+      "id": "spitter-small-a-frill",
+      "asset": "chibi-direction-dinosaur-spitter",
+      "jobId": "521ba569-5ce1-46cb-be95-8c3cca0710dc",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-dinosaur",
+        "asset": "chibi-direction-dinosaur-spitter",
+        "subject": "UNIT:DINOSAUR:MARKSMAN",
+        "faction": "DINOSAUR",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 44,
+          "height": 64
+        },
+        "seed": 238111,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only. The red frill becomes a dark navy blue frill, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes, navy between them. The dark slate hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour only. The red frill becomes a dark navy blue frill, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes, navy between them. The dark slate hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour only. The red frill becomes a dark navy blue frill, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes, navy between them. The dark slate hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour only. The red frill becomes a dark navy blue frill, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes, navy between them. The dark slate hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "spitter-small-a",
+          "candidate": 0,
+          "sha256": "94f19e6cc78e97fd36ee7c91b5929f74a8ab7f31515e9012174485147af213c4"
+        }
+      },
+      "submittedAt": "2026-10-08T14:44:32.904Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 44,
+        "height": 64
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dinosaur/spitter-small-a-frill.png",
+      "rawSheetSha256": "41848ebd44f98090257527909f811d212b0e70e754cc89c179f95ad484bc005b",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.619,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.619,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:45:07.624Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-eu3r.8: a small slim Spitter (42 x 62 visible, seated in the 56 x 80 canvas on the old foot line, bottomMargin 2): deep blue hide, cream belly, a navy frill with an orange rim and rays, the spit blob; reads smaller than the Raptor-class units.",
+        "reviewedAt": "2026-10-08T14:52:46.134Z"
+      }
+    },
+    "spitter-small-b": {
+      "id": "spitter-small-b",
+      "asset": "chibi-direction-dinosaur-spitter",
+      "jobId": "sync-5dcf6cea-d984-4f0d-a747-55e5accd7f34",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-dinosaur",
+        "asset": "chibi-direction-dinosaur-spitter",
+        "subject": "UNIT:DINOSAUR:MARKSMAN",
+        "faction": "DINOSAUR",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 44,
+          "height": 64
+        },
+        "seed": 238102,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+            "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint.",
+            "negative": "metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: Spitter, a cute small slim upright frilled spitting dinosaur, lighter built than a raptor: a round head on a slim body, two thin legs, small clawed arms and a thin tail; deep blue hide with a cream belly, a round neck frill in dark navy with a thin bright orange rim and thick bright orange ray stripes like spokes, two small cream crests, big round eyes and puffed cheeks spitting one small pale cream blob; no poncho, no red and no player colour; the frill is never a solid orange disc."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It stands upright on its two legs and holds nothing: the spit blob is its only weapon. It is small and slim, never chunky or fat. It is lit from the left.",
+            "negative": "poncho, cloth, cape, blanket, rider, weapon in hand, four legs, fat belly, two animals"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Spitter, a cute small slim upright frilled spitting dinosaur, lighter built than a raptor: a round head on a slim body, two thin legs, small clawed arms and a thin tail; deep blue hide with a cream belly, a round neck frill in dark navy with a thin bright orange rim and thick bright orange ray stripes like spokes, two small cream crests, big round eyes and puffed cheeks spitting one small pale cream blob; no poncho, no red and no player colour; the frill is never a solid orange disc. It stands upright on its two legs and holds nothing: the spit blob is its only weapon. It is small and slim, never chunky or fat. It is lit from the left.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, poncho, cloth, cape, blanket, rider, weapon in hand, four legs, fat belly, two animals",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Spitter, a cute small slim upright frilled spitting dinosaur, lighter built than a raptor: a round head on a slim body, two thin legs, small clawed arms and a thin tail; deep blue hide with a cream belly, a round neck frill in dark navy with a thin bright orange rim and thick bright orange ray stripes like spokes, two small cream crests, big round eyes and puffed cheeks spitting one small pale cream blob; no poncho, no red and no player colour; the frill is never a solid orange disc. It stands upright on its two legs and holds nothing: the spit blob is its only weapon. It is small and slim, never chunky or fat. It is lit from the left. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, poncho, cloth, cape, blanket, rider, weapon in hand, four legs, fat belly, two animals."
+      },
+      "submittedAt": "2026-10-08T14:36:47.249Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 44,
+        "height": 64
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dinosaur/spitter-small-b.png",
+      "rawSheetSha256": "d9336b609b35e101bf318a0c09ffa233c793214e4248fb17fadc3122cdbba269",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7568,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:37:25.659Z",
+      "usageUsd": 0.00846701717376709,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Too small (37 x 57), red-orange frill field, slate hide.",
+        "reviewedAt": "2026-10-08T14:52:14.267Z"
+      }
+    },
+    "spitter-small-c": {
+      "id": "spitter-small-c",
+      "asset": "chibi-direction-dinosaur-spitter",
+      "jobId": "sync-16608d6f-845a-48bd-9a14-578bbdd6df2f",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-dinosaur",
+        "asset": "chibi-direction-dinosaur-spitter",
+        "subject": "UNIT:DINOSAUR:MARKSMAN",
+        "faction": "DINOSAUR",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 48,
+          "height": 68
+        },
+        "seed": 238103,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+            "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint.",
+            "negative": "metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: Spitter, a cute small slim upright frilled spitting dinosaur, lighter built than a raptor: a round head on a slim body, two thin legs, small clawed arms and a thin tail; deep blue hide with a cream belly, a round neck frill in dark navy with a thin bright orange rim and thick bright orange ray stripes like spokes, two small cream crests, big round eyes and puffed cheeks spitting one small pale cream blob; no poncho, no red and no player colour; the frill is never a solid orange disc."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It stands upright on its two legs and holds nothing: the spit blob is its only weapon. It is small and slim, never chunky or fat. It is lit from the left.",
+            "negative": "poncho, cloth, cape, blanket, rider, weapon in hand, four legs, fat belly, two animals"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Spitter, a cute small slim upright frilled spitting dinosaur, lighter built than a raptor: a round head on a slim body, two thin legs, small clawed arms and a thin tail; deep blue hide with a cream belly, a round neck frill in dark navy with a thin bright orange rim and thick bright orange ray stripes like spokes, two small cream crests, big round eyes and puffed cheeks spitting one small pale cream blob; no poncho, no red and no player colour; the frill is never a solid orange disc. It stands upright on its two legs and holds nothing: the spit blob is its only weapon. It is small and slim, never chunky or fat. It is lit from the left.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, poncho, cloth, cape, blanket, rider, weapon in hand, four legs, fat belly, two animals",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Spitter, a cute small slim upright frilled spitting dinosaur, lighter built than a raptor: a round head on a slim body, two thin legs, small clawed arms and a thin tail; deep blue hide with a cream belly, a round neck frill in dark navy with a thin bright orange rim and thick bright orange ray stripes like spokes, two small cream crests, big round eyes and puffed cheeks spitting one small pale cream blob; no poncho, no red and no player colour; the frill is never a solid orange disc. It stands upright on its two legs and holds nothing: the spit blob is its only weapon. It is small and slim, never chunky or fat. It is lit from the left. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, poncho, cloth, cape, blanket, rider, weapon in hand, four legs, fat belly, two animals."
+      },
+      "submittedAt": "2026-10-08T14:37:25.670Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 68
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-dinosaur/spitter-small-c.png",
+      "rawSheetSha256": "855c40bf26ce54850dbb7924b7449700965d58d2e5d129dfc6995a335b03ffcb",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.0053,
+          "footprintWidthShare": 0.7174,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-08T14:37:56.493Z",
+      "usageUsd": 0.007910779820548164,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Closest frill shape, but a spotted body and a red-orange frill field; its recolour edit spitter-small-c-plain failed at PixelLab.",
+        "reviewedAt": "2026-10-08T14:52:14.975Z"
+      }
+    },
+    "spitter-small-c-plain": {
+      "id": "spitter-small-c-plain",
+      "asset": "chibi-direction-dinosaur-spitter",
+      "jobId": "ca6cbccd-96a3-4001-a75e-b42f93c0ad61",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-dinosaur",
+        "asset": "chibi-direction-dinosaur-spitter",
+        "subject": "UNIT:DINOSAUR:MARKSMAN",
+        "faction": "DINOSAUR",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 48,
+          "height": 68
+        },
+        "seed": 238112,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only. Erase the brown and red spots on the body: plain hide. The hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. The frill becomes dark navy blue, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour only. Erase the brown and red spots on the body: plain hide. The hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. The frill becomes dark navy blue, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour only. Erase the brown and red spots on the body: plain hide. The hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. The frill becomes dark navy blue, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour only. Erase the brown and red spots on the body: plain hide. The hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. The frill becomes dark navy blue, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "spitter-small-c",
+          "candidate": 0,
+          "sha256": "855c40bf26ce54850dbb7924b7449700965d58d2e5d129dfc6995a335b03ffcb"
+        }
+      },
+      "submittedAt": "2026-10-08T14:45:07.638Z"
     },
     "stegosaurus-a": {
       "id": "stegosaurus-a",
@@ -4282,18 +5290,21 @@
       "subject": "UNIT:DINOSAUR:JUGGERNAUT",
       "assetClass": "GIANT_UNIT",
       "status": "ACCEPTED",
-      "recipe": "brontosaurus-spots-edit-a",
-      "candidate": 1,
-      "candidateSha256": "4963721f48fea5373518dc3e1bb1daae7f31a1bfeb94fc3b51e03bff3f3a041d",
+      "recipe": "brontosaurus-bulk-tip-a",
+      "candidate": 0,
+      "candidateSha256": "d7a0d8d72acb07a2e15db02354e9e2440e7a1feeaf6aa026c66e9aa93b88c2a0",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-dinosaur-brontosaurus.png",
-        "sha256": "4963721f48fea5373518dc3e1bb1daae7f31a1bfeb94fc3b51e03bff3f3a041d",
-        "pixelSha256": "3da79ff643412a9cff0ef9ecabbc79d4b590e9dd850b1015deec65ed21d18b33",
+        "sha256": "c2f9fa013c903a4e9360c35ca80e59b4d74c2d627ca021621ff732ad6db01f37",
+        "pixelSha256": "fd841d435e8c08498b84ad2aa218a4fae366b9bf4c421804388ef32c83e36a1b",
         "width": 88,
         "height": 104
       },
       "derivation": {
-        "kind": "as-is"
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 6
+        }
       },
       "anchor": {
         "x": 44,
@@ -4305,12 +5316,6 @@
         "up": 24,
         "down": 0
       },
-      "plateCheck": {
-        "bandRows": 18,
-        "groundShare": 0.0233,
-        "footprintWidthShare": 0.7162,
-        "suspect": false
-      },
       "reviewChecks": {
         "native": true,
         "enlarged": true,
@@ -4318,8 +5323,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Deep blue hide, cream throat and belly, big solid orange blotches on the neck, back, flank and tail; candidate 1 has fewer on the legs.",
-      "acceptedAt": "2026-10-02T20:51:57.009Z"
+      "notes": "Bead pulp_wars-eu3r.8: a bulkier Brontosaurus (85 x 83 visible on the 88 x 104 giant canvas, on the old foot line, bottomMargin 6): a heavy barrel body on pillar legs, the long neck and head kept, a long tail curled up at the tip; deep blue hide, navy back, cream belly and throat, big solid orange blotches. The biggest Dinosaur on the board.",
+      "acceptedAt": "2026-10-08T14:52:46.909Z"
     },
     "chibi-direction-dinosaur-caveman": {
       "id": "chibi-direction-dinosaur-caveman",
@@ -4634,18 +5639,21 @@
       "subject": "UNIT:DINOSAUR:MARKSMAN",
       "assetClass": "STANDARD_UNIT",
       "status": "ACCEPTED",
-      "recipe": "spitter-hide-edit-a",
+      "recipe": "spitter-small-a-frill",
       "candidate": 0,
-      "candidateSha256": "be76d36853c874c36336480525ea83f1ecd1b1d53170d0572fd72b806d9eaeac",
+      "candidateSha256": "fb58aa9c82108c9b88967d9bb52b7a94bf5a384e7d4d434b116013611fa8aae9",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-dinosaur-spitter.png",
-        "sha256": "be76d36853c874c36336480525ea83f1ecd1b1d53170d0572fd72b806d9eaeac",
-        "pixelSha256": "a9c67f23010f0d22ad6d337296bf91eeaad61325489c21f23ec144d5a1656aed",
+        "sha256": "6367062a9d798b6efe3ca52eeebd1f7d1af02e9c872c198fce104fa90db1c7f9",
+        "pixelSha256": "5fd9e7b1708b74358d20aafdf2fe9cfbbe916488e45326f2f78eb9a890a9fee6",
         "width": 56,
         "height": 80
       },
       "derivation": {
-        "kind": "as-is"
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 2
+        }
       },
       "anchor": {
         "x": 28,
@@ -4657,12 +5665,6 @@
         "up": 0,
         "down": 0
       },
-      "plateCheck": {
-        "bandRows": 15,
-        "groundShare": 0.0928,
-        "footprintWidthShare": 0.6604,
-        "suspect": false
-      },
       "reviewChecks": {
         "native": true,
         "enlarged": true,
@@ -4670,8 +5672,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Deep blue hide, cream belly, a navy frill with an orange rim and orange ray stripes; the frill is not a solid accent disc.",
-      "acceptedAt": "2026-10-02T20:51:53.987Z"
+      "notes": "Bead pulp_wars-eu3r.8: a small slim Spitter (42 x 62 visible, seated in the 56 x 80 canvas on the old foot line, bottomMargin 2): deep blue hide, cream belly, a navy frill with an orange rim and rays, the spit blob; reads smaller than the Raptor-class units.",
+      "acceptedAt": "2026-10-08T14:52:46.134Z"
     },
     "chibi-direction-dinosaur-stegosaurus": {
       "id": "chibi-direction-dinosaur-stegosaurus",

@@ -1,0 +1,36 @@
+{
+  "id": "brontosaurus-bulk-edit-b",
+  "jobId": "60042fa1-9f00-4759-bd91-91d543168832",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-brontosaurus",
+    "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 238212,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the animal much heavier and bulkier: the body becomes a huge round barrel that reaches from the left edge to the right edge of the image, the four legs become very thick short pillars, and the neck becomes thicker and a little shorter so the head is lower. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, the head, eyes, smile, side view, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the animal much heavier and bulkier: the body becomes a huge round barrel that reaches from the left edge to the right edge of the image, the four legs become very thick short pillars, and the neck becomes thicker and a little shorter so the head is lower. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, the head, eyes, smile, side view, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the animal much heavier and bulkier: the body becomes a huge round barrel that reaches from the left edge to the right edge of the image, the four legs become very thick short pillars, and the neck becomes thicker and a little shorter so the head is lower. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, the head, eyes, smile, side view, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Make the animal much heavier and bulkier: the body becomes a huge round barrel that reaches from the left edge to the right edge of the image, the four legs become very thick short pillars, and the neck becomes thicker and a little shorter so the head is lower. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, the head, eyes, smile, side view, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "brontosaurus-spots-edit-a",
+      "candidate": 1,
+      "sha256": "4963721f48fea5373518dc3e1bb1daae7f31a1bfeb94fc3b51e03bff3f3a041d"
+    }
+  }
+}

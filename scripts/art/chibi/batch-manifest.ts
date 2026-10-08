@@ -754,6 +754,9 @@ export interface ChibiAssetSpec {
    * class (bead pulp_wars-wrn.2) it asks for the seated derivation instead:
    * a fresh creation of a ship floats wherever Pixen drew it, and the
    * margin puts its hull on the shared ship's waterline by whole pixels.
+   * Such an asset may also be generated smaller than its canvas (bead
+   * pulp_wars-eu3r.8): the candidate is padded with transparency, then
+   * seated, so the sprite draws smaller on the board at the same anchor.
    */
   readonly bottomMargin?: number;
   /**
@@ -1769,6 +1772,15 @@ export function batchManifestProblems(
         problems.push(
           `${label}: a seated request ${width}x${height} must be at least the ${asset.canvas.width}x${asset.canvas.height} master (never upscale)`,
         );
+    } else if (
+      classRecipe.derivation === "as-is" &&
+      asset.bottomMargin !== undefined &&
+      width <= asset.canvas.width &&
+      height <= asset.canvas.height
+    ) {
+      // Seated by its bottom margin, an as-is asset may be generated
+      // smaller than its canvas and padded into it (bead pulp_wars-eu3r.8):
+      // drawn smaller on the board, never resampled.
     } else if (width !== asset.canvas.width || height !== asset.canvas.height)
       problems.push(
         `${label}: generate at the display size: request ${width}x${height} must equal the ${asset.canvas.width}x${asset.canvas.height} master (never downscale)`,

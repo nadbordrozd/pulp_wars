@@ -1,0 +1,36 @@
+{
+  "id": "brontosaurus-bulk-tail-a",
+  "jobId": "11226294-c8f4-4b1d-86c6-35bb62c74498",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-brontosaurus",
+    "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 238214,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the tail: it becomes long and thick and stretches straight out behind the body, low and level, all the way to the left edge of the image, with two more big solid orange blotches on it. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the tail: it becomes long and thick and stretches straight out behind the body, low and level, all the way to the left edge of the image, with two more big solid orange blotches on it. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the tail: it becomes long and thick and stretches straight out behind the body, low and level, all the way to the left edge of the image, with two more big solid orange blotches on it. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the tail: it becomes long and thick and stretches straight out behind the body, low and level, all the way to the left edge of the image, with two more big solid orange blotches on it. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "brontosaurus-bulk-edit-c",
+      "candidate": 0,
+      "sha256": "a8863dd421e2a57388d761afb1432087807ced5c976bb9938cf86ed09b6c8b95"
+    }
+  }
+}

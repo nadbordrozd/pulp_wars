@@ -1,0 +1,36 @@
+{
+  "id": "brontosaurus-bulk-wide-a",
+  "jobId": "3b82768c-903b-4ea5-8c6c-e29a7ec502c3",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-brontosaurus",
+    "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 238215,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the animal longer from tail to chest: the round body stretches wider to the left and the thick tail sweeps out level behind it to the left edge of the image, so the whole animal fills the image from the left edge to the right edge. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the animal longer from tail to chest: the round body stretches wider to the left and the thick tail sweeps out level behind it to the left edge of the image, so the whole animal fills the image from the left edge to the right edge. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the animal longer from tail to chest: the round body stretches wider to the left and the thick tail sweeps out level behind it to the left edge of the image, so the whole animal fills the image from the left edge to the right edge. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the animal longer from tail to chest: the round body stretches wider to the left and the thick tail sweeps out level behind it to the left edge of the image, so the whole animal fills the image from the left edge to the right edge. Keep the head, neck, round body, legs, deep blue hide, dark navy back, cream belly and throat, big solid orange blotches, side view, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "brontosaurus-bulk-edit-c",
+      "candidate": 0,
+      "sha256": "a8863dd421e2a57388d761afb1432087807ced5c976bb9938cf86ed09b6c8b95"
+    }
+  }
+}

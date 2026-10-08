@@ -1,0 +1,36 @@
+{
+  "id": "spitter-small-c-plain",
+  "jobId": "ca6cbccd-96a3-4001-a75e-b42f93c0ad61",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-spitter",
+    "subject": "UNIT:DINOSAUR:MARKSMAN",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 48,
+      "height": 68
+    },
+    "seed": 238112,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only. Erase the brown and red spots on the body: plain hide. The hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. The frill becomes dark navy blue, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only. Erase the brown and red spots on the body: plain hide. The hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. The frill becomes dark navy blue, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only. Erase the brown and red spots on the body: plain hide. The hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. The frill becomes dark navy blue, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only. Erase the brown and red spots on the body: plain hide. The hide becomes a clear deep blue, colour #2b5a9a with #17325f shadows. The frill becomes dark navy blue, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes. Nothing red is left. Keep the cream belly, eyes, mouth, spit blob, pose, shapes, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "spitter-small-c",
+      "candidate": 0,
+      "sha256": "855c40bf26ce54850dbb7924b7449700965d58d2e5d129dfc6995a335b03ffcb"
+    }
+  }
+}

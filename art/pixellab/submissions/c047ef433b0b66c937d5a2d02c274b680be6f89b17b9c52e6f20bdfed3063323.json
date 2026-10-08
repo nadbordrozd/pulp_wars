@@ -1,0 +1,36 @@
+{
+  "id": "brontosaurus-bulk-edit-c",
+  "jobId": "947b2890-5e38-4a06-884d-aaa76954344c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-brontosaurus",
+    "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 238213,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw the body twice as fat: a huge round belly and back that bulge out wide on both sides, nearly filling the image from left to right, on four very thick stumpy legs, with a thick heavy tail. Keep the long neck rising to the same small smiling head. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, side view, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw the body twice as fat: a huge round belly and back that bulge out wide on both sides, nearly filling the image from left to right, on four very thick stumpy legs, with a thick heavy tail. Keep the long neck rising to the same small smiling head. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, side view, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw the body twice as fat: a huge round belly and back that bulge out wide on both sides, nearly filling the image from left to right, on four very thick stumpy legs, with a thick heavy tail. Keep the long neck rising to the same small smiling head. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, side view, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Redraw the body twice as fat: a huge round belly and back that bulge out wide on both sides, nearly filling the image from left to right, on four very thick stumpy legs, with a thick heavy tail. Keep the long neck rising to the same small smiling head. Keep the deep blue hide, the dark navy back, the cream belly and throat, the big solid orange blotches, side view, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "brontosaurus-spots-edit-a",
+      "candidate": 1,
+      "sha256": "4963721f48fea5373518dc3e1bb1daae7f31a1bfeb94fc3b51e03bff3f3a041d"
+    }
+  }
+}

@@ -98,8 +98,9 @@ Rules:
   pipeline for this faction and no remap to amber. Its mean hue is 21° to
   29° on the eight units (`readability.json`); a test holds every sprite
   between 18° and 34°.
-- **The accent is a pattern or a part, never a whole sprite.** It is 9% to
-  23% of a dinosaur (the striped Raptor is the most) and 9% or less of a
+- **The accent is a pattern or a part, never a whole sprite.** It is 6% to
+  23% of a dinosaur (the striped Raptor is the most; the redrawn Spitter and
+  Brontosaurus of bead `pulp_wars-eu3r.8` the least) and 9% or less of a
   caveman. Neither frill is a solid orange disc.
 - **Fur is duller and darker than skin.** The Caveman's pelt differs from
   his skin by 37 (CIE76; the study's spotted pelt differed by 3.5), and
@@ -119,9 +120,9 @@ thin lines and no ring-shaped spots).
 | ------------ | ------------------------------------------------------------------------------------------ | ------------ |
 | Raptor       | orange tiger stripes, fat wedges from the spine, on the back and tail; a tall orange crest | 23%          |
 | T-Rex        | an orange brow crest and back spines; fat orange stripes on the tail and behind the neck   | 9%           |
-| Brontosaurus | big solid orange blotches along the neck, back, flank and tail                             | 16%          |
+| Brontosaurus | big solid orange blotches along the neck, back, flank and tail                             | 8%           |
 | Ankylosaurus | navy armour plates in bands under a cream spike rim; an orange tail club                   | 9%           |
-| Spitter      | a navy frill with orange ray stripes and an orange rim, like a sun; the body is plain      | 12%          |
+| Spitter      | a navy frill with orange ray stripes and an orange rim, like a sun; the body is plain      | 6%           |
 | Triceratops  | a navy frill with a thick orange rim and two solid orange eye-spots; the body is plain     | 14%          |
 | Caveman      | a tawny pelt with bold dark brown spots, a tooth necklace, orange war paint on the cheeks  | 1%           |
 | Shaman       | a tawny spotted robe, a cream beast-skull hood with three orange feathers, heavy war paint | 9%           |
@@ -161,24 +162,40 @@ This guides the subject lines; it is not sent to PixelLab.
 
 Batch
 [`direction-dinosaur`](../../../scripts/art/chibi/batches/batch-direction-dinosaur.json).
-Every unit is an `edit-image-pixen` chain on its accepted classic sprite, so
-the canvas, the anchor and the footprint are unchanged. The subject lines
+Every unit but the Spitter and the Brontosaurus is an `edit-image-pixen`
+chain on its accepted classic sprite, so the canvas, the anchor and the
+footprint are unchanged. The subject lines
 (keys `UNIT:DINOSAUR:<ROLE>/PRIMAL` and `PORTRAIT:DINOSAUR:<ROLE>/PRIMAL` in
 [`subjects/DINOSAUR.json`](../../../scripts/art/chibi/subjects/DINOSAUR.json))
 describe the result, for a fresh creation if one is ever needed; the keys
 without `/PRIMAL` are the classic lines.
 
-| Unit (role)                 | Canvas   | Accepted recipe                          | What it shows                                                                                                 |
-| --------------------------- | -------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Caveman (`FIGHTER`)         | 56 x 80  | `caveman-pelt-edit-a`                    | golden skin, black hair and beard, a tawny spotted pelt, a tooth necklace, orange war paint, a bone club      |
-| Raptor (`RAIDER`)           | 72 x 88  | `raptor-deep-stripes-b` (the study's F)  | deep blue, navy back, cream belly, an orange feather crest, orange tiger stripes on the back and tail         |
-| Spitter (`MARKSMAN`)        | 56 x 80  | `spitter-hide-edit-a`                    | deep blue, cream belly, a navy frill with orange rays and rim, two cream crests                               |
-| Ankylosaurus (`GUARD`)      | 56 x 80  | `ankylosaurus-hide-edit-b`               | a dome of navy plates with a cream spike rim, a deep blue head and legs, an orange tail club                  |
-| Shaman (`CAPTAIN`)          | 56 x 80  | `shaman-skin-edit-a`                     | a cream beast-skull hood with three orange feathers, golden skin with war paint, a tawny spotted robe, a drum |
-| Triceratops (`CATAPULT`)    | 72 x 88  | `triceratops-face-edit-a`                | deep blue face and body, a navy frill with an orange rim and two eye-spots, cream horns and beak              |
-| T-Rex (`KNIGHT`)            | 72 x 88  | `t-rex-deep-stripes-a` (the study's F)   | deep blue, cream jaw and belly, orange brow and back spines, orange stripes on the tail                       |
-| Brontosaurus (`JUGGERNAUT`) | 88 x 104 | `brontosaurus-spots-edit-a`, candidate 1 | deep blue, cream throat and belly, big orange blotches on the neck, back, flank and tail                      |
-| Patrol Boat, Battleship     | Human    | (unchanged)                              | shared ships with the player-coloured sail                                                                    |
+| Unit (role)                 | Canvas   | Accepted recipe                         | What it shows                                                                                                 |
+| --------------------------- | -------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Caveman (`FIGHTER`)         | 56 x 80  | `caveman-pelt-edit-a`                   | golden skin, black hair and beard, a tawny spotted pelt, a tooth necklace, orange war paint, a bone club      |
+| Raptor (`RAIDER`)           | 72 x 88  | `raptor-deep-stripes-b` (the study's F) | deep blue, navy back, cream belly, an orange feather crest, orange tiger stripes on the back and tail         |
+| Spitter (`MARKSMAN`)        | 56 x 80  | `spitter-small-a-frill`                 | small and slim (42 x 62): deep blue, cream belly, a navy frill with an orange rim and rays, the spit blob     |
+| Ankylosaurus (`GUARD`)      | 56 x 80  | `ankylosaurus-hide-edit-b`              | a dome of navy plates with a cream spike rim, a deep blue head and legs, an orange tail club                  |
+| Shaman (`CAPTAIN`)          | 56 x 80  | `shaman-skin-edit-a`                    | a cream beast-skull hood with three orange feathers, golden skin with war paint, a tawny spotted robe, a drum |
+| Triceratops (`CATAPULT`)    | 72 x 88  | `triceratops-face-edit-a`               | deep blue face and body, a navy frill with an orange rim and two eye-spots, cream horns and beak              |
+| T-Rex (`KNIGHT`)            | 72 x 88  | `t-rex-deep-stripes-a` (the study's F)  | deep blue, cream jaw and belly, orange brow and back spines, orange stripes on the tail                       |
+| Brontosaurus (`JUGGERNAUT`) | 88 x 104 | `brontosaurus-bulk-tip-a`               | heavy (85 x 83): a barrel body, pillar legs, the long neck, a curled tail; deep blue, cream, orange blotches  |
+| Patrol Boat, Battleship     | Human    | (unchanged)                             | shared ships with the player-coloured sail                                                                    |
+
+**Sizes (bead `pulp_wars-eu3r.8`).** The first Spitter filled its standard
+canvas (53 x 77) and looked chunky, and the long-necked Brontosaurus looked
+small for the faction's giant. The Spitter is now a fresh creation generated
+at 44 x 64 and seated in the 56 x 80 canvas on the old foot line
+(`bottomMargin` 2; see the
+[pipeline](../CHIBI_PIPELINE.md#the-dinosaur-production-batch-bead-pulp_wars-3tq13)),
+then recoloured to the navy frill and deep blue hide, so it reads smaller
+than the Raptor-class units. The Brontosaurus is the accepted sprite made
+bulkier by three edits (a fatter body, a wider body and tail, a curled tail
+tip), seated on its old foot line (`bottomMargin` 6): the widest and
+heaviest Dinosaur, with the neck that tells it apart. Fresh creations of a
+bulky Brontosaurus drew upright crested beasts with short necks, and an edit
+asked only for bulk lost the neck and tail. The portraits are unchanged: the
+new sprites keep the head, frill and colours they show.
 
 Each unit has a 48 x 48 portrait (`chibi-direction-portrait-dinosaur-<unit>`)
 edited from its classic portrait. A body pattern does not fit a bust: the

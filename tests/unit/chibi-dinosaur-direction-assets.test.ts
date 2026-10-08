@@ -37,6 +37,8 @@ import {
   candidateCell,
   cropRaster,
   opaqueBounds,
+  paddedRaster,
+  seatedRaster,
 } from "../../scripts/art/chibi/raster";
 
 const ROOT = process.cwd();
@@ -60,6 +62,14 @@ const UNITS = [
  * The Triceratops keeps the slot CATAPULT.
  */
 const NEW_UNITS = [["SWORDSMAN", "stegosaurus"]] as const;
+/**
+ * Fresh creations of bead pulp_wars-eu3r.8, seated on the old foot line by
+ * their bottom margin: a smaller Spitter and a bulkier Brontosaurus.
+ */
+const SEATED = new Map([
+  ["chibi-direction-dinosaur-spitter", 2],
+  ["chibi-direction-dinosaur-brontosaurus", 6],
+]);
 const ALL_UNITS = [...UNITS, ...NEW_UNITS] as const;
 const ICONS = [
   ["ICON:ACTION:LAY_EGG", "lay-egg"],
@@ -302,9 +312,11 @@ describe("Dinosaur production art of the new visual direction (pulp_wars-3tq.13)
         ),
       ).rejects.toThrow();
       // The accent is kept as PixelLab drew it: no accent step, so the
-      // master is the recorded candidate, byte for byte.
+      // master is the recorded candidate, byte for byte. The Spitter and
+      // the Brontosaurus of bead pulp_wars-eu3r.8 are the exception: fresh
+      // creations seated on the old foot line (the Spitter generated
+      // smaller than its canvas and padded), still with no accent step.
       expect(asset.accent, entry.id).toBeUndefined();
-      expect(record.derivation.kind, entry.id).toBe("as-is");
       expect(record.derivation.accent, entry.id).toBeUndefined();
       const master = await readRaster(path.join(ROOT, record.master.path));
       expect([master.width, master.height], entry.id).toEqual([
@@ -312,10 +324,28 @@ describe("Dinosaur production art of the new visual direction (pulp_wars-3tq.13)
         entry.height,
       ]);
       const candidate = await candidateOf(records, record);
-      expect(
-        Buffer.from(master.data).equals(Buffer.from(candidate.data)),
-        entry.id,
-      ).toBe(true);
+      if (SEATED.has(entry.id)) {
+        expect(record.derivation.kind, entry.id).toBe("seated");
+        expect(asset.bottomMargin, entry.id).toBe(SEATED.get(entry.id));
+        expect(
+          Buffer.from(master.data).equals(
+            Buffer.from(
+              seatedRaster(
+                paddedRaster(candidate, asset.canvas),
+                asset.canvas,
+                asset.bottomMargin ?? 0,
+              ).data,
+            ),
+          ),
+          entry.id,
+        ).toBe(true);
+      } else {
+        expect(record.derivation.kind, entry.id).toBe("as-is");
+        expect(
+          Buffer.from(master.data).equals(Buffer.from(candidate.data)),
+          entry.id,
+        ).toBe(true);
+      }
       expect(await verifyAssetRecord(ROOT, manifest, record), entry.id).toEqual(
         [],
       );
@@ -434,8 +464,13 @@ describe("Dinosaur production art of the new visual direction (pulp_wars-3tq.13)
       expect(Math.abs(fresh.bottom - old.bottom), subject).toBeLessThanOrEqual(
         2,
       );
+      // Bead pulp_wars-eu3r.8 redrew the Brontosaurus bulkier on purpose:
+      // up to the giant canvas's width (88 px). Every other unit stays
+      // within 6 px of its classic sprite.
       expect(fresh.right - fresh.left, subject).toBeLessThanOrEqual(
-        old.right - old.left + 6,
+        subject === "UNIT:DINOSAUR:JUGGERNAUT"
+          ? after.width - 1
+          : old.right - old.left + 6,
       );
     }
   });
@@ -533,13 +568,21 @@ describe("Dinosaur production art of the new visual direction (pulp_wars-3tq.13)
     // Every piece is an edit, of a classic sprite or of an earlier step. The
     // Stegosaurus (bead pulp_wars-2yc.34) had no sprite to edit: its chains
     // start from fresh creations, the first use of the faction fragment.
+    // Bead pulp_wars-eu3r.8 redrew the Spitter smaller and the Brontosaurus
+    // bulkier as fresh creations too.
     const created = manifest.recipes
       .filter((recipe) => recipe.endpoint !== "edit-image-pixen")
       .map((recipe) => recipe.id)
       .sort();
     expect(created).toEqual([
+      "brontosaurus-bulk-a",
+      "brontosaurus-bulk-b",
+      "brontosaurus-bulk-c",
       "portrait-stegosaurus-a",
       "portrait-stegosaurus-b",
+      "spitter-small-a",
+      "spitter-small-b",
+      "spitter-small-c",
       "stegosaurus-a",
       "stegosaurus-b",
     ]);
@@ -574,5 +617,119 @@ describe("Dinosaur production art of the new visual direction (pulp_wars-3tq.13)
         chibiOverflowV7(asset).up + 8,
       );
     }
+  });
+
+  it("draws the Spitter smaller than the Raptor-class units and the Brontosaurus as the biggest Dinosaur", async () => {
+    const records = await loadRecords(productionLayout(ROOT, BATCH), BATCH);
+    const size = async (name: string) => {
+      const record = records.assets[`chibi-direction-dinosaur-${name}`];
+      if (record === undefined) throw new Error(`${name}: no record`);
+      const box = opaqueBounds(
+        await readRaster(path.join(ROOT, record.master.path)),
+      );
+      if (box === null) throw new Error(`${name}: empty`);
+      const width = box.right - box.left + 1;
+      const height = box.bottom - box.top + 1;
+      return { width, height, area: width * height };
+    };
+    const spitter = await size("spitter");
+    const brontosaurus = await size("brontosaurus");
+    // About 44 x 62 of the 56 x 80 standard canvas.
+    expect(spitter.width).toBeLessThanOrEqual(46);
+    expect(spitter.height).toBeLessThanOrEqual(66);
+    for (const name of ["raptor", "t-rex", "triceratops", "stegosaurus"]) {
+      const other = await size(name);
+      expect(spitter.area, name).toBeLessThan(other.area);
+      expect(brontosaurus.width, name).toBeGreaterThan(other.width);
+      expect(brontosaurus.area, name).toBeGreaterThan(other.area);
+    }
+    // Using the giant canvas's width: about 84 of 88 px.
+    expect(brontosaurus.width).toBeGreaterThanOrEqual(80);
+  });
+});
+
+describe("a unit generated smaller than its canvas (pulp_wars-eu3r.8)", () => {
+  /** A raster from rows of characters: "." is transparent, a letter opaque. */
+  const raster = (rows: readonly string[]): RgbaRaster => {
+    const width = rows[0]?.length ?? 0;
+    const data = new Uint8Array(width * rows.length * 4);
+    rows.forEach((row, y) =>
+      [...row].forEach((code, x) => {
+        if (code === ".") return;
+        data.set([code.charCodeAt(0), 90, 200, 255], (y * width + x) * 4);
+      }),
+    );
+    return { width, height: rows.length, data };
+  };
+  const picture = (image: RgbaRaster): string[] =>
+    Array.from({ length: image.height }, (_, y) =>
+      Array.from({ length: image.width }, (_, x) =>
+        (image.data[(y * image.width + x) * 4 + 3] ?? 0) >= 128 ? "#" : ".",
+      ).join(""),
+    );
+
+  it("pads the candidate with transparency, bottom-centred, and seats it in the canvas", () => {
+    const candidate = raster(["ab", "cd", ".."]);
+    expect(picture(paddedRaster(candidate, { width: 6, height: 5 }))).toEqual([
+      "......",
+      "......",
+      "..##..",
+      "..##..",
+      "......",
+    ]);
+    // A candidate that already covers the size is returned as it is.
+    expect(paddedRaster(candidate, { width: 2, height: 3 })).toBe(candidate);
+    expect(
+      picture(
+        seatedRaster(
+          paddedRaster(candidate, { width: 6, height: 5 }),
+          { width: 6, height: 5 },
+          1,
+        ),
+      ),
+    ).toEqual(["......", "......", "..##..", "..##..", "......"]);
+  });
+
+  it("lets an as-is asset with a bottom margin be generated no larger than its canvas, and only that", async () => {
+    const fragments = await loadFragments(ROOT);
+    const manifest = await loadBatchManifest(ROOT, BATCH);
+    const spitter = manifest.assets.find(
+      (asset) => asset.id === "chibi-direction-dinosaur-spitter",
+    );
+    const small = manifest.recipes.find(
+      (recipe) => recipe.id === "spitter-small-a",
+    );
+    if (spitter === undefined || small === undefined)
+      throw new Error("Spitter: missing");
+    expect(spitter.bottomMargin).toBe(2);
+    expect(small.requestSize).toEqual({ width: 44, height: 64 });
+    const problems = (
+      change: (
+        asset: (typeof manifest.assets)[number],
+      ) => (typeof manifest.assets)[number],
+      size = small.requestSize,
+    ): string[] =>
+      batchManifestProblems(
+        {
+          ...manifest,
+          assets: manifest.assets.map((asset) =>
+            asset.id === spitter.id ? change(asset) : asset,
+          ),
+          recipes: manifest.recipes.map((recipe) =>
+            recipe.id === small.id ? { ...recipe, requestSize: size } : recipe,
+          ),
+        },
+        fragments,
+        BATCH,
+      );
+    expect(problems((asset) => asset)).toEqual([]);
+    // Without the margin the request must equal the canvas, as before.
+    const { bottomMargin: _margin, ...unseated } = spitter;
+    void _margin;
+    expect(problems(() => unseated).join()).toContain("never downscale");
+    // Never larger than the canvas in either direction.
+    expect(
+      problems((asset) => asset, { width: 60, height: 64 }).join(),
+    ).toContain("never downscale");
   });
 });

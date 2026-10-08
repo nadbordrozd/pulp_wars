@@ -403,6 +403,32 @@ export function seatedRaster(
   return cropRaster(seated, window);
 }
 
+/**
+ * A candidate smaller than its master, padded with transparency to at least
+ * `size`: bottom-aligned and centred (left of centre by half a pixel when the
+ * difference is odd). Nothing is resampled; a candidate that already covers
+ * `size` is returned as it is. Bead pulp_wars-eu3r.8: an unowned as-is unit
+ * with a bottom margin may be generated smaller than its class canvas, so it
+ * draws smaller on the board, and is then seated in that canvas.
+ */
+export function paddedRaster(
+  raster: RgbaRaster,
+  size: { readonly width: number; readonly height: number },
+): RgbaRaster {
+  const width = Math.max(raster.width, size.width);
+  const height = Math.max(raster.height, size.height);
+  if (width === raster.width && height === raster.height) return raster;
+  const left = Math.floor((width - raster.width) / 2);
+  const top = height - raster.height;
+  const data = new Uint8Array(width * height * 4);
+  for (let y = 0; y < raster.height; y += 1)
+    data.set(
+      raster.data.subarray(y * raster.width * 4, (y + 1) * raster.width * 4),
+      ((top + y) * width + left) * 4,
+    );
+  return { width, height, data };
+}
+
 /** One piece of a crop row: candidate columns stamped at `at` in each period. */
 export interface CropRowStamp {
   readonly left: number;
