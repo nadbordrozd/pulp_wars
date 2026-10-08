@@ -240,3 +240,11 @@ bead and whenever tracker state changes that another session should see. Sync
 only to the remote configured in `.beads/config.yaml`; never force-push the
 tracker, and if a pull or push reports a conflict, stop and surface it rather
 than overwriting either side. Workers still do not sync Beads.
+
+The shared tracker data lives on the `beads-data` branch of that Git remote,
+selected by the Dolt `git_ref` remote parameter, because cloud sessions cannot
+push `refs/dolt/data`. The SessionStart hook (`.claude/hooks/session-start.sh`)
+configures it in cloud sessions; a local clone needs the same setting,
+`"git_ref": "refs/heads/beads-data"` in `remotes.origin.params` of
+`.beads/embeddeddolt/pulp_wars/.dolt/repo_state.json`, to sync. The remote's
+`refs/dolt/data` is only a stale seed for `bd bootstrap`.
