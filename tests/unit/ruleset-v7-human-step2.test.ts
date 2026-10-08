@@ -9,6 +9,7 @@ import {
   chooseNormalTurnCommandV7,
 } from "../../src/ai/v7";
 import {
+  PRIOR_RULESET_7_IDS,
   RULESET_7_ID,
   TECHNOLOGY_IDS_V7,
   viewForV7,
@@ -158,8 +159,10 @@ const ENEMY_GARRISON: GoblinPieceV7 = {
 };
 
 describe("step two of the Human pass: identity", () => {
-  it("is still 7r56: no rule, number, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+  it("left the identity at 7r56: no rule, number, command, state, or event shape changed", () => {
+    // (Step two of the Undead pass, `pulp_wars-w49.24`, took 7r57.)
+    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r56");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r57");
   });
 });
 
@@ -204,8 +207,10 @@ describe("1. the garrison rule yields to a ranged unit", () => {
       armyGarrisonYieldsToRangedV7("ORIGINAL", counts(5, 0, 0), false),
     ).toBe(false);
     // (Step two of the Goblin pass, `pulp_wars-w49.23`: a Goblin seat's
-    // yields too; `tests/unit/ruleset-v7-goblin-step2.test.ts`.)
-    for (const faction of ["UNDEAD", "MARTIAN", "DINOSAUR"] as const)
+    // yields too; `tests/unit/ruleset-v7-goblin-step2.test.ts`. Step two of
+    // the Undead pass, `pulp_wars-w49.24`: and an Undead seat's;
+    // `tests/unit/ruleset-v7-undead-step2.test.ts`.)
+    for (const faction of ["MARTIAN", "DINOSAUR"] as const)
       expect(armyGarrisonYieldsToRangedV7(faction, counts(5, 0, 0), true)).toBe(
         false,
       );

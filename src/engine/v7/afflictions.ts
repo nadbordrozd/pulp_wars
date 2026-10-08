@@ -37,8 +37,12 @@ export const PLAGUE_DAMAGE_V7 = 2;
  */
 export const PLAGUE_DURATION_TURNS_V7 = 3;
 
-/** Revision 14 section 4.3: a bitten victim rises as a 10-HP Zombie. */
-export const BITTEN_RISING_HP_V7 = 10;
+/**
+ * A bitten victim rises as a Zombie with 12 of its 18 HP (10 from revision
+ * 14, section 4.3, to `pulp-wars-poc-7r56`; 12 since step two of the Undead
+ * pass, `pulp_wars-w49.24`, 7r57: the same as an Infect rising).
+ */
+export const BITTEN_RISING_HP_V7 = 12;
 
 /**
  * "Living" in the revision-13 sense: the seat's faction is not UNDEAD. A

@@ -1744,7 +1744,8 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     label: "Zombie",
     tacticalRole: "DEFENDER",
     cost: 3,
-    // Revision 15 (Undead fragility): 18 HP (was 20); risings keep 10 HP.
+    // Revision 15 (Undead fragility): 18 HP (was 20); risings keep 10 HP
+    // (12 since 7r57, step two of the Undead pass).
     maxHp: 18,
     attack2: 4,
     defense2: 4,
@@ -3825,7 +3826,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r56`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r57`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the

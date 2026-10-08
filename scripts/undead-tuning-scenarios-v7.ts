@@ -406,14 +406,14 @@ export function undeadScenariosV7(h: typeof SCENARIO_HELPERS_V7): string[] {
       [attack("knight", "z1"), attack("knight", "z2")],
     ),
     ...play(
-      "A Marksman shoots the first Zombie, then the Knight: Zombie, a Zombie that has just risen (10 HP), a Banshee, a Lich",
+      "A Marksman shoots the first Zombie, then the Knight: Zombie, a Zombie that has just risen (12 HP), a Banshee, a Lich",
       ["ORIGINAL", "UNDEAD"],
       [
         { seat: 0, role: "MARKSMAN", at: at(4, 6), tag: "marksman" },
         { seat: 0, role: "MARKSMAN", at: at(3, 6), tag: "marksman2" },
         { seat: 0, role: "KNIGHT", at: at(4, 5), tag: "knight" },
         { seat: 1, role: "GUARD", at: at(4, 4), tag: "z1" },
-        { seat: 1, role: "GUARD", at: at(4, 3), hp: 10, tag: "z2" },
+        { seat: 1, role: "GUARD", at: at(4, 3), hp: 12, tag: "z2" },
         { seat: 1, role: "MARKSMAN", at: at(4, 2), tag: "banshee" },
         { seat: 1, role: "CATAPULT", at: at(4, 1), tag: "lich" },
       ],

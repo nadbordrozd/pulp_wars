@@ -1,5 +1,102 @@
 # Greedy Normal AI
 
+## Step two of the Undead pass (`pulp_wars-w49.24`)
+
+[Step two of the Undead pass](../product/RULESET_7_TUNING_UNDEAD.md#15-step-two)
+changed one number (a Zombie that rises has 12 HP, identity
+`pulp-wars-poc-7r57`), seven things in the policy of an Undead seat that
+plays the army rules (`armyUndeadSeatV7`: `context.army` and an Undead
+viewer), and two things for every army seat. Everything reads the viewer's
+`PlayerViewV7` and the public previews.
+
+**What was seen** (a hand-played game as the Humans on seed 6, six
+diagnostic matches on seeds 6, 9, and 13, and recorded positions of them).
+Since the Industry reshuffle the Zombie is two technologies away, and the
+seat bought them and its growth technology before any unit: on seed 9 it
+trained nothing from round 3 to round 9. It took Stockpile and Walls where
+a free Ghoul and the Militia were offered. With Banshees researched it
+trained Zombies in every threatened city; its first Lich came nine rounds
+after the technology, and with Leadership it trained no Necromancer in a
+land with nine Graves. It captured a city and could then not pay for the
+technology it had the Coins for.
+
+**1. Bodies first** (`armyUndeadShortOfUnitsV7`,
+`armyUndeadBodiesFirstV7`; `inspectNormalArmyV7(...).bodiesFirst`). A seat
+with fewer land units than its cities and `ARMY_UNDEAD_SPARE_UNITS_V7` (2)
+more, the Coins for a Skeleton, and a city with its action and a free
+slot: training comes first (`armyTrainsFirstV7`, `armyTrainingPriorityV7`),
+no technology is "due" (`armyEconomyResearchV7` and
+`armyDefenderResearchV7` are false, a due research on the war clock is
+capped to `ARMY_RESEARCH_PRIORITY_V7`), and no Coins are kept
+(`armyResearchFloorV7` is 0). It holds in peace and in a war: with the
+rule in peace only, a seat with six units on five cities bought three
+technologies in four rounds of a war and was eliminated. In a war it
+gives way when the research clock of tuning 8 is a whole technology
+behind (`armyUndeadResearchOverdueV7`: the round has reached the clock's
+rounds times the technologies owned and
+`ARMY_UNDEAD_WAR_RESEARCH_GRACE_V7`, 1, more), so a seat that is short of
+units for a whole war still buys one technology in every cycle of the
+clock, a cycle late, and no two in a row.
+
+**2. The free units** (`preferredReward`). While it is short of units the
+seat takes Scouts (its Ghoul) at level 2 and the Militia at level 3 of a
+city that is not threatened, where it took Stockpile and Walls.
+
+**3. One growth technology before the Zombie's two**
+(`armyUndeadGrowthFirstV7`, `armyUndeadContactV7`, in
+`armyResearchTargetV7` and `armyEconomyFirstV7`). While the seat cannot
+train the Zombie, owns at most
+`ARMY_UNDEAD_GROWTH_FIRST_TECHNOLOGIES_V7` (1) technology beside the root
+of Industry, and no hostile land unit is visible within
+`ARMY_ALERT_RADIUS_V7` of one of its centers, the growth technology of its
+land is the target. With contact the Zombie's two come first.
+
+**4. The Zombie's technology with an enemy at the gates**
+(`armyDefenderResearchV7`). The last step to the defender is a due
+research for an Undead seat also when an enemy stands at a gate (it was
+not, and on seven cities some gate always has one). The city at whose
+gates the enemy stands trains regardless of the Coins kept.
+
+**5. A technology before a capture**
+(`ARMY_RESEARCH_BEFORE_CAPTURE_PRIORITY_V7`, 1341). A research that is due
+is made before a Capture offered in the same turn (1340): the capture
+raises its price by 1 to 3 Coins.
+
+**6. Banshees and Liches in a threatened city**
+(`armyGarrisonYieldsToRangedV7`, which takes `offersSiege` now). The
+garrison rule of a threatened city yields for an Undead seat as it does
+for a Human and a Goblin seat: with `ARMY_GARRISON_YIELD_BODIES_V7` bodies
+and its ranged or siege class below its share, the city trains the Banshee
+or the Lich, not with an enemy at its gates.
+
+**7. A Necromancer for Graves** (`armyNecromancerDueV7`). A seat that can
+train one and fields none adds `ARMY_NECROMANCER_TRAINING_VALUE_V7` (600)
+to its training in a city with `ARMY_NECROMANCER_GRAVES_V7` (3) free
+Graves within `ARMY_NECROMANCER_GRAVE_REACH_V7` (3) tiles of the center,
+also a threatened one, not one with an enemy at its gates.
+
+**The value of a rising** (`INFECT_RISING_VALUE_V7`,
+`BITTEN_RISING_VALUE_V7`) is 24 where it was 22, with the 12 HP.
+
+**For every army seat.**
+
+- _A unit stays on its Field Defense_ (`armyHoldsFieldDefenseV7`, in
+  `armyMoveValueV7`). A land unit that has not moved, stands on a Field
+  Defense in its own land, and can be hit there by a visible enemy makes
+  no routine Move (a priority of `ARMY_ROUTINE_MOVE_MAXIMUM_V7`, 735, or
+  less) off it. Attacks, kills, captures, and the step that lets its city
+  train are made as before.
+- _The best garrison stays_ (`armyBestGarrisonStaysV7`, in
+  `armyGarrisonHoldsV7`). On a center with a Field Defense the exemption
+  "another own unit beside the center can replace it" does not apply to a
+  Move of a unit that is a better garrison than every own unit beside the
+  center.
+
+**Not changed, and seen:** the seat fights at its own cities and does not
+break out; a Lich is trained onto a center and fires from it, so the city
+trains nothing that turn; a seat behind Mountains buys no Engineering to
+get out.
+
 ## Step two of the Goblin pass (`pulp_wars-w49.23`)
 
 [Step two of the Goblin pass](../product/RULESET_7_TUNING_GOBLIN.md#14-step-two)

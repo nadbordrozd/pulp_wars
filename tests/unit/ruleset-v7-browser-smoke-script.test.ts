@@ -847,7 +847,7 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     expect(end).toContain("snapshot?.phase === 'EMPTY'");
     expect(end).toContain(
-      "localStorage.getItem('pulpWars.save.v7r56.current') === null",
+      "localStorage.getItem('pulpWars.save.v7r57.current') === null",
     );
     expect(end).toContain(
       "document.querySelector('[data-action=\"resume\"]') === null",
@@ -1125,7 +1125,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
       fastForwardObserved: true,
       hostTicks: 2,
     },
-    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r56", commandIndex: 3 },
+    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r57", commandIndex: 3 },
     ordinaryBoundary: {
       controllerOwnProperties: [],
       snapshotHasStateHash: false,

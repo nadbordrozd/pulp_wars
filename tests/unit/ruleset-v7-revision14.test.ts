@@ -102,9 +102,9 @@ interface ArenaOptions {
 
 describe("ruleset-7 revision-14 identity and roster", () => {
   it("keeps rejecting r13 after the r54 identity and cleans the r13 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-43, -1)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r57");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r57.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-44, -2)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
@@ -1151,7 +1151,12 @@ describe("ruleset-7 revision-14 natural play and persistence", () => {
     // seat of the Normal AI trains) the Undead seat of seed 9 never
     // plagues; of seeds 0-19, seeds 6 and 15 plague (seed 6: 8 Plague
     // applications, 20 bites, over in round 35).
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 6);
+    // With step two of the Undead pass (`pulp_wars-w49.24`, 7r57: the
+    // Undead seat trains before it researches while it is short of units)
+    // the three Liches of seed 6 never plague; of seeds 0-19, seeds 0 and
+    // 3 plague (seed 3: three Liches, 6 Plague applications, 51 bites,
+    // over in round 39).
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 3);
     const match = runAiMatchV7(setup, { maxRounds: 45 });
     expect(match.errors).toEqual([]);
     expect(match.stalls).toEqual([]);

@@ -20,6 +20,13 @@ open questions, the faction's units and branches as a player meets them
 after the economy rejig, and the evidence the user asked for on moving
 every faction's defender to Fortification.
 
+**Step two at `pulp-wars-poc-7r57`** (bead `pulp_wars-w49.24`, on the
+Industry reshuffle of `7r56`): [section 15](#15-step-two). One number
+changed: a Zombie that rises has 12 of its 18 HP, where every earlier
+section says 10. The Undead Normal AI opens with units and one growth
+technology before the Zombie's two, and trains Banshees, Liches, and a
+Necromancer in a war.
+
 **Superseded in part by [the ninth unit](RULESET_7_NINTH_UNIT.md) (`pulp-wars-poc-7r55`, `pulp_wars-w49.17`).** The Undead have a ninth land
 unit, the **Wight** (the heavy line role, at Metallurgy; Rise Again: it
 returns once from its own Grave at 7 HP unless a unit stands on it), so
@@ -1989,3 +1996,317 @@ both are, as before; a Goblin seat's units in the same position are.
 `tests/scripts/play-text-v7.test.ts`: the marked Grave in `view`, on the
 map, and in a Move's description, the unit that stands on it, a plain
 Grave, and the `among them` part of a `REVEALED` line.
+
+## 15. Step two
+
+The second pass over the Undead, on `pulp-wars-poc-7r56`
+([the Industry reshuffle](RULESET_7_INDUSTRY_RESHUFFLE.md): the Zombie at
+Fortification, the Workshop at the root), bead `pulp_wars-w49.24`. Step
+two is "iterate on each faction including playing games manually to rejig
+the balance better and improve the AI for each faction". **One number
+changed: a Zombie that rises (Infect or Bitten) has 12 of its 18 HP, where
+it had 10. The identity is `pulp-wars-poc-7r57`.** The Normal AI of an
+Undead seat changed in seven places
+([section 15.4](#154-the-undead-normal-ai)), and two rules about Field
+Defense hold for every army seat. The bar was the user's: "the faction is
+not crazy op or crazy weak and that all the tech branches are useful and
+that units are differentiated from other factions by more than stats".
+
+### 15.1 The games
+
+All in text mode against the Normal AI, on Dry Land.
+
+| Game  | Played as | Against                   | Map         | Route                                                                                       | Result                                                                                        |
+| ----- | --------- | ------------------------- | ----------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `a`   | Human     | Undead (before)           | 14, seed 6  | Gathering 1, Hunting 4, Marksmanship 8, Leadership 12                                       | stopped in round 15, the map won: 8 cities, 17 units, income 17 against 2 cities and 5 units  |
+| `b`   | Undead    | Goblin                    | 14, seed 13 | Industry: Hunting 4, Crafting 5, Fortification 8, Engineering 10, Armoury 14, Leadership 17 | stopped in round 19, the map won: 9 cities, 21 units, income 21 against 3 cities and 2 units  |
+| `c`   | Undead    | Martian, Human, Goblin    | 16, seed 7  | Settlement: Hunting 4, Farming 7, Crafting 11, Fortification 12, Banshees 15, Leadership 17 | stopped in round 18, level: 6 cities, 12 units, income 13; the Goblin seat 4 cities, 13 units |
+| `lab` | Undead    | Human                     | the lab     | `LAB_UNDEAD_MID`, four rounds, five Wights bought                                           | two Knights killed eight units in round 4; one Wight died                                     |
+| `a2`  | Human     | Undead (after), at `7r57` | 14, seed 6  | the commands of `a` to round 8                                                              | stopped in round 13, ahead: 8 cities, 14 units against 2 cities and 5 units                   |
+| `b2`  | Undead    | Goblin, at `7r57`         | 14, seed 13 | the commands of `b` to round 13                                                             | stopped in round 15: 7 cities, 12 units against 3 cities and 7 units (10 units in `b`)        |
+| `e`   | Human     | Undead (after), at `7r57` | 14, seed 9  | Hunting 1, eight Fighters and a Raider                                                      | stopped in round 8, level: 4 cities, 10 units against 5 cities and 7 units                    |
+
+The numbers after a technology are the rounds it was bought in; every
+route began with Gathering in round 1 except `e`. "Before" and "after"
+are the Undead AI before and after section 15.4. Seed 6 gives the Undead
+seat a capital with Mountains on fifteen of the twenty-four tiles around
+it, which no unit crosses before Engineering since `7r56`: it is the
+benchmark the brief named, and an unfair one for the Undead seat (section
+15.7). Seeds 9 and 13 are open for both seats and have no chest within
+three tiles of a capital.
+
+### 15.2 The questions
+
+**(i) A Skeleton-only opening until Fortification: fine, if Fortification
+is bought by round 8 or 9.** In `b` three Skeletons and a free Ghoul took
+three villages by round 6 and killed three Goblin scouts; Fortification
+came in round 8 (11 Coins with three cities) and the first Zombie in round
+9, one round before the first mob. From round 10 a Skeleton did not live
+through a mob's turn: four died in rounds 10 to 12 (a Wolf Rider with a
+helper deals 8, a Goblin with two helpers 10 to a full Skeleton). The
+Zombies held and bit what struck them. In `c` the player grew first
+(seven cities in round 10 and Farming) and paid 30 Coins for Crafting and
+Fortification in rounds 11 and 12 with no unit bought in either: five
+Skeletons died in rounds 8 to 14 and a level-2 city fell in round 13.
+That is a choice the tree prices, not a hole in the roster: no rule was
+changed.
+
+**(ii) The Zombie wave: one number.** At 10 HP a rising died before it
+acted. In `a` both risings were shot dead in the next turn (6 and 4). In
+`b` five of the first six died within one enemy turn, each to exactly 10
+damage: one blow of a Wolf Rider with a helper, one of a Goblin with two
+helpers, two bombs, a blow and a Kaboom, a blow and a bomb. With the 15 of
+the hand pass at `7r55` that is 17 of 23 risings dead within a turn. The
+wave of `b` came in rounds 17 and 18 (five risings in two turns, one of
+them on the Goblin city's center, which it captured), when the enemy army
+was already spent. The AI is not the cause: an Undead seat of the Normal
+AI had 14 risings in a diagnostic match and no wave either.
+
+**A rising now has 12 HP.** What that changes, from the engine's preview
+(`tests/unit/ruleset-v7-undead-step2.test.ts`):
+
+| Attacker on a rising             | at 10 HP   | at 12 HP   |
+| -------------------------------- | ---------- | ---------- |
+| Fighter, Marksman, Grunt, a bomb | 6          | 5          |
+| Champion                         | 10, a kill | 11         |
+| Catapult                         | 10, a kill | 9          |
+| Goblin with one helper           | 8          | 7          |
+| Goblin with two helpers          | 10, a kill | 11         |
+| Wolf Rider with one helper       | 10, a kill | 9          |
+| Wolf Rider with two helpers      | 10, a kill | 12, a kill |
+| Knight                           | 10, a kill | 12, a kill |
+
+So a rising takes three ordinary hits where it took two, and lives
+through every single blow but a Knight's and a full mob's. It is still
+shot down from range without a bite, which is the counter the user named,
+and a Knight still rides through it. Replayed with the same commands
+(`b2`): of the first three risings one lived through two bombs with 3 HP,
+one was not attacked (the Wolf Rider beside it no longer had a kill) and
+killed a Goblin in its own turn, which rose; the third died to a blow of 9
+and a bomb of 3, and the Wolf Rider that struck it was Bitten. Twelve
+units in round 14 where `b` had ten. 14 HP was weighed and not taken: it
+would make a rising a Zombie that only a Knight kills in one blow.
+
+**(iii) The Wight's Rise Again: left as it is; one more gap found.** No
+Wight died in `b` (four trained from round 15). In the lab one died, to a
+Catapult and a Marksman, on a tile that already had a Grave: such a death
+marks nothing, so no return. With the three of the hand pass at `7r55`
+that is four deaths and one return; the blocker was an enemy unit twice,
+an older Grave once, and the player's own unit never. So "an own unit
+does not block" would have changed none of the four, and was not built.
+What would have is a mark on the Grave already there, which is a question
+for the user ([section 15.6](#156-open-for-the-user)): battles are fought
+where units died before, and the Wight comes with a seat's sixth or
+seventh technology.
+
+**(iv) Raise Dead with no limit: kept.** Three Skeletons in round 19 of
+`b`. Nothing in these games came near the eight of `7r55`.
+
+**(v) Banshees and Liches against Martian Shields: the Lich works, the
+Banshee does not.** From the previews with the Shield set
+(`scen-shield.ts` in the scratch folder of the pass):
+
+| Attack                         | Grunt, Shield 0 | Shield 2       | Shield 4 (beside a Projector) |
+| ------------------------------ | --------------- | -------------- | ----------------------------- |
+| Lich from three tiles          | 8, a kill       | 7 of 8         | 5                             |
+| its splash on the unit beside  | 4               | 3              | 1                             |
+| Wight, Vampire, charging Ghoul | 8, a kill       | 7 (takes 2, 0) | 5                             |
+| Skeleton, Zombie               | 5               | 3 (and a bite) | 1 (and a bite)                |
+| Banshee's Wail                 | 2 each          | 0              | 0                             |
+
+A Lich reaches a tile farther than a Grunt, kills a Ray Gunner through a
+Shield of 2, and plagues through Shields. A Wail deals no damage to a
+shielded unit, ever: it takes 2 off every Shield within two tiles, which
+is worth having only just before the units behind it strike. In `c` a
+Grunt shot a Banshee for 6 of its 8 HP from two tiles and a Saucer pulled
+a new Necromancer off its center into a Ray Gunner's shot (10). The
+branch is not dead against Martians; the Banshee is. Not changed.
+
+**(vi) Fortification as the Undead's must: it takes two of the four
+technologies a player buys by round 10.** In `b` Crafting and
+Fortification were 16 of the 45 Coins earned by round 9, and Engineering
+waited to round 10. What it crowds out is the second growth technology
+and the Banshee, not the opening. Bought late it costs 30 Coins (`c`).
+The placement is the user's ruling; the AI was fitted to it (section
+15.4).
+
+**(vii) One best unit? No.** The Zombie is the unit of every game (the
+garrison, the bite, 3 Coins) and the wrong one against bombs and rays:
+six units took 3 each from one bomb in `b`, and a full Zombie with 12 HP
+left died to one Wolf Rider with two helpers. The Skeleton kills the Bomb
+Chucker and the wounded Wolf Rider, the Ghoul finishes what a Zombie bit
+(Wail 2, a bite 6, and a Ghoul with Carrion: a Wolf Rider rose in `c`),
+and the Wight killed a Bitten Wolf Rider on a city center, which rose
+there. **Every branch was bought in one game or another:** Engineering
+took five cities up a level in three rounds of `b` (income 9 to 17), and
+Farming on Fertile Ground five cities in one turn of `c` (a Farm is 5
+Coins, the level gives 4 back); Banshees and Leadership in `c`; the
+Mobility branch was not bought in this pass and was in `uc` at `7r55`.
+
+### 15.3 What was not changed
+
+The Skeleton, the Ghoul, the Banshee, the Lich, the Necromancer, the
+Vampire, the Wight, the Abomination, every price, the technology tree,
+Raise Dead, Rise Again, Plague, and Bitten. The Human Knight still kills a
+rising and rides on.
+
+### 15.4 The Undead Normal AI
+
+Read in `a`, in six diagnostic matches (seeds 6, 9, and 13, 14 x 14, 25
+rounds; not a balance measurement), and on recorded positions of them.
+Details and function names:
+[Normal AI, step two of the Undead pass](../architecture/NORMAL_AI.md#step-two-of-the-undead-pass-pulp_wars-w4924).
+
+**What was wrong.** Since the reshuffle the Zombie is two technologies
+away, and the seat bought them, and its growth technology, before any
+unit: on seed 9 it trained nothing from round 3 to round 9 (four cities
+and four units in round 9, with 39 Coins of research). It took Stockpile
+and Walls where a free Ghoul and the Militia were offered. With Banshees
+researched in round 14 or 16 it trained Zombies in every threatened city
+(ten of fifteen units), its first Lich came in round 23, and with
+Leadership from round 21 no Necromancer in a land with nine Graves. It
+bought a technology after the capture that raised its price.
+
+**What it does now.**
+
+- _Bodies first._ With fewer land units than its cities and two more, a
+  city that can train does so before any research, and no Coins are kept
+  for a technology. In a war too, until the research clock of the war is
+  a whole technology behind: then the technology is bought before the
+  units, as tuning 8 has it, and bodies come first again.
+- _The free units._ While it is that short it takes the Ghoul of Scouts
+  at level 2 and the Militia at level 3 of a city that is not threatened.
+- _One growth technology before the Zombie's two_ while no enemy unit is
+  within six tiles of one of its cities; with one there, the Zombie
+  first, and with an enemy at its gates too.
+- _A technology before a capture_ that would raise its price.
+- _Banshees and Liches._ The garrison rule of a threatened city yields to
+  a Banshee or a Lich while the army has three bodies and is below its
+  share of them, as a Human seat's does to a Marksman.
+- _A Necromancer_ is trained in a city with three free Graves within
+  three tiles, also a threatened one, when the seat has none.
+
+**For every army seat.** A unit on a Field Defense in an enemy's reach
+makes no routine Move off it, and the better garrison does not leave a
+center with a Field Defense to a weaker unit beside it. (The Goblin pass
+reported both: a seat pays 3 Coins and walks the unit off in the same
+turn, because building leaves the unit its Move.)
+
+**Before and after.**
+
+| Where                                       | Before                                                                                                                              | After                                                                                                                                                                                       |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Against the Human AI, seed 9, rounds 1 to 9 | Crafting 3, Fortification 7, Farming 8, Hunting 9; no unit trained in rounds 3 to 9; four cities and four units in round 9          | a free Ghoul in round 1 and four by round 6; five cities and nine units in round 7; Crafting 7, Fortification 8, two Zombies in round 9                                                     |
+| The same match, rounds 10 to 25             | Banshees 14 and one Banshee by round 16; the first Lich in round 23; Leadership 21 and no Necromancer; ten Zombies of fifteen units | Banshees 13 and two Banshees in round 14; a Lich and a Necromancer in round 22, which raises in rounds 24 and 25; seven Zombies, three Liches, two Banshees, three Skeletons, a Necromancer |
+| The hand-played Human, seed 6 (`a`, `a2`)   | second city round 4, third round 7; five units in round 7; eight units trained in fourteen rounds; two Fighters killed by round 14  | second city round 3, third round 5; eight units in round 7; ten trained in twelve rounds; four Fighters killed by round 11, a village contested and its own center retaken once             |
+| The hand-played Human, seed 9 (`e`)         | (the diagnostic above)                                                                                                              | five cities, seven units, and an income of 9 in round 7; Crafting in round 5 with the player's scouts in sight, Fortification in round 7, bought before that turn's capture                 |
+| Against the Goblin AI, seed 13              | not run                                                                                                                             | seven cities in round 11 with fifteen units; six cities and nineteen units against seven and nineteen in round 25                                                                           |
+
+On seed 6 the seat still loses to a hand player: its land is three cities
+behind Mountains. No error and no stall in any match. Every row was
+played before the last form of bodies first in a war (below), and the
+diagnostic rows before the technology bought ahead of a capture; the rows
+of seed 9 to round 9 are play in peace, which that form does not touch.
+
+**Tried and corrected.** With the Zombie's technology made due with an
+enemy at the gates, and bodies first in peace only, the seat on seed 13
+bought Fortification, Hunting, and Banshees in rounds 10 to 13 on the
+research clock of a war, trained two units in those four rounds with six
+units on five cities, and was eliminated in round 22. Bodies first now
+holds in a war too. On the recorded turns of that match the seat trains
+three Zombies in round 11 where it bought Hunting, and four units and two
+buildings in round 13 where it bought Banshees. With bodies first in every round of a war the
+recorded games of tuning 8 failed the other way (no ranged unit's
+technology by round 16: a seat at war is short of units in every round),
+so the rule gives way once the clock is a whole technology behind: that
+seat buys Marksmanship in round 18 where it did in round 16, with
+seventeen units trained by round 16. No diagnostic match was left for
+this last form; it was read on the recorded turns and in the tests only.
+
+**Seen and left.**
+
+- It fights at its own cities and does not break out: four cities from
+  round 9 to round 25 on seed 9, 33 units lost for 18 killed.
+- A Lich is trained onto a center and fires from it; the city trains
+  nothing that turn.
+- A seat behind Mountains (seed 6) buys no Engineering to get out.
+- Single Zombies still walk between its cities.
+- It researches later in a war, which is the price of the units: in the
+  seed scans for the natural-play tests (Undead mirror, 11 x 11, 40
+  rounds) one seed of sixteen trains a Vampire that heals, where three
+  did.
+
+### 15.5 The shared bugs of the Goblin pass
+
+- **A Field Defense built and left in the same turn:** corrected for
+  every army seat (above).
+- **A free reward unit that appears on the enemy's side of its city and
+  dies before it moves:** a rule, not the AI. A reward unit is placed on
+  the first free tile by the engine's fixed order around the center and
+  arrives with its turn spent. Not changed; for the user (section 15.6).
+- **Found on the way:** four source audits failed on `main` since the
+  beginner guidance and step two of the Goblin pass were merged (the
+  coach's and the glossary's readers had no class). They are classified
+  in `tests/fixtures`.
+
+### 15.6 Open, for the user
+
+1. **A Wight that dies on an older Grave leaves no mark.** The smallest
+   change: the Grave under it becomes its Grave. One of four deaths so
+   far; it will be most of them late in a game.
+2. **"An own unit does not block the return"** was not built: no death in
+   two passes would have been changed by it.
+3. **A reward unit's tile** (section 15.5): toward the seat's own capital
+   would be the smallest change.
+4. **Mountains around a capital.** Since `7r56` no unit crosses them
+   before Engineering. Of seeds 1 to 20 on Dry Land 14 the second seat
+   has fourteen or more Mountains within two tiles of its capital on
+   seeds 6, 7, 10, and 15 (`probe-land.mts`).
+5. **The Banshee against Martians** does nothing but strip 2 Shield.
+6. **Research before a capture** is an Undead seat's rule; every seat
+   pays more for capturing first.
+
+### 15.7 For the Martian pass
+
+- Seed 6 and its like (item 4 above) decide a game before it starts; pick
+  a map by its Mountains as well as its chests.
+- A Lich outranges a Grunt by a tile and cannot move and fire: does the
+  Martian AI walk into it or around it?
+- A Zombie bites a shielded unit only when HP is lost: 3 through a Shield
+  of 2, 1 through 4. Under a Projector the bite nearly never lands on a
+  full Shield; a Wail first makes it land.
+- A Saucer's Tractor Beam pulled a new Necromancer off a city center into
+  a Ray Gunner's shot. A risen Zombie has 12 HP now: two Grunts no longer
+  kill one in a turn (5 and 5).
+
+### 15.8 Tests
+
+`tests/unit/ruleset-v7-undead-step2.test.ts`: the identity; a rising at
+12 of 18 HP by Infect and by a bite; the blows a rising of 12 HP lives
+through and the two it does not; bodies first, in peace and in a war until
+the clock is a technology behind, and the Coins kept with enough units;
+the growth technology before the Zombie's and the Zombie first with an
+enemy in sight; the Zombie's technology as a due one with an enemy at the
+gates; a due technology before a capture; the Militia and the Ghoul on the
+recorded opening of seed 9
+(`tests/fixtures/ruleset-v7-undead-opening.json`); the garrison rule that
+yields to a Banshee or a Lich; the Necromancer for three Graves; the
+recorded position of the Goblin pass
+(`tests/fixtures/ruleset-v7-undead-field-defense.json`), where the Zombie
+builds its Field Defense and stays; a unit of a Human and of an Undead
+seat on a Field Defense that makes no routine Move.
+
+**Pins and fixtures that moved.** Every test that named `7r56` as the
+current identity names `7r57`; every expectation of a rising at 10 HP is 12. The fixtures of three tests got the units that keep the seat from
+being short of them (tuning 8's research clock, the Industry reshuffle's
+"Fortification before its units", the Undead pass's "technology before a
+unit"). Tuning 8's recorded positions: Marksmanship within five turns
+(four) on `r8d`, and by round 18 (16) on seed 4 with at least fifteen
+units trained (eight). Tuning 7's seed-4 opening: Hunting before
+Crafting. The command and event hashes of the Dry Land pin of
+`ruleset-v7-curiosities.test.ts` (18 rounds, 17 before). Four seeds of
+natural-play tests: the Lich that plagues (Pangea, seed 1, was 10),
+Plague and Bitten (seed 3, was 6), Infect and Lifesteal (seed 1, was 9:
+of seeds 0 to 15 of the Undead mirror only this one trains a Vampire that
+heals inside 40 rounds), and the units that embark (Archipelago, seed 21,
+was 20).

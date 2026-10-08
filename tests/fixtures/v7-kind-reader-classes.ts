@@ -192,6 +192,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7.ts::goblinMobSeatV7": "SEAT",
   "src/ai/v7.ts::armyBlockerV7": "SEAT",
   "src/ai/v7.ts::armyBlockerResearchV7": "SEAT",
+  // Step two of the Undead pass (`pulp_wars-w49.24`): the price of the
+  // seat's own Skeleton, and the Zombie's technology in its own tree.
+  "src/ai/v7.ts::armyUndeadBodiesFirstV7": "SEAT",
+  "src/ai/v7.ts::armyUndeadGrowthFirstV7": "SEAT",
   "src/ai/v7.ts::armyShootsBiterFirstV7": "SEAT",
   "src/ai/v7.ts::armyCureDueV7": "SEAT",
   "src/ai/v7.ts::armyCureResearchV7": "SEAT",

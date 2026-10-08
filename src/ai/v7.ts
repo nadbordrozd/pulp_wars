@@ -225,6 +225,13 @@ import {
   ARMY_VILLAGES_FIRST_DANGER_V7,
   ARMY_VILLAGES_FIRST_REACH_V7,
   ARMY_VILLAGES_FIRST_ROUNDS_V7,
+  ARMY_UNDEAD_SPARE_UNITS_V7,
+  ARMY_UNDEAD_WAR_RESEARCH_GRACE_V7,
+  ARMY_UNDEAD_GROWTH_FIRST_TECHNOLOGIES_V7,
+  ARMY_NECROMANCER_GRAVES_V7,
+  ARMY_NECROMANCER_GRAVE_REACH_V7,
+  ARMY_NECROMANCER_TRAINING_VALUE_V7,
+  ARMY_RESEARCH_BEFORE_CAPTURE_PRIORITY_V7,
   armyAssaultModeV7,
   armyClassV7,
   armyShareClassV7,
@@ -3135,6 +3142,14 @@ export function inspectNormalArmyV7(view: PlayerViewV7): {
   readonly threatDistance: number;
   readonly pressed: boolean;
   readonly expanding: boolean;
+  /** Tuning 7: an enemy army is in the field (`armyWarV7`). */
+  readonly war: boolean;
+  /**
+   * Step two of the Undead pass (`pulp_wars-w49.24`): an Undead seat short
+   * of units trains before it researches (`armyUndeadBodiesFirstV7`); false
+   * for every other seat.
+   */
+  readonly bodiesFirst: boolean;
   /** Tuning 7: the positions, each with its weights. */
   readonly positions: readonly {
     readonly hostileIds: readonly UnitId[];
@@ -3161,6 +3176,8 @@ export function inspectNormalArmyV7(view: PlayerViewV7): {
     threatDistance: armyThreatDistanceV7(context),
     pressed: armyPressedV7(context),
     expanding: armyExpandingV7(context),
+    war: armyWarV7(context),
+    bodiesFirst: armyUndeadBodiesFirstV7(context),
     positions: [...new Set(armyAssaultV7(context).positionByHostile.values())]
       .map((position) => ({
         hostileIds: position.hostiles
@@ -3600,7 +3617,9 @@ function armyResearchTargetV7(
         : effectiveRoleRuleV7(firstRole, faction).technology;
     const growth =
       firstTechnology === null ||
-      view.viewer.researchedTechs.includes(firstTechnology)
+      view.viewer.researchedTechs.includes(firstTechnology) ||
+      // Step two of the Undead pass: growth first.
+      armyUndeadGrowthFirstV7(context)
         ? armyGrowthResearchV7(context)
         : null;
     if (growth !== null) chosen = { ...growth, unlocks: null, growth: true };
@@ -4041,7 +4060,9 @@ function armyTrainingPriorityV7(context: PolicyContextV7): number {
     warTrainingFirstV7(context) ||
     context.chokepoint !== null ||
     // The first units are the ones that take the villages.
-    armyExpandingV7(context)
+    armyExpandingV7(context) ||
+    // Step two of the Undead pass: bodies first.
+    armyUndeadBodiesFirstV7(context)
     ? ARMY_TRAINING_PRIORITY_V7
     : ARMY_TOPUP_TRAINING_PRIORITY_V7;
 }
@@ -4057,7 +4078,9 @@ function armyTrainsFirstV7(context: PolicyContextV7): boolean {
     (context.army &&
       !context.naval.active &&
       !context.openingGrowthHarvest &&
-      armyExpandingV7(context))
+      armyExpandingV7(context)) ||
+    // Step two of the Undead pass: bodies first.
+    armyUndeadBodiesFirstV7(context)
   );
 }
 
@@ -4099,6 +4122,147 @@ function armyResearchHoldsV7(
 /** An Undead seat of the army play. */
 function armyUndeadSeatV7(context: PolicyContextV7): boolean {
   return context.army && context.view.viewer.faction === "UNDEAD";
+}
+
+// ---------------------------------------------------------------------------
+// Step two of the Undead pass (`pulp_wars-w49.24`,
+// docs/product/RULESET_7_TUNING_UNDEAD.md section 15). Since the Industry
+// reshuffle the Zombie is two technologies away, and an Undead seat bought
+// them before anything else: in two diagnostic matches it trained no unit
+// from round 3 to round 9 (four cities and four units in round 9, with 39
+// Coins of research), and its first Banshee came nine rounds after the
+// Banshee's technology.
+// ---------------------------------------------------------------------------
+
+const ARMY_UNDEAD_CONTACT_CACHE_V7 = new WeakMap<PolicyContextV7, boolean>();
+
+/**
+ * Step two of the Undead pass: the seat has met an enemy: a hostile land
+ * unit is visible within `ARMY_ALERT_RADIUS_V7` of one of its centers. (A
+ * known enemy city alone is not contact: a scout finds one in round 6 that
+ * sends nothing for ten rounds.)
+ */
+function armyUndeadContactV7(context: PolicyContextV7): boolean {
+  const cached = ARMY_UNDEAD_CONTACT_CACHE_V7.get(context);
+  if (cached !== undefined) return cached;
+  const view = context.view;
+  const hostiles = armyHostilesV7(context);
+  const result =
+    hostiles.length > 0 &&
+    view.cities.some(
+      (city) =>
+        city.ownerId === view.viewer.id &&
+        hostiles.some(
+          (unit) => distance(unit.at, city.at) <= ARMY_ALERT_RADIUS_V7,
+        ),
+    );
+  ARMY_UNDEAD_CONTACT_CACHE_V7.set(context, result);
+  return result;
+}
+
+/**
+ * Step two of the Undead pass: an Undead seat that fields fewer land units
+ * than it owns cities and `ARMY_UNDEAD_SPARE_UNITS_V7` more. Such a seat
+ * takes the free unit of a city level (the Ghoul of Scouts at level 2, the
+ * Skeletons of Militia at level 3 of a city that is not threatened) and
+ * trains before it researches (`armyUndeadBodiesFirstV7`).
+ */
+function armyUndeadShortOfUnitsV7(context: PolicyContextV7): boolean {
+  if (
+    !armyUndeadSeatV7(context) ||
+    context.naval.active ||
+    context.openingGrowthHarvest
+  )
+    return false;
+  const view = context.view;
+  let cities = 0;
+  for (const city of view.cities)
+    if (city.ownerId === view.viewer.id) cities += 1;
+  let units = 0;
+  for (const unit of view.units)
+    if (unit.ownerId === view.viewer.id && unit.form === "LAND") units += 1;
+  return units < cities + ARMY_UNDEAD_SPARE_UNITS_V7;
+}
+
+const ARMY_UNDEAD_BODIES_CACHE_V7 = new WeakMap<PolicyContextV7, boolean>();
+
+/**
+ * Step two of the Undead pass: a seat at war whose research clock
+ * (`armyResearchClockDueV7`) is a whole technology behind: the round has
+ * reached the clock's rounds times the technologies owned and
+ * `ARMY_UNDEAD_WAR_RESEARCH_GRACE_V7` more. Bodies first does not hold
+ * then, so a seat that is short of units for a whole war still buys a
+ * technology in every cycle of the clock, one cycle late, and no two in a
+ * row.
+ */
+function armyUndeadResearchOverdueV7(context: PolicyContextV7): boolean {
+  if (!armyWarV7(context)) return false;
+  const target = armyResearchTargetV7(context);
+  if (target === null) return false;
+  const view = context.view;
+  return (
+    view.round >=
+    armyResearchRoundsV7(context, target) *
+      (armyTempoTechnologiesV7(view) + ARMY_UNDEAD_WAR_RESEARCH_GRACE_V7)
+  );
+}
+
+/**
+ * Step two of the Undead pass, bodies first: an Undead seat that fields
+ * fewer land units than it owns cities and
+ * `ARMY_UNDEAD_SPARE_UNITS_V7` more, with a city that has a free unit slot,
+ * its action, and the Coins for a Skeleton. Such a seat trains before it
+ * researches and keeps no Coins for a technology: the Skeletons take the
+ * villages (every village is a unit slot and a Coin a turn). In a war too,
+ * until its research clock is a whole technology behind
+ * (`armyUndeadResearchOverdueV7`): a seat at war with fewer units than
+ * that is not saved by three technologies in four rounds, and it is not
+ * saved by Skeletons alone either. (In a diagnostic match against Goblins
+ * a seat with five cities and six units bought Fortification, Hunting, and
+ * Banshees in rounds 10 to 13 on the research clock, trained two units in
+ * those four rounds, and was eliminated in round 22. With bodies first in
+ * every round of a war the seat of tuning 8's recorded games bought no
+ * ranged unit's technology by round 16.) With its units the research rules
+ * are as they were: the growth technology and the Zombie's are bought
+ * before the units, the Coins are kept, and a war has its research clock.
+ */
+function armyUndeadBodiesFirstV7(context: PolicyContextV7): boolean {
+  const cached = ARMY_UNDEAD_BODIES_CACHE_V7.get(context);
+  if (cached !== undefined) return cached;
+  const view = context.view;
+  const result =
+    armyUndeadShortOfUnitsV7(context) &&
+    view.viewer.coins >=
+      (effectiveRoleRuleV7("FIGHTER", view.viewer.faction).cost ?? 0) &&
+    view.cities.some(
+      (city) =>
+        city.ownerId === view.viewer.id &&
+        city.cityActionAvailable !== false &&
+        freeCapacity(view, city.id) > 0,
+    ) &&
+    !armyUndeadResearchOverdueV7(context);
+  ARMY_UNDEAD_BODIES_CACHE_V7.set(context, result);
+  return result;
+}
+
+/**
+ * Step two of the Undead pass, growth first: an Undead seat that cannot
+ * train the Zombie yet, has met no enemy (`armyUndeadContactV7`), and owns
+ * no technology but its opener researches the one growth technology its
+ * land can use (`armyEconomyFirstV7`: Hunting, Farming, or Forestry) before
+ * the two technologies of the Zombie. With an enemy in sight of its cities
+ * the Zombie comes first, as before.
+ */
+function armyUndeadGrowthFirstV7(context: PolicyContextV7): boolean {
+  if (!armyUndeadSeatV7(context) || context.naval.active) return false;
+  const view = context.view;
+  const zombie = effectiveRoleRuleV7("GUARD", view.viewer.faction).technology;
+  return (
+    zombie !== null &&
+    !view.viewer.researchedTechs.includes(zombie) &&
+    armyTempoTechnologiesV7(view) <= ARMY_UNDEAD_GROWTH_FIRST_TECHNOLOGIES_V7 &&
+    !armyUndeadContactV7(context)
+  );
 }
 
 /**
@@ -4276,7 +4440,11 @@ function armyEconomyFirstV7(context: PolicyContextV7): boolean {
   if (
     first === undefined ||
     second === undefined ||
-    !view.viewer.researchedTechs.includes(first) ||
+    // Step two of the Undead pass: an Undead seat that has met no enemy
+    // buys its growth technology before the Zombie's two
+    // (`armyUndeadGrowthFirstV7`).
+    (!view.viewer.researchedTechs.includes(first) &&
+      !armyUndeadGrowthFirstV7(context)) ||
     view.viewer.researchedTechs.includes(second)
   )
     return false;
@@ -4308,6 +4476,8 @@ function armyEconomyResearchV7(
   tech: TechnologyIdV7,
 ): boolean {
   if (!armyEconomyFirstV7(context)) return false;
+  // Step two of the Undead pass: bodies first.
+  if (armyUndeadBodiesFirstV7(context)) return false;
   const target = armyResearchTargetV7(context);
   if (target === null || !target.growth || target.tech !== tech) return false;
   const view = context.view;
@@ -4339,9 +4509,18 @@ function armyDefenderResearchV7(
   const view = context.view;
   if ((ARMY_RESEARCH_ROLES_V7[view.viewer.faction] ?? [])[0] !== "GUARD")
     return false;
+  // Step two of the Undead pass: bodies first.
+  if (armyUndeadBodiesFirstV7(context)) return false;
   const target = armyResearchTargetV7(context);
   if (target === null || target.unlocks !== "GUARD" || target.tech !== tech)
     return false;
+  // Step two of the Undead pass (`pulp_wars-w49.24`): an Undead seat buys
+  // the Zombie's technology with an enemy at its gates too. In a war on
+  // seven cities some gate always has an enemy before it: a seat with the
+  // root in round 8 fielded thirteen Skeletons against Goblin mobs and
+  // bought Fortification in round 14. The city at whose gates the enemy
+  // stands trains regardless of the Coins kept (`armyFloorHoldsTrainingV7`).
+  if (armyUndeadSeatV7(context)) return true;
   return !view.cities.some(
     (city) =>
       city.ownerId === view.viewer.id && armyAtTheGatesV7(context, city.id),
@@ -4931,9 +5110,15 @@ function armyGarrisonHoldsV7(
   if (near.length === 0) return false;
   // The tactical plan lets a threatened city's defender act when another
   // own unit can take its place this turn; so does the garrison rule.
+  // Step two of the Undead pass (`pulp_wars-w49.24`): not for a Move of
+  // the best garrison in reach (`armyBestGarrisonStaysV7`).
   if (
     context.tactical.defenderReplacementActionKeys.has(
       policyCommandKeyV7(command),
+    ) &&
+    !(
+      command.kind === "MOVE" &&
+      armyBestGarrisonStaysV7(context, city.at, actor)
     )
   )
     return false;
@@ -4968,6 +5153,77 @@ function armyGarrisonHoldsV7(
   return (
     preview.advances && near.some((unit) => unit.id !== command.targetUnitId)
   );
+}
+
+/**
+ * Step two of the Undead pass (`pulp_wars-w49.24`,
+ * docs/product/RULESET_7_TUNING_UNDEAD.md section 15), for every army seat:
+ * the unit on a threatened own center with a Field Defense is a better
+ * garrison (HP times Defense, `armyDefenderWorthV7`) than every own land
+ * unit beside the center. It then makes no Move off the center for another
+ * unit to take its place; the step aside that lets the city train a
+ * garrison at least as good (`armyVacatesCenterV7`) is still made. (An
+ * Undead seat built a Field Defense under a Zombie on a village center and
+ * walked the Zombie off it in the same turn, and a Skeleton stepped on; a
+ * Human seat did the same twice in one game.)
+ */
+function armyBestGarrisonStaysV7(
+  context: PolicyContextV7,
+  center: CoordV7,
+  actor: PublicUnitV7,
+): boolean {
+  const view = context.view;
+  const tile = findPublicTileV7(view, center);
+  return (
+    tile?.explored === true &&
+    tile.fieldDefense &&
+    armyDefenderWorthV7(
+      context,
+      center,
+      unitRoleRuleV7(view, actor),
+      unitRoleMechanicsV7(view, actor),
+      actor.hp,
+    ) > armyBesideCenterWorthV7(context, center)
+  );
+}
+
+/**
+ * Step two of the Undead pass: an Undead army seat that can train a
+ * Necromancer and fields none trains one in a city with
+ * `ARMY_NECROMANCER_GRAVES_V7` free Graves (no unit on them) within
+ * `ARMY_NECROMANCER_GRAVE_REACH_V7` tiles of its center: a Raise Dead of
+ * three is 6 Coins of Skeletons for 5, with no unit slot. Not in a city
+ * with an enemy at its gates. (A seat with Leadership from round 21 of a
+ * diagnostic match trained none in a land with nine Graves: every city of
+ * it was threatened, and a support unit loses 200 there.)
+ */
+function armyNecromancerDueV7(
+  context: PolicyContextV7,
+  cityId: CityId,
+): boolean {
+  if (!armyUndeadSeatV7(context)) return false;
+  const view = context.view;
+  const city = context.lookup.citiesById.get(cityId);
+  if (city === undefined || armyAtTheGatesV7(context, cityId)) return false;
+  if (
+    view.units.some(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.form === "LAND" &&
+        unitRoleRuleV7(view, unit).abilities.includes("RAISE_DEAD"),
+    )
+  )
+    return false;
+  let free = 0;
+  for (const grave of view.graves)
+    if (
+      distance(grave, city.at) <= ARMY_NECROMANCER_GRAVE_REACH_V7 &&
+      !(context.threatLookup.occupantsByKey.get(coordKey(grave)) ?? []).some(
+        (unit) => same(unit.at, grave),
+      )
+    )
+      free += 1;
+  return free >= ARMY_NECROMANCER_GRAVES_V7;
 }
 
 /** What a unit's attack from a destination is worth (army play). */
@@ -5499,6 +5755,52 @@ const ARMY_ROUTINE_MOVE_MAXIMUM_V7 = 735;
  * units under a splash attacker costs strategic value.
  */
 function armyMoveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  priority: number,
+): { readonly priority: number; readonly strategic: number } {
+  const value = armyPlainMoveValueV7(context, actor, to, priority);
+  // Step two of the Undead pass (`pulp_wars-w49.24`), for every army seat:
+  // a unit on a Field Defense under a visible enemy's reach makes no
+  // routine Move off it (`armyHoldsFieldDefenseV7`).
+  return value.priority >= 0 &&
+    value.priority <= ARMY_ROUTINE_MOVE_MAXIMUM_V7 &&
+    armyHoldsFieldDefenseV7(context, actor, to)
+    ? { priority: -1, strategic: 0 }
+    : value;
+}
+
+/**
+ * Step two of the Undead pass (`pulp_wars-w49.24`,
+ * docs/product/RULESET_7_TUNING_UNDEAD.md section 15), for every army seat:
+ * `actor` has not moved, stands on a Field Defense in its own land where a
+ * visible enemy can hit it, and `to` is another tile. Such a unit keeps its
+ * Move for an attack, a kill, a village, or the step that lets its city
+ * train; an exploring, approaching, or regrouping Move waits. (Building a
+ * Field Defense leaves the unit its Move, and a seat that had just paid 3
+ * Coins for one walked the unit off it in the same turn: a Human Fighter in
+ * the lab, an Undead Zombie and two Human units in hand-played games.)
+ */
+function armyHoldsFieldDefenseV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): boolean {
+  if (!context.army || actor.form !== "LAND" || actor.activation.moved)
+    return false;
+  if (same(actor.at, to)) return false;
+  const view = context.view;
+  const tile = findPublicTileV7(view, actor.at);
+  return (
+    tile?.explored === true &&
+    tile.fieldDefense &&
+    tile.territoryOwnerId === view.viewer.id &&
+    visibleImmediateDamage(view, actor, actor.at, context) > 0
+  );
+}
+
+function armyPlainMoveValueV7(
   context: PolicyContextV7,
   actor: PublicUnitV7,
   to: CoordV7,
@@ -7442,6 +7744,11 @@ function armyResearchClockDueV7(context: PolicyContextV7): boolean {
 function armyResearchFloorV7(context: PolicyContextV7): number {
   if (context.armyResearchFloor !== undefined) return context.armyResearchFloor;
   let floor = 0;
+  // Step two of the Undead pass: bodies first keeps no Coins.
+  if (armyUndeadBodiesFirstV7(context)) {
+    context.armyResearchFloor = 0;
+    return 0;
+  }
   const target = armyResearchTargetV7(context);
   // The Martian pass, correction: also for the economy technology of
   // `armyEconomyFirstV7` (a seat with 4 Coins and 5 a turn trained a
@@ -10000,8 +10307,8 @@ function biteHarmAdjustmentV7(
   return adjustment;
 }
 
-/** A 10-HP Zombie rising: Zombie cost 3 x 4 + 10 HP. */
-const INFECT_RISING_VALUE_V7 = 22;
+/** A 12-HP Zombie rising: Zombie cost 3 x 4 + 12 HP (10 HP and 22 until 7r56). */
+const INFECT_RISING_VALUE_V7 = 24;
 
 function attackPurposeExceptionV7(
   context: PolicyContextV7,
@@ -10631,22 +10938,38 @@ function* sharedCityContextWorkV7(
       armyFloorHoldsTrainingV7(context, command);
     // Step two of the Goblin pass (`pulp_wars-w49.23`): the garrison rule
     // of a Goblin seat yields too (to a Bomb Chucker).
+    // Step two of the Undead pass (`pulp_wars-w49.24`): and an Undead
+    // seat's, to a Banshee or a Lich.
+    const offersClass = (wanted: "RANGED" | "SIEGE"): boolean =>
+      shared.some(
+        (command) =>
+          command.kind === "TRAIN" &&
+          !floorHolds(command) &&
+          armyShareClassV7(
+            effectiveRoleRuleV7(command.role, view.viewer.faction),
+          ) === wanted,
+      );
     const garrisonYields =
-      (withinFloor || goblinMobSeatV7(context)) &&
+      (withinFloor || goblinMobSeatV7(context) || armyUndeadSeatV7(context)) &&
       armyCounts !== null &&
       !armyAtTheGatesV7(context, cityId) &&
       armyGarrisonYieldsToRangedV7(
         view.viewer.faction,
         armyCounts,
-        shared.some(
-          (command) =>
-            command.kind === "TRAIN" &&
-            !floorHolds(command) &&
-            armyShareClassV7(
-              effectiveRoleRuleV7(command.role, view.viewer.faction),
-            ) === "RANGED",
-        ),
+        offersClass("RANGED"),
+        offersClass("SIEGE"),
       );
+    const necromancerDue =
+      armyCounts !== null &&
+      shared.some(
+        (command) =>
+          command.kind === "TRAIN" &&
+          effectiveRoleRuleV7(
+            command.role,
+            view.viewer.faction,
+          ).abilities.includes("RAISE_DEAD"),
+      ) &&
+      armyNecromancerDueV7(context, cityId);
     for (const command of shared) {
       const cost = sharedTrainingCostV7(
         view,
@@ -10724,6 +11047,7 @@ function* sharedCityContextWorkV7(
           city !== undefined &&
           threatened &&
           !garrisonYields &&
+          !necromancerDue &&
           !ownedAt.has(coordKey(city.at)) &&
           armyDefenderWorthV7(
             context,
@@ -10772,6 +11096,16 @@ function* sharedCityContextWorkV7(
                   (city !== undefined && armyFrontCenterV7(context, city.at)),
               ) +
               trainingAdjustment(command.role) +
+              // Step two of the Undead pass: the Necromancer for the
+              // Graves beside this city (`armyNecromancerDueV7`).
+              (necromancerDue &&
+              command.kind === "TRAIN" &&
+              effectiveRoleRuleV7(
+                command.role,
+                view.viewer.faction,
+              ).abilities.includes("RAISE_DEAD")
+                ? ARMY_NECROMANCER_TRAINING_VALUE_V7
+                : 0) +
               10 * cityAdjustment(command.role) +
               // (A hatch turn in a threatened city weighs as much as a
               // tenth of the army's share; the older policy's biases, the
@@ -11469,6 +11803,22 @@ function scoreCommandWithContext(
       armyBlockerResearchV7(context, command.tech)
     )
       priority = ARMY_DUE_RESEARCH_PRIORITY_V7;
+    // Step two of the Undead pass: bodies first. While an Undead seat is
+    // short of units (`armyUndeadBodiesFirstV7`) its technology is bought
+    // after the training of the turn, with what the units leave.
+    else if (armyUndeadBodiesFirstV7(context))
+      priority = Math.min(priority, ARMY_RESEARCH_PRIORITY_V7);
+    // Step two of the Undead pass: an Undead seat buys the technology that
+    // is due before it captures. A technology costs 1 to 3 Coins more for
+    // every city owned, and a capture is made first otherwise (1340): a
+    // seat with exactly the 15 Coins of Fortification captured its sixth
+    // city, could not pay 17, and bought it four rounds later for 19.
+    if (
+      priority === ARMY_DUE_RESEARCH_PRIORITY_V7 &&
+      armyUndeadSeatV7(context) &&
+      context.commands.some((offered) => offered.kind === "CAPTURE")
+    )
+      priority = ARMY_RESEARCH_BEFORE_CAPTURE_PRIORITY_V7;
     strategicValue = Math.max(strategicValue, 100);
   }
 
@@ -20287,6 +20637,16 @@ function preferredReward(
     offered.includes("SURVEY")
   )
     return "SURVEY";
+  // Step two of the Undead pass (`pulp_wars-w49.24`): an Undead seat short
+  // of units takes the free Ghoul (`armyUndeadShortOfUnitsV7`): it moves two
+  // tiles and takes the next village. (A seat with four cities and three
+  // Skeletons took Stockpile three times in rounds 5 to 7.)
+  if (
+    command.reachedLevel === 2 &&
+    offered.includes("SURVEY") &&
+    armyUndeadShortOfUnitsV7(context)
+  )
+    return "SURVEY";
   if (command.reachedLevel === 2)
     return offered.includes(
       context.view.viewer.coins < 4 ? "STOCKPILE" : "SURVEY",
@@ -20295,6 +20655,15 @@ function preferredReward(
         ? "STOCKPILE"
         : "SURVEY"
       : (offered[0] ?? command.reward);
+  // Step two of the Undead pass: an Undead seat short of units takes the
+  // Militia of a city that is not threatened.
+  if (
+    command.reachedLevel === 3 &&
+    offered.includes("MILITIA") &&
+    !threatenedCity(context, command.cityId) &&
+    armyUndeadShortOfUnitsV7(context)
+  )
+    return "MILITIA";
   if (command.reachedLevel === 3)
     return offered.includes("MILITIA") &&
       threatenedCity(context, command.cityId) &&

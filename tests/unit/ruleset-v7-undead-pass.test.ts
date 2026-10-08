@@ -190,13 +190,13 @@ describe("the Undead pass: identity", () => {
   // , the Dinosaur pass 7r53, and the economy rejig 7r54, so 7r51 is a
   // prior identity.
   it("was 7r51 after 7r50, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-6, -4)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r57");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r57.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-7, -5)).toEqual([
       "pulp-wars-poc-7r50",
       "pulp-wars-poc-7r51",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -4)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-7, -5)).toEqual([
       "pulpWars.save.v7r50.current",
       "pulpWars.save.v7r51.current",
     ]);
@@ -545,7 +545,8 @@ describe("the Undead pass: the Abomination's Infect", () => {
     expect(unitAtV7(result.state, at(5, 2))).toMatchObject({
       ownerId: actor,
       role: "GUARD",
-      hp: 10,
+      // (12 since step two of the Undead pass, 7r57; 10 before.)
+      hp: 12,
       maxHp: 18,
     });
     expect(result.state.graves).toEqual([]);
@@ -727,7 +728,7 @@ describe("the Undead pass: the matrix numbers the document reasons from", () => 
       [
         { seat: 0, role: "KNIGHT", at: at(5, 3) },
         { seat: 1, role: "GUARD", at: at(5, 2) },
-        { seat: 1, role: "GUARD", at: at(6, 2), hp: 10 },
+        { seat: 1, role: "GUARD", at: at(6, 2), hp: 12 },
       ],
     );
     expect(previewAt(state, at(5, 3), at(5, 2))).toMatchObject({
@@ -737,7 +738,8 @@ describe("the Undead pass: the matrix numbers the document reasons from", () => 
       attackerBitten: true,
       overrunContinues: false,
     });
-    // A Zombie that has just risen (10 HP) it kills, and rides on.
+    // A Zombie that has just risen (12 HP since 7r57; 10 before) it kills,
+    // and rides on.
     expect(previewAt(state, at(5, 3), at(6, 2))).toMatchObject({
       defenderDies: true,
       advances: true,
@@ -1350,7 +1352,7 @@ describe("the correction: a risen unit fills no unit slot", () => {
       expect(
         [rising.role, rising.ownerId, rising.hp, rising.homeCityId],
         killer,
-      ).toEqual(["GUARD", seatIdV7(state, 0), 10, null]);
+      ).toEqual(["GUARD", seatIdV7(state, 0), 12, null]);
       // It took a slot of the killer's home city until this correction.
       expect(assignedUnitCountV7(result.state, capital.id)).toBe(before);
       expect(
@@ -1855,14 +1857,21 @@ describe("the correction: the Undead Normal AI's economy", () => {
     kind: "FOREST" | "FERTILE" | "BOTH",
     coins = 3,
     enemyAt: CoordV7 = at(2, 8),
+    /** More Skeletons of seat 0 with no home city. */
+    spare: readonly CoordV7[] = [],
   ): PlayerViewV7 => {
     const { state } = field(
       [faction, faction === "UNDEAD" ? "ORIGINAL" : "UNDEAD"],
       [
         { seat: 0, role: "FIGHTER", at: at(9, 9) },
+        ...spare.map((where) => ({
+          seat: 0,
+          role: "FIGHTER" as const,
+          at: where,
+        })),
         { seat: 1, role: "FIGHTER", at: enemyAt },
       ],
-      { techs: { 0: techs }, coins, orphans: [at(9, 9)] },
+      { techs: { 0: techs }, coins, orphans: [at(9, 9), ...spare] },
     );
     const patched: GameStateV7 = {
       ...state,
@@ -1990,7 +1999,23 @@ describe("the correction: the Undead Normal AI's economy", () => {
     ).research?.cost;
     if (cost === undefined) throw new Error("no research target");
     // With the Coins for it and for a unit, the technology goes first (the
-    // seat still expands: its first units take the villages).
+    // seat still expands: its first units take the villages). Step two of
+    // the Undead pass (`pulp_wars-w49.24`): for a seat with its city and
+    // two units more; with one unit it trains first
+    // (`tests/unit/ruleset-v7-undead-step2.test.ts`).
+    const spare = [at(8, 9), at(9, 8)];
+    expect(
+      first(
+        land(
+          "UNDEAD",
+          ["GATHERING", "DRILL", "FORTIFICATION"],
+          "FERTILE",
+          cost,
+          at(2, 8),
+          spare,
+        ),
+      ),
+    ).toEqual({ kind: "RESEARCH", tech: "FARMING" });
     expect(
       first(
         land(
@@ -1999,8 +2024,8 @@ describe("the correction: the Undead Normal AI's economy", () => {
           "FERTILE",
           cost,
         ),
-      ),
-    ).toEqual({ kind: "RESEARCH", tech: "FARMING" });
+      )?.kind,
+    ).toBe("TRAIN");
     // With a Human Knight two tiles from the capital it trains.
     expect(
       first(
@@ -2010,6 +2035,7 @@ describe("the correction: the Undead Normal AI's economy", () => {
           "FERTILE",
           cost,
           at(6, 8),
+          spare,
         ),
       )?.kind,
     ).toBe("TRAIN");

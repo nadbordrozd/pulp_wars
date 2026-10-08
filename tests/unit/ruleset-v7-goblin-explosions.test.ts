@@ -919,9 +919,11 @@ describe("ruleset-7 Goblin chains and attacks", () => {
         ],
       },
     ]);
+    // (A rising has 12 HP since step two of the Undead pass, 7r57; 10 and
+    // 8 here before.)
     expect(
       result.state.units.find((unit) => unit.id === rising.unitId)?.hp,
-    ).toBe(8);
+    ).toBe(10);
   });
 });
 

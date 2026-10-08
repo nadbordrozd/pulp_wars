@@ -10,16 +10,16 @@
     "aiDifficulty": "NORMAL",
     "aiMode": "RIVAL",
     "humanColor": "CORAL",
-    "factions": ["GOBLIN", "ORIGINAL"],
+    "factions": ["ORIGINAL", "UNDEAD"],
     "mapType": "DRY_LAND",
     "mapGenerationRevision": "REGIONAL_BIOMES_NAVAL_V4",
     "curiosities": true
   },
-  "random": { "algorithm": "MULBERRY32", "version": 1, "state": 1819744019 },
+  "random": { "algorithm": "MULBERRY32", "version": 1, "state": 2451579689 },
   "humanPlayerId": 1,
-  "nextEntityId": 109,
-  "commandIndex": 324,
-  "round": 15,
+  "nextEntityId": 32,
+  "commandIndex": 75,
+  "round": 7,
   "activeSeatIndex": 1,
   "turnOrder": [1, 2],
   "board": {
@@ -233,7 +233,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 45
+        "territoryCityId": null
       },
       {
         "at": { "x": 5, "y": 1 },
@@ -244,18 +244,18 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 45
+        "territoryCityId": null
       },
       {
         "at": { "x": 6, "y": 1 },
         "biome": "PLAINS",
         "terrain": "GRASS",
         "resource": null,
-        "improvement": "MONUMENT",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 45
+        "territoryCityId": null
       },
       {
         "at": { "x": 7, "y": 1 },
@@ -266,7 +266,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 17
+        "territoryCityId": 28
       },
       {
         "at": { "x": 8, "y": 1 },
@@ -277,7 +277,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 17
+        "territoryCityId": 28
       },
       {
         "at": { "x": 9, "y": 1 },
@@ -288,7 +288,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 17
+        "territoryCityId": 28
       },
       {
         "at": { "x": 10, "y": 1 },
@@ -317,7 +317,7 @@
         "biome": "WOODLAND",
         "terrain": "GRASS",
         "resource": null,
-        "improvement": "MONUMENT",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
@@ -387,7 +387,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 45
+        "territoryCityId": null
       },
       {
         "at": { "x": 5, "y": 2 },
@@ -397,8 +397,8 @@
         "improvement": null,
         "road": false,
         "fieldDefense": false,
-        "site": "CITY",
-        "territoryCityId": 45
+        "site": "VILLAGE",
+        "territoryCityId": null
       },
       {
         "at": { "x": 6, "y": 2 },
@@ -409,7 +409,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 45
+        "territoryCityId": null
       },
       {
         "at": { "x": 7, "y": 2 },
@@ -420,7 +420,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 17
+        "territoryCityId": 28
       },
       {
         "at": { "x": 8, "y": 2 },
@@ -431,25 +431,25 @@
         "road": false,
         "fieldDefense": false,
         "site": "CITY",
-        "territoryCityId": 17
+        "territoryCityId": 28
       },
       {
         "at": { "x": 9, "y": 2 },
         "biome": "WOODLAND",
         "terrain": "FOREST",
         "resource": null,
-        "improvement": "LUMBER_CAMP",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 17
+        "territoryCityId": 28
       },
       {
         "at": { "x": 10, "y": 2 },
         "biome": "WOODLAND",
         "terrain": "FOREST",
         "resource": null,
-        "improvement": "LUMBER_CAMP",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
@@ -471,7 +471,7 @@
         "biome": "WOODLAND",
         "terrain": "FOREST",
         "resource": null,
-        "improvement": "LUMBER_CAMP",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
@@ -541,7 +541,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 45
+        "territoryCityId": null
       },
       {
         "at": { "x": 5, "y": 3 },
@@ -552,7 +552,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 45
+        "territoryCityId": null
       },
       {
         "at": { "x": 6, "y": 3 },
@@ -563,46 +563,46 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 45
+        "territoryCityId": null
       },
       {
         "at": { "x": 7, "y": 3 },
         "biome": "WOODLAND",
         "terrain": "FOREST",
         "resource": null,
-        "improvement": "LUMBER_CAMP",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 17
+        "territoryCityId": 28
       },
       {
         "at": { "x": 8, "y": 3 },
         "biome": "WOODLAND",
         "terrain": "FOREST",
         "resource": null,
-        "improvement": "SAWMILL",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 17
+        "territoryCityId": 28
       },
       {
         "at": { "x": 9, "y": 3 },
         "biome": "WOODLAND",
         "terrain": "FOREST",
         "resource": null,
-        "improvement": "LUMBER_CAMP",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 17
+        "territoryCityId": 28
       },
       {
         "at": { "x": 10, "y": 3 },
         "biome": "WOODLAND",
         "terrain": "GRASS",
-        "resource": null,
+        "resource": "FRUIT",
         "improvement": null,
         "road": false,
         "fieldDefense": false,
@@ -614,7 +614,7 @@
         "biome": "WOODLAND",
         "terrain": "FOREST",
         "resource": null,
-        "improvement": "SAWMILL",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
@@ -724,66 +724,66 @@
         "biome": "WOODLAND",
         "terrain": "FOREST",
         "resource": null,
-        "improvement": "LUMBER_CAMP",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 21
+        "territoryCityId": null
       },
       {
         "at": { "x": 8, "y": 4 },
         "biome": "WOODLAND",
         "terrain": "FOREST",
-        "resource": null,
-        "improvement": "LUMBER_CAMP",
+        "resource": "GAME",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 21
+        "territoryCityId": null
       },
       {
         "at": { "x": 9, "y": 4 },
         "biome": "WOODLAND",
         "terrain": "FOREST",
         "resource": null,
-        "improvement": "LUMBER_CAMP",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 21
+        "territoryCityId": null
       },
       {
         "at": { "x": 10, "y": 4 },
         "biome": "WOODLAND",
         "terrain": "FOREST",
         "resource": null,
-        "improvement": "LUMBER_CAMP",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 18
+        "territoryCityId": 24
       },
       {
         "at": { "x": 11, "y": 4 },
         "biome": "WOODLAND",
         "terrain": "FOREST",
-        "resource": null,
-        "improvement": "LUMBER_CAMP",
+        "resource": "GAME",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 18
+        "territoryCityId": 24
       },
       {
         "at": { "x": 12, "y": 4 },
         "biome": "WOODLAND",
         "terrain": "FOREST",
         "resource": null,
-        "improvement": "LUMBER_CAMP",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 18
+        "territoryCityId": 24
       },
       {
         "at": { "x": 13, "y": 4 },
@@ -805,7 +805,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 30
+        "territoryCityId": 16
       },
       {
         "at": { "x": 1, "y": 5 },
@@ -816,7 +816,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 30
+        "territoryCityId": 16
       },
       {
         "at": { "x": 2, "y": 5 },
@@ -827,7 +827,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 30
+        "territoryCityId": 16
       },
       {
         "at": { "x": 3, "y": 5 },
@@ -882,7 +882,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 21
+        "territoryCityId": null
       },
       {
         "at": { "x": 8, "y": 5 },
@@ -892,30 +892,30 @@
         "improvement": null,
         "road": false,
         "fieldDefense": false,
-        "site": "CITY",
-        "territoryCityId": 21
+        "site": "VILLAGE",
+        "territoryCityId": null
       },
       {
         "at": { "x": 9, "y": 5 },
         "biome": "WOODLAND",
         "terrain": "FOREST",
-        "resource": null,
-        "improvement": "SAWMILL",
+        "resource": "GAME",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 21
+        "territoryCityId": null
       },
       {
         "at": { "x": 10, "y": 5 },
         "biome": "WOODLAND",
         "terrain": "FOREST",
-        "resource": null,
-        "improvement": "LUMBER_CAMP",
+        "resource": "GAME",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 18
+        "territoryCityId": 24
       },
       {
         "at": { "x": 11, "y": 5 },
@@ -926,18 +926,18 @@
         "road": false,
         "fieldDefense": false,
         "site": "CITY",
-        "territoryCityId": 18
+        "territoryCityId": 24
       },
       {
         "at": { "x": 12, "y": 5 },
         "biome": "WOODLAND",
         "terrain": "FOREST",
-        "resource": null,
-        "improvement": "LUMBER_CAMP",
+        "resource": "GAME",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 18
+        "territoryCityId": 24
       },
       {
         "at": { "x": 13, "y": 5 },
@@ -959,7 +959,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 30
+        "territoryCityId": 16
       },
       {
         "at": { "x": 1, "y": 6 },
@@ -970,7 +970,7 @@
         "road": false,
         "fieldDefense": false,
         "site": "CITY",
-        "territoryCityId": 30
+        "territoryCityId": 16
       },
       {
         "at": { "x": 2, "y": 6 },
@@ -981,7 +981,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 30
+        "territoryCityId": 16
       },
       {
         "at": { "x": 3, "y": 6 },
@@ -992,7 +992,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 31
+        "territoryCityId": 17
       },
       {
         "at": { "x": 4, "y": 6 },
@@ -1003,7 +1003,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 31
+        "territoryCityId": 17
       },
       {
         "at": { "x": 5, "y": 6 },
@@ -1014,7 +1014,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 31
+        "territoryCityId": 17
       },
       {
         "at": { "x": 6, "y": 6 },
@@ -1036,18 +1036,18 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 21
+        "territoryCityId": null
       },
       {
         "at": { "x": 8, "y": 6 },
         "biome": "PLAINS",
         "terrain": "GRASS",
-        "resource": null,
+        "resource": "FRUIT",
         "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 21
+        "territoryCityId": null
       },
       {
         "at": { "x": 9, "y": 6 },
@@ -1058,18 +1058,18 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 21
+        "territoryCityId": null
       },
       {
         "at": { "x": 10, "y": 6 },
         "biome": "WOODLAND",
         "terrain": "FOREST",
         "resource": null,
-        "improvement": "LUMBER_CAMP",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 18
+        "territoryCityId": 24
       },
       {
         "at": { "x": 11, "y": 6 },
@@ -1080,7 +1080,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 18
+        "territoryCityId": 24
       },
       {
         "at": { "x": 12, "y": 6 },
@@ -1091,7 +1091,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 18
+        "territoryCityId": 24
       },
       {
         "at": { "x": 13, "y": 6 },
@@ -1113,7 +1113,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 30
+        "territoryCityId": 16
       },
       {
         "at": { "x": 1, "y": 7 },
@@ -1124,7 +1124,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 30
+        "territoryCityId": 16
       },
       {
         "at": { "x": 2, "y": 7 },
@@ -1135,18 +1135,18 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 30
+        "territoryCityId": 16
       },
       {
         "at": { "x": 3, "y": 7 },
         "biome": "PLAINS",
         "terrain": "GRASS",
         "resource": "FERTILE_GROUND",
-        "improvement": "FARM",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 31
+        "territoryCityId": 17
       },
       {
         "at": { "x": 4, "y": 7 },
@@ -1157,7 +1157,7 @@
         "road": false,
         "fieldDefense": false,
         "site": "CITY",
-        "territoryCityId": 31
+        "territoryCityId": 17
       },
       {
         "at": { "x": 5, "y": 7 },
@@ -1168,7 +1168,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 31
+        "territoryCityId": 17
       },
       {
         "at": { "x": 6, "y": 7 },
@@ -1190,7 +1190,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 64
+        "territoryCityId": null
       },
       {
         "at": { "x": 8, "y": 7 },
@@ -1201,7 +1201,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 64
+        "territoryCityId": null
       },
       {
         "at": { "x": 9, "y": 7 },
@@ -1212,7 +1212,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 64
+        "territoryCityId": null
       },
       {
         "at": { "x": 10, "y": 7 },
@@ -1223,7 +1223,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 55
+        "territoryCityId": null
       },
       {
         "at": { "x": 11, "y": 7 },
@@ -1234,7 +1234,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 55
+        "territoryCityId": null
       },
       {
         "at": { "x": 12, "y": 7 },
@@ -1245,7 +1245,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 55
+        "territoryCityId": null
       },
       {
         "at": { "x": 13, "y": 7 },
@@ -1300,7 +1300,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 31
+        "territoryCityId": 17
       },
       {
         "at": { "x": 4, "y": 8 },
@@ -1311,7 +1311,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 31
+        "territoryCityId": 17
       },
       {
         "at": { "x": 5, "y": 8 },
@@ -1322,7 +1322,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 31
+        "territoryCityId": 17
       },
       {
         "at": { "x": 6, "y": 8 },
@@ -1344,7 +1344,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 64
+        "territoryCityId": null
       },
       {
         "at": { "x": 8, "y": 8 },
@@ -1354,8 +1354,8 @@
         "improvement": null,
         "road": false,
         "fieldDefense": false,
-        "site": "CITY",
-        "territoryCityId": 64
+        "site": "VILLAGE",
+        "territoryCityId": null
       },
       {
         "at": { "x": 9, "y": 8 },
@@ -1366,7 +1366,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 64
+        "territoryCityId": null
       },
       {
         "at": { "x": 10, "y": 8 },
@@ -1377,7 +1377,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 55
+        "territoryCityId": null
       },
       {
         "at": { "x": 11, "y": 8 },
@@ -1387,8 +1387,8 @@
         "improvement": null,
         "road": false,
         "fieldDefense": false,
-        "site": "CITY",
-        "territoryCityId": 55
+        "site": "VILLAGE",
+        "territoryCityId": null
       },
       {
         "at": { "x": 12, "y": 8 },
@@ -1399,7 +1399,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 55
+        "territoryCityId": null
       },
       {
         "at": { "x": 13, "y": 8 },
@@ -1421,7 +1421,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 39
+        "territoryCityId": 25
       },
       {
         "at": { "x": 1, "y": 9 },
@@ -1432,7 +1432,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 39
+        "territoryCityId": 25
       },
       {
         "at": { "x": 2, "y": 9 },
@@ -1443,7 +1443,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 39
+        "territoryCityId": 25
       },
       {
         "at": { "x": 3, "y": 9 },
@@ -1498,7 +1498,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 64
+        "territoryCityId": null
       },
       {
         "at": { "x": 8, "y": 9 },
@@ -1509,18 +1509,18 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 64
+        "territoryCityId": null
       },
       {
         "at": { "x": 9, "y": 9 },
         "biome": "HIGHLANDS",
         "terrain": "GRASS",
         "resource": null,
-        "improvement": "MONUMENT",
+        "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 64
+        "territoryCityId": null
       },
       {
         "at": { "x": 10, "y": 9 },
@@ -1531,7 +1531,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 55
+        "territoryCityId": null
       },
       {
         "at": { "x": 11, "y": 9 },
@@ -1542,7 +1542,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 55
+        "territoryCityId": null
       },
       {
         "at": { "x": 12, "y": 9 },
@@ -1553,7 +1553,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 55
+        "territoryCityId": null
       },
       {
         "at": { "x": 13, "y": 9 },
@@ -1575,7 +1575,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 39
+        "territoryCityId": 25
       },
       {
         "at": { "x": 1, "y": 10 },
@@ -1586,18 +1586,18 @@
         "road": false,
         "fieldDefense": false,
         "site": "CITY",
-        "territoryCityId": 39
+        "territoryCityId": 25
       },
       {
         "at": { "x": 2, "y": 10 },
         "biome": "PLAINS",
         "terrain": "GRASS",
-        "resource": null,
+        "resource": "FRUIT",
         "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 39
+        "territoryCityId": 25
       },
       {
         "at": { "x": 3, "y": 10 },
@@ -1685,7 +1685,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 89
+        "territoryCityId": null
       },
       {
         "at": { "x": 11, "y": 10 },
@@ -1696,7 +1696,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 89
+        "territoryCityId": null
       },
       {
         "at": { "x": 12, "y": 10 },
@@ -1707,7 +1707,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 89
+        "territoryCityId": null
       },
       {
         "at": { "x": 13, "y": 10 },
@@ -1729,7 +1729,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 39
+        "territoryCityId": 25
       },
       {
         "at": { "x": 1, "y": 11 },
@@ -1740,18 +1740,18 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 39
+        "territoryCityId": 25
       },
       {
         "at": { "x": 2, "y": 11 },
         "biome": "PLAINS",
         "terrain": "GRASS",
-        "resource": null,
+        "resource": "FRUIT",
         "improvement": null,
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 39
+        "territoryCityId": 25
       },
       {
         "at": { "x": 3, "y": 11 },
@@ -1768,7 +1768,7 @@
         "at": { "x": 4, "y": 11 },
         "biome": "PLAINS",
         "terrain": "FOREST",
-        "resource": null,
+        "resource": "GAME",
         "improvement": null,
         "road": false,
         "fieldDefense": false,
@@ -1839,7 +1839,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 89
+        "territoryCityId": null
       },
       {
         "at": { "x": 11, "y": 11 },
@@ -1849,8 +1849,8 @@
         "improvement": null,
         "road": false,
         "fieldDefense": false,
-        "site": "CITY",
-        "territoryCityId": 89
+        "site": "VILLAGE",
+        "territoryCityId": null
       },
       {
         "at": { "x": 12, "y": 11 },
@@ -1861,7 +1861,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 89
+        "territoryCityId": null
       },
       {
         "at": { "x": 13, "y": 11 },
@@ -1993,7 +1993,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 89
+        "territoryCityId": null
       },
       {
         "at": { "x": 11, "y": 12 },
@@ -2004,7 +2004,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 89
+        "territoryCityId": null
       },
       {
         "at": { "x": 12, "y": 12 },
@@ -2015,7 +2015,7 @@
         "road": false,
         "fieldDefense": false,
         "site": null,
-        "territoryCityId": 89
+        "territoryCityId": null
       },
       {
         "at": { "x": 13, "y": 12 },
@@ -2190,28 +2190,12 @@
       "seat": 0,
       "controller": "HUMAN",
       "color": "CORAL",
-      "faction": "GOBLIN",
-      "factionTreeId": "GOBLIN_BASELINE_V1",
+      "faction": "ORIGINAL",
+      "factionTreeId": "ORIGINAL_BASELINE_V5",
       "status": "ACTIVE",
-      "coins": 0,
-      "researchedTechs": [
-        "GATHERING",
-        "ADMINISTRATION",
-        "HUNTING",
-        "FORESTRY",
-        "SAWMILLING",
-        "MARKSMANSHIP",
-        "SCOUTING",
-        "RAIDING",
-        "CHIVALRY",
-        "DRILL"
-      ],
+      "coins": 5,
+      "researchedTechs": ["HUNTING", "MARKSMANSHIP"],
       "explored": [
-        { "x": 0, "y": 0 },
-        { "x": 1, "y": 0 },
-        { "x": 2, "y": 0 },
-        { "x": 3, "y": 0 },
-        { "x": 4, "y": 0 },
         { "x": 5, "y": 0 },
         { "x": 6, "y": 0 },
         { "x": 7, "y": 0 },
@@ -2221,11 +2205,6 @@
         { "x": 11, "y": 0 },
         { "x": 12, "y": 0 },
         { "x": 13, "y": 0 },
-        { "x": 0, "y": 1 },
-        { "x": 1, "y": 1 },
-        { "x": 2, "y": 1 },
-        { "x": 3, "y": 1 },
-        { "x": 4, "y": 1 },
         { "x": 5, "y": 1 },
         { "x": 6, "y": 1 },
         { "x": 7, "y": 1 },
@@ -2235,11 +2214,6 @@
         { "x": 11, "y": 1 },
         { "x": 12, "y": 1 },
         { "x": 13, "y": 1 },
-        { "x": 0, "y": 2 },
-        { "x": 1, "y": 2 },
-        { "x": 2, "y": 2 },
-        { "x": 3, "y": 2 },
-        { "x": 4, "y": 2 },
         { "x": 5, "y": 2 },
         { "x": 6, "y": 2 },
         { "x": 7, "y": 2 },
@@ -2249,11 +2223,6 @@
         { "x": 11, "y": 2 },
         { "x": 12, "y": 2 },
         { "x": 13, "y": 2 },
-        { "x": 0, "y": 3 },
-        { "x": 1, "y": 3 },
-        { "x": 2, "y": 3 },
-        { "x": 3, "y": 3 },
-        { "x": 4, "y": 3 },
         { "x": 5, "y": 3 },
         { "x": 6, "y": 3 },
         { "x": 7, "y": 3 },
@@ -2263,11 +2232,6 @@
         { "x": 11, "y": 3 },
         { "x": 12, "y": 3 },
         { "x": 13, "y": 3 },
-        { "x": 0, "y": 4 },
-        { "x": 1, "y": 4 },
-        { "x": 2, "y": 4 },
-        { "x": 3, "y": 4 },
-        { "x": 4, "y": 4 },
         { "x": 5, "y": 4 },
         { "x": 6, "y": 4 },
         { "x": 7, "y": 4 },
@@ -2277,11 +2241,6 @@
         { "x": 11, "y": 4 },
         { "x": 12, "y": 4 },
         { "x": 13, "y": 4 },
-        { "x": 0, "y": 5 },
-        { "x": 1, "y": 5 },
-        { "x": 2, "y": 5 },
-        { "x": 3, "y": 5 },
-        { "x": 4, "y": 5 },
         { "x": 5, "y": 5 },
         { "x": 6, "y": 5 },
         { "x": 7, "y": 5 },
@@ -2290,60 +2249,17 @@
         { "x": 10, "y": 5 },
         { "x": 11, "y": 5 },
         { "x": 12, "y": 5 },
-        { "x": 13, "y": 5 },
-        { "x": 2, "y": 6 },
-        { "x": 3, "y": 6 },
-        { "x": 4, "y": 6 },
-        { "x": 5, "y": 6 },
-        { "x": 6, "y": 6 },
-        { "x": 7, "y": 6 },
-        { "x": 8, "y": 6 },
-        { "x": 9, "y": 6 },
         { "x": 10, "y": 6 },
         { "x": 11, "y": 6 },
-        { "x": 12, "y": 6 },
-        { "x": 13, "y": 6 },
-        { "x": 5, "y": 7 },
-        { "x": 6, "y": 7 },
-        { "x": 7, "y": 7 },
-        { "x": 8, "y": 7 },
-        { "x": 9, "y": 7 },
-        { "x": 10, "y": 7 },
-        { "x": 11, "y": 7 },
-        { "x": 12, "y": 7 },
-        { "x": 5, "y": 8 },
-        { "x": 6, "y": 8 },
-        { "x": 7, "y": 8 },
-        { "x": 8, "y": 8 },
-        { "x": 9, "y": 8 },
-        { "x": 10, "y": 8 },
-        { "x": 11, "y": 8 },
-        { "x": 12, "y": 8 },
-        { "x": 5, "y": 9 },
-        { "x": 6, "y": 9 },
-        { "x": 7, "y": 9 },
-        { "x": 8, "y": 9 },
-        { "x": 9, "y": 9 },
-        { "x": 10, "y": 9 },
-        { "x": 11, "y": 9 },
-        { "x": 12, "y": 9 },
-        { "x": 10, "y": 10 },
-        { "x": 11, "y": 10 },
-        { "x": 12, "y": 10 },
-        { "x": 10, "y": 11 },
-        { "x": 11, "y": 11 },
-        { "x": 12, "y": 11 },
-        { "x": 10, "y": 12 },
-        { "x": 11, "y": 12 },
-        { "x": 12, "y": 12 }
+        { "x": 12, "y": 6 }
       ],
       "spoilsClaimedCityIds": [],
       "achievementEntitlements": [
-        { "achievement": "EXPLORER", "unlocked": true, "spent": true },
+        { "achievement": "EXPLORER", "unlocked": false, "spent": false },
         { "achievement": "ENGINEER", "unlocked": false, "spent": false },
-        { "achievement": "MUSTER", "unlocked": true, "spent": true },
+        { "achievement": "MUSTER", "unlocked": false, "spent": false },
         { "achievement": "CONQUEROR", "unlocked": false, "spent": false },
-        { "achievement": "LAND_BARON", "unlocked": true, "spent": true },
+        { "achievement": "LAND_BARON", "unlocked": false, "spent": false },
         { "achievement": "SEA_DOG", "unlocked": false, "spent": false },
         { "achievement": "SLAYER", "unlocked": false, "spent": false }
       ],
@@ -2354,56 +2270,17 @@
       "seat": 1,
       "controller": "AI",
       "color": "TEAL",
-      "faction": "ORIGINAL",
-      "factionTreeId": "ORIGINAL_BASELINE_V5",
+      "faction": "UNDEAD",
+      "factionTreeId": "UNDEAD_BASELINE_V1",
       "status": "ACTIVE",
-      "coins": 15,
-      "researchedTechs": [
-        "GATHERING",
-        "FARMING",
-        "HUNTING",
-        "MARKSMANSHIP",
-        "DRILL"
-      ],
+      "coins": 9,
+      "researchedTechs": ["GATHERING", "FARMING"],
       "explored": [
-        { "x": 0, "y": 0 },
-        { "x": 1, "y": 0 },
-        { "x": 2, "y": 0 },
-        { "x": 3, "y": 0 },
-        { "x": 4, "y": 0 },
-        { "x": 0, "y": 1 },
-        { "x": 1, "y": 1 },
-        { "x": 2, "y": 1 },
-        { "x": 3, "y": 1 },
-        { "x": 4, "y": 1 },
-        { "x": 0, "y": 2 },
-        { "x": 1, "y": 2 },
-        { "x": 2, "y": 2 },
-        { "x": 3, "y": 2 },
-        { "x": 4, "y": 2 },
-        { "x": 5, "y": 2 },
-        { "x": 6, "y": 2 },
-        { "x": 7, "y": 2 },
-        { "x": 0, "y": 3 },
-        { "x": 1, "y": 3 },
-        { "x": 2, "y": 3 },
-        { "x": 3, "y": 3 },
-        { "x": 4, "y": 3 },
-        { "x": 5, "y": 3 },
-        { "x": 6, "y": 3 },
-        { "x": 7, "y": 3 },
         { "x": 0, "y": 4 },
         { "x": 1, "y": 4 },
-        { "x": 2, "y": 4 },
-        { "x": 3, "y": 4 },
-        { "x": 4, "y": 4 },
-        { "x": 5, "y": 4 },
-        { "x": 6, "y": 4 },
-        { "x": 7, "y": 4 },
         { "x": 0, "y": 5 },
         { "x": 1, "y": 5 },
         { "x": 2, "y": 5 },
-        { "x": 3, "y": 5 },
         { "x": 4, "y": 5 },
         { "x": 5, "y": 5 },
         { "x": 6, "y": 5 },
@@ -2449,8 +2326,6 @@
         { "x": 4, "y": 11 },
         { "x": 5, "y": 11 },
         { "x": 6, "y": 11 },
-        { "x": 0, "y": 12 },
-        { "x": 1, "y": 12 },
         { "x": 2, "y": 12 },
         { "x": 3, "y": 12 },
         { "x": 4, "y": 12 },
@@ -2475,29 +2350,24 @@
       "id": 1,
       "ownerId": 1,
       "at": { "x": 11, "y": 2 },
-      "level": 5,
-      "permanentPopulation": 8,
-      "economicPopulation": 10,
-      "population": 4,
+      "level": 2,
+      "permanentPopulation": 4,
+      "economicPopulation": 0,
+      "population": 2,
       "isCapital": true,
       "expanded": false,
       "landGrantUsed": false,
       "cityActionAvailable": true,
-      "rewards": [
-        { "reachedLevel": 2, "reward": "SURVEY" },
-        { "reachedLevel": 3, "reward": "WALLS" },
-        { "reachedLevel": 4, "reward": "BOOM" },
-        { "reachedLevel": 5, "reward": "TREASURY" }
-      ]
+      "rewards": [{ "reachedLevel": 2, "reward": "STOCKPILE" }]
     },
     {
       "id": 3,
       "ownerId": 2,
       "at": { "x": 4, "y": 10 },
       "level": 3,
-      "permanentPopulation": 4,
+      "permanentPopulation": 3,
       "economicPopulation": 2,
-      "population": 1,
+      "population": 0,
       "isCapital": true,
       "expanded": false,
       "landGrantUsed": false,
@@ -2508,61 +2378,7 @@
       ]
     },
     {
-      "id": 17,
-      "ownerId": 1,
-      "at": { "x": 8, "y": 2 },
-      "level": 4,
-      "permanentPopulation": 2,
-      "economicPopulation": 9,
-      "population": 2,
-      "isCapital": false,
-      "expanded": false,
-      "landGrantUsed": false,
-      "cityActionAvailable": false,
-      "rewards": [
-        { "reachedLevel": 2, "reward": "STOCKPILE" },
-        { "reachedLevel": 3, "reward": "MILITIA" },
-        { "reachedLevel": 4, "reward": "TREASURY_6" }
-      ]
-    },
-    {
-      "id": 18,
-      "ownerId": 1,
-      "at": { "x": 11, "y": 5 },
-      "level": 4,
-      "permanentPopulation": 3,
-      "economicPopulation": 6,
-      "population": 0,
-      "isCapital": false,
-      "expanded": false,
-      "landGrantUsed": false,
-      "cityActionAvailable": true,
-      "rewards": [
-        { "reachedLevel": 2, "reward": "STOCKPILE" },
-        { "reachedLevel": 3, "reward": "MILITIA" },
-        { "reachedLevel": 4, "reward": "TREASURY_6" }
-      ]
-    },
-    {
-      "id": 21,
-      "ownerId": 1,
-      "at": { "x": 8, "y": 5 },
-      "level": 4,
-      "permanentPopulation": 3,
-      "economicPopulation": 8,
-      "population": 2,
-      "isCapital": false,
-      "expanded": false,
-      "landGrantUsed": false,
-      "cityActionAvailable": true,
-      "rewards": [
-        { "reachedLevel": 2, "reward": "STOCKPILE" },
-        { "reachedLevel": 3, "reward": "WALLS" },
-        { "reachedLevel": 4, "reward": "TREASURY_6" }
-      ]
-    },
-    {
-      "id": 30,
+      "id": 16,
       "ownerId": 2,
       "at": { "x": 1, "y": 6 },
       "level": 2,
@@ -2576,58 +2392,41 @@
       "rewards": [{ "reachedLevel": 2, "reward": "STOCKPILE" }]
     },
     {
-      "id": 31,
+      "id": 17,
       "ownerId": 2,
       "at": { "x": 4, "y": 7 },
-      "level": 3,
+      "level": 2,
       "permanentPopulation": 3,
-      "economicPopulation": 2,
+      "economicPopulation": 0,
+      "population": 1,
+      "isCapital": false,
+      "expanded": false,
+      "landGrantUsed": false,
+      "cityActionAvailable": true,
+      "rewards": [{ "reachedLevel": 2, "reward": "STOCKPILE" }]
+    },
+    {
+      "id": 24,
+      "ownerId": 1,
+      "at": { "x": 11, "y": 5 },
+      "level": 1,
+      "permanentPopulation": 0,
+      "economicPopulation": 0,
       "population": 0,
       "isCapital": false,
       "expanded": false,
       "landGrantUsed": false,
       "cityActionAvailable": true,
-      "rewards": [
-        { "reachedLevel": 2, "reward": "STOCKPILE" },
-        { "reachedLevel": 3, "reward": "MILITIA" }
-      ]
+      "rewards": []
     },
     {
-      "id": 39,
+      "id": 25,
       "ownerId": 2,
       "at": { "x": 1, "y": 10 },
-      "level": 2,
-      "permanentPopulation": 3,
-      "economicPopulation": 0,
-      "population": 1,
-      "isCapital": false,
-      "expanded": false,
-      "landGrantUsed": false,
-      "cityActionAvailable": true,
-      "rewards": [{ "reachedLevel": 2, "reward": "STOCKPILE" }]
-    },
-    {
-      "id": 45,
-      "ownerId": 1,
-      "at": { "x": 5, "y": 2 },
-      "level": 2,
-      "permanentPopulation": 0,
-      "economicPopulation": 3,
-      "population": 1,
-      "isCapital": false,
-      "expanded": false,
-      "landGrantUsed": false,
-      "cityActionAvailable": true,
-      "rewards": [{ "reachedLevel": 2, "reward": "STOCKPILE" }]
-    },
-    {
-      "id": 55,
-      "ownerId": 1,
-      "at": { "x": 11, "y": 8 },
       "level": 1,
-      "permanentPopulation": 0,
+      "permanentPopulation": 1,
       "economicPopulation": 0,
-      "population": 0,
+      "population": 1,
       "isCapital": false,
       "expanded": false,
       "landGrantUsed": false,
@@ -2635,32 +2434,18 @@
       "rewards": []
     },
     {
-      "id": 64,
+      "id": 28,
       "ownerId": 1,
-      "at": { "x": 8, "y": 8 },
+      "at": { "x": 8, "y": 2 },
       "level": 2,
-      "permanentPopulation": 0,
-      "economicPopulation": 3,
-      "population": 1,
-      "isCapital": false,
-      "expanded": false,
-      "landGrantUsed": false,
-      "cityActionAvailable": true,
-      "rewards": [{ "reachedLevel": 2, "reward": "STOCKPILE" }]
-    },
-    {
-      "id": 89,
-      "ownerId": 1,
-      "at": { "x": 11, "y": 11 },
-      "level": 1,
-      "permanentPopulation": 0,
+      "permanentPopulation": 2,
       "economicPopulation": 0,
       "population": 0,
       "isCapital": false,
       "expanded": false,
       "landGrantUsed": false,
-      "cityActionAvailable": true,
-      "rewards": []
+      "cityActionAvailable": false,
+      "rewards": [{ "reachedLevel": 2, "reward": "SURVEY" }]
     }
   ],
   "populationContributions": [
@@ -2672,7 +2457,7 @@
       "source": {
         "kind": "RESOURCE_ACTION",
         "action": "HUNT_GAME",
-        "at": { "x": 10, "y": 2 }
+        "at": { "x": 10, "y": 1 }
       }
     },
     {
@@ -2683,7 +2468,29 @@
       "source": {
         "kind": "RESOURCE_ACTION",
         "action": "HUNT_GAME",
+        "at": { "x": 10, "y": 2 }
+      }
+    },
+    {
+      "id": 7,
+      "cityId": 1,
+      "category": "PERMANENT",
+      "amount": 1,
+      "source": {
+        "kind": "RESOURCE_ACTION",
+        "action": "HUNT_GAME",
         "at": { "x": 12, "y": 2 }
+      }
+    },
+    {
+      "id": 8,
+      "cityId": 1,
+      "category": "PERMANENT",
+      "amount": 1,
+      "source": {
+        "kind": "RESOURCE_ACTION",
+        "action": "HUNT_GAME",
+        "at": { "x": 12, "y": 3 }
       }
     },
     {
@@ -2720,118 +2527,8 @@
       }
     },
     {
-      "id": 13,
-      "cityId": 1,
-      "category": "PERMANENT",
-      "amount": 1,
-      "source": {
-        "kind": "RESOURCE_ACTION",
-        "action": "HUNT_GAME",
-        "at": { "x": 10, "y": 1 }
-      }
-    },
-    {
-      "id": 16,
-      "cityId": 1,
-      "category": "PERMANENT",
-      "amount": 1,
-      "source": {
-        "kind": "RESOURCE_ACTION",
-        "action": "HUNT_GAME",
-        "at": { "x": 12, "y": 3 }
-      }
-    },
-    {
-      "id": 20,
-      "cityId": 3,
-      "category": "PERMANENT",
-      "amount": 1,
-      "source": {
-        "kind": "RESOURCE_ACTION",
-        "action": "HUNT_GAME",
-        "at": { "x": 4, "y": 11 }
-      }
-    },
-    {
-      "id": 22,
-      "cityId": 17,
-      "category": "PERMANENT",
-      "amount": 1,
-      "source": {
-        "kind": "RESOURCE_ACTION",
-        "action": "HUNT_GAME",
-        "at": { "x": 8, "y": 1 }
-      }
-    },
-    {
-      "id": 23,
-      "cityId": 17,
-      "category": "PERMANENT",
-      "amount": 1,
-      "source": {
-        "kind": "RESOURCE_ACTION",
-        "action": "HUNT_GAME",
-        "at": { "x": 9, "y": 2 }
-      }
-    },
-    {
-      "id": 24,
-      "cityId": 18,
-      "category": "PERMANENT",
-      "amount": 1,
-      "source": {
-        "kind": "RESOURCE_ACTION",
-        "action": "HUNT_GAME",
-        "at": { "x": 11, "y": 4 }
-      }
-    },
-    {
-      "id": 25,
-      "cityId": 18,
-      "category": "PERMANENT",
-      "amount": 1,
-      "source": {
-        "kind": "RESOURCE_ACTION",
-        "action": "HUNT_GAME",
-        "at": { "x": 10, "y": 5 }
-      }
-    },
-    {
-      "id": 26,
-      "cityId": 21,
-      "category": "PERMANENT",
-      "amount": 1,
-      "source": {
-        "kind": "RESOURCE_ACTION",
-        "action": "HUNT_GAME",
-        "at": { "x": 8, "y": 4 }
-      }
-    },
-    {
-      "id": 27,
-      "cityId": 21,
-      "category": "PERMANENT",
-      "amount": 1,
-      "source": {
-        "kind": "RESOURCE_ACTION",
-        "action": "HUNT_GAME",
-        "at": { "x": 9, "y": 5 }
-      }
-    },
-    {
-      "id": 28,
-      "cityId": 1,
-      "category": "PERMANENT",
-      "amount": 1,
-      "source": {
-        "kind": "RESOURCE_ACTION",
-        "action": "HARVEST_FRUIT",
-        "at": { "x": 10, "y": 3 }
-      }
-    },
-    {
-      "id": 32,
-      "cityId": 30,
+      "id": 18,
+      "cityId": 16,
       "category": "PERMANENT",
       "amount": 1,
       "source": {
@@ -2841,8 +2538,8 @@
       }
     },
     {
-      "id": 33,
-      "cityId": 30,
+      "id": 19,
+      "cityId": 16,
       "category": "PERMANENT",
       "amount": 1,
       "source": {
@@ -2852,8 +2549,8 @@
       }
     },
     {
-      "id": 34,
-      "cityId": 31,
+      "id": 20,
+      "cityId": 17,
       "category": "PERMANENT",
       "amount": 1,
       "source": {
@@ -2863,8 +2560,8 @@
       }
     },
     {
-      "id": 35,
-      "cityId": 31,
+      "id": 21,
+      "cityId": 17,
       "category": "PERMANENT",
       "amount": 1,
       "source": {
@@ -2874,8 +2571,8 @@
       }
     },
     {
-      "id": 36,
-      "cityId": 30,
+      "id": 22,
+      "cityId": 16,
       "category": "PERMANENT",
       "amount": 1,
       "source": {
@@ -2885,8 +2582,8 @@
       }
     },
     {
-      "id": 37,
-      "cityId": 31,
+      "id": 23,
+      "cityId": 17,
       "category": "PERMANENT",
       "amount": 1,
       "source": {
@@ -2896,294 +2593,7 @@
       }
     },
     {
-      "id": 38,
-      "cityId": 18,
-      "category": "PERMANENT",
-      "amount": 1,
-      "source": {
-        "kind": "RESOURCE_ACTION",
-        "action": "HUNT_GAME",
-        "at": { "x": 12, "y": 5 }
-      }
-    },
-    {
-      "id": 40,
-      "cityId": 39,
-      "category": "PERMANENT",
-      "amount": 1,
-      "source": {
-        "kind": "RESOURCE_ACTION",
-        "action": "HARVEST_FRUIT",
-        "at": { "x": 1, "y": 9 }
-      }
-    },
-    {
-      "id": 41,
-      "cityId": 39,
-      "category": "PERMANENT",
-      "amount": 1,
-      "source": {
-        "kind": "RESOURCE_ACTION",
-        "action": "HARVEST_FRUIT",
-        "at": { "x": 2, "y": 10 }
-      }
-    },
-    {
-      "id": 42,
-      "cityId": 39,
-      "category": "PERMANENT",
-      "amount": 1,
-      "source": {
-        "kind": "RESOURCE_ACTION",
-        "action": "HARVEST_FRUIT",
-        "at": { "x": 2, "y": 11 }
-      }
-    },
-    {
-      "id": 46,
-      "cityId": 21,
-      "category": "PERMANENT",
-      "amount": 1,
-      "source": {
-        "kind": "RESOURCE_ACTION",
-        "action": "HARVEST_FRUIT",
-        "at": { "x": 8, "y": 6 }
-      }
-    },
-    {
-      "id": 47,
-      "cityId": 18,
-      "category": "LIVE",
-      "amount": 1,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "LUMBER_CAMP",
-        "at": { "x": 10, "y": 4 }
-      }
-    },
-    {
-      "id": 48,
-      "cityId": 18,
-      "category": "LIVE",
-      "amount": 1,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "LUMBER_CAMP",
-        "at": { "x": 12, "y": 4 }
-      }
-    },
-    {
-      "id": 51,
-      "cityId": 1,
-      "category": "LIVE",
-      "amount": 3,
-      "source": {
-        "kind": "MONUMENT",
-        "achievement": "LAND_BARON",
-        "at": { "x": 12, "y": 1 }
-      }
-    },
-    {
-      "id": 56,
-      "cityId": 1,
-      "category": "LIVE",
-      "amount": 1,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "LUMBER_CAMP",
-        "at": { "x": 10, "y": 2 }
-      }
-    },
-    {
-      "id": 57,
-      "cityId": 1,
-      "category": "LIVE",
-      "amount": 1,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "LUMBER_CAMP",
-        "at": { "x": 12, "y": 2 }
-      }
-    },
-    {
-      "id": 58,
-      "cityId": 1,
-      "category": "PERMANENT",
-      "amount": 3,
-      "source": {
-        "kind": "CITY_REWARD",
-        "reward": "BOOM",
-        "reachedLevel": 4,
-        "at": { "x": 11, "y": 2 }
-      }
-    },
-    {
-      "id": 59,
-      "cityId": 21,
-      "category": "LIVE",
-      "amount": 1,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "LUMBER_CAMP",
-        "at": { "x": 8, "y": 4 }
-      }
-    },
-    {
-      "id": 60,
-      "cityId": 21,
-      "category": "LIVE",
-      "amount": 1,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "LUMBER_CAMP",
-        "at": { "x": 9, "y": 4 }
-      }
-    },
-    {
-      "id": 66,
-      "cityId": 17,
-      "category": "LIVE",
-      "amount": 1,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "LUMBER_CAMP",
-        "at": { "x": 9, "y": 2 }
-      }
-    },
-    {
-      "id": 67,
-      "cityId": 17,
-      "category": "LIVE",
-      "amount": 1,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "LUMBER_CAMP",
-        "at": { "x": 9, "y": 3 }
-      }
-    },
-    {
-      "id": 68,
-      "cityId": 17,
-      "category": "LIVE",
-      "amount": 1,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "LUMBER_CAMP",
-        "at": { "x": 7, "y": 3 }
-      }
-    },
-    {
-      "id": 73,
-      "cityId": 17,
-      "category": "LIVE",
-      "amount": 6,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "SAWMILL",
-        "at": { "x": 8, "y": 3 }
-      }
-    },
-    {
-      "id": 74,
-      "cityId": 1,
-      "category": "LIVE",
-      "amount": 5,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "SAWMILL",
-        "at": { "x": 11, "y": 3 }
-      }
-    },
-    {
-      "id": 80,
-      "cityId": 21,
-      "category": "LIVE",
-      "amount": 1,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "LUMBER_CAMP",
-        "at": { "x": 7, "y": 4 }
-      }
-    },
-    {
-      "id": 81,
-      "cityId": 21,
-      "category": "LIVE",
-      "amount": 5,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "SAWMILL",
-        "at": { "x": 9, "y": 5 }
-      }
-    },
-    {
-      "id": 82,
-      "cityId": 18,
-      "category": "LIVE",
-      "amount": 1,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "LUMBER_CAMP",
-        "at": { "x": 10, "y": 5 }
-      }
-    },
-    {
-      "id": 83,
-      "cityId": 18,
-      "category": "LIVE",
-      "amount": 1,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "LUMBER_CAMP",
-        "at": { "x": 10, "y": 6 }
-      }
-    },
-    {
-      "id": 84,
-      "cityId": 18,
-      "category": "LIVE",
-      "amount": 1,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "LUMBER_CAMP",
-        "at": { "x": 11, "y": 4 }
-      }
-    },
-    {
-      "id": 85,
-      "cityId": 18,
-      "category": "LIVE",
-      "amount": 1,
-      "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "LUMBER_CAMP",
-        "at": { "x": 12, "y": 5 }
-      }
-    },
-    {
-      "id": 90,
-      "cityId": 45,
-      "category": "LIVE",
-      "amount": 3,
-      "source": {
-        "kind": "MONUMENT",
-        "achievement": "EXPLORER",
-        "at": { "x": 6, "y": 1 }
-      }
-    },
-    {
-      "id": 96,
-      "cityId": 64,
-      "category": "LIVE",
-      "amount": 3,
-      "source": {
-        "kind": "MONUMENT",
-        "achievement": "MUSTER",
-        "at": { "x": 9, "y": 9 }
-      }
-    },
-    {
-      "id": 101,
+      "id": 26,
       "cityId": 3,
       "category": "LIVE",
       "amount": 2,
@@ -3194,14 +2604,36 @@
       }
     },
     {
-      "id": 106,
-      "cityId": 31,
-      "category": "LIVE",
-      "amount": 2,
+      "id": 27,
+      "cityId": 25,
+      "category": "PERMANENT",
+      "amount": 1,
       "source": {
-        "kind": "IMPROVEMENT",
-        "improvement": "FARM",
-        "at": { "x": 3, "y": 7 }
+        "kind": "RESOURCE_ACTION",
+        "action": "HARVEST_FRUIT",
+        "at": { "x": 1, "y": 9 }
+      }
+    },
+    {
+      "id": 29,
+      "cityId": 28,
+      "category": "PERMANENT",
+      "amount": 1,
+      "source": {
+        "kind": "RESOURCE_ACTION",
+        "action": "HUNT_GAME",
+        "at": { "x": 8, "y": 1 }
+      }
+    },
+    {
+      "id": 30,
+      "cityId": 28,
+      "category": "PERMANENT",
+      "amount": 1,
+      "source": {
+        "kind": "RESOURCE_ACTION",
+        "action": "HUNT_GAME",
+        "at": { "x": 9, "y": 2 }
       }
     }
   ],
@@ -3209,12 +2641,39 @@
     {
       "id": 2,
       "ownerId": 1,
-      "homeCityId": 89,
+      "homeCityId": 1,
       "role": "FIGHTER",
       "form": "LAND",
-      "at": { "x": 11, "y": 11 },
-      "hp": 6,
-      "maxHp": 6,
+      "at": { "x": 6, "y": 1 },
+      "hp": 12,
+      "maxHp": 12,
+      "kills": 0,
+      "veteran": false,
+      "captureEligible": false,
+      "activation": {
+        "moved": true,
+        "movedPathLength": 1,
+        "attacked": false,
+        "attacksUsed": 0,
+        "tendedThisTurn": false,
+        "inspired": false,
+        "overrunActive": false,
+        "escapeAvailable": false,
+        "recovered": false,
+        "captured": false,
+        "handled": true,
+        "specialActed": false
+      }
+    },
+    {
+      "id": 4,
+      "ownerId": 2,
+      "homeCityId": 16,
+      "role": "FIGHTER",
+      "form": "LAND",
+      "at": { "x": 0, "y": 5 },
+      "hp": 10,
+      "maxHp": 10,
       "kills": 0,
       "veteran": false,
       "captureEligible": false,
@@ -3229,25 +2688,52 @@
         "escapeAvailable": false,
         "recovered": false,
         "captured": false,
-        "handled": true,
+        "handled": false,
         "specialActed": false
       }
     },
     {
-      "id": 7,
-      "ownerId": 1,
-      "homeCityId": 45,
-      "role": "RAIDER",
+      "id": 12,
+      "ownerId": 2,
+      "homeCityId": 17,
+      "role": "FIGHTER",
       "form": "LAND",
-      "at": { "x": 2, "y": 3 },
+      "at": { "x": 5, "y": 6 },
       "hp": 10,
       "maxHp": 10,
-      "kills": 2,
+      "kills": 0,
+      "veteran": false,
+      "captureEligible": false,
+      "activation": {
+        "moved": false,
+        "movedPathLength": 0,
+        "attacked": false,
+        "attacksUsed": 0,
+        "tendedThisTurn": false,
+        "inspired": false,
+        "overrunActive": false,
+        "escapeAvailable": false,
+        "recovered": false,
+        "captured": false,
+        "handled": false,
+        "specialActed": false
+      }
+    },
+    {
+      "id": 13,
+      "ownerId": 1,
+      "homeCityId": 24,
+      "role": "FIGHTER",
+      "form": "LAND",
+      "at": { "x": 10, "y": 4 },
+      "hp": 12,
+      "maxHp": 12,
+      "kills": 0,
       "veteran": false,
       "captureEligible": false,
       "activation": {
         "moved": true,
-        "movedPathLength": 2,
+        "movedPathLength": 1,
         "attacked": false,
         "attacksUsed": 0,
         "tendedThisTurn": false,
@@ -3262,800 +2748,17 @@
     },
     {
       "id": 14,
-      "ownerId": 1,
-      "homeCityId": 1,
-      "role": "FIGHTER",
-      "form": "LAND",
-      "at": { "x": 11, "y": 8 },
-      "hp": 6,
-      "maxHp": 6,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 15,
       "ownerId": 2,
-      "homeCityId": 39,
+      "homeCityId": 25,
       "role": "FIGHTER",
-      "form": "LAND",
-      "at": { "x": 2, "y": 5 },
-      "hp": 12,
-      "maxHp": 12,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": false,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 19,
-      "ownerId": 1,
-      "homeCityId": 1,
-      "role": "FIGHTER",
-      "form": "LAND",
-      "at": { "x": 11, "y": 2 },
-      "hp": 6,
-      "maxHp": 6,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 49,
-      "ownerId": 1,
-      "homeCityId": 18,
-      "role": "FIGHTER",
-      "form": "LAND",
-      "at": { "x": 7, "y": 6 },
-      "hp": 6,
-      "maxHp": 6,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 50,
-      "ownerId": 1,
-      "homeCityId": 18,
-      "role": "FIGHTER",
-      "form": "LAND",
-      "at": { "x": 6, "y": 6 },
-      "hp": 6,
-      "maxHp": 6,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 53,
-      "ownerId": 1,
-      "homeCityId": 21,
-      "role": "FIGHTER",
-      "form": "LAND",
-      "at": { "x": 5, "y": 5 },
-      "hp": 6,
-      "maxHp": 6,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": true,
-        "movedPathLength": 1,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 61,
-      "ownerId": 2,
-      "homeCityId": 30,
-      "role": "FIGHTER",
-      "form": "LAND",
-      "at": { "x": 1, "y": 5 },
-      "hp": 12,
-      "maxHp": 12,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": false,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 63,
-      "ownerId": 2,
-      "homeCityId": 39,
-      "role": "FIGHTER",
-      "form": "LAND",
-      "at": { "x": 3, "y": 7 },
-      "hp": 12,
-      "maxHp": 12,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": false,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 70,
-      "ownerId": 1,
-      "homeCityId": 17,
-      "role": "FIGHTER",
-      "form": "LAND",
-      "at": { "x": 4, "y": 4 },
-      "hp": 6,
-      "maxHp": 6,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 71,
-      "ownerId": 1,
-      "homeCityId": 18,
-      "role": "FIGHTER",
-      "form": "LAND",
-      "at": { "x": 11, "y": 5 },
-      "hp": 6,
-      "maxHp": 6,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 72,
-      "ownerId": 2,
-      "homeCityId": 3,
-      "role": "GUARD",
-      "form": "LAND",
-      "at": { "x": 2, "y": 7 },
-      "hp": 17,
-      "maxHp": 17,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": false,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 75,
-      "ownerId": 1,
-      "homeCityId": 1,
-      "role": "JUGGERNAUT",
-      "form": "LAND",
-      "at": { "x": 5, "y": 3 },
-      "hp": 40,
-      "maxHp": 40,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": true,
-        "movedPathLength": 1,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 77,
-      "ownerId": 2,
-      "homeCityId": 31,
-      "role": "GUARD",
-      "form": "LAND",
-      "at": { "x": 3, "y": 9 },
-      "hp": 14,
-      "maxHp": 17,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": false,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 78,
-      "ownerId": 2,
-      "homeCityId": 39,
-      "role": "MARKSMAN",
       "form": "LAND",
       "at": { "x": 1, "y": 10 },
-      "hp": 12,
-      "maxHp": 12,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": false,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 79,
-      "ownerId": 2,
-      "homeCityId": 3,
-      "role": "MARKSMAN",
-      "form": "LAND",
-      "at": { "x": 3, "y": 8 },
-      "hp": 12,
-      "maxHp": 12,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": false,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 86,
-      "ownerId": 1,
-      "homeCityId": 17,
-      "role": "CATAPULT",
-      "form": "LAND",
-      "at": { "x": 5, "y": 4 },
-      "hp": 8,
-      "maxHp": 8,
-      "kills": 1,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": true,
-        "movedPathLength": 1,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 87,
-      "ownerId": 1,
-      "homeCityId": 64,
-      "role": "MARKSMAN",
-      "form": "LAND",
-      "at": { "x": 7, "y": 7 },
-      "hp": 8,
-      "maxHp": 8,
-      "kills": 1,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 88,
-      "ownerId": 2,
-      "homeCityId": 31,
-      "role": "GUARD",
-      "form": "LAND",
-      "at": { "x": 5, "y": 9 },
-      "hp": 14,
-      "maxHp": 17,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": false,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 91,
-      "ownerId": 1,
-      "homeCityId": 45,
-      "role": "MARKSMAN",
-      "form": "LAND",
-      "at": { "x": 4, "y": 3 },
-      "hp": 8,
-      "maxHp": 8,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": true,
-        "movedPathLength": 1,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 92,
-      "ownerId": 1,
-      "homeCityId": 17,
-      "role": "CATAPULT",
-      "form": "LAND",
-      "at": { "x": 6, "y": 4 },
-      "hp": 8,
-      "maxHp": 8,
-      "kills": 1,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": true,
-        "attacksUsed": 1,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 93,
-      "ownerId": 1,
-      "homeCityId": 21,
-      "role": "MARKSMAN",
-      "form": "LAND",
-      "at": { "x": 7, "y": 5 },
-      "hp": 8,
-      "maxHp": 8,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 95,
-      "ownerId": 2,
-      "homeCityId": 3,
-      "role": "MARKSMAN",
-      "form": "LAND",
-      "at": { "x": 4, "y": 9 },
-      "hp": 12,
-      "maxHp": 12,
-      "kills": 1,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": false,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 97,
-      "ownerId": 1,
-      "homeCityId": 17,
-      "role": "GUARD",
-      "form": "LAND",
-      "at": { "x": 6, "y": 3 },
-      "hp": 15,
-      "maxHp": 15,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": true,
-        "movedPathLength": 1,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 98,
-      "ownerId": 1,
-      "homeCityId": 21,
-      "role": "FIGHTER",
-      "form": "LAND",
-      "at": { "x": 8, "y": 5 },
-      "hp": 6,
-      "maxHp": 6,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 99,
-      "ownerId": 2,
-      "homeCityId": 31,
-      "role": "GUARD",
-      "form": "LAND",
-      "at": { "x": 4, "y": 7 },
-      "hp": 17,
-      "maxHp": 17,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": false,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 100,
-      "ownerId": 2,
-      "homeCityId": 30,
-      "role": "FIGHTER",
-      "form": "LAND",
-      "at": { "x": 0, "y": 5 },
-      "hp": 12,
-      "maxHp": 12,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": false,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 102,
-      "ownerId": 2,
-      "homeCityId": 3,
-      "role": "FIGHTER",
-      "form": "LAND",
-      "at": { "x": 4, "y": 10 },
-      "hp": 12,
-      "maxHp": 12,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": false,
-        "movedPathLength": 0,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": false,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 103,
-      "ownerId": 1,
-      "homeCityId": 64,
-      "role": "CAPTAIN",
-      "form": "LAND",
-      "at": { "x": 7, "y": 8 },
-      "hp": 12,
-      "maxHp": 12,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
-        "moved": true,
-        "movedPathLength": 1,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 104,
-      "ownerId": 1,
-      "homeCityId": 17,
-      "role": "RAIDER",
-      "form": "LAND",
-      "at": { "x": 6, "y": 2 },
       "hp": 10,
       "maxHp": 10,
       "kills": 0,
       "veteran": false,
       "captureEligible": false,
       "activation": {
-        "moved": true,
-        "movedPathLength": 2,
-        "attacked": false,
-        "attacksUsed": 0,
-        "tendedThisTurn": false,
-        "inspired": false,
-        "overrunActive": false,
-        "escapeAvailable": false,
-        "recovered": false,
-        "captured": false,
-        "handled": true,
-        "specialActed": false
-      }
-    },
-    {
-      "id": 105,
-      "ownerId": 2,
-      "homeCityId": 30,
-      "role": "FIGHTER",
-      "form": "LAND",
-      "at": { "x": 1, "y": 6 },
-      "hp": 12,
-      "maxHp": 12,
-      "kills": 0,
-      "veteran": false,
-      "captureEligible": false,
-      "activation": {
         "moved": false,
         "movedPathLength": 0,
         "attacked": false,
@@ -4071,14 +2774,41 @@
       }
     },
     {
-      "id": 108,
+      "id": 15,
       "ownerId": 1,
-      "homeCityId": 17,
-      "role": "CATAPULT",
+      "homeCityId": 28,
+      "role": "FIGHTER",
       "form": "LAND",
       "at": { "x": 8, "y": 2 },
-      "hp": 8,
-      "maxHp": 8,
+      "hp": 12,
+      "maxHp": 12,
+      "kills": 0,
+      "veteran": false,
+      "captureEligible": false,
+      "activation": {
+        "moved": false,
+        "movedPathLength": 0,
+        "attacked": false,
+        "attacksUsed": 0,
+        "tendedThisTurn": false,
+        "inspired": false,
+        "overrunActive": false,
+        "escapeAvailable": false,
+        "recovered": false,
+        "captured": true,
+        "handled": true,
+        "specialActed": false
+      }
+    },
+    {
+      "id": 31,
+      "ownerId": 1,
+      "homeCityId": 28,
+      "role": "RAIDER",
+      "form": "LAND",
+      "at": { "x": 7, "y": 1 },
+      "hp": 12,
+      "maxHp": 12,
       "kills": 0,
       "veteran": false,
       "captureEligible": false,
@@ -4098,7 +2828,10 @@
       }
     }
   ],
-  "treasureChests": [],
+  "treasureChests": [
+    { "x": 1, "y": 1 },
+    { "x": 4, "y": 4 }
+  ],
   "curiosities": [],
   "ice": [],
   "monsters": [],

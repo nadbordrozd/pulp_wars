@@ -328,10 +328,11 @@ describe("ruleset-7 revision-13 Normal AI playing Undead", () => {
       unitId: zombie.id,
       targetUnitId: victim.id,
     });
-    // Target value (Fighter 2 x 4 + 2 HP) plus the 10-HP Zombie rising.
+    // Target value (Fighter 2 x 4 + 2 HP) plus the 12-HP Zombie rising (10
+    // HP and 22 until 7r56).
     // Tuning 6 (`pulp_wars-w49.6`): and 12 for cheap line infantry as a
     // Zombie's target.
-    expect(infect.candidates[0]?.score.strategicValue).toBe(10 + 22 + 12);
+    expect(infect.candidates[0]?.score.strategicValue).toBe(10 + 24 + 12);
   });
 
   it("uses Frenzy only when adjacent attackers can reach a visible enemy", () => {

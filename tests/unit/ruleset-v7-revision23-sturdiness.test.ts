@@ -284,10 +284,11 @@ describe("ruleset-7 revision-20 section 6.3 sturdiness numbers", () => {
       expect(source).not.toContain(`...ORIGINAL_ROLE_RULES_V7.${role}`);
   });
 
-  it("keeps risings at 10 HP, capped at the Zombie's maximum", () => {
+  it("kept risings at 10 HP, capped at the Zombie's maximum (12 since 7r57)", () => {
+    // Step two of the Undead pass (`pulp_wars-w49.24`): 12 of 18.
     const zombie = effectiveRoleRuleV7("GUARD", "UNDEAD").maxHp;
-    expect(Math.min(INFECT_RISING_HP_V7, zombie)).toBe(10);
-    expect(Math.min(BITTEN_RISING_HP_V7, zombie)).toBe(10);
+    expect(Math.min(INFECT_RISING_HP_V7, zombie)).toBe(12);
+    expect(Math.min(BITTEN_RISING_HP_V7, zombie)).toBe(12);
   });
 
   it("starts every unit of a new match at its role's maximum HP", () => {

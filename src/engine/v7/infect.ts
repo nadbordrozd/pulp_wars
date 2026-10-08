@@ -3,8 +3,14 @@ import { seatRoleRuleV7 } from "../rules/ruleset-v7";
 import type { DomainEventV7 } from "./events";
 import type { GameStateV7, UnitStateV7 } from "./types";
 
-/** Revision 13 section 6.4: an Infect rising has 10 HP (revision 15: of the Zombie's 18). */
-export const INFECT_RISING_HP_V7 = 10;
+/**
+ * An Infect rising has 12 of the Zombie's 18 HP. It had 10 from revision 13
+ * (section 6.4) to `pulp-wars-poc-7r56`; step two of the Undead pass
+ * (`pulp_wars-w49.24`, 7r57, docs/product/RULESET_7_TUNING_UNDEAD.md section
+ * 15) made it 12: at 10 a rising was dead after two ordinary hits, or one
+ * Gang Up blow, before its owner's next turn.
+ */
+export const INFECT_RISING_HP_V7 = 12;
 
 /**
  * Records one death converted by Infect (revision 13 sections 5.4 and 6.4):

@@ -258,6 +258,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // beside a target, and the company of a Goblin that goes into contact,
     // stand on the board.
     "src/ai/v7.ts::armyGoblinAloneV7": "BOARD",
+    // Step two of the Undead pass (`pulp_wars-w49.24`): the own land units
+    // an Undead seat fields, and its Necromancer, stand on the board (an
+    // Undead seat has no burrowed unit).
+    "src/ai/v7.ts::armyUndeadShortOfUnitsV7": "BOARD",
+    "src/ai/v7.ts::armyNecromancerDueV7": "BOARD",
     "src/ai/v7.ts::goblinContactCompanyV7": "BOARD",
     "src/ai/v7.ts::goblinMobHuntV7": "BOARD",
     "src/ai/v7.ts::vampireAttackAcceptableV7": "BOARD",

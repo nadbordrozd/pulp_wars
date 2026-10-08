@@ -171,16 +171,21 @@ const farmed = (
 };
 
 describe("the Industry reshuffle: identity", () => {
-  it("is 7r56, with 7r55 the last prior identity and an obsolete save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r55");
+  it("was 7r56 after 7r55, with both save keys obsolete now", () => {
+    // (Step two of the Undead pass, `pulp_wars-w49.24`, took 7r57.)
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r57");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r57.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r55",
+      "pulp-wars-poc-7r56",
+    ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r55.current",
-    );
+      "pulpWars.save.v7r56.current",
+    ]);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
-    // A 7r55 state has the shape of a 7r56 state and is refused by its
+    // A 7r55 state has the shape of a current state and is refused by its
     // identity alone (no migration).
     const state = field([]);
     expect(parseGameStateV7(state)).not.toBeNull();
@@ -561,10 +566,20 @@ describe("the Industry reshuffle: the Normal AI", () => {
 
   it("a seat whose order begins with its defender buys Fortification before its units, and keeps the Coins for it", () => {
     for (const faction of ["UNDEAD", "MARTIAN", "DINOSAUR"] as const) {
-      const seat = (coins: number): GameStateV7 =>
-        field(
+      // Step two of the Undead pass (`pulp_wars-w49.24`): an Undead seat
+      // with fewer units than its cities and two more trains first
+      // (`tests/unit/ruleset-v7-undead-step2.test.ts`), so this one has
+      // two Skeletons more, with no home city.
+      const spare = faction === "UNDEAD" ? [at(9, 9), at(9, 7)] : [];
+      const seat = (coins: number): GameStateV7 => {
+        const state = field(
           [
             { seat: 0, role: "FIGHTER", at: at(8, 7) },
+            ...spare.map((where) => ({
+              seat: 0,
+              role: "FIGHTER" as const,
+              at: where,
+            })),
             { seat: 1, role: "FIGHTER", at: at(2, 2) },
           ],
           {
@@ -573,6 +588,17 @@ describe("the Industry reshuffle: the Normal AI", () => {
             coins,
           },
         );
+        return {
+          ...state,
+          units: state.units.map((unit) =>
+            spare.some(
+              (where) => where.x === unit.at.x && where.y === unit.at.y,
+            )
+              ? { ...unit, homeCityId: null }
+              : unit,
+          ),
+        };
+      };
       const cost = research(faction, ["GATHERING", "DRILL"])?.cost ?? 0;
       expect(cost, faction).toBe(7);
       // With the price in hand: the technology first, then the defender.

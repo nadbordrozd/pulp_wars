@@ -443,7 +443,12 @@ describe("headless parity and the CLI flag", () => {
         // of every faction at Fortification, one technology behind the
         // root): recomputed for every pin of this list (the boards and the
         // final PRNG states are unchanged), 17 rounds here.
-        rounds: 17,
+        // Step two of the Undead pass (`pulp_wars-w49.24`, 7r57: a rising
+        // of 12 HP, and the Undead seat trains before it researches while
+        // it is short of units): 18 rounds, recomputed (commands were
+        // 56746d…1226, events 08f0db…7fd8); the board and the final PRNG
+        // state are unchanged, and so are the four pins below.
+        rounds: 18,
         // The Martian pass's correction (`pulp_wars-w49.14`: the Human
         // seat's economy-first opening, growth at war, and Knights):
         // recomputed, 15 rounds still.
@@ -455,7 +460,7 @@ describe("headless parity and the CLI flag", () => {
           // Step two of the Human pass (`pulp_wars-w49.22`: what a Human
           // seat of the Normal AI trains): recomputed (was d1beda…64cb), 17
           // rounds still; the board and the final PRNG state are unchanged.
-          "56746dff9eb4b03d3d493d358dac29d474deb5455795e1a345ec0a4747c11226",
+          "8b7c92ecd19ec9fcf3cda5b087e505140c5ba737b73c7d036c9b7195d5884f5f",
         eventHash:
           // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
           // bd5818…355f).
@@ -463,7 +468,7 @@ describe("headless parity and the CLI flag", () => {
           // 1448d4…47f4).
           // Step two of the Human pass (`pulp_wars-w49.22`): recomputed (was
           // a5db4a…efec).
-          "08f0db5cd80140145bde35f41e0ba7319991cc4efa60d2c6fce5496042547fd8",
+          "c6efafd4b23acf54f9427bbcfaed57a39d70d6cfd89e9823bc1798f7f0b4004e",
         mapHash:
           "1f6ad08d476884229d6cb8a7319ea209b8667cf4e28e24cd07352ebafc3055de",
         finalPrngHash:

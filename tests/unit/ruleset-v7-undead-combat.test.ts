@@ -149,7 +149,8 @@ describe("ruleset-7 revision-13 Infect", () => {
         captureEligible: false,
         activation: EXHAUSTED,
       });
-      expect(INFECT_RISING_HP_V7).toBe(10);
+      // (10 until 7r56; step two of the Undead pass, `pulp_wars-w49.24`.)
+      expect(INFECT_RISING_HP_V7).toBe(12);
       expect(result.state.nextEntityId).toBe(state.nextEntityId + 1);
       expect(parseGameStateV7(result.state)).toEqual(result.state);
       expectPublicPreviewMatches(state, zombie.id, victim.id, preview);
@@ -195,7 +196,7 @@ describe("ruleset-7 revision-13 Infect", () => {
       homeCityId: null,
       role: "GUARD",
       at: { x: 2, y: 3 },
-      hp: 10,
+      hp: 12,
       maxHp: 18,
       activation: EXHAUSTED,
       captureEligible: false,
@@ -308,7 +309,7 @@ describe("ruleset-7 revision-13 Infect", () => {
     expect(isCityBesiegedV7(state, capital)).toBe(false);
     const result = attack(state, { x: 8, y: 7 }, SEAT0_CAPITAL);
     const risen = unitAt(result.state, SEAT0_CAPITAL);
-    expect(risen).toMatchObject({ ownerId: undead, role: "GUARD", hp: 10 });
+    expect(risen).toMatchObject({ ownerId: undead, role: "GUARD", hp: 12 });
     expect(result.state.graves).toEqual([]);
     expect(
       isCityBesiegedV7(result.state, cityAt(result.state, SEAT0_CAPITAL)),
@@ -868,8 +869,10 @@ describe("ruleset-7 revision-13 Infect and Lifesteal: events, fog, and persisten
     // show risings and no heal). With the Industry reshuffle
     // (`pulp_wars-w49.21`, 7r56) seed 8 shows 38 risings and no heal;
     // seed 9 shows 53 risings and three heals (seeds 6 and 7 of 0-15 heal
-    // too).
-    const setup = setupWith(["UNDEAD", "UNDEAD"], 9);
+    // too). With step two of the Undead pass (`pulp_wars-w49.24`, 7r57)
+    // seed 9 shows 46 risings and no heal; seed 1 shows 68 risings and two
+    // heals (the only one of seeds 0-15 that heals).
+    const setup = setupWith(["UNDEAD", "UNDEAD"], 1);
     const match = runAiMatchV7(setup, { maxRounds: 40 });
     expect(match.errors).toEqual([]);
     expect(match.metrics.eventsByKind.UNIT_INFECTED).toBeGreaterThan(0);

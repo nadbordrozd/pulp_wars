@@ -50,7 +50,7 @@ import {
 } from "../../src/ai/v7-campaign";
 
 /**
- * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r56`;
+ * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r57`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 14, the Normal AI of a
  * Human, Undead, or Goblin seat): it commits against the enemy in front of
  * it and keeps committing after the line breaks, every faction's seat
@@ -194,7 +194,7 @@ const whereIs = (state: GameStateV7, id: UnitId): CoordV7 => {
 
 describe("tuning 7 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r57");
   });
 });
 
@@ -962,11 +962,15 @@ describe("2. every faction's seat grows", () => {
     // Sawmilling (tier 3) and Administration after it.
     expect(bought.filter((kind) => kind.startsWith("RESEARCH"))).toEqual([
       "RESEARCH GATHERING",
+      // Step two of the Undead pass (`pulp_wars-w49.24`): one growth
+      // technology before the Zombie's two while no enemy is in sight
+      // (Hunting, in round 3, for the Game in its land), and units before
+      // research while the seat is short of them.
+      "RESEARCH HUNTING",
       "RESEARCH DRILL",
       // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Zombie is
       // at Fortification, bought right after the root.
       "RESEARCH FORTIFICATION",
-      "RESEARCH HUNTING",
       "RESEARCH FORESTRY",
       "RESEARCH MARKSMANSHIP",
     ]);

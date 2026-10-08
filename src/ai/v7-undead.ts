@@ -33,8 +33,8 @@ export const RAISE_DEAD_SKELETON_VALUE_V7 = 14;
 export const NECROMANCER_GRAVE_REACH_V7 = 3;
 /** Devour heals at least this much before a Ghoul spends its action on it. */
 export const DEVOUR_MINIMUM_HEAL_V7 = 3;
-/** A 10-HP Zombie rising (Infect or Bitten): Zombie cost 3 x 4 + 10 HP. */
-export const BITTEN_RISING_VALUE_V7 = 22;
+/** A 12-HP Zombie rising (Infect or Bitten): Zombie cost 3 x 4 + 12 HP (10 HP and 22 until 7r56). */
+export const BITTEN_RISING_VALUE_V7 = 24;
 
 /** True when any seat is Undead; every Undead heuristic is gated on it. */
 export function undeadMatchForPolicyV7(view: PlayerViewV7): boolean {

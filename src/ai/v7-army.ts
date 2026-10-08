@@ -896,6 +896,50 @@ export const ARMY_PESTILENCE_LICHES_V7 = 2;
  * Captain) is worth more in training.
  */
 export const ARMY_CURE_TRAINING_VALUE_V7 = 400;
+
+// ---------------------------------------------------------------------------
+// Step two of the Undead pass (`pulp_wars-w49.24`,
+// docs/product/RULESET_7_TUNING_UNDEAD.md section 15). The hooks are in
+// `src/ai/v7.ts` (`armyUndeadBodiesFirstV7`, `armyUndeadGrowthFirstV7`,
+// `armyUndeadContactV7`, `armyNecromancerDueV7`, `armyBestGarrisonStaysV7`).
+// ---------------------------------------------------------------------------
+
+/**
+ * Bodies first: an Undead seat with fewer land units than its cities and
+ * this many more trains before it researches and keeps no Coins for a
+ * technology. (Its first three Skeletons and a free Ghoul were its whole
+ * army to round 9 in two diagnostic matches, on four cities.)
+ */
+export const ARMY_UNDEAD_SPARE_UNITS_V7 = 2;
+
+/**
+ * Step two of the Undead pass: the technologies the research clock of a
+ * war may fall behind while an Undead seat is short of units; one more and
+ * the technology is bought before the units again.
+ */
+export const ARMY_UNDEAD_WAR_RESEARCH_GRACE_V7 = 1;
+/**
+ * Growth first: an Undead seat that has met no enemy and owns at most this
+ * many technologies (its opener; the root of Industry does not count)
+ * researches one growth technology before the Zombie's two.
+ */
+export const ARMY_UNDEAD_GROWTH_FIRST_TECHNOLOGIES_V7 = 1;
+/**
+ * The Necromancer: an Undead seat that can train one and fields none
+ * trains it in a city with this many free Graves within
+ * `ARMY_NECROMANCER_GRAVE_REACH_V7` tiles of its center (its Move and the
+ * two tiles of Raise Dead), also in a threatened city, where a support unit
+ * otherwise loses 200. What the training is worth more.
+ */
+export const ARMY_NECROMANCER_GRAVES_V7 = 3;
+export const ARMY_NECROMANCER_GRAVE_REACH_V7 = 3;
+export const ARMY_NECROMANCER_TRAINING_VALUE_V7 = 600;
+/**
+ * An Undead seat's due technology while a capture is on offer: just above
+ * the capture (1340), which would raise its price.
+ */
+export const ARMY_RESEARCH_BEFORE_CAPTURE_PRIORITY_V7 = 1341;
+
 /** One skirmisher once the army has this many units. */
 export const ARMY_SKIRMISHER_ARMY_V7 = 5;
 /** One support unit per this many army units, at most two. */
@@ -1196,9 +1240,19 @@ export function armyGarrisonYieldsToRangedV7(
   faction: FactionIdV7,
   counts: ArmyCountsV7,
   offersRanged: boolean,
+  offersSiege = false,
 ): boolean {
-  if ((faction !== "ORIGINAL" && faction !== "GOBLIN") || !offersRanged)
+  // Step two of the Undead pass (`pulp_wars-w49.24`,
+  // docs/product/RULESET_7_TUNING_UNDEAD.md section 15): an Undead seat
+  // too, and to its siege class as well (the Banshee and the Lich). A seat
+  // with the Banshee's technology from round 16 of a diagnostic match
+  // trained Zombies and Skeletons only to round 25: ten Zombies of fifteen
+  // units in another. (No Banshee and no Lich is trained onto a contested
+  // center, as before: `armyHelplessGarrisonV7`.)
+  if (faction !== "ORIGINAL" && faction !== "GOBLIN" && faction !== "UNDEAD")
     return false;
+  const siege = faction === "UNDEAD" && offersSiege;
+  if (!offersRanged && !siege) return false;
   if (
     counts.byClass.LINE + counts.byClass.DEFENDER <
     ARMY_GARRISON_YIELD_BODIES_V7
@@ -1208,7 +1262,11 @@ export function armyGarrisonYieldsToRangedV7(
     faction,
     counts.hostileFragile >= ARMY_FRAGILE_HOSTILES_V7,
   );
-  return shares.RANGED * (counts.total + 1) > 100 * counts.byClass.RANGED;
+  return (
+    (offersRanged &&
+      shares.RANGED * (counts.total + 1) > 100 * counts.byClass.RANGED) ||
+    (siege && shares.SIEGE * (counts.total + 1) > 100 * counts.byClass.SIEGE)
+  );
 }
 
 /**

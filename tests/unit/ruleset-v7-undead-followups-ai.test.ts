@@ -309,11 +309,15 @@ describe("vkq.21 Normal AI: Liches and Vampires stay ashore", () => {
     // embarks three (two Zombies and a Skeleton).
     // With the Undead pass (`pulp_wars-w49.13`, 7r51) seed 20 embarks two
     // Zombies and a Skeleton again.
+    // With step two of the Undead pass (`pulp_wars-w49.24`, 7r57: the seat
+    // trains before it researches) seed 20 embarks a unit out of a chest
+    // first; seed 21 embarks seven (a Zombie, a Ghoul, and Skeletons; 27 of
+    // seeds 0-32 embark, 9 of them a unit out of a chest).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
-      seed: 20,
+      seed: 21,
       width: 14,
       height: 14,
       aiCount: 1,

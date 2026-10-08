@@ -644,7 +644,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // waits for its helpers, the one that goes into contact, and its
     // company are land-form units (an Egg and an embarked unit neither
     // strike beside a target nor walk up to one).
-    "src/ai/v7.ts": 43,
+    // Step two of the Undead pass (`pulp_wars-w49.24`): the unit that stays
+    // on its Field Defense is a land-form unit (an Egg makes no Move, and
+    // an embarked unit stands on no Field Defense).
+    "src/ai/v7.ts": 44,
     // Tuning 5: the army count takes land-form units only (an Egg and an
     // embarked unit are in no fighting class).
     "src/ai/v7-army.ts": 1,

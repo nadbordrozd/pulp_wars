@@ -405,10 +405,14 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // The Industry reshuffle (`pulp_wars-w49.21`, 7r56: the Zombie and
     // the Guard behind Fortification): the two Liches of seed 8 never
     // plague; of seeds 0-19, seeds 2, 10, and 13 plague (seed 10: three
-    // Liches, 10 applications, over in round 37).
+    // Liches, 10 applications, over in round 37). Step two of the Undead
+    // pass (`pulp_wars-w49.24`, 7r57: the Undead seat trains before it
+    // researches while it is short of units): seed 10 trains no Lich; of
+    // seeds 0-19, seeds 1 and 5 plague (seed 1: three Liches, 9
+    // applications, 40 rounds).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 10,
+      seed: 1,
       width: 11,
       height: 11,
       aiCount: 1,

@@ -65,7 +65,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r56`;
+ * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r57`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 15, the Normal AI of a
  * Human, Undead, or Goblin seat). Round 7 was played by hand four times
  * (`r7a` to `r7d`); every position below is one of those games, or the
@@ -383,7 +383,7 @@ function scene(options: SceneV7): GameStateV7 {
 
 describe("tuning 8 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r57");
   });
 });
 
@@ -949,7 +949,10 @@ describe("2. research while at war", () => {
    * Industry reshuffle (`pulp_wars-w49.21`, 7r56) Fortification, where the
    * Zombie it fields is now: its capital can
    * train, two of its units stand in the field, and a Human Fighter is
-   * three tiles from them.
+   * three tiles from them. (Step two of the Undead pass, `pulp_wars-w49.24`:
+   * and a third unit beside the capital, so that the seat fields its
+   * cities and two more and is not short of units; a seat that is trains
+   * first, `tests/unit/ruleset-v7-undead-step2.test.ts`.)
    */
   const undeadAtWar = (round: number, coins: number): GameStateV7 =>
     withRound(
@@ -959,6 +962,7 @@ describe("2. research while at war", () => {
             [
               { seat: 0, role: "FIGHTER", at: at(6, 7) },
               { seat: 0, role: "GUARD", at: at(6, 8) },
+              { seat: 0, role: "FIGHTER", at: at(9, 9) },
               { seat: 1, role: "FIGHTER", at: at(3, 7) },
               { seat: 1, role: "FIGHTER", at: at(2, 8) },
             ],
@@ -1318,7 +1322,11 @@ describe("2. research while at war", () => {
   // The economy rejig (`pulp_wars-w49.16`, 7r54): with its three cities
   // Marksmanship costs 11 (9 as its fourth technology before), and the
   // seat earns 4 a turn: four turns, three before.
-  it("r8d round 7: an Undead seat with the enemy at its border buys Marksmanship within four turns, before Engineering, and still trains", () => {
+  // Step two of the Undead pass (`pulp_wars-w49.24`): five turns. The seat
+  // has four units on its cities and is short of units (its cities and two
+  // more), so it trains first and keeps no Coins until its research clock
+  // is a whole technology behind (`ARMY_UNDEAD_WAR_RESEARCH_GRACE_V7`).
+  it("r8d round 7: an Undead seat with the enemy at its border buys Marksmanship within five turns, before Engineering, and still trains", () => {
     const start = stalled(
       UNDEAD,
       techs("GATHERING", "DRILL", "FORTIFICATION", "HUNTING"),
@@ -1330,7 +1338,7 @@ describe("2. research while at war", () => {
       unlocks: "MARKSMAN",
     });
     expect(armyOf(start).research?.cost).toBe(11);
-    const { research, trained } = played(start, 4);
+    const { research, trained } = played(start, 5);
     expect(research[0]).toBe("MARKSMANSHIP");
     expect(trained).toBeGreaterThan(0);
   });
@@ -1342,7 +1350,12 @@ describe("2. research while at war", () => {
   // seat of this match fields four Marksmen in round 11 (three before) and
   // the Undead seat buys Forestry in round 15 and Marksmanship in round 16
   // (rounds 14 and 15 before); nothing in an Undead seat's policy changed.
-  it("an Undead seat on the map of the hand-played game buys a ranged-unit technology by round 16, and keeps training", () => {
+  // Step two of the Undead pass (`pulp_wars-w49.24`): by round 18, with
+  // seventeen units trained by round 16 where it trained fewer than ten.
+  // The Undead seat trains before it researches while it is short of
+  // units: Hunting in round 3, Crafting 7, Fortification 11, Forestry 14,
+  // Marksmanship 18.
+  it("an Undead seat on the map of the hand-played game buys a ranged-unit technology by round 18, and keeps training", () => {
     // `r7d`: dry land 14 x 14, seed 4, Humans against the Undead Normal
     // AI. There the Undead seat bought Gathering, Drill, and Engineering in
     // twenty-one rounds, never Hunting or Marksmanship, and its capital
@@ -1370,7 +1383,7 @@ describe("2. research while at war", () => {
     const researched: string[] = [];
     let trained = 0;
     let idleTurns = 0;
-    while (state.outcome === null && state.round <= 16) {
+    while (state.outcome === null && state.round <= 18) {
       const actor = state.turnOrder[state.activeSeatIndex];
       if (actor === undefined) throw new Error("no actor");
       let bought = 0;
@@ -1399,12 +1412,13 @@ describe("2. research while at war", () => {
     expect(researched).toContain("HUNTING");
     expect(researched).toContain("MARKSMANSHIP");
     expect(researched.length).toBeGreaterThanOrEqual(5);
-    expect(trained).toBeGreaterThanOrEqual(8);
+    expect(trained).toBeGreaterThanOrEqual(15);
     // It bought a unit or a technology in all but a few of its turns (five
     // of sixteen since step two of the Human pass: rounds 4 and 5, and
     // rounds 12 to 14, in which it keeps its Coins for Forestry; four of
-    // fifteen before).
-    expect(idleTurns).toBeLessThanOrEqual(5);
+    // fifteen before; three of eighteen at most since step two of the
+    // Undead pass, which keeps no Coins while the seat is short of units).
+    expect(idleTurns).toBeLessThanOrEqual(3);
   }, 120_000);
 });
 // APPEND-MARKER

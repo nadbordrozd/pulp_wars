@@ -67,9 +67,9 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-15 identity", () => {
   it("keeps rejecting r14 after the r54 identity and cleans the r14 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r56.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-42, -1)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r57");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r57.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-43, -2)).toEqual([
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
@@ -144,7 +144,7 @@ describe("ruleset-7 revision-15 identity", () => {
 });
 
 describe("ruleset-7 revision-15 Zombie fragility", () => {
-  it("gives the Zombie 18 HP while Infect and Bitten risings keep 10 HP", () => {
+  it("gives the Zombie 18 HP; Infect and Bitten risings kept 10 HP and have 12 since 7r57", () => {
     expect(effectiveRoleRuleV7("GUARD", "UNDEAD")).toMatchObject({
       label: "Zombie",
       maxHp: 18,
@@ -154,7 +154,8 @@ describe("ruleset-7 revision-15 Zombie fragility", () => {
     });
     // Revision 20 section 6.3: the Human Guard has 17 HP (was 15).
     expect(effectiveRoleRuleV7("GUARD", "ORIGINAL").maxHp).toBe(17);
-    expect([INFECT_RISING_HP_V7, BITTEN_RISING_HP_V7]).toEqual([10, 10]);
+    // Step two of the Undead pass (`pulp_wars-w49.24`, 7r57): 12 (10 before).
+    expect([INFECT_RISING_HP_V7, BITTEN_RISING_HP_V7]).toEqual([12, 12]);
     const state = arena(
       ["UNDEAD", "ORIGINAL"],
       [
@@ -166,7 +167,7 @@ describe("ruleset-7 revision-15 Zombie fragility", () => {
     const result = attack(state, { x: 2, y: 3 }, { x: 3, y: 3 });
     expect(unitById(result.state, risingId)).toMatchObject({
       role: "GUARD",
-      hp: 10,
+      hp: 12,
       maxHp: 18,
     });
     expect(unitAt(state, { x: 2, y: 3 }).maxHp).toBe(18);

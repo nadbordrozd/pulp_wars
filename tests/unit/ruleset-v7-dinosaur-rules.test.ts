@@ -931,7 +931,8 @@ describe("ruleset-7 Dinosaur Grow", () => {
       role: "GUARD",
       form: "LAND",
       at: { x: 5, y: 3 },
-      hp: 10,
+      // (12 since step two of the Undead pass, 7r57; 10 before.)
+      hp: 12,
       maxHp: 18,
       kills: 0,
       veteran: false,

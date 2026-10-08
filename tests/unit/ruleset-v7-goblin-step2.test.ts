@@ -140,8 +140,8 @@ function without(...missing: readonly TechnologyIdV7[]): TechnologyIdV7[] {
 }
 
 describe("step two of the Goblin pass: no rule changed", () => {
-  it("keeps the identity", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r56");
+  it("kept the identity (7r56 then; 7r57 since step two of the Undead pass)", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r57");
   });
 });
 
@@ -433,10 +433,14 @@ describe("step two of the Goblin pass: Bomb Chuckers in a threatened city", () =
     expect(armyGarrisonYieldsToRangedV7("GOBLIN", counts(1), true)).toBe(true);
     // With its share it trains the body again.
     expect(armyGarrisonYieldsToRangedV7("GOBLIN", counts(2), true)).toBe(false);
-    // Not without a Bomb Chucker on offer, and not for an Undead seat.
+    // Not without a Bomb Chucker on offer, and not for a Martian seat. (An
+    // Undead seat's yields since step two of the Undead pass,
+    // `pulp_wars-w49.24`.)
     expect(armyGarrisonYieldsToRangedV7("GOBLIN", counts(0), false)).toBe(
       false,
     );
-    expect(armyGarrisonYieldsToRangedV7("UNDEAD", counts(0), true)).toBe(false);
+    expect(armyGarrisonYieldsToRangedV7("MARTIAN", counts(0), true)).toBe(
+      false,
+    );
   });
 });
