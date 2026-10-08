@@ -3066,11 +3066,6 @@
   box-shadow: var(--pw-shadow-sm);
 }
 
-.v7-tech-card.state-available .v7-tech-art {
-  border-radius: var(--pw-radius-xs);
-  background: var(--pw-surface-raised);
-}
-
 .v7-tech-card.state-blocked {
   border-color: var(--pw-line-soft);
   background: var(--pw-surface-2);

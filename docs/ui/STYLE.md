@@ -77,8 +77,10 @@ colour written outside the token block.
   pay for (`.is-blocked`, bead `pulp_wars-2yc.36`) is `--pw-surface-2` with
   a soft rule and no shadow, its art greyed, its name `--pw-text-2` and its
   price `--pw-loss` on `--pw-red-fill`.
-- **Technology**: available is a yellow plate with the art on a cream square;
-  owned is `--pw-teal-fill` with a teal rule; locked is `--pw-surface-2`.
+- **Technology**: available is a yellow plate with the art straight on the
+  yellow, on a transparent ground like every other state (no square behind
+  it, bead `pulp_wars-szc9`); owned is `--pw-teal-fill` with a teal rule;
+  locked is `--pw-surface-2`.
 - **Hint** (the first-steps line, bead `pulp_wars-2yc.39`): `--pw-yellow`
   with ink text, a `--pw-line-w-sm` ink border and `--pw-shadow-sm`. The HUD
   button a hint points at has a `--pw-yellow` outline; the marker on the
