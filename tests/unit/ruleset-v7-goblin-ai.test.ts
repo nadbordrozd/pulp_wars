@@ -628,8 +628,13 @@ describe("ruleset-7 revision-17 Normal AI: exploder spacing", () => {
     // tiles of an assault (at (9, 0) the three units commit against it, and
     // a committed unit makes no Move away from its position).
     const far = cart(at(10, 2));
+    // Since the Rocket Cart captures (`pulp_wars-ke95`) its errand lies
+    // east, and it makes no Move west into the clump at (3, 3) with either
+    // enemy; the far enemy still allows the Move toward the errand, (5, 3),
+    // that the near one refuses. (Before, the far enemy allowed (3, 3).)
+    expect(scoreCommandV7(near.view, move(rocket, at(5, 3))).priority).toBe(-1);
     expect(
-      scoreCommandV7(far.view, move(rocket, at(3, 3))).priority,
+      scoreCommandV7(far.view, move(rocket, at(5, 3))).priority,
     ).toBeGreaterThanOrEqual(0);
   });
 

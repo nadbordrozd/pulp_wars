@@ -194,10 +194,11 @@ describe("ruleset-7 Normal AI campaign (pulp_wars-9s0.1)", () => {
       job: "VILLAGE",
       at: { x: 8, y: 8 },
     });
-    // A unit that cannot capture marches on the enemy city instead.
+    // Any unit can capture (`pulp_wars-ke95`): the Captain is the third
+    // capturer and takes (2, 5) (it marched on the enemy city before).
     expect(jobOf(state, unitAt(state, { x: 3, y: 9 }).id)).toMatchObject({
-      job: "ATTACK",
-      at: ENEMY,
+      job: "VILLAGE",
+      at: { x: 2, y: 5 },
     });
   });
 
@@ -273,10 +274,11 @@ describe("ruleset-7 Normal AI campaign (pulp_wars-9s0.1)", () => {
 
   it("marches on one hostile seat of two in reach", () => {
     // Three seats (14 x 14): the viewer's capital (2, 2), hostile capitals
-    // (11, 2) and (11, 11). Vampires (the Undead Knight role) cannot
-    // capture, so the villages are no errand of theirs. (The Human Knight
-    // captures since tuning 2, 7r47.)
-    const state = goblinArenaV7(
+    // (11, 2) and (11, 11). The neutral villages and the treasure chests
+    // are removed, so no unit has a village or chest errand. (Vampires, the Undead Knight role, could not
+    // capture before `pulp_wars-ke95`, which kept them off the villages;
+    // any unit can capture since.)
+    const field = goblinArenaV7(
       ["UNDEAD", "ORIGINAL", "ORIGINAL"],
       [
         { seat: 0, role: "KNIGHT", at: { x: 3, y: 2 } },
@@ -285,6 +287,27 @@ describe("ruleset-7 Normal AI campaign (pulp_wars-9s0.1)", () => {
         { seat: 0, role: "KNIGHT", at: { x: 1, y: 3 } },
       ],
     );
+    const state = checkedV7({
+      ...field,
+      treasureChests: [],
+      board: {
+        ...field.board,
+        tiles: field.board.tiles.map((tile) =>
+          tile.site === "VILLAGE"
+            ? {
+                ...tile,
+                biome: tile.biome ?? ("PLAINS" as const),
+                terrain: "GRASS" as const,
+                resource: null,
+                improvement: null,
+                road: false,
+                fieldDefense: false,
+                site: null,
+              }
+            : tile,
+        ),
+      },
+    });
     const jobs = campaign(state).assignments;
     expect(jobs.map((item) => item.job)).toEqual([
       "ATTACK",
@@ -294,15 +317,26 @@ describe("ruleset-7 Normal AI campaign (pulp_wars-9s0.1)", () => {
     ]);
     const byTarget = new Map<string, number>();
     for (const item of jobs)
-      byTarget.set(
-        `${item.at.x},${item.at.y}`,
-        (byTarget.get(`${item.at.x},${item.at.y}`) ?? 0) + 1,
-      );
+      if (item.raid !== true)
+        byTarget.set(
+          `${item.at.x},${item.at.y}`,
+          (byTarget.get(`${item.at.x},${item.at.y}`) ?? 0) + 1,
+        );
     // Tuning 7 (`pulp_wars-w49.10`): the seat concentrates on one
     // neighbor (the weakest it can reach; these two are equal) instead of
     // sending a pair at each. A seat that already fights on a front keeps
     // its units there (`ruleset-v7-tuning-7.test.ts`).
-    expect([...byTarget].sort()).toEqual([["11,11", 4]]);
+    expect([...byTarget].sort()).toEqual([["11,11", 2]]);
+    // Since the Vampires capture (`pulp_wars-ke95`), tuning 7's lone raid
+    // also sends a fast capturer to each undefended hostile capital; the
+    // rest of the army still concentrates on one seat (all four marched on
+    // (11, 11) before).
+    expect(
+      jobs
+        .filter((item) => item.raid === true)
+        .map((item) => `${item.at.x},${item.at.y}`)
+        .sort(),
+    ).toEqual(["11,11", "11,2"]);
   });
 
   it("lands a stranded transport where it can walk to a target", () => {

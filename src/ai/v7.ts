@@ -263,6 +263,8 @@ import {
   campaignHoldsMoveV7,
   campaignPlanForPolicyV7,
   campaignRouteProgressV7,
+  policyCapturerV7,
+  policyRoleCapturesV7,
   type CampaignJobV7,
   type CampaignPlanV7,
 } from "./v7-campaign";
@@ -2455,13 +2457,13 @@ function* navalPlanWorkV7(
     (unit) =>
       unit.ownerId === view.viewer.id &&
       unit.form === "LAND" &&
-      unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"),
+      policyCapturerV7(view, unit),
   );
   const visibleObjectiveClaimants = view.units.filter(
     (unit) =>
       unit.form === "LAND" &&
       publicPlayersAllied(view, view.viewer.id, unit.ownerId) &&
-      unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"),
+      policyCapturerV7(view, unit),
   );
   const captureComponents = new Set(
     captureUnits.flatMap((unit) => {
@@ -3072,7 +3074,7 @@ function* addHostileThreatsWorkV7(
     const imminentCapture =
       unit.form === "LAND" &&
       unit.captureEligible &&
-      unitRoleRuleV7(view, unit).abilities.includes("CAPTURE") &&
+      policyCapturerV7(view, unit) &&
       same(unit.at, city.at);
     if (!tiles.has(coordKey(city.at)) && !imminentCapture) continue;
     context.threats.push({
@@ -4333,12 +4335,15 @@ function armyUndeadShortOfUnitsV7(context: PolicyContextV7): boolean {
   // T-Rex take no village and hold no center.
   const dinosaur = armyDinosaurSeatV7(context);
   // Step two of the Ice Folk pass: an Ice Folk seat counts the units that
-  // capture too: an Ice Witch, a Boulder Yeti, and a Sabretooth take no
-  // village and hold no center.
+  // capture too: an Ice Witch, a Boulder Yeti, and a Sabretooth took no
+  // village and held no center. Any unit can capture since `pulp_wars-ke95`,
+  // so these seats now count every land unit (and every Egg) as well; the
+  // split is kept for the AI tuning that follows.
   const iceFolk = armyIceFolkSeatV7(context);
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): a Dwarf seat counts the
-  // units that capture too (a Gyrocopter, an Engineer, a Steam Cannon, a
-  // Steam Tank, and a Whirligig take no village), and its burrowed ones (a
+  // units that capture too (the Gyrocopter takes no village; the Engineer,
+  // Steam Cannon, Steam Tank, and Whirligig took none before
+  // `pulp_wars-ke95` and count since), and its burrowed ones (a
   // Mole and its rider underground keep their slots and surface next turn).
   const dwarf = armyDwarfSeatV7(context);
   let units = 0;
@@ -4349,7 +4354,7 @@ function armyUndeadShortOfUnitsV7(context: PolicyContextV7): boolean {
       unit.ownerId === view.viewer.id &&
       (unit.form === "LAND" || (dinosaur && unit.form === "EGG")) &&
       (!(martian || dinosaur || iceFolk || dwarf) ||
-        unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"))
+        policyCapturerV7(view, unit))
     )
       units += 1;
   return units < cities + ARMY_UNDEAD_SPARE_UNITS_V7;
@@ -4569,7 +4574,7 @@ function armyVillagesFirstHoldsV7(
     actor !== undefined &&
     actor.form === "LAND" &&
     actor.ownerId === view.viewer.id &&
-    unitRoleRuleV7(view, actor).abilities.includes("CAPTURE") &&
+    policyCapturerV7(view, actor) &&
     unitRoleRuleV7(view, actor).abilities.includes("ATTACK");
   if (actor === undefined || !capturer) return false;
   if (command.kind === "ATTACK") {
@@ -8647,7 +8652,7 @@ function armyTrainsElsewhereV7(
   if (
     armyHostilesV7(context).some(
       (unit) =>
-        unitRoleRuleV7(view, unit).abilities.includes("CAPTURE") &&
+        policyCapturerV7(view, unit) &&
         distance(unit.at, city.at) <=
           publicCombatFacts(view, unit, context.lookup).move,
     )
@@ -9045,7 +9050,7 @@ function armyVillageMoveV7(
 ): boolean {
   if (!context.army || actor.form !== "LAND") return false;
   const view = context.view;
-  if (!unitRoleRuleV7(view, actor).abilities.includes("CAPTURE")) return false;
+  if (!policyCapturerV7(view, actor)) return false;
   const tile = findPublicTileV7(view, to);
   return (
     tile?.explored === true &&
@@ -9076,7 +9081,7 @@ function armyEmptyCenterMoveV7(
   )
     return null;
   const view = context.view;
-  if (!unitRoleRuleV7(view, actor).abilities.includes("CAPTURE")) return null;
+  if (!policyCapturerV7(view, actor)) return null;
   let best: number | null = null;
   for (const city of view.cities) {
     if (!isHostile(view, city.ownerId)) continue;
@@ -9119,7 +9124,7 @@ function armyHoldsVillageV7(
     actor === undefined ||
     actor.form !== "LAND" ||
     actor.ownerId !== view.viewer.id ||
-    !unitRoleRuleV7(view, actor).abilities.includes("CAPTURE")
+    !policyCapturerV7(view, actor)
   )
     return false;
   const tile = findPublicTileV7(view, actor.at);
@@ -9679,16 +9684,17 @@ function* publicThreatenedTilesWorkV7(
   const kaboom = unit.form === "LAND" && rule.abilities.includes("KABOOM");
   // The Martian revision (`pulp_wars-t6s.3`): a flyer passes every unit,
   // ignores zone of control, and crosses Shallow Water; a walker strides
-  // over Forest, Mountain, and Shallow Water. Both end only on land, and a
-  // flyer never on a center it does not own. `GROUND` for every non-Martian
-  // unit, so other matches are unchanged.
+  // over Forest, Mountain, and Shallow Water. Both end only on land (a
+  // flyer on any center since `pulp_wars-ke95`). `GROUND` for every
+  // non-Martian unit, so other matches are unchanged.
   const mode: "GROUND" | "STRIDE" | "FLY" =
     unit.form === "LAND" ? unitMovementModeV7(view, unit) : "GROUND";
   // The Ice Folk revision (`pulp_wars-7g3.4`): an Ice Folk unit Glides off
   // known Snow (half cost); another faction's ground unit is stopped by
   // known Snow (deep snow; Fieldcraft is assumed absent, as Forest freedom
-  // is); a Sabretooth's Prowl ignores zones of control and it never ends on
-  // a settlement center it does not own. Snow flags exist only in a match
+  // is); a Sabretooth's Prowl ignores zones of control (it may end on any
+  // settlement center since `pulp_wars-ke95`; only a Dwarf rider on its
+  // surfacing turn avoids foreign ones). Snow flags exist only in a match
   // with an Ice Folk seat, and the other facts only for Ice Folk units, so
   // other matches are unchanged. Rockfall from a Mountain a Yeti could
   // reach is left out: counting it lost the head-to-head (64 of 120 games
@@ -9743,8 +9749,7 @@ function* publicThreatenedTilesWorkV7(
           continue;
         const passedOnly =
           occupants.length > 0 ||
-          (mode !== "GROUND" &&
-            !machineMayEndForThreatV7(view, unit, tile, mode)) ||
+          (mode !== "GROUND" && !machineMayEndForThreatV7(tile, mode)) ||
           (avoidsSites &&
             tile.explored &&
             tile.site !== null &&
@@ -9938,22 +9943,17 @@ function publicMovementTilePossible(
 
 /**
  * The Martian revision: whether a walker or flyer can end a Move (and so
- * attack) on `tile`: land only (a Move that ends on water embarks), and a
- * flyer never on a settlement center it does not own.
+ * attack) on `tile`: land only (a Move that ends on water embarks). A flyer
+ * may end on any settlement center since any unit can capture
+ * (`pulp_wars-ke95`).
  */
 function machineMayEndForThreatV7(
-  view: PlayerViewV7,
-  unit: PublicUnitV7,
   tile: PlayerViewV7["board"]["tiles"][number],
   mode: "GROUND" | "STRIDE" | "FLY",
 ): boolean {
   if (!tile.explored || tile.biome === null) return false;
   // The Rift (RULESET_7_RIFT.md section 4): only a flyer ends on a Rift.
-  if (tile.terrain === "RIFT") return mode === "FLY";
-  if (mode !== "FLY" || tile.site === null) return true;
-  return view.cities.some(
-    (city) => same(city.at, tile.at) && city.ownerId === unit.ownerId,
-  );
+  return tile.terrain !== "RIFT" || mode === "FLY";
 }
 
 function isPolicyCandidate(
@@ -11107,10 +11107,7 @@ function* sharedCityContextWorkV7(
           (assignedByCity.get(unit.homeCityId) ?? 0) +
             unitCapacitySlotsV7(view, unit),
         );
-      if (
-        unit.form === "LAND" &&
-        unitRoleRuleV7(view, unit).abilities.includes("CAPTURE")
-      )
+      if (unit.form === "LAND" && policyCapturerV7(view, unit))
         hasLandCaptureUnit = true;
       if (unit.role === "PATROL_BOAT") patrolBoats += 1;
       if (unit.role === "BATTLESHIP") battleships += 1;
@@ -11355,7 +11352,8 @@ function* sharedCityContextWorkV7(
           : 0) +
         (vampireExposed && role === "KNIGHT" ? -40 : 0) +
         (endgameCity &&
-        ((endgameCaptureShortfall && rule.abilities.includes("CAPTURE")) ||
+        ((endgameCaptureShortfall &&
+          policyRoleCapturesV7(role, view.viewer.faction)) ||
           (endgameSiegeShortfall && policySiegeRuleV7(rule)))
           ? ENDGAME_TRAINING_BIAS_V7
           : 0) +
@@ -12495,9 +12493,7 @@ function scoreCommandWithContext(
         !strandedTransportV7(context, actor.id))
         ? 1335
         : 810;
-    strategicValue = unitRoleRuleV7(view, actor).abilities.includes("CAPTURE")
-      ? 70
-      : 10;
+    strategicValue = policyCapturerV7(view, actor) ? 70 : 10;
     objectiveValue =
       context.naval.target === null
         ? publicRevealGain(view, actor, command.at, context.lookup)
@@ -13193,7 +13189,7 @@ function scoreCommandWithContext(
       if (
         destinationCity !== undefined &&
         isHostile(view, destinationCity.ownerId) &&
-        unitRoleRuleV7(view, actor).abilities.includes("CAPTURE")
+        policyCapturerV7(view, actor)
       ) {
         priority = Math.max(priority, 1290);
         strategicValue += 30;
@@ -15626,10 +15622,7 @@ function curiosityMoveValueV7(
  * the endgame keep their decisions.
  */
 function canCaptureV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
-  return (
-    unit.form === "LAND" &&
-    unitRoleRuleV7(view, unit).abilities.includes("CAPTURE")
-  );
+  return unit.form === "LAND" && policyCapturerV7(view, unit);
 }
 
 /** An own capturer next to `center` that can still step onto it this turn. */
@@ -15815,11 +15808,7 @@ function endgameLandingValueV7(
   if (plan === null) return 0;
   const view = context.view;
   const actor = context.lookup.unitsById.get(command.unitId);
-  if (
-    actor === undefined ||
-    !unitRoleRuleV7(view, actor).abilities.includes("CAPTURE")
-  )
-    return 0;
+  if (actor === undefined || !policyCapturerV7(view, actor)) return 0;
   const route = plan.routeDistanceByKey.get(coordKey(command.at));
   if (route === undefined || route > 3) return 0;
   // pulp_wars-ykw.7: the route must lead to a target city. While the plan
@@ -15850,7 +15839,7 @@ function endgameKeepsAshoreV7(
     plan === null ||
     actor === undefined ||
     actor.form !== "LAND" ||
-    !unitRoleRuleV7(context.view, actor).abilities.includes("CAPTURE")
+    !policyCapturerV7(context.view, actor)
   )
     return false;
   return Number.isFinite(
@@ -18974,7 +18963,7 @@ function martianCapturerCanEnterV7(
       unit.form === "LAND" &&
       distance(unit.at, center) === 1 &&
       movers.has(unit.id) &&
-      unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"),
+      policyCapturerV7(view, unit),
   );
 }
 
@@ -19224,7 +19213,7 @@ function armyVillageFerryV7(
       unit.ownerId === view.viewer.id &&
       unit.form === "LAND" &&
       !fliesForPolicyV7(view, unit) &&
-      unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"),
+      policyCapturerV7(view, unit),
   );
   return view.board.tiles.some(
     (tile) =>
@@ -19270,7 +19259,7 @@ function armyVillageDeliveryV7(
   const view = context.view;
   if (
     passenger.ownerId !== view.viewer.id ||
-    !unitRoleRuleV7(view, passenger).abilities.includes("CAPTURE") ||
+    !policyCapturerV7(view, passenger) ||
     // From a city: a unit that has not acted, on or beside an own center.
     !primaryReadyForPolicyV7(passenger) ||
     !view.cities.some(
@@ -19309,7 +19298,7 @@ function armyVillageDeliveryV7(
             (unit.ownerId === view.viewer.id &&
               unit.form === "LAND" &&
               distance(unit.at, tile.at) <= 1 &&
-              unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"))),
+              policyCapturerV7(view, unit))),
       )
     )
       continue;
@@ -22069,8 +22058,7 @@ function navalMovementObjectiveValueV7(
   if (actor.form === "NAVAL") {
     return routeProgress(context.naval.fleetDistanceByKey, actor.at, to);
   }
-  if (!unitRoleRuleV7(context.view, actor).abilities.includes("CAPTURE"))
-    return 0;
+  if (!policyCapturerV7(context.view, actor)) return 0;
   // pulp_wars-9s0.1: nor does it walk to a Port.
   if (context.tactical.campaign?.assignmentByUnitId.has(actor.id) === true)
     return 0;

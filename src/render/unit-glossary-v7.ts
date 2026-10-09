@@ -201,7 +201,6 @@ const ENTRIES = {
     "Shoots over a distance only: it cannot hit a unit on the next tile.",
   ],
   SLOW_TO_STRIKE: ["Slow to strike", "Cannot attack on a turn it has moved."],
-  NO_CAPTURE: ["Can't capture", "Cannot take villages or cities."],
   SLIPS_PAST: [
     "Slips past",
     "Enemies next to its path do not stop its movement.",
@@ -314,7 +313,7 @@ const ENTRIES = {
     "Shield",
     "Soaks up damage before its health does, and refills at the start of your turn.",
   ],
-  FLY: ["Flies", "Flies over any terrain and any unit. It can never capture."],
+  FLY: ["Flies", "Flies over any terrain and any unit."],
   STRIDE: [
     "Strides",
     "Walks through forest, mountain and shallow water without stopping. It never gets cover.",
@@ -374,10 +373,7 @@ const ENTRIES = {
     "Boulders",
     "Its throw ignores Walls and Field Defense, and hits harder when it has not moved.",
   ],
-  PROWL: [
-    "Prowl",
-    "Enemies next to its path do not stop it. It cannot stand on a city or village that is not yours.",
-  ],
+  PROWL: ["Prowl", "Enemies next to its path do not stop it."],
   COLD_AURA: [
     "Cold Aura",
     "Chills every enemy next to it at the start of your turn.",
@@ -759,8 +755,8 @@ export function abilityGlossaryIdV7(
 
 /**
  * The traits of a faction's role that are no listed ability: what the role
- * rule and the role mechanics say about it (it cannot capture, it shoots
- * from afar, its Shield, the Egg it hatches from, ...).
+ * rule and the role mechanics say about it (it shoots from afar, its
+ * Shield, the Egg it hatches from, ...).
  */
 export function roleTraitGlossaryIdsV7(
   role: UnitRoleIdV7,
@@ -777,7 +773,6 @@ export function roleTraitGlossaryIdsV7(
   else if (attacks && rule.range > 1) traits.push("RANGED");
   if (attacks && !rule.mayUsePrimaryActionAfterMove)
     traits.push("SLOW_TO_STRIKE");
-  if (!ship && !rule.abilities.includes("CAPTURE")) traits.push("NO_CAPTURE");
   if (ship) {
     if (mechanics.splash) traits.push("SPLASH");
     return traits;

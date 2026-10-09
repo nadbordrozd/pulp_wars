@@ -598,7 +598,7 @@ export function dwarfAbilityDescriptionV7(
     case "DIG_IN":
       return "With Dig In, it fights as if on Field Defense while it has not moved this turn and stands on or next to your city center.";
     case "FLY":
-      return "Flies over any terrain and any unit and ignores zones of control; never captures or stands on a foreign city.";
+      return "Flies over any terrain and any unit and ignores zones of control.";
     case "BOMB_RUN":
       return `Flies over an enemy within ${BOMB_RANGE_V7} tiles, bombs it for ${BOMB_DAMAGE_V7} (${DIVE_BOMB_DAMAGE_V7} with Dive) and lands up to ${BOMB_LANDING_RANGE_V7} tiles beyond it. Nothing hits back, and no unit is bombed twice in a turn. It has no ordinary attack.`;
     case "CLOCKWORK":
@@ -695,7 +695,7 @@ export function dwarfRecruitNotesV7(
       ? [`${CLOCKWORK_INFO_V7}; it never recovers by itself.`]
       : []),
     ...(mechanics.movementMode === "FLY"
-      ? ["Flies over any terrain and unit; never captures."]
+      ? ["Flies over any terrain and unit."]
       : []),
     ...(mechanics.repairsAsMachine && !mechanics.construct
       ? [

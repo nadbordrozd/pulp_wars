@@ -450,11 +450,11 @@ Unchanged ([current rules section 23.6](RULESET_7_CURRENT.md#236-bounce)).
 ### 7.5 Confectioner: Re-bake and Top-Up
 
 The Confectioner keeps the Captain's body (5 Coins, 10 HP, Attack 1,
-Defense 1, Move 1, no capture, no Rally). Its primary actions are
+Defense 1, Move 1, no Rally; it captures since `pulp_wars-ke95`). Its primary actions are
 `ATTACK`, **`REBAKE`** ([section 8.1](#81-crumbs-and-re-bake)), and
 **`TOP_UP`** ([section 8.2](#82-top-up)). It no longer has `TEND_WOUNDED`
 (Frosting); `TEND_WOUNDED` is never offered to a Candy unit. Public
-abilities: `ATTACK`, `REBAKE`, `TOP_UP`, `SUGAR_RUSH`.
+abilities: `ATTACK`, `CAPTURE`, `REBAKE`, `TOP_UP`, `SUGAR_RUSH`.
 
 ### 7.6 Pie Launcher: Splat
 
@@ -507,7 +507,8 @@ every attack it makes thumps 2 into every other enemy around it.
   unbounced tile, marked `thumpUncertain: true`).
 
 The Bunny keeps Knight parity otherwise (9 Coins, 14 HP, Attack 3, Defense
-1.5, Move 2, the advance after a melee kill, no capture). Role mechanics
+1.5, Move 2, the advance after a melee kill; it captures since
+`pulp_wars-ke95`). Role mechanics
 `hop: true` and `thumpDamage: 2` for the Candy `KNIGHT` only; public
 abilities `HOP` and `THUMP`.
 

@@ -190,13 +190,13 @@ describe("the Undead pass: identity", () => {
   // , the Dinosaur pass 7r53, and the economy rejig 7r54, so 7r51 is a
   // prior identity.
   it("was 7r51 after 7r50, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-13, -11)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r64");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r64.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-14, -12)).toEqual([
       "pulp-wars-poc-7r50",
       "pulp-wars-poc-7r51",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-13, -11)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-14, -12)).toEqual([
       "pulpWars.save.v7r50.current",
       "pulpWars.save.v7r51.current",
     ]);
@@ -236,9 +236,10 @@ describe("the Undead pass: identity", () => {
       ["Ghoul", ["ATTACK", "CAPTURE", "CHARGE", "DEVOUR"]],
       ["Banshee", ["CAPTURE", "WAIL"]],
       ["Zombie", ["ATTACK", "CAPTURE", "INFECT", "BITE"]],
-      ["Necromancer", ["ATTACK", "RALLY", "RAISE_DEAD"]],
-      ["Lich", ["ATTACK", "PLAGUE"]],
-      ["Vampire", ["ATTACK", "LIFESTEAL", "UNANSWERED", "ESCAPE"]],
+      ["Necromancer", ["ATTACK", "CAPTURE", "RALLY", "RAISE_DEAD"]],
+      ["Lich", ["ATTACK", "CAPTURE", "PLAGUE"]],
+      // Any unit can capture since `pulp_wars-ke95`.
+      ["Vampire", ["ATTACK", "CAPTURE", "LIFESTEAL", "UNANSWERED", "ESCAPE"]],
       // The giants' signatures (`pulp_wars-w49.30`): Swallow instead of Push.
       ["Abomination", ["ATTACK", "CAPTURE", "INFECT", "SWALLOW"]],
     ]);

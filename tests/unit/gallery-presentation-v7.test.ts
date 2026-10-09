@@ -99,10 +99,10 @@ describe("Gallery presentation", () => {
       })),
     );
     expect(details.abilities.map((ability) => ability.name)).toEqual([
+      "Capture",
       "Plague",
       "Long shot",
       "Slow to strike",
-      "Can't capture",
       "Splash",
       "Wrecker",
       "Restless",

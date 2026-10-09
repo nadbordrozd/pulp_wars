@@ -246,9 +246,9 @@ describe("Revision 13 Undead DOM", () => {
         (line) => line.textContent,
       ),
     ).toEqual([
+      "CaptureTakes a village or an enemy city when it starts your turn standing on its centre.",
       "FrenzyFriendly units next to it hit harder on their next attack this turn.",
       "Raise DeadRaises a Skeleton from every free Grave within 2 tiles.",
-      "Can't captureCannot take villages or cities.",
       "RestlessHeals only inside your own borders.",
     ]);
     expect(help.textContent).not.toContain("Rally");

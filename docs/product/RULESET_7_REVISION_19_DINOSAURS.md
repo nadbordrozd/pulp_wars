@@ -1,5 +1,18 @@
 # Ruleset 7 revision 19: Dinosaur faction
 
+**Any unit can capture** (`pulp_wars-ke95`, user direction 2026-10-09):
+every land unit of every faction now has `CAPTURE`, so wherever this
+document says a unit has no capture, cannot capture, or lists the
+capture-capable units, read that every land unit captures under the
+ordinary capture rule. Flyers (Saucer, Mothership, Gyrocopter) and the
+Prowling Sabretooth included: wherever this document says a flyer or a
+Sabretooth never ends a Move, lands, or advances on a village or a foreign
+center, read that it may, and then besieges and captures like any land
+unit (only a Dwarf rider on its surfacing turn still avoids foreign
+centers). Boats, Eggs, embarked and burrowed units, and neutral
+curiosities still never capture. See
+[current rules section 4.7](RULESET_7_CURRENT.md#47-siege-and-capture).
+
 **The Dinosaur pass** (`pulp_wars-w49.15`, `pulp-wars-poc-7r53`,
 [its record](RULESET_7_TUNING_DINOSAUR.md)) changed rules of this
 document; the current rules win where this text differs. **The Caveman
@@ -1011,8 +1024,9 @@ See [section 6.5](#65-shaman-hatch).
   ([section 6.7](#67-destruction-capture-and-disband)), orphans the former
   owner's other units homed there, and re-homes the capturing unit with its
   slots ([section 5.1](#51-big-bodies-capacity-slots)).
-- **Capture-capable Dinosaur units:** Caveman, Raptor, Spitter, Ankylosaurus,
-  and Brontosaurus. The Shaman, Triceratops, and T-Rex cannot capture.
+- **Capture-capable Dinosaur units:** every Dinosaur unit (not an Egg)
+  since `pulp_wars-ke95` (before it: Caveman, Raptor, Spitter,
+  Ankylosaurus, and Brontosaurus).
 - **City action.** `LAY_EGG` joins `TRAIN`, `TRAIN_NAVAL`, and `LAND_GRANT`
   as the one city action per turn.
 - **Tile economy.** An Egg does not block harvesting, building, Roads,

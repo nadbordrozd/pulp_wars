@@ -1,5 +1,18 @@
 # Ruleset 7: Ice Folk faction
 
+**Any unit can capture** (`pulp_wars-ke95`, user direction 2026-10-09):
+every land unit of every faction now has `CAPTURE`, so wherever this
+document says a unit has no capture, cannot capture, or lists the
+capture-capable units, read that every land unit captures under the
+ordinary capture rule. Flyers (Saucer, Mothership, Gyrocopter) and the
+Prowling Sabretooth included: wherever this document says a flyer or a
+Sabretooth never ends a Move, lands, or advances on a village or a foreign
+center, read that it may, and then besieges and captures like any land
+unit (only a Dwarf rider on its surfacing turn still avoids foreign
+centers). Boats, Eggs, embarked and burrowed units, and neutral
+curiosities still never capture. See
+[current rules section 4.7](RULESET_7_CURRENT.md#47-siege-and-capture).
+
 **Status:** **folded into [Ruleset 7: current rules](RULESET_7_CURRENT.md)
 (kept as history)** by `pulp_wars-7g3.8` at `pulp-wars-poc-7r30`: the
 current rules describe the running six-faction game, with the Ice Folk in
@@ -1919,11 +1932,13 @@ Ice Folk engine bead, which checks them against that engine.
 
 ### 10.6 Cities, siege, capture, and capacity
 
-- **Capture-capable Ice Folk units:** Yeti, Sled, Snow Hunter, Mammoth, and
-  Frost Giant. The Witch, the Boulder Yeti, and the Sabretooth cannot
-  capture.
+- **Capture-capable Ice Folk units:** every Ice Folk land unit since
+  `pulp_wars-ke95` (before it: Yeti, Sled, Snow Hunter, Mammoth, and Frost
+  Giant), the Sabretooth included: it may end on a foreign center since
+  then.
 - **Siege.** An Ice Folk unit on a hostile center besieges it like any unit.
-  A Sabretooth can never be there ([section 7.7](#77-prowl-sabretooth)).
+  A Sabretooth could never be there ([section 7.7](#77-prowl-sabretooth))
+  until `pulp_wars-ke95`; it besieges like any unit since.
 - **Capture and frost.** Capture needs no Move, so a sluggish unit that began
   its turn on a center captures as usual.
 - **Fortification.** An Ice Folk unit on its owner's Walled center has the
@@ -2487,8 +2502,9 @@ One sentence per rule, shown in Help for every viewer:
   Attack 1.5.
 - **Boulders:** a Boulder Yeti's throw ignores Walls and Field Defense, and
   has +1 Attack on a turn it has not moved.
-- **Prowl:** zones of control do not stop a Sabretooth; it cannot stand on a
-  city or village it does not own.
+- **Prowl:** zones of control do not stop a Sabretooth. (Until
+  `pulp_wars-ke95` the line went on: "it cannot stand on a city or village
+  it does not own".)
 - **Cold Aura:** a Frost Giant frosts every hostile unit next to it at the
   start of its owner's turn.
 - **Deep Winter:** with Deep Winter, Snow spreads two tiles from Ice Folk

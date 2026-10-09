@@ -121,7 +121,7 @@ import {
   walledV7,
 } from "../fixtures/v7-revision20";
 
-// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r63`,
+// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r64`,
 // docs/product/RULESET_7_TUNING_DINOSAUR.md): Scouts for a Dinosaur city (a
 // free Raptor); a Triceratops's run-up counts one tile, two with
 // Wallbreaker; the Caveman's Pack Hunt; a Dinosaur Market hires a dinosaur
@@ -206,15 +206,15 @@ describe("the Dinosaur pass: identity", () => {
   // The economy rejig (tests/unit/ruleset-v7-economy-rejig.test.ts) took
   // 7r54, so 7r53 is the last prior identity.
   it("was 7r53 after 7r52, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r64");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r64.current");
     // The ninth unit (`pulp_wars-w49.17`) took 7r55, so 7r54 is prior too.
-    expect(PRIOR_RULESET_7_IDS.slice(-11, -8)).toEqual([
+    expect(PRIOR_RULESET_7_IDS.slice(-12, -9)).toEqual([
       "pulp-wars-poc-7r52",
       "pulp-wars-poc-7r53",
       "pulp-wars-poc-7r54",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-11, -8)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-12, -9)).toEqual([
       "pulpWars.save.v7r52.current",
       "pulpWars.save.v7r53.current",
       "pulpWars.save.v7r54.current",
@@ -2303,15 +2303,23 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
       ARMY_DINOSAUR_ALONE_RADIUS_V7,
     ]).toEqual([3, 2, 2, 2, 2]);
     // Two Fighters side by side, three tiles from a Triceratops, far from
-    // every city.
+    // every city. Round 12: since the Triceratops captures
+    // (`pulp_wars-ke95`), the opening's villages first (ten rounds) keeps
+    // it out of the Fighters' reach altogether.
+    const later = (state: GameStateV7): GameStateV7 => ({
+      ...state,
+      round: 12,
+    });
     const contact = (pieces: readonly GoblinPieceV7[]): boolean =>
       unitScored(
-        asDinosaur([
-          own("SWORDSMAN", 2, 3),
-          foe("FIGHTER", 5, 3),
-          foe("FIGHTER", 5, 2),
-          ...pieces,
-        ]),
+        later(
+          asDinosaur([
+            own("SWORDSMAN", 2, 3),
+            foe("FIGHTER", 5, 3),
+            foe("FIGHTER", 5, 2),
+            ...pieces,
+          ]),
+        ),
         at(2, 3),
       ).some((candidate) => {
         const end = endOf(candidate.command);
@@ -2328,7 +2336,7 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
     // A lone Fighter is charged without support.
     expect(
       unitScored(
-        asDinosaur([own("SWORDSMAN", 2, 3), foe("FIGHTER", 5, 3)]),
+        later(asDinosaur([own("SWORDSMAN", 2, 3), foe("FIGHTER", 5, 3)])),
         at(2, 3),
       ).some((candidate) => {
         const end = endOf(candidate.command);

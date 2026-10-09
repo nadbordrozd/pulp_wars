@@ -599,10 +599,15 @@ describe("ruleset-7 revision-13 Wail: resolution", () => {
     expect(effectiveRoleRuleV7("BATTLESHIP", "ORIGINAL").abilities).toEqual([
       "ATTACK",
     ]);
+    // Any unit can capture (`pulp_wars-ke95`).
     expect(effectiveRoleRuleV7("CATAPULT", "ORIGINAL").abilities).toEqual([
       "ATTACK",
+      "CAPTURE",
     ]);
-    expect(publicUnitStatsV7(state, catapult).abilities).toEqual(["ATTACK"]);
+    expect(publicUnitStatsV7(state, catapult).abilities).toEqual([
+      "ATTACK",
+      "CAPTURE",
+    ]);
   });
 
   it("threatens Chebyshev 1-2 around every tile a Banshee can reach", () => {
@@ -636,10 +641,20 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
       COMMAND_KIND_ORDER_V7.indexOf("RECOVER"),
     );
     // The Dwarf revision (`pulp_wars-78i.3`) inserts UNIT_BOMBED
-    // immediately after COMBAT_RESOLVED, before WAIL_RESOLVED.
+    // immediately after COMBAT_RESOLVED, before WAIL_RESOLVED. Was 86
+    // (COMBAT_RESOLVED + 2): Dwarf crowd control (`pulp_wars-w49.33`, 7r60)
+    // inserted WHIRL_RESOLVED and BARRICADE_ATTACKED after UNIT_BOMBED, so
+    // WAIL_RESOLVED is at 88 (COMBAT_RESOLVED + 4).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(88);
     expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(
-      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("COMBAT_RESOLVED") + 2,
+      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("COMBAT_RESOLVED") + 4,
     );
+    expect(
+      DOMAIN_EVENT_KIND_ORDER_V7.slice(
+        DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_BOMBED") + 1,
+        DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED"),
+      ),
+    ).toEqual(["WHIRL_RESOLVED", "BARRICADE_ATTACKED"]);
     expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_BOMBED")).toBe(
       DOMAIN_EVENT_KIND_ORDER_V7.indexOf("COMBAT_RESOLVED") + 1,
     );

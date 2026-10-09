@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 63;
+const REVISION = 64;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -618,7 +618,7 @@ const ROSTER = [
     2,
     true,
     // `pulp_wars-1wy.3` (M2): the Saucer has the Tractor Beam.
-    ["ATTACK", "CHARGE", "FLY", "BEAM_DOWN", "TRACTOR_BEAM"],
+    ["ATTACK", "CAPTURE", "CHARGE", "FLY", "BEAM_DOWN", "TRACTOR_BEAM"],
     "FLY",
     false,
     false,
@@ -678,7 +678,7 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "RALLY", "MIND_CONTROL"],
+    ["ATTACK", "CAPTURE", "RALLY", "MIND_CONTROL"],
     "GROUND",
     true,
     false,
@@ -700,7 +700,7 @@ const ROSTER = [
     2,
     2,
     true,
-    ["ATTACK", "STRIDE", "HEAT_RAY", "PIERCE"],
+    ["ATTACK", "CAPTURE", "STRIDE", "HEAT_RAY", "PIERCE"],
     "STRIDE",
     false,
     false,
@@ -721,7 +721,7 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "FLY", "BEAM_DOWN", "TRACTOR_BEAM"],
+    ["ATTACK", "CAPTURE", "FLY", "BEAM_DOWN", "TRACTOR_BEAM"],
     "FLY",
     false,
     false,

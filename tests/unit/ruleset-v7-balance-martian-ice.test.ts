@@ -138,8 +138,10 @@ describe("the balance registry (section 10)", () => {
   it("M2 to M4: the Saucer pulls at Scouting, the Mothership is an 8-Coin carrier, the Grunt has Attack 2 and 8 HP", () => {
     const saucer = effectiveRoleRuleV7("RAIDER", "MARTIAN");
     expect(saucer.technology).toBe("SCOUTING");
+    // Any unit can capture (`pulp_wars-ke95`).
     expect(saucer.abilities).toEqual([
       "ATTACK",
+      "CAPTURE",
       "CHARGE",
       "FLY",
       "BEAM_DOWN",
@@ -152,6 +154,7 @@ describe("the balance registry (section 10)", () => {
     expect(mothership.cost).toBe(8);
     expect(mothership.abilities).toEqual([
       "ATTACK",
+      "CAPTURE",
       "FLY",
       "BEAM_DOWN",
       "TRACTOR_BEAM",

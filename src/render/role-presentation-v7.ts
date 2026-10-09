@@ -83,8 +83,6 @@ export function recruitmentRolePresentationV7(
   const ship = isNavalRoleV7(roleId);
   if (!role.mayUsePrimaryActionAfterMove && role.minimumRange <= 1 && !ship)
     restrictions.push("Can't attack after moving.");
-  if (!role.abilities.includes("CAPTURE") && !ship)
-    restrictions.push("Can't capture.");
   // Tuning 4 (`pulp_wars-w49.3`): the Human Raider slips past a screen.
   if (
     faction === "ORIGINAL" &&

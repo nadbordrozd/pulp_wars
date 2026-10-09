@@ -171,7 +171,7 @@ describe("Ice Folk unit dock", () => {
     );
     expect(
       roleGlossaryV7("CAPTAIN", "ICE_FOLK").map((entry) => entry.name),
-    ).toEqual(["Blizzard", "Cold Snap", "Freeze", "Can't capture", "Glide"]);
+    ).toEqual(["Capture", "Blizzard", "Cold Snap", "Freeze", "Glide"]);
     expect(
       document.querySelector(
         '.v7-unit-help-dialog [data-tactical-state="blizzard"]',

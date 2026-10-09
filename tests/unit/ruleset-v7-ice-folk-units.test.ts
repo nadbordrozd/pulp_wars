@@ -504,7 +504,10 @@ describe("Prowl (section 7.7)", () => {
     ).toBe("ZOC_STOPS_MOVE");
   });
 
-  it("never ends a Move or advances on a settlement center it does not own (no landing: an Ice Folk unit never embarks since the frozen sea)", () => {
+  // Any unit can capture (`pulp_wars-ke95`, user direction 2026-10-09): the
+  // Sabretooth ends a Move and advances on a settlement center like any
+  // land unit (section 7.7 kept it off foreign ones before).
+  it("ends a Move and advances on a village center, and stands on its own center", () => {
     const state = iceFieldV7(
       [
         { seat: 0, role: "KNIGHT", at: at(4, 4) },
@@ -513,9 +516,12 @@ describe("Prowl (section 7.7)", () => {
       { techs: { 0: ["SCOUTING", "RAIDING", "CHIVALRY"] } },
     );
     // The neutral village (5, 5).
-    expect(
-      rejectedV7(state, move(state, at(4, 4), at(5, 5))).params.reason,
-    ).toBe("SETTLEMENT_FORBIDDEN");
+    const onVillage = applyOkV7(
+      state,
+      activeIdV7(state),
+      move(state, at(4, 4), at(5, 5)),
+    ).state;
+    expect(unitAtV7(onVillage, at(5, 5)).role).toBe("KNIGHT");
     // It may pass over the village and end beyond it.
     applyOkV7(
       state,
@@ -531,7 +537,7 @@ describe("Prowl (section 7.7)", () => {
       { techs: { 0: ["SCOUTING", "RAIDING", "CHIVALRY"] } },
     );
     applyOkV7(home, activeIdV7(home), move(home, at(7, 7), at(8, 8)));
-    // A kill on a village center: no advance.
+    // A kill on a village center: it advances onto it.
     const village = iceFieldV7(
       [
         { seat: 0, role: "KNIGHT", at: at(4, 4) },
@@ -540,7 +546,7 @@ describe("Prowl (section 7.7)", () => {
       { techs: { 0: ["SCOUTING", "RAIDING", "CHIVALRY"] } },
     );
     const run = attackV7(village, at(4, 4), at(5, 5));
-    expect(run.combat).toMatchObject({ defenderDies: true, advances: false });
+    expect(run.combat).toMatchObject({ defenderDies: true, advances: true });
   });
 });
 

@@ -213,14 +213,17 @@ describe("Normal AI second pass: the siege", () => {
       expect(candidate.score.priority).not.toBe(1178);
   });
 
-  // Tuning 2 (7r47): a Human Knight is a capturer itself, so the seat
-  // without one fields Vampires (the Undead Knight role cannot capture).
-  it("does not move in without a capturer to take the city", () => {
-    const state = field([defender, ...knights], {
-      factions: ["UNDEAD", "ORIGINAL"],
-    });
+  // Tuning 2 (7r47): a Human Knight is a capturer itself. Any unit can
+  // capture since `pulp_wars-ke95`, so a seat of Vampires (which could not
+  // capture before, and then held back) moves in on the defender too: the
+  // assault no longer waits for a separate capturer.
+  it("moves in with Vampires, which capture since ke95", () => {
+    const state = {
+      ...field([defender, ...knights], { factions: ["UNDEAD", "ORIGINAL"] }),
+      round: 12,
+    };
     const knight = unitCandidatesV7(state, at(5, 7), "MOVE")[0];
-    expect(knight?.score.priority).not.toBe(1177);
+    expect(knight?.score.priority).toBe(1177);
   });
 });
 

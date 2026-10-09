@@ -82,11 +82,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
-    expect(PRIOR_RULESET_7_IDS.at(-47)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(62);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-47)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r64");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r64.current");
+    expect(PRIOR_RULESET_7_IDS.at(-48)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(63);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-48)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -400,7 +400,7 @@ describe("ruleset-7 Goblin roster", () => {
       1,
       1,
       true,
-      ["ATTACK", "RALLY"],
+      ["ATTACK", "CAPTURE", "RALLY"],
       null,
       null,
     ],
@@ -417,7 +417,7 @@ describe("ruleset-7 Goblin roster", () => {
       2,
       1,
       false,
-      ["ATTACK", "KABOOM"],
+      ["ATTACK", "CAPTURE", "KABOOM"],
       5,
       7,
     ],
@@ -434,7 +434,7 @@ describe("ruleset-7 Goblin roster", () => {
       1,
       1,
       true,
-      ["ATTACK", "OVERRUN", "KABOOM"],
+      ["ATTACK", "CAPTURE", "OVERRUN", "KABOOM"],
       5,
       7,
     ],
@@ -558,8 +558,9 @@ describe("ruleset-7 Goblin roster", () => {
       ]).toEqual(ROSTER[role]);
       expect(rule.tacticalRole).toBe(ORIGINAL_ROLE_RULES_V7[role].tacticalRole);
     }
-    // Capture: Goblin, Wolf Rider, Bomb Chucker, Orc Brute, Troll (and the
-    // copied Human Swordsman role, which no Goblin seat fields).
+    // Capture: every land role since any unit can capture
+    // (`pulp_wars-ke95`; before, the Orc Warboss, the Rocket Cart, and the
+    // Scrap Buggy did not).
     expect(
       UNIT_ROLE_IDS_V7.filter((role) =>
         GOBLIN_ROLE_RULES_V7[role].abilities.includes("CAPTURE"),
@@ -569,6 +570,9 @@ describe("ruleset-7 Goblin roster", () => {
       "RAIDER",
       "MARKSMAN",
       "GUARD",
+      "CAPTAIN",
+      "CATAPULT",
+      "KNIGHT",
       "JUGGERNAUT",
       "SWORDSMAN",
     ]);

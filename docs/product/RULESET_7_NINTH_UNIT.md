@@ -1,5 +1,18 @@
 # Ruleset 7: the ninth unit and the technology names
 
+**Any unit can capture** (`pulp_wars-ke95`, user direction 2026-10-09):
+every land unit of every faction now has `CAPTURE`, so wherever this
+document says a unit has no capture, cannot capture, or lists the
+capture-capable units, read that every land unit captures under the
+ordinary capture rule. Flyers (Saucer, Mothership, Gyrocopter) and the
+Prowling Sabretooth included: wherever this document says a flyer or a
+Sabretooth never ends a Move, lands, or advances on a village or a foreign
+center, read that it may, and then besieges and captures like any land
+unit (only a Dwarf rider on its surfacing turn still avoids foreign
+centers). Boats, Eggs, embarked and burrowed units, and neutral
+curiosities still never capture. See
+[current rules section 4.7](RULESET_7_CURRENT.md#47-siege-and-capture).
+
 **Status:** implemented on `pulp-wars-poc-7r55` (bead `pulp_wars-w49.17`).
 This is the record of what was built from Parts A and B of
 [the heavy slot and economy design](RULESET_7_DESIGN_HEAVY_SLOT_AND_ECONOMY.md),

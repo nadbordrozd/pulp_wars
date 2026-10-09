@@ -1679,7 +1679,8 @@ describe("ruleset-7 Dinosaur ability parities", () => {
         { unitId: unitAtV7(state, { x: 5, y: 2 }).id, amount: 2, hpAfter: 7 },
       ],
     });
-    // The Shaman cannot capture.
+    // Off a settlement the Shaman is not capture-eligible (it may capture
+    // like every land unit since `pulp_wars-ke95`).
     expect(unitAtV7(state, { x: 5, y: 3 }).captureEligible).toBe(false);
   });
 
@@ -1804,7 +1805,7 @@ describe("ruleset-7 Dinosaur ability parities", () => {
     ).toMatchObject({ runUpBonus: 1, runUpMaximum: 2, capacitySlots: 2 });
   });
 
-  it("gives the Brontosaurus no Push (Thunder Stomp instead) and the T-Rex no capture", () => {
+  it("gives the Brontosaurus no Push (Thunder Stomp instead) and every dinosaur capture", () => {
     const state = goblinArenaV7(
       ["DINOSAUR", "ORIGINAL"],
       [
@@ -1830,26 +1831,29 @@ describe("ruleset-7 Dinosaur ability parities", () => {
       false,
     );
     expect(unitAtV7(result.state, { x: 5, y: 3 }).id).toBe(guard.id);
-    // Capture-capable Dinosaur units: Caveman, Raptor, Spitter,
-    // Ankylosaurus, and Brontosaurus.
+    // Any unit can capture (`pulp_wars-ke95`): every hatched dinosaur
+    // captures; before it only the Caveman, Raptor, Spitter, Ankylosaurus,
+    // and Brontosaurus did.
     const village = { x: 5, y: 5 };
-    for (const [role, captures] of [
-      ["FIGHTER", true],
-      ["RAIDER", true],
-      ["MARKSMAN", true],
-      ["GUARD", true],
-      ["JUGGERNAUT", true],
-      ["CAPTAIN", false],
-      ["SWORDSMAN", false],
-      ["KNIGHT", false],
+    for (const role of [
+      "FIGHTER",
+      "RAIDER",
+      "MARKSMAN",
+      "GUARD",
+      "JUGGERNAUT",
+      "CAPTAIN",
+      "CATAPULT",
+      "SWORDSMAN",
+      "KNIGHT",
     ] as const) {
       const arena = goblinArenaV7(
         ["DINOSAUR", "ORIGINAL"],
         [
-          { seat: 0, role, at: village, captureEligible: captures },
+          { seat: 0, role, at: village, captureEligible: true },
           { seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } },
         ],
       );
+      expect(parseGameStateV7(arena), role).not.toBeNull();
       const capture: CommandV7 = {
         kind: "CAPTURE",
         unitId: unitAtV7(arena, village).id,
@@ -1857,19 +1861,7 @@ describe("ruleset-7 Dinosaur ability parities", () => {
       expect(
         applyCommandV7(arena, arena.humanPlayerId, capture).accepted,
         role,
-      ).toBe(captures);
-      // The state schema rejects capture eligibility for the other roles.
-      if (!captures)
-        expect(
-          parseGameStateV7({
-            ...arena,
-            units: arena.units.map((unit) =>
-              sameV7(unit.at, village)
-                ? { ...unit, captureEligible: true }
-                : unit,
-            ),
-          }),
-        ).toBeNull();
+      ).toBe(true);
     }
   });
 });

@@ -244,13 +244,6 @@ describe("Ruleset 7 unit glossary", () => {
         "ROCK_HARD",
       ],
       [
-        "cannot capture",
-        (role, faction) =>
-          !isNavalRoleV7(role) &&
-          !effectiveRoleRuleV7(role, faction).abilities.includes("CAPTURE"),
-        "NO_CAPTURE",
-      ],
-      [
         "cannot attack after moving",
         (role, faction) => {
           const rule = effectiveRoleRuleV7(role, faction);
@@ -302,19 +295,19 @@ describe("Ruleset 7 unit glossary", () => {
     }
     expect(
       roleGlossaryV7("CAPTAIN", "ORIGINAL").map((entry) => entry.id),
-    ).toEqual(["RALLY", "TEND", "NO_CAPTURE"]);
+    ).toEqual(["CAPTURE", "RALLY", "TEND"]);
     expect(
       roleGlossaryV7("MARKSMAN", "GOBLIN").map((entry) => entry.id),
     ).toEqual(["CAPTURE", "KABOOM", "LONG_SHOT", "BOMBS", "EXPLODES"]);
     expect(
       roleGlossaryV7("CAPTAIN", "UNDEAD").map((entry) => entry.name),
-    ).toEqual(["Frenzy", "Raise Dead", "Can't capture", "Restless"]);
+    ).toEqual(["Capture", "Frenzy", "Raise Dead", "Restless"]);
     expect(
       roleGlossaryV7("GUARD", "MARTIAN").map((entry) => entry.name),
     ).toEqual(["Capture", "Force Field", "Slow to strike", "Shield"]);
     expect(
       roleGlossaryV7("KNIGHT", "DWARF").map((entry) => entry.name),
-    ).toEqual(["Clockwork", "Whirl", "Can't capture"]);
+    ).toEqual(["Capture", "Clockwork", "Whirl"]);
     // A Mothership's Tractor Beam is the free heavy one.
     expect(
       roleGlossaryV7("KNIGHT", "MARTIAN").map((entry) => entry.id),
@@ -322,6 +315,19 @@ describe("Ruleset 7 unit glossary", () => {
     expect(
       roleGlossaryV7("RAIDER", "MARTIAN").map((entry) => entry.id),
     ).toContain("TRACTOR_BEAM");
+  });
+
+  it("lists Capture for every land unit of every faction (pulp_wars-ke95)", () => {
+    for (const [role, faction] of roles()) {
+      const names = roleGlossaryV7(role, faction).map((entry) => entry.name);
+      expect(names, `${faction} ${role}`).not.toContain("Can't capture");
+      expect(names.includes("Capture"), `${faction} ${role}`).toBe(
+        !isNavalRoleV7(role),
+      );
+    }
+    // Nothing says a flyer or a Prowler stays off villages any more.
+    for (const id of ["FLY", "PROWL"] as const)
+      expect(glossaryEntryV7(id).text, id).not.toMatch(/village|city|captur/i);
   });
 
   it("explains the terms of a unit card and the Giant Spider", () => {

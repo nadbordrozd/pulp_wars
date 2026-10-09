@@ -625,9 +625,12 @@ export function deepSnowStopsUnitV7(
 }
 
 /**
- * Section 7.7: a unit that never ends a Move (or lands) on a settlement
- * center it does not own: a Martian flyer, or a land-form Sabretooth
- * (`PROWL`).
+ * A unit that never ends a Move (or lands, or advances) on a settlement
+ * center it does not own: only a Dwarf rider on the turn it surfaced. Any
+ * unit can capture (`pulp_wars-ke95`, user direction 2026-10-09): a flyer
+ * (the Martian revision section 7.2) and a Prowling Sabretooth (the Ice Folk
+ * revision section 7.7) stood off villages and foreign centers before and
+ * may stand there, and so capture, since.
  */
 export function unitAvoidsForeignSitesV7(
   roster: FactionRosterV7 & { readonly surfacedThisTurn?: readonly UnitId[] },
@@ -640,12 +643,10 @@ export function unitAvoidsForeignSitesV7(
 ): boolean {
   return (
     (unit.form === undefined || unit.form === "LAND") &&
-    (unitRoleMechanicsV7(roster, unit).movementMode === "FLY" ||
-      unitRoleRuleV7(roster, unit).abilities.includes("PROWL") ||
-      // The Dwarf revision (section 5.4, root ruling 1): a rider never ends
-      // a Move or advances on a foreign or neutral center on the turn it
-      // surfaced.
-      surfacedRiderV7(roster, unit))
+    // The Dwarf revision (section 5.4, root ruling 1): a rider never ends
+    // a Move or advances on a foreign or neutral center on the turn it
+    // surfaced.
+    surfacedRiderV7(roster, unit)
   );
 }
 

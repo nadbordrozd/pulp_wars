@@ -966,9 +966,9 @@ describe("Revision 19 growth, abilities and labels", () => {
     expect(
       roleGlossaryV7("KNIGHT", "DINOSAUR").map((entry) => entry.name),
     ).toEqual([
+      "Capture",
       "Rampage",
       "Grows",
-      "Can't capture",
       "Egg-laid",
       ...bigBody("KNIGHT"),
     ]);
@@ -1025,15 +1025,15 @@ describe("Revision 19 growth, abilities and labels", () => {
       ...bigBody("GUARD"),
     ]);
     expect(abilityNames(AT.shaman)).toEqual([
+      "Capture",
       "War Drums",
       "Tend",
       "Hatch",
-      "Can't capture",
     ]);
     expect(abilityNames(AT.triceratops)).toEqual([
+      "Capture",
       "Charge!",
       "Grows",
-      "Can't capture",
       "Egg-laid",
       ...bigBody("SWORDSMAN"),
     ]);
@@ -1153,14 +1153,13 @@ describe("Revision 19 growth, abilities and labels", () => {
     ).toMatchObject({
       label: "Triceratops",
       // Revision 20: it attacks after moving.
-      restrictions: [
-        "Can't capture.",
-        ...dinosaurRecruitNotesV7("SWORDSMAN", "DINOSAUR"),
-      ],
+      // Any unit can capture (`pulp_wars-ke95`): no "Can't capture." line.
+      restrictions: [...dinosaurRecruitNotesV7("SWORDSMAN", "DINOSAUR")],
     });
     expect(
       recruitmentRolePresentationV7("SWORDSMAN", "DINOSAUR").abilities,
     ).toEqual([
+      "Capture: Can take villages and enemy cities.",
       `Charge!: ${dinosaurAbilityDescriptionV7("LINEBREAKER", "DINOSAUR")}`,
       `Grows: ${dinosaurAbilityDescriptionV7("GROW", "DINOSAUR")}`,
     ]);

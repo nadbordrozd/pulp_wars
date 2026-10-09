@@ -550,7 +550,7 @@ const ROSTER = [
     1,
     2,
     true,
-    ["FLY", "BOMB_RUN"],
+    ["CAPTURE", "FLY", "BOMB_RUN"],
     false,
   ],
   [
@@ -598,7 +598,7 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "TEND_WOUNDED", "ASSEMBLE", "BARRICADE"],
+    ["ATTACK", "CAPTURE", "TEND_WOUNDED", "ASSEMBLE", "BARRICADE"],
     true,
   ],
   [
@@ -614,7 +614,7 @@ const ROSTER = [
     3,
     1,
     false,
-    ["ATTACK", "KNOCKBACK"],
+    ["ATTACK", "CAPTURE", "KNOCKBACK"],
     false,
   ],
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Whirligig is the
@@ -635,7 +635,7 @@ const ROSTER = [
     1,
     true,
     // Dwarf crowd control (`pulp_wars-w49.33`): the Whirl.
-    ["ATTACK", "CLOCKWORK", "WHIRL"],
+    ["ATTACK", "CAPTURE", "CLOCKWORK", "WHIRL"],
     false,
   ],
   [
@@ -721,7 +721,7 @@ describe("Dwarf roster (section 3)", () => {
       sightRadius: 1,
       technology: "METALLURGY",
       mayUsePrimaryActionAfterMove: true,
-      abilities: ["ATTACK", "PLATED"],
+      abilities: ["ATTACK", "CAPTURE", "PLATED"],
     });
     const mechanics = (role: UnitRoleIdV7) => roleMechanicsV7(role, "DWARF");
     const roles = (test: (role: UnitRoleIdV7) => boolean) =>

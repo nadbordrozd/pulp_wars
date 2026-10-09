@@ -108,7 +108,8 @@ describe("ruleset-7 revision-20 Triceratops stats", () => {
       sightRadius: 1,
       technology: "METALLURGY",
       mayUsePrimaryActionAfterMove: true,
-      abilities: ["ATTACK", "LINEBREAKER", "GROW"],
+      // Any unit can capture (`pulp_wars-ke95`).
+      abilities: ["ATTACK", "CAPTURE", "LINEBREAKER", "GROW"],
     });
     expect(roleMechanicsV7("SWORDSMAN", "DINOSAUR")).toMatchObject({
       advancesAfterKill: true,
@@ -167,7 +168,7 @@ describe("ruleset-7 revision-20 Triceratops stats", () => {
     );
   });
 
-  it("attacks after a Move, once per turn, and never captures", () => {
+  it("attacks after a Move, once per turn, and captures since ke95", () => {
     const state = fieldV7([
       { seat: 0, role: "SWORDSMAN", at: at(2, 2) },
       { seat: 1, role: "GUARD", at: at(5, 2) },
@@ -196,9 +197,10 @@ describe("ruleset-7 revision-20 Triceratops stats", () => {
         targetUnitId: second.id,
       }),
     ).toBe("UNIT_ALREADY_ACTED");
-    expect(
-      effectiveRoleRuleV7("SWORDSMAN", "DINOSAUR").abilities,
-    ).not.toContain("CAPTURE");
+    // Any unit can capture (`pulp_wars-ke95`); it never captured before.
+    expect(effectiveRoleRuleV7("SWORDSMAN", "DINOSAUR").abilities).toContain(
+      "CAPTURE",
+    );
   });
 
   it("threatens its ordinary move-then-melee reach and no lane tiles", () => {

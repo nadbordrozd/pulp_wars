@@ -278,7 +278,10 @@ describe("ruleset-7 revision-20 Normal AI: Charge! attacks", () => {
     // Two equal Guards next to the Triceratops; one stands on Field Defense
     // in its own territory. The preview already ignores the fortification,
     // so the damage is the same and the fortified one is worth more.
-    const state = fieldDefenseV7(
+    // Round 12: since the Triceratops captures (`pulp_wars-ke95`), the
+    // opening's villages first (ten rounds) holds its non-lethal attacks
+    // after a Move.
+    const fortified = fieldDefenseV7(
       fieldV7([
         {
           seat: 0,
@@ -291,6 +294,7 @@ describe("ruleset-7 revision-20 Normal AI: Charge! attacks", () => {
       ]),
       at(3, 7),
     );
+    const state = { ...fortified, round: 12 };
     const attacks = candidates(state, at(4, 8), "ATTACK");
     expect(attacks.map((candidate) => candidate.command)).toEqual([
       {

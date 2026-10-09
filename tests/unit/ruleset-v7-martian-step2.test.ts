@@ -47,7 +47,7 @@ import {
 import { checkedV7 } from "../fixtures/v7-builders";
 import { martianFieldV7, offeredV7 } from "../fixtures/v7-martian";
 
-// Step two of the Martian pass (`pulp_wars-w49.25`, `pulp-wars-poc-7r63`,
+// Step two of the Martian pass (`pulp_wars-w49.25`, `pulp-wars-poc-7r64`,
 // docs/product/RULESET_7_TUNING_MARTIAN.md section 14): hand-played games as
 // the Humans against the Martian AI and as the Martians. One rule changed:
 // City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -257,14 +257,14 @@ describe("step two of the Martian pass: the identity", () => {
     // (Step two of the Ice Folk pass, `pulp_wars-w49.27`, took 7r59,
     // Dwarf crowd control, `pulp_wars-w49.33`, 7r60, and Goblin explosions
     // and Berserk, `pulp_wars-w49.35`, 7r61.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-6, -4)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r64");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r64.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-7, -5)).toEqual([
       "pulp-wars-poc-7r57",
       "pulp-wars-poc-7r58",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -4)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-7, -5)).toEqual([
       "pulpWars.save.v7r57.current",
       "pulpWars.save.v7r58.current",
     ]);
@@ -789,10 +789,15 @@ describe("step two of the Martian pass: a Shock Trooper for every two Grunts", (
 describe("step two of the Martian pass: a ray unit does not walk out in front of its line", () => {
   /**
    * A Tripod four tiles east of a Human Fighter with `hp` HP, on open
-   * ground, and the given own pieces.
+   * ground, and the given own pieces. Round 12: since the Tripod captures
+   * (`pulp_wars-ke95`), the opening's villages first (ten rounds) keeps it
+   * out of the Fighter's reach altogether.
    */
-  const front = (hp: number, own: readonly GoblinPieceV7[] = []): GameStateV7 =>
-    field(
+  const front = (
+    hp: number,
+    own: readonly GoblinPieceV7[] = [],
+  ): GameStateV7 => ({
+    ...field(
       MARTIAN,
       [
         { seat: 0, role: "CATAPULT", at: at(6, 3) },
@@ -800,7 +805,9 @@ describe("step two of the Martian pass: a ray unit does not walk out in front of
         { seat: 1, role: "FIGHTER", at: at(2, 3), hp },
       ],
       { orphans: [at(6, 3), ...own.map((piece) => piece.at)] },
-    );
+    ),
+    round: 12,
+  });
   const firingTiles = (state: GameStateV7): readonly CoordV7[] =>
     movesOf(state, at(6, 3)).filter((to) => gap(to, at(2, 3)) <= 2);
 

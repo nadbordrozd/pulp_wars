@@ -1,5 +1,18 @@
 # Ruleset 7: Candy faction
 
+**Any unit can capture** (`pulp_wars-ke95`, user direction 2026-10-09):
+every land unit of every faction now has `CAPTURE`, so wherever this
+document says a unit has no capture, cannot capture, or lists the
+capture-capable units, read that every land unit captures under the
+ordinary capture rule. Flyers (Saucer, Mothership, Gyrocopter) and the
+Prowling Sabretooth included: wherever this document says a flyer or a
+Sabretooth never ends a Move, lands, or advances on a village or a foreign
+center, read that it may, and then besieges and captures like any land
+unit (only a Dwarf rider on its surfacing turn still avoids foreign
+centers). Boats, Eggs, embarked and burrowed units, and neutral
+curiosities still never capture. See
+[current rules section 4.7](RULESET_7_CURRENT.md#47-siege-and-capture).
+
 **Name change (`pulp_wars-w49.3`, `pulp-wars-poc-7r46`):** the Candy
 `FIGHTER`-role unit is displayed as **Toffee Trooper** (it was the Gumdrop;
 its sprite has been a wrapped toffee since `pulp_wars-2o7.3`). Only the
@@ -1545,8 +1558,9 @@ Candy command is offered ([section 17](#17-unchanged-behaviour-of-the-other-fact
 
 ### 12.11 Cities, siege, capture, and capacity
 
-- **Capture-capable Candy units:** Toffee Trooper, Donut Racer, Gumball Gunner,
-  Marshmallow, Gingerbread Giant. A Crashed unit cannot capture (Capture is a
+- **Capture-capable Candy units:** every Candy land unit since
+  `pulp_wars-ke95` (before it: Toffee Trooper, Donut Racer, Gumball Gunner,
+  Marshmallow, Gingerbread Giant). A Crashed unit cannot capture (Capture is a
   primary action): a unit that Rushed onto a center captures two turns later
   at the earliest.
 - **Siege.** A Candy unit on a hostile center besieges it like any unit, a

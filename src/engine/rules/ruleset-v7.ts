@@ -1432,7 +1432,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "RALLY", "TEND_WOUNDED"],
+    abilities: ["ATTACK", "CAPTURE", "RALLY", "TEND_WOUNDED"],
   }),
   CATAPULT: role({
     role: "CATAPULT",
@@ -1449,7 +1449,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "SAWMILLING",
     mayUsePrimaryActionAfterMove: false,
-    abilities: ["ATTACK"],
+    abilities: ["ATTACK", "CAPTURE"],
   }),
   KNIGHT: role({
     role: "KNIGHT",
@@ -1471,8 +1471,8 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
     // Tuning 2 (`pulp_wars-w49.3`, 7r47): the Human Knight captures
-    // settlements like the other capturing units. The Knight-role units of
-    // the other factions do not (each has its own `abilities`).
+    // settlements. Since `pulp_wars-ke95` every land role of every faction
+    // has `CAPTURE`; only boats and the neutral Giant Spider lack it.
     abilities: ["ATTACK", "CAPTURE", "OVERRUN"],
   }),
   JUGGERNAUT: role({
@@ -1889,7 +1889,7 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "RALLY", "RAISE_DEAD"],
+    abilities: ["ATTACK", "CAPTURE", "RALLY", "RAISE_DEAD"],
   }),
   CATAPULT: role({
     role: "CATAPULT",
@@ -1906,7 +1906,7 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "SAWMILLING",
     mayUsePrimaryActionAfterMove: false,
-    abilities: ["ATTACK", "PLAGUE"],
+    abilities: ["ATTACK", "CAPTURE", "PLAGUE"],
   }),
   KNIGHT: role({
     role: "KNIGHT",
@@ -1924,7 +1924,7 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     // The Undead pass (`pulp_wars-w49.13`, 7r51): Escape. A Vampire that
     // survives its attack may move again (it strikes and flies back).
-    abilities: ["ATTACK", "LIFESTEAL", "UNANSWERED", "ESCAPE"],
+    abilities: ["ATTACK", "CAPTURE", "LIFESTEAL", "UNANSWERED", "ESCAPE"],
   }),
   JUGGERNAUT: role({
     ...ORIGINAL_ROLE_RULES_V7.JUGGERNAUT,
@@ -2096,7 +2096,7 @@ export const GOBLIN_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "RALLY"],
+    abilities: ["ATTACK", "CAPTURE", "RALLY"],
   }),
   CATAPULT: role({
     role: "CATAPULT",
@@ -2112,7 +2112,7 @@ export const GOBLIN_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "SAWMILLING",
     mayUsePrimaryActionAfterMove: false,
-    abilities: ["ATTACK", "KABOOM"],
+    abilities: ["ATTACK", "CAPTURE", "KABOOM"],
   }),
   KNIGHT: role({
     role: "KNIGHT",
@@ -2128,7 +2128,7 @@ export const GOBLIN_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "OVERRUN", "KABOOM"],
+    abilities: ["ATTACK", "CAPTURE", "OVERRUN", "KABOOM"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -2360,12 +2360,12 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "RALLY", "TEND_WOUNDED", "HATCH"],
+    abilities: ["ATTACK", "CAPTURE", "RALLY", "TEND_WOUNDED", "HATCH"],
   }),
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Stegosaurus, a siege
   // dinosaur at Sawmilling (the Triceratops held this role until 7r54 and
   // is the `SWORDSMAN` role now). Range 2–3, cannot attack after moving,
-  // never advances, no capture; the Thagomizer is the role mechanic
+  // never advances; the Thagomizer is the role mechanic
   // `cracksArmour`.
   CATAPULT: role({
     role: "CATAPULT",
@@ -2381,7 +2381,7 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "SAWMILLING",
     mayUsePrimaryActionAfterMove: false,
-    abilities: ["ATTACK", "GROW"],
+    abilities: ["ATTACK", "CAPTURE", "GROW"],
   }),
   KNIGHT: role({
     role: "KNIGHT",
@@ -2398,7 +2398,7 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "OVERRUN", "GROW"],
+    abilities: ["ATTACK", "CAPTURE", "OVERRUN", "GROW"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -2440,7 +2440,7 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "METALLURGY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "LINEBREAKER", "GROW"],
+    abilities: ["ATTACK", "CAPTURE", "LINEBREAKER", "GROW"],
   }),
 });
 
@@ -2574,7 +2574,14 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     technology: "SCOUTING",
     mayUsePrimaryActionAfterMove: true,
     // `pulp_wars-1wy.3` (balance M2): the Saucer has the Tractor Beam.
-    abilities: ["ATTACK", "CHARGE", "FLY", "BEAM_DOWN", "TRACTOR_BEAM"],
+    abilities: [
+      "ATTACK",
+      "CAPTURE",
+      "CHARGE",
+      "FLY",
+      "BEAM_DOWN",
+      "TRACTOR_BEAM",
+    ],
   }),
   MARKSMAN: role({
     role: "MARKSMAN",
@@ -2622,7 +2629,7 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "RALLY", "MIND_CONTROL"],
+    abilities: ["ATTACK", "CAPTURE", "RALLY", "MIND_CONTROL"],
   }),
   CATAPULT: role({
     role: "CATAPULT",
@@ -2640,7 +2647,7 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     sightRadius: 2,
     technology: "SAWMILLING",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "STRIDE", "HEAT_RAY", "PIERCE"],
+    abilities: ["ATTACK", "CAPTURE", "STRIDE", "HEAT_RAY", "PIERCE"],
   }),
   KNIGHT: role({
     role: "KNIGHT",
@@ -2659,7 +2666,7 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "FLY", "BEAM_DOWN", "TRACTOR_BEAM"],
+    abilities: ["ATTACK", "CAPTURE", "FLY", "BEAM_DOWN", "TRACTOR_BEAM"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -2896,7 +2903,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "BLIZZARD", "COLD_SNAP", "FREEZE"],
+    abilities: ["ATTACK", "CAPTURE", "BLIZZARD", "COLD_SNAP", "FREEZE"],
   }),
   CATAPULT: role({
     role: "CATAPULT",
@@ -2912,7 +2919,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "SAWMILLING",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "BOULDERS", "MOUNTAIN_BORN", "FREEZE"],
+    abilities: ["ATTACK", "CAPTURE", "BOULDERS", "MOUNTAIN_BORN", "FREEZE"],
   }),
   KNIGHT: role({
     role: "KNIGHT",
@@ -2928,7 +2935,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "PROWL", "FREEZE"],
+    abilities: ["ATTACK", "CAPTURE", "PROWL", "FREEZE"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -3100,7 +3107,7 @@ export const DWARF_ROLE_RULES_V7: Readonly<
     sightRadius: 2,
     technology: "SCOUTING",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["FLY", "BOMB_RUN"],
+    abilities: ["CAPTURE", "FLY", "BOMB_RUN"],
   }),
   MARKSMAN: role({
     role: "MARKSMAN",
@@ -3148,7 +3155,7 @@ export const DWARF_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "TEND_WOUNDED", "ASSEMBLE", "BARRICADE"],
+    abilities: ["ATTACK", "CAPTURE", "TEND_WOUNDED", "ASSEMBLE", "BARRICADE"],
   }),
   CATAPULT: role({
     role: "CATAPULT",
@@ -3164,13 +3171,14 @@ export const DWARF_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "SAWMILLING",
     mayUsePrimaryActionAfterMove: false,
-    abilities: ["ATTACK", "KNOCKBACK"],
+    abilities: ["ATTACK", "CAPTURE", "KNOCKBACK"],
   }),
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Whirligig, a clockwork
   // crowd-fighter at Chivalry (the Steam Tank held this role until 7r54 and
   // is the `SWORDSMAN` role now). A construct and a machine; it never
-  // advances and does not capture. Dwarf crowd control (`pulp_wars-w49.33`):
-  // its Whirl (the role mechanic `whirl`) replaced Three Hammers.
+  // advances. Dwarf crowd control (`pulp_wars-w49.33`): its Whirl (the role
+  // mechanic `whirl`) replaced Three Hammers. It captures like every land
+  // role since `pulp_wars-ke95`.
   KNIGHT: role({
     role: "KNIGHT",
     label: "Whirligig",
@@ -3185,7 +3193,7 @@ export const DWARF_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CLOCKWORK", "WHIRL"],
+    abilities: ["ATTACK", "CAPTURE", "CLOCKWORK", "WHIRL"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -3209,7 +3217,8 @@ export const DWARF_ROLE_RULES_V7: Readonly<
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Steam Tank is the
   // Dwarf heavy line unit (Metallurgy; it was the `KNIGHT` role at
-  // Chivalry). Its numbers and rules are unchanged (it does not capture).
+  // Chivalry). Its numbers and rules are unchanged (it captures like every
+  // land role since `pulp_wars-ke95`).
   SWORDSMAN: role({
     role: "SWORDSMAN",
     label: "Steam Tank",
@@ -3224,7 +3233,7 @@ export const DWARF_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "METALLURGY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "PLATED"],
+    abilities: ["ATTACK", "CAPTURE", "PLATED"],
   }),
 });
 
@@ -3419,7 +3428,7 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "TEND_WOUNDED", "REBAKE", "SUGAR_RUSH"],
+    abilities: ["ATTACK", "CAPTURE", "TEND_WOUNDED", "REBAKE", "SUGAR_RUSH"],
   }),
   CATAPULT: role({
     role: "CATAPULT",
@@ -3435,7 +3444,7 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "SAWMILLING",
     mayUsePrimaryActionAfterMove: false,
-    abilities: ["ATTACK", "SUGAR_RUSH", "SPLAT"],
+    abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH", "SPLAT"],
   }),
   // The Chocolate Bunny has Overrun (Sugar Frenzy) only while Rushed.
   KNIGHT: role({
@@ -3453,7 +3462,7 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "SUGAR_RUSH"],
+    abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -4051,7 +4060,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r63`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r64`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the
@@ -5173,6 +5182,29 @@ export function unitFliesV7(
 }
 
 /**
+ * `pulp_wars-ke95`: whether a unit's kind can ever capture. Any unit can
+ * capture (user direction 2026-10-09): every land role of every faction has
+ * `CAPTURE`, flyers and the Prowling Sabretooth included; boats and the
+ * neutral Giant Spider do not. Eggs, burrowed and embarked units are no
+ * land-form unit on a center, so the capture rules refuse them. The Normal
+ * AI picks its capturers with this.
+ */
+export function unitCanEverCaptureV7(
+  roster: FactionRosterV7,
+  unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 },
+): boolean {
+  return unitRoleRuleV7(roster, unit).abilities.includes("CAPTURE");
+}
+
+/** {@link unitCanEverCaptureV7} for a faction's role (training choices). */
+export function roleCanEverCaptureV7(
+  role: UnitRoleIdV7,
+  faction: FactionIdV7,
+): boolean {
+  return effectiveRoleRuleV7(role, faction).abilities.includes("CAPTURE");
+}
+
+/**
  * Whether the unit gets terrain cover and fortification: a land-form unit
  * whose movement mode is `GROUND`. The Martian machines (walkers and flyers)
  * are tall and never get either (section 7.1).
@@ -5403,9 +5435,11 @@ export function canCrossWaterV7(input: {
 }
 
 /**
- * The Martian revision (section 7.2): whether a flyer may END a Move, land,
- * or be placed on a tile with this settlement state. A flyer never stands on
- * a neutral village center or on the center of a city it does not own.
+ * Whether a unit that avoids foreign sites (`unitAvoidsForeignSitesV7`: a
+ * Dwarf rider on its surfacing turn) may END a Move, land, or be placed on a
+ * tile with this settlement state: never on a neutral village center or on
+ * the center of a city it does not own. The Martian revision (section 7.2)
+ * applied it to every flyer until any unit could capture (`pulp_wars-ke95`).
  */
 export function flyerMayStandOnSiteV7(
   site: "CAPITAL" | "VILLAGE" | "CITY" | null,

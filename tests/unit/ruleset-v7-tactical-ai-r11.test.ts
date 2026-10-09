@@ -29,6 +29,7 @@ import {
   initialV7,
   richV7,
 } from "../fixtures/v7-builders";
+import { ARMY_FIRING_POSITION_PRIORITY_V7 } from "../../src/ai/v7-army";
 import { withPortV7 } from "../fixtures/v7-naval-builders";
 import { withRevision12DecisionOrdinalsV7 } from "../fixtures/v7-revision12-command-ordinals";
 
@@ -742,12 +743,16 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
             unit.id === guard.id ? { ...unit, form } : unit,
           ),
         };
+        // Since the Catapult captures (`pulp_wars-ke95`), the seat has a
+        // capturer without the Guard, so the army's firing position
+        // (tuning 7) may still take a tile in range; no other Move does.
         expect(
           chooseNormalCommandV7(nonLandScreen).candidates.filter(
-            ({ command }) =>
+            ({ command, score }) =>
               command.kind === "MOVE" &&
               command.unitId === catapult.id &&
-              distance(required(command.path.at(-1)), target.at) <= 3,
+              distance(required(command.path.at(-1)), target.at) <= 3 &&
+              score.priority !== ARMY_FIRING_POSITION_PRIORITY_V7,
           ),
         ).toEqual([]);
       }
@@ -761,10 +766,12 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         chooseNormalCommandV7(
           viewForV7(blocked, blocked.humanPlayerId),
         ).candidates.filter(
-          ({ command }) =>
+          ({ command, score }) =>
             command.kind === "MOVE" &&
             command.unitId === blockedCatapult.id &&
-            distance(required(command.path.at(-1)), blockedTarget.at) <= 3,
+            distance(required(command.path.at(-1)), blockedTarget.at) <= 3 &&
+            // As above: the army's firing position since `pulp_wars-ke95`.
+            score.priority !== ARMY_FIRING_POSITION_PRIORITY_V7,
         ),
       ).toEqual([]);
     },

@@ -1,5 +1,18 @@
 # Ruleset 7: Steampunk Dwarf faction
 
+**Any unit can capture** (`pulp_wars-ke95`, user direction 2026-10-09):
+every land unit of every faction now has `CAPTURE`, so wherever this
+document says a unit has no capture, cannot capture, or lists the
+capture-capable units, read that every land unit captures under the
+ordinary capture rule. Flyers (Saucer, Mothership, Gyrocopter) and the
+Prowling Sabretooth included: wherever this document says a flyer or a
+Sabretooth never ends a Move, lands, or advances on a village or a foreign
+center, read that it may, and then besieges and captures like any land
+unit (only a Dwarf rider on its surfacing turn still avoids foreign
+centers). Boats, Eggs, embarked and burrowed units, and neutral
+curiosities still never capture. See
+[current rules section 4.7](RULESET_7_CURRENT.md#47-siege-and-capture).
+
 **Status:** **folded into [Ruleset 7: current rules](RULESET_7_CURRENT.md)
 (kept as history)** by `pulp_wars-78i.8` at `pulp-wars-poc-7r31`: the
 current rules describe the running seven-faction game, with the Dwarves in
@@ -1708,12 +1721,14 @@ One ruling each. "Off the board" means burrowed
 
 ### 13.8 Cities, siege, capture, and capacity
 
-- **Capture-capable Dwarf units:** Hammerer, Clockwork Gunner, Steam Mole,
-  and Brass Titan. The Gyrocopter, the Engineer, the Steam Cannon, and the
-  Steam Tank cannot capture.
+- **Capture-capable Dwarf units:** every Dwarf land unit since
+  `pulp_wars-ke95` (before it: Hammerer, Clockwork Gunner, Steam Mole, and
+  Brass Titan), the Gyrocopter included: it may stand on a village or a
+  foreign center since then.
 - **Siege.** A Dwarf unit on a hostile center besieges it like any unit; a
-  mound is never on a center and never besieges; a Gyrocopter never stands on
-  a foreign or neutral center. The Mole may step onto a center on its
+  mound is never on a center and never besieges; a Gyrocopter on one
+  besieges it too since `pulp_wars-ke95` (it never stood there before). The
+  Mole may step onto a center on its
   surfacing turn (and capture on the next); the rider may not.
 - **Knockback** can empty a center; a capture still needs a unit that begins
   its turn there.

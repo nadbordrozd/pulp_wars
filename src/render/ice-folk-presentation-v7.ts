@@ -155,8 +155,7 @@ export const COLD_SNAP_LABEL_V7 = "Cold Snap";
 export const COLD_SNAP_TOOLTIP_V7 = `Chill every hostile unit within ${COLD_SNAP_RANGE_V7} tiles.`;
 export const COLD_SNAP_NO_TARGET_V7 = `No enemy within ${COLD_SNAP_RANGE_V7} tiles`;
 export const COLD_SNAP_CAST_V7 = "Cast Cold Snap";
-export const SABRETOOTH_INFO_V7 =
-  "Prowl: zones of control do not stop it. It cannot stand on a foreign city or village";
+export const SABRETOOTH_INFO_V7 = "Prowl: zones of control do not stop it";
 export const MOUNTAIN_BORN_INFO_V7 =
   "Mountain-born: crosses Mountains without Engineering";
 /** "Shatters at {n} HP or less". */
@@ -374,10 +373,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
       "Boulders",
       `a ${joinOr(boulders)}'s throw ignores Walls and Field Defense, and has +${half(PLANTED_BONUS2_V7)} Attack on a turn it has not moved.`,
     ],
-    [
-      "Prowl",
-      `zones of control do not stop a ${joinOr(prowlers)}; it cannot stand on a city or village it does not own.`,
-    ],
+    ["Prowl", `zones of control do not stop a ${joinOr(prowlers)}.`],
     [
       "Cold Aura",
       `a ${joinOr(giants)} frosts every hostile unit next to it at the start of its owner's turn.`,

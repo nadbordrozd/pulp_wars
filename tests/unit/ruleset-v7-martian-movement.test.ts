@@ -23,7 +23,6 @@ import {
 } from "../fixtures/v7-goblin-arena";
 import {
   expectOfferedAcceptedV7,
-  hasUnitAtV7,
   martianFieldV7,
   offeredV7,
   playV7,
@@ -462,32 +461,34 @@ describe("Flying (section 7.2)", () => {
       );
   });
 
-  it("cannot end a Move on a village center or a foreign city center; may fly over them and stand on its own", () => {
+  // Any unit can capture (`pulp_wars-ke95`, user direction 2026-10-09): a
+  // flyer ends a Move on a village center or a foreign city center like any
+  // land unit (the Martian revision section 7.2 kept it off them before).
+  it("ends a Move on a village center, a foreign city center, and its own", () => {
     const village = martianFieldV7([
       { seat: 0, role: "RAIDER", at: at(5, 3) },
       { seat: 1, role: "FIGHTER", at: at(9, 1) },
     ]);
-    expect(moveReason(village, at(5, 3), at(5, 4), at(5, 5))).toBe(
-      "SETTLEMENT_FORBIDDEN",
-    );
-    go(village, at(5, 3), at(5, 4), at(5, 5), at(5, 6));
     const saucer = unitAtV7(village, at(5, 3)).id;
     const destinations = offeredV7(village, "MOVE").flatMap((command) =>
       command.kind === "MOVE" && command.unitId === saucer
         ? [command.path[command.path.length - 1] as CoordV7]
         : [],
     );
-    expect(destinations.length).toBeGreaterThan(20);
-    expect(destinations.some((where) => sameV7(where, at(5, 5)))).toBe(false);
-    expect(destinations.some((where) => sameV7(where, at(5, 6)))).toBe(true);
+    expect(destinations.some((where) => sameV7(where, at(5, 5)))).toBe(true);
+    expect(
+      unitAtV7(go(village, at(5, 3), at(5, 4), at(5, 5)).state, at(5, 5)).id,
+    ).toBe(saucer);
+    // It may still fly over the center and end beyond it.
+    go(village, at(5, 3), at(5, 4), at(5, 5), at(5, 6));
 
     const hostile = martianFieldV7([
       { seat: 0, role: "KNIGHT", at: at(2, 6) },
       { seat: 1, role: "FIGHTER", at: at(9, 1) },
     ]);
-    expect(moveReason(hostile, at(2, 6), at(2, 7), at(2, 8))).toBe(
-      "SETTLEMENT_FORBIDDEN",
-    );
+    expect(
+      unitAtV7(go(hostile, at(2, 6), at(2, 7), at(2, 8)).state, at(2, 8)).role,
+    ).toBe("KNIGHT");
 
     const own = martianFieldV7([
       { seat: 0, role: "KNIGHT", at: at(8, 6) },
@@ -508,7 +509,7 @@ describe("Flying (section 7.2)", () => {
     }
   });
 
-  it("an embarked flyer cannot land on a forbidden center", () => {
+  it("an embarked flyer lands on a village center (pulp_wars-ke95)", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "RAIDER", at: at(4, 5), form: "EMBARKED" },
@@ -517,22 +518,16 @@ describe("Flying (section 7.2)", () => {
       { water: [at(4, 5)] },
     );
     const saucer = unitAtV7(state, at(4, 5)).id;
-    const error = rejectedV7(state, {
+    const landing = playV7(state, {
       kind: "DISEMBARK",
       unitId: saucer,
       at: at(5, 5),
     });
-    expect(error).toEqual({
-      code: "MOVEMENT_ILLEGAL",
-      params: { reason: "SETTLEMENT_FORBIDDEN" },
+    expect(unitAtV7(landing.state, at(5, 5))).toMatchObject({
+      id: saucer,
+      form: "LAND",
     });
-    const landing = playV7(state, {
-      kind: "DISEMBARK",
-      unitId: saucer,
-      at: at(4, 4),
-    });
-    expect(unitAtV7(landing.state, at(4, 4)).form).toBe("LAND");
-    // An embarked Grunt lands on the village center.
+    // An embarked Grunt lands on the village center too.
     const grunt = martianFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(4, 5), form: "EMBARKED" },
@@ -547,7 +542,7 @@ describe("Flying (section 7.2)", () => {
     });
   });
 
-  it("never advances after a kill, never captures, and cannot Pillage", () => {
+  it("never advances after a kill, captures nothing off a center, and cannot Pillage", () => {
     for (const role of ["RAIDER", "KNIGHT"] as const) {
       const state = martianFieldV7([
         { seat: 0, role, at: at(4, 2) },
@@ -787,22 +782,17 @@ describe("interrupted Moves (section 7.2, hidden units)", () => {
     );
   });
 
-  it("a flyer that enters an unexplored forbidden center stays on the tile before it", () => {
+  it("a flyer that enters an unexplored village center ends there (pulp_wars-ke95)", () => {
     const base = martianFieldV7([
       { seat: 0, role: "RAIDER", at: at(5, 3) },
       { seat: 1, role: "FIGHTER", at: at(9, 1) },
     ]);
     const state = unexploreV7(base, 0, [at(5, 5)]);
     const run = go(state, at(5, 3), at(5, 4), at(5, 5));
-    expect(unitAtV7(run.state, at(5, 4)).role).toBe("RAIDER");
-    expect(hasUnitAtV7(run.state, at(5, 5))).toBe(false);
-    expect(run.events).toContainEqual(
-      expect.objectContaining({
-        kind: "UNIT_MOVE_INTERRUPTED",
-        at: at(5, 5),
-        reason: "SETTLEMENT_FORBIDDEN",
-      }),
-    );
+    expect(unitAtV7(run.state, at(5, 5)).role).toBe("RAIDER");
+    expect(
+      run.events.some((event) => event.kind === "UNIT_MOVE_INTERRUPTED"),
+    ).toBe(false);
   });
 });
 
@@ -893,9 +883,9 @@ describe("offered Moves are accepted", () => {
           command.kind === "MOVE" &&
           sameV7(command.path[command.path.length - 1] as CoordV7, where),
       );
-    // Somebody may end on the Mountain and on Shallow Water; nobody on the
-    // village center occupied by nobody but forbidden to flyers ... a Grunt
-    // may, so only Deep Water (no Navigation) is unreachable.
+    // Somebody may end on the Mountain and on Shallow Water (and anybody
+    // on the village center since `pulp_wars-ke95`), so only Deep Water (no
+    // Navigation) is unreachable.
     expect(ends(at(5, 3))).toBe(true);
     expect(ends(at(4, 3))).toBe(true);
     expect(ends(at(2, 4))).toBe(false);

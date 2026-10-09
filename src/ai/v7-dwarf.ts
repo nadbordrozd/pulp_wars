@@ -13,7 +13,7 @@ import type { CommandV7 } from "../engine/v7/commands";
 import type { CoordV7, TechnologyIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import type { PublicUnitStatsV7 } from "../engine/v7/unit-stats";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
-import type { CampaignAssignmentV7 } from "./v7-campaign";
+import { policyCapturerV7, type CampaignAssignmentV7 } from "./v7-campaign";
 
 /**
  * The Steampunk Dwarf Normal AI (`pulp_wars-78i.4`,
@@ -995,7 +995,7 @@ function expansionVillagesV7(
       unit.ownerId === view.viewer.id &&
       unit.form === "LAND" &&
       unit.id !== mole.id &&
-      unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"),
+      policyCapturerV7(view, unit),
   );
   const villages: CoordV7[] = [];
   for (const tile of view.board.tiles) {

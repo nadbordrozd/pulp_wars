@@ -670,9 +670,12 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Hatch", () => {
     expect(approach?.score.priority).toBe(HATCH_APPROACH_PRIORITY_V7);
     // A quarter of the T-Rex inside (revision 20: 14 * 4 + 28 = 84).
     expect(approach?.score.strategicValue).toBe(21);
-    expect(moveCandidateV7(state, from, { x: 9, y: 10 })?.score.priority).toBe(
-      700,
-    );
+    // A Move that does not approach the Egg ranks below it. (It scored 700
+    // before `pulp_wars-ke95`; since the Shaman captures, the policy no
+    // longer offers it that ordinary Move at all.)
+    expect(
+      moveCandidateV7(state, from, { x: 9, y: 10 })?.score.priority ?? 0,
+    ).toBeLessThan(HATCH_APPROACH_PRIORITY_V7);
     // An Egg laid this turn cannot be hatched yet: the Shaman only stands by.
     const fresh = dino([own("CAPTAIN", 10, 10), foe("FIGHTER", 1, 1)], {
       eggs: [

@@ -1,11 +1,52 @@
 import type { CityId, PlayerId, UnitId } from "../engine/model/ids";
-import { unitRoleRuleV7 } from "../engine/rules/ruleset-v7";
-import { cityHasWallsV7, type CoordV7 } from "../engine/v7/types";
+import {
+  roleCanEverCaptureV7,
+  roleMechanicsV7,
+  unitCanEverCaptureV7,
+  unitMovementModeV7,
+  unitRoleRuleV7,
+} from "../engine/rules/ruleset-v7";
+import {
+  cityHasWallsV7,
+  type CoordV7,
+  type FactionIdV7,
+  type UnitRoleIdV7,
+} from "../engine/v7/types";
 import type {
   PlayerViewV7,
   PublicCityV7,
   PublicUnitV7,
 } from "../engine/v7/view";
+
+/**
+ * The units the Normal AI plans captures with. Any unit can capture since
+ * `pulp_wars-ke95` (user direction 2026-10-09), and the policy plans with
+ * every capturing land unit but the flyers (Saucer, Mothership,
+ * Gyrocopter): they had no `CAPTURE` before and the policy plays them as
+ * carriers, bombers, and pullers, so it keeps doing that until an AI bead
+ * teaches it to capture with them. A flyer still takes a `CAPTURE` the
+ * policy is offered.
+ */
+export function policyCapturerV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): boolean {
+  return (
+    unitCanEverCaptureV7(view, unit) &&
+    !(unit.form === "LAND" && unitMovementModeV7(view, unit) === "FLY")
+  );
+}
+
+/** {@link policyCapturerV7} for a role the seat trains. */
+export function policyRoleCapturesV7(
+  role: UnitRoleIdV7,
+  faction: FactionIdV7,
+): boolean {
+  return (
+    roleCanEverCaptureV7(role, faction) &&
+    roleMechanicsV7(role, faction).movementMode !== "FLY"
+  );
+}
 
 /**
  * Normal AI campaign plan (`pulp_wars-9s0.1`): expansion, exploration, and
@@ -453,7 +494,7 @@ export function campaignPlanForPolicyV7(
       (center) => chebyshev(center, at) <= CAMPAIGN_HOME_RADIUS_V7,
     );
   const captures = (unit: PublicUnitV7): boolean =>
-    unitRoleRuleV7(view, unit).abilities.includes("CAPTURE");
+    policyCapturerV7(view, unit);
   const unassigned = (): PublicUnitV7[] =>
     free.filter((unit) => !assignmentByUnitId.has(unit.id));
 

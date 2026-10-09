@@ -31,6 +31,7 @@ import {
   unitIdAtV7,
   viewerViewV7,
 } from "../fixtures/v7-dinosaur-ai";
+import { checkedV7 } from "../fixtures/v7-builders";
 import { martianFieldV7, type MartianPieceV7 } from "../fixtures/v7-martian";
 import { withoutTechsV7 } from "../fixtures/v7-revision20";
 
@@ -67,6 +68,27 @@ const againstMartian = (pieces: readonly MartianPieceV7[]): GameStateV7 =>
   martianFieldV7(pieces, { factions: ["ORIGINAL", "MARTIAN"] });
 
 const at = (x: number, y: number): CoordV7 => ({ x, y });
+/** The field with its neutral villages turned into Grass. */
+const withoutVillages = (state: GameStateV7): GameStateV7 =>
+  checkedV7({
+    ...state,
+    board: {
+      ...state.board,
+      tiles: state.board.tiles.map((tile) =>
+        tile.site === "VILLAGE"
+          ? {
+              ...tile,
+              terrain: "GRASS" as const,
+              resource: null,
+              improvement: null,
+              road: false,
+              fieldDefense: false,
+              site: null,
+            }
+          : tile,
+      ),
+    },
+  });
 const endOf = (command: CommandV7): CoordV7 | undefined =>
   command.kind === "MOVE" ? command.path.at(-1) : undefined;
 
@@ -195,7 +217,12 @@ describe("Martian Normal AI: ranged play (`pulp_wars-b5f.2`)", () => {
   });
 
   it("a Tripod with only an adjacent target strides away to fire from two tiles", () => {
-    const state = asMartian([own("CATAPULT", 5, 5), foe("FIGHTER", 4, 5)]);
+    // Since the Tripod captures (`pulp_wars-ke95`), villages first keeps it
+    // on the village (5, 5) and out of the Fighter's reach, so the scene has
+    // no villages.
+    const state = withoutVillages(
+      asMartian([own("CATAPULT", 5, 5), foe("FIGHTER", 4, 5)]),
+    );
     // The adjacent Fighter is not a target (minimum range 2).
     expect(unitCandidatesV7(state, at(5, 5), "ATTACK")).toEqual([]);
     const best = unitCandidatesV7(state, at(5, 5))[0];
@@ -310,7 +337,10 @@ describe("Martian Normal AI: machines and water", () => {
         water: [at(6, 1), at(6, 0), at(7, 0), at(7, 1), at(8, 0)],
       },
     );
-    const moves = unitCandidatesV7(state, at(5, 2), "MOVE");
+    // Since the Tripod captures (`pulp_wars-ke95`), with villages on the
+    // field it would hold back for them (villages first), so the scene has
+    // none.
+    const moves = unitCandidatesV7(withoutVillages(state), at(5, 2), "MOVE");
     expect(moves.length).toBeGreaterThan(0);
     for (const item of moves) {
       const end = endOf(item.command);

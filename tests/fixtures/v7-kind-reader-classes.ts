@@ -54,6 +54,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // Tuning 3 (`pulp_wars-w49.3`): Forest cover is the owner's Forestry, and
   // hiring is the owner's Commerce and its own roster (seat-level rules).
   "src/engine/rules/ruleset-v7.ts::ownerHasForestCoverV7": "SEAT",
+  // Any unit can capture (`pulp_wars-ke95`): whether a role the seat
+  // trains captures (the Normal AI's endgame training bias).
+  "src/engine/rules/ruleset-v7.ts::roleCanEverCaptureV7": "SEAT",
+  "src/ai/v7-campaign.ts::policyRoleCapturesV7": "SEAT",
   "src/engine/v7/query.ts::appendPublicHireCommandsV7": "SEAT",
   "src/engine/v7/query.ts::publicHireCostV7": "SEAT",
   "src/engine/v7/reducer.ts::applyHire": "SEAT",

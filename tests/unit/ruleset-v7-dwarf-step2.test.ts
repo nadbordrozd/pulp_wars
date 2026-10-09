@@ -164,7 +164,7 @@ describe("step two of the Dwarf pass: no rule changed", () => {
   // Scouts, a level-3 reward since then, grants its fast unit, so the
   // Dwarves a Gyrocopter (the Dwarf Survey was the area alone here).
   it("kept the identity; the Dwarf Survey has a Gyrocopter since the reward ladder rework", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r64");
     expect([SURVEY_RAIDERS_V7.DWARF, SURVEY_RAIDERS_V7.CANDY]).toEqual([1, 1]);
   });
 });
@@ -295,7 +295,9 @@ describe("step two of the Dwarf pass: the Dwarf Normal AI's army", () => {
     expect(inspectNormalArmyV7(viewOf(opening(3))).bodiesFirst).toBe(false);
   });
 
-  it("counts only the units that capture: a Gyrocopter and a Steam Tank take no village", () => {
+  // Any unit can capture (`pulp_wars-ke95`): the Steam Tank counts now; the
+  // Gyrocopter, a flyer the policy plans no capture with, still does not.
+  it("counts only the units that capture: a Gyrocopter takes no village", () => {
     const with2 = (role: UnitRoleIdV7): GameStateV7 =>
       field(
         [
@@ -307,10 +309,10 @@ describe("step two of the Dwarf pass: the Dwarf Normal AI's army", () => {
         { techs: techsOf("GATHERING"), coins: 20, orphans: true },
       );
     expect(inspectNormalArmyV7(viewOf(with2("RAIDER"))).bodiesFirst).toBe(true);
+    // A Steam Tank, a Steam Mole, and a Clockwork Gunner capture.
     expect(inspectNormalArmyV7(viewOf(with2("SWORDSMAN"))).bodiesFirst).toBe(
-      true,
+      false,
     );
-    // A Steam Mole and a Clockwork Gunner capture.
     expect(inspectNormalArmyV7(viewOf(with2("GUARD"))).bodiesFirst).toBe(false);
     expect(inspectNormalArmyV7(viewOf(with2("MARKSMAN"))).bodiesFirst).toBe(
       false,

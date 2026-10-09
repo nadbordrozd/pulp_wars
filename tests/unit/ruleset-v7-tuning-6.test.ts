@@ -70,7 +70,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r63`;
+ * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r64`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 13): the Normal AI breaks
  * a line with numbers, expands and grows, researches toward its army and
  * buys its dear units, and keeps its discipline; research costs 1 Coin more
@@ -179,13 +179,13 @@ describe("tuning 6 identity and the research price", () => {
   // and the Undead pass 7r51, so 7r49 is the prior identity before the
   // last.
   it("was 7r49 after 7r48, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
-    expect(PRIOR_RULESET_7_IDS.slice(-15, -13)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r64");
+    expect(PRIOR_RULESET_7_IDS.slice(-16, -14)).toEqual([
       "pulp-wars-poc-7r48",
       "pulp-wars-poc-7r49",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-15, -13)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r64.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-16, -14)).toEqual([
       "pulpWars.save.v7r48.current",
       "pulpWars.save.v7r49.current",
     ]);

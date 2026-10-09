@@ -83,7 +83,7 @@ const coinsOf = (state: GameStateV7, seat = 0): number =>
 
 describe("tuning 3 keeps the unpublished identity of tuning 2", () => {
   it("is 7r47", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r64");
   });
 });
 

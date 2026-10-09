@@ -81,9 +81,10 @@ export type MovementFailureReasonV7 =
   | "FOREST_STOPS_MOVE"
   | "ZOC_STOPS_MOVE"
   | "ALLY_TERRITORY_FORBIDDEN"
-  // The Martian revision section 7.2: a flyer cannot end a Move on a neutral
-  // village center or on the center of a city it does not own (the Ice Folk
-  // revision: nor can a Sabretooth).
+  // The Dwarf revision section 5.4: a rider cannot end a Move on a neutral
+  // village center or on the center of a city it does not own on the turn
+  // it surfaced. (A flyer and a Sabretooth were refused there too before any
+  // unit could capture, `pulp_wars-ke95`.)
   | "SETTLEMENT_FORBIDDEN"
   // The Ice Folk revision section 6.2 (3): deep snow ends the Move of
   // another faction's ground unit, so a path cannot continue past it.
@@ -123,8 +124,8 @@ export type MovementPathResultV7 =
           | "OCCUPIED"
           | "ENGINEERING_REQUIRED"
           | "ZOC"
-          // The Martian revision: a flyer entered an unexplored cell that
-          // is a settlement center it cannot stand on.
+          // A surfaced rider entered an unexplored cell that is a
+          // settlement center it cannot stand on.
           | "SETTLEMENT_FORBIDDEN"
           // The Ice Folk revision: Snow the mover could not know about.
           | "SNOW"
@@ -153,9 +154,10 @@ export interface ReachablePathV7 {
  * Mountain without Engineering and is never stopped by terrain; it may step
  * onto water (a walker Shallow Water, a flyer also Deep Water with
  * Navigation), and a Move that ends there self-launches it (the reducer
- * embarks it). A flyer also passes over every unit, ignores hostile zones of
- * control, and cannot end on a settlement center it does not own. Terrain
- * entry goes through the shared `canEnterTerrainV7` and `canCrossWaterV7`.
+ * embarks it). A flyer also passes over every unit and ignores hostile zones
+ * of control; since `pulp_wars-ke95` it may end on a settlement center it
+ * does not own (and capture there). Terrain entry goes through the shared
+ * `canEnterTerrainV7` and `canCrossWaterV7`.
  */
 export function validateMovementPathV7(
   state: GameStateV7,
@@ -210,8 +212,7 @@ function validateMovementPathWithOptionsV7(
   // from the state before the command. An Ice Folk unit Glides (a step from
   // Snow onto Snow costs half); another faction's ground unit stops on entering
   // Snow, and Snow it could not know about (a hidden Witch's Blizzard)
-  // interrupts the Move. A Sabretooth Prowls through zones of control and,
-  // like a flyer, never ends on a settlement center it does not own.
+  // interrupts the Move. A Sabretooth Prowls through zones of control.
   const winter = winterV7(state);
   const glides = unitGlidesV7(state, unit);
   const snowStopped =
@@ -238,7 +239,7 @@ function validateMovementPathWithOptionsV7(
     unitIgnoresZocStopsV7(state, unit) || berserkIgnoresZocV7(state, unit);
   // The giants' signatures (section 6.5): Overstride.
   const overstrides = unitOverstridesV7(state, unit);
-  const ownSitesOnly = flies || unitAvoidsForeignSitesV7(state, unit);
+  const ownSitesOnly = unitAvoidsForeignSitesV7(state, unit);
   let currentSnow = snowAt(current);
   // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.3,
   // 8.6, 8.7, and 8.9): ice is read once, from the state before the command.
@@ -406,9 +407,8 @@ function validateMovementPathWithOptionsV7(
             mountainBorn: false,
             ice: stepIce,
           });
-    // The Martian revision section 7.2: a flyer may pass over a settlement
-    // center it does not own but never ends a Move there (the Ice Folk
-    // revision section 7.7: nor does a Sabretooth).
+    // The Dwarf revision section 5.4: a surfaced rider may pass over a
+    // settlement center it does not own but never ends a Move there.
     const forbiddenSite =
       ownSitesOnly &&
       !passThroughProbe &&
@@ -653,9 +653,9 @@ export function reachableMovementPathsV7(
   const flies = unitFliesV7(state, unit);
   // The giants' signatures (section 6.5): Overstride passes every unit.
   const passesAll = flies || unitOverstridesV7(state, unit);
-  // The Ice Folk revision section 7.7: a Sabretooth, like a flyer, never
-  // ends on a settlement center it does not own.
-  const ownSitesOnly = flies || unitAvoidsForeignSitesV7(state, unit);
+  // The Dwarf revision section 5.4: a surfaced rider never ends on a
+  // settlement center it does not own.
+  const ownSitesOnly = unitAvoidsForeignSitesV7(state, unit);
   const queue: CoordV7[][] = [[]];
   const best = new Map<string, number>([[key(unit.at), 0]]);
   const results = new Map<string, ReachablePathV7>();
@@ -689,8 +689,8 @@ export function reachableMovementPathsV7(
       if (prior !== undefined && prior <= validation.spentPoints2) continue;
       // An own-occupied tile is never a destination; it is only passed, and
       // only when the Move would not have to stop on it. The Martian
-      // revision: a flyer passes every unit and every settlement center it
-      // cannot stand on, and ends on neither.
+      // revision: a flyer passes every unit and ends on none; a surfaced
+      // rider never ends on a settlement center it cannot stand on.
       const ownOccupied =
         state.units.some(
           (other) =>
@@ -733,8 +733,7 @@ export function reachablePlayerMovementPathsV7(
   // Revision 19 section 6.2: an Egg never moves.
   if (unit.form === "EGG") return [];
   const context = publicMovementContextV7(view);
-  const flies = unitFliesV7(view, unit);
-  const ownSitesOnly = flies || unitAvoidsForeignSitesV7(view, unit);
+  const ownSitesOnly = unitAvoidsForeignSitesV7(view, unit);
   const queue: CoordV7[][] = [[]];
   const best = new Map<string, number>([[key(unit.at), 0]]);
   const results = new Map<string, ReachablePathV7>();
@@ -768,9 +767,8 @@ export function reachablePlayerMovementPathsV7(
       const prior = best.get(stateKey);
       if (prior !== undefined && prior <= validation.spentPoints2) continue;
       // An own-occupied tile is never a destination; it is only passed, and
-      // only when the Move would not have to stop on it. The Martian
-      // revision: a flyer also passes, and never ends on, a settlement
-      // center it cannot stand on.
+      // only when the Move would not have to stop on it. A surfaced rider
+      // never ends on a settlement center it cannot stand on.
       const ownOccupied =
         context.unitsByPosition
           .get(destinationKey)
@@ -923,7 +921,7 @@ function validatePlayerMovementPathWithContextV7(
     unitIgnoresZocStopsV7(view, unit) || berserkIgnoresZocV7(view, unit);
   // The giants' signatures (section 6.5): Overstride.
   const overstrides = unitOverstridesV7(view, unit);
-  const ownSitesOnly = flies || unitAvoidsForeignSitesV7(view, unit);
+  const ownSitesOnly = unitAvoidsForeignSitesV7(view, unit);
   const publicSnowAt = (at: CoordV7): boolean => {
     const tile = publicTileAt(view, at);
     return tile?.explored === true && tile.snow === true;
@@ -1409,8 +1407,8 @@ function publicProjectsZocV7(
 /**
  * The entered path cut back to its last tile that holds no other unit. An
  * interrupted Move never leaves the mover on a tile it was only passing.
- * The Martian revision section 7.2: a flyer is also never left on a
- * settlement center it cannot stand on.
+ * A surfaced rider is also never left on a settlement center it cannot
+ * stand on.
  */
 function lastFreeEnteredPath(
   state: Pick<GameStateV7, "units" | "board" | "cities">,
@@ -1437,9 +1435,10 @@ function lastFreeEnteredPath(
 }
 
 /**
- * Whether a flyer of `unit`'s owner may end a Move on a public tile: an
- * unexplored tile is unknown and allowed (resolution interrupts the Move if
- * it turns out to be a center); an explored center needs an own city.
+ * Whether a surfaced rider of `unit`'s owner may end a Move on a public
+ * tile: an unexplored tile is unknown and allowed (resolution interrupts the
+ * Move if it turns out to be a center); an explored center needs an own
+ * city.
  */
 function publicFlyerMayStandV7(
   view: PlayerViewV7,

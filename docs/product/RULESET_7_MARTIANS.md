@@ -1,5 +1,18 @@
 # Ruleset 7: Martian faction
 
+**Any unit can capture** (`pulp_wars-ke95`, user direction 2026-10-09):
+every land unit of every faction now has `CAPTURE`, so wherever this
+document says a unit has no capture, cannot capture, or lists the
+capture-capable units, read that every land unit captures under the
+ordinary capture rule. Flyers (Saucer, Mothership, Gyrocopter) and the
+Prowling Sabretooth included: wherever this document says a flyer or a
+Sabretooth never ends a Move, lands, or advances on a village or a foreign
+center, read that it may, and then besieges and captures like any land
+unit (only a Dwarf rider on its surfacing turn still avoids foreign
+centers). Boats, Eggs, embarked and burrowed units, and neutral
+curiosities still never capture. See
+[current rules section 4.7](RULESET_7_CURRENT.md#47-siege-and-capture).
+
 **The Martian pass** (`pulp_wars-w49.14`, `pulp-wars-poc-7r52`,
 [its record](RULESET_7_TUNING_MARTIAN.md)) changed four rules of this
 document; the current rules win where this text differs. **The Force
@@ -1883,11 +1896,13 @@ What this says:
 
 ### 10.5 Cities, siege, capture, and capacity
 
-- **Capture-capable Martian units:** Grunt, Ray Gunner, Shield Projector,
-  Colossus, and Thrall. The Saucer, Brain, Tripod, and Mothership cannot
-  capture.
+- **Capture-capable Martian units:** every Martian land unit since
+  `pulp_wars-ke95` (before it: Grunt, Ray Gunner, Shield Projector,
+  Colossus, and Thrall), the Saucer and the Mothership included: as flyers
+  they may stand on a village or a foreign center since then.
 - **Siege.** A Martian foot unit or walker on a hostile center besieges it
-  like any unit. A flyer can never be there ([section 7.2](#72-flying)).
+  like any unit. A flyer could never be there ([section 7.2](#72-flying))
+  until `pulp_wars-ke95`; it besieges like any unit since.
 - **Fortification.** A Martian foot unit on its owner's Walled center has the
   ordinary +2. No Martian unit builds Field Defense
   (`buildsFieldDefense` false for the Grunt and the Shield Projector, and the
@@ -2335,8 +2350,8 @@ One sentence per rule, shown in Help for every viewer:
 - **Walkers:** a Tripod or Colossus crosses Forest, Mountain, and Shallow
   Water without stopping and never gets cover or fortification.
 - **Flyers:** a Saucer or Mothership flies over any terrain, any unit, and
-  Rifts, ignores zones of control, and never captures or stands on a foreign
-  city.
+  Rifts, and ignores zones of control. (Until `pulp_wars-ke95` the line went
+  on: "and never captures or stands on a foreign city".)
 - **Launch:** Martian machines need no Port: they enter water from any shore
   and cross it as transports that cannot fight.
 - **Beam Down:** a Saucer that has not moved brings a unit from one of its

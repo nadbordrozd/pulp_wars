@@ -89,13 +89,14 @@ describe("the Bomb Run command (section 6.2)", () => {
         command.kind === "BOMB_RUN" && command.targetUnitId === target.id,
     );
     // Within 2 of (5, 4) (Dwarf crowd control, `pulp_wars-w49.33`: was
-    // next to it) and at distance 3 from (5, 2), the Move's reach; (5, 5)
-    // is a village.
+    // next to it) and at distance 3 from (5, 2), the Move's reach; the
+    // village (5, 5) is a landing too since any unit can capture
+    // (`pulp_wars-ke95`: a flyer may end on a village center).
     expect(
       offered.map((command) =>
         command.kind === "BOMB_RUN" ? command.to : null,
       ),
-    ).toEqual([at(3, 5), at(4, 5), at(6, 5), at(7, 5)]);
+    ).toEqual([at(3, 5), at(4, 5), at(5, 5), at(6, 5), at(7, 5)]);
     const result = bombRun(state, bombV7(state, at(5, 2), at(5, 4), at(4, 5)));
     expect(bombed(result.events)).toEqual({
       kind: "UNIT_BOMBED",
@@ -305,7 +306,8 @@ describe("the Bomb Run command (section 6.2)", () => {
       code: "BOMB_RUN_NOT_LEGAL",
       params: { reason: "LANDING" },
     };
-    for (const to of [at(5, 3), at(4, 3), at(5, 6), at(5, 5)])
+    // (The village (5, 5) was refused too before `pulp_wars-ke95`.)
+    for (const to of [at(5, 3), at(4, 3), at(5, 6)])
       expect(
         refusalV7(state, bombV7(state, at(5, 2), at(5, 4), to)),
         JSON.stringify(to),

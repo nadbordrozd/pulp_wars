@@ -58,10 +58,10 @@ const adjacentAttackers = (faction: FactionIdV7): readonly UnitRoleIdV7[] =>
 
 describe("tuning 2 identity", () => {
   it("is 7r47 with 7r46 last in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
-    expect(PRIOR_RULESET_7_IDS.at(-17)).toBe("pulp-wars-poc-7r46");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(62);
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r64");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r64.current");
+    expect(PRIOR_RULESET_7_IDS.at(-18)).toBe("pulp-wars-poc-7r46");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(63);
   });
 });
 
@@ -266,11 +266,13 @@ describe("3: the Human Knight captures settlements", () => {
     ).toBe(seatIdV7(state, 0));
   });
 
-  it("leaves the Knight-role units of the other factions without Capture", () => {
+  // Any unit can capture (`pulp_wars-ke95`): the Knight-role units of the
+  // other factions, which tuning 2 left without Capture, capture too.
+  it("gives the Knight-role units of every faction Capture since ke95", () => {
     const capturing = FACTION_IDS_V7.filter((faction) =>
       effectiveRoleRuleV7("KNIGHT", faction).abilities.includes("CAPTURE"),
     );
-    expect(capturing).toEqual(["ORIGINAL"]);
+    expect(capturing).toEqual(FACTION_IDS_V7);
     expect(
       FACTION_IDS_V7.map(
         (faction) => effectiveRoleRuleV7("KNIGHT", faction).label,

@@ -54,7 +54,7 @@ export const HELP_SECTIONS_V7: readonly HelpSectionV7[] = [
       "Harvest and build there to add population. Enough population raises the city's level.",
       "Each level brings a reward to choose, room for one more unit, and more Coins every turn.",
       "A big city can choose a free giant unit or a pile of Coins at every new level.",
-      "To take a village or an enemy city, stand a unit on it. On your next turn it can capture.",
+      "To take a village or an enemy city, stand any unit on it (not a boat). On your next turn it can capture.",
     ],
   },
   {

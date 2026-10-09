@@ -237,8 +237,8 @@ describe("Revision 17 Goblin DOM", () => {
         ),
       ].map((entry) => entry.textContent);
     expect(glossaryLines()).toEqual([
+      "CaptureTakes a village or an enemy city when it starts your turn standing on its centre.",
       "BerserkYour units within 2 tiles that have not moved yet go one tile farther this turn, and enemies next to their path do not stop them.",
-      "Can't captureCannot take villages or cities.",
       "Gang UpHits harder for each of your other units next to its target.",
     ]);
     requiredButton("close-unit-help").click();

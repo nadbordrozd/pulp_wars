@@ -283,10 +283,11 @@ const HEAVY: Readonly<Record<FactionIdV7, Numbers>> = {
   GOBLIN: num(5, 16, 5, 4, 1),
   UNDEAD: num(6, 14, 6, 5, 1),
   MARTIAN: num(6, 12, 6, 4, 1),
-  // The three moved units keep their numbers.
-  DINOSAUR: { ...num(8, 20, 6, 4, 2), captures: false },
+  // The three moved units keep their numbers. Every land unit captures
+  // since `pulp_wars-ke95` (the Triceratops and the Steam Tank did not).
+  DINOSAUR: num(8, 20, 6, 4, 2),
   ICE_FOLK: num(6, 20, 5, 4, 1),
-  DWARF: { ...num(9, 16, 6, 4, 2), captures: false },
+  DWARF: num(9, 16, 6, 4, 2),
   CANDY: num(6, 16, 6, 5, 1),
 };
 function num(
@@ -373,11 +374,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
-    expect(PRIOR_RULESET_7_IDS.at(-9)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r64");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r64.current");
+    expect(PRIOR_RULESET_7_IDS.at(-10)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-9)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-10)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -495,7 +496,7 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
       move: 1,
       range: [2, 3],
       afterMove: false,
-      captures: false,
+      captures: true,
     });
     expect(numbersOf("GUARD", "ICE_FOLK")).toEqual({
       cost: 4,
@@ -515,7 +516,7 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
       move: 3,
       range: [1, 1],
       afterMove: true,
-      captures: false,
+      captures: true,
     });
   });
 
@@ -559,10 +560,12 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
 
   it("keeps the rules of the three moved units with the unit, under the heavy role", () => {
     // The Triceratops: Charge!, the run-up, two slots, an Egg of two turns,
-    // growth, no capture, out of War Drums, and Field Defense destroyed.
+    // growth, out of War Drums, and Field Defense destroyed; it captures
+    // since `pulp_wars-ke95`.
     const triceratops = roleMechanicsV7("SWORDSMAN", "DINOSAUR");
     expect(effectiveRoleRuleV7("SWORDSMAN", "DINOSAUR").abilities).toEqual([
       "ATTACK",
+      "CAPTURE",
       "LINEBREAKER",
       "GROW",
     ]);
@@ -578,6 +581,7 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
     // The Stegosaurus in the role it left: one slot, an Egg of two turns.
     expect(effectiveRoleRuleV7("CATAPULT", "DINOSAUR").abilities).toEqual([
       "ATTACK",
+      "CAPTURE",
       "GROW",
     ]);
     expect(roleMechanicsV7("CATAPULT", "DINOSAUR")).toMatchObject({
@@ -615,9 +619,10 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
       glides: true,
       buildsFieldDefense: false,
     });
-    // The Steam Tank: Plated 4, a machine, no capture.
+    // The Steam Tank: Plated 4, a machine; it captures since `pulp_wars-ke95`.
     expect(effectiveRoleRuleV7("SWORDSMAN", "DWARF").abilities).toEqual([
       "ATTACK",
+      "CAPTURE",
       "PLATED",
     ]);
     expect(roleMechanicsV7("SWORDSMAN", "DWARF")).toMatchObject({
@@ -629,6 +634,7 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
     // Dwarf crowd control (`pulp_wars-w49.33`): it Whirls.
     expect(effectiveRoleRuleV7("KNIGHT", "DWARF").abilities).toEqual([
       "ATTACK",
+      "CAPTURE",
       "CLOCKWORK",
       "WHIRL",
     ]);

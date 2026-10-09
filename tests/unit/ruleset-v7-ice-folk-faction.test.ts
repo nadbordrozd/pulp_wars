@@ -512,7 +512,7 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "BLIZZARD", "COLD_SNAP"],
+    ["ATTACK", "CAPTURE", "BLIZZARD", "COLD_SNAP"],
     true,
   ],
   [
@@ -528,7 +528,7 @@ const ROSTER = [
     2,
     1,
     true,
-    ["ATTACK", "BOULDERS", "MOUNTAIN_BORN"],
+    ["ATTACK", "CAPTURE", "BOULDERS", "MOUNTAIN_BORN"],
     false,
   ],
   [
@@ -544,7 +544,7 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "PROWL"],
+    ["ATTACK", "CAPTURE", "PROWL"],
     true,
   ],
   [

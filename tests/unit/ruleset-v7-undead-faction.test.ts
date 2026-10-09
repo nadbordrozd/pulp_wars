@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r64");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r64.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r62 and preserves the r63 save", () => {
+  it("cleans obsolete keys through v7r63 and preserves the r64 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r62.current",
+      "pulpWars.save.v7r63.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(62);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(63);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -590,7 +590,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         1,
         "ADMINISTRATION",
         true,
-        ["ATTACK", "RALLY", "RAISE_DEAD"],
+        ["ATTACK", "CAPTURE", "RALLY", "RAISE_DEAD"],
       ],
       CATAPULT: [
         "Lich",
@@ -605,7 +605,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         1,
         "SAWMILLING",
         false,
-        ["ATTACK", "PLAGUE"],
+        ["ATTACK", "CAPTURE", "PLAGUE"],
       ],
       KNIGHT: [
         "Vampire",
@@ -620,7 +620,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         "CHIVALRY",
         true,
         // The Undead pass (`pulp_wars-w49.13`, 7r51): Escape.
-        ["ATTACK", "LIFESTEAL", "UNANSWERED", "ESCAPE"],
+        ["ATTACK", "CAPTURE", "LIFESTEAL", "UNANSWERED", "ESCAPE"],
       ],
       JUGGERNAUT: [
         "Abomination",
@@ -769,8 +769,9 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       // Attack 3, Knight 13 HP.
       ["Marksman", 4, 12, 4, 2, 1, 2, 1, "ATTACK+CAPTURE"],
       ["Guard", 3, 17, 3, 6, 1, 1, 1, "ATTACK+CAPTURE"],
-      ["Captain", 5, 10, 2, 2, 1, 1, 1, "ATTACK+RALLY+TEND_WOUNDED"],
-      ["Catapult", 8, 10, 6, 1, 1, 3, 2, "ATTACK"],
+      // Any unit can capture (`pulp_wars-ke95`).
+      ["Captain", 5, 10, 2, 2, 1, 1, 1, "ATTACK+CAPTURE+RALLY+TEND_WOUNDED"],
+      ["Catapult", 8, 10, 6, 1, 1, 3, 2, "ATTACK+CAPTURE"],
       ["Knight", 9, 13, 8, 2, 3, 1, 1, "ATTACK+CAPTURE+OVERRUN"],
       // The giants' signatures (`pulp_wars-w49.30`): Crushing Shove.
       ["Juggernaut", null, 40, 8, 8, 1, 1, 1, "ATTACK+CAPTURE+PUSH+CRUSH"],
@@ -1527,26 +1528,23 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
       UNIT_ROLE_IDS_V7.filter((role) =>
         effectiveRoleRuleV7(role, faction).abilities.includes("CAPTURE"),
       );
-    // Tuning 2 (7r47): the Human Knight captures; the Vampire does not.
-    // Tuning 5: the Swordsman captures (the Undead table only copies the
-    // Human role and never fields it).
-    expect(captures("ORIGINAL")).toEqual([
+    // Any unit can capture (`pulp_wars-ke95`): every land role of both
+    // factions (before it the Human Captain and Catapult and the Undead
+    // Necromancer, Lich, and Vampire did not; the Undead table only copies
+    // the Human Swordsman role and never fields it).
+    const land = [
       "FIGHTER",
       "RAIDER",
       "MARKSMAN",
       "GUARD",
+      "CAPTAIN",
+      "CATAPULT",
       "KNIGHT",
       "JUGGERNAUT",
       "SWORDSMAN",
-    ]);
-    expect(captures("UNDEAD")).toEqual([
-      "FIGHTER",
-      "RAIDER",
-      "MARKSMAN",
-      "GUARD",
-      "JUGGERNAUT",
-      "SWORDSMAN",
-    ]);
+    ];
+    expect(captures("ORIGINAL")).toEqual(land);
+    expect(captures("UNDEAD")).toEqual(land);
 
     const state = arena(
       ["UNDEAD", "ORIGINAL"],

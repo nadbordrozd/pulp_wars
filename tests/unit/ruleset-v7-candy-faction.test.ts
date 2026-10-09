@@ -68,7 +68,8 @@ function must<T>(value: T | undefined, what = "value"): T {
 }
 
 // label, role, technology, cost, HP, attack2, defense2, Move, minimum range,
-// range, Sight, attack after Move, abilities
+// range, Sight, attack after Move, abilities (every land unit has CAPTURE
+// since `pulp_wars-ke95`)
 const ROSTER = [
   [
     "Toffee Trooper",
@@ -143,7 +144,7 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "TEND_WOUNDED", "REBAKE", "SUGAR_RUSH"],
+    ["ATTACK", "CAPTURE", "TEND_WOUNDED", "REBAKE", "SUGAR_RUSH"],
   ],
   [
     "Pie Launcher",
@@ -158,7 +159,7 @@ const ROSTER = [
     3,
     1,
     false,
-    ["ATTACK", "SUGAR_RUSH", "SPLAT"],
+    ["ATTACK", "CAPTURE", "SUGAR_RUSH", "SPLAT"],
   ],
   [
     "Chocolate Bunny",
@@ -173,7 +174,7 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "SUGAR_RUSH"],
+    ["ATTACK", "CAPTURE", "SUGAR_RUSH"],
   ],
   [
     "Gingerbread Giant",

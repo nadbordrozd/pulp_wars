@@ -446,7 +446,7 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       "Flyers",
-      `a ${joinOr(flyers)} flies over any terrain, any unit, and Rifts, ignores zones of control, and never captures or stands on a foreign city.`,
+      `a ${joinOr(flyers)} flies over any terrain, any unit, and Rifts, and ignores zones of control.`,
     ],
     [
       "Launch",
@@ -543,7 +543,7 @@ export function martianAbilityDescriptionV7(
         ? TRACTOR_BEAM_TOOLTIP_V7
         : tractorBeamTooltipV7(roleHasHeavyTractorBeamV7(role, faction));
     case "FLY":
-      return "Flies over any terrain and any unit and ignores zones of control; never captures or stands on a foreign city.";
+      return "Flies over any terrain and any unit and ignores zones of control.";
     case "STRIDE":
       return "Crosses Forest, Mountain, and Shallow Water without stopping; never gets cover or fortification.";
     default:
@@ -623,7 +623,7 @@ export function martianRecruitNotesV7(
         ]
       : []),
     ...(mechanics.movementMode === "FLY"
-      ? ["Flies over any terrain and unit; never captures."]
+      ? ["Flies over any terrain and unit."]
       : mechanics.movementMode === "STRIDE"
         ? ["Strides over Forest, Mountain, and Shallow Water; no cover."]
         : []),

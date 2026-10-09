@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r63`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r64`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -266,6 +266,19 @@ another reward ladder, a giant once per city or from level 6, a Treasury
 of 6 Coins, or a Survey without a unit, section 4.8 is the rule.** A
 save, replay, or setup of `7r62` is rejected, and the browser autosave
 has a new key.
+`pulp-wars-poc-7r64` (`pulp_wars-ke95`) is **any unit can capture**
+([section 4.7](#47-siege-and-capture)): every land unit of every faction
+has `CAPTURE` (support, siege, Knight-role, and heavy line units, the
+flyers, and the Sabretooth included); boats, Eggs, embarked and burrowed
+units, and the neutral Giant Spider never capture. A flyer (Saucer,
+Mothership, Gyrocopter) and the Sabretooth may now end a Move, land, or
+advance on a village or a foreign center, so they besiege and capture
+there; only a Dwarf rider on its surfacing turn still keeps off foreign
+centers. "Can't capture" is gone from every recruit card and glossary.
+The Normal AI plans captures with every land unit but the flyers
+([section 16](#16-normal-ai-summary)). No state, view, command, or event
+key changed. A save, replay, or setup of `7r63` is rejected, and the
+browser autosave has a new key.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
 **City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -716,7 +729,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r63`.
+resolved ones as of `pulp-wars-poc-7r64`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -817,10 +830,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r63`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r64`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r63.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r64.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -2492,24 +2505,28 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
 - A city is **besieged** while a hostile unit stands on its center: zero income
   and no training, Egg laying, Land Grant, or tile economy for that city.
   Pending rewards can still be chosen, and the city's Eggs still count down
-  and hatch. A Martian flyer never stands on a hostile or neutral center
-  ([section 20.6](#206-movement-stride-flying-and-crossing-water)), so it
-  never besieges, and neither does a Sabretooth
-  ([section 21.12](#2112-prowl-and-the-cold-aura)) or a Dwarf Gyrocopter (a
-  flyer). A mound never stands on a center, so a burrowed unit never
-  besieges, and a siege its Mole or rider made ends when it tunnels. A
-  besieged Ice Folk city is still Snow.
-- **Capture** requires a capture-capable land unit (Human Fighter, Raider,
-  Marksman, Guard, or Juggernaut; Undead Skeleton, Ghoul, Banshee, Zombie, or
-  Abomination; Goblin Goblin, Wolf Rider, Bomb Chucker, Orc Brute, or Troll;
-  Dinosaur Caveman, Raptor, Spitter, Ankylosaurus, or Brontosaurus; Martian
-  Grunt, Ray Gunner, Shield Projector, or Colossus; Ice Folk Yeti,
-  Sled, Snow Hunter, Mammoth, or Frost Giant; Dwarf Hammerer, Clockwork
-  Gunner, Steam Mole, or Brass Titan)
-  (a mind-controlled unit of a capture-capable kind too, for its
-  controller) that began its owner's turn on a neutral
-  village or hostile city center, stands there alone, and has not moved or used
-  a primary action this turn. Capture is terminal.
+  and hatch. A flyer (Saucer, Mothership, Gyrocopter) and a Sabretooth
+  besiege like any land unit since `pulp_wars-ke95` (they never stood on a
+  hostile or neutral center before). A mound never stands on a center, so a
+  burrowed unit never besieges, and a siege its Mole or rider made ends when
+  it tunnels. A besieged Ice Folk city is still Snow.
+- **Capture** is open to every land unit of every faction
+  (`pulp_wars-ke95`, user direction 2026-10-09: every land role has
+  `CAPTURE`, support, siege, Knight-type, heavy line, flyers, the Prowling
+  Sabretooth, and reward giants included; a mind-controlled unit captures
+  for its controller). Only boats, Eggs, embarked units, burrowed units,
+  and the neutral Giant Spider never capture. The unit must
+  have begun its owner's turn on a neutral village or hostile city center
+  (`captureEligible`), stand there alone, be in land form, not be Crashed, and
+  not have moved or used a primary action this turn. Capture is terminal.
+  A flyer and a Sabretooth may end a Move on a village or a foreign center
+  like any land unit
+  ([section 20.6](#206-movement-stride-flying-and-crossing-water),
+  [section 21.12](#2112-prowl-and-the-cold-aura)) and capture there on
+  their owner's next turn; a surfaced Steam Mole or rider is not eligible
+  on its surfacing turn
+  ([section 22.3](#223-the-mound-surfacing-and-the-eruption)), and a rider
+  never ends a Move on a foreign center that turn.
 - Capture transfers level, footprint, improvements, Roads, Walls, and reward
   history; re-homes the capturing unit (with its capacity slots; a
   controlled unit stays homeless); destroys
@@ -3709,10 +3726,10 @@ numbers are first guesses ([the ninth unit](RULESET_7_NINTH_UNIT.md)):
 | Human    | Champion          |    6 |  15 |    3.5 |     2.5 |    1 | yes      | none                                                                 |
 | Undead   | **Wight**         |    6 |  14 |      3 |     2.5 |    1 | yes      | Rise Again ([17.11](#1711-the-wight-rise-again))                     |
 | Goblin   | **Ogre**          |    5 |  16 |    2.5 |       2 |    1 | yes      | Heavyweight ([18.13](#1813-the-ogre-heavyweight))                    |
-| Dinosaur | _Triceratops_     |    8 |  20 |      3 |       2 |    2 | no       | Charge! ([19.11](#1911-charge)); an Egg, two slots                   |
+| Dinosaur | _Triceratops_     |    8 |  20 |      3 |       2 |    2 | yes      | Charge! ([19.11](#1911-charge)); an Egg, two slots                   |
 | Martian  | **Shock Trooper** |    6 |  12 |      3 |       2 |    1 | yes      | Shield 3; Shock Field ([20.13](#2013-the-shock-trooper-shock-field)) |
 | Ice Folk | _Mammoth_         |    6 |  20 |    2.5 |       2 |    1 | yes      | Sweep and Trample ([21.10](#2110-sweep-and-trample))                 |
-| Dwarf    | _Steam Tank_      |    9 |  16 |      3 |       2 |    2 | no       | Plated 4 ([22.10](#2210-steam-tank-plated-and-the-brass-titan))      |
+| Dwarf    | _Steam Tank_      |    9 |  16 |      3 |       2 |    2 | yes      | Plated 4 ([22.10](#2210-steam-tank-plated-and-the-brass-titan))      |
 | Candy    | **Jawbreaker**    |    6 |  16 |      3 |     2.5 |    1 | yes      | Sugar Rush; Rock Hard ([23.12](#2312-the-jawbreaker-rock-hard))      |
 
 | Unit        | Tech              | Cost |  HP | Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                    |
@@ -3722,8 +3739,8 @@ numbers are first guesses ([the ninth unit](RULESET_7_NINTH_UNIT.md)):
 | Marksman    | Marksmanship      |   4³ | 12² |      2 |       1 |    1 |   1–2 |    1¹ | yes               | yes     | never advances³                                              |
 | Guard       | Fortification     |    3 | 17² |    1.5 |      3⁶ |    1 |     1 |     1 | no                | yes     | Field Defense; open to ranged attacks⁶                       |
 | Champion⁷   | Metallurgy        |    6 |  15 |    3.5 |     2.5 |    1 |     1 |     1 | yes               | yes     | —                                                            |
-| Captain     | Administration    |    5 |  10 |      1 |       1 |    1 |     1 |     1 | yes               | no      | Rally; Tend Wounded                                          |
-| Catapult    | Sawmilling        |    8 |  10 |     3³ |     0.5 |    1 |   2–3 |     1 | no                | no      | —                                                            |
+| Captain     | Administration    |    5 |  10 |      1 |       1 |    1 |     1 |     1 | yes               | yes     | Rally; Tend Wounded                                          |
+| Catapult    | Sawmilling        |    8 |  10 |     3³ |     0.5 |    1 |   2–3 |     1 | no                | yes     | —                                                            |
 | Knight      | Chivalry          |    9 | 13³ |     4⁵ |       1 |    3 |     1 |     1 | yes               | yes⁴    | Overrun                                                      |
 | Juggernaut  | reward only       |    — |  40 |      4 |       4 |    1 |     1 |     1 | yes               | yes     | Push; Crushing Shove                                         |
 | Patrol Boat | Shorecraft        |    5 |  10 |      2 |       2 |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                                      |
@@ -3751,9 +3768,9 @@ are unchanged. Human Disband refunds follow the cost (a Marksman's is 2).
 (`pulp_wars-w49.3`, `pulp-wars-poc-7r47`): the Human Knight has the
 `CAPTURE` ability and captures a settlement like a Fighter (the same
 `CAPTURE` command and timing: it must have stood on the center since its
-turn began). The Knight-role units of the other factions (Vampire, Scrap
-Buggy, T-Rex, Mothership, Sabretooth, Steam Tank, Chocolate Bunny) still
-cannot capture.
+turn began). Since `pulp_wars-ke95` every land unit of every faction
+captures ([section 4.7](#47-siege-and-capture)), the Knight-role units of
+the other factions included.
 
 ⁵ [Round 3](RULESET_7_TUNING_HUMAN.md) (`pulp_wars-w49.3`,
 `pulp-wars-poc-7r47`): the Human Knight has Attack 4 (3 before). At full HP
@@ -3815,9 +3832,9 @@ parentheses):
 | Ghoul       | `RAIDER`      | Scouting          |    3 |  10 |  2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Devour; Carrion⁴                |
 | Banshee     | `MARKSMAN`    | Marksmanship      |    3 |   8 |  1 (2) |   1 (2) |    1 |     — |    1² | Wail: yes         | yes     | Wail; no targeted Attack                          |
 | Zombie      | `GUARD`       | Fortification     |    3 |  18 |  2 (4) |   2 (4) |    1 |     1 |     1 | no                | yes     | Field Defense; Infect; Bite; never advances       |
-| Necromancer | `CAPTAIN`     | Administration    |    5 |  10 |  1 (2) |   1 (2) |    1 |     1 |     1 | yes               | no      | Frenzy; Raise Dead (2 tiles⁴)                     |
-| Lich        | `CATAPULT`    | Sawmilling        |    8 |  10 |  3 (6) |   1 (2) |    1 |   2–3 |     1 | no                | no      | splash; Plague (Pestilence⁴); never advances      |
-| Vampire     | `KNIGHT`      | Chivalry          |    9 |  10 |  3 (6) |   1 (2) |    3 |     1 |     1 | yes               | no      | Lifesteal; Unanswered; Escape³                    |
+| Necromancer | `CAPTAIN`     | Administration    |    5 |  10 |  1 (2) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Frenzy; Raise Dead (2 tiles⁴)                     |
+| Lich        | `CATAPULT`    | Sawmilling        |    8 |  10 |  3 (6) |   1 (2) |    1 |   2–3 |     1 | no                | yes     | splash; Plague (Pestilence⁴); never advances      |
+| Vampire     | `KNIGHT`      | Chivalry          |    9 |  10 |  3 (6) |   1 (2) |    3 |     1 |     1 | yes               | yes     | Lifesteal; Unanswered; Escape³                    |
 | Wight       | `SWORDSMAN`   | Metallurgy        |    6 |  14 |  3 (6) | 2.5 (5) |    1 |     1 |     1 | yes               | yes     | Rise Again (7 HP, once; `7r55`); no Field Defense |
 | Abomination | `JUGGERNAUT`  | reward only       |    — |  40 |  4 (8) |   4 (8) |    1 |     1 |     1 | yes               | yes     | Swallow; Infect³; never advances³                 |
 | Patrol Boat | `PATROL_BOAT` | Shorecraft        |    5 |  10 |  2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                           |
@@ -3856,15 +3873,15 @@ tiles, and Plague behind Pestilence.
   freedom, and ordinary land ZOC (none onto water).
 - **Zombie** has Guard parity for movement, capture, Field Defense, and "cannot
   attack after moving"; it never advances after a kill.
-- **Necromancer** cannot capture; its primary actions are Attack, Frenzy, and
+- **Necromancer** captures (`pulp_wars-ke95`); its primary actions are Attack, Frenzy, and
   Raise Dead, which reaches Graves within two tiles
   ([section 17.2](#172-raise-dead-and-devour)).
 - **Lich** has Catapult parity for range 2–3, minimum range, "cannot attack
-  after moving", no capture, no advance, and Field Defense destruction on the
-  primary target tile, and adds splash and, once its owner has researched
+  after moving", no advance, and Field Defense destruction on the
+  primary target tile, captures like every land unit, and adds splash and, once its owner has researched
   Pestilence (the Undead Explosives), Plague
   ([section 17.8](#178-plague)).
-- **Vampire** cannot capture and has no Overrun; the defender of its attacks
+- **Vampire** captures and has no Overrun; the defender of its attacks
   never retaliates (`UNANSWERED`). Since `7r51` it has **Escape**
   ([section 12.2](#122-activation)): after an attack it survives it may
   make one more Move with its full Move 3.
@@ -3893,9 +3910,9 @@ damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
 | Wolf Rider   | `RAIDER`      | Scouting          |    3 |  10 |   2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     |      4 |           — | Charge (Raiding); Kaboom; no Escape                             |
 | Bomb Chucker | `MARKSMAN`    | Marksmanship      |    3 |   8 |   2 (4) |   1 (2) |    1 |     2 |    1³ | yes               | yes     |      4 |           5 | bombs (friendly-fire splash, no Gang Up); Kaboom                |
 | Orc Brute    | `GUARD`       | Fortification     |    3 |  15 |   2 (4) | 2.5 (5) |    1 |     1 |     1 | no                | yes     |      — |           — | Field Defense; Blast-proof                                      |
-| Orc Warboss  | `CAPTAIN`     | Administration    |    5 |  12 |   2 (4) |   1 (2) |    1 |     1 |     1 | yes               | no      |      — |           — | Berserk; no Tend Wounded                                        |
-| Rocket Cart  | `CATAPULT`    | Sawmilling        |    7 |   8 | 3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | no                | no      |      5 |           7 | Kaboom; never advances; Gang Up +1 at most                      |
-| Scrap Buggy  | `KNIGHT`      | Chivalry          |    8 |  10 |   3 (6) |   1 (2) |    3 |     1 |     1 | yes               | no      |      5 |           7 | Ram; Kaboom, also after attacking (Crash)                       |
+| Orc Warboss  | `CAPTAIN`     | Administration    |    5 |  12 |   2 (4) |   1 (2) |    1 |     1 |     1 | yes               | yes     |      — |           — | Berserk; no Tend Wounded                                        |
+| Rocket Cart  | `CATAPULT`    | Sawmilling        |    7 |   8 | 3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | no                | yes     |      5 |           7 | Kaboom; never advances; Gang Up +1 at most                      |
+| Scrap Buggy  | `KNIGHT`      | Chivalry          |    8 |  10 |   3 (6) |   1 (2) |    3 |     1 |     1 | yes               | yes     |      5 |           7 | Ram; Kaboom, also after attacking (Crash)                       |
 | Ogre         | `SWORDSMAN`   | Metallurgy        |    5 |  16 | 2.5 (5) |   2 (4) |    1 |     1 |     1 | yes               | yes     |      — |           — | Heavyweight (two helpers for Gang Up; `7r55`); no Field Defense |
 | Troll        | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) |   3 (6) |    1 |     1 |     1 | yes               | yes     |      — |           — | Goblin Toss; Regenerate 4                                       |
 | Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval; Ram (Seamanship)                                         |
@@ -3918,13 +3935,13 @@ damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
   Defense with Fortification) and is the only Goblin unit that builds Field
   Defense. Since `7r50` it is **Blast-proof**: no explosion and no splash
   hits it ([section 18.6](#186-blast-resolution)).
-- **Orc Warboss** cannot capture; its primary actions are Attack and Berserk
+- **Orc Warboss** captures; its primary actions are Attack and Berserk
   (no Tend Wounded).
 - **Rocket Cart** has Catapult parity: range 2–3, minimum range 2, cannot
-  attack after moving (Kaboom is still allowed after a Move), no capture,
+  attack after moving (Kaboom is still allowed after a Move), capture,
   never advances, Field Defense destruction on the primary target tile
   (reason `CATAPULT`), and no splash.
-- **Scrap Buggy** has Knight parity: Move 3, no capture, and Overrun,
+- **Scrap Buggy** has Knight parity: Move 3, capture, and Overrun,
   labelled **Ram** for Goblins (same rule and events). Since `7r50` it may
   Kaboom after attacking (**Crash**, [section 18.4](#184-kaboom)).
 - **Troll** has Juggernaut parity (reward only, capture, no Pillage or
@@ -3939,9 +3956,10 @@ damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
 - **Public abilities** (the role rule's `abilities`): Goblin `ATTACK`,
   `CAPTURE`, `KABOOM`; Wolf Rider `ATTACK`, `CAPTURE`, `CHARGE`, `KABOOM`;
   Bomb Chucker `ATTACK`, `CAPTURE`, `KABOOM`; Orc Brute `ATTACK`, `CAPTURE`;
-  Orc Warboss `ATTACK`, `RALLY`; Rocket Cart `ATTACK`, `KABOOM`; Scrap Buggy
-  `ATTACK`, `OVERRUN`, `KABOOM`; Troll `ATTACK`, `CAPTURE`, `PUSH`,
-  `REGENERATE`. Blast damages, the bomb's splash target mode, the Berserk
+  Orc Warboss `ATTACK`, `CAPTURE`, `RALLY`; Rocket Cart `ATTACK`, `CAPTURE`,
+  `KABOOM`; Scrap Buggy `ATTACK`, `CAPTURE`, `OVERRUN`, `KABOOM`; Troll
+  `ATTACK`, `CAPTURE`, `REGENERATE`, `TOSS`. Blast damages, the bomb's
+  splash target mode, the Berserk
   radius, the Field Defense restriction, and the regeneration amount are role
   mechanics, exposed to every viewer of a Goblin unit through the `goblin`
   block of its public unit stats (`kaboomDamage`, `deathBlastDamage`,
@@ -3960,10 +3978,10 @@ capacity the unit, or its Egg, uses
 | Raptor       | `RAIDER`      | Scouting          |    4 | 1       |     1 |  12 | 2.5 (5) |   1 (2) |    2 |     1 |     2 | yes               | yes     | yes   | Pounce (Raiding); no Escape                                            |
 | Spitter      | `MARKSMAN`    | Marksmanship      |    4 | 1       |     1 |  10 |   2 (4) |   1 (2) |    1 |   1–2 |    1⁴ | yes               | yes     | yes   | Acid                                                                   |
 | Ankylosaurus | `GUARD`       | Fortification     |    5 | 2       |     1 |  20 |   2 (4) |   3 (6) |    1 |     1 |     1 | no                | yes     | yes   | Armoured; no Field Defense                                             |
-| Shaman       | `CAPTAIN`     | Administration    |    5 | trained |     1 |  10 |   1 (2) |   1 (2) |    1 |     1 |     1 | yes               | no      | no    | War Drums; Tend Wounded; Hatch                                         |
-| Stegosaurus  | `CATAPULT`    | Sawmilling        |    7 | 2       |     1 |  12 | 2.5 (5) |   1 (2) |    1 |   2–3 |     1 | no                | no      | yes   | Thagomizer (Cracked; `7r55`); destroys Field Defense; never advances   |
-| Triceratops  | `SWORDSMAN`   | Metallurgy        |    8 | 2       |     2 |  20 |   3 (6) |   2 (4) |    2 |     1 |     1 | yes               | no      | yes   | Charge! (the heavy role since `7r55`; `CATAPULT` at Sawmilling before) |
-| T-Rex        | `KNIGHT`      | Chivalry          |   14 | 4       |     2 |  28 |   4 (8) |   2 (4) |    2 |     1 |     1 | yes               | no      | yes   | Rampage                                                                |
+| Shaman       | `CAPTAIN`     | Administration    |    5 | trained |     1 |  10 |   1 (2) |   1 (2) |    1 |     1 |     1 | yes               | yes     | no    | War Drums; Tend Wounded; Hatch                                         |
+| Stegosaurus  | `CATAPULT`    | Sawmilling        |    7 | 2       |     1 |  12 | 2.5 (5) |   1 (2) |    1 |   2–3 |     1 | no                | yes     | yes   | Thagomizer (Cracked; `7r55`); destroys Field Defense; never advances   |
+| Triceratops  | `SWORDSMAN`   | Metallurgy        |    8 | 2       |     2 |  20 |   3 (6) |   2 (4) |    2 |     1 |     1 | yes               | yes     | yes   | Charge! (the heavy role since `7r55`; `CATAPULT` at Sawmilling before) |
+| T-Rex        | `KNIGHT`      | Chivalry          |   14 | 4       |     2 |  28 |   4 (8) |   2 (4) |    2 |     1 |     1 | yes               | yes     | yes   | Rampage                                                                |
 | Brontosaurus | `JUGGERNAUT`  | reward only       |    — | —       |     2 |  45 | 3.5 (7) |   4 (8) |    1 |     1 |     1 | yes               | yes     | yes   | Thunder Stomp                                                          |
 | Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 | trained |     1 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | no    | naval; Ram (Seamanship)                                                |
 | Battleship   | `BATTLESHIP`  | Naval Engineering |   16 | trained |     1 |  25 |  6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | no    | naval; splash                                                          |
@@ -3985,16 +4003,16 @@ capacity the unit, or its Egg, uses
 - **Ankylosaurus** has Guard parity for "cannot attack after moving" and
   capture, cannot build Field Defense, and is Armoured
   ([section 19.9](#199-acid-and-armoured)).
-- **Shaman** has exact Captain parity (no capture; Attack, War Drums, and
+- **Shaman** has exact Captain parity (capture; Attack, War Drums, and
   Tend Wounded, which cures Plague and Bitten) and adds Hatch
   ([section 19.6](#196-shaman-hatch)).
 - **Triceratops** is a melee line-breaker: range 1, Move 2, it may attack
-  after moving, it cannot capture, it advances after a melee kill (unlike
+  after moving, it captures, it advances after a melee kill (unlike
   the Catapult), and every attack it makes is a **Charge!**
   ([section 19.11](#1911-charge)). It keeps the `SIEGE` tactical label of
   the `CATAPULT` role, so War Drums never Inspires it, and its attacks
   destroy Field Defense with reason `CATAPULT`.
-- **T-Rex** has Knight parity (no capture, Overrun, labelled **Rampage**)
+- **T-Rex** has Knight parity (capture, Overrun, labelled **Rampage**)
   with Move 2 instead of 3. It is never a treasure unit.
 - **Brontosaurus** has Juggernaut parity (reward only, capture, no
   Pillage or Disband) with 45 HP and Attack 3.5, and uses 2 slots. Its
@@ -4022,8 +4040,9 @@ capacity the unit, or its Egg, uses
 - **Public abilities** (the role rule's `abilities`): Caveman `ATTACK`,
   `CAPTURE`; Raptor `ATTACK`, `CAPTURE`, `CHARGE`, `GROW`; Spitter `ATTACK`,
   `CAPTURE`, `ACID`, `GROW`; Ankylosaurus `ATTACK`, `CAPTURE`, `ARMOURED`,
-  `GROW`; Shaman `ATTACK`, `RALLY`, `TEND_WOUNDED`, `HATCH`; Triceratops
-  `ATTACK`, `LINEBREAKER`, `GROW`; T-Rex `ATTACK`, `OVERRUN`, `GROW`;
+  `GROW`; Shaman `ATTACK`, `CAPTURE`, `RALLY`, `TEND_WOUNDED`, `HATCH`;
+  Stegosaurus `ATTACK`, `CAPTURE`, `GROW`; Triceratops `ATTACK`, `CAPTURE`,
+  `LINEBREAKER`, `GROW`; T-Rex `ATTACK`, `CAPTURE`, `OVERRUN`, `GROW`;
   Brontosaurus `ATTACK`, `CAPTURE`, `PUSH`, `GROW`; Patrol Boat `ATTACK`, `RAM`; Battleship `ATTACK`; Submarine `ATTACK`,
   `SUBMERGED`, `TORPEDO`.
   Slots,
@@ -4041,12 +4060,12 @@ is its movement mode ([section 20.6](#206-movement-stride-flying-and-crossing-wa
 | Unit             | Role          | Tech              | Cost | Slots |  HP | Shield |  Attack |  Defense | Move | Range | Sight | Mode   | Attack after Move | Capture | Abilities                                                                           |
 | ---------------- | ------------- | ----------------- | ---: | ----: | --: | -----: | ------: | -------: | ---: | ----: | ----: | ------ | ----------------- | ------- | ----------------------------------------------------------------------------------- |
 | Grunt            | `FIGHTER`     | start             |   3⁶ |     1 |  8⁸ |      2 |  2 (4)⁷ |  1.5 (3) |    1 |  1–2⁶ |     1 | ground | yes               | yes     | ray pistol (plain shot); no Field Defense                                           |
-| Saucer           | `RAIDER`      | Scouting          |    4 |     1 |   8 |      2 | 1.5 (3) |    1 (2) |    3 |     1 |     2 | fly    | yes               | no      | Beam Down; Tractor Beam⁷; Strafe (Raiding); no Escape, Pillage, or advance          |
+| Saucer           | `RAIDER`      | Scouting          |    4 |     1 |   8 |      2 | 1.5 (3) |    1 (2) |    3 |     1 |     2 | fly    | yes               | yes     | Beam Down; Tractor Beam⁷; Strafe (Raiding); no Escape, Pillage, or advance          |
 | Ray Gunner       | `MARKSMAN`    | Marksmanship      |    4 |     1 |   8 |      2 |   3 (6) |    1 (2) |    1 |   1–2 |    1⁵ | ground | yes               | yes     | heat ray                                                                            |
 | Shield Projector | `GUARD`       | Fortification     |    4 |     1 |  12 |      3 | 1.5 (3) |  2.5 (5) |    1 |     1 |     1 | ground | no                | yes     | Force Field; no Field Defense                                                       |
-| Brain            | `CAPTAIN`     | Administration    |    5 |     1 |   8 |      2 |   1 (2) |    1 (2) |    1 |     1 |     1 | ground | yes               | no      | Psychic Command; Mind Control; no Tend Wounded                                      |
-| Tripod           | `CATAPULT`    | Sawmilling        |    9 |     1 |  12 |      2 |   4 (8) |    1 (2) |    2 |    2⁶ |    2⁶ | stride | yes               | no      | heat ray; Pierce; never advances                                                    |
-| Mothership       | `KNIGHT`      | Chivalry          |   8⁷ |     2 |  16 |      4 | 2.5 (5) |    2 (4) |    2 |     1 |     1 | fly    | yes               | no      | Beam Down⁷; Heavy Tractor Beam⁷ (free once a turn); no Overrun, Pillage, or advance |
+| Brain            | `CAPTAIN`     | Administration    |    5 |     1 |   8 |      2 |   1 (2) |    1 (2) |    1 |     1 |     1 | ground | yes               | yes     | Psychic Command; Mind Control; no Tend Wounded                                      |
+| Tripod           | `CATAPULT`    | Sawmilling        |    9 |     1 |  12 |      2 |   4 (8) |    1 (2) |    2 |    2⁶ |    2⁶ | stride | yes               | yes     | heat ray; Pierce; never advances                                                    |
+| Mothership       | `KNIGHT`      | Chivalry          |   8⁷ |     2 |  16 |      4 | 2.5 (5) |    2 (4) |    2 |     1 |     1 | fly    | yes               | yes     | Beam Down⁷; Heavy Tractor Beam⁷ (free once a turn); no Overrun, Pillage, or advance |
 | Shock Trooper    | `SWORDSMAN`   | Metallurgy        |    6 |     1 |  12 |      3 |   3 (6) |    2 (4) |    1 |     1 |     1 | ground | yes               | yes     | Shock Field 3 (`7r55`); no Field Defense                                            |
 | Colossus         | `JUGGERNAUT`  | reward only       |    — |     2 |  32 |      3 |   4 (8) | 2.5 (5)⁶ |    2 |   1–2 |     1 | stride | yes               | yes     | heat ray; Overstride                                                                |
 | Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |     1 |  10 |      0 |   2 (4) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Ram (Seamanship)                                                             |
@@ -4081,8 +4100,9 @@ applied after the Martians won about 75% of the coarse Dry Land games at
   advances (tuning 2, `7r47`; before, it advanced after an adjacent kill).
 - **Saucer** flies. It has Raider parity for Sight 2 and for Charge with
   Raiding, labelled **Strafe** (+1 Attack at range 1 on its first attack
-  after a Move of at least two tiles); it has no Escape, no capture, no
-  Pillage, and never advances. Its primary actions (one per turn) are
+  after a Move of at least two tiles); it has no Escape and no Pillage, and
+  never advances. It captures (`pulp_wars-ke95`; as a flyer it may stand on
+  a village or a foreign center). Its primary actions (one per turn) are
   Attack, Beam Down ([section 20.7](#207-beam-down)), and the Tractor Beam
   ([section 20.10](#2010-tractor-beam)).
 - **Ray Gunner** has Marksman parity (range 1–2, minimum range 1, capture,
@@ -4094,7 +4114,7 @@ applied after the Martians won about 75% of the coarse Dry Land games at
   capture, cannot build Field Defense, and, once its owner has Force
   Fields (`7r52`), projects the Force Field
   ([section 20.3](#203-force-field-and-force-fields)).
-- **Brain** has Captain parity for no capture and for Rally, labelled
+- **Brain** has Captain parity for capture and for Rally, labelled
   **Psychic Command**; it has no Tend Wounded. Its primary actions are
   Attack, Psychic Command, and Mind Control.
 - **Tripod** is a walker with a heat ray and Pierce
@@ -4103,11 +4123,12 @@ applied after the Martians won about 75% of the coarse Dry Land games at
   (range 2, minimum range 2), never at an adjacent one, and an adjacent
   attacker draws no retaliation from it. Unlike the Catapult it sees two
   tiles (Sight 2) and may attack after moving (at half power); like it, it
-  cannot capture, never advances, keeps the `SIEGE` label, and every attack
+  captures, never advances, keeps the `SIEGE` label, and every attack
   it makes destroys Field Defense on the target's tile (reason
   `CATAPULT`).
-- **Mothership** flies. It has Knight parity for no capture only: no
-  Overrun, Move 2, and it never advances. It is the faction's carrier: its
+- **Mothership** flies. It has Knight parity for `CAPTURE` only (it
+  captures since `pulp_wars-ke95`; as a flyer it may stand on a village or
+  a foreign center): no Overrun, Move 2, and it never advances. It is the faction's carrier: its
   primary actions are Attack and Beam Down ([section 20.7](#207-beam-down)),
   and its **Heavy Tractor Beam** ([section 20.10](#2010-tractor-beam)) is
   not a primary action: it is free once a turn, before or after its Move
@@ -4125,10 +4146,11 @@ applied after the Martians won about 75% of the coarse Dry Land games at
   and Brain 2; Tripod 4; Mothership 4. The Colossus and a mind-controlled
   unit cannot Disband.
 - **Public abilities** (the role rule's `abilities`): Grunt `ATTACK`,
-  `CAPTURE`; Saucer `ATTACK`, `CHARGE`, `FLY`, `BEAM_DOWN`, `TRACTOR_BEAM`; Ray Gunner
+  `CAPTURE`; Saucer `ATTACK`, `CAPTURE`, `CHARGE`, `FLY`, `BEAM_DOWN`, `TRACTOR_BEAM`; Ray Gunner
   `ATTACK`, `CAPTURE`, `HEAT_RAY`; Shield Projector `ATTACK`, `CAPTURE`,
-  `FORCE_FIELD`; Brain `ATTACK`, `RALLY`, `MIND_CONTROL`; Tripod `ATTACK`,
-  `STRIDE`, `HEAT_RAY`, `PIERCE`; Mothership `ATTACK`, `FLY`, `BEAM_DOWN`,
+  `FORCE_FIELD`; Brain `ATTACK`, `CAPTURE`, `RALLY`, `MIND_CONTROL`; Tripod
+  `ATTACK`, `CAPTURE`, `STRIDE`, `HEAT_RAY`, `PIERCE`; Mothership `ATTACK`,
+  `CAPTURE`, `FLY`, `BEAM_DOWN`,
   `TRACTOR_BEAM`; Colossus `ATTACK`, `CAPTURE`, `PUSH`, `STRIDE`,
   `HEAT_RAY`; Patrol Boat `ATTACK`, `RAM`; Battleship `ATTACK`; Submarine `ATTACK`,
   `SUBMERGED`, `TORPEDO`.
@@ -4152,9 +4174,9 @@ units cross Mountains without Engineering and without stopping
 | Snow Hunter  | `MARKSMAN`   | Marksmanship   |    3 |   8 |                2 (4) |    1 (2) |    1 |   1–2 |    1⁷ | yes               | yes     | Cold Blood                                                                              |
 | Musk Ox      | `GUARD`      | Fortification  |    4 |  16 |              1.5 (3) |  2.5 (5) |    1 |     1 |     1 | no                | yes     | Frostbite (`7r55`); no Field Defense                                                    |
 | Mammoth      | `SWORDSMAN`  | Metallurgy     |    6 |  20 |              2.5 (5) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; no Field Defense (the heavy role since `7r55`; `GUARD` at Drill before) |
-| Ice Witch    | `CAPTAIN`    | Administration |    5 |  12 |                1 (2) |    1 (2) |    1 |     1 |     1 | yes               | no      | Blizzard; Cold Snap; no Rally; no Tend Wounded                                          |
-| Boulder Yeti | `CATAPULT`   | Sawmilling     |    8 |  12 | 2 (4); 3 (6) planted |  1.5 (3) |    2 |   1–2 |     1 | yes               | no      | Boulders (ignore fortification); Planted; Mountain-born; never advances                 |
-| Sabretooth   | `KNIGHT`     | Chivalry       |    9 |  14 |                3 (6) |    1 (2) |    3 |     1 |     1 | yes               | no      | Prowl; no Glide; never on a foreign center; no Overrun                                  |
+| Ice Witch    | `CAPTAIN`    | Administration |    5 |  12 |                1 (2) |    1 (2) |    1 |     1 |     1 | yes               | yes     | Blizzard; Cold Snap; no Rally; no Tend Wounded                                          |
+| Boulder Yeti | `CATAPULT`   | Sawmilling     |    8 |  12 | 2 (4); 3 (6) planted |  1.5 (3) |    2 |   1–2 |     1 | yes               | yes     | Boulders (ignore fortification); Planted; Mountain-born; never advances                 |
+| Sabretooth   | `KNIGHT`     | Chivalry       |    9 |  14 |                3 (6) |    1 (2) |    3 |     1 |     1 | yes               | yes     | Prowl; no Glide; no Overrun                                                             |
 | Frost Giant  | `JUGGERNAUT` | reward only    |    — |  40 |                4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Glacial Smash; Cold Aura; Mountain-born; never advances                                 |
 
 ⁷ Snow Hunter Sight becomes 2 with Fieldcraft.
@@ -4177,24 +4199,25 @@ units cross Mountains without Engineering and without stopping
   Pillage, Disband, Fieldcraft Forest freedom and Sight; no advance since
   tuning 2, `7r47`) and Cold Blood
   ([section 21.9](#219-bolas-and-cold-blood)).
-- **Mammoth** has Guard parity for capture only: unlike the Guard it may
+- **Mammoth** has Guard parity for capture: unlike the Guard it may
   attack after moving, and it cannot build Field Defense. Every attack it
   makes is a Sweep and a Trample ([section 21.10](#2110-sweep-and-trample)).
-- **Ice Witch** has Captain parity for no capture and nothing else: no
+- **Ice Witch** has Captain parity for capture and nothing else: no
   Rally and no Tend Wounded (`RALLY` and `TEND_WOUNDED` are never offered
   and are rejected with `UNIT_ROLE_INVALID`). She carries the Blizzard; her
   primary actions are Attack and Cold Snap
   ([section 21.6](#216-the-blizzard-and-cold-snap)).
 - **Boulder Yeti** has range 1–2 with minimum range 1 and may attack after
-  moving, unlike the Catapult; like it, it cannot capture, never advances,
+  moving, unlike the Catapult; like it, it captures, never advances,
   keeps the `SIEGE` label, and every attack it makes destroys Field Defense
   on the target's tile (reason `CATAPULT`). Its attacks ignore fortification,
   and it has +1 Attack on a turn in which it has not moved
   ([section 21.11](#2111-boulders-and-planted)). It is Mountain-born.
-- **Sabretooth** has Knight parity for no capture and for the advance after
-  a melee kill. It has no Overrun and no Charge; it Prowls, never Glides,
-  and never ends on a settlement center it does not own
-  ([section 21.12](#2112-prowl-and-the-cold-aura)).
+- **Sabretooth** has Knight parity for `CAPTURE` and for the advance after
+  a melee kill. It has no Overrun and no Charge; it Prowls
+  ([section 21.12](#2112-prowl-and-the-cold-aura)) and never Glides. Since
+  `pulp_wars-ke95` it ends a Move and advances on any settlement center
+  like any land unit, so it captures.
 - **Frost Giant** has Juggernaut parity (reward only, capture, no
   Pillage, no Disband) and the Juggernaut's numbers, plus the Cold Aura
   ([section 21.12](#2112-prowl-and-the-cold-aura)). It is Mountain-born.
@@ -4214,9 +4237,9 @@ units cross Mountains without Engineering and without stopping
 - **Public abilities** (the role rule's `abilities`): Yeti `ATTACK`,
   `CAPTURE`, `MOUNTAIN_BORN`, `ROCKFALL`; Sled `ATTACK`, `CAPTURE`, `CHARGE`,
   `BOLAS`; Snow Hunter `ATTACK`, `CAPTURE`, `COLD_BLOOD`; Mammoth `ATTACK`,
-  `CAPTURE`, `SWEEP`, `TRAMPLE`; Ice Witch `ATTACK`, `BLIZZARD`,
-  `COLD_SNAP`; Boulder Yeti `ATTACK`, `BOULDERS`, `MOUNTAIN_BORN`;
-  Sabretooth `ATTACK`, `PROWL`; Frost Giant `ATTACK`, `CAPTURE`, `PUSH`,
+  `CAPTURE`, `SWEEP`, `TRAMPLE`; Ice Witch `ATTACK`, `CAPTURE`, `BLIZZARD`,
+  `COLD_SNAP`; Boulder Yeti `ATTACK`, `CAPTURE`, `BOULDERS`, `MOUNTAIN_BORN`;
+  Sabretooth `ATTACK`, `CAPTURE`, `PROWL`; Frost Giant `ATTACK`, `CAPTURE`, `PUSH`,
   `COLD_AURA`, `MOUNTAIN_BORN`; and every one of the eight also `FREEZE`.
   Mountain-born, Glide, Prowl,
   the Sweep damage, Trample, ignoring fortification, the Planted bonus, the
@@ -4236,13 +4259,13 @@ The Dwarf (`DWARF`) roster, by mechanical role, with the
 | Unit             | Role          | Tech              | Cost |  HP |    Attack | Defense | Move | Range | Sight | Kind               | Attack after Move    | Capture | Abilities                                                                                                         |
 | ---------------- | ------------- | ----------------- | ---: | --: | --------: | ------: | ---: | ----: | ----: | ------------------ | -------------------- | ------- | ----------------------------------------------------------------------------------------------------------------- |
 | Hammerer         | `FIGHTER`     | start             |    2 |  12 |     2 (4) |   2 (4) |    1 |     1 |     1 | living             | yes                  | yes     | rides the tunnel; Dig In; no Field Defense                                                                        |
-| Gyrocopter       | `RAIDER`      | Scouting          |    4 |   8 | 1.5 (3)¹¹ |   1 (2) |    3 |  bomb |     2 | living; machine    | the bomb is its Move | no      | flies; Bomb Run (5, Dive 6¹²), once per target per turn                                                           |
+| Gyrocopter       | `RAIDER`      | Scouting          |    4 |   8 | 1.5 (3)¹¹ |   1 (2) |    3 |  bomb |     2 | living; machine    | the bomb is its Move | yes     | flies; Bomb Run (5, Dive 6¹²), once per target per turn                                                           |
 | Clockwork Gunner | `MARKSMAN`    | Marksmanship      |    3 |  10 |   1.5 (3) |   1 (2) |    1 |   1–2 |   1¹⁰ | construct; machine | yes, one shot        | yes     | two shots if it has not moved; never moves after firing                                                           |
 | Steam Mole       | `GUARD`       | Fortification     |    5 |  16 |     2 (4) | 2.5 (5) |    1 |     1 |     1 | living; machine    | yes                  | yes     | Tunnel 3 with a rider; Eruption 2 (3); Dig In; no Field Defense                                                   |
-| Engineer         | `CAPTAIN`     | Administration    |    5 |  10 |     1 (2) |   1 (2) |    1 |     1 |     1 | living             | yes                  | no      | Repair; Assemble; no Rally                                                                                        |
-| Steam Cannon     | `CATAPULT`    | Sawmilling        |    8 |  10 |   3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | living; machine    | no                   | no      | Knockback; with Blasting Charges ignores Walls and Field Defense                                                  |
-| Whirligig        | `KNIGHT`      | Chivalry          |    9 |  12 |     3 (6) | 1.5 (3) |    3 |     1 |     1 | construct; machine | yes                  | no      | Whirl (hits every adjacent enemy at once, unanswered; `w49.33`, Three Hammers before); never advances; no Overrun |
-| Steam Tank       | `SWORDSMAN`   | Metallurgy        |    9 |  16 |     3 (6) |   2 (4) |    2 |     1 |     1 | living; machine    | yes                  | no      | Plated 4; no Overrun (the heavy role since `7r55`; `KNIGHT` at Chivalry before)                                   |
+| Engineer         | `CAPTAIN`     | Administration    |    5 |  10 |     1 (2) |   1 (2) |    1 |     1 |     1 | living             | yes                  | yes     | Repair; Assemble; no Rally                                                                                        |
+| Steam Cannon     | `CATAPULT`    | Sawmilling        |    8 |  10 |   3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | living; machine    | no                   | yes     | Knockback; with Blasting Charges ignores Walls and Field Defense                                                  |
+| Whirligig        | `KNIGHT`      | Chivalry          |    9 |  12 |     3 (6) | 1.5 (3) |    3 |     1 |     1 | construct; machine | yes                  | yes     | Whirl (hits every adjacent enemy at once, unanswered; `w49.33`, Three Hammers before); never advances; no Overrun |
+| Steam Tank       | `SWORDSMAN`   | Metallurgy        |    9 |  16 |     3 (6) |   2 (4) |    2 |     1 |     1 | living; machine    | yes                  | yes     | Plated 4; no Overrun (the heavy role since `7r55`; `KNIGHT` at Chivalry before)                                   |
 | Brass Titan      | `JUGGERNAUT`  | reward only       |    — |  36 |     4 (8) |   3 (6) |    1 |     1 |     1 | construct; machine | yes                  | yes     | Siege Hammer                                                                                                      |
 | Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |  10 |     2 (4) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Ram (Seamanship)                                                                                           |
 | Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |  25 |    6 (12) |   4 (8) |    2 |   1–3 |     3 | —                  | no                   | no      | naval; splash                                                                                                     |
@@ -4261,7 +4284,9 @@ retaliates, at distance 1 ([section 22.5](#225-gyrocopters-and-the-bombing-run))
   ([section 22.4](#224-the-rider)) and digs in ([section 22.7](#227-dig-in)).
 - **Gyrocopter** (a goggled dwarf under a rotor) flies like a Martian flyer
   ([section 20.6](#206-movement-stride-flying-and-crossing-water)), with
-  Sight 2 and no capture, Pillage, Escape, or advance. It has no `ATTACK`:
+  Sight 2 and no Pillage, Escape, or advance; it captures
+  (`pulp_wars-ke95`; as a flyer it may stand on a village or a foreign
+  center). It has no `ATTACK`:
   `ATTACK` is never offered for it and is rejected with `UNIT_ROLE_INVALID`.
   Its one primary action is the bombing run
   ([section 22.5](#225-gyrocopters-and-the-bombing-run)).
@@ -4271,20 +4296,20 @@ retaliates, at distance 1 ([section 22.5](#225-gyrocopters-and-the-bombing-run))
   once after moving, never moves after firing, and never advances after a
   kill ([section 22.6](#226-clockwork)).
 - **Steam Mole** (a squat riveted tub on tracks with a drill nose) has Guard
-  parity for capture only: unlike the Guard it may attack after moving and
+  parity for capture: unlike the Guard it may attack after moving and
   advances after a melee kill. It cannot build Field Defense. It may move
   underground with `TUNNEL` instead of a Move
   ([section 22.2](#222-the-tunnel-and-burrowed-units)), erupts when it
   surfaces, and digs in.
-- **Engineer** has Captain parity for no capture and the Captain's body. It
+- **Engineer** has Captain parity for capture and the Captain's body. It
   has no Rally (`RALLY` is never offered and is rejected with
   `UNIT_ROLE_INVALID`); its Tend Wounded is **Repair**, and it has
   **Assemble** ([section 22.8](#228-engineer-repair-and-assemble)).
 - **Steam Cannon** has Catapult parity (range 2–3, minimum range 2, cannot
-  attack after moving, no capture, never advances, Field Defense
+  attack after moving, capture, never advances, Field Defense
   destruction on the target tile with reason `CATAPULT`) plus **Knockback**
   ([section 22.9](#229-steam-cannon-knockback)).
-- **Steam Tank** has Knight parity for no capture and the advance after a
+- **Steam Tank** has Knight parity for capture and the advance after a
   melee kill, with 16 HP, Defense 2, and Move 2. It has no Overrun and is
   **Plated** ([section 22.10](#2210-steam-tank-plated-and-the-brass-titan)).
 - **Brass Titan** has Juggernaut parity (reward only, capture, the
@@ -4300,12 +4325,13 @@ retaliates, at distance 1 ([section 22.5](#225-gyrocopters-and-the-bombing-run))
   Mole, and Engineer 2; Steam Cannon and Steam Tank 4. The Brass Titan and
   a burrowed unit cannot Disband.
 - **Public abilities** (the role rule's `abilities`): Hammerer `ATTACK`,
-  `CAPTURE`, `RIDES_TUNNEL`, `DIG_IN`; Gyrocopter `FLY`, `BOMB_RUN`;
+  `CAPTURE`, `RIDES_TUNNEL`, `DIG_IN`; Gyrocopter `CAPTURE`, `FLY`, `BOMB_RUN`;
   Clockwork Gunner `ATTACK`, `CAPTURE`, `CLOCKWORK`, `TWIN_SHOT`; Steam Mole
   `ATTACK`, `CAPTURE`, `TUNNEL`, `ERUPTION`, `DIG_IN`; Engineer `ATTACK`,
-  `TEND_WOUNDED` (labelled Repair), `ASSEMBLE`; Steam Cannon `ATTACK`,
-  `KNOCKBACK`; Steam Tank `ATTACK`, `PLATED`; Brass Titan `ATTACK`,
-  `CAPTURE`, `PUSH`, `CLOCKWORK`; Patrol Boat `ATTACK`, `RAM`; Battleship `ATTACK`; Submarine `ATTACK`,
+  `CAPTURE`, `TEND_WOUNDED` (labelled Repair), `ASSEMBLE`, `BARRICADE`;
+  Steam Cannon `ATTACK`, `CAPTURE`, `KNOCKBACK`; Whirligig `ATTACK`,
+  `CAPTURE`, `CLOCKWORK`, `WHIRL`; Steam Tank `ATTACK`, `CAPTURE`, `PLATED`;
+  Brass Titan `ATTACK`, `CAPTURE`, `CLOCKWORK`, `SIEGE_HAMMER`; Patrol Boat `ATTACK`, `RAM`; Battleship `ATTACK`; Submarine `ATTACK`,
   `SUBMERGED`, `TORPEDO`.
   Constructs, Unflinching,
   machines, the Repair amount, Dig In, the tunnel range, the ride, the
@@ -4328,9 +4354,9 @@ living, and every Candy land unit is a ground unit:
 | Donut Racer       | `RAIDER`      | Scouting          |    3 |  10 |   2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Sugar Rush (Rushed: Escape); Charge (Raiding); no Escape otherwise |
 | Gumball Gunner    | `MARKSMAN`    | Marksmanship      |    3 |   8 |   2 (4) |   1 (2) |    1 |   1–2 |   1¹³ | yes               | yes     | Sugar Rush; Sugar Toss                                             |
 | Marshmallow       | `GUARD`       | Fortification     |    4 |  18 | 1.5 (3) | 2.5 (5) |    1 |     1 |     1 | no                | yes     | Sugar Rush; Bounce; no Field Defense                               |
-| Confectioner      | `CAPTAIN`     | Administration    |    5 |  10 |   1 (2) |   1 (2) |    1 |     1 |     1 | yes               | no      | Sugar Rush; Frosting; Re-bake; no Rally                            |
-| Pie Launcher      | `CATAPULT`    | Sawmilling        |    8 |  10 |   3 (6) | 0.5 (1) |    1 |   2–3 |     1 | no                | no      | Sugar Rush; Splat; never advances                                  |
-| Chocolate Bunny   | `KNIGHT`      | Chivalry          |    9 |  14 |   3 (6) | 1.5 (3) |    2 |     1 |     1 | yes               | no      | Sugar Rush (Rushed: Sugar Frenzy); no Overrun otherwise            |
+| Confectioner      | `CAPTAIN`     | Administration    |    5 |  10 |   1 (2) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Frosting; Re-bake; no Rally                            |
+| Pie Launcher      | `CATAPULT`    | Sawmilling        |    8 |  10 |   3 (6) | 0.5 (1) |    1 |   2–3 |     1 | no                | yes     | Sugar Rush; Splat; never advances                                  |
+| Chocolate Bunny   | `KNIGHT`      | Chivalry          |    9 |  14 |   3 (6) | 1.5 (3) |    2 |     1 |     1 | yes               | yes     | Sugar Rush (Rushed: Sugar Frenzy); no Overrun otherwise            |
 | Jawbreaker        | `SWORDSMAN`   | Metallurgy        |    6 |  16 |   3 (6) | 2.5 (5) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Rock Hard (`7r55`); no Field Defense                   |
 | Gingerbread Giant | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) | 3.5 (7) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Break Off; Bounce                                      |
 | Patrol Boat       | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                                            |
@@ -4353,15 +4379,15 @@ living, and every Candy land unit is a ground unit:
 - **Marshmallow** has Guard parity for "cannot attack after moving",
   capture, and the advance. It cannot build Field Defense, and it
   **Bounces** ([section 23.6](#236-bounce)).
-- **Confectioner** has the Captain's body and no capture. It has no Rally
+- **Confectioner** has the Captain's body and captures. It has no Rally
   (`RALLY` is never offered and is rejected with `UNIT_ROLE_INVALID`); its
   Tend Wounded is **Frosting**, and it has **Re-bake**
   ([section 23.3](#233-crumbs)).
 - **Pie Launcher** has Catapult parity (range 2–3, minimum range 2, cannot
-  attack after moving, no capture, never advances, Field Defense
+  attack after moving, capture, never advances, Field Defense
   destruction on the target tile with reason `CATAPULT`) with Attack 3, plus
   **Splat** ([section 23.5](#235-splat)).
-- **Chocolate Bunny** has Knight parity for no capture and the advance after a
+- **Chocolate Bunny** has Knight parity for capture and the advance after a
   melee kill, with Move 2. It has Overrun only while Rushed (**Sugar
   Frenzy**, capped at two continuations).
 - **Gingerbread Giant** has Juggernaut parity (reward only, capture, the
@@ -4380,9 +4406,9 @@ living, and every Candy land unit is a ground unit:
   `CAPTURE`, `SUGAR_RUSH`; Donut Racer `ATTACK`, `CAPTURE`, `CHARGE`,
   `SUGAR_RUSH`; Gumball Gunner `ATTACK`, `CAPTURE`, `SUGAR_RUSH`,
   `SUGAR_TOSS`; Marshmallow `ATTACK`, `CAPTURE`, `SUGAR_RUSH`, `BOUNCE`;
-  Confectioner `ATTACK`, `TEND_WOUNDED` (labelled Frosting), `REBAKE`,
-  `SUGAR_RUSH`; Pie Launcher `ATTACK`, `SUGAR_RUSH`, `SPLAT`; Chocolate Bunny
-  `ATTACK`, `SUGAR_RUSH`; Gingerbread Giant `ATTACK`, `CAPTURE`, `PUSH`,
+  Confectioner `ATTACK`, `CAPTURE`, `TEND_WOUNDED` (labelled Frosting),
+  `REBAKE`, `SUGAR_RUSH`; Pie Launcher `ATTACK`, `CAPTURE`, `SUGAR_RUSH`,
+  `SPLAT`; Chocolate Bunny `ATTACK`, `CAPTURE`, `SUGAR_RUSH`; Gingerbread Giant `ATTACK`, `CAPTURE`, `PUSH`,
   `SUGAR_RUSH`, `BOUNCE`; Patrol Boat `ATTACK`, `RAM`; Battleship `ATTACK`; Submarine `ATTACK`,
   `SUBMERGED`, `TORPEDO`.
   The Rush perks and Crumbs are role
@@ -5192,8 +5218,9 @@ Disintegrator ([section 21.5](#215-snow)).
   land, and the advance is not a Move, so nothing slides or slips), then
   reveals sight. It does not
   advance when the defender rises in place (an Infect or Bitten rising, a
-  shattered Bitten unit too), a Sabretooth or a rider on its surfacing turn
-  never advances onto a settlement center its owner does not own, and the
+  shattered Bitten unit too), a rider on its surfacing turn never advances
+  onto a settlement center its owner does not own (a Sabretooth does since
+  `pulp_wars-ke95`), and the
   attacker stands on any Grave the death left. A Hammerer's or a Steam
   Mole's advance sets its `moved` flag (Dig In,
   [section 22.7](#227-dig-in)); no other unit's advance does. Nothing advances onto a **Rift** (only a flyer
@@ -5398,10 +5425,11 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
 - **Disembarking:** on a later turn an embarked unit may move through water,
   then `DISEMBARK` onto an adjacent (Chebyshev 1) empty land cell it can enter
   (Mountain needs Engineering unless the unit strides, flies, or is
-  Mountain-born; no allied territory; no mound; a Martian flyer, a Dwarf
-  Gyrocopter, or an Ice Folk Sabretooth never lands on a neutral village
-  center or a center it does not own: `MOVEMENT_ILLEGAL` with reason
-  `SETTLEMENT_FORBIDDEN`, never offered). Landing costs one of the
+  Mountain-born; no allied territory; no mound; a Dwarf rider on its
+  surfacing turn never lands on a neutral village center or a center it
+  does not own: `MOVEMENT_ILLEGAL` with reason `SETTLEMENT_FORBIDDEN`, never
+  offered; a flyer and a Sabretooth land there like any unit since
+  `pulp_wars-ke95`). Landing costs one of the
   unit's two movement points: `DISEMBARK` is legal only while
   `spent = moved ? movedPathLength : 0` is at most 1, and is otherwise rejected
   atomically with `MOVEMENT_ILLEGAL` and not offered. So from its start-of-turn
@@ -5907,6 +5935,16 @@ Harbours from it.
   cities, otherwise the Treasury. (The economy rejig, `7r54`, took the
   giant whenever it was offered while the seat had fewer giants than
   cities.)
+- **Any unit can capture** (`pulp_wars-ke95`; mechanics only, no AI
+  tuning yet). The policy reads every capturing land unit as a capturer
+  (its village errands, sieges, villages first, and the counts of units
+  that capture), so a Captain-role, siege, Knight-role, or heavy line unit
+  now takes villages and holds centers like the others. The flyers
+  (Saucer, Mothership, Gyrocopter) are the exception: the policy still
+  plays them as carriers, bombers, and pullers and plans no capture with
+  them (`policyCapturerV7` in `src/ai/v7-campaign.ts`), though it takes a
+  `CAPTURE` it is offered. Every command it chooses is offered and
+  accepted.
 - **The economy rejig** (`pulp_wars-w49.16`, `7r54`). Its research target's price, the research clock
   of a seat at war, and the Coins it keeps for a due technology are read
   from the public technology tree, so they follow the seat's cities
@@ -7905,8 +7943,10 @@ Triceratops makes** (always at range 1) is a Charge! with four parts:
 
 Parts 2–4 need no Move. Retaliation is ordinary (with the reduced Defense of
 part 2) and comes before the Push, so the Triceratops may be bitten,
-infected, or killed. It never captures: one that follows a defender onto a
-hostile city or village center besieges it like any unit standing there. It
+infected, or killed. Since `pulp_wars-ke95` it captures like every land
+unit: one that follows a defender onto a hostile city or village center
+besieges it like any unit standing there, and may capture it from its
+owner's next turn. It
 attacks once per turn, has no Raider Charge (`chargeApplied` false), and is
 never Inspired. An embarked Triceratops cannot attack, and landing ends its
 activation.
@@ -7966,7 +8006,7 @@ Attack 3, Defense 2). The rows with two tiles need Wallbreaker since
 | Goblin rules            | Gang Up counts the Goblin attacker's own helpers around a dinosaur or an Egg as usual; no Dinosaur attack has Gang Up. Blasts and bomb splash hit dinosaurs and Eggs with their fixed or splash damage (an Ankylosaurus takes 1 less). A Triceratops that kills an exploding unit advances and is then hit by its blast; a pushed survivor is pushed before the chain. An Egg destroyed by a Goblin attack, splash, or blast earns Plunder; Eggs lost with a city do not.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Push, Overrun, Charge   | No Push (Juggernaut role or Charge!) ever moves an Egg or ends on an Egg's tile. A Knight, Scrap Buggy, or T-Rex that destroys an Egg advances and may attack again. Only Charge! follows a pushed target.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | Field Defense, Walls    | They give Human, Undead, and Goblin defenders their ordinary bonus against every Dinosaur attack except the Spitter's (none), the Triceratops's (none), and, with Wallbreaker, the Walls levels against any dinosaur. A Catapult may target an Egg at range 2–3.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Cities, siege           | A besieged Dinosaur city cannot lay or train; its Eggs stay, count down, and hatch. An enemy that wants the city may ignore its Eggs: capture destroys them all. A Triceratops on a hostile center besieges it and never captures.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Cities, siege           | A besieged Dinosaur city cannot lay or train; its Eggs stay, count down, and hatch. An enemy that wants the city may ignore its Eggs: capture destroys them all. A Triceratops on a hostile center besieges it and may capture it like any land unit.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | Boats, water            | Eggs never embark or stand on water or a dock; a two-slot unit embarks like any other. Dinosaur boats are the Human boats.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | Achievements, Promotion | Muster counts hatched Dinosaur roles, never an Egg; Slayer counts a dinosaur's kills (growth does not reset them); a destroyed Egg is a kill for its killer. Promotion stays for the Caveman, the Shaman, and the boats.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Martians                | Martian attacks, rays, and Pierce hit an Egg like any unit (Defense 1, no retaliation); an Egg is never a Mind Control or Tractor Beam target, and its tile never a Beam Down or pull destination. A Charge! on a Martian unit is absorbed by the Shield first and pushes and follows whatever it absorbed; Acid and Wallbreaker reach only a Martian foot unit's cover and Walls (machines have neither). An Ankylosaurus takes 1 less from every Martian hit. The two-slot Triceratops, T-Rex, and Brontosaurus are immune to Mind Control and the Tractor Beam; a wounded Raptor, Spitter, or Ankylosaurus at 6 HP or less is not, and it keeps growing under its controller (it has no Hatch). A Mind Control and a `BRAIN_LOST` removal are no kill for growth.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -8095,7 +8135,7 @@ attacked it this turn and it survived.
 Dinosaur heavy line unit** (role `SWORDSMAN`, tactical label `LINE`,
 Metallurgy): every number and rule it had as the `CATAPULT` role is
 unchanged (8 Coins, an Egg of two turns, two slots, 20 HP, Attack 3,
-Defense 2, Move 2, Charge!, no capture; War Drums still skip it and its
+Defense 2, Move 2, Charge!; since `pulp_wars-ke95` it captures; War Drums still skip it and its
 attacks still destroy Field Defense, with the reason `CATAPULT`). Where
 sections 19.1 to 19.14 call the Triceratops the `CATAPULT` role or a
 `SIEGE` unit, read the `SWORDSMAN` role.
@@ -8103,7 +8143,7 @@ sections 19.1 to 19.14 call the Triceratops the `CATAPULT` role or a
 The **Stegosaurus** is the siege unit it left (role `CATAPULT`, `SIEGE`;
 Sawmilling, which a Dinosaur player sees as Timber): 7 Coins, an Egg that
 hatches in two turns, one slot, 12 HP, Attack 2.5, Defense 1, Move 1, range
-2 to 3 (never an adjacent target), no attack after moving, no capture, no
+2 to 3 (never an adjacent target), no attack after moving, capture, no
 advance after a kill. It is a dinosaur: Wild, it grows Big and Alpha with
 kills ([section 19.8](#198-grow)), and with Wallbreaker it ignores City
 Walls like every growing unit. War Drums skip it (a `SIEGE` label). Its
@@ -8463,20 +8503,18 @@ walker rule, and:
 - **ignores hostile ZOC** (entering it never ends its Move) and **exerts no
   ZOC**;
 - may cross Shallow Water, and Deep Water with Navigation, inside a Move;
-- **cannot end a Move, or land from the water, on a neutral village center
-  or on the center of a city it does not own** (`flyerMayStandOnSiteV7`): a
-  `MOVE` or `DISEMBARK` that would is rejected with `MOVEMENT_ILLEGAL`
-  (reason `SETTLEMENT_FORBIDDEN`) and never offered; a Move that enters such
-  a center that was unexplored before the command is accepted and
-  interrupted there (`UNIT_MOVE_INTERRUPTED` reason `SETTLEMENT_FORBIDDEN`),
-  the flyer staying on the last tile it entered on which it may end a Move.
-  It may stand on its owner's own center, where it blocks training like any
-  unit. No other rule can put a flyer on a foreign or neutral center (Push,
-  the Tractor Beam, and Beam Down never choose a settlement site), so a flyer
-  never besieges, never blocks the capture of a foreign city, and never
-  takes a village;
-- **never advances** after a kill (`advancesAfterKill` false), never
-  captures, and cannot Pillage;
+- **may end a Move, or land from the water, on any settlement center**,
+  like any land unit (`pulp_wars-ke95`, user direction 2026-10-09: any unit
+  can capture). On a hostile center it besieges the city and blocks its
+  capture; on a neutral village or a hostile center it becomes
+  capture-eligible at its owner's next Start Turn and may then `CAPTURE`
+  ([section 4.7](#47-siege-and-capture)). On its owner's own center it
+  blocks training like any unit. (From the Martian revision until
+  `pulp_wars-ke95` a flyer could stand only on its owner's own centers: a
+  `MOVE` or `DISEMBARK` onto another center was rejected with reason
+  `SETTLEMENT_FORBIDDEN`, and it never besieged or captured.);
+- **never advances** after a kill (`advancesAfterKill` false) and cannot
+  Pillage;
 - never destroys Field Defense by entering a tile (it is not on the
   ground); it still destroys it by attack under the ordinary reasons.
 
@@ -8877,7 +8915,7 @@ cost.
 | Goblin rules            | Gang Up counts the Goblin attacker's helpers around a Martian target; no Martian attack has Gang Up. Blasts and bomb splash are absorbed by the Shield first. A mind-controlled Goblin unit Kabooms and explodes as its kind (its blast hits its old friends); a pulled one keeps everything. Plunder counts Martian kills, never a `BRAIN_LOST` removal or a Mind Control, and a Martian seat has no Plunder.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Dinosaur rules          | Martian attacks, rays, and Pierce hit Eggs; Eggs are never Mind Control or Tractor Beam targets. A Charge! is absorbed by the Shield first and pushes and follows whatever it absorbed. Acid and Wallbreaker matter only for a Martian foot unit. An Ankylosaurus takes 1 less from every Martian hit. The two-slot dinosaurs are immune to Mind Control and the Tractor Beam.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Human abilities         | Field Defense and Walls give a non-Martian defender their bonus against every Martian attack except a ray fired with the Disintegrator; a Tripod attack destroys Field Defense on the target tile. A Knight that kills a Martian unit advances and may attack again. A Juggernaut-role unit pushes a Martian unit under the ordinary conditions. The Catapult out-ranges every ray.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Cities, siege, capacity | Capture-capable: Grunt, Ray Gunner, Shield Projector, Colossus, and a controlled unit of a capture-capable kind role. A foot unit or walker on a hostile center besieges it; a flyer is never there. Machines are never fortified. Slots: Mothership and Colossus 2, controlled units none; Martian cities have no capacity bonus. Beam Down, Mind Control, and the Tractor Beam spend no city action.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Cities, siege, capacity | Capture-capable: every Martian land unit, the Saucer and the Mothership included, and every controlled unit (`pulp_wars-ke95`). Any Martian unit on a hostile center besieges it, a flyer included since `pulp_wars-ke95`. Machines are never fortified. Slots: Mothership and Colossus 2, controlled units none; Martian cities have no capacity bonus. Beam Down, Mind Control, and the Tractor Beam spend no city action.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Boats, water            | Martian boats are the Human boats. Foot units embark at Ports; machines self-launch on any water they may enter. An embarked Martian unit keeps its Shield, cannot attack, retaliate, or use an ability, and can be pulled from water to water.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | Achievements, Promotion | Muster counts a controlled unit by its role and excludes the Colossus; Sea Dog never counts an afloat machine. Promotion (3 kills, +5 maximum HP, full heal of HP, Shield unchanged) applies to every Martian unit and to a controlled unit by its kind's rules; ray, hostile Pierce, and retaliation kills count; Mind Control is not a kill.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Ice Folk                | Chill is not damage and ignores Shields: a shielded unit is Chilled whatever its Shield. Shatter reads the HP after the Shield, so a Chilled unit at 1 to 3 HP is shattered by a hit its full Shield absorbs entirely; a Shield absorbs a Sweep flank hit, a Rockfall, and a Boulder like any damage (since `7r37` a Chilled 9-HP Grunt in a Force Field dies to two Yeti hits: the first costs 1 HP, the second leaves 3 and shatters it; at 10 HP it took three). A ray fired from distance 2 at an Ice Folk unit in its own Witch's Blizzard is halved after its full or half power, and a Pierce hit derives from the halved hit; the Disintegrator leaves an Ice Folk unit on its Walled center with neither fortification nor Snow cover. Martian walkers and flyers ignore deep snow, and flyers ZOC; they are Chilled and shattered like any unit (the Mothership too), never the Colossus. A ray unit that stands still loses nothing to frost; a sluggish Saucer cannot Strafe, and a sluggish Brain or Mothership that moved cannot use Mind Control, Psychic Command, or the Tractor Beam. A Chilled unit may be mind-controlled (it stays Chilled), a mind-controlled Witch keeps her Blizzard (it now halves ranged hits only for Ice Folk units of her controller and stops the controller's ground units), a shattered Witch takes it with her, a shattered Brain's controlled unit is released, and the Frost Giant is immune to Mind Control and the Tractor Beam (`JUGGERNAUT`). The Tractor Beam pulls an Ice Folk unit off Snow, out of a Blizzard, or off Walls, and a Mountain-born unit onto a Mountain; a pulled or beamed unit keeps its Chill. A self-launched machine cannot be Chilled or shattered while afloat. |
@@ -8912,7 +8950,8 @@ cost.
   `CONTROL_LIMIT`, `TARGET_IMMUNE`, `OUT_OF_RANGE`, `TARGET_HEALTHY`), and
   `TRACTOR_BEAM_NOT_LEGAL` (`EMBARKED`, `TARGET_IMMUNE`, `OUT_OF_RANGE`,
   `BLOCKED`); `DISBAND_NOT_LEGAL` gains the reason `MIND_CONTROLLED`; the movement
-  failure reasons and `UNIT_MOVE_INTERRUPTED` gain `SETTLEMENT_FORBIDDEN`;
+  failure reasons and `UNIT_MOVE_INTERRUPTED` gain `SETTLEMENT_FORBIDDEN`
+  (since `pulp_wars-ke95` only the Dwarf rider brake uses it);
   `INVALID_TILE` gains the action `BEAM_DOWN`. A flyer's Pillage is rejected
   with `PILLAGE_INVALID_TARGET`.
 - **Registration:** faction `MARTIAN`, tree `MARTIAN_BASELINE_V1`, display
@@ -8945,8 +8984,8 @@ cost.
   `TRACTOR_BEAM` for every legal target (a Mothership's Heavy Tractor Beam
   after its Move and after its primary action, until it is used). It
   never offers Field Defense or Tend Wounded for a Martian unit, `DISBAND`
-  or a dropped ability (section 20.9) for a controlled unit, a flyer's Move
-  or landing onto a forbidden center, or Pillage for a flyer. It offers a
+  or a dropped ability (section 20.9) for a controlled unit, or Pillage for
+  a flyer. It offers a
   controlled unit's commands under its kind. Every offered command is
   accepted.
 - **`previewBeamDownV7(view, unitId, passengerUnitId)`** returns null unless
@@ -9087,7 +9126,8 @@ the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
   has no Snow cover.
 - **Treasure unit:** a Sled (`treasureUnitRole` `RAIDER`). **Starting
   unit:** one Yeti. **Militia:** one Yeti. **Level-5+ reward:** a Frost
-  Giant. Capture-capable: Yeti, Sled, Snow Hunter, Mammoth, Frost Giant.
+  Giant. Capture-capable: every Ice Folk land unit, the Sabretooth
+  included (`pulp_wars-ke95`).
   Every Ice Folk land unit except the Frost Giant is trained on the city
   center with `TRAIN`. All eight roles **Freeze** (ability `FREEZE`, with
   Rime), and all but the Sabretooth **slide** on ice.
@@ -9521,7 +9561,7 @@ Every `ATTACK` a land-form Boulder Yeti makes, at distance 1 or 2:
   Attack 2).
 
 It retaliates at distance 1 and 2 with its ordinary Defense, never advances
-after a kill (`advancesAfterKill` false), and cannot capture; at distance 1
+after a kill (`advancesAfterKill` false), and captures; at distance 1
 it can shatter. Examples (full HP): planted, it deals a Guard on a Walled
 center with Field Defense 7 (a Yeti without Brittle deals that Guard 2 and
 takes 8 of its 9 HP), and a Fighter 8; after a Move, a Guard 4.
@@ -9533,13 +9573,13 @@ cell in hostile ZOC does not end its Move; it exerts ZOC like any land unit.
 Forest, Mountain (which it needs Engineering to enter), unexplored cells,
 and occupied tiles are ordinary: it does not pass other players' units. It
 never Glides, deep snow does not apply to it (it is an Ice Folk unit), and
-it has Snow cover like the others. It **never ends a Move, lands, advances
-after a kill, or is displaced onto a neutral village center or the center
-of a city its owner does not own** (`MOVEMENT_ILLEGAL` with reason
-`SETTLEMENT_FORBIDDEN`, never offered; the kill is ordinary and the
-Sabretooth stays), so it never besieges, never blocks a capture, and never
-takes a village; it may stand on its owner's centers. It has no Overrun, no
-capture, and no Charge.
+it has Snow cover like the others. Since `pulp_wars-ke95` (user direction
+2026-10-09: any unit can capture) it ends a Move, lands, advances after a
+kill, and is displaced onto any settlement center like any land unit, so
+it besieges, blocks captures, and captures villages and cities. (Before,
+it never stood on a neutral village center or the center of a city its
+owner did not own: `MOVEMENT_ILLEGAL` with reason `SETTLEMENT_FORBIDDEN`.)
+It has no Overrun and no Charge.
 
 **Cold Aura** (the Frost Giant). At its owner's Start Turn, after the
 Shield recharge and before Plague ([section 3](#3-players-turns-and-victory)),
@@ -9577,7 +9617,7 @@ resolution, with these steps (new ones in bold):
    controlled unit of a dead Brain is released; bites and Plague land on the
    survivors.
 8. Push of a surviving target (Frost Giant), then the advance (never for a
-   Boulder Yeti, never onto a foreign center for a Sabretooth).
+   Boulder Yeti).
 9. The death-blast chain of the exploding units among the dead, **except a
    shattered defender**; Plunder; reveals; the economy, reward, and
    achievement tail.
@@ -9632,8 +9672,8 @@ tail.
   Trample is read from `sweep` and the target tile's Field Defense.
 - **Errors:** `BOLAS_NOT_LEGAL` (reasons `EMBARKED`, `TARGET_IMMUNE`,
   `OUT_OF_RANGE`) and `COLD_SNAP_NOT_LEGAL` (`EMBARKED`, `NO_TARGET`); the
-  movement failure reasons gain `SNOW_STOPS_MOVE`, and
-  `SETTLEMENT_FORBIDDEN` also covers the Sabretooth. A sluggish unit's
+  movement failure reasons gain `SNOW_STOPS_MOVE` (`SETTLEMENT_FORBIDDEN`
+  covered the Sabretooth until `pulp_wars-ke95`). A sluggish unit's
   refused action is `UNIT_ALREADY_ACTED`.
 - **Registration:** faction `ICE_FOLK`, tree `ICE_FOLK_BASELINE_V1`,
   display name "Ice Folk"; unlock kinds `WITCH_SUPPORT`, `DEEP_WINTER`, and
@@ -9660,8 +9700,8 @@ tail.
   unit-ID then target-ID order; and `COLD_SNAP` for every Witch with a
   target. For every seat it withholds the actions a sluggish unit cannot
   take and offers no `MOVE` through a known Snow stop. It never offers an
-  Ice Folk seat Field Defense, Rally, or Tend Wounded, or a Sabretooth a
-  foreign center. Every offered command is accepted.
+  Ice Folk seat Field Defense, Rally, or Tend Wounded. Every offered
+  command is accepted.
 - **`previewBolasV7(view, unitId, targetUnitId)`** returns null unless that
   command is offered, otherwise
   `{ unitId, targetUnitId, becomesSluggish, turnsLeft, shatterSetups }`,
@@ -10326,9 +10366,9 @@ its units (`UNIT_DIED` cause `ELIMINATION`, no Grave, no blast).
   ([section 20.6](#206-movement-stride-flying-and-crossing-water)): it
   passes over units, ignores terrain stops and hostile ZOC, exerts no ZOC,
   has no cover or fortification, enters Mountains without Engineering, may
-  stand on a Rift, never ends a Move on a neutral village center or a
-  center of a city its owner does not own (so it never besieges or
-  captures), never advances, cannot Pillage, crosses Shallow Water (Deep
+  stand on a Rift, may end a Move on any settlement center (so it besieges
+  and captures like any land unit since `pulp_wars-ke95`), never advances,
+  cannot Pillage, crosses Shallow Water (Deep
   Water with Navigation), and self-launches where a Move ends on water. It
   takes a treasure chest by ending a Move on it.
 - **No ordinary attack.** Its abilities are `FLY` and `BOMB_RUN`, with no
@@ -10506,7 +10546,7 @@ dug-in Hammerer 4 and takes 8 (in the open 5 and 5).
 ### 22.8 Engineer: Repair and Assemble
 
 The Engineer has the Captain's body (5 Coins, 10 HP, Attack 1, Defense 1,
-Move 1, no capture), no Rally, and two support actions. A sluggish
+Move 1, captures), no Rally, and two support actions. A sluggish
 Engineer that moved can use neither.
 
 - **Repair** is `TEND_WOUNDED` under the Dwarf label, with the Tend Wounded
@@ -10642,7 +10682,7 @@ unitId, at, ownerId, damage, hpAfter, destroyed }`. Bombs, eruptions,
   empty a center; a capture still needs a unit that begins its turn there.
 - **Otherwise the Catapult of `7r45`:** 8 Coins, 10 HP, Attack 3.5 (the
   Human Catapult has 3 since tuning 1, `7r46`), Defense 0.5, range
-  2–3, no attack after moving, no capture, no advance, and every attack
+  2–3, no attack after moving, capture, no advance, and every attack
   destroys Field Defense on the target tile (reason `CATAPULT`).
 - **Blasting Charges** (capability `cannonIgnoresFortification`): its
   attacks ignore fortification (Walls, Field Defense, and Dig In) for the
@@ -10659,7 +10699,7 @@ unitId, at, ownerId, damage, hpAfter, destroyed }`. Bombs, eruptions,
   before a Shield (the Tank has neither). The combat preview's damage is the
   capped value, with `platedApplied`; the Shatter test reads the HP after the
   cap. Every unit in the game needs at least four hits to kill a fresh Tank.
-- The **Steam Tank** otherwise has Knight parity for no capture: 9 Coins,
+- The **Steam Tank** otherwise has Knight parity for capture: 9 Coins,
   16 HP, Attack 3, Defense 2, **Move 2**, the advance after a melee kill,
   and **no Overrun**.
 - The **Brass Titan** is the level-5 reward unit: 36 HP, Attack 4, Defense
@@ -10746,7 +10786,7 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
 | Martian rules           | [Section 20.11](#2011-interactions-with-other-rules): Shields absorb eruptions and bombs first; eruptions never hit flyers but hit walkers; constructs are immune to Mind Control; a controlled Mole tunnels alone, a controlled Hammerer cannot ride, and a controlled Engineer repairs but cannot Assemble; a mound is never a Mind Control, Tractor Beam, or Pierce target; the Disintegrator ignores Dig In; the Saucer and the Gyrocopter share the flight rule.                                                                                                                                          |
 | Ice Folk rules          | [Section 21.14](#2114-interactions-with-other-rules): tunnels ignore Snow; deep snow stops only the Move-2 Steam Tank; every Dwarf unit can be Chilled (the Titan too) and shattered (never the Titan); a sluggish Gyrocopter cannot bomb, a sluggish Mole may tunnel; the Shatter test reads a Tank's HP after the cap; the Blizzard halves a Gunner's or Cannon's shot from distance 2 or more, never a bomb or eruption.                                                                                                                                                                                    |
 | Human abilities         | An eruption undermines Field Defense on nine tiles, whoever owns it; Walls are untouched; bombs and eruptions ignore both; Dig In and Field Defense never stack. A Catapult destroys Field Defense, never Dig In, and out-ranges every Dwarf unit but the Steam Cannon. A Juggernaut pushes a Dwarf unit under the ordinary conditions (Dig In read on the new tile), never onto a mound. A Knight's kill of a surfaced Mole may continue its Overrun; the Steam Tank has none. An Escape Move never ends on a mound. Human and Dinosaur healers tend only their own units.                                    |
-| Cities, siege, capacity | Capture-capable: Hammerer, Clockwork Gunner, Steam Mole, Brass Titan. A Dwarf unit on a hostile center besieges it; a mound and a Gyrocopter never do. The Mole may step onto a center on its surfacing turn and capture on the next; the rider may not. Every Dwarf role uses one slot; a burrowed unit keeps its slot and home; Assemble uses the Engineer's home city's slot; Dwarf cities have no capacity bonus. Dig In counts around the seat's own centers only: a captured city's ring stops counting at once, and a captured one starts at once. Tunnel, Bomb Run, and Assemble spend no city action. |
+| Cities, siege, capacity | Capture-capable: every Dwarf land unit since `pulp_wars-ke95`. A Dwarf unit on a hostile center besieges it, a Gyrocopter as well; a mound never does. The Mole may step onto a center on its surfacing turn and capture on the next; the rider may not. Every Dwarf role uses one slot; a burrowed unit keeps its slot and home; Assemble uses the Engineer's home city's slot; Dwarf cities have no capacity bonus. Dig In counts around the seat's own centers only: a captured city's ring stops counting at once, and a captured one starts at once. Tunnel, Bomb Run, and Assemble spend no city action. |
 | Boats, water            | Dwarf boats are the Human boats. Foot units and machines but the Gyrocopter embark at Ports with Shorecraft; the Gyrocopter flies over water and self-launches. A tunnel never passes under water; eruptions skip naval and embarked units; bombs may target them. An embarked unit is never dug in.                                                                                                                                                                                                                                                                                                           |
 | Rift                    | Tunnels pass under a Rift but never end there, and a rider's tile is never one. A Gyrocopter may stand on a Rift as a flyer (it lands there from a bombing run as from a Move); there it is attacked, bombed, and Chilled like any unit, leaves no Grave, and is immune to Mind Control. No eruption case arises (a unit on a Rift flies). Assemble and Knockback never put a ground unit on a Rift.                                                                                                                                                                                                           |
 | ZOC, Roads              | Tunnels and bombing runs ignore ZOC and Roads; a mound exerts no ZOC; surfaced units exert and suffer it; a Gyrocopter ignores hostile ZOC and exerts none. A Move may pass over a mound tile.                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -10898,13 +10938,13 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
 `pulp-wars-poc-7r55` (`pulp_wars-w49.17`). The **Steam Tank is the Dwarf
 heavy line unit** (role `SWORDSMAN`, tactical label `LINE`, Metallurgy):
 every number and rule it had as the `KNIGHT` role is unchanged (9 Coins, 16
-HP, Attack 3, Defense 2, Move 2, Plated 4, a machine, no capture, no
-Overrun). Where sections 22.1 to 22.14 call the Steam Tank the `KNIGHT`
+HP, Attack 3, Defense 2, Move 2, Plated 4, a machine, no Overrun; it
+captures since `pulp_wars-ke95`). Where sections 22.1 to 22.14 call the Steam Tank the `KNIGHT`
 role, read the `SWORDSMAN` role.
 
 The **Whirligig** is the breakthrough unit it left (role `KNIGHT`,
 `BREAKTHROUGH`; Chivalry): 9 Coins, 12 HP, Attack 3, Defense 1.5, Move 3,
-melee, no capture, no Overrun. It is a **construct** and a machine
+melee, captures, no Overrun. It is a **construct** and a machine
 ([section 22.6](#226-clockwork)): it attacks at full strength whatever its
 HP, never recovers by itself, is repaired by an Engineer, leaves no Grave,
 and is immune to Plague, bites, Wail, and Mind Control. Its numbers are
@@ -11506,6 +11546,7 @@ first guesses.
 | Explosions    | `pulp-wars-poc-7r61` | `pulp_wars-w49.35` Goblin explosions and Berserk, engine (user requests of 2026-10-09): every Goblin death blast is 3 harder (Bomb Chucker 5, Rocket Cart 7, Scrap Buggy 7), the Goblin's Kaboom is 6 (the other Kabooms unchanged), and the Orc Warboss's **Berserk** replaces WAAAGH! (its `RALLY`: the own land units within 2 that have not moved get +1 Move and ignore enemy zones of control until the end of the turn; state and view list `berserkThisTurn`; unlock `BERSERK_SUPPORT`); no AI tuning                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | [Goblin tuning record, section 15](RULESET_7_TUNING_GOBLIN.md#15-goblin-explosions-and-berserk-pulp_wars-w4935)                       |
 | Giants        | `pulp-wars-poc-7r62` | `pulp_wars-w49.30` [the giants' signatures](RULESET_7_GIANTS.md#6-final-rules), engine (the identity became `7r62` when it was published after Goblin explosions and Berserk, `7r61`; a save, replay, or setup of `7r61` is rejected): every reward giant has one signature ([section 11.1](#111-the-giants-signatures)): Crushing Shove (Juggernaut), Swallow (Abomination), Goblin Toss (Troll), Thunder Stomp (Brontosaurus), Overstride and Move 2 (Colossus), Glacial Smash and no advance (Frost Giant), Siege Hammer (Brass Titan), Break Off (Gingerbread Giant: 10 HP for two Gingerbread Men, the user's change of 2026-10-09); Push only on the Juggernaut; the commands `SWALLOW`, `TOSS`, `STOMP`, `BREAK_OFF`; the state block `giants`, the city field `wallsRazed`, and the unit field `variant`; the new events and the death causes `CRUSH`, `STOMP`, `TRAMPLE`, `DIGESTED`; `lab --giant`; the Normal AI kept legal (it uses no signature yet, `pulp_wars-w49.31`)                                                                                                                                                                 |
 | Rewards       | `pulp-wars-poc-7r63` | `pulp_wars-zypi` the reward ladder rework, engine (the user, 2026-10-09; the identity became `7r63` when it was published after the giants' signatures, `7r62`; a save, replay, or setup of `7r62` is rejected): for every faction level 2 Stockpile (+4 Coins) or Militia; level 3 Scouts (the radius-3 reveal and the faction's free `RAIDER`-role unit, now also the Dwarf Gyrocopter and the Candy Donut Racer) or Walls; level 4 Population Boom or the new Economic Miracle (`ECONOMIC_MIRACLE`, +1 Coin of the city's income every turn, kept on capture); level 5 and every later level the faction's giant or the Treasury (10 Coins, 6 before), with no once-per-city limit; Barracks and the 6-Coin level-4 Treasury no longer offered (older records keep their effect); the Showcase records and first income (20 Coins, 17 for a Goblin seat); the Normal AI kept legal and plain                                                                                                                                                                                                                                                       |
+| Capture       | `pulp-wars-poc-7r64` | `pulp_wars-ke95` any unit can capture, engine (the user, 2026-10-09; the identity became `7r64` when it was published after the reward ladder rework, `7r63`; a save, replay, or setup of `7r63` is rejected): every land role of every faction has `CAPTURE`; a flyer and the Sabretooth may end a Move, land, or advance on a village or a foreign center and so besiege and capture (only a surfaced Dwarf rider keeps off foreign centers that turn); "Can't capture" removed from cards, glossary, and Help; the Normal AI plans captures with every land unit but the flyers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -11651,7 +11692,8 @@ the code's behavior is stated:
   of 0 still plagues; a Tractor Beam on another player's unit reads the
   board, not that player's Engineering or Navigation
   ([section 20.10](#2010-tractor-beam)); an unexplored foreign center
-  interrupts a flyer's Move with `SETTLEMENT_FORBIDDEN`; an eliminated
+  interrupted a flyer's Move with `SETTLEMENT_FORBIDDEN` (until
+  `pulp_wars-ke95`, after which a flyer may end there); an eliminated
   seat's Thralls are removed with cause `ELIMINATION`; `PLAGUE_DAMAGED`
   carries no `shieldDamage`; the Thrall's HP is the victim's;
 - the overlay's Rift rules (sections 7.4, 8.1 row 7, 8.2 row 9, 10.1, and
@@ -11994,8 +12036,9 @@ items left after the fold, and the pending balance steps below.
   its own city center (the user's rule of tuning 2; an optional advance
   was not asked for); since tuning 2 no ranged unit advances, which
   includes the Martian Grunt and Colossus (range 2) and is to be looked at
-  in the Martian pass; only the Human Knight captures, and the other
-  factions' Knight-role units wait for their faction passes; the level-5
+  in the Martian pass; only the Human Knight captured, and the other
+  factions' Knight-role units waited for their faction passes (since
+  `pulp_wars-ke95` every land unit captures); the level-5
   Treasury (12
   Coins) is above the cheapest price of that level's population (10); the
   Dinosaur Wallbreaker added nothing beyond Breach (until the Dinosaur
@@ -12325,9 +12368,9 @@ stating the code's behavior):
   is an emitted Attack modifier source (`ROCKFALL` and `COLD_BLOOD` are
   declared but never emitted; the preview flags carry them), and a snowy
   cover row reads `SNOW`; a sluggish Goblin or Raider that moved cannot
-  Kaboom or Pillage; the Sabretooth's foreign centers are also refused for
+  Kaboom or Pillage; the Sabretooth's foreign centers were also refused for
   reward displacement (which, with settlements at least 3 apart, never
-  reaches one).
+  reaches one) until `pulp_wars-ke95`.
 - **Superseded overlay text:** its status line and section 15 ("no bead of
   the Ice Folk epic folds this overlay", "no UI offers the faction until
   `pulp_wars-7g3.6`"), the placeholder-art plan of section 13.4 (the

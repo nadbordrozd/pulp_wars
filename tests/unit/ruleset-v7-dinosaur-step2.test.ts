@@ -155,7 +155,7 @@ const research = (state: GameStateV7) =>
 describe("step two of the Dinosaur pass: no rule changed", () => {
   it("kept the identity of step two of the Martian pass", () => {
     // (7r58 then; step two of the Ice Folk pass took 7r59.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r64");
   });
 });
 
@@ -273,7 +273,7 @@ describe("step two of the Dinosaur pass: the Dinosaur Normal AI's opening", () =
     ).toMatchObject({ war: true, bodiesFirst: true });
   });
 
-  it("counts an Egg as the unit inside, and no Triceratops", () => {
+  it("counts an Egg as the unit inside, and a Triceratops since ke95", () => {
     // Two Cavemen and a Raptor Egg beside the capital: three capturers.
     expect(
       inspectNormalArmyV7(
@@ -282,13 +282,14 @@ describe("step two of the Dinosaur pass: the Dinosaur Normal AI's opening", () =
         ),
       ).bodiesFirst,
     ).toBe(false);
-    // Two Cavemen and a Triceratops: the Triceratops takes no village and
-    // holds no center, so the seat is still short of units.
+    // Two Cavemen and a Triceratops: three capturers too, since any unit
+    // can capture (`pulp_wars-ke95`; the Triceratops took no village before,
+    // and the seat was still short of units).
     expect(
       inspectNormalArmyV7(
         viewOf(opening(2, { extra: [own("SWORDSMAN", 7, 9)] })),
       ).bodiesFirst,
-    ).toBe(true);
+    ).toBe(false);
   });
 
   it("researches one growth technology before Nesting's two while no enemy is in sight of its cities", () => {
@@ -382,19 +383,22 @@ describe("step two of the Dinosaur pass: what the policy counts for its own blow
     // A Triceratops two tiles from a Fighter: after its Move it charges at
     // Attack 4 and kills (12). The projection from the tile beside the
     // Fighter read the Attack 3 of a Triceratops that has not moved (8).
+    // (It stood on the village (5, 5) before `pulp_wars-ke95`; since the
+    // Triceratops captures, the policy would hold that village instead, so
+    // the scene is one row up.)
     const state = field(
-      [own("SWORDSMAN", 5, 5), own("FIGHTER", 8, 8), foe("FIGHTER", 7, 5)],
+      [own("SWORDSMAN", 5, 4), own("FIGHTER", 8, 8), foe("FIGHTER", 7, 4)],
       { techs: { 0: NO_WALLBREAKER, 1: [] } },
     );
     const view = viewOf(state);
-    const triceratops = view.units.find((unit) => same(unit.at, at(5, 5)));
-    const fighter = view.units.find((unit) => same(unit.at, at(7, 5)));
+    const triceratops = view.units.find((unit) => same(unit.at, at(5, 4)));
+    const fighter = view.units.find((unit) => same(unit.at, at(7, 4)));
     if (triceratops === undefined || fighter === undefined)
       throw new Error("units");
     expect(
       publicProjectedDamageForPolicyV7(
         view,
-        { ...triceratops, at: at(6, 5) },
+        { ...triceratops, at: at(6, 4) },
         fighter,
         fighter.at,
       ),
@@ -403,7 +407,7 @@ describe("step two of the Dinosaur pass: what the policy counts for its own blow
     const moved = applyOkV7(state, seatIdV7(state, 0), {
       kind: "MOVE",
       unitId: triceratops.id,
-      path: [at(6, 5)],
+      path: [at(6, 4)],
     }).state;
     expect(
       queryCombatPreviewV7(viewOf(moved), triceratops.id, fighter.id),

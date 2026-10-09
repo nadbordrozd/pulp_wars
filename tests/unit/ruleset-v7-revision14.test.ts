@@ -102,9 +102,9 @@ interface ArenaOptions {
 
 describe("ruleset-7 revision-14 identity and roster", () => {
   it("keeps rejecting r13 after the r54 identity and cleans the r13 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-50, -8)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r64");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r64.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-51, -9)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
@@ -158,7 +158,8 @@ describe("ruleset-7 revision-14 identity and roster", () => {
     expect(effectiveRoleRuleV7("CATAPULT", "UNDEAD")).toMatchObject({
       label: "Lich",
       attack2: 6,
-      abilities: ["ATTACK", "PLAGUE"],
+      // Any unit can capture (`pulp_wars-ke95`).
+      abilities: ["ATTACK", "CAPTURE", "PLAGUE"],
     });
     expect(effectiveRoleRuleV7("GUARD", "UNDEAD").abilities).toEqual([
       "ATTACK",
@@ -169,6 +170,7 @@ describe("ruleset-7 revision-14 identity and roster", () => {
     // The Undead pass (`pulp_wars-w49.13`, 7r51): and Escape.
     expect(effectiveRoleRuleV7("KNIGHT", "UNDEAD").abilities).toEqual([
       "ATTACK",
+      "CAPTURE",
       "LIFESTEAL",
       "UNANSWERED",
       "ESCAPE",
