@@ -41,8 +41,8 @@ import { lightVerdict, lightingOf } from "../../scripts/art/lighting-qa";
  * Bead pulp_wars-eu3r.2 (the user, 2026-10-08): every achievement Monument
  * in every faction's style, plus one obelisk per faction for a viewer who
  * may not see the achievement. Today's seven Monuments are the Human ones.
- * Art only: registered, but the board does not ask for these subjects
- * until the skin rule (bead pulp_wars-eu3r.3).
+ * The skin rule (bead pulp_wars-eu3r.3, tests/unit/ruleset-v7-monument-skin
+ * .test.ts) asks for them in the builder's faction look.
  */
 
 const ROOT = process.cwd();
@@ -258,7 +258,7 @@ describe("the faction Monuments", () => {
     );
   });
 
-  it("are registered in the live look, but nothing asks for them yet", () => {
+  it("are registered in the live look and asked for in the builder's look", () => {
     const live = chibiDirectionArtRegistryV7();
     for (const { faction, achievement } of SLOTS) {
       const subject = subjectOf(faction, achievement);
@@ -273,9 +273,10 @@ describe("the faction Monuments", () => {
       expect(chibiFallbackSubjectV7(subject)).toBe("IMPROVEMENT:MONUMENT");
       expect(assetGroupOfSubjectV7(subject)).toBe(faction);
     }
-    // The board, the dock, the build button and the Gallery still ask for
-    // the achievement's (Human) look or the shared one, whatever the
-    // faction: the skin rule is bead pulp_wars-eu3r.3.
+    // The skin rule (bead pulp_wars-eu3r.3): the board, the dock and the
+    // build button ask for the builder's faction look (the territory
+    // owner's faction is ignored for a Monument); the Gallery still shows
+    // the achievement's (Human) look or the shared one, whatever the faction.
     for (const faction of FACTIONS) {
       expect(
         tileImprovementSubjectV7(
@@ -288,16 +289,22 @@ describe("the faction Monuments", () => {
       expect(galleryBuildingSubjectV7("MONUMENT", faction)).toBe(
         "IMPROVEMENT:MONUMENT",
       );
+      expect(monumentArtSubjectV7(null, faction)).toBe(
+        subjectOf(faction, null),
+      );
       for (const achievement of ACHIEVEMENT_IDS_V7) {
         expect(monumentArtSubjectV7(achievement)).toBe(
           `IMPROVEMENT:MONUMENT:${achievement}`,
+        );
+        expect(monumentArtSubjectV7(achievement, faction)).toBe(
+          subjectOf(faction, achievement),
         );
         expect(
           commandSubjectV7(
             { kind: "BUILD_MONUMENT", achievement, at: { x: 1, y: 1 } },
             faction,
           ),
-        ).toBe(`IMPROVEMENT:MONUMENT:${achievement}`);
+        ).toBe(subjectOf(faction, achievement));
         expect(
           galleryBuildingSubjectV7(`MONUMENT_${achievement}`, faction),
         ).toBe(`IMPROVEMENT:MONUMENT:${achievement}`);

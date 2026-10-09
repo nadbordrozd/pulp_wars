@@ -277,11 +277,19 @@ export type PublicPopulationContributionV7 =
             readonly visibility: "FULL";
             readonly achievement: AchievementIdV7;
             readonly at: CoordV7;
+            /** The builder's faction, public (pulp_wars-eu3r.3). */
+            readonly builderFaction?: FactionIdV7;
           }
         | {
             readonly kind: "MONUMENT";
             readonly visibility: "BUILDING_ONLY";
             readonly at: CoordV7;
+            /**
+             * The builder's faction (pulp_wars-eu3r.3): public, as the
+             * Monument's look shows it to everyone; the achievement stays
+             * the current owner's.
+             */
+            readonly builderFaction?: FactionIdV7;
           };
     });
 
@@ -723,6 +731,9 @@ export function viewForV7(
                   kind: "MONUMENT" as const,
                   visibility: "BUILDING_ONLY" as const,
                   at: contribution.source.at,
+                  ...(contribution.source.builderFaction === undefined
+                    ? {}
+                    : { builderFaction: contribution.source.builderFaction }),
                 },
         },
       ];

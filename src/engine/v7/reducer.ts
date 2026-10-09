@@ -1858,6 +1858,8 @@ function applyMonument(
         kind: "MONUMENT",
         achievement: command.achievement,
         at: command.at,
+        // The builder's look, kept through every capture (pulp_wars-eu3r.3).
+        builderFaction: player.faction,
       },
     };
     const recalculation = recomputeLiveEconomyV7(

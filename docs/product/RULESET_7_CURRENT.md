@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r68`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r69`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -329,6 +329,13 @@ unit over capacity. The state gains `stuck`, `toothache`, and
 `REBAKE` gains `from`. A match without a Candy seat plays as at `7r67`
 except for the three new empty lists. A save, replay, or setup of `7r67` is
 rejected, and the browser autosave has a new key.
+`pulp-wars-poc-7r69` (`pulp_wars-eu3r.3`) is **the Monument skin rule**
+([section 5](#5-achievements-and-monuments)): a Monument keeps the look of
+the faction that built it when another faction captures its city. A
+Monument's population contribution gains the optional `builderFaction`, set
+by every `BUILD_MONUMENT` and published to every viewer; no rule, price,
+population, command, or event changed. A save, replay, or setup of `7r68`
+is rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
 **City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -779,7 +786,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r68`.
+resolved ones as of `pulp-wars-poc-7r69`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -880,10 +887,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r68`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r69`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r68.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r69.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -1149,7 +1156,10 @@ separate [Ruleset 6](RULESET_6.md) route.
   modes (`pulp_wars-kaw6.2`) added the optional setup key `gameMode`, the
   `scoreLedger` state list, the leaderboard `score` and the view's `score`
   block, and the optional outcome keys `decidedBy` and `ranking`
-  ([section 3.1](#31-score-play-modes-and-stars)).
+  ([section 3.1](#31-score-play-modes-and-stars)). The Monument skin rule
+  (`pulp_wars-eu3r.3`, `7r69`) added the optional `builderFaction` to a
+  Monument's population-contribution source, and to its view copy
+  ([section 5](#5-achievements-and-monuments)).
 
 ## 2. Setup and map generation
 
@@ -3073,6 +3083,28 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
   improvement, or treasure (Mountain needs Engineering), at most one Monument
   per city, no siege or pending reward. A player can therefore place at most
   seven Monuments in a match, never more than one per owned city.
+- **A Monument keeps its builder's look** (`pulp_wars-eu3r.3`, the user
+  2026-10-08). Unlike every other building, which takes the look of the
+  faction that owns its territory, a Monument is drawn in the faction of
+  the player who built it, whoever owns it now, so each Monument and look
+  appears at most once on the map. `BUILD_MONUMENT` records the builder's
+  faction on the Monument's population contribution
+  (`source.builderFaction`, identity `pulp-wars-poc-7r69`), and nothing
+  changes it: a capture, a city
+  changing hands, or a builder eliminated leaves it as it was; Redevelop
+  and Pillage remove the Monument and its record together. A state
+  validates `builderFaction` as a faction ID held by at least as many
+  seats that spent that achievement as there are Monuments of that
+  achievement and faction. The view publishes it to every viewer that sees
+  the Monument (both the owner's `FULL` source and everyone else's
+  `BUILDING_ONLY` one); the achievement stays the current owner's. The
+  board draws `IMPROVEMENT:MONUMENT:<FACTION>:<ACHIEVEMENT>` for the
+  owner and the builder's obelisk `IMPROVEMENT:MONUMENT:<FACTION>` for
+  everyone else; a Human Monument keeps the shared subjects
+  (`IMPROVEMENT:MONUMENT:<ACHIEVEMENT>`, or `IMPROVEMENT:MONUMENT`), and so
+  does a Monument of an older state that has no `builderFaction`. The
+  build button and the Achievements screen show the viewer's own faction's
+  Monument. No rule, price, or population changed.
 - Spent entitlements stay spent if the Monument is removed or captured;
   captured Monuments keep their +3 for the captor. A level-1 city with an
   empty meter reaches level 2 with 1 toward level 3; a level-2 city reaches
@@ -12164,6 +12196,7 @@ first guesses.
 | Curiosities 2   | `pulp-wars-poc-7r66` | `pulp_wars-737.14` [map curiosities round 2](RULESET_7_MAP_CURIOSITIES.md#22-round-2-source-and-scope), engine (the identity became `7r66` when it was published after score and modes, `7r65`; a save, replay, or setup of `7r65` is rejected): with the Curiosities option on, five more kinds share the old per-board counts (one danger per board): the Downed Saucer camp (no Martian seat) and the Graveyard camp (no Undead seat) with neutral guards that wander within 2 and attack provokers, a pair of Dimensional Gates (a gate ends every Move; stepping on one carries the unit to the other and displaces its occupant clockwise), Bigfoot (flees, never fights, bounty 12), and the Wishing Well (`TOSS_COIN`, once per player); `monsters[].breed`, `GATE_DISPLACED`, `GATE_TRAVERSED`, `GATE_BLOCKED`, `COIN_TOSSED`; every neutral unit is worth its bounty in the score; the Normal AI is unchanged (bead `pulp_wars-737.15`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | Ice Folk Freeze | `pulp-wars-poc-7r67` | `pulp_wars-w49.37` Ice Folk Freeze, engine (user requests of 2026-10-09; the identity became `7r67` when it was published after map curiosities round 2, `7r66`; a save, replay, or setup of `7r66` is rejected): **Frozen** replaces Chill and Sluggish (state and view `frozen`, event `UNITS_FROZEN`; a Frozen unit cannot move or act on its owner's next turn, does not retaliate, and thaws at the end of that turn; no thaw immunity; [sections 21.2](#212-frozen) and [21.3](#213-what-a-frozen-unit-cannot-do)); Cold Snap freezes the eight tiles around the Witch and the new **Frost Bolt** one unit within 2 (one of the two a turn); the Frost Giant's Cold Aura follows its own Move or landing; Bolas, Frostbite, Black Ice, and the shards of Glacial Smash freeze (never a neutral unit); Glacier gives +1 Move across ice; the Mammoth's **Stampede** (`STAMPEDE`, `MAMMOTH_STAMPEDED`, death cause `STAMPEDE`, kills scored like the giants' fixed hits; [section 21.18](#2118-the-mammoths-stampede)); Sled 4 Coins, Musk Ox Defense 2, Ice Witch 6 Coins and 10 HP, Boulder Yeti 9 Coins and 10 HP, Mammoth 7 Coins, Frost Giant 36 HP; `LAB_ICE_FOLK_MID` revision 2; the Normal AI kept legal (basic scores for the new commands, untuned)                                                                                                                                                                                                                                                                                                      |
 | Candy redesign  | `pulp-wars-poc-7r68` | `pulp_wars-jdb.12` [the Candy redesign](RULESET_7_CANDY_REDESIGN.md), engine (the user's direction of 2026-10-09: the mechanics as specified, no stat changes; the identity became `7r68` when it was published after Ice Folk Freeze, `7r67`; a save, replay, or setup of `7r67` is rejected): Sticky Toffee (a Toffee Trooper's hit, either way, makes its surviving victim Stuck: one step per Move), Glaze Trail (a Donut Racer's start and passed tiles cost its side a Road step this turn), Ricochet (a Gumball Gunner's shot from two tiles bounces half its hit onto the weakest visible neighbour of the target), Bunny Hop and Thump (a Chocolate Bunny hops one tile in a Move, and every attack it makes deals 2 to every other hostile unit around it), Toothache (a surviving distance-1 attacker of a Jawbreaker has −1 Attack on its next attack), and the Confectioner's Top-Up (one adjacent own unit: its Crash ends, it heals 2 and is cured) in place of Frosting; no Rush perks (Sugar Frenzy and the Rushed Racer's Escape removed); Crumbs on settlement sites and from Ricochet and Thump deaths; Re-bake reworked (`from` within 2, scooped from under any unit, the copy beside the Confectioner, one unit over capacity) with the public "why not" query of `pulp_wars-jdb.9`; three state lists (`stuck`, `toothache`, `glazedThisTurn`), one command (`TOP_UP`), six events, ten combat-preview fields; the Normal AI kept legal with a basic Top-Up; matches without a Candy seat decide as before apart from the command-kind ordinals | [section 23](#23-candy-faction-rules), [the Candy redesign](RULESET_7_CANDY_REDESIGN.md)                                              |
+| Monument skin   | `pulp-wars-poc-7r69` | `pulp_wars-eu3r.3` the Monument skin rule, engine and art choice (the user, 2026-10-08: unlike every other building, a Monument keeps its builder's look when another faction captures its city, so each Monument and look appears at most once on the map; the identity became `7r69` when it was published after the Candy redesign, `7r68`; a save, replay, or setup of `7r68` is rejected): `BUILD_MONUMENT` records the builder's faction as `builderFaction` on the Monument's population-contribution source, a capture never changes it, the view publishes it to every viewer (the achievement stays the owner's), and the board, the dock, the build button, and the Achievements screen draw the faction Monuments of `pulp_wars-eu3r.2`; a state without the field draws the Human or shared Monument; no rule, price, population, command, or event changed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | [section 5](#5-achievements-and-monuments)                                                                                            |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

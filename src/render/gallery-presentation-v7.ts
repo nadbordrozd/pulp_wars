@@ -677,7 +677,8 @@ const BUILDING_DESCRIPTIONS: Readonly<
   FORGE: "Built next to mines.",
   WORKSHOP: "Built among varied buildings.",
   MARKET: "Built among varied buildings.",
-  MONUMENT: `Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, one per city.`,
+  // The skin rule (pulp_wars-eu3r.3): a Monument keeps its builder's look.
+  MONUMENT: `Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, one per city. It keeps its builder's look when its city is captured.`,
   PORT: "Built on Shallow Water. Puts land units to sea and trains ships.",
   SHIPYARD: "An upgraded Port. Ships cost less.",
 };

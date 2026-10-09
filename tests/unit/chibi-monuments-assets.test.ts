@@ -301,7 +301,7 @@ describe("the Gallery's Monuments", () => {
       name: "Sea Dog Monument",
       factionName: null,
       description:
-        "The Monument of the Sea Dog achievement: Own 5 warships at once. Each achievement earns a free Monument: +3 population, one per city.",
+        "The Monument of the Sea Dog achievement: Own 5 warships at once. Each achievement earns a free Monument: +3 population, one per city. It keeps its builder's look when its city is captured.",
       effects: [],
       cost: null,
       technology: null,

@@ -12,11 +12,12 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * `IMPROVEMENT:MONUMENT:<FACTION>:<ACHIEVEMENT>` and
  * `IMPROVEMENT:MONUMENT:<FACTION>`.
  *
- * Art only: the list is part of the direction registry
- * (chibiDirectionArtAssetsV7, so the preload fetches it with its faction's
- * art), but nothing asks for these subjects yet, so the board, the
- * interface and the Gallery draw exactly what they drew before. The skin
- * rule (bead pulp_wars-eu3r.3) asks for them.
+ * The list is part of the direction registry (chibiDirectionArtAssetsV7,
+ * so the preload fetches it with its faction's art). The skin rule (bead
+ * pulp_wars-eu3r.3) asks for them: a Monument on the board and in the dock
+ * is drawn in its builder's faction look (monumentArtSubjectV7), as are the
+ * build button and the Achievements screen in the viewer's. The Gallery
+ * still shows the Human set.
  */
 export const CHIBI_FACTION_MONUMENT_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
   [

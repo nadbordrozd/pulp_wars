@@ -552,18 +552,34 @@ export type MonumentArtSubjectV7 =
  * materials (`IMPROVEMENT:MONUMENT:<FACTION>:<ACHIEVEMENT>`; the seven
  * above are the Human ones) and the faction's own obelisk
  * (`IMPROVEMENT:MONUMENT:<FACTION>`) for a viewer who may not see the
- * achievement. Art only: nothing asks for them yet (the skin rule is bead
- * pulp_wars-eu3r.3), and each falls back to the shared Monument.
+ * achievement. The faction is the Monument's builder's, which a capture
+ * never changes (the skin rule, bead pulp_wars-eu3r.3); each falls back to
+ * the shared Monument.
  */
 export type FactionMonumentArtSubjectV7 =
   | `IMPROVEMENT:MONUMENT:${Exclude<FactionIdV7, "ORIGINAL">}:${AchievementIdV7}`
   | `IMPROVEMENT:MONUMENT:${Exclude<FactionIdV7, "ORIGINAL">}`;
 
-/** The subject of a Monument: its achievement's look, or the shared one. */
+/**
+ * The subject of a Monument: its achievement's look, or the shared one, in
+ * the materials of `faction`, the faction that built it (bead
+ * pulp_wars-eu3r.3). A Human Monument, and one whose builder is unknown (a
+ * state written before the builder was recorded), takes the achievement's
+ * shared look (`IMPROVEMENT:MONUMENT:<ACHIEVEMENT>`, the Human set) or the
+ * shared Monument; every other faction its own
+ * (`IMPROVEMENT:MONUMENT:<FACTION>:<ACHIEVEMENT>`, or its obelisk
+ * `IMPROVEMENT:MONUMENT:<FACTION>` when the achievement is hidden).
+ */
 export function monumentArtSubjectV7(
   achievement: AchievementIdV7 | null | undefined,
+  faction?: FactionIdV7 | null,
 ): ArtSubjectV7 {
-  return achievement === null || achievement === undefined
+  const hidden = achievement === null || achievement === undefined;
+  if (faction !== null && faction !== undefined && faction !== "ORIGINAL")
+    return hidden
+      ? `IMPROVEMENT:MONUMENT:${faction}`
+      : `IMPROVEMENT:MONUMENT:${faction}:${achievement}`;
+  return hidden
     ? "IMPROVEMENT:MONUMENT"
     : `IMPROVEMENT:MONUMENT:${achievement}`;
 }

@@ -911,10 +911,23 @@ function parseContributionSource(
       ? null
       : { kind: "RESOURCE_ACTION", action: input.action, at };
   }
+  // The builder's faction (bead pulp_wars-eu3r.3) is present on every
+  // Monument a `BUILD_MONUMENT` places; a state written before it has none
+  // and draws the Monument as before.
+  const builder =
+    typeof input === "object" &&
+    input !== null &&
+    Object.hasOwn(input, "builderFaction");
   if (
-    hasExactKeysV7(input, ["achievement", "at", "kind"]) &&
+    hasExactKeysV7(input, [
+      "achievement",
+      "at",
+      "kind",
+      ...(builder ? ["builderFaction"] : []),
+    ]) &&
     input.kind === "MONUMENT" &&
-    ACHIEVEMENT_IDS_V7.includes(input.achievement as never)
+    ACHIEVEMENT_IDS_V7.includes(input.achievement as never) &&
+    (!builder || FACTION_IDS_V7.includes(input.builderFaction as FactionIdV7))
   ) {
     const at = parseCoordV7(input.at);
     return at === null
@@ -923,6 +936,9 @@ function parseContributionSource(
           kind: "MONUMENT",
           achievement: input.achievement as AchievementIdV7,
           at,
+          ...(builder
+            ? { builderFaction: input.builderFaction as FactionIdV7 }
+            : {}),
         };
   }
   if (
@@ -2525,6 +2541,25 @@ function validateCrossReferences(value: CrossInput): boolean {
         )?.spent === true,
     ).length;
     if (monuments > funded) return false;
+  }
+  // A builder's faction (pulp_wars-eu3r.3) names a seat that spent the
+  // achievement: no more Monuments of an achievement and faction than seats
+  // of that faction that spent it.
+  const builtByFaction = new Map<string, number>();
+  for (const { source } of contributions)
+    if (source.kind === "MONUMENT" && source.builderFaction !== undefined) {
+      const slot = `${source.achievement}:${source.builderFaction}`;
+      builtByFaction.set(slot, (builtByFaction.get(slot) ?? 0) + 1);
+    }
+  for (const [slot, built] of builtByFaction) {
+    const funders = players.filter((player) =>
+      player.achievementEntitlements.some(
+        (entitlement) =>
+          entitlement.spent &&
+          `${entitlement.achievement}:${player.faction}` === slot,
+      ),
+    ).length;
+    if (built > funders) return false;
   }
   if (
     choices.some((choice) => {

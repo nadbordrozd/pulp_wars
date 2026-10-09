@@ -7339,9 +7339,10 @@ export class Ruleset7DomAppView {
           theme,
         ),
       );
-      // The Monument this achievement earns (bead pulp_wars-2yc.15).
+      // The Monument this achievement earns (bead pulp_wars-2yc.15), in
+      // the viewer's own faction look (pulp_wars-eu3r.3).
       const monument = this.#chibiArt(
-        monumentArtSubjectV7(achievement),
+        monumentArtSubjectV7(achievement, view.viewer.faction),
         CHIBI_DOM_BOXES_V7.action,
       )?.element;
       if (monument !== undefined) {
@@ -7820,9 +7821,10 @@ export class Ruleset7DomAppView {
     );
     if (achievement === undefined) return modal;
     const badge = el(this.#document, "div", "v7-achievement-badge");
-    // The Monument it earns, where the look has one (pulp_wars-2yc.15).
+    // The Monument it earns, where the look has one (pulp_wars-2yc.15), in
+    // the viewer's own faction look (pulp_wars-eu3r.3).
     const monument = this.#chibiArt(
-      monumentArtSubjectV7(achievement),
+      monumentArtSubjectV7(achievement, this.#snapshot.view?.viewer.faction),
       CHIBI_DOM_BOXES_V7.action,
     )?.element;
     if (monument === undefined)
@@ -12154,7 +12156,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r68",
+    rulesetId: "pulp-wars-poc-7r69",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),

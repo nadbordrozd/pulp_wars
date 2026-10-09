@@ -102,6 +102,8 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // value resolves its kind through `unitRoleRuleV7` (no raw read).
   "src/engine/v7/score.ts::techTiersV7": "SEAT",
   "src/engine/v7/score-query.ts::queryStarGradeV7": "SEAT",
+  // The Monument's builder (pulp_wars-eu3r.3): the building seat's faction.
+  "src/engine/v7/reducer.ts::applyMonument": "SEAT",
   // `pulp_wars-68k.2`: mission registry, setup, and builder read seat
   // factions; no unit is mind-controlled at setup, so a seat's faction is
   // the kind of every unit it starts with (as in the Showcase).
@@ -459,6 +461,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // owner's own capability, and the Sea Dog goal is the viewer's seat's.
   "src/render/frozen-sea-presentation-v7.ts::viewerHasBlackIceV7": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#achievements": "SEAT",
+  // The viewer's own Monument look (pulp_wars-eu3r.3).
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#achievementNotice":
+    "SEAT",
   "src/render/ice-folk-presentation-v7.ts::matchHasIceFolkSeatV7": "SEAT",
   "src/render/ice-folk-presentation-v7.ts::iceFolkLabelV7": "SEAT",
   "src/render/ice-folk-presentation-v7.ts::iceFolkRolesWith": "SEAT",

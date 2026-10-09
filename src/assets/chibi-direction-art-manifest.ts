@@ -627,8 +627,8 @@ export function chibiDirectionArtAssetsV7(): readonly ChibiArtAssetV7[] {
     ...CHIBI_FACTION_BUILDING_ART_ASSETS_V7,
     // --- One Monument look per achievement (pulp_wars-2yc.15) ---
     ...CHIBI_MONUMENT_ART_ASSETS_V7,
-    // --- The faction Monuments (pulp_wars-eu3r.2): registered, but nothing
-    // asks for their subjects until the skin rule (pulp_wars-eu3r.3) ---
+    // --- The faction Monuments (pulp_wars-eu3r.2), drawn in the builder's
+    // look by the skin rule (pulp_wars-eu3r.3) ---
     ...CHIBI_FACTION_MONUMENT_ART_ASSETS_V7,
     // --- The range-style mined mountain (pulp_wars-6kn) ---
     ...CHIBI_RANGE_MINED_MOUNTAIN_ART_ASSETS_V7,

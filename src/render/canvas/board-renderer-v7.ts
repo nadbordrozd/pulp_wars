@@ -1251,7 +1251,9 @@ export function buildBoardRenderPlanV7(
         // The look of the faction that owns the territory (epic
         // pulp_wars-xdh): it changes when the city changes hands. A faction
         // subject without a raster falls back to the shared building. The
-        // viewer's own Monument is its achievement's (pulp_wars-2yc.15).
+        // viewer's own Monument is its achievement's (pulp_wars-2yc.15), and
+        // every Monument keeps its builder's faction look through a capture
+        // (pulp_wars-eu3r.3).
         artSubject: tileImprovementSubjectV7(
           view,
           tile.at,

@@ -118,10 +118,14 @@ export function factionImprovementSubjectV7(
  * achievement that earned it, every other improvement in the look of the
  * faction that owns its territory (factionImprovementSubjectV7).
  *
- * The view names a Monument's achievement only to the Monument's current
- * owner (`visibility: "FULL"`, docs/product/RULESET_7.md: the source
- * achievement is owner-only), so another player's Monument is the shared
- * `IMPROVEMENT:MONUMENT`.
+ * A Monument keeps its builder's faction look whoever owns it now (bead
+ * pulp_wars-eu3r.3): the view publishes `builderFaction` to every viewer,
+ * and `faction` (the territory owner's) is ignored for it. The view names
+ * a Monument's achievement only to the Monument's current owner
+ * (`visibility: "FULL"`, docs/product/RULESET_7.md: the source achievement
+ * is owner-only), so another player's Monument is its builder's obelisk
+ * (`IMPROVEMENT:MONUMENT:<FACTION>`), or the shared `IMPROVEMENT:MONUMENT`
+ * when the builder is Human or unknown (monumentArtSubjectV7).
  */
 export function tileImprovementSubjectV7(
   view: Pick<PlayerViewV7, "populationContributions">,
@@ -139,6 +143,7 @@ export function tileImprovementSubjectV7(
     )
       return monumentArtSubjectV7(
         source.visibility === "FULL" ? source.achievement : null,
+        source.builderFaction,
       );
   return monumentArtSubjectV7(null);
 }
@@ -327,9 +332,10 @@ export function commandSubjectV7(
       return navalArtSubjectV7(faction, "UNIT", "EMBARKED_TRANSPORT");
     case "CHOOSE_CITY_REWARD":
       return rewardSubjectV7(command.reward, faction);
-    // The Monument of the achievement that pays for it (pulp_wars-2yc.15).
+    // The Monument of the achievement that pays for it (pulp_wars-2yc.15),
+    // in the builder's look (pulp_wars-eu3r.3).
     case "BUILD_MONUMENT":
-      return monumentArtSubjectV7(command.achievement);
+      return monumentArtSubjectV7(command.achievement, faction);
     case "RALLY":
       if (faction === "UNDEAD") return "ICON:ACTION:UNDEAD:RALLY";
       if (faction === "GOBLIN") return "ICON:ACTION:GOBLIN:RALLY";

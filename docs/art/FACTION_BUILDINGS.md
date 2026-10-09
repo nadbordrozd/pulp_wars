@@ -997,9 +997,9 @@ The user, 2026-10-08, approved this plan: the seven achievement Monuments of
 are the **Human** look; every other faction gets the seven in its own
 materials (49 masters), plus **one faction obelisk** each (7) for a viewer
 who sees only the building, so the builder's faction is public and the
-achievement stays hidden as today. **Art only:** nothing draws them yet. The
-skin rule (the builder's faction is recorded and kept after capture) is bead
-`pulp_wars-eu3r.3`, which also wires the subjects to the board.
+achievement stays hidden as today. The skin rule (the builder's faction is
+recorded and kept after capture) is bead `pulp_wars-eu3r.3`, which wires the
+subjects to the board (below, "In the game").
 
 **What each must say, in every faction** (the motif of the Human one):
 Explorer, an obelisk with a compass rose and a spyglass; Engineer, a pillar
@@ -1096,18 +1096,28 @@ were passed over is in the records.
 
 ### In the game
 
-Nothing changes on screen yet. The list is
+The list is
 [`chibi-faction-monuments-art-manifest.ts`](../../src/assets/chibi-faction-monuments-art-manifest.ts)
 (`CHIBI_FACTION_MONUMENT_ART_ASSETS_V7`), registered in the direction
 registry (`chibiDirectionArtAssetsV7`), so the live look resolves the
 subjects and the preload fetches each faction's Monuments with that
-faction's art (every manifest raster is in the inventory). Nothing asks for
-the subjects: the board, the dock, the build buttons, the Achievements
-screen and the Gallery ask for the Human or the shared subject as before,
-and `chibiFallbackSubjectV7` maps every new subject to the shared Monument.
-Bead `pulp_wars-eu3r.3` asks for them (a FULL viewer
-`IMPROVEMENT:MONUMENT:<FACTION>:<ACHIEVEMENT>`, everyone else
-`IMPROVEMENT:MONUMENT:<FACTION>`; the Humans keep today's subjects).
+faction's art (every manifest raster is in the inventory).
+`chibiFallbackSubjectV7` maps every new subject to the shared Monument (the
+Classic look).
+
+**The skin rule** (bead `pulp_wars-eu3r.3`, the user 2026-10-08): a
+Monument keeps its builder's faction look whoever owns it now. The engine
+records the builder's faction on the Monument (`builderFaction` on its
+population contribution, docs/product/RULESET_7_CURRENT.md section 5) and the
+view publishes it to every viewer. The board and the dock
+(`tileImprovementSubjectV7`, through `monumentArtSubjectV7`) ask a FULL
+viewer (the current owner) for `IMPROVEMENT:MONUMENT:<FACTION>:<ACHIEVEMENT>`
+and everyone else for the builder's obelisk `IMPROVEMENT:MONUMENT:<FACTION>`;
+a Human Monument, and one without a recorded builder, keeps the Human
+subjects (`IMPROVEMENT:MONUMENT:<ACHIEVEMENT>` or the shared
+`IMPROVEMENT:MONUMENT`). The build buttons and the Achievements screen show
+the viewer's own faction's Monument. The Gallery still shows one Human row
+per achievement.
 
 ### Evidence
 
