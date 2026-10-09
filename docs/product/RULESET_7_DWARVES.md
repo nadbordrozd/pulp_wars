@@ -3098,3 +3098,52 @@ the current rules:
   positional value counts every adjacent target (nothing strikes back). It
   never builds or attacks a Barricade and routes around them through the
   public movement queries. These are follow-ups for the AI pass.
+
+### 24.2 Interface (`pulp_wars-w49.34`)
+
+Every text and number below is read from the registry, the engine
+constants, and the public previews (`previewWhirlV7`,
+`previewBuildBarricadeV7`, `queryBarricadeUnavailableReasonV7`,
+`previewAttackBarricadeV7`, `previewTendWoundedV7`); none of the three
+commands is a generic dock button any more.
+
+- **Whirl.** An own Whirligig that can act has a Whirl button (its glyph,
+  "Whirl", and a chip with the total damage and the number of enemies);
+  without a visible enemy next to it the button is disabled with "No enemy
+  next to it". Pressing it aims the Whirl: the board outlines the eight
+  tiles round the Whirligig and marks every enemy it hits as an attack
+  target labelled with its damage ("−4", "−3 · Kills"); the dock lists the
+  same enemies by name with their damage (never by tile) and a Whirl
+  button. The Whirl button, or choosing any marked enemy, whirls. The cue:
+  three hammer swooshes sweep round the Whirligig while its targets stay
+  on the board, a burst of rays on each target, then each target's damage.
+- **Barricade.** An own Engineer has a Barricade button with its price; its
+  tooltip names the price, the HP, the rule, and "You have N of 4
+  Barricades". At the cap it is disabled with "All 4 Barricades built",
+  below 3 Coins with "Needs 3 Coins", and without a free tile with "No
+  free tile". Pressing it aims the Barricade: the legal tiles are Place
+  targets on the board and the dock shows one line, "3 Coins · 10 HP · N/4
+  built"; choosing a tile builds it (a cue of earth and steam).
+- **On the board** a Barricade is drawn in code in every look (there is no
+  raster): sharpened timber stakes bound by riveted iron bands on a heap of
+  earth, its owner's pennant, cracks at half its HP or less, and its HP as
+  a segmented bar in the cell's left strip (one segment per HP, where a
+  unit's HP bar is) with the number above it. Its tile's dock names whose
+  it is, its HP, and its rule; the board cursor says the same.
+- **Attacking a Barricade.** A unit that may attack a hostile Barricade
+  shows an attack target on its tile, labelled with the exact damage and
+  what is left ("Deal 5 · 5 left", "Deal 3 · Breaks it"). Choosing it
+  attacks: the attacker lunges or shoots, and splinters fly.
+- **Repair.** A selected Engineer marks each damaged own Barricade next to
+  it with the Help ring and "+4 HP", like the units its Repair heals; the
+  Repair tooltip says it mends Barricades.
+- **Bomb Run.** Every landing within 2 tiles of the target is a Move target
+  labelled with its threat ("Land · up to 6", "Land · safe"); the landing
+  hint reads "Landing: …".
+- **Log.** "Your Whirligig whirled: 3 units hit (1 killed)", "Your Engineer
+  built a Barricade", "Player 2's Fighter hit your Barricade for 5" (a
+  toast for the owner), "… broke your Barricade", and "Your Engineer
+  mended a Barricade (+4 HP)".
+- **Words.** Help (the Dwarf rules of `dwarfHelpRulesV7`), the glossary,
+  and the unit cards name Whirl and Barricade, and the Bomb Run's landing
+  up to 2 tiles beyond its target; nothing names Three Hammers.

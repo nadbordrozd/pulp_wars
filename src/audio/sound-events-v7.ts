@@ -262,6 +262,13 @@ export function soundCuesForStepV7(
           return [{ id: "economy.build", delayMs: 0 }];
         case "KNOCKBACK":
           return [{ id: "special.puff", delayMs: 0 }];
+        // Dwarf crowd control (`pulp_wars-w49.34`).
+        case "WHIRL":
+          return [{ id: "attack.melee", delayMs: 0 }];
+        case "BARRICADE":
+          return [{ id: "economy.build", delayMs: 0 }];
+        case "SPLINTERS":
+          return [{ id: "impact.hit", delayMs: 0 }];
       }
       return [];
     case "CANDY":

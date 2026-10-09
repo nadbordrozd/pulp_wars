@@ -184,16 +184,20 @@ import {
 } from "../../assets/chibi-art-v7";
 import {
   addDwarfPickEntriesV7,
+  attackBarricadeTargetsV7,
   dwarfAttackTargetExtrasV7,
+  dwarfBarricadeEntriesV7,
   dwarfMoundEntriesV7,
   dwarfPickTargetsV7,
   dwarfUnitMarkersV7,
   TUNNEL_TETHER_LINK_V7,
+  type DwarfBarricadeMarkerV7,
   type DwarfMoundMarkerV7,
   type DwarfPickV7,
   type DwarfUnitMarkersV7,
 } from "./dwarf-board-plan-v7";
 import {
+  drawBarricadeV7,
   drawClockworkGearV7,
   drawCodeMoundV7,
   drawDigInEarthworkV7,
@@ -203,7 +207,11 @@ import {
   drawTunnelTetherV7,
   type DwarfBoardArtV7,
 } from "./dwarf-canvas-v7";
-import { STAYS_BEHIND_V7, matchHasDwarfSeatV7 } from "../dwarf-presentation-v7";
+import {
+  STAYS_BEHIND_V7,
+  barricadeRepairLabelV7,
+  matchHasDwarfSeatV7,
+} from "../dwarf-presentation-v7";
 import {
   TARGET_HIGHLIGHTS_V7,
   drawTargetHighlightV7,
@@ -545,6 +553,14 @@ export interface MapCommandTargetV7 {
     | "BOMB_RUN"
     | "ASSEMBLE"
     /**
+     * Dwarf crowd control (`pulp_wars-w49.34`): an enemy an aimed Whirl
+     * hits (every one carries the same command, so choosing any of them
+     * whirls), and a tile an Engineer may put a Barricade on. An attack on
+     * a Barricade is an ATTACK target whose command is ATTACK_BARRICADE.
+     */
+    | "WHIRL"
+    | "BARRICADE"
+    /**
      * The Candy revision: a tile of an armed Sugar Rush's reach (`command`
      * is the `SUGAR_RUSH`; the Move is sent after it), a Crumbs tile a
      * Confectioner may Re-bake, and a unit a Gunner may toss sugar to.
@@ -768,6 +784,8 @@ export interface BoardRenderPlanEntryV7 {
     | "GRAVE"
     /** The Candy revision: the Crumbs of a tile. */
     | "CRUMBS"
+    /** Dwarf crowd control (`pulp_wars-w49.34`): a standing Barricade. */
+    | "BARRICADE"
     | "ABILITY_AREA"
     | "ABILITY_TARGET";
   readonly assetId?: string;
@@ -922,6 +940,8 @@ export interface BoardRenderPlanEntryV7 {
   readonly icebound?: IceboundMarkerV7;
   /** CRUMBS only, the Candy revision: the role, the turns left, the bite. */
   readonly crumbs?: CandyCrumbsMarkerV7;
+  /** BARRICADE only, Dwarf crowd control: its HP and whose it is. */
+  readonly barricade?: DwarfBarricadeMarkerV7;
   /** CURIOSITY only (bead pulp_wars-737.6): which tile overlay this is. */
   readonly curiosity?: CuriosityOverlayIdV7;
   /** UNIT only: the neutral Giant Spider and its provoked marker. */
@@ -1378,6 +1398,14 @@ export function buildBoardRenderPlanV7(
         interaction.selection?.kind === "TILE"
           ? interaction.selection.at
           : null,
+      ),
+    );
+  // Dwarf crowd control (`pulp_wars-w49.34`): every Barricade on an
+  // explored tile, with its owner's colour and its HP.
+  if (view.barricades.length > 0)
+    entries.push(
+      ...dwarfBarricadeEntriesV7(view, (ownerId) =>
+        ownerPresentation(view, ownerId),
       ),
     );
   for (const value of view.improvementValues)
@@ -3185,6 +3213,22 @@ export function drawBoardV7(input: {
             initial: candyLabelV7(entry.crumbs.role).charAt(0),
             highContrast: input.highContrast ?? false,
             devicePixelRatio,
+          });
+          context.restore();
+        }
+        continue;
+      }
+      if (entry.kind === "BARRICADE") {
+        // Dwarf crowd control (`pulp_wars-w49.34`): the code-drawn
+        // Barricade, its owner's pennant and its HP, in every look.
+        if (entry.barricade !== undefined) {
+          context.save();
+          context.globalAlpha = sceneAlpha;
+          drawBarricadeV7(context, x, y, camera.zoom, {
+            hp: entry.barricade.hp,
+            maxHp: entry.barricade.maxHp,
+            ownerColor: entry.ownerColor ?? "#d8d2c0",
+            highContrast: input.highContrast ?? false,
           });
           context.restore();
         }
@@ -6010,6 +6054,18 @@ function addAbilityPreviews(
         areaSupport,
       });
     }
+    // Dwarf crowd control (`pulp_wars-w49.34`): the Barricades an
+    // Engineer's Repair mends, each with its amount.
+    for (const mend of preview?.barricades ?? [])
+      entries.push({
+        key: `ability-target:TEND:barricade:${coordKey(mend.at)}`,
+        kind: "ABILITY_TARGET",
+        layer: 7.5,
+        at: mend.at,
+        abilityStyle: "TEND",
+        label: barricadeRepairLabelV7(mend.amount),
+        areaSupport,
+      });
   }
   // Rally (Frenzy, Berserk, War Drums) is nearly always on offer and has
   // no amount to read, so its recipients are marked only while its button
@@ -6138,6 +6194,9 @@ function mapTargets(
       withBerserkReachV7(view, withMoveOnIceV7(view, target)),
     ),
     ...landingAfterMoveTargets(view, commands, selectedUnitId),
+    // Dwarf crowd control (`pulp_wars-w49.34`): an attack on a hostile
+    // Barricade is an Attack mark on its tile.
+    ...attackBarricadeTargetsV7(view, commands, selectedUnitId),
   ];
 }
 

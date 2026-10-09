@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  BARRICADE_HP_V7,
+  BOMB_LANDING_RANGE_V7,
   applyCommandV7,
   previewAssembleV7,
+  previewBuildBarricadeV7,
+  previewWhirlV7,
   projectEventsV7,
   queryPlayerCommandsV7,
   viewForV7,
@@ -11,9 +15,18 @@ import {
   type PlayerViewV7,
 } from "../../src/engine/index";
 import {
+  BARRICADE_CAP_REACHED_V7,
+  BARRICADE_NO_COINS_V7,
   RIDE_BADGE_V7,
   RIDING_BADGE_V7,
+  WHIRL_NO_TARGET_V7,
+  dwarfAbilityUnavailableTextV7,
+  dwarfBoundaryNoticeV7,
+  dwarfCommandLabelV7,
+  whirlSummaryV7,
+  whirlTargetLinesV7,
 } from "../../src/render/dwarf-presentation-v7";
+import { targetHighlightStyleV7 } from "../../src/render/canvas/target-highlight-v7";
 import {
   DWARF_DIG_IN_WALL_SHARE_V7,
   DWARF_ERUPTION_TIMELINE_V7,
@@ -36,6 +49,8 @@ import {
   type DwarfPickV7,
 } from "../../src/render/canvas/dwarf-board-plan-v7";
 import {
+  BARRICADE_HP_BAR_V7,
+  drawBarricadeV7,
   drawDigInEarthworkV7,
   drawEruptionRingV7,
   type DwarfBoardArtV7,
@@ -57,8 +72,12 @@ import {
   createDirectedChibiArtV7,
 } from "../../src/render/canvas/visual-direction-v7";
 import {
+  DWARF_BARRICADE_VICTIM_V7,
+  DWARF_CROWD_CONTROL_V7,
   DWARF_DIG_IN_V7,
   DWARF_UI_V7,
+  dwarfBarricadeVictimFixtureV7,
+  dwarfCrowdControlFixtureV7,
   dwarfDigInFixtureV7,
   dwarfEruptionBeforeFixtureV7,
   dwarfUiFixtureV7,
@@ -870,6 +889,372 @@ describe("Dwarf cues (section 16.1, DWARF.md effects)", () => {
           from: AT.engineer,
           cells: [AT.mole, AT.tunnelTo],
           progress: effect === "ERUPTION" ? 0.36 : 0.5,
+        },
+      );
+      expect(
+        log.some((call) => call[0] === "fill" || call[0] === "stroke"),
+        effect,
+      ).toBe(true);
+    }
+  });
+});
+
+// Dwarf crowd control (`pulp_wars-w49.34`): the Whirl, the Barricade and
+// the Bomb Run's wider landing on the board, in words and as cues, from
+// hand-built states (no match is played).
+describe("Dwarf crowd control on the board (pulp_wars-w49.34)", () => {
+  const CC = DWARF_CROWD_CONTROL_V7;
+  const state = dwarfCrowdControlFixtureV7();
+  const view = humanView(state);
+  const id = (at: CoordV7) => unitAt(view, at).id;
+  const aim = (at: CoordV7, pick: DwarfPickV7) =>
+    planFor(view, at, { dwarfPick: pick });
+
+  it("draws every Barricade in the view with its owner and HP, never as a unit", () => {
+    const plan = planFor(view, null);
+    const barricades = plan.entries.filter(
+      (entry) => entry.kind === "BARRICADE",
+    );
+    expect(barricades.map((entry) => entry.key)).toEqual([
+      `barricade:${CC.wholeBarricade.x},${CC.wholeBarricade.y}`,
+      `barricade:${CC.damagedBarricade.x},${CC.damagedBarricade.y}`,
+    ]);
+    expect(barricades[1]).toMatchObject({
+      at: CC.damagedBarricade,
+      hp: 6,
+      maxHp: BARRICADE_HP_V7,
+      barricade: { hp: 6, maxHp: BARRICADE_HP_V7, own: true },
+      label: "Your Barricade, 6 of 10 HP",
+    });
+    expect(barricades.every((entry) => entry.ownerColor !== undefined)).toBe(
+      true,
+    );
+    // The board draws them in code (no raster), with the segmented bar.
+    const log = draw(plan);
+    expect(
+      log.filter(
+        (call) =>
+          call[0] === "fillText" && (call[1] === "6" || call[1] === "10"),
+      ),
+    ).toHaveLength(2);
+    // A match without a Dwarf seat has no Barricade at all.
+    const other = humanView(martianUiFixtureV7());
+    expect(
+      planFor(other, null).entries.some((entry) => entry.kind === "BARRICADE"),
+    ).toBe(false);
+  });
+
+  it("draws a Barricade's HP bar in the cell's left strip, cracked at half HP", () => {
+    const whole = recordingContext();
+    drawBarricadeV7(whole.context, 0, 0, 1, {
+      hp: 10,
+      maxHp: 10,
+      ownerColor: "#123456",
+      highContrast: false,
+    });
+    const bar = BARRICADE_HP_BAR_V7;
+    expect(whole.log).toContainEqual([
+      "fillRect",
+      bar.left,
+      bar.top,
+      bar.width,
+      bar.height,
+    ]);
+    expect(whole.log).toContainEqual([
+      "fillText",
+      "10",
+      expect.any(Number),
+      expect.any(Number),
+    ]);
+    expect(whole.log).toContainEqual(["set", "fillStyle", "#123456"]);
+    const broken = recordingContext();
+    drawBarricadeV7(broken.context, 0, 0, 1, {
+      hp: 3,
+      maxHp: 10,
+      ownerColor: "#123456",
+      highContrast: false,
+    });
+    // Ten segments' dividers are drawn either way; cracks add strokes.
+    const strokes = (log: readonly LogEntry[]) =>
+      log.filter((call) => call[0] === "stroke").length;
+    expect(strokes(broken.log)).toBeGreaterThan(strokes(whole.log));
+  });
+
+  it("aims a Whirl: every visible enemy next to the Whirligig, each with its damage, and its reach", () => {
+    const whirligig = id(CC.whirligig);
+    const preview = previewWhirlV7(view, whirligig);
+    if (preview === null) throw new Error("no Whirl preview");
+    const plan = aim(CC.whirligig, { kind: "WHIRL", unitId: whirligig });
+    expect(plan.targets.map((target) => target.at)).toEqual(
+      preview.targets.map((target) => target.at),
+    );
+    // The own Hammerer next to it is never hit.
+    expect(plan.targets.some((target) => same(target.at, CC.ownHammerer))).toBe(
+      false,
+    );
+    for (const target of plan.targets) {
+      expect(target.family).toBe("WHIRL");
+      expect(targetHighlightStyleV7(target.family)).toBe("ATTACK");
+      expect(target.command).toEqual({ kind: "WHIRL", unitId: whirligig });
+      expect(target.previewLabel).toMatch(/^−\d+( · Kills)?$/);
+    }
+    expect(
+      plan.targets.find((target) => same(target.at, CC.whirlMarksman))
+        ?.previewLabel,
+    ).toMatch(/· Kills$/);
+    expect(
+      plan.entries.filter(
+        (entry) =>
+          entry.kind === "ABILITY_AREA" && entry.abilityStyle === "WHIRL",
+      ),
+    ).toHaveLength(9);
+    // The words of the dock: one line per enemy, by name.
+    expect(whirlTargetLinesV7(view, preview).map((line) => line.name)).toEqual([
+      "Fighter",
+      "Marksman",
+      "Guard",
+    ]);
+    expect(whirlSummaryV7(preview)).toMatch(
+      /^Whirl: 3 enemies, \d+ damage, 1 kill$/,
+    );
+  });
+
+  it("aims a Barricade at the Engineer's free tiles, and marks the Barricade its Repair mends", () => {
+    const engineer = id(CC.engineer);
+    const plan = aim(CC.engineer, {
+      kind: "BUILD_BARRICADE",
+      unitId: engineer,
+    });
+    expect(plan.targets.map((target) => target.at)).toEqual(
+      previewBuildBarricadeV7(view, engineer)?.tiles,
+    );
+    for (const target of plan.targets) {
+      expect(target.family).toBe("BARRICADE");
+      expect(targetHighlightStyleV7(target.family)).toBe("PLACE");
+      expect(target.command.kind).toBe("BUILD_BARRICADE");
+      expect(target.semanticLabel).toBe(
+        "Build barricade here: 3 Coins · 10 HP · 2/4 built",
+      );
+    }
+    const repair = planFor(view, CC.engineer).entries.filter(
+      (entry) => entry.abilityStyle === "TEND",
+    );
+    expect(repair).toEqual([
+      expect.objectContaining({
+        at: CC.damagedBarricade,
+        label: "+4 HP",
+        areaSupport: "QUIET",
+      }),
+    ]);
+  });
+
+  it("lands a Bomb Run up to 2 tiles from its target", () => {
+    const gyro = id(CC.gyrocopter);
+    const target = id(CC.bombTarget);
+    const plan = aim(CC.gyrocopter, {
+      kind: "BOMB_RUN",
+      unitId: gyro,
+      targetUnitId: target,
+    });
+    const offered = queryPlayerCommandsV7(view).flatMap((command) =>
+      command.kind === "BOMB_RUN" && command.targetUnitId === target
+        ? [command.to]
+        : [],
+    );
+    expect(plan.targets.map((landing) => landing.at)).toEqual(offered);
+    const reach = plan.targets.map((landing) =>
+      Math.max(
+        Math.abs(landing.at.x - CC.bombTarget.x),
+        Math.abs(landing.at.y - CC.bombTarget.y),
+      ),
+    );
+    expect(Math.max(...reach)).toBe(BOMB_LANDING_RANGE_V7);
+    expect(reach).toContain(1);
+    for (const landing of plan.targets)
+      expect(landing.semanticLabel).toMatch(/^Land here\. Landing: /);
+  });
+
+  it("names the commands and why a Whirl or a Barricade is unavailable", () => {
+    expect(dwarfCommandLabelV7("WHIRL", "DWARF")).toBe("Whirl");
+    expect(dwarfCommandLabelV7("BUILD_BARRICADE", "DWARF")).toBe("Barricade");
+    expect(dwarfCommandLabelV7("ATTACK_BARRICADE", "ORIGINAL")).toBe(
+      "Attack Barricade",
+    );
+    const engineer = unitAt(view, CC.engineer);
+    expect(
+      dwarfAbilityUnavailableTextV7(
+        view,
+        engineer,
+        "BUILD_BARRICADE",
+        false,
+        undefined,
+        "CAP",
+      ),
+    ).toBe(BARRICADE_CAP_REACHED_V7);
+    expect(
+      dwarfAbilityUnavailableTextV7(
+        view,
+        engineer,
+        "BUILD_BARRICADE",
+        false,
+        undefined,
+        "INSUFFICIENT_COINS",
+      ),
+    ).toBe(BARRICADE_NO_COINS_V7);
+    expect(
+      dwarfAbilityUnavailableTextV7(
+        view,
+        engineer,
+        "BUILD_BARRICADE",
+        false,
+        undefined,
+        "ALREADY_ACTED",
+      ),
+    ).toBeNull();
+    expect(
+      dwarfAbilityUnavailableTextV7(
+        view,
+        unitAt(view, CC.whirligig),
+        "WHIRL",
+        false,
+      ),
+    ).toBe(WHIRL_NO_TARGET_V7);
+  });
+
+  it("marks an attack on a hostile Barricade with its exact damage, for melee and range", () => {
+    const victim = humanView(dwarfBarricadeVictimFixtureV7());
+    const V = DWARF_BARRICADE_VICTIM_V7;
+    const fighter = planFor(victim, V.fighter).targets.filter(
+      (target) => target.command.kind === "ATTACK_BARRICADE",
+    );
+    expect(fighter).toEqual([
+      expect.objectContaining({
+        at: V.wholeBarricade,
+        family: "ATTACK",
+        previewLabel: "Deal 5 · 5 left",
+        semanticLabel:
+          "Attack Player 2's Barricade: deals 5, nothing strikes back. 5 of 10 HP left.",
+      }),
+    ]);
+    const catapult = planFor(victim, V.catapult).targets.filter(
+      (target) => target.command.kind === "ATTACK_BARRICADE",
+    );
+    expect(
+      catapult.find((target) => same(target.at, V.brokenBarricade))
+        ?.previewLabel,
+    ).toBe("Deal 3 · Breaks it");
+  });
+
+  const boundary = (
+    from: GameStateV7,
+    find: (command: CommandV7) => boolean,
+  ) => {
+    const viewer = from.humanPlayerId;
+    const command = queryPlayerCommandsV7(viewForV7(from, viewer)).find(find);
+    if (command === undefined) throw new Error("command not offered");
+    const result = applyCommandV7(from, viewer, command);
+    if (!result.accepted) throw new Error(result.error.code);
+    const before = viewForV7(from, viewer);
+    const after = viewForV7(result.state, viewer);
+    const events = projectEventsV7(from, result.state, viewer, result.events);
+    return {
+      steps: corePresentationPlanV7(before, events, after),
+      notice: dwarfBoundaryNoticeV7(events.events, before, after),
+    };
+  };
+
+  it("whirls with hammer arcs and a hit on every target, then their damage", () => {
+    const { steps, notice } = boundary(
+      state,
+      (command) => command.kind === "WHIRL",
+    );
+    expect(steps[0]).toMatchObject({
+      kind: "DWARF",
+      effect: "WHIRL",
+      durationMs: DWARF_EFFECT_DURATIONS_V7.WHIRL,
+    });
+    expect(steps[0]?.kind === "DWARF" && steps[0].cells).toEqual([
+      CC.whirligig,
+      CC.whirlFighter,
+      CC.whirlMarksman,
+      CC.whirlGuard,
+    ]);
+    expect(
+      steps.filter((step) => step.kind === "DAMAGE").map((step) => step.at),
+    ).toEqual([CC.whirlFighter, CC.whirlMarksman, CC.whirlGuard]);
+    expect(notice?.text).toBe("Your Whirligig whirled: 3 units hit (1 killed)");
+  });
+
+  it("builds a Barricade with earth and steam, and splinters one that is hit", () => {
+    const built = boundary(
+      state,
+      (command) =>
+        command.kind === "BUILD_BARRICADE" && same(command.to, { x: 8, y: 3 }),
+    );
+    expect(built.steps).toEqual([
+      expect.objectContaining({
+        kind: "DWARF",
+        effect: "BARRICADE",
+        cells: [{ x: 8, y: 3 }],
+      }),
+    ]);
+    expect(built.notice?.text).toBe("Your Engineer built a Barricade");
+    const victim = dwarfBarricadeVictimFixtureV7();
+    const V = DWARF_BARRICADE_VICTIM_V7;
+    const hit = boundary(
+      victim,
+      (command) =>
+        command.kind === "ATTACK_BARRICADE" &&
+        same(command.at, V.wholeBarricade),
+    );
+    expect(hit.steps.map((step) => step.kind)).toEqual(["MELEE", "DWARF"]);
+    expect(hit.steps[0]).toMatchObject({
+      from: V.fighter,
+      to: V.wholeBarricade,
+    });
+    expect(hit.steps[1]).toMatchObject({
+      effect: "SPLINTERS",
+      cells: [V.wholeBarricade],
+    });
+    expect(hit.notice?.text).toBe(
+      "Your Fighter hit Player 2's Barricade for 5",
+    );
+    const broken = boundary(
+      victim,
+      (command) =>
+        command.kind === "ATTACK_BARRICADE" &&
+        same(command.at, V.brokenBarricade),
+    );
+    expect(broken.steps[0]).toMatchObject({ kind: "CATAPULT" });
+    expect(broken.notice?.text).toBe(
+      "Your Catapult broke Player 2's Barricade",
+    );
+    const repaired = boundary(
+      state,
+      (command) => command.kind === "TEND_WOUNDED",
+    );
+    expect(repaired.steps).toContainEqual(
+      expect.objectContaining({
+        kind: "DWARF",
+        effect: "REPAIR",
+        cells: [CC.damagedBarricade],
+      }),
+    );
+    expect(repaired.notice?.text).toBe(
+      "Your Engineer mended a Barricade (+4 HP)",
+    );
+  });
+
+  it("draws the Whirl, Barricade and Splinters cues without art", () => {
+    for (const effect of ["WHIRL", "BARRICADE", "SPLINTERS"] as const) {
+      const { context, log } = recordingContext();
+      drawDwarfFeedbackV7(
+        context,
+        { offsetX: 0, offsetY: 0, zoom: 1 },
+        {
+          effect,
+          cells: [CC.whirligig, CC.whirlFighter],
+          progress: 0.5,
         },
       );
       expect(

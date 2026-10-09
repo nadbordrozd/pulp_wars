@@ -65,7 +65,12 @@ import {
   type AttackEffectIdV7,
   type AttackFeedbackV7,
 } from "./attack-effects-v7";
-import { moundAtV7, moundInfoLinesV7 } from "../dwarf-presentation-v7";
+import {
+  BARRICADE_RULE_V7,
+  moundAtV7,
+  moundInfoLinesV7,
+} from "../dwarf-presentation-v7";
+import { barricadeTileLineV7 } from "./dwarf-board-plan-v7";
 import {
   CANDY_EFFECT_SUBJECTS_V7,
   candyReducedMotionProgressV7,
@@ -1400,16 +1405,20 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // An eruption shows the mound until the Mole and its rider are back
         // (DWARF_ERUPTION_TIMELINE_V7.surface); every other cue shows the
         // result (the mound, the bombed target, the new Gunner).
+        // Dwarf crowd control (`pulp_wars-w49.34`): a Whirl shows its
+        // targets until the hammers land, halfway through.
         const eruption = step.effect === "ERUPTION";
-        this.#presentedView = eruption ? before : after;
+        const whirl = step.effect === "WHIRL";
+        this.#presentedView = eruption || whirl ? before : after;
         this.#draw();
         await this.#animate(step.durationMs * durationScale, (progress) => {
           this.#dwarfFeedback = dwarfFeedbackOf(step, progress);
           if (
-            eruption &&
             this.#presentedView !== after &&
-            eruptionCueV7(progress * DWARF_EFFECT_DURATIONS_V7.ERUPTION)
-              .surfaced
+            (eruption
+              ? eruptionCueV7(progress * DWARF_EFFECT_DURATIONS_V7.ERUPTION)
+                  .surfaced
+              : whirl && progress >= 0.5)
           ) {
             this.#presentedView = after;
             this.#draw();
@@ -2481,6 +2490,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           lines.eruption ?? "",
           lines.rider ?? "",
         ];
+      })(),
+      // Dwarf crowd control: the tile's Barricade, its HP and its rule.
+      ...(() => {
+        const line = barricadeTileLineV7(model.view, at);
+        return line === null ? [] : [line, BARRICADE_RULE_V7];
       })(),
       city === undefined
         ? ""

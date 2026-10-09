@@ -47,6 +47,10 @@ export type UiIconIdV7 =
   | "drill"
   | "bomb-run"
   | "key"
+  // Dwarf crowd control (`pulp_wars-w49.34`): three hammer heads swept
+  // round a hub (Whirl), and sharpened stakes bound by a band (Barricade).
+  | "whirl"
+  | "barricade"
   // The Mind Control revision (bead pulp_wars-b5f.3): a brain, the badge of
   // a mind-controlled unit.
   | "brain"
@@ -152,6 +156,10 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   "bomb-run":
     "M3.5 3.5h17M12 3.5v3.5M12 9.5a5.2 5.2 0 1 0 0 10.4 5.2 5.2 0 0 0 0-10.4ZM15.4 10.4l1.8-1.8",
   key: "M12 10.5 7 6.2a2.6 2.6 0 1 0 0 8.6L12 10.5l5 4.3a2.6 2.6 0 1 0 0-8.6ZM12 10.5v10.5M9.5 18h5",
+  whirl:
+    "M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM12 9.5V4M14.2 13.2l4.7 2.8M9.8 13.2 5.1 16M9.5 2.5h5v3h-5ZM17.6 15.6l2.5 4.3 2.6-1.5-2.5-4.3ZM6.4 15.6l-2.5 4.3-2.6-1.5 2.5-4.3ZM4.5 8.5a8.5 8.5 0 0 1 4-4M19.5 8.5a8.5 8.5 0 0 0-4-4",
+  barricade:
+    "M4.5 20.5V8L6.5 4.5 8.5 8v12.5M10 20.5V9.5l2-3.5 2 3.5v11M15.5 20.5V8l2-3.5 2 3.5v12.5M3 11.5h18v2.5H3ZM3 16h18v2.5H3ZM2.5 21h19",
   brain: BRAIN_LOBES,
   // The naval branch interface: a hook on a ringed shank, and a periscope
   // over a wave: LEGACY and stand-in glyphs until the art registers icons.

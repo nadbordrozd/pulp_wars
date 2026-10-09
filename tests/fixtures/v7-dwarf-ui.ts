@@ -353,3 +353,83 @@ export function dwarfDigInFixtureV7(): GameStateV7 {
     { seat: 1, role: "FIGHTER", at: at.enemy },
   ]);
 }
+
+/**
+ * Dwarf crowd control (`pulp_wars-w49.34`): the Dwarf viewer (seat 0)
+ * against Humans. An unmoved Whirligig with three enemies next to it (the
+ * Marksman wounded, so the Whirl kills it) and an own Hammerer beside it
+ * (never hit); an Engineer with 20 Coins next to a damaged own Barricade
+ * (Repair mends it) and a whole one; an unmoved Gyrocopter next to an enemy
+ * Captain (its landings reach 2 tiles past the Captain).
+ */
+export const DWARF_CROWD_CONTROL_V7 = {
+  whirligig: { x: 6, y: 2 },
+  whirlFighter: { x: 5, y: 1 },
+  whirlMarksman: { x: 7, y: 2 },
+  whirlGuard: { x: 6, y: 3 },
+  ownHammerer: { x: 5, y: 2 },
+  engineer: { x: 9, y: 3 },
+  damagedBarricade: { x: 10, y: 3 },
+  wholeBarricade: { x: 9, y: 1 },
+  gyrocopter: { x: 1, y: 3 },
+  bombTarget: { x: 2, y: 3 },
+} as const;
+
+export function dwarfCrowdControlFixtureV7(): GameStateV7 {
+  const at = DWARF_CROWD_CONTROL_V7;
+  const state = dwarfUiFieldV7(
+    [
+      { seat: 0, role: "KNIGHT", at: at.whirligig },
+      { seat: 0, role: "FIGHTER", at: at.ownHammerer },
+      { seat: 0, role: "CAPTAIN", at: at.engineer },
+      { seat: 0, role: "RAIDER", at: at.gyrocopter },
+      { seat: 1, role: "FIGHTER", at: at.whirlFighter },
+      { seat: 1, role: "MARKSMAN", at: at.whirlMarksman, hp: 3 },
+      { seat: 1, role: "GUARD", at: at.whirlGuard },
+      { seat: 1, role: "CAPTAIN", at: at.bombTarget },
+    ],
+    { coins: 20 },
+  );
+  const dwarf = state.players.find((player) => player.faction === "DWARF");
+  if (dwarf === undefined) throw new Error("no Dwarf seat");
+  return checkedV7({
+    ...state,
+    barricades: [
+      { at: at.wholeBarricade, ownerId: dwarf.id, hp: 10 },
+      { at: at.damagedBarricade, ownerId: dwarf.id, hp: 6 },
+    ],
+  });
+}
+
+/**
+ * The other side of a Barricade: a Human viewer (seat 0) against the Dwarf
+ * seat 1, whose two Barricades stand in the open: a whole one next to a
+ * Human Fighter, and one of 3 HP two tiles from a Human Catapult (its shot
+ * breaks it).
+ */
+export const DWARF_BARRICADE_VICTIM_V7 = {
+  fighter: { x: 4, y: 4 },
+  wholeBarricade: { x: 5, y: 3 },
+  catapult: { x: 7, y: 6 },
+  brokenBarricade: { x: 5, y: 6 },
+} as const;
+
+export function dwarfBarricadeVictimFixtureV7(): GameStateV7 {
+  const at = DWARF_BARRICADE_VICTIM_V7;
+  const state = dwarfUiFieldV7(
+    [
+      { seat: 0, role: "FIGHTER", at: at.fighter },
+      { seat: 0, role: "CATAPULT", at: at.catapult },
+    ],
+    { factions: ["ORIGINAL", "DWARF"] },
+  );
+  const dwarf = state.players.find((player) => player.faction === "DWARF");
+  if (dwarf === undefined) throw new Error("no Dwarf seat");
+  return checkedV7({
+    ...state,
+    barricades: [
+      { at: at.wholeBarricade, ownerId: dwarf.id, hp: 10 },
+      { at: at.brokenBarricade, ownerId: dwarf.id, hp: 3 },
+    ],
+  });
+}

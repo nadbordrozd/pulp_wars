@@ -21,6 +21,7 @@ import {
   dwarfDigInMarkerV7,
 } from "../../assets/chibi-direction-dwarf-presentation";
 import type { ChibiRasterEnvironmentV7 } from "./chibi-art-resolver-v7";
+import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 import { UNDEAD_BADGE_FRAME_V7 } from "./undead-canvas-v7";
 
 /** The Dwarf badge sits in the Undead badge's corner, like every faction's. */
@@ -511,5 +512,208 @@ export function drawPassengerPipV7(
   );
   context.fill();
   context.stroke();
+  context.restore();
+}
+
+/** The Barricade's timber (DWARF_PALETTE_V7 has no wood). */
+const BARRICADE_WOOD_V7 = { light: "#b9844f", mid: "#8d5c34", dark: "#5a3820" };
+
+/**
+ * The Barricade's HP bar, in world units from the cell's centre: the unit
+ * HP bar's place in the CHIBI look (CHIBI_OVERLAY_FRAME_V7.hpBar), a
+ * vertical bar in the cell's left strip, with the HP as a number above it.
+ */
+export const BARRICADE_HP_BAR_V7 = {
+  left: -63,
+  top: -36,
+  width: 10,
+  height: 76,
+} as const;
+
+/**
+ * Dwarf crowd control (`pulp_wars-w49.34`): a standing Barricade, drawn in
+ * code in every look (no raster exists): a heap of earth, four sharpened
+ * timber stakes bound by two riveted iron bands, the owner's pennant on
+ * the right-hand stake, cracks once it is at half HP or less, and in the
+ * cell's left strip a segmented HP bar (one segment per HP) with the HP
+ * as a number. `x`, `y` are the cell's centre; sizes are world units (128
+ * = one cell) times `zoom`.
+ */
+export function drawBarricadeV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  zoom: number,
+  options: {
+    readonly hp: number;
+    readonly maxHp: number;
+    readonly ownerColor: string;
+    readonly highContrast: boolean;
+  },
+): void {
+  // The structure is drawn a fifth larger than its master sizes, centred
+  // a little right of the cell's centre, clear of the HP bar.
+  const scale = 1.2;
+  const ox = x + 6 * zoom;
+  const z = (value: number): number => value * zoom * scale;
+  const ink = options.highContrast ? "#ffffff" : DWARF_PALETTE_V7.outline;
+  const line = Math.max(1, z(2.2));
+  context.save();
+  context.lineJoin = "round";
+  context.lineCap = "round";
+  // The heap of earth the stakes are driven into.
+  context.fillStyle = DWARF_PALETTE_V7.earthDark;
+  context.strokeStyle = ink;
+  context.lineWidth = line;
+  context.beginPath();
+  context.ellipse(ox, y + z(16), z(48), z(12), 0, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  context.fillStyle = DWARF_PALETTE_V7.earth;
+  context.beginPath();
+  context.ellipse(ox - z(6), y + z(13), z(34), z(6), 0, 0, Math.PI * 2);
+  context.fill();
+  // Four sharpened stakes, alternately tall and short.
+  const stakes = [-33, -11, 11, 33] as const;
+  const halfWidth = 8.5;
+  stakes.forEach((dx, index) => {
+    const top = index % 2 === 0 ? -34 : -26;
+    const left = ox + z(dx - halfWidth);
+    const right = ox + z(dx + halfWidth);
+    const foot = y + z(16);
+    const shoulder = y + z(top + 10);
+    context.beginPath();
+    context.moveTo(left, foot);
+    context.lineTo(left, shoulder);
+    context.lineTo(ox + z(dx), y + z(top));
+    context.lineTo(right, shoulder);
+    context.lineTo(right, foot);
+    context.closePath();
+    context.fillStyle = BARRICADE_WOOD_V7.mid;
+    context.fill();
+    // The lit left face of the stake.
+    context.save();
+    context.clip();
+    context.fillStyle = BARRICADE_WOOD_V7.light;
+    context.fillRect(left, y + z(top), z(halfWidth * 0.8), foot - y - z(top));
+    context.restore();
+    context.strokeStyle = ink;
+    context.lineWidth = line;
+    context.stroke();
+    // The grain.
+    context.strokeStyle = BARRICADE_WOOD_V7.dark;
+    context.lineWidth = Math.max(0.8, z(1.2));
+    context.beginPath();
+    context.moveTo(ox + z(dx + 3), shoulder + z(4));
+    context.lineTo(ox + z(dx + 3), foot - z(6));
+    context.stroke();
+  });
+  // Two iron bands with copper rivets where they cross a stake.
+  for (const band of [-8, 5] as const) {
+    const top = y + z(band);
+    context.fillStyle = DWARF_PALETTE_V7.iron;
+    context.strokeStyle = ink;
+    context.lineWidth = line;
+    context.beginPath();
+    context.rect(ox - z(44), top, z(88), z(7));
+    context.fill();
+    context.stroke();
+    context.strokeStyle = DWARF_PALETTE_V7.ironRim;
+    context.lineWidth = Math.max(0.8, z(1.2));
+    context.beginPath();
+    context.moveTo(ox - z(42), top + z(1.5));
+    context.lineTo(ox + z(42), top + z(1.5));
+    context.stroke();
+    context.fillStyle = options.highContrast
+      ? "#ffffff"
+      : DWARF_PALETTE_V7.copper;
+    for (const dx of stakes) {
+      context.beginPath();
+      context.arc(
+        ox + z(dx),
+        top + z(3.5),
+        Math.max(1, z(2.2)),
+        0,
+        Math.PI * 2,
+      );
+      context.fill();
+    }
+  }
+  // Cracks once half its HP is gone.
+  const share = Math.max(0, Math.min(1, options.hp / options.maxHp));
+  if (share <= 0.5) {
+    context.strokeStyle = ink;
+    context.lineWidth = Math.max(1, z(1.8));
+    for (const [dx, from] of [
+      [-11, -20],
+      [33, -26],
+      ...(share <= 0.3 ? ([[-33, -24]] as const) : []),
+    ] as const) {
+      context.beginPath();
+      context.moveTo(ox + z(dx - 3), y + z(from));
+      context.lineTo(ox + z(dx + 2), y + z(from + 6));
+      context.lineTo(ox + z(dx - 2), y + z(from + 11));
+      context.lineTo(ox + z(dx + 3), y + z(from + 17));
+      context.stroke();
+    }
+  }
+  // The owner's pennant on the right-hand stake.
+  const poleX = ox + z(33);
+  const poleTop = y - z(50);
+  context.strokeStyle = ink;
+  context.lineWidth = Math.max(1, z(3));
+  context.beginPath();
+  context.moveTo(poleX, y - z(34));
+  context.lineTo(poleX, poleTop);
+  context.stroke();
+  context.fillStyle = options.ownerColor;
+  context.lineWidth = line;
+  context.beginPath();
+  context.moveTo(poleX, poleTop);
+  context.lineTo(poleX - z(20), poleTop + z(6));
+  context.lineTo(poleX, poleTop + z(12));
+  context.closePath();
+  context.fill();
+  context.stroke();
+  // The HP: a vertical segmented bar filling from the bottom, and its
+  // number above it.
+  const bar = BARRICADE_HP_BAR_V7;
+  const barLeft = x + bar.left * zoom;
+  const barTop = y + bar.top * zoom;
+  const barWidth = bar.width * zoom;
+  const barHeight = bar.height * zoom;
+  const inset = Math.max(1, zoom);
+  context.fillStyle = "#101718";
+  context.fillRect(barLeft, barTop, barWidth, barHeight);
+  const inner = (barHeight - 2 * inset) * share;
+  context.fillStyle = share > 0.3 ? "#65d889" : "#f2a13a";
+  context.fillRect(
+    barLeft + inset,
+    barTop + barHeight - inset - inner,
+    barWidth - 2 * inset,
+    inner,
+  );
+  context.strokeStyle = "#101718";
+  context.lineWidth = Math.max(0.6, zoom);
+  for (let segment = 1; segment < options.maxHp; segment += 1) {
+    const sy =
+      barTop + inset + ((barHeight - 2 * inset) * segment) / options.maxHp;
+    context.beginPath();
+    context.moveTo(barLeft + inset, sy);
+    context.lineTo(barLeft + barWidth - inset, sy);
+    context.stroke();
+  }
+  const font = Math.max(10, 17 * zoom);
+  context.font = `800 ${font}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
+  context.textAlign = "center";
+  context.textBaseline = "alphabetic";
+  context.lineWidth = Math.max(2.5, 4 * zoom);
+  context.strokeStyle = "#101718";
+  const number = String(options.hp);
+  const numberX = barLeft + barWidth / 2 + 2 * zoom;
+  const numberY = barTop - 4 * zoom;
+  context.strokeText(number, numberX, numberY);
+  context.fillStyle = options.highContrast ? "#ffffff" : "#fff8df";
+  context.fillText(number, numberX, numberY);
   context.restore();
 }

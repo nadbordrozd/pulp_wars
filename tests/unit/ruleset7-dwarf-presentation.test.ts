@@ -3,7 +3,11 @@ import {
   ASSEMBLE_COST_V7,
   BLASTING_ERUPTION_DAMAGE_V7,
   BOMB_DAMAGE_V7,
+  BOMB_LANDING_RANGE_V7,
   BOMB_RANGE_V7,
+  BARRICADE_CAP_V7,
+  BARRICADE_COST_V7,
+  BARRICADE_HP_V7,
   DIVE_BOMB_DAMAGE_V7,
   ERUPTION_DAMAGE_V7,
   PLATED_CAP_V7,
@@ -139,7 +143,7 @@ function apply(
 }
 
 describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
-  it("writes the twelve Help sentences from the registry and the constants", () => {
+  it("writes the fourteen Help sentences from the registry and the constants", () => {
     expect(DWARF_HELP_RULES_V7.map(([name]) => name)).toEqual([
       "Tunnel",
       "Eruption",
@@ -149,12 +153,14 @@ describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
       "Twin shot",
       "Dig In",
       "Repair",
+      // Dwarf crowd control (`pulp_wars-w49.34`): the Engineer's Barricade.
+      "Barricade",
       "Assemble",
       "Knockback",
       "Plated",
       "Blasting Charges",
       // The ninth unit (`pulp_wars-w49.17`, 7r55): the Whirligig's Whirl
-      // (`pulp_wars-w49.33`, which replaced Three Hammers).
+      // (`pulp_wars-w49.33`).
       "Whirl",
     ]);
     const rules = new Map(DWARF_HELP_RULES_V7);
@@ -174,6 +180,17 @@ describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
       `an ${label("CAPTAIN")} heals adjacent machines by ${REPAIR_MACHINE_V7} and other units by 2.`,
     );
     expect(rules.get("Assemble")).toContain(`for ${ASSEMBLE_COST_V7} Coins`);
+    expect(rules.get("Bomb Run")).toContain(
+      `lands up to ${BOMB_LANDING_RANGE_V7} tiles beyond it`,
+    );
+    expect(rules.get("Barricade")).toBe(
+      `an ${label("CAPTAIN")} builds a Barricade next to itself for ${BARRICADE_COST_V7} Coins (at most ${BARRICADE_CAP_V7} at a time); its ${BARRICADE_HP_V7} HP block every unit until attacks break it, and Repair mends it.`,
+    );
+    expect(rules.get("Whirl")).toBe(
+      `a ${label("KNIGHT")}: hits every enemy next to it at once with its attack, and nobody hits back.`,
+    );
+    for (const [, rule] of DWARF_HELP_RULES_V7)
+      expect(rule).not.toMatch(/Three Hammers/i);
     expect(rules.get("Plated")).toBe(
       `no single hit takes more than ${PLATED_CAP_V7} HP from a ${label("SWORDSMAN")}.`,
     );
@@ -217,7 +234,7 @@ describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
       `Dig up to ${TUNNEL_RANGE_V7} tiles under anything. Enemies next to the Mole take 3 when it surfaces`,
     );
     expect(bombRunTooltipV7(5)).toBe(
-      `Fly over an enemy within ${BOMB_RANGE_V7} tiles, bomb it for 5, and land beyond it. No reply`,
+      `Fly over an enemy within ${BOMB_RANGE_V7} tiles, bomb it for 5, and land up to ${BOMB_LANDING_RANGE_V7} tiles past it. No reply`,
     );
     expect(STAYS_BEHIND_V7).toBe("Hammerer stays behind");
     // Bead pulp_wars-b5f.8: no text names a tile; the hints and the
@@ -399,8 +416,8 @@ describe("Dwarf previews (section 16.1)", () => {
     );
     expect(landingHintV7(run)).toBe(
       run.landingThreat > 0
-        ? `Lands next to: up to ${run.landingThreat} damage next turn`
-        : "Lands next to: no visible threat",
+        ? `Landing: up to ${run.landingThreat} damage next turn`
+        : "Landing: no visible threat",
     );
   });
 

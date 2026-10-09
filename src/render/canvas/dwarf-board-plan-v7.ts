@@ -1,8 +1,12 @@
 import {
+  BARRICADE_HP_V7,
   BOMB_RANGE_V7,
   previewAssembleV7,
+  previewAttackBarricadeV7,
   previewBombRunV7,
+  previewBuildBarricadeV7,
   previewTunnelV7,
+  previewWhirlV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
   type CommandV7,
@@ -11,7 +15,15 @@ import {
   type UnitId,
 } from "../../engine/index";
 import {
+  BARRICADE_LABEL_V7,
   BOMBED_MARK_V7,
+  WHIRL_LABEL_V7,
+  attackBarricadeLabelV7,
+  attackBarricadeSemanticV7,
+  barricadeCostLineV7,
+  barricadeInfoTextV7,
+  whirlSummaryV7,
+  whirlTargetLabelV7,
   RIDE_BADGE_V7,
   RIDING_BADGE_V7,
   passengerAccessibleNameV7,
@@ -64,6 +76,9 @@ export const TUNNEL_TETHER_LINK_V7 = "TUNNEL_TETHER";
  * tunnel, the Hammerer's ghost on its default landing or on `riderTo`
  * when the player moved it; choosing `to` again digs it.
  * BOMB_RUN: first the target (`targetUnitId` null), then the landing.
+ * Dwarf crowd control (`pulp_wars-w49.34`): WHIRL marks every enemy the
+ * Whirligig would hit (choosing any of them, or the dock's Whirl, whirls);
+ * BUILD_BARRICADE marks the Engineer's legal tiles (choosing one builds).
  */
 export type DwarfPickV7 =
   | ({ readonly kind: "TUNNEL" } & TunnelChoiceStateV7)
@@ -72,7 +87,9 @@ export type DwarfPickV7 =
       readonly unitId: UnitId;
       readonly targetUnitId: UnitId | null;
     }
-  | { readonly kind: "ASSEMBLE"; readonly unitId: UnitId };
+  | { readonly kind: "ASSEMBLE"; readonly unitId: UnitId }
+  | { readonly kind: "WHIRL"; readonly unitId: UnitId }
+  | { readonly kind: "BUILD_BARRICADE"; readonly unitId: UnitId };
 
 /** UNIT only: the Dwarf markers of a visible Dwarf unit. */
 export interface DwarfUnitMarkersV7 {
@@ -328,6 +345,47 @@ export function dwarfPickTargetsV7(
       ];
     });
   }
+  if (pick.kind === "WHIRL") {
+    // Every target carries the same command: choosing any of them whirls.
+    const command = commands.find(
+      (candidate): candidate is Extract<CommandV7, { kind: "WHIRL" }> =>
+        candidate.kind === "WHIRL" && candidate.unitId === pick.unitId,
+    );
+    const preview =
+      command === undefined ? null : previewWhirlV7(view, pick.unitId);
+    if (command === undefined || preview === null) return [];
+    return preview.targets.flatMap((target): MapCommandTargetV7[] => {
+      const unit = unitById(target.unitId);
+      if (unit === undefined) return [];
+      const name = unitRoleRuleV7(view, unit).label;
+      return [
+        {
+          at: target.at,
+          command,
+          family: "WHIRL",
+          previewLabel: whirlTargetLabelV7(target),
+          semanticLabel: `${WHIRL_LABEL_V7}: hits this ${name} for ${target.damage + target.shieldDamage}${target.dies ? ", lethal" : ""}, with every other highlighted enemy. ${whirlSummaryV7(preview)}. Choose any highlighted enemy to whirl.`,
+        },
+      ];
+    });
+  }
+  if (pick.kind === "BUILD_BARRICADE") {
+    const preview = previewBuildBarricadeV7(view, pick.unitId);
+    if (preview === null) return [];
+    return commands.flatMap((command): MapCommandTargetV7[] =>
+      command.kind === "BUILD_BARRICADE" && command.unitId === pick.unitId
+        ? [
+            {
+              at: command.to,
+              command,
+              family: "BARRICADE",
+              // No label per tile: the dock's line names the cost and cap.
+              semanticLabel: `Build ${BARRICADE_LABEL_V7.toLowerCase()} here: ${barricadeCostLineV7(preview)}`,
+            },
+          ]
+        : [],
+    );
+  }
   const assemble = commands.filter(
     (command): command is Extract<CommandV7, { kind: "ASSEMBLE" }> =>
       command.kind === "ASSEMBLE" && command.unitId === pick.unitId,
@@ -371,6 +429,36 @@ export function addDwarfPickEntriesV7(
         linkTo: actor.at,
         label: TUNNEL_TETHER_LINK_V7,
       });
+  }
+  // Dwarf crowd control: the Whirl's reach, the eight tiles round the
+  // Whirligig, outlined in steam copper at its edge.
+  if (pick.kind === "WHIRL") {
+    const inArea = (at: CoordV7): boolean =>
+      Math.max(Math.abs(at.x - actor.at.x), Math.abs(at.y - actor.at.y)) <= 1 &&
+      at.x >= 0 &&
+      at.y >= 0 &&
+      at.x < view.board.width &&
+      at.y < view.board.height &&
+      view.board.tiles[at.y * view.board.width + at.x]?.explored === true;
+    for (let dy = -1; dy <= 1; dy += 1)
+      for (let dx = -1; dx <= 1; dx += 1) {
+        const at = { x: actor.at.x + dx, y: actor.at.y + dy };
+        if (!inArea(at)) continue;
+        entries.push({
+          key: `ability-area:WHIRL:${key(at)}`,
+          kind: "ABILITY_AREA",
+          layer: 7,
+          at,
+          abilityStyle: "WHIRL",
+          targetEdges: (["NORTH", "EAST", "SOUTH", "WEST"] as const).filter(
+            (edge) =>
+              !inArea({
+                x: at.x + (edge === "EAST" ? 1 : edge === "WEST" ? -1 : 0),
+                y: at.y + (edge === "SOUTH" ? 1 : edge === "NORTH" ? -1 : 0),
+              }),
+          ),
+        });
+      }
   }
   // A chosen destination is still a target: its forecast and ghosts are
   // drawn from it while nothing else is focused.
@@ -467,9 +555,93 @@ export function dwarfAttackTargetExtrasV7(
   };
 }
 
-/** Whether `kind` is one of the three aimed Dwarf commands. */
+/** Whether `kind` is one of the five aimed Dwarf commands. */
 export function isDwarfPickCommandV7(kind: CommandV7["kind"]): boolean {
-  return kind === "TUNNEL" || kind === "BOMB_RUN" || kind === "ASSEMBLE";
+  return (
+    kind === "TUNNEL" ||
+    kind === "BOMB_RUN" ||
+    kind === "ASSEMBLE" ||
+    kind === "WHIRL" ||
+    kind === "BUILD_BARRICADE"
+  );
+}
+
+// ------------------------------------------------ Dwarf crowd control ---
+
+/** BARRICADE only: what the board draws of a standing Barricade. */
+export interface DwarfBarricadeMarkerV7 {
+  readonly hp: number;
+  readonly maxHp: number;
+  /** The viewer's own Barricade. */
+  readonly own: boolean;
+}
+
+/**
+ * Dwarf crowd control (`pulp_wars-w49.34`): one BARRICADE entry per
+ * Barricade in the view (every one on an explored tile), keyed
+ * `barricade:<x>,<y>`, drawn on its tile in code with its owner's colour
+ * and its HP. It is a structure: no unit lookup ever finds it.
+ */
+export function dwarfBarricadeEntriesV7(
+  view: PlayerViewV7,
+  presentation: (ownerId: number) => Partial<BoardRenderPlanEntryV7>,
+): BoardRenderPlanEntryV7[] {
+  return view.barricades.map((barricade) => ({
+    key: `barricade:${key(barricade.at)}`,
+    kind: "BARRICADE" as const,
+    layer: 5,
+    at: barricade.at,
+    ownerId: barricade.ownerId,
+    ...presentation(barricade.ownerId),
+    hp: barricade.hp,
+    maxHp: BARRICADE_HP_V7,
+    label: barricadeInfoTextV7(view, barricade),
+    barricade: {
+      hp: barricade.hp,
+      maxHp: BARRICADE_HP_V7,
+      own: barricade.ownerId === view.viewer.id,
+    },
+  }));
+}
+
+/**
+ * Dwarf crowd control: the attacks of the selected unit on hostile
+ * Barricades, each an Attack mark on the Barricade's tile with the exact
+ * damage and what is left ("Deal 5 · 5 left", "Deal 5 · Breaks it").
+ */
+export function attackBarricadeTargetsV7(
+  view: PlayerViewV7,
+  commands: readonly CommandV7[],
+  selectedUnitId: number | null,
+): MapCommandTargetV7[] {
+  if (selectedUnitId === null || view.barricades.length === 0) return [];
+  return commands.flatMap((command): MapCommandTargetV7[] => {
+    if (
+      command.kind !== "ATTACK_BARRICADE" ||
+      command.unitId !== selectedUnitId
+    )
+      return [];
+    const preview = previewAttackBarricadeV7(view, command);
+    if (preview === null) return [];
+    return [
+      {
+        at: command.at,
+        command,
+        family: "ATTACK",
+        previewLabel: attackBarricadeLabelV7(preview),
+        semanticLabel: attackBarricadeSemanticV7(view, preview),
+      },
+    ];
+  });
+}
+
+/** The cursor's line of a tile's Barricade, or null without one. */
+export function barricadeTileLineV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+): string | null {
+  const barricade = view.barricades.find((entry) => same(entry.at, at));
+  return barricade === undefined ? null : barricadeInfoTextV7(view, barricade);
 }
 
 /** The eruption ring's label for a hovered or selected Mole mound. */

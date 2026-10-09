@@ -69,6 +69,12 @@ import {
   previewLayEggV7,
   previewColdSnapV7,
   previewAssembleV7,
+  previewBuildBarricadeV7,
+  previewWhirlV7,
+  queryBarricadeUnavailableReasonV7,
+  BARRICADE_CAP_V7,
+  BARRICADE_COST_V7,
+  BARRICADE_HP_V7,
   previewTunnelV7,
   queryAssembleUnavailableReasonV7,
   queryLandingPreviewV7,
@@ -465,6 +471,19 @@ import {
   ASSEMBLE_LABEL_V7,
   ASSEMBLE_PICK_V7,
   ASSEMBLE_UNLOCK_TEXT_V7,
+  BARRICADE_LABEL_V7,
+  BARRICADE_PICK_V7,
+  BARRICADE_RULE_V7,
+  BARRICADE_TOOLTIP_V7,
+  WHIRL_LABEL_V7,
+  WHIRL_PICK_V7,
+  WHIRL_TOOLTIP_V7,
+  barricadeCapTextV7,
+  barricadeCostLineV7,
+  barricadeInfoTextV7,
+  barricadeNameV7,
+  whirlSummaryV7,
+  whirlTargetLinesV7,
   BLASTING_CHARGES_UNLOCK_TEXT_V7,
   BOMBED_MARK_V7,
   BOMB_RUN_LABEL_V7,
@@ -747,10 +766,16 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "COLD_SNAP",
   // The Dwarf revision: Tunnel, Bomb Run and Assemble have one button per
   // unit each; the destination, target, landing and tile are picked on the
-  // board (a Mole's tunnels alone can be dozens of commands).
+  // board (a Mole's tunnels alone can be dozens of commands). Dwarf crowd
+  // control (`pulp_wars-w49.34`): Whirl and Barricade likewise (one button
+  // each; the Whirl's enemies and the Barricade's tile are on the board),
+  // and an attack on a Barricade is an Attack mark on its tile.
   "TUNNEL",
   "BOMB_RUN",
   "ASSEMBLE",
+  "WHIRL",
+  "BUILD_BARRICADE",
+  "ATTACK_BARRICADE",
   // The Candy revision: Sugar Rush, Re-bake and Sugar Toss have one button
   // per unit each; the Rushed reach, the Crumbs and the unit to heal are
   // picked on the board.
@@ -4977,6 +5002,42 @@ export class Ruleset7DomAppView {
             ]
               .filter(Boolean)
               .join(". "),
+          );
+          details.append(info);
+        }
+        // Dwarf crowd control (`pulp_wars-w49.34`): a Barricade is a
+        // structure on its tile: whose it is, its HP and what it does. It
+        // is attacked from the attacker's dock (an Attack mark here).
+        const barricade = view.barricades.find((entry) =>
+          same(entry.at, tile.at),
+        );
+        if (barricade !== undefined) {
+          const info = el(this.#document, "section", "v7-dwarf-barricade");
+          info.dataset.dwarfBarricade =
+            barricade.ownerId === view.viewer.id ? "own" : "other";
+          const heading = el(this.#document, "p", "v7-dwarf-mound-name");
+          heading.append(
+            uiIconV7(this.#document, "barricade", "v7-ui-icon v7-command-icon"),
+            text(this.#document, "strong", barricadeNameV7(view, barricade)),
+            text(
+              this.#document,
+              "span",
+              `${barricade.hp}/${BARRICADE_HP_V7} HP`,
+              "v7-dwarf-mound-hp",
+            ),
+          );
+          info.append(
+            heading,
+            text(
+              this.#document,
+              "p",
+              `${BARRICADE_RULE_V7}.`,
+              "v7-dwarf-barricade-rule",
+            ),
+          );
+          info.setAttribute(
+            "aria-label",
+            `${barricadeInfoTextV7(view, barricade)}. ${BARRICADE_RULE_V7}`,
           );
           details.append(info);
         }
@@ -9840,26 +9901,38 @@ export class Ruleset7DomAppView {
     const abilities = unitRoleRuleV7(view, unit).abilities as readonly string[];
     const city = dwarfCityNameV7(view, unit.homeCityId);
     const assemble = previewAssembleV7(view, unit.id);
+    // Dwarf crowd control (`pulp_wars-w49.34`): the Whirl's summary and the
+    // Barricade's cost and cap.
+    const whirl = previewWhirlV7(view, unit.id);
+    const barricade = previewBuildBarricadeV7(view, unit.id);
+    const barricadesBuilt = view.barricades.filter(
+      (entry) => entry.ownerId === view.viewer.id,
+    ).length;
     const entries: readonly {
-      readonly kind: "TUNNEL" | "BOMB_RUN" | "ASSEMBLE";
+      readonly kind:
+        "TUNNEL" | "BOMB_RUN" | "ASSEMBLE" | "WHIRL" | "BUILD_BARRICADE";
+      readonly ability: string;
       readonly label: string;
       readonly tooltip: string;
-      readonly icon: "drill" | "bomb-run" | "key";
+      readonly icon: "drill" | "bomb-run" | "key" | "whirl" | "barricade";
     }[] = [
       {
         kind: "TUNNEL",
+        ability: "TUNNEL",
         label: TUNNEL_LABEL_V7,
         tooltip: tunnelTooltipV7(viewerEruptionDamageV7(view)),
         icon: "drill",
       },
       {
         kind: "BOMB_RUN",
+        ability: "BOMB_RUN",
         label: BOMB_RUN_LABEL_V7,
         tooltip: bombRunTooltipV7(viewerBombDamageV7(view)),
         icon: "bomb-run",
       },
       {
         kind: "ASSEMBLE",
+        ability: "ASSEMBLE",
         label: ASSEMBLE_LABEL_V7,
         tooltip: assembleTooltipV7(
           assemble?.cost ?? effectiveRoleRuleV7("MARKSMAN", "DWARF").cost ?? 0,
@@ -9867,10 +9940,30 @@ export class Ruleset7DomAppView {
         ),
         icon: "key",
       },
+      {
+        kind: "WHIRL",
+        ability: "WHIRL",
+        label: WHIRL_LABEL_V7,
+        tooltip:
+          whirl === null
+            ? WHIRL_TOOLTIP_V7
+            : `${WHIRL_TOOLTIP_V7}. ${whirlSummaryV7(whirl)}`,
+        icon: "whirl",
+      },
+      {
+        kind: "BUILD_BARRICADE",
+        ability: "BARRICADE",
+        label: BARRICADE_LABEL_V7,
+        tooltip: `${BARRICADE_TOOLTIP_V7}. ${barricadeCapTextV7(
+          barricade?.standing ?? barricadesBuilt,
+          BARRICADE_CAP_V7,
+        )}`,
+        icon: "barricade",
+      },
     ];
     const buttons: HTMLButtonElement[] = [];
     for (const entry of entries) {
-      if (!abilities.includes(entry.kind)) continue;
+      if (!abilities.includes(entry.ability)) continue;
       const offered = this.#snapshot.offeredCommands.some(
         (command) => command.kind === entry.kind && command.unitId === unit.id,
       );
@@ -9885,6 +9978,9 @@ export class Ruleset7DomAppView {
               city: city.charAt(0).toUpperCase() + city.slice(1),
             }
           : undefined,
+        entry.kind === "BUILD_BARRICADE"
+          ? queryBarricadeUnavailableReasonV7(view, unit.id)
+          : undefined,
       );
       if (!offered && reason === null) continue;
       const slug = entry.kind.toLowerCase().replaceAll("_", "-");
@@ -9895,12 +9991,33 @@ export class Ruleset7DomAppView {
         "v7-context-action",
       );
       action.append(
-        this.#chibiArt(`ICON:ACTION:${entry.kind}`, CHIBI_DOM_BOXES_V7.action)
-          ?.element ??
+        this.#chibiArt(
+          dwarfActionSubjectV7(entry.kind),
+          CHIBI_DOM_BOXES_V7.action,
+        )?.element ??
           uiIconV7(this.#document, entry.icon, "v7-ui-icon v7-command-icon"),
         text(this.#document, "span", entry.label, "v7-action-label"),
       );
       action.dataset.dwarfAbility = slug;
+      // Dwarf crowd control: the Whirl's damage and the Barricade's price.
+      if (reason === null && entry.kind === "WHIRL" && whirl !== null) {
+        const total = whirl.targets.reduce(
+          (sum, target) => sum + target.damage + target.shieldDamage,
+          0,
+        );
+        action.append(
+          text(
+            this.#document,
+            "span",
+            `−${total} ×${whirl.targets.length}`,
+            "v7-undead-preview-chip",
+          ),
+        );
+      }
+      if (entry.kind === "BUILD_BARRICADE")
+        action.append(
+          economyChips(this.#document, { cost: BARRICADE_COST_V7 }),
+        );
       if (reason === null) {
         const aiming = this.#dwarfPick?.kind === entry.kind;
         action.title = entry.tooltip;
@@ -9932,9 +10049,12 @@ export class Ruleset7DomAppView {
     return buttons;
   }
 
-  /** Starts aiming a Tunnel, Bomb Run or Assemble of the selected unit. */
+  /**
+   * Starts aiming a Tunnel, Bomb Run, Assemble, Whirl or Barricade of the
+   * selected unit.
+   */
   #startDwarfPick(
-    kind: "TUNNEL" | "BOMB_RUN" | "ASSEMBLE",
+    kind: "TUNNEL" | "BOMB_RUN" | "ASSEMBLE" | "WHIRL" | "BUILD_BARRICADE",
     unitId: UnitId,
   ): void {
     if (this.#localBusy()) return;
@@ -9963,7 +10083,11 @@ export class Ruleset7DomAppView {
         ? TUNNEL_PICK_V7
         : kind === "BOMB_RUN"
           ? BOMB_RUN_PICK_TARGET_V7
-          : ASSEMBLE_PICK_V7
+          : kind === "WHIRL"
+            ? WHIRL_PICK_V7
+            : kind === "BUILD_BARRICADE"
+              ? BARRICADE_PICK_V7
+              : ASSEMBLE_PICK_V7
     }.`;
     this.#pendingFocusAction = null;
     this.#render();
@@ -10064,17 +10188,19 @@ export class Ruleset7DomAppView {
     );
     panel.dataset.v7DwarfPick = pick.kind.toLowerCase();
     panel.dataset.boardTargets = String(
-      new Set(
-        commands.map((command) =>
-          command.kind === "BOMB_RUN" && pick.kind === "BOMB_RUN"
-            ? pick.targetUnitId === null
-              ? String(command.targetUnitId)
-              : `${command.to.x},${command.to.y}`
-            : "to" in command
-              ? `${command.to.x},${command.to.y}`
-              : "",
-        ),
-      ).size,
+      pick.kind === "WHIRL"
+        ? (previewWhirlV7(view, unitId)?.targets.length ?? 0)
+        : new Set(
+            commands.map((command) =>
+              command.kind === "BOMB_RUN" && pick.kind === "BOMB_RUN"
+                ? pick.targetUnitId === null
+                  ? String(command.targetUnitId)
+                  : `${command.to.x},${command.to.y}`
+                : "to" in command
+                  ? `${command.to.x},${command.to.y}`
+                  : "",
+            ),
+          ).size,
     );
     let prompt: string;
     let info: string;
@@ -10083,6 +10209,8 @@ export class Ruleset7DomAppView {
     // The Tunnel's passenger control and its confirmation.
     let passengers: HTMLElement | null = null;
     let confirm: HTMLButtonElement | null = null;
+    // Dwarf crowd control: the Whirl's list of the enemies it hits.
+    let whirlList: HTMLElement | null = null;
     if (pick.kind === "TUNNEL") {
       // Passenger first (bead pulp_wars-78i.9). Bead pulp_wars-9im: the
       // Hammerers that can ride wear their badge on the board and are
@@ -10211,6 +10339,60 @@ export class Ruleset7DomAppView {
         prompt = `${BOMB_RUN_PICK_LANDING_V7} after bombing the ${nameOf(pick.targetUnitId)}`;
         info = BOMB_RUN_PICK_LANDING_V7;
       }
+    } else if (pick.kind === "WHIRL") {
+      // Dwarf crowd control (`pulp_wars-w49.34`): every enemy the Whirl
+      // hits is marked on the board with its damage; the dock lists them
+      // by name (never by tile) and the Whirl button whirls.
+      const preview = previewWhirlV7(view, unitId);
+      const command = commands.find((candidate) => candidate.kind === "WHIRL");
+      if (preview === null || command === undefined) {
+        this.#dwarfPick = null;
+        return null;
+      }
+      const summary = whirlSummaryV7(preview);
+      prompt = summary;
+      info = `${WHIRL_PICK_V7}. ${WHIRL_TOOLTIP_V7}`;
+      whirlList = el(this.#document, "ul", "v7-dwarf-whirl-targets");
+      whirlList.setAttribute("aria-label", "Enemies hit");
+      const lines = whirlTargetLinesV7(view, preview);
+      for (const line of lines) {
+        const item = el(
+          this.#document,
+          "li",
+          line.lethal
+            ? "v7-dwarf-whirl-target is-lethal"
+            : "v7-dwarf-whirl-target",
+        );
+        item.dataset.whirlTarget = String(line.unitId);
+        item.append(
+          text(this.#document, "span", line.name, "v7-dwarf-whirl-name"),
+          text(this.#document, "span", line.label, "v7-dwarf-whirl-damage"),
+        );
+        whirlList.append(item);
+      }
+      confirm = button(
+        this.#document,
+        WHIRL_LABEL_V7,
+        "whirl-confirm",
+        "primary-action v7-dwarf-confirm",
+      );
+      confirm.setAttribute(
+        "aria-label",
+        `${WHIRL_LABEL_V7}. ${summary}. ${lines.map((line) => `${line.name} ${line.label}`).join(", ")}.`,
+      );
+      confirm.title = WHIRL_TOOLTIP_V7;
+      confirm.disabled = this.#localBusy();
+      confirm.onclick = () => void this.#dispatch(command);
+    } else if (pick.kind === "BUILD_BARRICADE") {
+      // Dwarf crowd control: the tiles are picked on the board; the dock
+      // says the price, the HP and how many of the cap stand.
+      const preview = previewBuildBarricadeV7(view, unitId);
+      prompt =
+        preview === null
+          ? BARRICADE_PICK_V7
+          : `${BARRICADE_PICK_V7}. ${barricadeCostLineV7(preview)}. ${barricadeCapTextV7(preview.standing, preview.cap)}`;
+      info = `${BARRICADE_PICK_V7}. ${BARRICADE_TOOLTIP_V7}`;
+      detail = preview === null ? null : barricadeCostLineV7(preview);
     } else {
       const preview = previewAssembleV7(view, unitId);
       prompt =
@@ -10225,21 +10407,30 @@ export class Ruleset7DomAppView {
         ? TUNNEL_LABEL_V7
         : pick.kind === "BOMB_RUN"
           ? BOMB_RUN_LABEL_V7
-          : ASSEMBLE_LABEL_V7;
+          : pick.kind === "WHIRL"
+            ? WHIRL_LABEL_V7
+            : pick.kind === "BUILD_BARRICADE"
+              ? BARRICADE_LABEL_V7
+              : ASSEMBLE_LABEL_V7;
     panel.setAttribute("aria-label", prompt);
     panel.append(
       this.#pickHead(
-        `ICON:ACTION:${pick.kind}`,
+        dwarfActionSubjectV7(pick.kind),
         pick.kind === "TUNNEL"
           ? "drill"
           : pick.kind === "BOMB_RUN"
             ? "bomb-run"
-            : "key",
+            : pick.kind === "WHIRL"
+              ? "whirl"
+              : pick.kind === "BUILD_BARRICADE"
+                ? "barricade"
+                : "key",
         kindTitle,
         info,
       ),
     );
     if (passengers !== null) panel.append(passengers);
+    if (whirlList !== null) panel.append(whirlList);
     if (detail !== null)
       panel.append(text(this.#document, "p", detail, "v7-martian-detail"));
     const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
@@ -10294,6 +10485,18 @@ export class Ruleset7DomAppView {
       this.#snapshot.ai.active
     );
   }
+}
+
+/**
+ * The CHIBI action icon of an aimed Dwarf ability; Whirl and Barricade
+ * have none yet (Dwarf crowd control), so their LEGACY glyph is drawn.
+ */
+function dwarfActionSubjectV7(
+  kind: "TUNNEL" | "BOMB_RUN" | "ASSEMBLE" | "WHIRL" | "BUILD_BARRICADE",
+): ArtSubjectV7 | null {
+  return kind === "TUNNEL" || kind === "BOMB_RUN" || kind === "ASSEMBLE"
+    ? `ICON:ACTION:${kind}`
+    : null;
 }
 
 function selectionKey(selection: BoardSelectionV7): string {
@@ -11860,10 +12063,13 @@ const FACTION_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
   // The Ice Folk revision: LEGACY glyphs of Bolas and Cold Snap.
   THROW_BOLAS: "bolas",
   COLD_SNAP: "snowflake",
-  // The Dwarf revision: LEGACY glyphs of Tunnel, Bomb Run and Assemble.
+  // The Dwarf revision: LEGACY glyphs of Tunnel, Bomb Run and Assemble;
+  // Dwarf crowd control: Whirl and Barricade (no CHIBI icon yet).
   TUNNEL: "drill",
   BOMB_RUN: "bomb-run",
   ASSEMBLE: "key",
+  WHIRL: "whirl",
+  BUILD_BARRICADE: "barricade",
 };
 
 function undeadCommandPreview(

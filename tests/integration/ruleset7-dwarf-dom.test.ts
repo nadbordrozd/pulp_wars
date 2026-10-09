@@ -5,6 +5,8 @@ import {
   applyCommandV7,
   effectiveRoleRuleV7,
   previewAssembleV7,
+  previewBuildBarricadeV7,
+  previewWhirlV7,
   previewTunnelV7,
   projectEventsV7,
   queryPlayerCommandsV7,
@@ -56,9 +58,13 @@ import {
 } from "../../src/render/dwarf-presentation-v7";
 import { tunnelDestinationsV7 } from "../../src/render/dwarf-tunnel-v7";
 import {
+  DWARF_BARRICADE_VICTIM_V7,
+  DWARF_CROWD_CONTROL_V7,
   DWARF_DIG_IN_V7,
   DWARF_UI_V7,
   DWARF_VICTIM_V7,
+  dwarfBarricadeVictimFixtureV7,
+  dwarfCrowdControlFixtureV7,
   dwarfDigInFixtureV7,
   dwarfUiFieldV7,
   dwarfUiFixtureV7,
@@ -503,7 +509,7 @@ describe("Dwarf abilities through the dock and the board", () => {
     const landing = required(
       boardPlan(host).targets.find((target) => target.family === "BOMB_RUN"),
     );
-    expect(landing.semanticLabel).toMatch(/^Land here\. Lands next to:/);
+    expect(landing.semanticLabel).toMatch(/^Land here\. Landing:/);
     host.callbacks?.onCommand(landing);
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toMatchObject({
@@ -616,6 +622,166 @@ describe("Dwarf abilities through the dock and the board", () => {
       live().includes(`Your ${label("CATAPULT")} knocked back a Guard`),
     );
     expect(unitAt(controller, AT.knockTo).id).toBe(target.id);
+    app.destroy();
+  });
+});
+
+// Dwarf crowd control (`pulp_wars-w49.34`): the Whirl, the Barricade, an
+// attack on one and the Repair of one, through the dock and the board.
+describe("Dwarf crowd control through the dock and the board", () => {
+  const CC = DWARF_CROWD_CONTROL_V7;
+
+  it("whirls: one button, the enemies listed with their damage, then Whirl", async () => {
+    const controller = new FixtureController(dwarfCrowdControlFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const whirligig = selectUnitAt(controller, host, CC.whirligig);
+    // No generic button: the Whirl has its own, with its damage.
+    expect(document.querySelector('[data-action="command-whirl"]')).toBe(null);
+    const button = requiredButton("dwarf-whirl");
+    expect(button.getAttribute("aria-label")).toMatch(
+      /^Whirl\. .*Whirl: 3 enemies, \d+ damage, 1 kill$/,
+    );
+    button.click();
+    expect(host.lastModel?.interaction.dwarfPick).toEqual({
+      kind: "WHIRL",
+      unitId: whirligig.id,
+    });
+    const view = required(controller.snapshot().view);
+    const preview = required(previewWhirlV7(view, whirligig.id));
+    expect(
+      [...document.querySelectorAll("[data-whirl-target]")].map(
+        (item) => item.textContent,
+      ),
+    ).toEqual(
+      preview.targets.map((target) => {
+        const unit = required(
+          view.units.find((candidate) => candidate.id === target.unitId),
+        );
+        return `${effectiveRoleRuleV7(unit.role, "ORIGINAL").label}−${target.damage + target.shieldDamage}${target.dies ? " · Kills" : ""}`;
+      }),
+    );
+    expect(
+      requiredElement<HTMLElement>("[data-v7-dwarf-pick]").dataset.boardTargets,
+    ).toBe("3");
+    expect(
+      boardPlan(host)
+        .targets.map((target) => target.family)
+        .every((family) => family === "WHIRL"),
+    ).toBe(true);
+    requiredButton("whirl-confirm").click();
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "WHIRL",
+      unitId: whirligig.id,
+    });
+    await waitUntil(() =>
+      live().includes(
+        `Your ${label("KNIGHT")} whirled: 3 units hit (1 killed)`,
+      ),
+    );
+    app.destroy();
+  });
+
+  it("builds a Barricade on a picked tile, then describes it on its tile", async () => {
+    const controller = new FixtureController(dwarfCrowdControlFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const engineer = selectUnitAt(controller, host, CC.engineer);
+    expect(
+      document.querySelector('[data-action^="command-build_barricade"]'),
+    ).toBe(null);
+    const button = requiredButton("dwarf-build-barricade");
+    expect(button.title).toContain("3 Coins, 10 HP");
+    expect(button.title).toContain("You have 2 of 4 Barricades");
+    button.click();
+    const view = required(controller.snapshot().view);
+    const preview = required(previewBuildBarricadeV7(view, engineer.id));
+    expect(
+      requiredElement("[data-v7-dwarf-pick] .v7-martian-detail").textContent,
+    ).toBe("3 Coins · 10 HP · 2/4 built");
+    expect(boardPlan(host).targets.map((target) => target.at)).toEqual(
+      preview.tiles,
+    );
+    const tile = required(preview.tiles[0]);
+    host.callbacks?.onCommand(
+      required(boardPlan(host).targets.find((target) => same(target.at, tile))),
+    );
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "BUILD_BARRICADE",
+      unitId: engineer.id,
+      to: tile,
+    });
+    await waitUntil(() =>
+      live().includes(`Your ${label("CAPTAIN")} built a Barricade`),
+    );
+    host.callbacks?.onSelection({ kind: "TILE", at: tile });
+    const info = requiredElement<HTMLElement>(".v7-dwarf-barricade");
+    expect(info.dataset.dwarfBarricade).toBe("own");
+    expect(info.getAttribute("aria-label")).toMatch(
+      /^Your Barricade, 10 of 10 HP\. Blocks every unit/,
+    );
+    app.destroy();
+  });
+
+  it("names why the Engineer cannot build at the cap", () => {
+    const base = dwarfCrowdControlFixtureV7();
+    const dwarf = required(
+      base.players.find((player) => player.faction === "DWARF"),
+    );
+    const capped = {
+      ...base,
+      barricades: [
+        { at: { x: 0, y: 0 }, ownerId: dwarf.id, hp: 10 },
+        ...base.barricades,
+        { at: { x: 10, y: 10 }, ownerId: dwarf.id, hp: 10 },
+      ],
+    };
+    const controller = new FixtureController(capped);
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    selectUnitAt(controller, host, CC.engineer);
+    const button = requiredButton("dwarf-build-barricade");
+    expect(button.getAttribute("aria-disabled")).toBe("true");
+    expect(button.dataset.disabledReason).toBe("All 4 Barricades built");
+    app.destroy();
+  });
+
+  it("attacks an enemy Barricade from the board, with no button in the dock", async () => {
+    const controller = new FixtureController(dwarfBarricadeVictimFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const V = DWARF_BARRICADE_VICTIM_V7;
+    const fighter = selectUnitAt(controller, host, V.fighter);
+    expect(
+      document.querySelector('[data-action^="command-attack_barricade"]'),
+    ).toBe(null);
+    const attack = required(
+      boardPlan(host).targets.find(
+        (target) => target.command.kind === "ATTACK_BARRICADE",
+      ),
+    );
+    expect(attack).toMatchObject({
+      at: V.wholeBarricade,
+      family: "ATTACK",
+      previewLabel: "Deal 5 · 5 left",
+    });
+    host.callbacks?.onCommand(attack);
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "ATTACK_BARRICADE",
+      unitId: fighter.id,
+      at: V.wholeBarricade,
+    });
+    await waitUntil(() =>
+      live().includes("Your Fighter hit Player 2's Barricade for 5"),
+    );
+    host.callbacks?.onSelection({ kind: "TILE", at: V.wholeBarricade });
+    expect(
+      requiredElement<HTMLElement>(".v7-dwarf-barricade").dataset
+        .dwarfBarricade,
+    ).toBe("other");
     app.destroy();
   });
 });

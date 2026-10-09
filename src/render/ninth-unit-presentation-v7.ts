@@ -107,7 +107,7 @@ export function ninthUnitMechanicsV7(
       name: FROSTBITE_LABEL_V7,
       rule: "a unit that attacks it from the next tile and survives is Chilled",
     });
-  // Dwarf crowd control (`pulp_wars-w49.33`): Whirl replaced Three Hammers.
+  // Dwarf crowd control (`pulp_wars-w49.33`): the Whirligig's Whirl.
   if (mechanics.whirl)
     result.push({
       name: WHIRL_LABEL_V7,

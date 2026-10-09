@@ -119,7 +119,7 @@ const ENTRIES = {
   ],
   REPAIR: [
     "Repair",
-    "Heals the friendly units next to it, machines most of all, and cures their ailments.",
+    "Heals the friendly units next to it, machines most of all, and cures their ailments. It also mends your Barricades.",
   ],
   FROSTING: [
     "Frosting",
@@ -406,7 +406,7 @@ const ENTRIES = {
   ],
   BOMB_RUN: [
     "Bomb Run",
-    "Flies over an enemy within 2 tiles, bombs it and lands beyond it. Nothing hits back.",
+    "Flies over an enemy within 2 tiles, bombs it and lands on its far side, beside it or a tile beyond. Nothing hits back.",
   ],
   CLOCKWORK: [
     "Clockwork",
@@ -434,11 +434,11 @@ const ENTRIES = {
   ],
   PLATED: ["Plated", "Thick plating: one hit never takes much of its health."],
   MACHINE: ["Machine", "An Engineer's Repair heals it more than other units."],
-  // Dwarf crowd control (`pulp_wars-w49.33`): Whirl replaced Three Hammers.
+  // Dwarf crowd control (`pulp_wars-w49.33`).
   WHIRL: ["Whirl", "Hits every enemy next to it at once. Nobody hits back."],
   BARRICADE: [
     "Barricade",
-    "Builds a barricade on a free tile next to it, for Coins. It blocks every unit until it is destroyed.",
+    "Builds a Barricade on a free tile next to it, for Coins. It blocks every unit until attacks break it.",
   ],
 
   // ------------------------------------------------------------------ Candy

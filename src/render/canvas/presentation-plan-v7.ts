@@ -964,6 +964,70 @@ export function corePresentationPlanV7(
           cells: [event.at],
           ...(engineer === undefined ? {} : { from: engineer.at }),
         });
+    } else if (event.kind === "WHIRL_RESOLVED") {
+      // Dwarf crowd control (`pulp_wars-w49.34`): the hammers sweep round
+      // the Whirligig and land on every target at once; nothing strikes
+      // back, and each target shows its damage.
+      if (isExplored(event.at))
+        pushDwarf({
+          effect: "WHIRL",
+          cells: [
+            event.at,
+            ...event.results
+              .filter((result) => isExplored(result.at))
+              .map((result) => result.at),
+          ],
+          unitId: event.unitId,
+        });
+      for (const result of event.results)
+        if (isExplored(result.at))
+          steps.push({
+            kind: "DAMAGE",
+            unitId: result.unitId,
+            at: result.at,
+            damage: result.damage + result.shieldDamage,
+            lethal: result.dies,
+            durationMs: 100,
+          });
+    } else if (event.kind === "BARRICADE_BUILT") {
+      // Dwarf crowd control: the stakes go in with earth and steam.
+      if (isExplored(event.at))
+        pushDwarf({ effect: "BARRICADE", cells: [event.at] });
+    } else if (event.kind === "BARRICADE_ATTACKED") {
+      // Dwarf crowd control: the attacker strikes the Barricade (a lunge,
+      // or its shot), splinters fly, and nothing strikes back.
+      const attacker = unitAnywhere(event.unitId);
+      if (attacker !== undefined && isExplored(event.at)) {
+        const distance = Math.max(
+          Math.abs(attacker.at.x - event.at.x),
+          Math.abs(attacker.at.y - event.at.y),
+        );
+        const attackEffect = attackEffectForV7(
+          kindOf(before, attacker),
+          attacker.role,
+        );
+        steps.push({
+          kind:
+            distance <= 1
+              ? "MELEE"
+              : attacker.role === "CATAPULT"
+                ? "CATAPULT"
+                : "RANGED",
+          unitId: attacker.id,
+          from: attacker.at,
+          to: event.at,
+          durationMs: distance <= 1 ? 230 : 280,
+          ...(attackEffect === null || attackEffect === "BROADSIDE"
+            ? {}
+            : { attackEffect }),
+        });
+      }
+      if (isExplored(event.at))
+        pushDwarf({ effect: "SPLINTERS", cells: [event.at] });
+    } else if (event.kind === "BARRICADE_REPAIRED") {
+      // Dwarf crowd control: an Engineer's Repair throws sparks on it too.
+      if (isExplored(event.at))
+        pushDwarf({ effect: "REPAIR", cells: [event.at] });
     } else if (event.kind === "UNIT_DISBANDED") {
       // Tuning 7: the disbanded unit fades where it stood.
       const gone = before.units.find((unit) => unit.id === event.unitId);

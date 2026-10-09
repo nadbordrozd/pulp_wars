@@ -124,6 +124,8 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   THROW_BOLAS: "ATTACK",
   COLD_SNAP: "ATTACK",
   BOMB_TARGET: "ATTACK",
+  // Dwarf crowd control: an enemy an aimed Whirl hits.
+  WHIRL: "ATTACK",
   // The naval branch interface: a ship to capture, while Board is aimed.
   BOARD: "ATTACK",
   HATCH: "SUPPORT",
@@ -133,6 +135,8 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   LAY_EGG: "PLACE",
   BEAM_DOWN: "PLACE",
   ASSEMBLE: "PLACE",
+  // Dwarf crowd control: a tile an Engineer may put a Barricade on.
+  BARRICADE: "PLACE",
   REBAKE: "PLACE",
   // The frozen sea: the tile a line role's Freeze starts on.
   FREEZE: "PLACE",

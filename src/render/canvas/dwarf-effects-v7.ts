@@ -35,14 +35,24 @@ export type DwarfFeedbackEffectV7 =
   /** An Engineer's Repair: sparks on each repaired unit. */
   | "REPAIR"
   /** A Steam Cannon's Knockback: a puff where the target lands. */
-  | "KNOCKBACK";
+  | "KNOCKBACK"
+  /**
+   * Dwarf crowd control (`pulp_wars-w49.34`): a Whirligig's Whirl (spinning
+   * hammer arcs round it, then a hit flash on every target), a Barricade
+   * built (earth and steam), and a Barricade hit (flying splinters).
+   */
+  | "WHIRL"
+  | "BARRICADE"
+  | "SPLINTERS";
 
 export interface DwarfFeedbackV7 {
   readonly effect: DwarfFeedbackEffectV7;
   /**
    * The cue's cells: TUNNEL the Mole's start then its mound (and the
    * rider's), ERUPTION the Mole's tile, BOMB the target, ASSEMBLE the new
-   * Gunner, REPAIR the repaired units, KNOCKBACK the landing tile.
+   * Gunner, REPAIR the repaired units, KNOCKBACK the landing tile, WHIRL
+   * the Whirligig then every unit it hit, BARRICADE the new Barricade,
+   * SPLINTERS the Barricade hit.
    */
   readonly cells: readonly CoordV7[];
   /** The source: the Engineer (ASSEMBLE), the Gyrocopter's landing (BOMB). */
@@ -60,6 +70,9 @@ export const DWARF_EFFECT_DURATIONS_V7: Readonly<
   ASSEMBLE: 520,
   REPAIR: 480,
   KNOCKBACK: 320,
+  WHIRL: 560,
+  BARRICADE: 480,
+  SPLINTERS: 360,
 };
 
 /** The progress a reduced-motion hold shows: the eruption's peak frame. */
@@ -441,6 +454,118 @@ export function drawDwarfFeedbackV7(
         }
         context.restore();
       }
+    }
+  } else if (feedback.effect === "WHIRL") {
+    const [whirligig, ...targets] = feedback.cells;
+    if (whirligig !== undefined) {
+      // Three broad hammer swooshes sweep round the Whirligig over its
+      // eight tiles, widening as it spins: dark under, steam, copper edge.
+      const point = body(whirligig);
+      const alpha = clamp01(Math.min(progress / 0.12, (1 - progress) / 0.35));
+      const radius = (52 + 22 * progress) * zoom;
+      context.save();
+      context.globalAlpha *= alpha;
+      context.lineCap = "round";
+      for (let arc = 0; arc < 3; arc += 1) {
+        const start = progress * Math.PI * 3 + (arc * Math.PI * 2) / 3;
+        for (const [colour, width] of [
+          [outline, 15],
+          [steam, 10],
+          [copper, 4],
+        ] as const) {
+          context.strokeStyle = colour;
+          context.lineWidth = Math.max(1.5, width * zoom);
+          context.beginPath();
+          context.ellipse(
+            point.x,
+            point.y + 14 * zoom,
+            radius,
+            radius * 0.6,
+            0,
+            start,
+            start + Math.PI * 0.42,
+          );
+          context.stroke();
+        }
+      }
+      context.restore();
+    }
+    // Each target flashes as the hammers land: a burst of rays.
+    if (progress >= 0.3) {
+      const local = (progress - 0.3) / 0.7;
+      for (const at of targets) {
+        const point = body(at);
+        context.save();
+        context.globalAlpha *= clamp01((1 - local) * 1.4);
+        context.lineCap = "round";
+        for (const [colour, width] of [
+          [outline, 7],
+          ["#fff1c9", 4],
+        ] as const) {
+          context.strokeStyle = colour;
+          context.lineWidth = Math.max(1.5, width * zoom);
+          for (let ray = 0; ray < 8; ray += 1) {
+            const angle = (ray / 8) * Math.PI * 2 + 0.2;
+            const inner = (10 + 8 * local) * zoom;
+            const outer = (26 + 16 * local) * zoom;
+            context.beginPath();
+            context.moveTo(
+              point.x + Math.cos(angle) * inner,
+              point.y + Math.sin(angle) * inner,
+            );
+            context.lineTo(
+              point.x + Math.cos(angle) * outer,
+              point.y + Math.sin(angle) * outer,
+            );
+            context.stroke();
+          }
+        }
+        context.restore();
+      }
+    }
+  } else if (feedback.effect === "BARRICADE") {
+    // Earth thrown up as the stakes go in, then a puff of steam.
+    const at = feedback.cells[0];
+    if (at !== undefined) {
+      const point = ground(at);
+      clods(point, (14 + 18 * progress) * zoom, 1 - progress);
+      const lifted = { x: point.x, y: point.y - 18 * step * progress };
+      if (
+        !sprite("EFFECT:STEAM_PUFF", lifted, 1 + progress, 0.9 * (1 - progress))
+      )
+        puff(lifted, 14 * zoom * (1 + progress), steam, 0.7 * (1 - progress));
+    }
+  } else if (feedback.effect === "SPLINTERS") {
+    // Splinters of timber fly off the Barricade that was hit, with a puff
+    // of its earth.
+    const at = feedback.cells[0];
+    if (at !== undefined) {
+      const point = body(at);
+      clods(ground(at), (16 + 14 * progress) * zoom, 1 - progress);
+      context.save();
+      context.globalAlpha *= clamp01((1 - progress) * 1.3);
+      context.strokeStyle = outline;
+      context.lineWidth = Math.max(1, 2 * zoom);
+      for (let chip = 0; chip < 12; chip += 1) {
+        const angle = (chip / 12) * Math.PI * 2 + 0.3;
+        const distance =
+          (14 + 46 * progress) * zoom * (chip % 2 === 0 ? 1 : 0.72);
+        const cx = point.x + Math.cos(angle) * distance;
+        const cy =
+          point.y +
+          Math.sin(angle) * distance * 0.75 +
+          26 * zoom * progress ** 2;
+        context.save();
+        context.translate(cx, cy);
+        context.rotate(angle + progress * 7);
+        context.fillStyle = chip % 3 === 0 ? "#b9844f" : "#8d5c34";
+        context.beginPath();
+        context.rect(-9 * zoom, -2.5 * zoom, 18 * zoom, 5 * zoom);
+        context.fill();
+        context.stroke();
+        context.restore();
+      }
+      context.restore();
     }
   } else {
     // KNOCKBACK: a puff of steam where the target lands.

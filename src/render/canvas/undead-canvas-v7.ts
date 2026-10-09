@@ -64,6 +64,11 @@ export type AbilityPreviewStyleV7 =
   | "BOMB"
   | "BOMBED"
   /**
+   * Dwarf crowd control (`pulp_wars-w49.34`): the reach of an aimed Whirl,
+   * the eight tiles round the Whirligig, in steam copper.
+   */
+  | "WHIRL"
+  /**
    * Map curiosities (bead pulp_wars-737.6): a selected Giant Spider's area
    * (outlined only) and the tiles it could attack after one step (shaded),
    * in the neutral bone white and umber of its art.
@@ -581,6 +586,7 @@ const STYLE_COLORS: Readonly<
   ERUPTION: { fill: "rgba(160, 122, 82, 0.16)", stroke: "#c99a66" },
   BOMB: { fill: "rgba(222, 111, 42, 0.22)", stroke: "#f2a46a" },
   BOMBED: { fill: "rgba(170, 179, 192, 0.16)", stroke: "#aab3c0" },
+  WHIRL: { fill: "rgba(194, 124, 58, 0.14)", stroke: "#f2b27a" },
   // Map curiosities: the Spider's bone white (area) and umber (reach).
   MONSTER_AREA: { fill: "rgba(239, 230, 208, 0)", stroke: "#efe6d0" },
   MONSTER_REACH: { fill: "rgba(138, 90, 51, 0.3)", stroke: "#efe6d0" },

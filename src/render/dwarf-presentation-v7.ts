@@ -1,7 +1,11 @@
 import {
   ASSEMBLE_COST_V7,
+  BARRICADE_CAP_V7,
+  BARRICADE_COST_V7,
+  BARRICADE_HP_V7,
   BLASTING_ERUPTION_DAMAGE_V7,
   BOMB_DAMAGE_V7,
+  BOMB_LANDING_RANGE_V7,
   BOMB_RANGE_V7,
   DIVE_BOMB_DAMAGE_V7,
   ERUPTION_DAMAGE_V7,
@@ -18,7 +22,10 @@ import {
   technologyCapabilitiesV7,
   unitRoleRuleV7,
   type AssemblePreviewV7,
+  type AttackBarricadePreviewV7,
+  type BarricadeV7,
   type BombRunPreviewV7,
+  type BuildBarricadePreviewV7,
   type CombatPreviewV7,
   type CommandV7,
   type CoordV7,
@@ -29,6 +36,7 @@ import {
   type PublicDwarfMechanicsV7,
   type PublicUnitStatsV7,
   type TunnelPreviewV7,
+  type WhirlPreviewV7,
   isNavalRoleV7,
   type UnitRoleIdV7,
   technologyDisplayNameV7,
@@ -117,6 +125,7 @@ const CANNON = (): string => dwarfLabelV7("CATAPULT");
 // The ninth unit (`pulp_wars-w49.17`, 7r55): the Steam Tank is the heavy
 // line role (the Whirligig took the `KNIGHT` role).
 const TANK = (): string => dwarfLabelV7("SWORDSMAN");
+const WHIRLIGIG = (): string => dwarfLabelV7("KNIGHT");
 
 // ------------------------------------------------------------ section 16.2
 
@@ -170,9 +179,13 @@ export const TUNNEL_NO_TILE_V7 = `No free tile within ${TUNNEL_RANGE_V7}`;
 export const RIDER_SURFACED_V7 =
   "Just surfaced: cannot enter a city or village this turn";
 export const BOMB_RUN_LABEL_V7 = "Bomb Run";
-/** "Fly over an enemy within 2 tiles, bomb it for {n}, and land beyond it. No reply". */
+/**
+ * "Fly over an enemy within 2 tiles, bomb it for {n}, and land up to 2
+ * tiles past it. No reply" (Dwarf crowd control, `pulp_wars-w49.33`: the
+ * landing may be up to `BOMB_LANDING_RANGE_V7` from the target).
+ */
 export function bombRunTooltipV7(bombDamage: number): string {
-  return `Fly over an enemy within ${BOMB_RANGE_V7} tiles, bomb it for ${bombDamage}, and land beyond it. No reply`;
+  return `Fly over an enemy within ${BOMB_RANGE_V7} tiles, bomb it for ${bombDamage}, and land up to ${BOMB_LANDING_RANGE_V7} tiles past it. No reply`;
 }
 export const BOMB_RUN_PICK_TARGET_V7 = "Choose an enemy to bomb";
 export const BOMB_RUN_PICK_LANDING_V7 = "Choose where the Gyrocopter lands";
@@ -181,11 +194,11 @@ export function bombPreviewTextV7(damage: number): string {
   return `Bomb: ${damage} damage, no reply`;
 }
 export const BOMB_KILLS_V7 = "Kills";
-/** "Lands next to: up to {n} damage next turn". */
+/** "Landing: up to {n} damage next turn". */
 export function landingHintTextV7(threat: number): string {
-  return `Lands next to: up to ${threat} damage next turn`;
+  return `Landing: up to ${threat} damage next turn`;
 }
-export const LANDING_SAFE_V7 = "Lands next to: no visible threat";
+export const LANDING_SAFE_V7 = "Landing: no visible threat";
 export const BOMBED_MARK_V7 = "Bombed this turn";
 export const BOMB_NO_TARGET_V7 = `No enemy within ${BOMB_RANGE_V7} tiles`;
 export const BOMB_FROZEN_V7 = "Frozen: it cannot bomb this turn";
@@ -237,7 +250,112 @@ export const ASSEMBLE_NO_TILE_V7 = "No free tile";
 export const ASSEMBLE_NO_HOME_V7 = "No home city";
 export const REPAIR_LABEL_V7 = "Repair";
 export const REPAIR_CHIP_V7 = `+${REPAIR_MACHINE_V7} machines, +2 others`;
-export const REPAIR_TOOLTIP_V7 = `Heal adjacent units: ${REPAIR_CHIP_V7}. Cures Plague, bites, and frost`;
+export const REPAIR_TOOLTIP_V7 = `Heal adjacent units: ${REPAIR_CHIP_V7}. Cures Plague, bites, and frost. Mends your Barricades by ${REPAIR_MACHINE_V7}`;
+
+// ------------------------------------- Dwarf crowd control (w49.33/34)
+
+/** The Whirligig's Whirl (`pulp_wars-w49.33`). */
+export const WHIRL_LABEL_V7 = "Whirl";
+export const WHIRL_TOOLTIP_V7 = `Hit every enemy next to the ${WHIRLIGIG()} at once. Nobody hits back`;
+export const WHIRL_PICK_V7 =
+  "Every highlighted enemy is hit. Press Whirl or tap one of them";
+export const WHIRL_NO_TARGET_V7 = "No enemy next to it";
+/** The board label of one Whirl target: "−4", "−4 · Kills". */
+export function whirlTargetLabelV7(
+  target: WhirlPreviewV7["targets"][number],
+): string {
+  const total = target.damage + target.shieldDamage;
+  return target.dies ? `−${total} · ${BOMB_KILLS_V7}` : `−${total}`;
+}
+/** "Whirl: 3 enemies, 11 damage, 1 kill" (the "?" and the button's name). */
+export function whirlSummaryV7(preview: WhirlPreviewV7): string {
+  const total = preview.targets.reduce(
+    (sum, target) => sum + target.damage + target.shieldDamage,
+    0,
+  );
+  const parts = [
+    `${preview.targets.length} ${preview.targets.length === 1 ? "enemy" : "enemies"}`,
+    `${total} damage`,
+    ...(preview.kills > 0 ? [plural(preview.kills, "kill")] : []),
+  ];
+  return `${WHIRL_LABEL_V7}: ${parts.join(", ")}${preview.exact ? "" : " (a hidden Blizzard may change it)"}`;
+}
+/** One line of the Whirl panel per target: "Fighter −4", "Archer −5 · Kills". */
+export function whirlTargetLinesV7(
+  view: PlayerViewV7,
+  preview: WhirlPreviewV7,
+): readonly {
+  readonly unitId: number;
+  readonly name: string;
+  readonly label: string;
+  readonly lethal: boolean;
+}[] {
+  return preview.targets.map((target) => {
+    const unit = view.units.find((candidate) => candidate.id === target.unitId);
+    return {
+      unitId: target.unitId,
+      name: unit === undefined ? "Unit" : unitName(view, unit),
+      label: whirlTargetLabelV7(target),
+      lethal: target.dies,
+    };
+  });
+}
+
+/** The Engineer's Barricade (`pulp_wars-w49.33`). */
+export const BARRICADE_LABEL_V7 = "Barricade";
+/** "Build a Barricade next to the Engineer: 3 Coins, 10 HP. It blocks every unit" */
+export const BARRICADE_TOOLTIP_V7 = `Build a Barricade next to the ${ENGINEER()}: ${BARRICADE_COST_V7} Coins, ${BARRICADE_HP_V7} HP. It blocks every unit until it is destroyed`;
+export const BARRICADE_PICK_V7 = `Choose a tile next to the ${ENGINEER()}`;
+/** "3 Coins · 10 HP · 1/4 built" (the Barricade panel's one line). */
+export function barricadeCostLineV7(
+  preview: Pick<BuildBarricadePreviewV7, "cost" | "hp" | "standing" | "cap">,
+): string {
+  return `${preview.cost} Coins · ${preview.hp} HP · ${preview.standing}/${preview.cap} built`;
+}
+/** "You have 1 of 4 Barricades" (the cap, in words). */
+export function barricadeCapTextV7(standing: number, cap: number): string {
+  return `You have ${standing} of ${cap} Barricades`;
+}
+export const BARRICADE_CAP_REACHED_V7 = `All ${BARRICADE_CAP_V7} Barricades built`;
+export const BARRICADE_NO_COINS_V7 = `Needs ${BARRICADE_COST_V7} Coins`;
+export const BARRICADE_NO_TILE_V7 = "No free tile";
+/** The rule of a standing Barricade, for the tile dock and the cursor. */
+export const BARRICADE_RULE_V7 =
+  "Blocks every unit, its owner's too. Only an attack breaks it; an Engineer's Repair mends it";
+/** "Your Barricade", "Player 2's Barricade". */
+export function barricadeNameV7(
+  view: PlayerViewV7,
+  barricade: Pick<BarricadeV7, "ownerId">,
+): string {
+  return `${capitalized(dwarfPossessiveV7(view, barricade.ownerId))} ${BARRICADE_LABEL_V7}`;
+}
+/** "Your Barricade, 7 of 10 HP". */
+export function barricadeInfoTextV7(
+  view: PlayerViewV7,
+  barricade: BarricadeV7,
+): string {
+  return `${barricadeNameV7(view, barricade)}, ${barricade.hp} of ${BARRICADE_HP_V7} HP`;
+}
+/** The board label of an attack on a Barricade: "Deal 5 · 5 left", "Deal 5 · Breaks it". */
+export function attackBarricadeLabelV7(
+  preview: AttackBarricadePreviewV7,
+): string {
+  return preview.destroys
+    ? `Deal ${preview.damage} · Breaks it`
+    : `Deal ${preview.damage} · ${preview.hpAfter} left`;
+}
+/** The cursor's sentence of an attack on a Barricade. */
+export function attackBarricadeSemanticV7(
+  view: PlayerViewV7,
+  preview: AttackBarricadePreviewV7,
+): string {
+  const name = `${dwarfPossessiveV7(view, preview.ownerId)} ${BARRICADE_LABEL_V7}`;
+  return `Attack ${name}: deals ${preview.damage}, nothing strikes back. ${preview.destroys ? "It breaks" : `${preview.hpAfter} of ${BARRICADE_HP_V7} HP left`}.`;
+}
+/** A Barricade a Repair mends: "+4 HP", like a unit it heals. */
+export function barricadeRepairLabelV7(amount: number): string {
+  return `+${amount} HP`;
+}
 /** The attack preview's Knockback note; the board's arrow shows where. */
 export const KNOCKBACK_V7 = "Knocks back";
 export const KNOCKBACK_BLOCKED_V7 = "Knockback blocked";
@@ -376,7 +494,7 @@ export function dwarfHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       BOMB_RUN_LABEL_V7,
-      `a ${GYROCOPTER()} flies over an enemy within ${BOMB_RANGE_V7} tiles, bombs it for ${BOMB_DAMAGE_V7} (${DIVE_BOMB_DAMAGE_V7} with Dive), and lands beyond it; nothing hits back, and no unit is bombed twice in a turn.`,
+      `a ${GYROCOPTER()} flies over an enemy within ${BOMB_RANGE_V7} tiles, bombs it for ${BOMB_DAMAGE_V7} (${DIVE_BOMB_DAMAGE_V7} with Dive), and lands up to ${BOMB_LANDING_RANGE_V7} tiles beyond it; nothing hits back, and no unit is bombed twice in a turn.`,
     ],
     [
       CLOCKWORK_LABEL_V7,
@@ -393,6 +511,11 @@ export function dwarfHelpRulesV7(): readonly (readonly [string, string])[] {
     [
       REPAIR_LABEL_V7,
       `an ${ENGINEER()} heals adjacent machines by ${REPAIR_MACHINE_V7} and other units by 2.`,
+    ],
+    // Dwarf crowd control (`pulp_wars-w49.33`): the Engineer's Barricade.
+    [
+      BARRICADE_LABEL_V7,
+      `an ${ENGINEER()} builds a Barricade next to itself for ${BARRICADE_COST_V7} Coins (at most ${BARRICADE_CAP_V7} at a time); its ${BARRICADE_HP_V7} HP block every unit until attacks break it, and Repair mends it.`,
     ],
     [
       ASSEMBLE_LABEL_V7,
@@ -451,6 +574,11 @@ export function dwarfAbilityNameV7(
       return "Knockback";
     case "PLATED":
       return "Plated";
+    // Dwarf crowd control (`pulp_wars-w49.33`).
+    case "WHIRL":
+      return WHIRL_LABEL_V7;
+    case "BARRICADE":
+      return BARRICADE_LABEL_V7;
     default:
       return null;
   }
@@ -472,7 +600,7 @@ export function dwarfAbilityDescriptionV7(
     case "FLY":
       return "Flies over any terrain and any unit and ignores zones of control; never captures or stands on a foreign city.";
     case "BOMB_RUN":
-      return `Flies over an enemy within ${BOMB_RANGE_V7} tiles, bombs it for ${BOMB_DAMAGE_V7} (${DIVE_BOMB_DAMAGE_V7} with Dive) and lands beyond it. Nothing hits back, and no unit is bombed twice in a turn. It has no ordinary attack.`;
+      return `Flies over an enemy within ${BOMB_RANGE_V7} tiles, bombs it for ${BOMB_DAMAGE_V7} (${DIVE_BOMB_DAMAGE_V7} with Dive) and lands up to ${BOMB_LANDING_RANGE_V7} tiles beyond it. Nothing hits back, and no unit is bombed twice in a turn. It has no ordinary attack.`;
     case "CLOCKWORK":
       return `${CLOCKWORK_INFO_V7}. Immune to Plague, bites, Wail, and Mind Control; leaves no Grave.`;
     case "TWIN_SHOT":
@@ -487,14 +615,19 @@ export function dwarfAbilityDescriptionV7(
       return "Its shot knocks a surviving target one tile straight back.";
     case "PLATED":
       return `No single hit takes more than ${PLATED_CAP_V7} HP from it.`;
+    // Dwarf crowd control (`pulp_wars-w49.33`); the Whirl's sentence is a
+    // ninth-unit note (ninthUnitRecruitNotesV7), so it is not repeated.
+    case "BARRICADE":
+      return `Builds a Barricade on a free tile next to it for ${BARRICADE_COST_V7} Coins (at most ${BARRICADE_CAP_V7} at a time). It has ${BARRICADE_HP_V7} HP and blocks every unit until attacks break it.`;
     default:
       return null;
   }
 }
 
 /**
- * Dwarf command labels: Tunnel, Bomb Run and Assemble for every viewer, and
- * Repair for a Dwarf viewer's Tend Wounded.
+ * Dwarf command labels: Tunnel, Bomb Run, Assemble, Whirl, Barricade and
+ * Attack Barricade for every viewer, and Repair for a Dwarf viewer's Tend
+ * Wounded.
  */
 export function dwarfCommandLabelV7(
   kind: CommandV7["kind"],
@@ -503,6 +636,9 @@ export function dwarfCommandLabelV7(
   if (kind === "TUNNEL") return TUNNEL_LABEL_V7;
   if (kind === "BOMB_RUN") return BOMB_RUN_LABEL_V7;
   if (kind === "ASSEMBLE") return ASSEMBLE_LABEL_V7;
+  if (kind === "WHIRL") return WHIRL_LABEL_V7;
+  if (kind === "BUILD_BARRICADE") return BARRICADE_LABEL_V7;
+  if (kind === "ATTACK_BARRICADE") return `Attack ${BARRICADE_LABEL_V7}`;
   if (kind === "TEND_WOUNDED" && faction === "DWARF") return REPAIR_LABEL_V7;
   return null;
 }
@@ -531,6 +667,8 @@ export function dwarfRoleUnlockTextV7(role: UnitRoleIdV7): string {
     ...(abilities.includes("TUNNEL") ? [TUNNEL_LABEL_V7] : []),
     ...(abilities.includes("KNOCKBACK") ? ["Knockback"] : []),
     ...(abilities.includes("PLATED") ? ["Plated"] : []),
+    ...(abilities.includes("WHIRL") ? [WHIRL_LABEL_V7] : []),
+    ...(abilities.includes("BARRICADE") ? [BARRICADE_LABEL_V7] : []),
   ];
   const label = dwarfLabelV7(role);
   return notes.length === 0
@@ -886,15 +1024,17 @@ export function landingHintV7(preview: BombRunPreviewV7): string {
 }
 
 /**
- * Why an own Mole, Gyrocopter or Engineer that could still act has no
- * Tunnel, Bomb Run or Assemble (section 16.2), or null when it has one or
- * cannot act at all. `assembleReason` is queryAssembleUnavailableReasonV7's
- * answer; `city` names the Engineer's home city.
+ * Why an own Mole, Gyrocopter, Engineer or Whirligig that could still act
+ * has no Tunnel, Bomb Run, Assemble, Barricade or Whirl (section 16.2), or
+ * null when it has one or cannot act at all. `assembleReason` is
+ * queryAssembleUnavailableReasonV7's answer; `city` names the Engineer's
+ * home city; `barricade` is queryBarricadeUnavailableReasonV7's answer
+ * (Dwarf crowd control, `pulp_wars-w49.34`).
  */
 export function dwarfAbilityUnavailableTextV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
-  kind: "TUNNEL" | "BOMB_RUN" | "ASSEMBLE",
+  kind: "TUNNEL" | "BOMB_RUN" | "ASSEMBLE" | "WHIRL" | "BUILD_BARRICADE",
   offered: boolean,
   assemble?: {
     readonly reason:
@@ -906,6 +1046,13 @@ export function dwarfAbilityUnavailableTextV7(
       | null;
     readonly city: string;
   },
+  barricade?:
+    | "ALREADY_ACTED"
+    | "EMBARKED"
+    | "CAP"
+    | "INSUFFICIENT_COINS"
+    | "INVALID_TILE"
+    | null,
 ): string | null {
   if (offered) return null;
   if (
@@ -933,6 +1080,20 @@ export function dwarfAbilityUnavailableTextV7(
     if (unit.activation.moved) return BOMB_MOVED_V7;
     return BOMB_NO_TARGET_V7;
   }
+  // Dwarf crowd control: a Whirl may follow a Move; without a visible
+  // enemy next to it there is nothing to hit.
+  if (kind === "WHIRL") return WHIRL_NO_TARGET_V7;
+  if (kind === "BUILD_BARRICADE")
+    switch (barricade ?? null) {
+      case "CAP":
+        return BARRICADE_CAP_REACHED_V7;
+      case "INSUFFICIENT_COINS":
+        return BARRICADE_NO_COINS_V7;
+      case "INVALID_TILE":
+        return BARRICADE_NO_TILE_V7;
+      default:
+        return null;
+    }
   switch (assemble?.reason ?? null) {
     case "TECH_REQUIRED":
       return ASSEMBLE_NEEDS_TECH_V7;
@@ -977,8 +1138,9 @@ export function clockworkRecoverBlockedV7(
 
 /**
  * Section 16.2 log lines of one projected boundary: a tunnel, a surfacing
- * and its eruption, a bomb, an Assemble, a Repair, a Knockback, and
- * Undermined Field Defense. A match without a Dwarf seat never emits these
+ * and its eruption, a bomb, an Assemble, a Repair, a Knockback, Undermined
+ * Field Defense, and (Dwarf crowd control) a Whirl and a Barricade built,
+ * hit, broken or mended. A match without a Dwarf seat never emits these
  * events, so its notices are unchanged.
  */
 export function dwarfBoundaryNoticeV7(
@@ -1047,6 +1209,35 @@ export function dwarfBoundaryNoticeV7(
       const name = target === undefined ? "unit" : unitName(after, target);
       parts.push(
         `${owner(source.ownerId)} ${CANNON()} knocked back ${article(name)} ${name}`,
+      );
+    } else if (event.kind === "WHIRL_RESOLVED") {
+      // Dwarf crowd control (`pulp_wars-w49.34`).
+      const hitsViewer = event.results.some(
+        (result) => unitById(result.unitId)?.ownerId === viewerId,
+      );
+      if (hitsViewer) toast = true;
+      const kills = event.results.filter((result) => result.dies).length;
+      parts.push(
+        `${owner(event.playerId)} ${WHIRLIGIG()} whirled: ${plural(event.results.length, "unit")} hit${kills > 0 ? ` (${kills} killed)` : ""}`,
+      );
+    } else if (event.kind === "BARRICADE_BUILT") {
+      parts.push(
+        `${owner(event.playerId)} ${ENGINEER()} built ${article(BARRICADE_LABEL_V7)} ${BARRICADE_LABEL_V7}`,
+      );
+    } else if (event.kind === "BARRICADE_ATTACKED") {
+      if (event.ownerId === viewerId && event.playerId !== viewerId)
+        toast = true;
+      const attacker = unitById(event.unitId);
+      const name = attacker === undefined ? "unit" : unitName(after, attacker);
+      const target = `${dwarfPossessiveV7(after, event.ownerId)} ${BARRICADE_LABEL_V7}`;
+      parts.push(
+        event.destroyed
+          ? `${owner(event.playerId)} ${name} broke ${target}`
+          : `${owner(event.playerId)} ${name} hit ${target} for ${event.damage}`,
+      );
+    } else if (event.kind === "BARRICADE_REPAIRED") {
+      parts.push(
+        `${owner(event.playerId)} ${ENGINEER()} mended ${article(BARRICADE_LABEL_V7)} ${BARRICADE_LABEL_V7} (+${event.amount} HP)`,
       );
     } else if (
       event.kind === "FIELD_DEFENSE_DESTROYED" &&
