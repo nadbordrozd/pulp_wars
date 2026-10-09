@@ -494,7 +494,9 @@ function coinTelemetryState(): GameStateV7 {
         kind: "CITY_REWARD",
         cityId: city.id,
         reachedLevel: 2,
-        candidates: ["SURVEY", "STOCKPILE"],
+        // Was ["SURVEY", "STOCKPILE"]: level 2 offers Militia or +4 Coins
+        // since the reward ladder rework (`pulp_wars-zypi`, 7r63).
+        candidates: ["STOCKPILE", "MILITIA"],
       },
     ],
     board: {

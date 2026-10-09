@@ -737,11 +737,13 @@ describe("text-mode play harness", () => {
         expect(started).toContain(
           "| Open to ranged: Defense 1 against attacks from 2 or more tiles",
         );
+        // Was "ATTACK, LIFESTEAL, ..." with no CAPTURE: any land unit can
+        // capture a city since `pulp_wars-ke95` (7r64).
         expect(ok("view", "--session", session, "--full")).toMatch(
-          /Vampire .*abilities: ATTACK, LIFESTEAL, UNANSWERED, ESCAPE/,
+          /Vampire .*abilities: ATTACK, CAPTURE, LIFESTEAL, UNANSWERED, ESCAPE/,
         );
         expect(ok("tech", "--session", session)).toMatch(
-          /unit Vampire \[KNIGHT\] 9c .*abilities LIFESTEAL,UNANSWERED,ESCAPE/,
+          /unit Vampire \[KNIGHT\] 9c .*abilities CAPTURE,LIFESTEAL,UNANSWERED,ESCAPE/,
         );
         expect(ok("help")).toContain("LAB_UNDEAD_MID: the Undead");
         // The correction: Carrion on the Ghoul, the Lich's Plague behind

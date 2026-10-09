@@ -12,6 +12,7 @@ import {
   effectiveRoleRuleV7,
   queryCombatPreviewV7,
   unitId,
+  unitShieldMaximumV7,
   viewForV7,
   type CityStateV7,
   type CommandV7,
@@ -69,14 +70,25 @@ describe("ruleset-7 Normal AI endgame siege (pulp_wars-1mc)", () => {
   });
 
   it("vacates a non-capturing squatter for an adjacent capturer", () => {
-    const pieces: Piece[] = [
+    // Was a Human Captain as the squatter: any land unit can capture since
+    // `pulp_wars-ke95` (7r64), so a Captain on the center is a capturer and
+    // stays; the policy still counts a flyer as non-capturing, so the
+    // squatter is a Martian Raider (a flyer) on the same board.
+    const captain: Piece[] = [
       { seat: 0, role: "CAPTAIN", at: TARGET },
       { seat: 0, role: "FIGHTER", at: { x: 2, y: 3 } },
     ];
-    const outside = decide(arena(pieces, OUTSIDE_VILLAGES));
+    expect(
+      decide(arena(captain, ENDGAME_VILLAGES)).candidates.some(isVacate),
+    ).toBe(false);
+    const pieces: Piece[] = [
+      { seat: 0, role: "RAIDER", at: TARGET },
+      { seat: 0, role: "FIGHTER", at: { x: 2, y: 3 } },
+    ];
+    const outside = decide(arena(pieces, OUTSIDE_VILLAGES, MARTIAN_SEAT_0));
     expect(outside.candidates.some(isVacate)).toBe(false);
 
-    let state = arena(pieces, ENDGAME_VILLAGES);
+    let state = arena(pieces, ENDGAME_VILLAGES, MARTIAN_SEAT_0);
     const vacate = decide(state);
     expect(vacate.command).toMatchObject({
       kind: "MOVE",
@@ -199,7 +211,13 @@ function isVacate(candidate: NormalAiDecisionV7["candidates"][number]) {
   return candidate.score.priority === 1291;
 }
 
-function setupWith(seed = 2): MatchSetupV7 {
+/** Seat 0 as the Martians: the same seed-2 board and capitals. */
+const MARTIAN_SEAT_0: MatchSetupV7["factions"] = ["MARTIAN", "ORIGINAL"];
+
+function setupWith(
+  seed = 2,
+  factions: MatchSetupV7["factions"] = ["ORIGINAL", "ORIGINAL"],
+): MatchSetupV7 {
   return {
     rulesetId: RULESET_7_ID,
     seed,
@@ -209,7 +227,7 @@ function setupWith(seed = 2): MatchSetupV7 {
     aiDifficulty: "NORMAL",
     aiMode: "RIVAL",
     humanColor: "CORAL",
-    factions: ["ORIGINAL", "ORIGINAL"],
+    factions,
     allowDuplicateFactions: true,
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
@@ -225,10 +243,11 @@ function setupWith(seed = 2): MatchSetupV7 {
 function arena(
   pieces: readonly Piece[],
   villages: readonly CoordV7[],
+  factions?: MatchSetupV7["factions"],
 ): GameStateV7 {
   // pulp_wars-wwc: the revision-15 seed-2 board this siege layout was
   // written for (revision 16 floors capital growth and changes the board).
-  const base = revision15PlayableGameV7(setupWith()).state;
+  const base = revision15PlayableGameV7(setupWith(2, factions)).state;
   const seat = (index: number) =>
     required(base.players.find((player) => player.seat === index));
   let nextEntityId = base.nextEntityId;
@@ -289,6 +308,14 @@ function arena(
       .map((city) => ({ ...city, cityActionAvailable: false }))
       .sort((left, right) => left.id - right.id),
     units,
+    // A Martian seat's pieces start at their full Shield (empty for Humans).
+    shields: units.flatMap((unit) => {
+      const shield = unitShieldMaximumV7(
+        { players: base.players, mindControlled: [] },
+        unit,
+      );
+      return shield > 0 ? [{ unitId: unit.id, shield }] : [];
+    }),
     treasureChests: base.treasureChests.filter(
       (chest) => !cleared.some((at) => same(at, chest)),
     ),

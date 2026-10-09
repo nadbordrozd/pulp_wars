@@ -214,6 +214,11 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         crumbs,
         splattedThisTurn,
         tossedThisTurn,
+        // `pulp_wars-jdb.12`: and the three empty Candy redesign lists (was
+        // hashed with them in, so the pin failed).
+        stuck,
+        toothache,
+        glazedThisTurn,
         // `pulp_wars-w49.15`: and the empty hunted list (Pack Hunt).
         huntedThisTurn,
         // `pulp_wars-w49.35`: and the empty Berserk list.
@@ -250,6 +255,7 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         [],
         [],
       ]);
+      expect([stuck, toothache, glazedThisTurn]).toEqual([[], [], []]);
       const revision18State = {
         ...withoutMonsters,
         setup: setupBefore,

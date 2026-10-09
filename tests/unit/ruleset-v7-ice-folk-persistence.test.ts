@@ -136,8 +136,14 @@ describe("Ice Folk persistence (section 15)", () => {
       );
       play(cast as CommandV7);
     }
-    for (let seat = 0; seat < 4; seat += 1) play({ kind: "END_TURN" });
-    expect(state.turnOrder[state.activeSeatIndex]).toBe(iceId);
+    // Was four End Turns back to the Ice Folk with the list still non-empty
+    // (the Chill timing): a freeze cast on the Ice Folk turn gives
+    // `turnsLeft` 1 and thaws at the end of its owner's next turn
+    // (`pulp_wars-w49.37`, section 21.2), so after a full round the list is
+    // always empty. One End Turn: the next seat is active, its units still
+    // Frozen.
+    play({ kind: "END_TURN" });
+    expect(state.turnOrder[state.activeSeatIndex]).not.toBe(iceId);
     expect(state.frozen.length).toBeGreaterThan(0);
     expect(kinds.has("UNITS_FROZEN")).toBe(true);
     // State, replay, and save round trips.

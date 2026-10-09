@@ -106,7 +106,17 @@ describe("ruleset-7 revision-20 Normal AI: no lane heuristics", () => {
       /GameStateV7|random|Math\.random|Date\.now|STAMPEDE|stampede/,
     );
     const policy = readFileSync("src/ai/v7.ts", "utf8");
-    expect(policy).not.toMatch(/STAMPEDE|stampede|[Ll]ane/);
+    // Was no `STAMPEDE` at all: Ice Folk Freeze (`pulp_wars-w49.37`, 7r67)
+    // gave the Mammoth its own Stampede command, which the policy scores
+    // through the public `previewStampedeV7` query. That one scoring branch
+    // is the only Stampede code; no Dinosaur Stampede or lane code returns.
+    expect(policy).not.toMatch(/[Ll]ane/);
+    expect(
+      policy
+        .split("\n")
+        .filter((line) => /STAMPEDE/.test(line))
+        .map((line) => line.trim()),
+    ).toEqual(['if (command.kind === "STAMPEDE") {']);
   });
 
   it("plays the Triceratops as a line unit, whatever its SIEGE label", () => {

@@ -698,7 +698,17 @@ describe("the Submarine is public like any unit, and no more", () => {
       queryPlayerCommandsV7(without),
     );
     expect(withBranch.cities).toEqual(without.cities);
-    expect(withBranch.leaderboard).toEqual(without.leaderboard);
+    // Was the whole leaderboard: since score and modes (`pulp_wars-kaw6.2`,
+    // 7r65) each entry carries the player's public score total, and its
+    // Technology factor moves with research. The score spec rules that
+    // acceptable (docs/product/RULESET_7_SCORE_AND_STARS.md section 3.4 and
+    // C10: a total names no technology), so the rest of each entry must
+    // match.
+    const withoutScore = (entries: typeof without.leaderboard) =>
+      entries.map((entry) => ({ ...entry, score: 0 }));
+    expect(withoutScore(withBranch.leaderboard)).toEqual(
+      withoutScore(without.leaderboard),
+    );
   });
 });
 

@@ -24,6 +24,12 @@ export function normalizedInitialState(state: GameStateV7): string {
     crumbs: _crumbs,
     splattedThisTurn: _splatted,
     tossedThisTurn: _tossed,
+    // The Candy redesign (`pulp_wars-jdb.12`, 7r68) adds three more lists,
+    // empty in every initial state (was hashed with them in, so the pin
+    // failed).
+    stuck: _stuck,
+    toothache: _toothache,
+    glazedThisTurn: _glazed,
     // The Dinosaur pass, correction (`pulp_wars-w49.15`) adds the
     // `huntedThisTurn` list, empty in every initial state.
     huntedThisTurn: _hunted,
@@ -62,7 +68,16 @@ export function normalizedInitialState(state: GameStateV7): string {
     throw new Error("a ninth-unit fact in an initial state");
   if (_barricades.length !== 0)
     throw new Error("a Barricade in an initial state");
-  if (_rush.length + _crumbs.length + _splatted.length + _tossed.length !== 0)
+  if (
+    _rush.length +
+      _crumbs.length +
+      _splatted.length +
+      _tossed.length +
+      _stuck.length +
+      _toothache.length +
+      _glazed.length !==
+    0
+  )
     throw new Error("a Candy fact in an initial state");
   if (_hunted.length !== 0)
     throw new Error("a hunted unit in an initial state");

@@ -181,6 +181,12 @@ function missionStateHash(state: GameStateV7): string {
     crumbs,
     splattedThisTurn,
     tossedThisTurn,
+    // The Candy redesign (`pulp_wars-jdb.12`, 7r68) added three more lists,
+    // empty in every initial state and left out too (was hashed with them
+    // in, so every pin failed).
+    stuck,
+    toothache,
+    glazedThisTurn,
     // The Dinosaur pass, correction (`pulp_wars-w49.15`) added the
     // `huntedThisTurn` list, empty in every initial state and left out too.
     huntedThisTurn,
@@ -226,6 +232,7 @@ function missionStateHash(state: GameStateV7): string {
     [],
     [],
   ]);
+  expect([stuck, toothache, glazedThisTurn]).toEqual([[], [], []]);
   return canonicalHash({
     ...rest,
     chilled: frozen,
@@ -333,6 +340,10 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
     crumbs,
     splattedThisTurn,
     tossedThisTurn,
+    // The Candy redesign (`pulp_wars-jdb.12`, 7r68): left out too.
+    stuck,
+    toothache,
+    glazedThisTurn,
     huntedThisTurn,
     // Goblin explosions and Berserk (`pulp_wars-w49.35`) added the
     // `berserkThisTurn` list, empty in every initial state and left out too.
@@ -368,6 +379,7 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
     [],
     [],
   ]);
+  expect([stuck, toothache, glazedThisTurn]).toEqual([[], [], []]);
   return canonicalHash({
     ...rest,
     chilled: frozen,

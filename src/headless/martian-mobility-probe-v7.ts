@@ -648,6 +648,12 @@ export function probeStepOnCenterV7(
     const end = moveEnd(command);
     const unit = view.units.find((item) => item.id === command.unitId);
     if (end === undefined || unit === undefined || !same(end, center)) continue;
+    // Was any unit: since `pulp_wars-ke95` a flyer may end on a hostile
+    // center, and the highest-HP mover was then the pulling Mothership.
+    // Like `probeStepperV7` (and the policy's `policyCapturerV7`), a flyer
+    // is no stepper.
+    if (unit.form === "LAND" && unitMovementModeV7(view, unit) === "FLY")
+      continue;
     if (
       best === null ||
       unit.hp > best.hp ||
