@@ -9,6 +9,11 @@ import type {
   SupportEffectV7,
 } from "../render/canvas/presentation-plan-v7";
 import type { SoundIdV1 } from "./sound-manifest";
+import {
+  GIANT_EFFECT_BEAT_V7,
+  GIANT_EFFECT_DURATIONS_V7,
+  type GiantFeedbackEffectV7,
+} from "../render/canvas/giant-effects-v7";
 
 /**
  * Which sounds an accepted command makes (bead pulp_wars-2yc.10,
@@ -45,6 +50,28 @@ const ATTACK_EFFECT_SOUNDS: Readonly<
   GUMBALL_SHOT: { launch: "attack.pop", impact: "impact.hit" },
   // Bead pulp_wars-eu3r.4: the Battleship's broadside and its area blast.
   BROADSIDE: { launch: "attack.cannon", impact: "impact.explosion" },
+};
+
+/**
+ * The giants' signatures (`pulp_wars-w49.32`): each cue's opening sound (or
+ * none) and the sound of its beat, at GIANT_EFFECT_BEAT_V7.
+ */
+const GIANT_EFFECT_SOUNDS_V7: Readonly<
+  Record<
+    GiantFeedbackEffectV7,
+    { readonly start: SoundIdV1 | null; readonly hit: SoundIdV1 }
+  >
+> = {
+  CRUSH: { start: null, hit: "impact.heavy" },
+  SWALLOW: { start: "support.drain", hit: "special.pop" },
+  DIGEST: { start: null, hit: "support.dark" },
+  REGURGITATE: { start: "support.dark", hit: "impact.splat" },
+  TOSS: { start: "attack.siege", hit: "special.puff" },
+  STOMP: { start: null, hit: "impact.explosion" },
+  TRAMPLE: { start: null, hit: "impact.heavy" },
+  SHARDS: { start: "special.freeze", hit: "impact.ice" },
+  HAMMER: { start: "attack.melee", hit: "impact.heavy" },
+  BREAK_OFF: { start: "special.pop", hit: "special.sparkle" },
 };
 
 const SUPPORT_SOUNDS: Readonly<Record<SupportEffectV7, SoundIdV1>> = {
@@ -295,6 +322,23 @@ export function soundCuesForStepV7(
           return [{ id: "economy.harvest", delayMs: 0 }];
       }
       return [];
+    case "GIANT": {
+      // The giants' signatures (`pulp_wars-w49.32`): each cue's sound at
+      // its beat (the thud, the gulp, the throw and landing, the slam).
+      const durationMs = GIANT_EFFECT_DURATIONS_V7[step.effect];
+      const hitMs = durationMs * GIANT_EFFECT_BEAT_V7[step.effect];
+      const sounds = GIANT_EFFECT_SOUNDS_V7[step.effect];
+      const hammerKills =
+        step.effect === "HAMMER" &&
+        [...deadUnitIds(cue.envelope)].some((id) => step.unitIds.includes(id));
+      return [
+        ...(sounds.start === null ? [] : [{ id: sounds.start, delayMs: 0 }]),
+        { id: sounds.hit, delayMs: hitMs },
+        ...(hammerKills
+          ? [{ id: "unit.death" as const, delayMs: hitMs + DEATH_AFTER_HIT_MS }]
+          : []),
+      ];
+    }
     case "DINOSAUR":
       switch (step.effect) {
         case "CHARGE_HIT":

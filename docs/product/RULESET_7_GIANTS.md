@@ -20,7 +20,18 @@ Gingerbread Men for 10 HP, no slot needed); the draft, critique, balance
 reasoning, and AI notes below still describe the design's single Trooper.
 [The current rules](RULESET_7_CURRENT.md#111-the-giants-signatures) hold
 the built rules and are authoritative. Not yet built: the Normal AI's use
-of the signatures (`pulp_wars-w49.31`) and the presentation (section 10).
+of the signatures (`pulp_wars-w49.31`).
+
+**Built (presentation, `pulp_wars-w49.32`).** Section 10: the four
+commands' buttons and board targeting
+([board targeting 3.6](../ui/BOARD_TARGETING.md#36-the-giants-signatures-bead-pulp_wars-w4932)),
+the preview text, the unit cards and the swallowed victim's badge, the
+city panel's Walls, the glossary, the reward line, and the code-drawn cues
+with their sounds and reduced-motion frames
+([attack effects](../art/ATTACK_EFFECTS.md#the-giants-signatures-bead-pulp_wars-w4932)).
+The Gingerbread Men are the Gingerbread Giant's sprite drawn smaller (no
+new art). The general Help keeps no faction text, so the signatures are
+explained in the unit glossary and on the unit card.
 
 **The user's ask.** 2026-10-08: "review the giant units of all factions and
 give them unique abilities; they are very samey now". Epic `w49` point 7:

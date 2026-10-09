@@ -79,6 +79,13 @@ const EVERY_FAMILY: Readonly<
   BARRICADE: "PLACE",
   REBAKE: "PLACE",
   FREEZE: "PLACE",
+  // The giants' signatures (`pulp_wars-w49.32`).
+  SWALLOW: "ATTACK",
+  STOMP: "ATTACK",
+  TOSS_PASSENGER: "SUPPORT",
+  TOSS: "PLACE",
+  BREAK_OFF_FIRST: "PLACE",
+  BREAK_OFF: "PLACE",
 };
 
 describe("target highlight vocabulary", () => {

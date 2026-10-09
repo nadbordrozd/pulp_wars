@@ -72,6 +72,18 @@ import {
   frozenSlideUiFixtureV7,
 } from "../fixtures/v7-frozen-sea-ui";
 import { riftUiFixtureV7 } from "../fixtures/v7-rift-ui";
+import {
+  giantsBreakOffFixtureV7,
+  giantsCrushFixtureV7,
+  giantsGingerbreadFixtureV7,
+  giantsGlacialFixtureV7,
+  giantsOverstrideFixtureV7,
+  giantsSiegeRazedFixtureV7,
+  giantsStompFixtureV7,
+  giantsSwallowFixtureV7,
+  giantsSwallowedFixtureV7,
+  giantsTossFixtureV7,
+} from "../fixtures/v7-giants-ui";
 import { undeadShowcaseFixtureV7 } from "../fixtures/v7-undead-ui";
 
 /**
@@ -90,11 +102,15 @@ const STAGE_FAMILIES = new Set([
   "TUNNEL_DESTINATION",
   "BOMB_TARGET",
   "BEAM_DOWN_PASSENGER",
+  // The giants' signatures (`pulp_wars-w49.32`): the Goblin to throw, and
+  // the first Gingerbread Man's tile.
+  "TOSS_PASSENGER",
+  "BREAK_OFF_FIRST",
 ]);
 /** These toggle or adjust an aimed ability without finishing it. */
 const ADJUST_FAMILIES = new Set(["TUNNEL_PASSENGER", "TUNNEL_RIDER"]);
 const ABILITY_BUTTONS =
-  ".v7-selection-dock [data-dwarf-ability]:not([aria-disabled='true']), .v7-selection-dock [data-martian-ability]:not([aria-disabled='true']), .v7-selection-dock [data-ice-folk-ability]:not([aria-disabled='true']), .v7-selection-dock [data-candy-ability]:not([aria-disabled='true']), .v7-selection-dock [data-naval-ability]:not([aria-disabled='true']), .v7-selection-dock [data-freeze-ability]:not([aria-disabled='true'])";
+  ".v7-selection-dock [data-dwarf-ability]:not([aria-disabled='true']), .v7-selection-dock [data-martian-ability]:not([aria-disabled='true']), .v7-selection-dock [data-ice-folk-ability]:not([aria-disabled='true']), .v7-selection-dock [data-candy-ability]:not([aria-disabled='true']), .v7-selection-dock [data-naval-ability]:not([aria-disabled='true']), .v7-selection-dock [data-freeze-ability]:not([aria-disabled='true']), .v7-selection-dock [data-giant-ability]:not([aria-disabled='true'])";
 
 /**
  * The fixtures, and steps each sweep must reach (so a fixture that stops
@@ -201,6 +217,27 @@ const FIXTURES: readonly (readonly [
   ["Frozen sea: slide", frozenSlideUiFixtureV7, []],
   ["Frozen sea: slip", () => frozenSlideUiFixtureV7({ slipper: true }), []],
   ["Frozen sea: icebound", frozenIceboundUiFixtureV7, []],
+  // The giants' signatures (`pulp_wars-w49.32`): each of the four commands
+  // aimed and picked on the board, the attack and Move previews, the held
+  // victim, the Gingerbread Men and razed Walls.
+  ["Giants: Crushing Shove", giantsCrushFixtureV7, []],
+  ["Giants: Swallow", giantsSwallowFixtureV7, ["giant-swallow aimed"]],
+  ["Giants: held victim", giantsSwallowedFixtureV7, []],
+  [
+    "Giants: Goblin Toss",
+    giantsTossFixtureV7,
+    ["giant-toss aimed", "giant-toss stage 1"],
+  ],
+  ["Giants: Thunder Stomp", giantsStompFixtureV7, ["giant-stomp aimed"]],
+  ["Giants: Overstride", giantsOverstrideFixtureV7, []],
+  ["Giants: Glacial Smash", giantsGlacialFixtureV7, []],
+  ["Giants: Siege Hammer", giantsSiegeRazedFixtureV7, []],
+  [
+    "Giants: Break Off",
+    giantsBreakOffFixtureV7,
+    ["giant-break-off aimed", "giant-break-off stage 1"],
+  ],
+  ["Giants: Gingerbread Men", giantsGingerbreadFixtureV7, []],
   [
     "Frozen sea: icebound victim",
     () => frozenIceboundUiFixtureV7({ victim: true }),

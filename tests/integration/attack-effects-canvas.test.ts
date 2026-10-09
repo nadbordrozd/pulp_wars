@@ -5,6 +5,7 @@ import {
   applyCommandV7,
   projectEventsV7,
   viewForV7,
+  type CommandV7,
   type CoordV7,
   type GameStateV7,
   type PlayerViewV7,
@@ -15,6 +16,15 @@ import {
 } from "../../src/render/canvas/attack-effects-v7";
 import { CanvasBoardHostV7 } from "../../src/render/canvas/board-host-v7";
 import { martianFieldV7 } from "../fixtures/v7-martian";
+import {
+  GIANT_EFFECT_DURATIONS_V7,
+  giantReducedMotionProgressV7,
+} from "../../src/render/canvas/giant-effects-v7";
+import {
+  GIANTS_UI_V7,
+  giantsStompFixtureV7,
+  giantsTossFixtureV7,
+} from "../fixtures/v7-giants-ui";
 import {
   UNDEAD_SHOWCASE_V7,
   undeadShowcaseFixtureV7,
@@ -67,14 +77,39 @@ function battleshipShot() {
   );
 }
 
+/** The giants' signatures (`pulp_wars-w49.32`): the Brontosaurus stomps. */
+function stomp() {
+  return commandOf(giantsStompFixtureV7(), (view) => ({
+    kind: "STOMP",
+    unitId: unitAt(view, GIANTS_UI_V7.stomp.brontosaurus).id,
+  }));
+}
+
+/** The Troll throws its Goblin next to the two Humans. */
+function toss() {
+  return commandOf(giantsTossFixtureV7(), (view) => ({
+    kind: "TOSS",
+    unitId: unitAt(view, GIANTS_UI_V7.toss.troll).id,
+    passengerUnitId: unitAt(view, GIANTS_UI_V7.toss.goblin).id,
+    at: GIANTS_UI_V7.toss.landing,
+  }));
+}
+
 function shotOf(state: GameStateV7, from: CoordV7, to: CoordV7) {
-  const actor = state.humanPlayerId;
-  const before = viewForV7(state, actor);
-  const result = applyCommandV7(state, actor, {
+  return commandOf(state, (before) => ({
     kind: "ATTACK",
     unitId: unitAt(before, from).id,
     targetUnitId: unitAt(before, to).id,
-  });
+  }));
+}
+
+function commandOf(
+  state: GameStateV7,
+  command: (view: PlayerViewV7) => CommandV7,
+) {
+  const actor = state.humanPlayerId;
+  const before = viewForV7(state, actor);
+  const result = applyCommandV7(state, actor, command(before));
   if (!result.accepted) throw new Error(result.error.code);
   return {
     before,
@@ -85,7 +120,7 @@ function shotOf(state: GameStateV7, from: CoordV7, to: CoordV7) {
 
 function setUp(
   motion: "FULL" | "REDUCED",
-  shot: ReturnType<typeof shotOf> = lichShot(),
+  shot: ReturnType<typeof commandOf> = lichShot(),
 ) {
   let now = 0;
   vi.spyOn(window.performance, "now").mockImplementation(() => now);
@@ -267,6 +302,73 @@ describe("Attack cues on the board host", () => {
     scene.host.finishPresentations();
     await presentation;
     expect(scene.arrowStrokes).toEqual([]);
+    scene.host.destroy();
+  });
+});
+
+describe("The giants' signature cues on the board host (bead pulp_wars-w49.32)", () => {
+  it("plays the Thunder Stomp on its own timeline and shakes the board after the slam", async () => {
+    const scene = setUp("FULL", stomp());
+    const board = scene.effects.parentElement?.querySelector<HTMLCanvasElement>(
+      "canvas.board-canvas-v7",
+    );
+    const presentation = scene.host.presentBoundary(
+      scene.shot.before,
+      scene.shot.after,
+      scene.shot.envelope,
+    );
+    const duration = GIANT_EFFECT_DURATIONS_V7.STOMP;
+    scene.step(duration * 0.1);
+    expect(scene.effects.dataset.giantEffect).toBe("STOMP");
+    expect(Number(scene.effects.dataset.giantProgress)).toBeCloseTo(0.1, 2);
+    expect(board?.style.transform ?? "").toBe("");
+    scene.step(duration * 0.32);
+    expect(Number(scene.effects.dataset.giantProgress)).toBeCloseTo(0.32, 2);
+    expect(scene.effects.style.transform).toMatch(/^translateX\(/);
+    scene.step(duration);
+    // The three hits' damage cues follow; the shake has settled.
+    await waitUntil(() => scene.effects.dataset.giantEffect === undefined);
+    expect(scene.effects.style.transform).toBe("");
+    scene.host.finishPresentations();
+    await presentation;
+    scene.host.destroy();
+  });
+
+  it("holds one frame of the Stomp under reduced motion, without a shake", async () => {
+    const scene = setUp("REDUCED", stomp());
+    const presentation = scene.host.presentBoundary(
+      scene.shot.before,
+      scene.shot.after,
+      scene.shot.envelope,
+    );
+    expect(scene.effects.dataset.giantEffect).toBe("STOMP");
+    expect(Number(scene.effects.dataset.giantProgress)).toBeCloseTo(
+      giantReducedMotionProgressV7("STOMP"),
+      3,
+    );
+    expect(scene.effects.style.transform).toBe("");
+    scene.step(1_000);
+    await waitUntil(() => scene.effects.dataset.giantEffect === undefined);
+    scene.host.finishPresentations();
+    await presentation;
+    scene.host.destroy();
+  });
+
+  it("throws the Goblin over the board", async () => {
+    const scene = setUp("FULL", toss());
+    const presentation = scene.host.presentBoundary(
+      scene.shot.before,
+      scene.shot.after,
+      scene.shot.envelope,
+    );
+    const duration = GIANT_EFFECT_DURATIONS_V7.TOSS;
+    scene.step(duration * 0.4);
+    expect(scene.effects.dataset.giantEffect).toBe("TOSS");
+    expect(Number(scene.effects.dataset.giantProgress)).toBeCloseTo(0.4, 2);
+    scene.step(duration);
+    await waitUntil(() => scene.effects.dataset.giantEffect === undefined);
+    scene.host.finishPresentations();
+    await presentation;
     scene.host.destroy();
   });
 });

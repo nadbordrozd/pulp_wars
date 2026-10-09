@@ -328,6 +328,37 @@ arrow, the icebound marker).
   owner, one disabled "Sail" button with the reason. Board's own reason
   for an icebound boarder is in section 3.4.
 
+### 3.6 The giants' signatures (bead `pulp_wars-w49.32`)
+
+Each faction's giant has one signature
+([rules](../product/RULESET_7_CURRENT.md#111-the-giants-signatures)).
+Four of them are commands, and each gets **one button** in the dock that
+arms an aiming panel. The other four are part of an Attack or a Move, so
+they have no button and appear in that target's preview. Code:
+`src/render/giant-presentation-v7.ts` (the words) and
+`src/render/canvas/giant-board-plan-v7.ts` (the targets).
+
+| Faction  | Signature      | Class | How it is chosen                                                                                                                                                                                                                                                 | Style                       |
+| -------- | -------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| Human    | Crushing Shove | (c)   | Part of the Juggernaut's Attack: the preview reads "Crush 3" or "Crush 3 · 3 behind", or "Push or crush 3" when the tile behind is in fog; the unit behind takes a "−3" mark                                                                                     | Attack (the attack)         |
+| Undead   | Swallow        | (b)   | One Swallow button; each enemy it can swallow is a target labelled "Swallow · N turns"; the cursor names it, its HP and when it is digested                                                                                                                      | Attack                      |
+| Goblin   | Goblin Toss    | (b)   | One Toss button; the Goblins next to the Troll are targets badged "Throw" (one Goblin: skipped), then the landing tiles, the focused one with the Goblin's Kaboom! area previewed                                                                                | Help, then Place            |
+| Dinosaur | Thunder Stomp  | (c)   | One Stomp button opens a panel with its confirmation ("Stomp"); the 3 x 3 area is drawn, each enemy hit is a target with its "−4" (any of them, or the confirmation, stomps) and each Field Defense reads "Smash"; the panel's summary counts the hits and kills | Attack, and an area preview |
+| Martian  | Overstride     | (c)   | Part of the Colossus's Move: a Move through enemies reads "Trample −3" and marks each trampled unit                                                                                                                                                              | Move                        |
+| Ice Folk | Glacial Smash  | (c)   | Part of the Frost Giant's Attack on a Chilled unit: the preview adds "Glacial Smash"                                                                                                                                                                             | Attack (the attack)         |
+| Dwarf    | Siege Hammer   | (c)   | Part of the Titan's Attack: "Siege Hammer: no fortification", and "Tears down the Walls" on a walled city centre; the Breach note is not shown                                                                                                                   | Attack (the attack)         |
+| Candy    | Break Off      | (b)   | One Break Off button; the free tiles next to the Giant are targets, the first pick is labelled "Gingerbread Man", then the second tile is picked; the panel's summary gives the HP before and after                                                              | Place                       |
+
+The aiming panel holds the "?" (the instruction), Stomp's confirmation
+where it applies, Back for a two-step pick (Toss and Break Off: back to
+the first step) and Cancel. Escape steps back the same way, then disarms.
+A button that cannot be used is shown disabled with the first failing
+rule: "Already acted this turn", "It moved this turn" (Stomp), "Its belly
+is full", "No enemy of 12 HP or less next to it", "No Goblin next to it",
+"Needs more than 10 HP", "It has no home city", "Not at sea", and the
+like. While a panel is open the unit card hides its signature line, so
+the panel fits a phone.
+
 ## 4. The aiming panel
 
 While an ability is armed the dock shows its aiming panel in place of the
@@ -391,6 +422,16 @@ for tools; it is never read out.
   the CHIBI look, arms Freeze and picks its tile on the board at desktop
   and phone widths, casts the Witch's ring, slides a Sled across a bridge
   to the far shore, and reads an icebound ship's crush.
+- `tests/unit/ruleset7-giants-presentation.test.ts` and
+  `tests/integration/ruleset7-giants-dom.test.ts` (section 3.6, scenes in
+  `tests/fixtures/v7-giants-ui.ts`): the four picks and their families,
+  labels and summaries, the reasons, the Crush, Siege Hammer, Glacial
+  Smash and Trample preview text, a board pick sends the offered command,
+  Back, Escape and Cancel, the swallowed victim's chip, the city's Walls
+  and the reward line. The guard test sweeps the giants' scenes too.
+  `scripts/browser-giants-review-v7.ts` (dev server only) captures each
+  signature's button, aiming panel and preview at desktop and phone
+  widths.
 - `scripts/browser-board-targeting-review-v7.ts` (dev server only)
   captures every style on the faction fixtures, on Grass, Snow, a Forest,
   Mountains and the Undead ground, at desktop and phone widths, the area

@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   applyCommandV7,
   FACTION_IDS_V7,
+  GIANT_SIGNATURES_V7,
+  queryPlayerCommandsV7,
+  type CommandV7,
   projectEventsV7,
   UNIT_ROLE_IDS_V7,
   viewForV7,
@@ -37,6 +40,36 @@ import {
   corePresentationPlanV7,
   type CorePresentationStepV7,
 } from "../../src/render/canvas/presentation-plan-v7";
+import {
+  GIANT_EFFECT_BEAT_V7,
+  GIANT_EFFECT_DURATIONS_V7,
+  GIANT_FEEDBACK_EFFECTS_V7,
+  GIANT_SIGNATURE_CUES_V7,
+  drawGiantFeedbackV7,
+  giantBoardShakeCssPxV7,
+  giantEffectPlanV7,
+  giantReducedMotionProgressV7,
+  giantUnitPulsesV7,
+  type GiantFeedbackEffectV7,
+  type GiantFeedbackV7,
+} from "../../src/render/canvas/giant-effects-v7";
+import { soundCuesForStepV7 } from "../../src/audio/sound-events-v7";
+import { CANDY_PALETTE_V7 } from "../../src/assets/chibi-direction-candy-presentation";
+import { DWARF_PALETTE_V7 } from "../../src/assets/chibi-direction-dwarf-presentation";
+import { ICE_FOLK_PALETTE_V7 } from "../../src/assets/chibi-direction-ice-folk-presentation";
+import { MARTIAN_PALETTE_V7 } from "../../src/assets/chibi-direction-martian-presentation";
+import {
+  GIANTS_UI_V7,
+  giantsBreakOffFixtureV7,
+  giantsCrushFixtureV7,
+  giantsGlacialFixtureV7,
+  giantsOverstrideFixtureV7,
+  giantsSiegeFixtureV7,
+  giantsStompFixtureV7,
+  giantsSwallowFixtureV7,
+  giantsSwallowedFixtureV7,
+  giantsTossFixtureV7,
+} from "../fixtures/v7-giants-ui";
 import { DWARF_UI_V7, dwarfUiFixtureV7 } from "../fixtures/v7-dwarf-ui";
 import { goblinArenaV7 } from "../fixtures/v7-goblin-arena";
 import { martianFieldV7 } from "../fixtures/v7-martian";
@@ -582,5 +615,407 @@ describe("Attack cue drawing", () => {
     };
     expect(radius(1)).toBeLessThan(radius());
     expect(radius() / radius(1)).toBeCloseTo(ATTACK_EFFECT_SCALE_V7, 5);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The giants' signatures (`pulp_wars-w49.32`, docs/art/ATTACK_EFFECTS.md
+// "The giants' signatures"): eight code-drawn cues in the manner of the
+// attack cues, planned from the real commands of the hand-built scenes of
+// tests/fixtures/v7-giants-ui.ts, each with its sound and its
+// reduced-motion frame.
+
+/** The plan of the human seat's `command` on `state`. */
+function commandSteps(
+  state: GameStateV7,
+  command: (view: PlayerViewV7) => CommandV7,
+): readonly CorePresentationStepV7[] {
+  const actor = state.humanPlayerId;
+  const before = viewForV7(state, actor);
+  const result = applyCommandV7(state, actor, command(before));
+  if (!result.accepted) throw new Error(result.error.code);
+  return corePresentationPlanV7(
+    before,
+    projectEventsV7(state, result.state, actor, result.events),
+    viewForV7(result.state, actor),
+  );
+}
+
+const giantSteps = (steps: readonly CorePresentationStepV7[]) =>
+  steps.filter(
+    (step): step is Extract<CorePresentationStepV7, { kind: "GIANT" }> =>
+      step.kind === "GIANT",
+  );
+
+const giantFeedback = (
+  effect: GiantFeedbackEffectV7,
+  progress: number,
+  extra: Partial<GiantFeedbackV7> = {},
+): GiantFeedbackV7 => ({
+  effect,
+  from,
+  cells: [to, { x: 4, y: 2 }],
+  amounts: [3, 4],
+  progress,
+  ...extra,
+});
+
+describe("The giants' signature cues (bead pulp_wars-w49.32)", () => {
+  it("gives each of the eight signatures a cue, short, with a frame to hold", () => {
+    expect(Object.keys(GIANT_SIGNATURE_CUES_V7).sort()).toEqual(
+      [...GIANT_SIGNATURES_V7].sort(),
+    );
+    expect(new Set(Object.values(GIANT_SIGNATURE_CUES_V7)).size).toBe(8);
+    for (const effect of GIANT_FEEDBACK_EFFECTS_V7) {
+      expect(GIANT_EFFECT_DURATIONS_V7[effect], effect).toBeGreaterThanOrEqual(
+        400,
+      );
+      expect(GIANT_EFFECT_DURATIONS_V7[effect], effect).toBeLessThanOrEqual(
+        640,
+      );
+      expect(GIANT_EFFECT_BEAT_V7[effect], effect).toBeLessThan(1);
+      const held = giantReducedMotionProgressV7(effect);
+      expect(held, effect).toBeGreaterThan(0.3);
+      expect(held, effect).toBeLessThan(0.6);
+      // The held frame draws something.
+      const { context, log } = recordingContext();
+      drawGiantFeedbackV7(context, camera, giantFeedback(effect, held));
+      expect(
+        log.some((call) => call[0] === "fill" || call[0] === "stroke"),
+        effect,
+      ).toBe(true);
+    }
+    // Only the Stomp shakes the board, after its slam.
+    expect(giantBoardShakeCssPxV7("STOMP", 0.1)).toBe(0);
+    expect(Math.abs(giantBoardShakeCssPxV7("STOMP", 0.3))).toBeGreaterThan(0);
+    expect(giantBoardShakeCssPxV7("CRUSH", 0.3)).toBe(0);
+  });
+
+  it("plans a Crushing Shove's thud after the attack, then each hit", () => {
+    const at = GIANTS_UI_V7.crush;
+    const steps = commandSteps(giantsCrushFixtureV7(), (view) => ({
+      kind: "ATTACK",
+      unitId: unitAt(view, at.juggernaut).id,
+      targetUnitId: unitAt(view, at.blocked).id,
+    }));
+    expect(steps[0]).toMatchObject({ kind: "MELEE", to: at.blocked });
+    const [crush] = giantSteps(steps);
+    expect(crush).toMatchObject({
+      effect: "CRUSH",
+      from: at.juggernaut,
+      cells: [at.blocked, at.blocker],
+      amounts: [3, 3],
+    });
+    const index = steps.indexOf(crush as CorePresentationStepV7);
+    expect(steps.slice(index + 1, index + 3)).toMatchObject([
+      { kind: "DAMAGE", at: at.blocked, damage: 3 },
+      { kind: "DAMAGE", at: at.blocker, damage: 3 },
+    ]);
+  });
+
+  it("plans a Swallow's gulp, the Goblin's throw, the Stomp and the Break Off", () => {
+    const swallow = GIANTS_UI_V7.swallow;
+    expect(
+      giantSteps(
+        commandSteps(giantsSwallowFixtureV7(), (view) => ({
+          kind: "SWALLOW",
+          unitId: unitAt(view, swallow.abomination).id,
+          targetUnitId: unitAt(view, swallow.knight).id,
+        })),
+      ),
+    ).toMatchObject([
+      { effect: "SWALLOW", from: swallow.abomination, cells: [swallow.knight] },
+    ]);
+    const toss = GIANTS_UI_V7.toss;
+    const thrown = commandSteps(giantsTossFixtureV7(), (view) => ({
+      kind: "TOSS",
+      unitId: unitAt(view, toss.troll).id,
+      passengerUnitId: unitAt(view, toss.goblin).id,
+      at: toss.landing,
+    }));
+    expect(giantSteps(thrown)).toMatchObject([
+      { effect: "TOSS", from: toss.troll, cells: [toss.goblin, toss.landing] },
+    ]);
+    const stomp = GIANTS_UI_V7.stomp;
+    const stomped = commandSteps(giantsStompFixtureV7(), (view) => ({
+      kind: "STOMP",
+      unitId: unitAt(view, stomp.brontosaurus).id,
+    }));
+    expect(giantSteps(stomped)).toMatchObject([
+      { effect: "STOMP", from: stomp.brontosaurus, amounts: [4, 4, 4] },
+    ]);
+    expect(stomped.filter((step) => step.kind === "DAMAGE")).toHaveLength(3);
+    const breakOff = GIANTS_UI_V7.breakOff;
+    const [broke] = giantSteps(
+      commandSteps(giantsBreakOffFixtureV7(), (view) => ({
+        kind: "BREAK_OFF",
+        unitId: unitAt(view, breakOff.giant).id,
+        tiles: [breakOff.first, breakOff.second],
+      })),
+    );
+    expect(broke).toMatchObject({
+      effect: "BREAK_OFF",
+      from: breakOff.giant,
+      cells: [breakOff.first, breakOff.second],
+    });
+    expect(broke?.unitIds).toHaveLength(2);
+  });
+
+  it("plans the trample after the Overstride, the shards after the shatter, the hammer as the Titan's blow", () => {
+    const stride = GIANTS_UI_V7.overstride;
+    const strideSteps = commandSteps(giantsOverstrideFixtureV7(), (view) => {
+      const colossus = unitAt(view, stride.colossus);
+      const move = queryPlayerCommandsV7(view).find(
+        (command) =>
+          command.kind === "MOVE" &&
+          command.unitId === colossus.id &&
+          command.path.at(-1)?.x === stride.beyond.x &&
+          command.path.at(-1)?.y === stride.beyond.y,
+      );
+      if (move === undefined) throw new Error("no Overstride Move");
+      return move;
+    });
+    expect(strideSteps[0]).toMatchObject({ kind: "MOVE" });
+    expect(giantSteps(strideSteps)).toMatchObject([
+      { effect: "TRAMPLE", cells: [stride.fighter], amounts: [3] },
+    ]);
+    const glacial = GIANTS_UI_V7.glacial;
+    const smash = commandSteps(giantsGlacialFixtureV7(), (view) => ({
+      kind: "ATTACK",
+      unitId: unitAt(view, glacial.frostGiant).id,
+      targetUnitId: unitAt(view, glacial.target).id,
+    }));
+    const shatter = smash.findIndex(
+      (step) => step.kind === "ICE_FOLK" && step.effect === "SHATTER",
+    );
+    const [shards] = giantSteps(smash);
+    expect(shatter).toBeGreaterThanOrEqual(0);
+    expect(smash.indexOf(shards as CorePresentationStepV7)).toBe(shatter + 1);
+    expect(shards).toMatchObject({ effect: "SHARDS", from: glacial.target });
+    // Seven tiles: never back at the Frost Giant.
+    expect(shards?.cells).toHaveLength(7);
+    expect(
+      shards?.cells.some(
+        (cell) =>
+          cell.x === glacial.frostGiant.x && cell.y === glacial.frostGiant.y,
+      ),
+    ).toBe(false);
+    expect(shards?.marks).toEqual(
+      expect.arrayContaining([glacial.shardFighter, glacial.shardKnight]),
+    );
+    // The shards' Chill is the cue's, not a Cold Aura of its own.
+    expect(
+      smash.some(
+        (step) => step.kind === "ICE_FOLK" && step.effect === "COLD_AURA",
+      ),
+    ).toBe(false);
+    const siege = GIANTS_UI_V7.siege;
+    const blow = commandSteps(giantsSiegeFixtureV7(), (view) => ({
+      kind: "ATTACK",
+      unitId: unitAt(view, siege.titan).id,
+      targetUnitId: unitAt(view, siege.centre).id,
+    }));
+    expect(blow.some((step) => step.kind === "MELEE")).toBe(false);
+    expect(giantSteps(blow)).toMatchObject([
+      {
+        effect: "HAMMER",
+        from: siege.titan,
+        cells: [siege.centre],
+        walls: true,
+      },
+    ]);
+  });
+
+  it("plans the digest and the Zombie spat out at the Abomination's Start Turn", () => {
+    let state = giantsSwallowedFixtureV7();
+    const human = state.humanPlayerId;
+    for (let turn = 0; turn < 6; turn += 1) {
+      const actor = state.turnOrder[state.activeSeatIndex];
+      if (actor === undefined) throw new Error("no active seat");
+      const before = viewForV7(state, human);
+      const result = applyCommandV7(state, actor, { kind: "END_TURN" });
+      if (!result.accepted) throw new Error(result.error.code);
+      const steps = giantSteps(
+        corePresentationPlanV7(
+          before,
+          projectEventsV7(state, result.state, human, result.events),
+          viewForV7(result.state, human),
+        ),
+      );
+      state = result.state;
+      if (steps.some((step) => step.effect === "REGURGITATE")) {
+        expect(steps.map((step) => step.effect)).toEqual([
+          "DIGEST",
+          "REGURGITATE",
+        ]);
+        return;
+      }
+      if (steps.length > 0)
+        expect(steps).toMatchObject([{ effect: "DIGEST", amounts: [4] }]);
+    }
+    throw new Error("the Knight was never digested");
+  });
+
+  it("throws the Goblin in an arc over the board and lands it in dust", () => {
+    const toss = (progress: number) =>
+      giantEffectPlanV7(
+        giantFeedback("TOSS", progress, { cells: [from, to], amounts: [] }),
+        camera,
+      );
+    const start = worldToScreen(projectGrid(from), camera);
+    const end = worldToScreen(projectGrid(to), camera);
+    const mid = toss(0.42).flights[0];
+    expect(mid?.at.x).toBeGreaterThan(start.x);
+    expect(mid?.at.x).toBeLessThan(end.x);
+    // Well above the straight line between the two tiles.
+    expect(mid?.at.y).toBeLessThan(start.y - 80 * camera.zoom);
+    expect(Math.abs(mid?.spin ?? 0)).toBeGreaterThan(Math.PI);
+    const landed = toss(0.9);
+    expect(landed.flights).toEqual([]);
+    // The landing's dust on the landing tile.
+    expect(landed.bursts.some((burst) => burst.at === landed.cells[1])).toBe(
+      true,
+    );
+    // With the Goblin's own sprite, it is that image that cartwheels.
+    const { context, log } = recordingContext();
+    const image = { width: 56, height: 80 } as unknown as CanvasImageSource;
+    drawGiantFeedbackV7(
+      context,
+      camera,
+      giantFeedback("TOSS", 0.42, {
+        cells: [from, to],
+        sprite: { image, width: 35, height: 50 },
+      }),
+    );
+    expect(
+      log.some((call) => call[0] === "drawImage" && call[1] === image),
+    ).toBe(true);
+    expect(log.some((call) => call[0] === "rotate")).toBe(true);
+  });
+
+  it("rings the Stomp out to the 3 x 3 and floats each unit's damage", () => {
+    const stomp = (progress: number) =>
+      giantEffectPlanV7(giantFeedback("STOMP", progress), camera);
+    expect(stomp(0.1).ring).toBeNull();
+    const early = stomp(0.3).ring?.halfSize ?? 0;
+    const late = stomp(0.8).ring?.halfSize ?? 0;
+    expect(early).toBeGreaterThan(0);
+    expect(late).toBeGreaterThan(early);
+    expect(late).toBeLessThanOrEqual(1.5 * TILE_WIDTH * camera.zoom);
+    expect(stomp(0.5).floats.map((float) => float.text)).toEqual(["−3", "−4"]);
+    // Each "−N" rises as the cue goes on.
+    const first = stomp(0.4).floats[0]?.at.y ?? 0;
+    expect(stomp(0.7).floats[0]?.at.y ?? 0).toBeLessThan(first);
+  });
+
+  it("puts the crush's thud on the edge the defender could not cross", () => {
+    const plan = giantEffectPlanV7(giantFeedback("CRUSH", 0.4), camera);
+    const target = worldToScreen(projectGrid(to), camera);
+    expect(plan.bursts[0]?.at.x).toBeCloseTo(
+      target.x + (TILE_WIDTH * camera.zoom) / 2,
+    );
+    expect(plan.floats).toHaveLength(2);
+  });
+
+  it("moves the units of a cue: the victim shrinks, the men pop up, the Brontosaurus rears", () => {
+    const swallow = (progress: number) =>
+      giantUnitPulsesV7(
+        { effect: "SWALLOW", unitIds: [7], from, cells: [to], actorUnitId: 3 },
+        progress,
+        1,
+      );
+    const victim = (progress: number) =>
+      swallow(progress).find((pulse) => pulse.unitId === 7)?.scale ?? 1;
+    expect(victim(0.3)).toBeLessThan(1);
+    expect(victim(0.55)).toBeLessThan(victim(0.3));
+    expect(swallow(0.62).some((pulse) => pulse.unitId === 3)).toBe(true);
+    const men = giantUnitPulsesV7(
+      { effect: "BREAK_OFF", unitIds: [8, 9], from, cells: [to, to] },
+      0.62,
+      1,
+    );
+    expect(men.map((pulse) => pulse.unitId)).toEqual([8, 9]);
+    expect(men[0]?.scale).toBeLessThan(1.2);
+    const rear = giantUnitPulsesV7(
+      { effect: "STOMP", unitIds: [], from, cells: [], actorUnitId: 5 },
+      0.2,
+      1,
+    );
+    expect(rear[0]?.scale).toBeGreaterThan(1);
+  });
+
+  it("draws each cue in its faction's colours, the Undead ones in the live violet", () => {
+    const colours = (feedback: GiantFeedbackV7): Set<unknown> => {
+      const { context, log } = recordingContext();
+      drawGiantFeedbackV7(context, camera, feedback);
+      return new Set(
+        log
+          .filter(
+            (call) =>
+              call[0] === "set" &&
+              (call[1] === "fillStyle" || call[1] === "strokeStyle"),
+          )
+          .map((call) => call[2]),
+      );
+    };
+    expect(
+      colours(giantFeedback("SHARDS", 0.3)).has(ICE_FOLK_PALETTE_V7.ice),
+    ).toBe(true);
+    expect(
+      colours(giantFeedback("HAMMER", 0.2, { walls: true })).has(
+        DWARF_PALETTE_V7.copper,
+      ),
+    ).toBe(true);
+    expect(
+      colours(giantFeedback("BREAK_OFF", 0.3)).has(CANDY_PALETTE_V7.biscuit),
+    ).toBe(true);
+    expect(
+      colours(giantFeedback("TRAMPLE", 0.2)).has(MARTIAN_PALETTE_V7.magenta),
+    ).toBe(true);
+    expect(
+      colours(giantFeedback("SWALLOW", 0.3, { undeadViolet: true })).has(
+        NECRO_BOLT_VIOLET_V7.lit,
+      ),
+    ).toBe(true);
+    expect(
+      colours(giantFeedback("SWALLOW", 0.3)).has(NECRO_BOLT_VIOLET_V7.lit),
+    ).toBe(false);
+  });
+
+  it("times each cue's sound to its beat", () => {
+    const step: Extract<CorePresentationStepV7, { kind: "GIANT" }> = {
+      kind: "GIANT",
+      effect: "STOMP",
+      from,
+      cells: [to],
+      unitIds: [1],
+      durationMs: GIANT_EFFECT_DURATIONS_V7.STOMP,
+    };
+    const state = giantsStompFixtureV7();
+    const view = viewForV7(state, state.humanPlayerId);
+    const cues = soundCuesForStepV7({
+      step,
+      before: view,
+      after: view,
+      envelope: { schemaVersion: 7, events: [] } as never,
+      durationScale: 1,
+    });
+    expect(cues).toEqual([
+      {
+        id: "impact.explosion",
+        delayMs: GIANT_EFFECT_DURATIONS_V7.STOMP * GIANT_EFFECT_BEAT_V7.STOMP,
+      },
+    ]);
+    for (const effect of GIANT_FEEDBACK_EFFECTS_V7)
+      expect(
+        soundCuesForStepV7({
+          step: { ...step, effect },
+          before: view,
+          after: view,
+          envelope: { schemaVersion: 7, events: [] } as never,
+          durationScale: 1,
+        }).length,
+        effect,
+      ).toBeGreaterThan(0);
   });
 });

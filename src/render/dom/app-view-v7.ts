@@ -68,6 +68,8 @@ import {
   previewHatchV7,
   previewLayEggV7,
   previewColdSnapV7,
+  previewBreakOffV7,
+  previewStompV7,
   previewAssembleV7,
   previewBuildBarricadeV7,
   previewWhirlV7,
@@ -591,6 +593,34 @@ import {
   type GlossaryLineV7,
 } from "./unit-glossary-dom-v7";
 import type { CandyPickV7 } from "../canvas/candy-board-plan-v7";
+import {
+  breakOffSecondTilesV7,
+  tossPassengersV7,
+  type GiantPickV7,
+} from "../canvas/giant-board-plan-v7";
+import {
+  BREAK_OFF_LABEL_V7,
+  BREAK_OFF_PICK_FIRST_V7,
+  BREAK_OFF_PICK_SECOND_V7,
+  STOMP_CAST_V7,
+  STOMP_LABEL_V7,
+  SWALLOW_LABEL_V7,
+  SWALLOW_PICK_V7,
+  TOSS_LABEL_V7,
+  TOSS_PICK_PASSENGER_V7,
+  TOSS_PICK_TILE_V7,
+  breakOffSummaryV7,
+  cityWallsStatV7,
+  giantCardLineV7,
+  giantCommandTooltipV7,
+  giantCommandUnavailableTextV7,
+  giantRewardLabelV7,
+  GINGERBREAD_MAN_CHIP_V7,
+  GINGERBREAD_MAN_INFO_V7,
+  GINGERBREAD_MAN_LABEL_V7,
+  stompSummaryV7,
+  swallowedVictimLineV7,
+} from "../giant-presentation-v7";
 import { recruitmentRolePresentationV7 } from "../role-presentation-v7";
 import {
   economicFormulaV7,
@@ -782,6 +812,14 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "SUGAR_RUSH",
   "REBAKE",
   "SUGAR_TOSS",
+  // The giants' signatures (`pulp_wars-w49.32`): one button per giant aims
+  // its signature; the victim, the Goblin and its landing (up to dozens of
+  // commands), the Stomp and the two Break Off tiles (up to 28 pairs) are
+  // picked on the board (docs/ui/BOARD_TARGETING.md section 3.2).
+  "SWALLOW",
+  "TOSS",
+  "STOMP",
+  "BREAK_OFF",
   // The naval branch interface (bead pulp_wars-5ti.7): Board has one
   // button per ship that arms it; the ship to capture is picked on the
   // board (docs/ui/BOARD_TARGETING.md section 3.4).
@@ -791,6 +829,39 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   // Ice Witch's casts her ring (BOARD_TARGETING.md section 3.5).
   "FREEZE",
 ]);
+/**
+ * The giants' signatures (`pulp_wars-w49.32`): the four aimed signature
+ * commands, each with its button's name and icon.
+ */
+const GIANT_PICK_ENTRIES_V7: readonly {
+  readonly kind: GiantPickV7["kind"];
+  readonly label: string;
+  readonly icon: UiIconIdV7;
+}[] = [
+  { kind: "SWALLOW", label: SWALLOW_LABEL_V7, icon: "devour" },
+  { kind: "TOSS", label: TOSS_LABEL_V7, icon: "goblin" },
+  { kind: "STOMP", label: STOMP_LABEL_V7, icon: "stampede" },
+  { kind: "BREAK_OFF", label: BREAK_OFF_LABEL_V7, icon: "units" },
+];
+
+/** The instruction of a giant's aiming stage. */
+function giantPickPromptV7(pick: GiantPickV7): string {
+  switch (pick.kind) {
+    case "SWALLOW":
+      return SWALLOW_PICK_V7;
+    case "TOSS":
+      return pick.passengerUnitId === null
+        ? TOSS_PICK_PASSENGER_V7
+        : TOSS_PICK_TILE_V7;
+    case "STOMP":
+      return `${STOMP_LABEL_V7}: every marked enemy is hit`;
+    case "BREAK_OFF":
+      return pick.first === null
+        ? BREAK_OFF_PICK_FIRST_V7
+        : BREAK_OFF_PICK_SECOND_V7;
+  }
+}
+
 /** Revision 18 (sections 3.4 and 4.4) movement help and technology text. */
 export const OWN_UNIT_PASS_THROUGH_TEXT_V7 =
   "Units can move through your own units but cannot stop on them.";
@@ -1050,6 +1121,13 @@ export class Ruleset7DomAppView {
    * another selection leaves it and sends nothing).
    */
   #candyPick: CandyPickV7 | null = null;
+  /**
+   * The giants' signatures (`pulp_wars-w49.32`): the Swallow, Goblin Toss,
+   * Thunder Stomp or Break Off the selected giant is aiming on the board
+   * (Escape and Back step back from a Toss's landing or a Break Off's
+   * second tile; Cancel or another selection leaves it and sends nothing).
+   */
+  #giantPick: GiantPickV7 | null = null;
   /**
    * The naval branch interface: the Board the selected ship is aiming on
    * the board (Escape, Cancel or another selection leaves it and sends
@@ -1434,6 +1512,10 @@ export class Ruleset7DomAppView {
       } else if (this.#candyPick !== null) {
         // The Candy revision: Escape first disarms the Rush or the aiming.
         this.#cancelCandyPick();
+        return;
+      } else if (this.#giantPick !== null) {
+        // The giants' signatures: Escape first steps back out of the aiming.
+        this.#cancelGiantPick(true);
         return;
       } else if (this.#navalPick !== null) {
         // The naval branch interface: Escape first disarms Board.
@@ -2836,6 +2918,7 @@ export class Ruleset7DomAppView {
           this.#iceFolkPick = null;
           this.#dwarfPick = null;
           this.#candyPick = null;
+          this.#giantPick = null;
           this.#navalPick = null;
           this.#freezePick = null;
           this.#freezeHoverUnitId = null;
@@ -3358,6 +3441,11 @@ export class Ruleset7DomAppView {
         this.#candyPick.unitId === selectedUnitId
           ? { candyPick: this.#candyPick }
           : {}),
+        // The giants' signatures: the signature being aimed.
+        ...(this.#giantPick !== null &&
+        this.#giantPick.unitId === selectedUnitId
+          ? { giantPick: this.#giantPick }
+          : {}),
         // The naval branch interface: the Board being aimed.
         ...(this.#navalPick !== null &&
         this.#navalPick.unitId === selectedUnitId
@@ -3393,6 +3481,7 @@ export class Ruleset7DomAppView {
       this.#iceFolkPick = null;
       this.#dwarfPick = null;
       this.#candyPick = null;
+      this.#giantPick = null;
       this.#navalPick = null;
       this.#freezePick = null;
       this.#freezeHoverUnitId = null;
@@ -3411,7 +3500,14 @@ export class Ruleset7DomAppView {
       // The Martian revision: a machine afloat is drawn as itself; the Mind
       // Control revision: a controlled unit keeps its own name and sprite.
       const machine = martianMachineV7(view, unit);
-      const roleLabel = egg ? `${roleRule.label} Egg` : roleRule.label;
+      // The giants' signatures (`pulp_wars-w49.32`): a Gingerbread Man is
+      // named and drawn as itself (a Toffee Trooper in every rule).
+      const gingerbreadMan = unit.variant === "GINGERBREAD_MAN";
+      const roleLabel = egg
+        ? `${roleRule.label} Egg`
+        : gingerbreadMan
+          ? GINGERBREAD_MAN_LABEL_V7
+          : roleRule.label;
       const undeadUnit = unitIsUndeadV7(view, unit);
       // Revision 17: every unit resolves through its owner's faction; the
       // Mind Control revision: through its kind (`unitFactionV7`).
@@ -3424,6 +3520,7 @@ export class Ruleset7DomAppView {
         ? "PORTRAIT:MONSTER_GIANT_SPIDER"
         : unitArtSubjectV7({
             ...unit,
+            ...(gingerbreadMan ? { role: "JUGGERNAUT" as const } : {}),
             faction: unitFaction,
             machine,
           });
@@ -3502,6 +3599,46 @@ export class Ruleset7DomAppView {
           );
           identityColumn?.append(cue);
         }
+      }
+      // The giants' signatures: what a Gingerbread Man is, and the victim
+      // an Abomination holds (its portrait, HP and digestion).
+      if (gingerbreadMan) {
+        const cue = text(
+          this.#document,
+          "span",
+          GINGERBREAD_MAN_CHIP_V7,
+          "v7-chip v7-giant-chip",
+        );
+        cue.dataset.unitStatus = "gingerbread-man";
+        cue.title = GINGERBREAD_MAN_INFO_V7;
+        cue.setAttribute("aria-label", GINGERBREAD_MAN_INFO_V7);
+        identityColumn?.append(cue);
+      }
+      const victim = swallowedVictimLineV7(view, unit.id);
+      if (victim !== null) {
+        const entry = view.giants.swallowed.find(
+          (candidate) => candidate.holderUnitId === unit.id,
+        );
+        const cue = el(this.#document, "span", "v7-chip v7-giant-chip");
+        cue.dataset.unitStatus = "swallowed";
+        cue.title = victim.text;
+        cue.setAttribute("aria-label", victim.text);
+        if (entry !== undefined) {
+          const portrait = this.#chibiArt(
+            portraitSubjectV7(
+              entry.unit.role,
+              presentedUnitFactionV7(view, entry.unit),
+            ),
+            CHIBI_DOM_BOXES_V7.passenger,
+            this.#playerColour(view, entry.unit.ownerId),
+          )?.element;
+          if (portrait !== undefined) {
+            portrait.classList.add("v7-giant-chip-portrait");
+            cue.append(portrait);
+          }
+        }
+        cue.append(text(this.#document, "span", victim.label));
+        identityColumn?.append(cue);
       }
       if (unitBadge !== null) {
         const faction = text(
@@ -4047,6 +4184,18 @@ export class Ruleset7DomAppView {
         }
         dock.append(rows);
       }
+      // The giants' signatures (section 10): the unit card states the
+      // giant's signature in one line, its numbers from the public stats.
+      const signature = egg ? null : giantCardLineV7(view, unit);
+      if (signature !== null) {
+        const line = el(this.#document, "p", "v7-giant-signature");
+        line.dataset.giantSignature = signature.name;
+        line.append(
+          text(this.#document, "strong", `${signature.name}:`),
+          ` ${signature.text}`,
+        );
+        dock.append(line);
+      }
       // An Egg is exhausted at all times; it is not dimmed as "done".
       if (unit.activation.handled && unit.ownerId === view.viewer.id && !egg) {
         dock.dataset.handled = "true";
@@ -4210,6 +4359,9 @@ export class Ruleset7DomAppView {
         ...this.#dwarfActionButtons(view, unit.id),
         // The Candy revision: Sugar Rush, Re-bake and Sugar Toss likewise.
         ...this.#candyActionButtons(view, unit.id),
+        // The giants' signatures: Swallow, Goblin Toss, Thunder Stomp and
+        // Break Off likewise.
+        ...this.#giantActionButtons(view, unit.id),
         // The naval branch interface: Board likewise.
         ...this.#navalActionButtons(view, unit.id),
         // The frozen sea: Freeze likewise.
@@ -4324,10 +4476,14 @@ export class Ruleset7DomAppView {
         this.#iceFolkPickPanel(view, unit.id) ??
         this.#dwarfPickPanel(view, unit.id) ??
         this.#candyPickPanel(unit.id) ??
+        this.#giantPickPanel(view, unit.id) ??
         this.#navalPickPanel(unit.id) ??
         this.#freezePickPanel(unit.id);
       if (martianPanel !== null) {
         dock.dataset.hasActions = "true";
+        // The giants' signatures: while an ability is aimed the signature's
+        // line steps aside, so a phone's dock keeps the panel in view.
+        dock.querySelector(".v7-giant-signature")?.remove();
         dock.append(martianPanel);
       } else if (actions.querySelector("button") !== null) {
         dock.dataset.hasActions = "true";
@@ -4506,6 +4662,20 @@ export class Ruleset7DomAppView {
       );
       growth.append(text(this.#document, "dt", "Population"), growthValue);
       details.append(level, growth);
+      // The giants' signatures (section 6.7): the city's Walls, standing or
+      // razed by a Siege Hammer (public: Walls are).
+      const walls = cityWallsStatV7(city);
+      if (walls !== null) {
+        const stat = el(this.#document, "div", "v7-city-stat");
+        stat.dataset.stat = "walls";
+        stat.dataset.walls = city.wallsRazed === true ? "razed" : "standing";
+        stat.title = walls.title;
+        stat.append(
+          text(this.#document, "dt", "Walls"),
+          text(this.#document, "dd", walls.value),
+        );
+        details.append(stat);
+      }
       if (owned) {
         // Revision 19 (section 5.1): used capacity is the slot sum of the
         // units and Eggs homed here; it equals the unit count for every
@@ -5872,6 +6042,31 @@ export class Ruleset7DomAppView {
         targetUnitId: command.targetUnitId,
       };
       this.#notice = `${BOMB_RUN_PICK_LANDING_V7}.`;
+      this.#render();
+      this.#queueBoardFocus();
+      return;
+    }
+    // The giants' signatures (`pulp_wars-w49.32`): choosing the Goblin to
+    // throw moves on to its landing tiles, and the first Gingerbread Man's
+    // tile to the second; nothing is dispatched yet.
+    if (target.family === "TOSS_PASSENGER" && command.kind === "TOSS") {
+      this.#giantPick = {
+        kind: "TOSS",
+        unitId: command.unitId,
+        passengerUnitId: command.passengerUnitId,
+      };
+      this.#notice = `${TOSS_PICK_TILE_V7}.`;
+      this.#render();
+      this.#queueBoardFocus();
+      return;
+    }
+    if (target.family === "BREAK_OFF_FIRST" && command.kind === "BREAK_OFF") {
+      this.#giantPick = {
+        kind: "BREAK_OFF",
+        unitId: command.unitId,
+        first: target.at,
+      };
+      this.#notice = `${BREAK_OFF_PICK_SECOND_V7}.`;
       this.#render();
       this.#queueBoardFocus();
       return;
@@ -7502,6 +7697,7 @@ export class Ruleset7DomAppView {
     this.#iceFolkPick = null;
     this.#dwarfPick = null;
     this.#candyPick = null;
+    this.#giantPick = null;
     this.#navalPick = null;
     this.#freezePick = null;
     this.#freezeHoverUnitId = null;
@@ -9878,6 +10074,253 @@ export class Ruleset7DomAppView {
   }
 
   /**
+   * The giants' signatures (`pulp_wars-w49.32`, docs/product/
+   * RULESET_7_GIANTS.md section 10): the one button of an own giant's
+   * signature command (Swallow, Goblin Toss, Thunder Stomp, Break Off).
+   * With a legal choice it aims the signature on the board (pressed while
+   * aiming); without one it is disabled and names the reason ("It moved
+   * this turn", "No Goblin next to it", "Needs more than 10 HP", ...). The
+   * dock never grows with the number of victims, landings or tile pairs.
+   */
+  #giantActionButtons(
+    view: PlayerViewV7,
+    unitId: UnitId,
+  ): readonly HTMLButtonElement[] {
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    if (
+      unit === undefined ||
+      unit.ownerId !== view.viewer.id ||
+      unit.form !== "LAND" ||
+      this.#snapshot.offeredCommands.length === 0
+    )
+      return [];
+    const abilities = unitRoleRuleV7(view, unit).abilities as readonly string[];
+    const faction = presentedUnitFactionV7(view, unit);
+    const buttons: HTMLButtonElement[] = [];
+    for (const entry of GIANT_PICK_ENTRIES_V7) {
+      if (!abilities.includes(entry.kind)) continue;
+      const offered = this.#snapshot.offeredCommands.some(
+        (command) => command.kind === entry.kind && command.unitId === unit.id,
+      );
+      const reason = giantCommandUnavailableTextV7(
+        view,
+        unit,
+        entry.kind,
+        offered,
+      );
+      if (!offered && reason === null) continue;
+      const slug = entry.kind.toLowerCase().replaceAll("_", "-");
+      const tooltip = giantCommandTooltipV7(entry.kind, faction);
+      const action = button(
+        this.#document,
+        "",
+        `giant-${slug}`,
+        "v7-context-action",
+      );
+      action.append(
+        uiIconV7(this.#document, entry.icon, "v7-ui-icon v7-command-icon"),
+        text(this.#document, "span", entry.label, "v7-action-label"),
+      );
+      action.dataset.giantAbility = slug;
+      if (reason === null) {
+        const aiming = this.#giantPick?.kind === entry.kind;
+        action.title = tooltip;
+        action.setAttribute("aria-label", `${entry.label}. ${tooltip}`);
+        action.setAttribute("aria-pressed", String(aiming));
+        action.disabled = this.#localBusy();
+        action.onclick = () =>
+          aiming
+            ? this.#cancelGiantPick(false)
+            : this.#startGiantPick(entry.kind, unit.id);
+      } else {
+        // aria-disabled keeps the reason reachable by keyboard and touch.
+        action.setAttribute("aria-disabled", "true");
+        action.dataset.disabledReason = reason;
+        action.title = reason;
+        action.setAttribute(
+          "aria-label",
+          `${entry.label} unavailable. ${reason}`,
+        );
+        action.onclick = () => {
+          this.#notice = `${reason}.`;
+          this.#showToast(`${reason}.`);
+          this.#pendingFocusAction = action.dataset.action ?? null;
+          this.#render();
+        };
+      }
+      buttons.push(action);
+    }
+    return buttons;
+  }
+
+  /**
+   * Starts aiming a giant's signature on the board. A Troll with a single
+   * Goblin in reach goes straight to its landing tiles.
+   */
+  #startGiantPick(kind: GiantPickV7["kind"], unitId: UnitId): void {
+    if (this.#localBusy()) return;
+    const passengers =
+      kind === "TOSS"
+        ? tossPassengersV7(this.#snapshot.offeredCommands, unitId)
+        : [];
+    const onlyPassenger = passengers.length === 1 ? passengers[0] : undefined;
+    const pick: GiantPickV7 =
+      kind === "TOSS"
+        ? { kind, unitId, passengerUnitId: onlyPassenger ?? null }
+        : kind === "BREAK_OFF"
+          ? { kind, unitId, first: null }
+          : { kind, unitId };
+    this.#giantPick = pick;
+    this.#notice = `${giantPickPromptV7(pick)}.`;
+    this.#pendingFocusAction = null;
+    this.#render();
+    // The board takes the keyboard, so the arrow keys and Enter pick.
+    this.#queueBoardFocus();
+  }
+
+  /**
+   * Leaves the aiming (a Toss's landing steps back to its Goblin, a Break
+   * Off's second tile to its first, when `stepBack`), and returns focus to
+   * the signature's button.
+   */
+  #cancelGiantPick(stepBack: boolean): void {
+    const pick = this.#giantPick;
+    if (stepBack && pick !== null) {
+      const back: GiantPickV7 | null =
+        pick.kind === "TOSS" &&
+        pick.passengerUnitId !== null &&
+        tossPassengersV7(this.#snapshot.offeredCommands, pick.unitId).length > 1
+          ? { ...pick, passengerUnitId: null }
+          : pick.kind === "BREAK_OFF" && pick.first !== null
+            ? { ...pick, first: null }
+            : null;
+      if (back !== null) {
+        this.#giantPick = back;
+        this.#notice = `${giantPickPromptV7(back)}.`;
+        this.#render();
+        return;
+      }
+    }
+    this.#giantPick = null;
+    this.#pendingFocusAction =
+      pick === null
+        ? null
+        : `giant-${pick.kind.toLowerCase().replaceAll("_", "-")}`;
+    this.#render();
+  }
+
+  /**
+   * The giant's aiming panel in the dock (docs/ui/BOARD_TARGETING.md
+   * section 4): the signature's icon and name with its "?", the Stomp's one
+   * confirmation, Back (a Toss's landing, a Break Off's second tile) and
+   * Cancel. Every victim, Goblin, landing and tile is highlighted and
+   * picked on the board with its preview; the dock lists none. Null (and
+   * the aiming ends) when nothing is offered any more.
+   */
+  #giantPickPanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
+    const pick = this.#giantPick;
+    if (pick === null || pick.unitId !== unitId) return null;
+    const commands = this.#snapshot.offeredCommands.filter(
+      (command) => command.kind === pick.kind && command.unitId === unitId,
+    );
+    if (commands.length === 0) {
+      this.#giantPick = null;
+      return null;
+    }
+    const entry = GIANT_PICK_ENTRIES_V7.find(
+      (candidate) => candidate.kind === pick.kind,
+    );
+    const panel = el(
+      this.#document,
+      "section",
+      "v7-kaboom-preview v7-martian-pick v7-giant-pick v7-board-pick",
+    );
+    panel.dataset.v7GiantPick = pick.kind.toLowerCase();
+    const prompt = giantPickPromptV7(pick);
+    let info: string = prompt;
+    const lines = el(this.#document, "div", "v7-martian-choices");
+    if (pick.kind === "STOMP") {
+      const command = commands[0];
+      const preview = previewStompV7(view, unitId);
+      if (command === undefined || preview === null) {
+        this.#giantPick = null;
+        return null;
+      }
+      info = stompSummaryV7(preview);
+      panel.dataset.boardTargets = String(preview.results.length);
+      const cast = button(
+        this.#document,
+        STOMP_CAST_V7,
+        "giant-stomp-cast",
+        "v7-martian-choice-button",
+      );
+      cast.setAttribute("aria-label", `${STOMP_CAST_V7}. ${info}.`);
+      cast.title = info;
+      cast.disabled = this.#localBusy();
+      cast.onclick = () => void this.#dispatch(command);
+      lines.append(cast);
+    } else if (pick.kind === "BREAK_OFF") {
+      const preview = previewBreakOffV7(view, unitId);
+      if (preview !== null) info = `${prompt}. ${breakOffSummaryV7(preview)}`;
+      panel.dataset.boardTargets = String(
+        pick.first === null
+          ? (preview?.tiles.length ?? 0)
+          : breakOffSecondTilesV7(
+              this.#snapshot.offeredCommands,
+              unitId,
+              pick.first,
+            ).length,
+      );
+    } else if (pick.kind === "TOSS") {
+      panel.dataset.boardTargets = String(
+        pick.passengerUnitId === null
+          ? tossPassengersV7(this.#snapshot.offeredCommands, unitId).length
+          : commands.filter(
+              (command) =>
+                command.kind === "TOSS" &&
+                command.passengerUnitId === pick.passengerUnitId,
+            ).length,
+      );
+    } else panel.dataset.boardTargets = String(commands.length);
+    panel.setAttribute("aria-label", info);
+    panel.append(
+      this.#pickHead(
+        null,
+        entry?.icon ?? "info",
+        entry?.label ?? pick.kind,
+        info,
+      ),
+    );
+    if (lines.childElementCount > 0) panel.append(lines);
+    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    const stepsBack =
+      (pick.kind === "TOSS" &&
+        pick.passengerUnitId !== null &&
+        tossPassengersV7(this.#snapshot.offeredCommands, unitId).length > 1) ||
+      (pick.kind === "BREAK_OFF" && pick.first !== null);
+    if (stepsBack) {
+      const back = button(
+        this.#document,
+        "Back",
+        "giant-pick-back",
+        "v7-kaboom-cancel",
+      );
+      back.onclick = () => this.#cancelGiantPick(true);
+      buttons.append(back);
+    }
+    const cancel = button(
+      this.#document,
+      "Cancel",
+      "giant-pick-cancel",
+      "v7-kaboom-cancel",
+    );
+    cancel.onclick = () => this.#cancelGiantPick(false);
+    buttons.append(cancel);
+    panel.append(buttons);
+    return panel;
+  }
+
+  /**
    * The Dwarf revision (section 16.1): the Tunnel button of an own Steam
    * Mole, the Bomb Run button of an own Gyrocopter and the Assemble button
    * of an own Engineer. With a legal choice it aims the ability on the
@@ -11534,15 +11977,14 @@ function rewardLabel(
   reward: string,
   faction: FactionIdV7,
 ): readonly [string, string] {
+  // The giants' signatures (`pulp_wars-w49.32`): every faction's giant card
+  // names its signature ("A free Troll, once: throws Goblins").
+  if (reward === "JUGGERNAUT") return giantRewardLabelV7(faction);
   if (faction === "UNDEAD" && reward === "MILITIA")
     return ["Militia", "A free Skeleton"];
-  if (faction === "UNDEAD" && reward === "JUGGERNAUT")
-    return ["Abomination", "A giant unit"];
-  // Revision 17: Goblin Militia is two Goblins; the giant is a Troll.
+  // Revision 17: Goblin Militia is two Goblins.
   if (faction === "GOBLIN" && reward === "MILITIA")
     return ["Militia", "Two free Goblins"];
-  if (faction === "GOBLIN" && reward === "JUGGERNAUT")
-    return ["Troll", "A giant unit"];
   // Revision 19: Dinosaur Militia is the registry's Cavemen; the giant is a
   // Brontosaurus, named with its unit slots.
   const dinosaur =
@@ -11600,8 +12042,6 @@ function rewardLabel(
     ];
   if (reward === "TREASURY_6")
     return ["Treasury", `+${CITY_REWARD_COINS_V7.TREASURY_6} Coins`];
-  if (reward === "JUGGERNAUT")
-    return [effectiveRoleRuleV7("JUGGERNAUT", faction).label, "A giant unit"];
   return [title(reward), ""];
 }
 

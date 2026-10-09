@@ -188,6 +188,53 @@ the blast, the ring over the splash tiles and the splash bursts, since the
 area is what the frame must say. High contrast changes nothing, as for the
 other cues.
 
+## The giants' signatures (bead `pulp_wars-w49.32`)
+
+Each giant's signature
+([rules](../product/RULESET_7_CURRENT.md#111-the-giants-signatures)) has
+a cue of its own, drawn in code over the board by
+`src/render/canvas/giant-effects-v7.ts` in its faction's colours. The
+presentation plan adds a `GIANT` step for each signature event
+(`UNIT_CRUSHED`, `UNIT_SWALLOWED`, `UNIT_DIGESTED`, `UNIT_REGURGITATED`,
+`GOBLIN_TOSSED`, `THUNDER_STOMP`, `UNITS_TRAMPLED`, `GIANT_BROKE_OFF`),
+plus a Glacial Smash's shards after the Ice Folk shatter and a Siege
+Hammer's swing in place of the melee strike. The damage cues of the units
+hit follow the step as for any attack.
+
+| Cue           | Signature              | What it shows                                                                                                                                                        | Sounds (start, hit)              | ms  |
+| ------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | --- |
+| `CRUSH`       | Crushing Shove         | a crack ring, a white star and dust puffs on the crushed unit, and on the unit behind it when it collides; both units jolt                                           | -, `impact.heavy`                | 420 |
+| `SWALLOW`     | Swallow                | the Abomination bulges, a violet maw closes over the victim, which shrinks into it, with dark wisps                                                                  | `support.drain`, `special.pop`   | 640 |
+| `DIGEST`      | a held victim's damage | violet bubbles rise from the Abomination's belly                                                                                                                     | -, `support.dark`                | 520 |
+| `REGURGITATE` | a victim freed         | a violet glob arcs from the holder to the freed unit's tile and splats; the unit pops up                                                                             | `support.dark`, `impact.splat`   | 560 |
+| `TOSS`        | Goblin Toss            | the Troll heaves; the Goblin's own sprite cartwheels along a high arc and lands with a dust puff                                                                     | `attack.siege`, `special.puff`   | 640 |
+| `STOMP`       | Thunder Stomp          | the Brontosaurus rears and slams; a shock ring and cracks run over the 3 x 3 tiles, one ground puff per tile; the board shakes                                       | -, `impact.explosion`            | 560 |
+| `TRAMPLE`     | Overstride             | a footprint lands on each trampled unit, which jolts                                                                                                                 | -, `impact.heavy`                | 420 |
+| `SHARDS`      | Glacial Smash          | ice shards fly from the shattered unit to its other neighbours (never back at the Frost Giant)                                                                       | `special.freeze`, `impact.ice`   | 520 |
+| `HAMMER`      | Siege Hammer           | a hammer swings onto the target; on a walled city a low rampart of stone blocks crumbles in front of it                                                              | `attack.melee`, `impact.heavy`   | 560 |
+| `BREAK_OFF`   | Break Off              | the Gingerbread Giant cracks and shudders, shedding crumbs; two chunks fly to the new men's tiles and pop (a sugar star, sprinkles, a ring of icing); the men pop up | `special.pop`, `special.sparkle` | 640 |
+
+The sounds are existing ids (`GIANT_EFFECT_SOUNDS_V7` in
+`src/audio/sound-events-v7.ts`), the hit sound at the cue's impact beat
+(`GIANT_EFFECT_BEAT_V7`); a Hammer that kills adds the death sound. The
+board shows the result at the cue's hit fraction (`GIANT_EFFECT_HIT_V7`):
+at once for the Crush, the Trample, the Shards and the Hammer, after the
+maw closes, the Goblin lands, the Stomp slams or the chunks land for the
+others. While a Goblin is in the air it is drawn by the cue only, not on
+its tiles. The fast speed halves every duration.
+
+**The Gingerbread Men** are the Gingerbread Giant's own sprite drawn at 0.6
+of its size (`GINGERBREAD_MAN_SPRITE_SCALE_V7`), so they read as small
+gingerbread men without new art; the unit card names them "Gingerbread
+Man" with the chip "Toffee Trooper". An Abomination holding a victim wears
+a belly badge: the victim's portrait in a disc with its owner's colour on
+the rim and its HP.
+
+**Reduced motion** holds one frame for 240 ms, like the other faction
+cues (`giantReducedMotionProgressV7`: the maw closing, the Goblin at the top
+of its arc, the Stomp's ring over the area, the hammer on the target, the
+chunks in flight). The board never shakes under reduced motion.
+
 ## Evidence
 
 `npm run art:attack-effects-review` (with `CHROME_PATH` set) draws each cue
@@ -210,3 +257,15 @@ faction's Battleship maps to it, its plan step carries the shell and the
 splashed units' cells, the guns, ring and splash bursts are timed, each
 shell draws its own colours, and the board host plays it instead of the
 arrow, in full and reduced motion.
+
+The giants' cues are not in `art:attack-effects-review`, which starts a
+match. `scripts/browser-giants-review-v7.ts` (dev server only, no match)
+mounts the hand-built scenes of `tests/fixtures/v7-giants-ui.ts` and pins
+each cue with `pinGiantFeedback` at three or four progress points and at
+its reduced-motion frame, at desktop (1440 x 1000) and phone (390 x 844)
+widths, beside the buttons, aiming and previews:
+`npx tsx scripts/browser-giants-review-v7.ts http://localhost:<port>/ --output-dir=<new-dir>`.
+Their tests are in the same two files: every signature event maps to its
+cue and sounds, the plan's geometry and timing, each cue draws, and the
+board host plays the Stomp (with its shake) and the Toss in full motion
+and holds a frame under reduced motion.

@@ -428,6 +428,20 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // `pulp_wars-w49.36`: the Goblin Help's blast numbers, read from the
   // Goblin registration (a rule text, no unit).
   "src/render/goblin-presentation-v7.ts::goblinBlastListV7": "SEAT",
+  // The giants' signatures (`pulp_wars-w49.32`): a faction giant's
+  // signature, its rule text and reward line read its faction's
+  // registration (rule texts, no unit); a button's tooltip takes the
+  // giant's faction already resolved by the dock; the Break Off cue reads a
+  // Candy palette colour. A unit's card line, a button's reason and a
+  // victim's name resolve the unit's kind through `presentedUnitFactionV7`,
+  // `unitRoleMechanicsV7` and `unitRoleRuleV7`, so they read no faction
+  // themselves.
+  "src/render/giant-presentation-v7.ts::factionGiantSignatureV7": "SEAT",
+  "src/render/giant-presentation-v7.ts::label": "SEAT",
+  "src/render/giant-presentation-v7.ts::giantSignatureRuleV7": "SEAT",
+  "src/render/giant-presentation-v7.ts::giantRewardLabelV7": "SEAT",
+  "src/render/giant-presentation-v7.ts::giantCommandTooltipV7": "KIND_RESOLVED",
+  "src/render/canvas/giant-effects-v7.ts::drawBreakOff": "SEAT",
   // The naval branch interface (`pulp_wars-5ti.7`): Seamanship's boarding
   // and Harbours are the viewer's own capabilities (a boarded prize's kind
   // follows its new owner, and Harbours is a seat-level economy rule).

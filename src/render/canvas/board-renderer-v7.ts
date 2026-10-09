@@ -8,6 +8,7 @@ import {
   RULESET7_UNIT_ART_IDS,
 } from "../../assets/ruleset7-ui-art";
 import type {
+  CombatPreviewV7,
   CommandV7,
   CoordV7,
   FactionIdV7,
@@ -17,6 +18,8 @@ import type {
 } from "../../engine/index";
 import {
   isRallyTargetV7,
+  previewTrampleV7,
+  unitRoleRuleV7,
   previewAttackExplosionsV7,
   previewHatchV7,
   previewKaboomV7,
@@ -31,6 +34,21 @@ import {
   WAIL_RADIUS_V7,
 } from "../../engine/index";
 import { presentedUnitFactionV7 } from "../neutral-presentation-v7";
+import {
+  addGiantPickEntriesV7,
+  giantPickTargetsV7,
+  type GiantPickV7,
+} from "./giant-board-plan-v7";
+import {
+  GINGERBREAD_MAN_SPRITE_SCALE_V7,
+  drawSwallowedBadgeV7,
+  type SwallowedBadgeV7,
+} from "./giant-canvas-v7";
+import {
+  giantCombatNotesV7,
+  giantHitLabelV7,
+  trampleLabelV7,
+} from "../giant-presentation-v7";
 import {
   MONSTER_OUT_OF_REACH_V7,
   MONSTER_RETALIATES_V7,
@@ -306,7 +324,10 @@ import {
   unitArtSubjectV7,
   type TerritoryGroundV7,
 } from "../../assets/chibi-art-v7";
-import { tileImprovementSubjectV7 } from "../../assets/chibi-ui-art-v7";
+import {
+  portraitSubjectV7,
+  tileImprovementSubjectV7,
+} from "../../assets/chibi-ui-art-v7";
 import { factionBuildingV7 } from "../faction-buildings-v7";
 import {
   resolveChibiWithFallbackV7,
@@ -480,6 +501,12 @@ export interface BoardRenderInteractionV7 {
    */
   readonly candyPick?: CandyPickV7 | null;
   /**
+   * The giants' signatures (`pulp_wars-w49.32`): the Swallow, Goblin Toss,
+   * Thunder Stomp or Break Off being aimed by the selected giant. Its
+   * targets become the only map targets; null or omitted aims none.
+   */
+  readonly giantPick?: GiantPickV7 | null;
+  /**
    * The naval branch interface (bead pulp_wars-5ti.7): the Board being
    * aimed by the selected ship. The ships it may capture become the only
    * map targets; null or omitted aims none.
@@ -569,6 +596,20 @@ export interface MapCommandTargetV7 {
     | "REBAKE"
     | "SUGAR_TOSS"
     /**
+     * The giants' signatures (`pulp_wars-w49.32`): a unit an Abomination
+     * may swallow, a Goblin a Troll may throw (choosing it moves on to the
+     * landing tiles; nothing is dispatched) and a landing tile, an enemy a
+     * Brontosaurus's Stomp would hit (every one carries the same command),
+     * and the first and second tiles of a Break Off (choosing the first
+     * moves on to the second).
+     */
+    | "SWALLOW"
+    | "TOSS_PASSENGER"
+    | "TOSS"
+    | "STOMP"
+    | "BREAK_OFF_FIRST"
+    | "BREAK_OFF"
+    /**
      * The naval branch interface: an enemy ship the selected ship may
      * capture, while its Board is aimed.
      */
@@ -657,6 +698,16 @@ export interface MapCommandTargetV7 {
     readonly lethal: boolean;
     readonly note: string;
   };
+  /**
+   * The giants' signatures (`pulp_wars-w49.32`): the other units this target
+   * hurts, shown while it is focused: the hostile unit behind a crushed
+   * defender (an ATTACK) and each enemy an Overstride tramples (a MOVE).
+   */
+  readonly giantHits?: readonly {
+    readonly at: CoordV7;
+    readonly label: string;
+    readonly lethal: boolean;
+  }[];
   /**
    * The Ice Folk revision: a Mammoth's Sweep flank victims, shown while the
    * target is focused.
@@ -883,6 +934,16 @@ export interface BoardRenderPlanEntryV7 {
   readonly egg?: { readonly turnsRemaining: number };
   /** UNIT only, revision 19: a grown Dinosaur unit, Big (1) or Alpha (2). */
   readonly growthStage?: 1 | 2;
+  /**
+   * UNIT only, the giants' signatures (`pulp_wars-w49.32`): a Gingerbread
+   * Man, drawn as its Giant's sprite at GINGERBREAD_MAN_SPRITE_SCALE_V7.
+   */
+  readonly gingerbreadMan?: true;
+  /**
+   * UNIT only, the giants' signatures: the victim a visible Abomination
+   * holds, shown as its belly badge.
+   */
+  readonly swallowed?: SwallowedBadgeV7;
   /**
    * UNIT only, the Martian revision: the Shield, Cooling, flying and afloat
    * markers of a visible Martian unit, and the control visual of a
@@ -1325,6 +1386,11 @@ export function buildBoardRenderPlanV7(
     // Map curiosities: the neutral Giant Spider has its own sprite (a
     // code-drawn disc in LEGACY), its own name and no owner colour.
     const monster = isMonsterUnitV7(unit);
+    // The giants' signatures (`pulp_wars-w49.32`): a Gingerbread Man, and
+    // the victim an Abomination holds (its belly badge).
+    const gingerbreadMan =
+      unit.variant === "GINGERBREAD_MAN" && unit.form === "LAND";
+    const swallowed = swallowedBadgeOfV7(view, unit.id);
     entries.push({
       key: `unit:${unit.id}`,
       kind: "UNIT",
@@ -1350,8 +1416,11 @@ export function buildBoardRenderPlanV7(
         : // A submerged Submarine asks for its low-riding sprite (bead
           // pulp_wars-5ti.6); without one (the Classic look, a faction with
           // no Submarine art) it falls back to the whole Submarine.
+          // The giants' signatures (`pulp_wars-w49.32`): a Gingerbread Man
+          // is its Giant's sprite, drawn small.
           unitArtSubjectV7({
             ...unit,
+            ...(gingerbreadMan ? { role: "JUGGERNAUT" as const } : {}),
             faction,
             machine,
             submerged: naval?.submerged === true,
@@ -1376,6 +1445,8 @@ export function buildBoardRenderPlanV7(
       ...(unitShowsBerserkV7(view, unit) ? { berserk: true as const } : {}),
       ...(egg ? { egg: { turnsRemaining: eggTurns.get(unit.id) ?? 1 } } : {}),
       ...(growthStage === 1 || growthStage === 2 ? { growthStage } : {}),
+      ...(gingerbreadMan ? { gingerbreadMan: true as const } : {}),
+      ...(swallowed === undefined ? {} : { swallowed }),
       ...(martian === undefined ? {} : { martian }),
       ...(iceFolk === undefined ? {} : { iceFolk }),
       ...(ringWitch?.id === unit.id ? { blizzardRing: true as const } : {}),
@@ -1523,7 +1594,10 @@ export function buildBoardRenderPlanV7(
         interaction.dwarfPick.unitId !== selectedUnitId) &&
       (interaction.candyPick === undefined ||
         interaction.candyPick === null ||
-        interaction.candyPick.unitId !== selectedUnitId)
+        interaction.candyPick.unitId !== selectedUnitId) &&
+      (interaction.giantPick === undefined ||
+        interaction.giantPick === null ||
+        interaction.giantPick.unitId !== selectedUnitId)
     )
       addAbilityPreviews(
         entries,
@@ -1589,6 +1663,13 @@ export function buildBoardRenderPlanV7(
     interaction.candyPick.unitId === interaction.selectedUnitId
       ? interaction.candyPick
       : null;
+  // The giants' signatures: likewise while a signature is aimed.
+  const giantPick =
+    interaction.giantPick !== undefined &&
+    interaction.giantPick !== null &&
+    interaction.giantPick.unitId === interaction.selectedUnitId
+      ? interaction.giantPick
+      : null;
   // The naval branch interface: likewise while a Board is aimed.
   const navalPick =
     interaction.navalPick !== undefined &&
@@ -1635,44 +1716,67 @@ export function buildBoardRenderPlanV7(
               ? navalPickTargetsV7(view, commands, navalPick)
               : freezePick !== null
                 ? freezePickTargetsV7(view, commands, freezePick)
-                : candyPick !== null
-                  ? candyPickTargetsV7(
+                : giantPick !== null
+                  ? giantPickTargetsV7(
                       view,
                       commands,
-                      candyPick,
-                      // An armed Rush shows the unit's attacks with the bonus.
-                      candyPick.kind === "SUGAR_RUSH"
-                        ? commandMapTargets(
-                            view,
-                            commands.filter(
-                              (command) => command.kind === "ATTACK",
-                            ),
-                            candyPick.unitId,
-                            { assumeSugarRush: true },
-                          )
-                        : [],
-                      candyGhost,
+                      giantPick,
+                      interaction.cursor ?? null,
                     )
-                  : dedupeMapTargets([
-                      ...mapTargets(view, commands, interaction.selectedUnitId),
-                      // Bead pulp_wars-9im: a selected Gunner shows the units
-                      // it may heal beside its Moves and Attacks, unarmed: an
-                      // own unit is never a Move or an Attack target.
-                      ...(unarmedToss === undefined
-                        ? []
-                        : candyPickTargetsV7(
-                            view,
-                            commands,
-                            { kind: "SUGAR_TOSS", unitId: unarmedToss.unitId },
-                            [],
-                            candyGhost,
-                          )),
-                    ]);
+                  : candyPick !== null
+                    ? candyPickTargetsV7(
+                        view,
+                        commands,
+                        candyPick,
+                        // An armed Rush shows the unit's attacks with the bonus.
+                        candyPick.kind === "SUGAR_RUSH"
+                          ? commandMapTargets(
+                              view,
+                              commands.filter(
+                                (command) => command.kind === "ATTACK",
+                              ),
+                              candyPick.unitId,
+                              { assumeSugarRush: true },
+                            )
+                          : [],
+                        candyGhost,
+                      )
+                    : dedupeMapTargets([
+                        ...mapTargets(
+                          view,
+                          commands,
+                          interaction.selectedUnitId,
+                        ),
+                        // Bead pulp_wars-9im: a selected Gunner shows the units
+                        // it may heal beside its Moves and Attacks, unarmed: an
+                        // own unit is never a Move or an Attack target.
+                        ...(unarmedToss === undefined
+                          ? []
+                          : candyPickTargetsV7(
+                              view,
+                              commands,
+                              {
+                                kind: "SUGAR_TOSS",
+                                unitId: unarmedToss.unitId,
+                              },
+                              [],
+                              candyGhost,
+                            )),
+                      ]);
   if (martianPick !== null)
     addMartianPickEntriesV7(entries, view, targets, martianPick);
   if (iceFolkPick !== null) addIceFolkPickEntriesV7(entries, view, iceFolkPick);
   if (dwarfPick !== null)
     addDwarfPickEntriesV7(entries, view, commands, dwarfPick);
+  if (giantPick !== null)
+    addGiantPickEntriesV7(
+      entries,
+      view,
+      commands,
+      giantPick,
+      targets,
+      interaction.cursor ?? null,
+    );
   if (freezePick !== null)
     addFreezePickEntriesV7(entries, view, commands, targets, freezePick);
   else if (
@@ -1684,6 +1788,7 @@ export function buildBoardRenderPlanV7(
     iceFolkPick === null &&
     dwarfPick === null &&
     candyPick === null &&
+    giantPick === null &&
     navalPick === null
   ) {
     // The Ice Witch's ring: quiet while she is selected, prominent while
@@ -1704,6 +1809,7 @@ export function buildBoardRenderPlanV7(
     iceFolkPick === null &&
     dwarfPick === null &&
     candyPick === null &&
+    giantPick === null &&
     freezePick === null
   )
     // A Submarine the selected unit cannot attack from where it stands.
@@ -3452,10 +3558,15 @@ export function drawBoardV7(input: {
           // Bead pulp_wars-jg1: the shadow and the ready ring sit under the
           // unit's own measured feet, grown with a Big or Alpha sprite
           // (which grows about its canvas bottom, below).
+          // The giants' signatures (`pulp_wars-w49.32`): a Gingerbread Man is
+          // the Gingerbread Giant's sprite drawn small.
           const growth =
             chibiReady === null
               ? 1
-              : growthSpriteScaleV7(entry.growthStage, chibiReady.asset.width);
+              : growthSpriteScaleV7(entry.growthStage, chibiReady.asset.width) *
+                (entry.kind === "UNIT" && entry.gingerbreadMan === true
+                  ? GINGERBREAD_MAN_SPRITE_SCALE_V7
+                  : 1);
           const groundRect =
             growth === 1
               ? rect
@@ -3543,13 +3654,7 @@ export function drawBoardV7(input: {
           }
           // Revision 19: a Big or Alpha chibi sprite is drawn larger about
           // its feet (DINOSAUR.md "Growth display"); a cue may scale it too.
-          const spriteScale =
-            (chibiReady === null
-              ? 1
-              : growthSpriteScaleV7(
-                  entry.growthStage,
-                  chibiReady.asset.width,
-                )) * (unitPulse?.scale ?? 1);
+          const spriteScale = growth * (unitPulse?.scale ?? 1);
           if (entry.kind === "UNIT") {
             // The ready cue is the attached outline alone: in both art sets
             // the sprite stays opaque at its own size, so neither it nor the
@@ -4066,6 +4171,37 @@ export function drawBoardV7(input: {
             slot:
               (entry.afflictions?.length ?? 0) +
               (entry.iceFolk?.chill === "FROSTED" ? 1 : 0),
+            highContrast: input.highContrast ?? false,
+          });
+          context.restore();
+        }
+        // The giants' signatures (`pulp_wars-w49.32`): an Abomination's
+        // belly badge, its victim's sprite and HP.
+        if (entry.kind === "UNIT" && entry.swallowed !== undefined) {
+          const badge = entry.swallowed;
+          const resolveVictim = (subject: ArtSubjectV7) =>
+            chibiArt === undefined
+              ? null
+              : resolveChibiWithFallbackV7(chibiArt, {
+                  subject,
+                  at: entry.at,
+                  ownerColor: badge.ownerColor,
+                  deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+                }).resolution;
+          const portrait = resolveVictim(badge.portraitSubject);
+          const sprite =
+            portrait?.kind === "READY" ? null : resolveVictim(badge.artSubject);
+          context.save();
+          context.globalAlpha = sceneAlpha;
+          drawSwallowedBadgeV7(context, x, y, camera.zoom, badge, {
+            chibi: chibiPiece,
+            image:
+              portrait?.kind === "READY"
+                ? portrait.image
+                : sprite?.kind === "READY"
+                  ? sprite.image
+                  : null,
+            portrait: portrait?.kind === "READY",
             highContrast: input.highContrast ?? false,
           });
           context.restore();
@@ -4656,6 +4792,14 @@ export function drawBoardV7(input: {
       defer,
     );
     drawIceFolkFocusPreviewV7(
+      context,
+      camera,
+      input.plan,
+      input.previewFocus ?? null,
+      placer,
+      defer,
+    );
+    drawGiantFocusPreviewV7(
       context,
       camera,
       input.plan,
@@ -5347,6 +5491,42 @@ function drawMartianFocusPreviewV7(
       pierce.friendly ? "BLAST_FRIENDLY" : "PIERCE",
       pierce.label,
       pierce.lethal,
+      placer,
+      defer,
+    );
+}
+
+/**
+ * The giants' signatures (`pulp_wars-w49.32`): the focused (or only)
+ * target's other victims: the unit behind a crushed defender, or the
+ * enemies an Overstride Move tramples, each with its damage.
+ */
+function drawGiantFocusPreviewV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  plan: BoardRenderPlanV7,
+  focus: CoordV7 | null,
+  placer: PreviewLabelPlacerV7,
+  defer: (draw: () => void) => void,
+): void {
+  const hitting = plan.targets.filter(
+    (target) => target.giantHits !== undefined,
+  );
+  if (hitting.length === 0) return;
+  const target =
+    (focus === null
+      ? undefined
+      : hitting.find((candidate) => same(candidate.at, focus))) ??
+    (hitting.length === 1 ? hitting[0] : undefined);
+  for (const victim of target?.giantHits ?? [])
+    drawAbilityTargetV7(
+      context,
+      camera.offsetX + victim.at.x * TILE_WIDTH * camera.zoom,
+      camera.offsetY + victim.at.y * TILE_HEIGHT * camera.zoom,
+      camera.zoom,
+      "BLAST",
+      victim.label,
+      victim.lethal,
       placer,
       defer,
     );
@@ -6363,6 +6543,10 @@ function commandMapTargets(
         candyMatch && at !== undefined
           ? crumbsEatLabelV7(view, command.unitId, at)
           : null;
+      // The giants' signatures (`pulp_wars-w49.32`): an Overstride Move
+      // tramples each enemy it steps over (the exact public preview, asked
+      // only for a path that passes a hostile unit).
+      const trample = overstrideTrampleV7(view, command);
       return at === undefined
         ? []
         : [
@@ -6406,6 +6590,18 @@ function commandMapTargets(
                     ]
                       .filter((part): part is string => part !== null)
                       .join(". "),
+                  }),
+              ...(trample === null
+                ? {}
+                : {
+                    previewLabel: trample.label,
+                    semanticLabel: [
+                      provokes ? PROVOKE_MOVE_WARNING_V7 : null,
+                      trample.semantic,
+                    ]
+                      .filter((part): part is string => part !== null)
+                      .join(". "),
+                    giantHits: trample.hits,
                   }),
             },
           ];
@@ -6499,6 +6695,11 @@ function commandMapTargets(
         preview === null || attacker?.form !== "LAND"
           ? []
           : advanceCombatNotesV7(preview);
+      const giantNotes = preview === null ? [] : giantCombatNotesV7(preview);
+      const crushBlocker =
+        preview === null || attacker === undefined
+          ? null
+          : crushBlockerHitV7(view, preview, attacker.at, target.at);
       const noteParts = [
         monsterNote,
         undeadNote,
@@ -6512,10 +6713,16 @@ function commandMapTargets(
         // The frozen sea: Glacier's cover on ice, and a target frozen in.
         ...(preview === null ? [] : frozenSeaCombatNotesV7(preview)),
         // Tuning 1 (7r46): Breach (Explosives) ignores fortification.
-        ...(preview === null ? [] : breachCombatNotesV7(preview)),
+        // The giants' signatures: a Siege Hammer's own note says it.
+        ...(preview === null || preview.siegeHammer
+          ? []
+          : breachCombatNotesV7(preview)),
         // The ninth unit (`pulp_wars-w49.17`, 7r55): the Shock Field, the
         // Thagomizer's Crack, and Frostbite.
         ...(preview === null ? [] : ninthUnitCombatNotesV7(preview)),
+        // The giants' signatures (`pulp_wars-w49.32`): the crush and its
+        // collision, the Siege Hammer and the Walls, Glacial Smash.
+        ...giantNotes,
         // Tuning 2 (7r47): whether a kill moves the attacker.
         ...advanceNotes,
       ].filter((part): part is string => part !== null);
@@ -6527,6 +6734,7 @@ function commandMapTargets(
         dinosaurMatch && preview !== null
           ? dinosaurCombatSemanticNoteV7(preview, view)
           : null,
+        ...giantNotes.map((note) => `${note}.`),
         ...advanceNotes.map((note) => `Attacker ${note.toLowerCase()}.`),
       ].filter((part): part is string => part !== null);
       const semanticNote =
@@ -6586,6 +6794,9 @@ function commandMapTargets(
           ...(blast === null ? {} : { blast }),
           ...(martian?.pierce === undefined ? {} : { pierce: martian.pierce }),
           ...(iceFolk?.sweep === undefined ? {} : { sweep: iceFolk.sweep }),
+          // The giants' signatures: the hostile unit behind a crushed
+          // defender, with the collision's damage.
+          ...(crushBlocker === null ? {} : { giantHits: [crushBlocker] }),
           ...(dwarf?.knockback === undefined
             ? naval?.knockback === undefined
               ? {}
@@ -7272,6 +7483,114 @@ function selectionCoord(
   if (selection.kind === "UNIT")
     return view.units.find((unit) => unit.id === selection.unitId)?.at ?? null;
   return view.cities.find((city) => city.id === selection.cityId)?.at ?? null;
+}
+
+/**
+ * The giants' signatures (`pulp_wars-w49.32`, RULESET_7_GIANTS.md section
+ * 6.1): the hostile unit on the tile behind a crushed defender (straight on
+ * from the attacker) and the collision's damage, or null without one.
+ */
+function crushBlockerHitV7(
+  view: PlayerViewV7,
+  preview: Pick<CombatPreviewV7, "crush" | "collisionDamage">,
+  from: CoordV7,
+  to: CoordV7,
+): NonNullable<MapCommandTargetV7["giantHits"]>[number] | null {
+  if (preview.crush !== "WILL_CRUSH" || preview.collisionDamage <= 0)
+    return null;
+  const behind = {
+    x: to.x + Math.sign(to.x - from.x),
+    y: to.y + Math.sign(to.y - from.y),
+  };
+  const blocker = view.units.find(
+    (unit) => unit.at.x === behind.x && unit.at.y === behind.y,
+  );
+  return blocker === undefined
+    ? null
+    : {
+        at: behind,
+        label: `−${preview.collisionDamage}`,
+        lethal: preview.collisionDamage >= blocker.hp,
+      };
+}
+
+/**
+ * The giants' signatures (`pulp_wars-w49.32`): the trample of an offered
+ * Overstride Move of the viewer's Colossus (RULESET_7_GIANTS.md section
+ * 6.5), or null when it steps over no enemy. Only a path that passes a
+ * visible unit of another owner asks the engine's exact preview.
+ */
+function overstrideTrampleV7(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): {
+  readonly label: string;
+  readonly semantic: string;
+  readonly hits: NonNullable<MapCommandTargetV7["giantHits"]>;
+} | null {
+  const mover = view.units.find((unit) => unit.id === command.unitId);
+  if (
+    mover === undefined ||
+    mover.form !== "LAND" ||
+    !(unitRoleRuleV7(view, mover).abilities as readonly string[]).includes(
+      "OVERSTRIDE",
+    )
+  )
+    return null;
+  const passed = command.path.slice(0, -1);
+  if (
+    !view.units.some(
+      (unit) =>
+        unit.ownerId !== mover.ownerId &&
+        passed.some((at) => at.x === unit.at.x && at.y === unit.at.y),
+    )
+  )
+    return null;
+  const results = previewTrampleV7(view, command.unitId, command.path);
+  if (results === null || results.length === 0) return null;
+  const hits = results.flatMap((entry) => {
+    const victim = view.units.find((unit) => unit.id === entry.unitId);
+    return victim === undefined
+      ? []
+      : [{ at: victim.at, label: giantHitLabelV7(entry), lethal: entry.dies }];
+  });
+  const names = results.map((entry) => {
+    const victim = view.units.find((unit) => unit.id === entry.unitId);
+    return `${victim === undefined ? "a unit" : unitRoleRuleV7(view, victim).label} ${giantHitLabelV7(entry)}${entry.dies ? ", lethal" : ""}`;
+  });
+  return {
+    label: trampleLabelV7(results),
+    semantic: `Overstride: tramples ${names.join(" and ")}`,
+    hits,
+  };
+}
+
+/**
+ * The giants' signatures (`pulp_wars-w49.32`): the belly badge of a visible
+ * Abomination that holds a victim (the public `giants.swallowed`), or
+ * undefined.
+ */
+function swallowedBadgeOfV7(
+  view: PlayerViewV7,
+  holderUnitId: number,
+): SwallowedBadgeV7 | undefined {
+  if (view.giants.swallowed.length === 0) return undefined;
+  const entry = view.giants.swallowed.find(
+    (candidate) => candidate.holderUnitId === holderUnitId,
+  );
+  if (entry === undefined) return undefined;
+  const faction = presentedUnitFactionV7(view, entry.unit);
+  return {
+    portraitSubject: portraitSubjectV7(entry.unit.role, faction),
+    artSubject: unitArtSubjectV7({
+      role: entry.unit.role,
+      form: "LAND",
+      faction,
+    }),
+    ownerColor: ownerPresentation(view, entry.unit.ownerId).ownerColor,
+    hp: entry.unit.hp,
+    maxHp: entry.unit.maxHp,
+  };
 }
 
 function ownerPresentation(

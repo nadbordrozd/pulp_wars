@@ -613,6 +613,20 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/goblin-presentation-v7.ts::berserkPreviewTextV7": "BOARD",
     "src/render/goblin-presentation-v7.ts::berserkRadiusCellsV7": "BOARD",
     "src/render/goblin-presentation-v7.ts::berserkNewReachV7": "BOARD",
+    // The giants' signatures (`pulp_wars-w49.32`): the four commands' board
+    // targets, previews and reasons, the crush's blocker, the Overstride's
+    // trample and a pinned cue read units on the board (a burrowed unit is
+    // never a victim, a passenger, a blocker or trampled).
+    "src/render/giant-presentation-v7.ts::giantCommandUnavailableTextV7":
+      "BOARD",
+    "src/render/giant-presentation-v7.ts::swallowTargetNameV7": "BOARD",
+    "src/render/canvas/giant-board-plan-v7.ts::thrownViewV7": "BOARD",
+    "src/render/canvas/giant-board-plan-v7.ts::giantPickTargetsV7": "BOARD",
+    "src/render/canvas/giant-board-plan-v7.ts::addGiantPickEntriesV7": "BOARD",
+    "src/render/canvas/board-renderer-v7.ts::crushBlockerHitV7": "BOARD",
+    "src/render/canvas/board-renderer-v7.ts::overstrideTrampleV7": "BOARD",
+    "src/render/canvas/board-host-v7.ts::CanvasBoardHostV7.pinGiantFeedback":
+      "BOARD",
     "src/render/ice-folk-presentation-v7.ts::bolasPreviewLinesV7": "BOARD",
     "src/render/ice-folk-presentation-v7.ts::iceFolkBoundaryNoticeV7": "BOARD",
     "src/render/ice-folk-presentation-v7.ts::iceFolkCombatLinesV7": "BOARD",

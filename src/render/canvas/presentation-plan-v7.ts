@@ -29,6 +29,10 @@ import {
   type BroadsideShellV7,
 } from "./attack-effects-v7";
 import { playerFactionColourV7 } from "./faction-colours-v7";
+import {
+  GIANT_EFFECT_DURATIONS_V7,
+  type GiantFeedbackEffectV7,
+} from "./giant-effects-v7";
 
 export type CorePresentationStepV7 =
   | {
@@ -128,6 +132,31 @@ export type CorePresentationStepV7 =
       readonly from?: CoordV7;
       /** SUGAR_TOSS: the HP healed; PEPPERMINT: the damage. */
       readonly amount?: number;
+      readonly durationMs: number;
+      /** Another player's cue: the camera frames it, like enemy moves. */
+      readonly followCamera?: true;
+    }
+  | {
+      /**
+       * The giants' signatures (`pulp_wars-w49.32`, giant-effects-v7): a
+       * Crushing Shove's thud, a Swallow, a digest and the Zombie spat
+       * out, a Goblin Toss, a Thunder Stomp, an Overstride's trample, the
+       * Glacial Smash's shards, the Siege Hammer's blow (the Titan's
+       * attack itself) and a Break Off. `from` is the giant's cell (the
+       * shattered unit's for SHARDS); `unitIds` are the units the cue moves
+       * (the crushed pair, the victim, the stomped, the trampled, the
+       * Zombie, the Gingerbread Men; TOSS the Goblin, hidden in flight).
+       */
+      readonly kind: "GIANT";
+      readonly effect: GiantFeedbackEffectV7;
+      readonly from: CoordV7;
+      readonly cells: readonly CoordV7[];
+      readonly unitIds: readonly number[];
+      /** The giant itself, which the cue rears, heaves, gulps or shakes. */
+      readonly actorUnitId?: number;
+      readonly amounts?: readonly number[];
+      readonly marks?: readonly CoordV7[];
+      readonly walls?: true;
       readonly durationMs: number;
       /** Another player's cue: the camera frames it, like enemy moves. */
       readonly followCamera?: true;
@@ -460,6 +489,39 @@ export function corePresentationPlanV7(
       durationMs: DWARF_EFFECT_DURATIONS_V7[step.effect],
       ...(enemyTurn ? { followCamera: true as const } : {}),
     });
+  };
+  /** Adds a giant cue at its GIANT_EFFECT_DURATIONS_V7 duration. */
+  const pushGiant = (
+    step: Omit<
+      Extract<CorePresentationStepV7, { readonly kind: "GIANT" }>,
+      "kind" | "followCamera" | "durationMs"
+    >,
+  ): void => {
+    steps.push({
+      kind: "GIANT",
+      ...step,
+      durationMs: GIANT_EFFECT_DURATIONS_V7[step.effect],
+      ...(enemyTurn ? { followCamera: true as const } : {}),
+    });
+  };
+  /** The DAMAGE cues of a giant's fixed hits, after its cue. */
+  const pushGiantHits = (
+    hits: readonly {
+      readonly unitId: number;
+      readonly at: CoordV7;
+      readonly damage: number;
+      readonly lethal: boolean;
+    }[],
+  ): void => {
+    for (const hit of hits)
+      steps.push({
+        kind: "DAMAGE",
+        unitId: hit.unitId,
+        at: hit.at,
+        damage: hit.damage,
+        lethal: hit.lethal,
+        durationMs: 100,
+      });
   };
   /** Adds a Candy cue at its CANDY_EFFECT_DURATIONS_V7 duration. */
   const pushCandy = (
@@ -814,6 +876,169 @@ export function corePresentationPlanV7(
           ...(brain === undefined ? {} : { from: brain.at }),
           durationMs: 520,
         });
+    } else if (event.kind === "UNIT_CRUSHED") {
+      // The giants' signatures: the defender could not be pushed; the
+      // thud on the edge it could not cross, "−3" on it and on the unit
+      // behind it.
+      const source = unitAnywhere(event.sourceUnitId);
+      const target = unitAnywhere(event.targetUnitId);
+      const blocker =
+        event.blockerUnitId === null
+          ? undefined
+          : unitAnywhere(event.blockerUnitId);
+      if (
+        source !== undefined &&
+        target !== undefined &&
+        isExplored(target.at)
+      ) {
+        const hits = [
+          {
+            unitId: target.id,
+            at: target.at,
+            damage: event.damage + event.shieldDamage,
+            lethal: event.dies,
+          },
+          ...(blocker === undefined || !isExplored(blocker.at)
+            ? []
+            : [
+                {
+                  unitId: blocker.id,
+                  at: blocker.at,
+                  damage: event.blockerDamage + event.blockerShieldDamage,
+                  lethal: event.blockerDies,
+                },
+              ]),
+        ];
+        pushGiant({
+          effect: "CRUSH",
+          from: source.at,
+          cells: hits.map((hit) => hit.at),
+          unitIds: hits.map((hit) => hit.unitId),
+          amounts: hits.map((hit) => hit.damage),
+        });
+        pushGiantHits(hits);
+      }
+    } else if (event.kind === "UNIT_SWALLOWED") {
+      // A gulp: the victim shrinks into the Abomination.
+      const holder = unitAnywhere(event.unitId);
+      const victim = before.units.find(
+        (unit) => unit.id === event.victimUnitId,
+      );
+      if (holder !== undefined && isExplored(holder.at))
+        pushGiant({
+          effect: "SWALLOW",
+          actorUnitId: holder.id,
+          from: holder.at,
+          cells: victim === undefined ? [] : [victim.at],
+          unitIds: victim === undefined ? [] : [victim.id],
+        });
+    } else if (event.kind === "UNIT_DIGESTED") {
+      // Start Turn: bubbles and the digest's "−4" over the Abomination.
+      const holder = unitAnywhere(event.unitId);
+      if (holder !== undefined && isExplored(holder.at))
+        pushGiant({
+          effect: "DIGEST",
+          from: holder.at,
+          cells: [],
+          unitIds: [],
+          amounts: [event.amount],
+        });
+    } else if (event.kind === "UNIT_REGURGITATED") {
+      // The digested victim spat out as a Zombie beside the Abomination.
+      const holder = unitAnywhere(event.unitId);
+      if (
+        holder !== undefined &&
+        event.at !== null &&
+        isExplored(holder.at) &&
+        isExplored(event.at)
+      )
+        pushGiant({
+          effect: "REGURGITATE",
+          from: holder.at,
+          cells: [event.at],
+          unitIds: event.zombieUnitId === null ? [] : [event.zombieUnitId],
+        });
+    } else if (event.kind === "GOBLIN_TOSSED") {
+      // The Goblin cartwheels over the board and lands in a puff of dust.
+      const troll = unitAnywhere(event.unitId);
+      if (isExplored(event.from) || isExplored(event.to))
+        pushGiant({
+          effect: "TOSS",
+          ...(troll === undefined ? {} : { actorUnitId: troll.id }),
+          from: troll?.at ?? event.from,
+          cells: [event.from, event.to],
+          unitIds: [event.passengerUnitId],
+        });
+      origins.set(event.passengerUnitId, event.to);
+    } else if (event.kind === "THUNDER_STOMP") {
+      // A foot slam, the ground ring over the 3 x 3, dust; then each hit.
+      const bronto = unitAnywhere(event.unitId);
+      if (bronto !== undefined && isExplored(bronto.at)) {
+        const hits = event.results.flatMap((result) => {
+          const unit = unitAnywhere(result.unitId);
+          return unit === undefined || !isExplored(unit.at)
+            ? []
+            : [
+                {
+                  unitId: unit.id,
+                  at: unit.at,
+                  damage: result.damage + result.shieldDamage,
+                  lethal: result.dies,
+                },
+              ];
+        });
+        pushGiant({
+          effect: "STOMP",
+          actorUnitId: bronto.id,
+          from: bronto.at,
+          cells: hits.map((hit) => hit.at),
+          unitIds: hits.map((hit) => hit.unitId),
+          amounts: hits.map((hit) => hit.damage),
+        });
+        pushGiantHits(hits);
+      }
+    } else if (event.kind === "UNITS_TRAMPLED") {
+      // A stamp and "−3" on each unit the Colossus stepped over.
+      const colossus = unitAnywhere(event.unitId);
+      const hits = event.results.flatMap((result) => {
+        const unit = before.units.find(
+          (candidate) => candidate.id === result.unitId,
+        );
+        return unit === undefined || !isExplored(unit.at)
+          ? []
+          : [
+              {
+                unitId: unit.id,
+                at: unit.at,
+                damage: result.damage + result.shieldDamage,
+                lethal: result.dies,
+              },
+            ];
+      });
+      if (colossus !== undefined && hits.length > 0) {
+        pushGiant({
+          effect: "TRAMPLE",
+          from: colossus.at,
+          cells: hits.map((hit) => hit.at),
+          unitIds: hits.map((hit) => hit.unitId),
+          amounts: hits.map((hit) => hit.damage),
+        });
+        pushGiantHits(hits);
+      }
+    } else if (event.kind === "GIANT_BROKE_OFF") {
+      // Gingerbread chunks roll to their tiles and the men pop up.
+      const giant = unitAnywhere(event.unitId);
+      if (giant !== undefined && isExplored(giant.at))
+        pushGiant({
+          effect: "BREAK_OFF",
+          actorUnitId: giant.id,
+          from: giant.at,
+          cells: event.tiles.filter(isExplored),
+          unitIds: [...event.newUnitIds],
+        });
+    } else if (event.kind === "UNITS_CHILLED" && event.source === "SHARDS") {
+      // The giants' signatures: the shards' Chill is part of the Glacial
+      // Smash cue, planned with the Frost Giant's attack.
     } else if (event.kind === "UNITS_CHILLED") {
       // The Ice Folk revision: a Bolas flies from the Sled, a Cold Snap
       // rings out from the Witch, a Cold Aura pulses round the Giant; frost
@@ -1144,7 +1369,19 @@ export function corePresentationPlanV7(
         ray && attackerFaction === "MARTIAN"
           ? event.preview.splash[0]
           : undefined;
-      if (ray || pistol)
+      // The giants' signatures (section 6.7): the Brass Titan's blow is the
+      // Siege Hammer's swing (with the Walls crumbling on a walled centre).
+      const hammer =
+        event.preview.siegeHammer && isExplored(defender.at) && !ray;
+      if (hammer)
+        pushGiant({
+          effect: "HAMMER",
+          from: attacker.at,
+          cells: [defender.at],
+          unitIds: [defender.id],
+          ...(event.preview.wallsDestroyed ? { walls: true as const } : {}),
+        });
+      else if (ray || pistol)
         pushMartian({
           effect: "HEAT_RAY",
           cells: [defender.at],
@@ -1212,6 +1449,50 @@ export function corePresentationPlanV7(
           cells: [defender.at],
           unitId: defender.id,
         });
+      // The giants' signatures (section 6.6): a Frost Giant's shatter
+      // bursts bigger, its shards flying to the eight tiles around and
+      // Chilling the units there.
+      if (
+        shatters &&
+        (
+          unitRoleRuleV7(before, attacker).abilities as readonly string[]
+        ).includes("GLACIAL_SMASH")
+      ) {
+        const shards = envelope.events.find(
+          (candidate) =>
+            candidate.kind === "UNITS_CHILLED" &&
+            candidate.source === "SHARDS" &&
+            candidate.sourceUnitId === attacker.id,
+        );
+        const ring: CoordV7[] = [];
+        for (let dy = -1; dy <= 1; dy += 1)
+          for (let dx = -1; dx <= 1; dx += 1) {
+            const at = { x: defender.at.x + dx, y: defender.at.y + dy };
+            // The shards fly to the tiles round the shattered unit, not
+            // back at the Frost Giant.
+            if (
+              (dx !== 0 || dy !== 0) &&
+              isExplored(at) &&
+              !(at.x === attacker.at.x && at.y === attacker.at.y)
+            )
+              ring.push(at);
+          }
+        pushGiant({
+          effect: "SHARDS",
+          from: defender.at,
+          cells: ring,
+          unitIds: [],
+          marks:
+            shards?.kind === "UNITS_CHILLED"
+              ? shards.results.flatMap((result) => {
+                  const unit = unitAnywhere(result.unitId);
+                  return unit === undefined || !isExplored(unit.at)
+                    ? []
+                    : [unit.at];
+                })
+              : [],
+        });
+      }
       // The Candy revision: a Pie Launcher's hit leaves its target Splatted
       // (the pie's own flight and burst are its attack cue).
       if (

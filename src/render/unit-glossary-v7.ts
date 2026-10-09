@@ -138,38 +138,39 @@ const ENTRIES = {
     "After a kill it takes the tile and may attack again, for as long as it keeps killing.",
   ],
   PUSH: ["Push", "Shoves a target that survives its attack one tile back."],
-  // The giants' signatures (`pulp_wars-w49.30`): one per faction giant.
+  // The giants' signatures (`pulp_wars-w49.30`, worded by `pulp_wars-w49.32`):
+  // one per faction giant (docs/product/RULESET_7_GIANTS.md section 6).
   CRUSH: [
     "Crushing Shove",
-    "A target it cannot push is crushed instead, and an enemy behind it is hurt too.",
+    "A target it hits but cannot push back is crushed for extra damage instead, and an enemy standing behind it is hurt too.",
   ],
   SWALLOW: [
     "Swallow",
-    "Swallows a weakened enemy next to it, digests it over the next turns, and spits it out as your Zombie.",
+    "Swallows a weakened enemy next to it whole. Each of your turns it digests some, healing itself, then spits it out as your Zombie.",
   ],
   TOSS: [
     "Goblin Toss",
-    "Throws a Goblin next to it over whatever stands in between. The Goblin may still attack or Kaboom.",
+    "Throws a Goblin next to it two or three tiles, over anything in between. The Goblin can still attack or Kaboom after it lands.",
   ],
   STOMP: [
     "Thunder Stomp",
-    "If it has not moved, it hurts every enemy on the ground around it and smashes their Field Defense.",
+    "If it has not moved, it hurts every enemy on the ground around it at once and smashes their Field Defense. Nobody hits back.",
   ],
   OVERSTRIDE: [
     "Overstride",
-    "Steps over units and through enemy zones of control, trampling the enemies it steps over.",
+    "Strides over units and through enemy zones of control, trampling every enemy it steps over on the way.",
   ],
   GLACIAL_SMASH: [
     "Glacial Smash",
-    "Shatters a Chilled enemy its hit leaves badly hurt, and the shards Chill the enemies around it.",
+    "Its hit shatters a Chilled enemy that it leaves badly hurt, and the flying shards Chill the enemies around it. It never advances.",
   ],
   SIEGE_HAMMER: [
     "Siege Hammer",
-    "Its blows ignore Walls and Field Defense, smash the Field Defense, and tear a city's Walls down.",
+    "Its blows ignore Walls and Field Defense, smash the Field Defense, and tear a city's Walls down for good.",
   ],
   BREAK_OFF: [
     "Break Off",
-    "Spends some of its health to make 2 Gingerbread Men next to it.",
+    "Spends some of its health to make two Gingerbread Men beside it. Each fights as a Toffee Trooper at full health.",
   ],
 
   // ------------------------------------------------------------------ ships
@@ -630,6 +631,15 @@ const ENTRIES = {
     "Risen",
     "It has climbed out of its Grave once. It will not rise again.",
   ],
+  // The giants' signatures (`pulp_wars-w49.32`).
+  STATUS_SWALLOWED: [
+    "Swallowed",
+    "It holds an enemy inside and digests it a little each of your turns. If it dies first, the enemy is freed.",
+  ],
+  STATUS_GINGERBREAD_MAN: [
+    "Gingerbread Man",
+    "Broken off a Gingerbread Giant. It is a Toffee Trooper in every way.",
+  ],
 } as const satisfies Readonly<Record<string, readonly [string, string]>>;
 
 export type GlossaryIdV7 = keyof typeof ENTRIES;
@@ -904,6 +914,10 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   escape: "STATUS_ESCAPE",
   cracked: "STATUS_CRACKED",
   risen: "STATUS_RISEN",
+  // The giants' signatures (`pulp_wars-w49.32`): an Abomination's held
+  // victim, and a Gingerbread Man.
+  swallowed: "STATUS_SWALLOWED",
+  "gingerbread-man": "STATUS_GINGERBREAD_MAN",
 };
 
 /** Every status ID the unit dock can put on a chip (`data-unit-status`). */

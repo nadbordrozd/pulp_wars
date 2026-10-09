@@ -140,6 +140,15 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   REBAKE: "PLACE",
   // The frozen sea: the tile a line role's Freeze starts on.
   FREEZE: "PLACE",
+  // The giants' signatures (`pulp_wars-w49.32`): a victim to swallow and an
+  // enemy a Stomp hits are harmed; a Goblin to throw is helped; a landing
+  // tile and a Gingerbread Man's tile are places.
+  SWALLOW: "ATTACK",
+  STOMP: "ATTACK",
+  TOSS_PASSENGER: "SUPPORT",
+  TOSS: "PLACE",
+  BREAK_OFF_FIRST: "PLACE",
+  BREAK_OFF: "PLACE",
 };
 
 /** Every family the vocabulary knows, for the audit and its tests. */

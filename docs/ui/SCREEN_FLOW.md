@@ -747,7 +747,7 @@ looks as in revision 16 apart from the extra faction option.
   "Ram", and Commerce is "Plunder" in the technology
   tree, its detail and research actions. Goblin Commerce lists no trade, and
   Chivalry reads "Ram: Scrap Buggies advance after a kill and may attack
-  again". Rewards read "Two free Goblins" and "Troll". In a match with a
+  again". Rewards read "Two free Goblins" and "Troll: A free Troll, once: throws Goblins". In a match with a
   Goblin seat the leaderboard and turn status name each player's faction.
 - **Unit information.** The `?` details list "Kaboom N", "Explodes on death
   (N)", "Bombs", "Regenerates 4 HP each turn", "Gang Up: +1 Attack per ally
@@ -867,7 +867,7 @@ seat looks as in revision 18 apart from the extra faction option.
   unlock lines and adds "Dinosaurs ignore City Walls"); unit unlocks of
   egg-laid roles read "Raptor Egg", "Triceratops Egg (Charge!)" and so on, and Metallurgy reads "Forge discount: 1 Coin off
   trained land units and Eggs". Rewards read "A free Caveman" and
-  "Brontosaurus: A giant unit (2 slots)". In a match with a Dinosaur seat the
+  "Brontosaurus: A free Brontosaurus, once: stomps everything around it (uses 2 unit slots)". In a match with a Dinosaur seat the
   leaderboard and turn status name each player's faction.
 - **City panel.** A Dinosaur viewer's city shows capacity in slots: the stat
   is labelled "Slots" and reads "5/7 slots" (accessible name "5 of 7 slots",
@@ -1029,7 +1029,7 @@ without a Martian seat looks as before apart from the extra faction option.
   icon) and Explosives "Disintegrator" in the tree, its detail and research;
   unit unlocks read "Train Tripod (strides, heat ray, Pierce)", "Train Saucer
   (flies, Beam Down, Tractor Beam)" and so on, all from the registry. Rewards read "A free
-  Grunt" and "Colossus: A giant unit (2 slots)". In a match with a Martian
+  Grunt" and "Colossus: A free Colossus, once: strides over armies (uses 2 unit slots)". In a match with a Martian
   seat the leaderboard and turn status name each player's faction.
 - **Board markers** (code-drawn, `MARTIAN_PALETTE_V7`; calm: one row and one
   chip at most):
@@ -1233,7 +1233,7 @@ from the extra faction option.
   detail and research; unit unlocks read "Train Ice Witch (Blizzard, Cold
   Snap)", "Train Mammoth (Sweep, Trample)", "Train Boulder Yeti (ignores
   Walls and Field Defense)", all from the registry. Rewards read "A free
-  Yeti" and "Frost Giant: A giant unit".
+  Yeti" and "Frost Giant: A free Frost Giant, once: shatters Chilled enemies".
 - **Snow** (`ICE_FOLK_SNOW_OVERLAY_V7`): every explored land tile whose
   flag `snow` is true gets the cached 80 x 80 overlay tile of its edges and
   variant: a soft white wash with drifts and sparkle, cut raggedly with a
@@ -1383,7 +1383,7 @@ apart from the extra faction option.
   that stand still on or next to your city centers are dug in", "Eruptions
   deal 3; Steam Cannons ignore Walls and Field Defense", all from the
   registry and the constants. Rewards read "A free Hammerer" and "Brass
-  Titan: A giant clockwork unit".
+  Titan: A free Brass Titan, once: tears down city Walls".
 - **The mound** (spec 5.3): every mound of `view.burrowed` is drawn where
   its unit would stand, bottom-centred like a unit, with the unit's HP bar:
   `UNIT:DWARF:MOUND` for the Mole, `UNIT:DWARF:MOUND_RIDER` (a hammer head

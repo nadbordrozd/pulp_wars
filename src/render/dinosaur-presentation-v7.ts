@@ -27,6 +27,7 @@ import {
   type UnitRoleIdV7,
 } from "../engine/index";
 import { ninthUnitHelpRulesV7 } from "./ninth-unit-presentation-v7";
+import { GINGERBREAD_MAN_LABEL_V7 } from "./giant-presentation-v7";
 import { packHuntAttack2V7 } from "../engine/v7/combat";
 import { technologyNameV7 } from "./goblin-presentation-v7";
 
@@ -421,9 +422,13 @@ export function cityCapacityTextV7(used: number, capacity: number): string {
 /** A unit's name under its kind's registration; an Egg is "{Unit} Egg". */
 export function unitDisplayNameV7(
   view: PlayerViewV7,
-  unit: Pick<PublicUnitV7, "id" | "ownerId" | "role" | "form">,
+  unit: Pick<PublicUnitV7, "id" | "ownerId" | "role" | "form"> &
+    Partial<Pick<PublicUnitV7, "variant">>,
 ): string {
   const label = unitRoleRuleV7(view, unit).label;
+  // The giants' signatures (`pulp_wars-w49.32`): a Gingerbread Man is a
+  // Toffee Trooper in every rule, and named for what it is.
+  if (unit.variant === "GINGERBREAD_MAN") return GINGERBREAD_MAN_LABEL_V7;
   return unit.form === "EGG" ? `${label} Egg` : label;
 }
 

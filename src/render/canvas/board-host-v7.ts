@@ -78,6 +78,16 @@ import {
   type CandyFeedbackV7,
 } from "./candy-effects-v7";
 import { CRASHED_SPRITE_SATURATION_V7 } from "./candy-canvas-v7";
+import { GINGERBREAD_MAN_LABEL_V7 } from "../giant-presentation-v7";
+import {
+  GIANT_EFFECT_HIT_V7,
+  drawGiantFeedbackV7,
+  giantBoardShakeCssPxV7,
+  giantReducedMotionProgressV7,
+  giantUnitPulsesV7,
+  type GiantFeedbackV7,
+  type GiantSpriteV7,
+} from "./giant-effects-v7";
 import { candyCursorCueV7 } from "./candy-board-plan-v7";
 import {
   crumbsTileLinesV7,
@@ -128,10 +138,13 @@ import {
   arrowGeometry,
 } from "./combat-presentation";
 import { BoardGlowCacheV7 } from "./glow-cache-v7";
-import type { ArtSetV7 } from "../../assets/chibi-art-v7";
+import { unitArtSubjectV7, type ArtSetV7 } from "../../assets/chibi-art-v7";
+import { playerFactionColourV7 } from "./faction-colours-v7";
+import { presentedUnitFactionV7 } from "../neutral-presentation-v7";
 import {
   browserChibiRasterEnvironmentV7,
   createChibiArtResolverV7,
+  resolveChibiWithFallbackV7,
   type ChibiBoardArtV7,
 } from "./chibi-art-resolver-v7";
 import {
@@ -440,6 +453,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #pinnedCandyFeedback: readonly CandyFeedbackV7[] = [];
   /** The faded copies of Crashed units' sprites, built once per sprite. */
   readonly #candyDroopCache: SpriteSaturationCacheV7;
+  /**
+   * The giants' signature cue playing on the effects overlay (bead
+   * `pulp_wars-w49.32`).
+   */
+  #giantFeedback: GiantFeedbackV7 | null = null;
+  /** Review tooling only (pinGiantFeedback): cues frozen mid-animation. */
+  #pinnedGiantFeedback: readonly GiantFeedbackV7[] = [];
   /** Revision 19: this frame's unit sprite cues (growth, Egg, hatchling). */
   #unitPulses: readonly UnitPulseV7[] = [];
   /**
@@ -771,6 +791,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     // The Candy revision: an armed Sugar Rush, a Re-bake or a Sugar Toss
     // likewise.
     const candyPick = model.interaction.candyPick ?? null;
+    // The giants' signatures (`pulp_wars-w49.32`): an aimed Swallow, Toss,
+    // Stomp or Break Off likewise, once per stage.
+    const giantPick = model.interaction.giantPick ?? null;
     // The naval branch interface: an aimed Board likewise, and (the
     // frozen sea) an aimed Freeze.
     const navalPick =
@@ -788,9 +811,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
                 ? `dwarf:${dwarfPick.kind}:${dwarfPick.unitId}:${dwarfPick.kind === "TUNNEL" ? (dwarfPick.to === null ? "" : `${dwarfPick.to.x},${dwarfPick.to.y}`) : dwarfPick.kind === "BOMB_RUN" ? String(dwarfPick.targetUnitId) : ""}`
                 : candyPick !== null
                   ? `candy:${candyPick.kind}:${candyPick.unitId}`
-                  : navalPick !== null
-                    ? `naval:${navalPick.kind}:${navalPick.unitId}`
-                    : null;
+                  : giantPick !== null
+                    ? `giant:${giantPick.kind}:${giantPick.unitId}:${giantPick.kind === "TOSS" ? String(giantPick.passengerUnitId) : giantPick.kind === "BREAK_OFF" && giantPick.first !== null ? `${giantPick.first.x},${giantPick.first.y}` : ""}`
+                    : navalPick !== null
+                      ? `naval:${navalPick.kind}:${navalPick.unitId}`
+                      : null;
     if (subject === null) {
       this.#kaboomFramedKey = null;
       return;
@@ -805,6 +830,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       iceFolkPick?.unitId ??
       dwarfPick?.unitId ??
       candyPick?.unitId ??
+      giantPick?.unitId ??
       navalPick?.unitId ??
       null;
     const pickUnit =
@@ -816,6 +842,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         iceFolkPick !== null ||
         dwarfPick !== null ||
         candyPick !== null ||
+        giantPick !== null ||
         navalPick !== null) &&
         unitId === null &&
         layEgg === null
@@ -996,6 +1023,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#pinnedDwarfFeedback = [];
     this.#candyFeedback = null;
     this.#pinnedCandyFeedback = [];
+    this.#giantFeedback = null;
+    this.#pinnedGiantFeedback = [];
+    this.#setBoardShake(0);
     this.#unitPulses = [];
     this.#heldUnits = new Map();
     this.#drawSupportOverlay();
@@ -1066,6 +1096,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       const iceFolkSteps = steps.filter((step) => step.kind === "ICE_FOLK");
       const dwarfSteps = steps.filter((step) => step.kind === "DWARF");
       const candySteps = steps.filter((step) => step.kind === "CANDY");
+      const giantSteps = steps.filter((step) => step.kind === "GIANT");
       const attackSteps = steps.filter(
         (step): step is ShotStepV7 => attackEffectOf(step) !== null,
       );
@@ -1081,6 +1112,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         ...iceFolkSteps,
         ...dwarfSteps,
         ...candySteps,
+        ...giantSteps,
       ]);
       for (const step of steps) if (!framed.has(step)) announce(step);
       if (
@@ -1092,7 +1124,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         martianSteps.length > 0 ||
         iceFolkSteps.length > 0 ||
         dwarfSteps.length > 0 ||
-        candySteps.length > 0
+        candySteps.length > 0 ||
+        giantSteps.length > 0
       ) {
         this.#presentedView = after;
         this.#draw();
@@ -1194,6 +1227,23 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           this.#candyFeedback = null;
           this.#drawSupportOverlay();
         }
+        // The giants' signatures (`pulp_wars-w49.32`): each giant cue holds
+        // one still frame where it reads (the crack ring and its numbers,
+        // the Goblin at the top of its arc); the board never shakes.
+        for (const step of giantSteps) {
+          announce(step);
+          if (step.followCamera === true) this.#followCamera(step.from);
+          this.#giantFeedback = this.#giantFeedbackOf(
+            step,
+            giantReducedMotionProgressV7(step.effect),
+            before,
+          );
+          this.#drawSupportOverlay();
+          await this.#animate(240 * durationScale, () => undefined);
+          if (token !== this.#presentationToken) return;
+          this.#giantFeedback = null;
+          this.#drawSupportOverlay();
+        }
         // Revision 17: each explosion wave holds its midpoint burst, in
         // wave order, long enough to read.
         for (const step of explosionSteps) {
@@ -1264,7 +1314,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             martianSteps.length +
             iceFolkSteps.length +
             dwarfSteps.length +
-            candySteps.length ===
+            candySteps.length +
+            giantSteps.length ===
           steps.length
         ) {
           this.#presentedView = null;
@@ -1444,6 +1495,46 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         });
         if (token !== this.#presentationToken) return;
         this.#candyFeedback = null;
+        this.#drawSupportOverlay();
+      } else if (step.kind === "GIANT") {
+        // The giants' signatures (`pulp_wars-w49.32`): the cue plays on
+        // its own linear timeline. The board shows the view before the
+        // command until the cue's hit (a thrown Goblin is in the air, off
+        // its tile; the victim shrinks; the men are not there yet), then
+        // the result; the cue moves its units, and a Stomp shakes the
+        // board.
+        if (step.followCamera === true) this.#followCamera(step.from);
+        const hit = GIANT_EFFECT_HIT_V7[step.effect];
+        const flying = step.effect === "TOSS" ? step.unitIds : [];
+        const beforeView =
+          flying.length === 0
+            ? before
+            : {
+                ...before,
+                units: before.units.filter((unit) => !flying.includes(unit.id)),
+              };
+        this.#presentedView = hit > 0 ? beforeView : after;
+        this.#draw();
+        await this.#animate(step.durationMs * durationScale, (eased) => {
+          const progress = 1 - Math.cbrt(1 - eased);
+          if (hit > 0 && progress >= hit && this.#presentedView !== after)
+            this.#presentedView = after;
+          this.#giantFeedback = this.#giantFeedbackOf(step, progress, before);
+          this.#unitPulses = giantUnitPulsesV7(
+            step,
+            progress,
+            this.#camera.zoom,
+          );
+          this.#setBoardShake(giantBoardShakeCssPxV7(step.effect, progress));
+          this.#draw();
+          this.#drawSupportOverlay();
+        });
+        if (token !== this.#presentationToken) return;
+        this.#unitPulses = [];
+        this.#setBoardShake(0);
+        this.#giantFeedback = null;
+        this.#presentedView = after;
+        this.#draw();
         this.#drawSupportOverlay();
       } else if (step.kind === "BUILD") {
         this.#followCamera(step.at);
@@ -2184,6 +2275,140 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   }
 
   /**
+   * Review tooling and tests (bead `pulp_wars-w49.32`): draws the given
+   * giant cues at their fixed progress on the effects canvas until cleared
+   * with an empty list, with their units moved as the cue moves them and
+   * the board before the command until each cue's hit when `before` is
+   * given. The game never calls it; presentations clear it.
+   */
+  pinGiantFeedback(
+    feedback: readonly (Omit<GiantFeedbackV7, "undeadViolet" | "scale"> & {
+      readonly unitIds?: readonly number[];
+      readonly actorUnitId?: number;
+    })[],
+    before: PlayerViewV7 | null = null,
+  ): void {
+    this.#pinnedGiantFeedback = feedback.map((entry) =>
+      this.#giantFeedbackOf(
+        {
+          effect: entry.effect,
+          from: entry.from,
+          cells: entry.cells,
+          ...(entry.amounts === undefined ? {} : { amounts: entry.amounts }),
+          ...(entry.marks === undefined ? {} : { marks: entry.marks }),
+          ...(entry.walls === true ? { walls: true as const } : {}),
+          ...(entry.unitIds === undefined ? {} : { unitIds: entry.unitIds }),
+        },
+        entry.progress,
+        before ?? this.#model?.view ?? null,
+      ),
+    );
+    this.#unitPulses = feedback.flatMap((entry) =>
+      giantUnitPulsesV7(
+        { ...entry, unitIds: entry.unitIds ?? [] },
+        entry.progress,
+        this.#camera.zoom,
+      ),
+    );
+    const pending = feedback.find(
+      (entry) =>
+        GIANT_EFFECT_HIT_V7[entry.effect] > 0 &&
+        entry.progress < GIANT_EFFECT_HIT_V7[entry.effect],
+    );
+    const flying = pending?.effect === "TOSS" ? (pending.unitIds ?? []) : [];
+    this.#presentedView =
+      pending === undefined || before === null
+        ? null
+        : {
+            ...before,
+            units: before.units.filter((unit) => !flying.includes(unit.id)),
+          };
+    this.#draw();
+    this.#drawSupportOverlay();
+  }
+
+  /**
+   * A giant cue at `progress`, in the look's Undead accent and scale; a
+   * Goblin Toss with the thrown Goblin's own sprite (CHIBI) from `view`.
+   */
+  #giantFeedbackOf(
+    step: Pick<
+      GiantFeedbackV7,
+      "effect" | "from" | "cells" | "amounts" | "marks" | "walls"
+    > & { readonly unitIds?: readonly number[] },
+    progress: number,
+    view: PlayerViewV7 | null = this.#model?.view ?? null,
+  ): GiantFeedbackV7 {
+    const flyer =
+      step.effect === "TOSS"
+        ? view?.units.find((unit) => unit.id === step.unitIds?.[0])
+        : undefined;
+    const sprite = flyer === undefined ? null : this.#unitSprite(view, flyer);
+    return {
+      ...(sprite === null ? {} : { sprite }),
+      effect: step.effect,
+      from: step.from,
+      cells: step.cells,
+      ...(step.amounts === undefined ? {} : { amounts: step.amounts }),
+      ...(step.marks === undefined ? {} : { marks: step.marks }),
+      ...(step.walls === true ? { walls: true } : {}),
+      progress,
+      ...(this.#model?.visualDirection?.undeadAccent === "VIOLET"
+        ? { undeadViolet: true }
+        : {}),
+      // LEGACY draws its stand-in units at a larger zoom.
+      ...(this.#artSet() === "CHIBI" ? {} : { scale: 1 }),
+    };
+  }
+
+  /**
+   * A unit's own CHIBI sprite at its drawn size, or null (LEGACY, or while
+   * it loads).
+   */
+  #unitSprite(
+    view: PlayerViewV7 | null,
+    unit: PlayerViewV7["units"][number],
+  ): GiantSpriteV7 | null {
+    if (view === null || this.#artSet() !== "CHIBI") return null;
+    const model = this.#model;
+    const art =
+      model?.visualDirection === undefined
+        ? this.#chibiArt
+        : this.#directionRuntime(
+            model.visualDirection,
+            model.visualDirectionArt,
+          ).art;
+    const scale = chibiMasterScale(this.#camera);
+    const resolved = resolveChibiWithFallbackV7(art, {
+      subject: unitArtSubjectV7({
+        ...unit,
+        faction: presentedUnitFactionV7(view, unit),
+      }),
+      at: unit.at,
+      ownerColor: playerFactionColourV7(view, unit.ownerId),
+      deviceScale: scale * (this.#document.defaultView?.devicePixelRatio ?? 1),
+    }).resolution;
+    return resolved.kind === "READY"
+      ? {
+          image: resolved.image,
+          width: resolved.asset.width * scale,
+          height: resolved.asset.height * scale,
+        }
+      : null;
+  }
+
+  /** A Thunder Stomp's board shake: both canvases moved sideways. */
+  #setBoardShake(cssPx: number): void {
+    const transform =
+      cssPx === 0 || this.#model?.motion === "REDUCED"
+        ? ""
+        : `translateX(${cssPx.toFixed(2)}px)`;
+    for (const canvas of [this.#canvas, this.#effectsCanvas])
+      if (canvas !== null && canvas.style.transform !== transform)
+        canvas.style.transform = transform;
+  }
+
+  /**
    * Review tooling and tests: draws the given attack cues (bead
    * pulp_wars-b5f.5) at their fixed progress on the effects canvas until
    * cleared with an empty list. The Lich's bolt takes the look's Undead
@@ -2261,6 +2486,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       canvas.dataset.candyEffect = candy.effect;
       canvas.dataset.candyProgress = candy.progress.toFixed(3);
       drawCandyFeedbackV7(context, this.#camera, candy, effectArt);
+    }
+    for (const pinned of this.#pinnedGiantFeedback)
+      drawGiantFeedbackV7(context, this.#camera, pinned);
+    const giant = this.#giantFeedback;
+    if (giant === null) {
+      delete canvas.dataset.giantEffect;
+      delete canvas.dataset.giantProgress;
+    } else {
+      canvas.dataset.giantEffect = giant.effect;
+      canvas.dataset.giantProgress = giant.progress.toFixed(3);
+      drawGiantFeedbackV7(context, this.#camera, giant);
     }
     for (const pinned of this.#pinnedDwarfFeedback)
       drawDwarfFeedbackV7(context, this.#camera, pinned, effectArt);
@@ -2447,6 +2683,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       actions.length > 0 &&
       ((interaction.dwarfPick ?? null) !== null ||
         (interaction.candyPick ?? null) !== null ||
+        (interaction.giantPick ?? null) !== null ||
         (interaction.martianPick ?? null) !== null ||
         (interaction.iceFolkPick ?? null) !== null ||
         (interaction.navalPick ?? null) !== null ||
@@ -2725,6 +2962,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const aimed =
       (interaction.dwarfPick ?? null) !== null ||
       (interaction.candyPick ?? null) !== null ||
+      (interaction.giantPick ?? null) !== null ||
       (interaction.martianPick ?? null) !== null ||
       (interaction.iceFolkPick ?? null) !== null ||
       (interaction.navalPick ?? null) !== null ||
@@ -3348,6 +3586,10 @@ function unitName(
   view: PlayerViewV7,
   unit: PlayerViewV7["units"][number],
 ): string {
+  // The giants' signatures (`pulp_wars-w49.32`): a Gingerbread Man by its
+  // own name (a Toffee Trooper in every rule).
+  if (unit.variant === "GINGERBREAD_MAN")
+    return `Candy ${GINGERBREAD_MAN_LABEL_V7}`;
   if (unitIsUndeadV7(view, unit))
     return `Undead ${unitRoleRuleV7(view, unit).label}`;
   if (unitIsGoblinV7(view, unit))
