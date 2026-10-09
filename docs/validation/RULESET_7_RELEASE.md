@@ -548,7 +548,10 @@ Goblin, Dinosaur, Martian, Ice Folk, Dwarf, map-curiosity, Candy, and
 naval-branch additions).
 `npm run check:full` (`npm run check` and then the whole-match simulations of
 `npm run test:sim`, `pulp_wars-bwry`) runs before the art reviews, and `git checkout -- art/` restores the evidence they rewrite
-before the browser smokes (see the gate-order note above):
+before the browser smokes (see the gate-order note above). This is a manual
+release run: CI, the GitHub Pages deploy, runs only `npm run check` (the unit
+tier), and the simulations of `npm run test:sim` are run by hand when the user
+asks (`pulp_wars-2fvp`):
 
 ```bash
 npm run validate:ruleset7-release

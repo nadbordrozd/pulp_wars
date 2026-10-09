@@ -61,7 +61,17 @@ describe("GitHub Pages deployment", () => {
     );
 
     expect(workflow).toContain("branches: [main]");
-    expect(workflow).toContain("run: npm run check:full");
+    // CI runs only the unit tier; whole-game simulations (`npm run test:sim`,
+    // `npm run check:full`) are run by hand when the user asks
+    // (pulp_wars-2fvp; was `run: npm run check:full` from pulp_wars-bwry).
+    const validateSteps = Array.from(
+      workflow.matchAll(/- name: Validate and build\n\s+run: (.+)\n/g),
+      (match) => match[1],
+    );
+    expect(validateSteps).toEqual(["npm run check"]);
+    expect(workflow).toMatch(/^ {8}run: npm run check$/m);
+    expect(workflow).not.toContain("check:full");
+    expect(workflow).not.toContain("test:sim");
     expect(workflow).toMatch(/actions\/upload-pages-artifact@v\d+/);
     expect(workflow).toContain("path: ./dist");
     expect(workflow).toMatch(/actions\/deploy-pages@v\d+/);

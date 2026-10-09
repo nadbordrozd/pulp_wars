@@ -66,7 +66,10 @@ default tier applies to `npm test` and to `npx vitest run <files>`, even when a
 simulation file is named. `npm run test:sim` runs only the simulations and
 `npm run check:full` runs `npm run check` and then `npm run test:sim`; both are
 user-authorised only, like the release validators. `npm run check` is the
-static checks, `npm run test:unit`, and `npm run build`. A new test that plays
+static checks, `npm run test:unit`, and `npm run build`. CI (the GitHub Pages
+deploy in `.github/workflows/deploy-pages.yml`) runs only `npm run check`, the
+unit tier; simulations (`npm run test:sim`) are run by hand when the user asks
+(`pulp_wars-2fvp`). A new test that plays
 a match goes in a `*.sim.test.ts` file; `tests/unit/test-tiers.test.ts` fails
 when a match runner appears in any other test file.
 
@@ -129,8 +132,9 @@ Browser and audit gates are risk-triggered, not routine extras:
   variant is never a routine gate; use it only when an approved change
   intentionally replaces the checked release corpus and review that diff.
 - `npm audit --audit-level=high` is required for dependency/lockfile,
-  toolchain, security-boundary, and release-profile work. CI is unchanged by
-  this policy.
+  toolchain, security-boundary, and release-profile work. CI (the GitHub
+  Pages deploy) runs only `npm run check` (the unit tier); simulations
+  (`npm run test:sim`) are run by hand when the user asks.
 
 The worker owns focused implementation checks while iterating and reports their
 exact commands and results. The root owns the independent review and final

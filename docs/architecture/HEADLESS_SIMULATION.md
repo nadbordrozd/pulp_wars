@@ -864,7 +864,9 @@ unmarked setup for historical v5 reconstruction instead of silently upgrading
 it.
 
 `runAiBatch` returns compact outcomes, rounds, command counts, hashes, errors,
-and stalls. CI fixes seed `0` for all three supported opponent counts; the
+and stalls. The simulation tier (`npm run test:sim`, run by hand when the
+user asks; CI runs only the unit tier) fixes seed `0` for all three supported
+opponent counts; the
 documented soak corpus is seeds `0..7` across 1/2/3 opponents (24 matches).
 Every run uses 20,000 commands and 500 rounds as hard safety caps. Corpus
 changes are intentional golden changes: compare per-entry final hashes as well

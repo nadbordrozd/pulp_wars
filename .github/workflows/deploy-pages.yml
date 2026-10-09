@@ -33,8 +33,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # The unit tier only: static checks, `npm run test:unit`, and the build.
+      # The whole-game simulation tier is run by hand when the user asks,
+      # never on a deploy (pulp_wars-2fvp).
       - name: Validate and build
-        run: npm run check:full
+        run: npm run check
 
       - name: Upload Vite build
         uses: actions/upload-pages-artifact@v5
