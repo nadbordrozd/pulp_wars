@@ -217,7 +217,9 @@ describe("ruleset-7 revision-20 section 6.3 sturdiness numbers", () => {
     // balance (`pulp_wars-7g3.7`) gave the Yeti 9 HP.
     // (The ninth unit, 7r55: the defender is the Musk Ox, 16; the Mammoth,
     // 20, is the heavy role.)
-    expect(hp("ICE_FOLK")).toEqual([9, 10, 8, 16, 12, 12, 14, 40]);
+    // Ice Folk Freeze (`pulp_wars-w49.37`): the Ice Witch and the Boulder
+    // Yeti 10 (were 12), the Frost Giant 36 (was 40).
+    expect(hp("ICE_FOLK")).toEqual([9, 10, 8, 16, 10, 10, 14, 36]);
     // The Dwarf revision (`pulp_wars-78i.3`) adds a seventh faction
     // (docs/product/RULESET_7_DWARVES.md section 3).
     // (The ninth unit, 7r55: the breakthrough unit is the Whirligig, 12;

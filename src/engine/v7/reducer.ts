@@ -69,7 +69,7 @@ import {
   isResourceRevealedV7,
   playerTechnologyResearchCostV7,
   primaryActionBlockedAfterMoveV7,
-  sluggishUnitMovedV7,
+  unitIsFrozenV7,
   kaboomReadyV7,
   BLAST_MOUNTAIN_POPULATION_V7,
   BOOM_POPULATION_V7,
@@ -95,18 +95,20 @@ import {
 } from "./ice";
 import {
   attackMaximumRangeV7,
-  canBeChilledV7,
-  chillCountdownV7,
+  canBeFrozenV7,
   coldSnapTargetsV7,
-  isChilledV7,
+  frozenCountdownV7,
+  isFrozenV7,
   isIceFolkLandUnitV7,
   prunedIceFolkV7,
   resolveColdAuraV7,
   unitAvoidsForeignSitesV7,
-  unitsChilledEventV7,
-  withChillAppliedV7,
-  withChillCuredV7,
+  unitsFrozenEventV7,
+  withFrozenAppliedV7,
+  withFrozenCuredV7,
   withinBolasRangeV7,
+  withinFrostBoltRangeV7,
+  frozenUnitNamedV7,
 } from "./ice-folk";
 import {
   ACHIEVEMENT_REQUIRED_TECH_V7,
@@ -278,6 +280,7 @@ import {
   swallowedOutcomeEventsV7,
   unitUsesSignatureV7,
 } from "./giants";
+import { applyStampedeV7 } from "./stampede";
 import { unitIsConstructV7 } from "./afflictions";
 import {
   recoverEligibleV7,
@@ -391,9 +394,16 @@ export type RuleErrorCodeV7 =
   // `OUT_OF_RANGE`) or Cold Snap (`EMBARKED`, `NO_TARGET`).
   | "BOLAS_NOT_LEGAL"
   | "COLD_SNAP_NOT_LEGAL"
+  // Ice Folk Freeze (`pulp_wars-w49.37`): a command naming a Frozen unit
+  // (`UNIT_FROZEN { unitId }`), an illegal Frost Bolt (`EMBARKED`,
+  // `TARGET_IMMUNE`, `OUT_OF_RANGE`), or Stampede (`EMBARKED`, `MOVED`,
+  // `DIRECTION`, `BLOCKED`).
+  | "UNIT_FROZEN"
+  | "FROST_BOLT_NOT_LEGAL"
+  | "STAMPEDE_NOT_LEGAL"
   // The Dwarf revision: an illegal Tunnel (`EMBARKED`, `SURFACED`,
   // `DESTINATION`, `RIDER`, `RIDER_DESTINATION`), bombing run (`EMBARKED`,
-  // `SLUGGISH`, `OUT_OF_RANGE`, `ALREADY_BOMBED`, `LANDING`), or Assemble
+  // `OUT_OF_RANGE`, `ALREADY_BOMBED`, `LANDING`), or Assemble
   // (`EMBARKED`, `NO_HOME`).
   | "TUNNEL_NOT_LEGAL"
   | "BOMB_RUN_NOT_LEGAL"
@@ -1091,6 +1101,26 @@ function revealReleasedUnitsV7(
   return next;
 }
 
+/**
+ * Ice Folk Freeze (`pulp_wars-w49.37`, section 21.12): after an accepted
+ * `MOVE` or `DISEMBARK` of `unitId`, a Frost Giant's Cold Aura freezes the
+ * units around the tile it ended on. Returns `result` itself otherwise.
+ */
+function withColdAuraResultV7(
+  unitId: UnitStateV7["id"],
+  result: ApplyCommandResultV7,
+): ApplyCommandResultV7 {
+  if (!result.accepted) return result;
+  const aura = resolveColdAuraV7(result.state, unitId);
+  if (aura.events.length === 0) return result;
+  const next = accepted(checked(aura.state), [
+    ...result.events,
+    ...aura.events,
+  ]);
+  if (!next.accepted) throw new RangeError("INVALID_STATE");
+  return next;
+}
+
 function navalFactsMayChangeV7(
   state: GameStateV7,
   command: CommandV7,
@@ -1171,6 +1201,13 @@ function applyCommandCoreV7(
     if (named !== undefined && named.ownerId === actor && named.form === "EGG")
       return rejected(stateInput, "UNIT_IS_EGG", { unitId: named.id });
   }
+  // Ice Folk Freeze (`pulp_wars-w49.37`, section 21.3): a Frozen unit
+  // cannot move or act. Every command naming an own Frozen unit is refused,
+  // except Promote, Disband, and Wait; so is a Goblin Toss or a Tunnel ride
+  // of a Frozen passenger.
+  const frozenNamed = frozenUnitNamedV7(state, actor, command);
+  if (frozenNamed !== null)
+    return rejected(stateInput, "UNIT_FROZEN", { unitId: frozenNamed });
   // The Dwarf revision section 5.3: a burrowed unit spent its turn
   // underground; every command naming it is refused.
   if (
@@ -1231,11 +1268,19 @@ function applyCommandCoreV7(
   if (command.kind === "BUILD_SHIPYARD")
     return applyShipyard(stateInput, state, actor, command.at);
   if (command.kind === "DISEMBARK")
-    return applyDisembark(stateInput, state, actor, command);
+    return withColdAuraResultV7(
+      command.unitId,
+      applyDisembark(stateInput, state, actor, command),
+    );
   if (command.kind === "CHOOSE_CITY_REWARD")
     return applyReward(stateInput, state, actor, command);
+  // Ice Folk Freeze (`pulp_wars-w49.37`, section 21.12): a Frost Giant
+  // that ends its own Move or landing freezes the units around it.
   if (command.kind === "MOVE")
-    return applyMove(stateInput, state, actor, command);
+    return withColdAuraResultV7(
+      command.unitId,
+      applyMove(stateInput, state, actor, command),
+    );
   if (command.kind === "ATTACK")
     return huntedAfterAttackV7(
       state,
@@ -1290,6 +1335,12 @@ function applyCommandCoreV7(
     return applyThrowBolas(stateInput, state, actor, command);
   if (command.kind === "COLD_SNAP")
     return applyColdSnap(stateInput, state, actor, command.unitId);
+  // Ice Folk Freeze (`pulp_wars-w49.37`): the Ice Witch's Frost Bolt and the
+  // Mammoth's Stampede.
+  if (command.kind === "FROST_BOLT")
+    return applyFrostBolt(stateInput, state, actor, command);
+  if (command.kind === "STAMPEDE")
+    return applyStampedeV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "FREEZE")
     return applyFreeze(stateInput, state, actor, command);
   if (command.kind === "TUNNEL")
@@ -3724,9 +3775,9 @@ function applyTractorBeam(
 }
 
 /**
- * The Ice Folk revision (section 7.3): `THROW_BOLAS`. Rejections in the
- * order of the section's table; the result applies Chill to the target, and
- * the Sled has used its primary action.
+ * The Ice Folk revision (section 21.9): `THROW_BOLAS`. Rejections in the
+ * order of the section's table; the result freezes the target (Ice Folk
+ * Freeze, `pulp_wars-w49.37`), and the Sled has used its primary action.
  */
 function applyThrowBolas(
   original: GameStateV7,
@@ -3734,22 +3785,66 @@ function applyThrowBolas(
   actor: PlayerId,
   command: Extract<CommandV7, { kind: "THROW_BOLAS" }>,
 ): ApplyCommandResultV7 {
+  return applySingleFreeze(original, state, actor, command, {
+    ability: "BOLAS",
+    error: "BOLAS_NOT_LEGAL",
+    inRange: withinBolasRangeV7,
+    source: "BOLAS",
+  });
+}
+
+/**
+ * Ice Folk Freeze (`pulp_wars-w49.37`, section 21.6): `FROST_BOLT`, the Ice
+ * Witch freezes one visible hostile unit within Chebyshev 2. Its legality
+ * is the Bolas table with the role ability `FROST_BOLT` and the error
+ * `FROST_BOLT_NOT_LEGAL`.
+ */
+function applyFrostBolt(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "FROST_BOLT" }>,
+): ApplyCommandResultV7 {
+  return applySingleFreeze(original, state, actor, command, {
+    ability: "FROST_BOLT",
+    error: "FROST_BOLT_NOT_LEGAL",
+    inRange: withinFrostBoltRangeV7,
+    source: "FROST_BOLT",
+  });
+}
+
+/** The shared single-target freeze of `THROW_BOLAS` and `FROST_BOLT`. */
+function applySingleFreeze(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: {
+    readonly unitId: UnitStateV7["id"];
+    readonly targetUnitId: UnitStateV7["id"];
+  },
+  rule: {
+    readonly ability: "BOLAS" | "FROST_BOLT";
+    readonly error: "BOLAS_NOT_LEGAL" | "FROST_BOLT_NOT_LEGAL";
+    readonly inRange: (from: CoordV7, to: CoordV7) => boolean;
+    readonly source: "BOLAS" | "FROST_BOLT";
+  },
+): ApplyCommandResultV7 {
   if (state.commandIndex === Number.MAX_SAFE_INTEGER)
     return rejected(original, "INTEGER_OVERFLOW");
   const actorCheck = validateUnitActor(state, actor, command.unitId);
   if (!actorCheck.ok)
     return rejected(original, actorCheck.code, actorCheck.params);
-  const sled = actorCheck.unit;
-  if (!unitRoleRuleV7(state, sled).abilities.includes("BOLAS"))
-    return rejected(original, "UNIT_ROLE_INVALID", { role: sled.role });
+  const source = actorCheck.unit;
+  if (!unitRoleRuleV7(state, source).abilities.includes(rule.ability))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: source.role });
   if (
-    sled.activation.overrunActive ||
-    primaryUsed(sled) ||
-    primaryActionBlockedAfterMoveV7(state, sled)
+    source.activation.overrunActive ||
+    primaryUsed(source) ||
+    primaryActionBlockedAfterMoveV7(state, source)
   )
-    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: sled.id });
-  if (sled.form !== "LAND")
-    return rejected(original, "BOLAS_NOT_LEGAL", { reason: "EMBARKED" });
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: source.id });
+  if (source.form !== "LAND")
+    return rejected(original, rule.error, { reason: "EMBARKED" });
   const target = state.units.find(
     (unit) => unit.id === command.targetUnitId && unit.hp > 0,
   );
@@ -3759,19 +3854,19 @@ function applyThrowBolas(
     });
   if (!arePlayersHostileV7(state, actor, target.ownerId))
     return rejected(original, "TARGET_ALLIED");
-  if (!canBeChilledV7(state, actor, target))
-    return rejected(original, "BOLAS_NOT_LEGAL", { reason: "TARGET_IMMUNE" });
-  if (!withinBolasRangeV7(sled.at, target.at))
-    return rejected(original, "BOLAS_NOT_LEGAL", { reason: "OUT_OF_RANGE" });
+  if (!canBeFrozenV7(state, actor, target))
+    return rejected(original, rule.error, { reason: "TARGET_IMMUNE" });
+  if (!rule.inRange(source.at, target.at))
+    return rejected(original, rule.error, { reason: "OUT_OF_RANGE" });
   try {
-    const applied = withChillAppliedV7(state.chilled, [target.id]);
+    const applied = withFrozenAppliedV7(state, state.frozen, [target.id]);
     return accepted(
       checked({
         ...state,
         commandIndex: nextSafe(state.commandIndex),
-        chilled: applied.chilled,
+        frozen: applied.frozen,
         units: state.units.map((unit) =>
-          unit.id === sled.id
+          unit.id === source.id
             ? {
                 ...unit,
                 activation: {
@@ -3783,7 +3878,7 @@ function applyThrowBolas(
             : unit,
         ),
       }),
-      [unitsChilledEventV7(actor, sled.id, "BOLAS", applied.results)],
+      [unitsFrozenEventV7(actor, source.id, rule.source, applied.results)],
     );
   } catch (cause) {
     return arithmeticFailure(original, cause);
@@ -3791,9 +3886,10 @@ function applyThrowBolas(
 }
 
 /**
- * The Ice Folk revision (section 6.4): `COLD_SNAP`. The Witch applies Chill
- * to every unit she can Chill that her owner sees within 2 tiles, and has
- * used her primary action.
+ * The Ice Folk revision (section 21.6): `COLD_SNAP`. Ice Folk Freeze
+ * (`pulp_wars-w49.37`): the Witch freezes every unit she can freeze that her
+ * owner sees on the eight tiles around her, and has used her primary
+ * action.
  */
 function applyColdSnap(
   original: GameStateV7,
@@ -3825,15 +3921,16 @@ function applyColdSnap(
   if (targets.length === 0)
     return rejected(original, "COLD_SNAP_NOT_LEGAL", { reason: "NO_TARGET" });
   try {
-    const applied = withChillAppliedV7(
-      state.chilled,
+    const applied = withFrozenAppliedV7(
+      state,
+      state.frozen,
       targets.map((unit) => unit.id),
     );
     return accepted(
       checked({
         ...state,
         commandIndex: nextSafe(state.commandIndex),
-        chilled: applied.chilled,
+        frozen: applied.frozen,
         units: state.units.map((unit) =>
           unit.id === witch.id
             ? {
@@ -3847,7 +3944,7 @@ function applyColdSnap(
             : unit,
         ),
       }),
-      [unitsChilledEventV7(actor, witch.id, "COLD_SNAP", applied.results)],
+      [unitsFrozenEventV7(actor, witch.id, "COLD_SNAP", applied.results)],
     );
   } catch (cause) {
     return arithmeticFailure(original, cause);
@@ -5519,12 +5616,14 @@ function resolveAttackExchangeV7(
         ),
       }
     : state.ninthUnit;
-  let chilled = state.chilled;
+  // Ice Folk Freeze (`pulp_wars-w49.37`): Frostbite freezes the attacker
+  // during its own turn, so it stays Frozen through its next turn.
+  let frozen = state.frozen;
   if (preview.frostbiteApplied) {
-    const applied = withChillAppliedV7(state.chilled, [attacker.id]);
-    chilled = applied.chilled;
+    const applied = withFrozenAppliedV7(state, state.frozen, [attacker.id]);
+    frozen = applied.frozen;
     events.push(
-      unitsChilledEventV7(
+      unitsFrozenEventV7(
         defender.ownerId,
         defender.id,
         "FROSTBITE",
@@ -5533,8 +5632,8 @@ function resolveAttackExchangeV7(
     );
   }
   // The giants' signatures (section 6.6): the shards of a unit a Frost
-  // Giant shattered Chill every unit around its tile that the Giant's owner
-  // can Chill, after the death events.
+  // Giant shattered freeze every unit around its tile that the Giant's
+  // owner can freeze, after the death events.
   if (
     preview.shatters &&
     unitUsesSignatureV7(state, attacker, "GLACIAL_SMASH")
@@ -5545,14 +5644,14 @@ function resolveAttackExchangeV7(
           unit.id !== defender.id &&
           unit.id !== attacker.id &&
           chebyshev(unit.at, defender.at) === 1 &&
-          canBeChilledV7(state, attacker.ownerId, unit),
+          canBeFrozenV7(state, attacker.ownerId, unit),
       )
       .map((unit) => unit.id);
     if (shards.length > 0) {
-      const applied = withChillAppliedV7(chilled, shards);
-      chilled = applied.chilled;
+      const applied = withFrozenAppliedV7({ ...state, units }, frozen, shards);
+      frozen = applied.frozen;
       events.push(
-        unitsChilledEventV7(actor, attacker.id, "SHARDS", applied.results),
+        unitsFrozenEventV7(actor, attacker.id, "SHARDS", applied.results),
       );
     }
   }
@@ -5789,7 +5888,7 @@ function resolveAttackExchangeV7(
       cooling,
       splattedThisTurn,
       ninthUnit,
-      chilled,
+      frozen,
       populationContributions: economy.populationContributions,
     },
     events,
@@ -5889,8 +5988,8 @@ function applyTendWounded(
   const result = supportCaptain(original, state, actor, unitId, "TEND_WOUNDED");
   if ("accepted" in result) return result;
   // Revision 14 section 5: Tend Wounded also cures Plague and Bitten, so a
-  // plagued or bitten unit is a target even at full HP. The Ice Folk
-  // revision section 10.5: it cures Chill too (the entry becomes thawing).
+  // plagued or bitten unit is a target even at full HP. Ice Folk Freeze
+  // (`pulp_wars-w49.37`): it thaws a Frozen unit too (the entry is removed).
   const plaguedIds = new Set(state.plagued.map((entry) => entry.unitId));
   const bittenIds = new Set(state.bitten.map((entry) => entry.unitId));
   const targets = state.units
@@ -5903,7 +6002,7 @@ function applyTendWounded(
         (unit.hp < unit.maxHp ||
           plaguedIds.has(unit.id) ||
           bittenIds.has(unit.id) ||
-          isChilledV7(state.chilled, unit.id)) &&
+          isFrozenV7(state.frozen, unit.id)) &&
         !unit.activation.tendedThisTurn &&
         chebyshev(result.captain.at, unit.at) === 1,
     )
@@ -5949,9 +6048,9 @@ function applyTendWounded(
       commandIndex: nextSafe(state.commandIndex),
       plagued: state.plagued.filter((entry) => !amounts.has(entry.unitId)),
       bitten: state.bitten.filter((entry) => !amounts.has(entry.unitId)),
-      chilled: targets.reduce(
-        (chilled, unit) => withChillCuredV7(chilled, unit.id),
-        state.chilled,
+      frozen: targets.reduce(
+        (frozen, unit) => withFrozenCuredV7(frozen, unit.id),
+        state.frozen,
       ),
       units: state.units.map((unit) =>
         unit.id === result.captain.id
@@ -5986,7 +6085,7 @@ function applyTendWounded(
                 hpAfter: unit.hp + (amounts.get(unit.id) ?? 0),
                 curedPlague: plaguedIds.has(unit.id),
                 curedBitten: bittenIds.has(unit.id),
-                curedChill: isChilledV7(state.chilled, unit.id),
+                curedFrozen: isFrozenV7(state.frozen, unit.id),
               })),
             },
           ]),
@@ -6387,7 +6486,7 @@ function applyPillage(
   // The Candy revision section 5.3: a Crashed unit has no primary action.
   if (unitIsCrashedV7(state, unit.id))
     return rejected(original, "UNIT_CRASHED", { unitId });
-  if (primaryUsed(unit) || sluggishUnitMovedV7(state, unit))
+  if (primaryUsed(unit) || unitIsFrozenV7(state, unit))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   const player = requirePlayer(state, actor);
   if (!player.researchedTechs.includes("RAIDING"))
@@ -6990,14 +7089,14 @@ function applyEndTurn(
     // Inspired and Overrun and before the income preview.
     const cooled = coolingStepV7(expiredUnits, actor);
     const fields = rechargeShieldsAtEndTurnV7(cooled, actor);
-    // The Ice Folk revision section 5.4: the Chill countdown of the
-    // player's units, after the Force Fields recharge (no event).
-    // The Dwarf revision (sections 5.4 and 6.3): the per-turn lists of the
-    // active seat are emptied after the Chill countdown.
-    const chillCounted = chillCountdownV7(fields.state, actor);
-    // The frozen sea (naval branch section 8.5): the thaw, after the Chill
-    // countdown and before the income preview.
-    const thaw = resolveThawV7(chillCounted, actor);
+    // Ice Folk Freeze (`pulp_wars-w49.37`, section 21.2): the Frozen
+    // countdown of the player's units, after the Force Fields recharge (no
+    // event). The Dwarf revision (sections 5.4 and 6.3): the per-turn lists
+    // of the active seat are emptied after the Frozen countdown.
+    const frozenCounted = frozenCountdownV7(fields.state, actor);
+    // The frozen sea (naval branch section 8.5): the thaw of the ice, after
+    // the Frozen countdown and before the income preview.
+    const thaw = resolveThawV7(frozenCounted, actor);
     const counted = thaw.state;
     // The Martian balance revision (`pulp_wars-1wy.3`): so are the beamed
     // passengers and the used free Tractor Beams.
@@ -7123,19 +7222,11 @@ function applyEndTurn(
           mindControlCooldownStepV7(reset, nextPlayer.id),
           nextPlayer.id,
         );
-        // The Ice Folk revision section 7.8: the Cold Aura runs after the
-        // Shield recharge and before Plague.
-        const coldAura = resolveColdAuraV7(recharge.state, nextPlayer.id);
         // The frozen sea (naval branch section 9): Black Ice, then the crush,
-        // after the Cold Aura and before Plague.
-        const frozen = resolveStartTurnIceV7(coldAura.state, nextPlayer.id);
-        const aura =
-          frozen.events.length === 0
-            ? coldAura
-            : {
-                state: frozen.state,
-                events: [...coldAura.events, ...frozen.events],
-              };
+        // after the Shield recharge and before Plague. Ice Folk Freeze
+        // (`pulp_wars-w49.37`): the Frost Giant's Cold Aura no longer runs
+        // here; it freezes at the end of the Giant's own Move.
+        const aura = resolveStartTurnIceV7(recharge.state, nextPlayer.id);
         // The Dwarf revision section 5.4: the burrowed Moles surface after the
         // Shield recharge (and the Cold Aura) and before Plague.
         const surfacing = resolveStartTurnSurfacingV7(
@@ -7778,7 +7869,7 @@ function applyKaboom(
       exploder.activation,
       unitRoleMechanicsV7(state, exploder).kaboomAfterAttack,
     ) ||
-    sluggishUnitMovedV7(state, exploder)
+    unitIsFrozenV7(state, exploder)
   )
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   if (exploder.form !== "LAND")

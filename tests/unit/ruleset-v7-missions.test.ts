@@ -159,8 +159,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "2c1c6e42c2f3b305e7b5c97077c74a8cdb57227bd7ba36df9018be4e026eb3a3",
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Ice Folk
   // roster in the same middle game, the hand player as the Ice Folk.
-  "LAB_ICE_FOLK_MID@1:ICE_FOLK":
-    "c4b578b93fd3756c895536e7a2f1e3067269d178b962eb72ecfa6bd2bebfc185",
+  // Ice Folk Freeze (`pulp_wars-w49.37`): revision 2.
+  "LAB_ICE_FOLK_MID@2:ICE_FOLK":
+    "b82c78fa2a4a0ac1ca7379830de53fe66a01c3ac5015bff340f1c14bc438772d",
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): the Dwarf roster in
   // the same middle game, the hand player as the Dwarves.
   "LAB_DWARF_MID@1:DWARF":
@@ -212,8 +213,12 @@ function missionStateHash(state: GameStateV7): string {
     // Score and modes (`pulp_wars-kaw6.2`) added the `scoreLedger`, the
     // initial ledger in every initial state, left out too.
     scoreLedger,
+    // Ice Folk Freeze (`pulp_wars-w49.37`) renamed the empty `chilled`
+    // list `frozen`; it is hashed under its old name, so no pin moves.
+    frozen,
     ...rest
   } = state;
+  expect(frozen).toEqual([]);
   expect(giants).toEqual({ swallowed: [] });
   expectInitialScoreLedgerV7(state, scoreLedger);
   expect(ninthUnit).toEqual({
@@ -236,6 +241,7 @@ function missionStateHash(state: GameStateV7): string {
   ]);
   return canonicalHash({
     ...rest,
+    chilled: frozen,
     rulesetId: "*",
     setup: {
       ...state.setup,
@@ -323,8 +329,9 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   "LAB_DINOSAUR_MID@3:DINOSAUR":
     "57e1c97f2d8c05ba6e0cccffbf61ed290788552078d10bdd882eac27e23e7556",
-  "LAB_ICE_FOLK_MID@1:ICE_FOLK":
-    "7c2a4b8a9d4ab4ec04424434da6de3d804520171ddfefd482bd890154959e0f4",
+  // Ice Folk Freeze (`pulp_wars-w49.37`): revision 2.
+  "LAB_ICE_FOLK_MID@2:ICE_FOLK":
+    "ebd63e3819669af5c3446cca594362b3f44fdd534624e342fb48d9b24c8b19e0",
   "LAB_DWARF_MID@1:DWARF":
     "8a17c1c43532dc6a5e830d0f552cee4a955902a2897545267726d39c890c7ca2",
 };
@@ -348,8 +355,10 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
     barricades,
     giants,
     scoreLedger,
+    frozen,
     ...rest
   } = state;
+  expect(frozen).toEqual([]);
   expect(giants).toEqual({ swallowed: [] });
   expectInitialScoreLedgerV7(state, scoreLedger);
   expect(ninthUnit).toEqual({
@@ -374,6 +383,7 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
   ]);
   return canonicalHash({
     ...rest,
+    chilled: frozen,
     rulesetId: "*",
     setup: {
       ...setup,

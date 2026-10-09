@@ -249,7 +249,7 @@ describe("the Clockwork Gunner's two shots (section 7.3)", () => {
     expect(offeredOfV7(second.state, at(5, 2), "ATTACK")).toEqual([]);
   });
 
-  it("shoots once after moving; a sluggish unmoved Gunner shoots twice", () => {
+  it("shoots once after moving; a Frozen Gunner does not shoot", () => {
     const state = dwarfFieldV7([
       { seat: 0, role: "MARKSMAN", at: at(5, 1) },
       { seat: 1, role: "FIGHTER", at: at(5, 4) },
@@ -269,16 +269,15 @@ describe("the Clockwork Gunner's two shots (section 7.3)", () => {
           seat: 0,
           role: "MARKSMAN",
           at: at(5, 2),
-          chill: { sluggish: true, turnsLeft: 2 },
+          frozen: { turnsLeft: 1 },
         },
         { seat: 1, role: "FIGHTER", at: at(5, 4) },
         ENEMY,
       ],
       { factions: ["DWARF", "ICE_FOLK"] },
     );
-    const once = attackV7(cold, at(5, 2), at(5, 4));
-    expect(once.combat.attacksRemaining).toBe(1);
-    attackV7(once.state, at(5, 2), at(5, 4));
+    // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen unit does nothing.
+    expect(offeredOfV7(cold, at(5, 2), "ATTACK")).toEqual([]);
   });
 });
 

@@ -375,11 +375,9 @@ describe("the Whirligig's Whirl (section 22.15)", () => {
     );
     const chilled = whirl(ox, W);
     expect(
-      chilled.state.chilled.some(
-        (entry) => entry.unitId === unitAtV7(ox, W).id,
-      ),
+      chilled.state.frozen.some((entry) => entry.unitId === unitAtV7(ox, W).id),
     ).toBe(false);
-    expect(kindsV7(chilled.events)).not.toContain("UNITS_CHILLED");
+    expect(kindsV7(chilled.events)).not.toContain("UNITS_FROZEN");
   });
 
   it("sets off the death blast of an exploding unit it kills, which hits the Whirligig", () => {

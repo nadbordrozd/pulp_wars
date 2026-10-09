@@ -465,22 +465,34 @@ describe("moving on ice", () => {
     const built = plan(view, yeti.id);
     const last = FROZEN_UI_V7.bridge.at(-1);
     if (last === undefined) throw new Error("bridge missing");
-    // The only destination on the ice is the tile the slide stops on.
+    // The destinations on the ice: the tile the slide stops on and, with
+    // Glacier's extra point (Ice Folk Freeze, `pulp_wars-w49.37`), the
+    // first bridge tile entered diagonally from the shore beside the head,
+    // where no slide continues.
     const onIce = built.targets.filter(
       (target) =>
         target.family === "MOVE" &&
         FROZEN_UI_V7.bridge.some((tile) => at(tile) === at(target.at)),
     );
-    expect(onIce.map((target) => at(target.at))).toEqual([at(last)]);
-    expect(onIce[0]?.slide).toEqual([
+    expect(onIce.map((target) => at(target.at))).toEqual([
+      at(FROZEN_UI_V7.bridge[0] as { x: number; y: number }),
+      at(last),
+    ]);
+    const slid = onIce.find((target) => at(target.at) === at(last));
+    expect(slid?.slide).toEqual([
       { from: FROZEN_UI_V7.bridgeHead, tiles: FROZEN_UI_V7.bridge },
     ]);
-    expect(onIce[0]?.slip).toBeUndefined();
-    expect(onIce[0]?.semanticLabel).toBe(SLIDE_MOVE_LABEL_V7);
-    // Its plain Moves on land carry nothing.
+    expect(slid?.slip).toBeUndefined();
+    expect(slid?.semanticLabel).toBe(SLIDE_MOVE_LABEL_V7);
+    // Every other Move that carries a slide slides the same bridge (with
+    // Glacier's extra point it may step ashore after it); the first bridge
+    // tile, entered diagonally, carries none.
     for (const target of built.targets)
-      if (target.family === "MOVE" && target !== onIce[0])
-        expect(target.slide).toBeUndefined();
+      if (target.family === "MOVE" && target.slide !== undefined)
+        expect(target.slide).toEqual([
+          { from: FROZEN_UI_V7.bridgeHead, tiles: FROZEN_UI_V7.bridge },
+        ]);
+    expect(onIce[0]?.slide).toBeUndefined();
   });
 
   it("a Sled slides the bridge and steps ashore in the same Move", () => {

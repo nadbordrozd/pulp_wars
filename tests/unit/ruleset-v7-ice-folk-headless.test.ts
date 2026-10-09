@@ -80,7 +80,7 @@ describe("headless Normal matches with Ice Folk seats", () => {
       metrics.shatters + metrics.glideMoves + metrics.snowTilesAtEndTurnTotal,
     ).toBe(0);
     expect(match.metrics.commandsByKind.THROW_BOLAS).toBe(0);
-    expect(match.metrics.eventsByKind.UNITS_CHILLED).toBe(0);
+    expect(match.metrics.eventsByKind.UNITS_FROZEN).toBe(0);
   }, 120_000);
 
   it("is deterministic and replays command by command with valid events", () => {

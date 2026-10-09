@@ -185,12 +185,12 @@ describe("the area support mark", () => {
       hpAfter: 10,
       curedPlague: false,
       curedBitten: false,
-      curedChill: false,
+      curedFrozen: false,
     };
     expect(tendTargetLabelV7({ ...result, amount: 2 })).toBe("+2 HP");
-    expect(tendTargetLabelV7({ ...result, curedChill: true })).toBe("Cure");
+    expect(tendTargetLabelV7({ ...result, curedFrozen: true })).toBe("Cure");
     expect(tendTargetLabelV7({ ...result, curedPlague: true })).toBe("Cure");
-    expect(tendTargetLabelV7({ ...result, amount: 2, curedChill: true })).toBe(
+    expect(tendTargetLabelV7({ ...result, amount: 2, curedFrozen: true })).toBe(
       "+2 · Cure",
     );
   });

@@ -1021,7 +1021,12 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // The giants' signatures (`pulp_wars-w49.30`) insert SWALLOW, TOSS,
           // STOMP, and BREAK_OFF after RECOVER, moving every later command kind
           // forward by four (was 8cc618…40ad).
-          "4cff069eb2d8ce98cc16769ae88db43a8f4ea47d0989137bc033786e5cfd0986",
+          // Map curiosities round 2 (`pulp_wars-737.14`) insert TOSS_COIN
+          // before RECOVER and Ice Folk Freeze (`pulp_wars-w49.37`) inserts
+          // FROST_BOLT and STAMPEDE after BREAK_OFF, moving the later command
+          // kinds forward (was 4cff06…0986); the revision-12-ordinal value
+          // below is unchanged.
+          "81c68aefa7af61f6d9db75d03dd289bf2c9976d3e7c5994695d0534c9a36dd4e",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1117,7 +1122,12 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // The giants' signatures (`pulp_wars-w49.30`) insert SWALLOW, TOSS,
           // STOMP, and BREAK_OFF after RECOVER, moving every later command kind
           // forward by four (was ae238c…ba54).
-          "1b2b60bb65b2f027e0f8f7bdf2938c43968862aef04402090d135e8fc18f8baa",
+          // Map curiosities round 2 (`pulp_wars-737.14`) insert TOSS_COIN
+          // before RECOVER and Ice Folk Freeze (`pulp_wars-w49.37`) inserts
+          // FROST_BOLT and STAMPEDE after BREAK_OFF, moving the later command
+          // kinds forward (was 1b2b60…8baa); the revision-12-ordinal value
+          // below is unchanged.
+          "6d11393d97b3c6d76f0dfc69e83893354e53bb7d0ea0c32128b1cfc89361067b",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).

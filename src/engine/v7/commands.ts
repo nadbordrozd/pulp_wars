@@ -129,8 +129,8 @@ export type CommandV7 =
     }
   | {
       /**
-       * The Ice Folk revision (section 7.3): a Sled chills a hostile unit
-       * within 2 tiles.
+       * The Ice Folk revision (section 7.3): a Sled freezes a hostile unit
+       * within 2 tiles (Ice Folk Freeze, `pulp_wars-w49.37`).
        */
       readonly kind: "THROW_BOLAS";
       readonly unitId: UnitId;
@@ -138,8 +138,8 @@ export type CommandV7 =
     }
   | {
       /**
-       * The Ice Folk revision (section 6.4): an Ice Witch chills every
-       * hostile unit within 2 tiles.
+       * The Ice Folk revision (section 6.4): an Ice Witch freezes every
+       * hostile unit next to her (Ice Folk Freeze, `pulp_wars-w49.37`).
        */
       readonly kind: "COLD_SNAP";
       readonly unitId: UnitId;
@@ -277,6 +277,26 @@ export type CommandV7 =
       readonly kind: "BREAK_OFF";
       readonly unitId: UnitId;
       readonly tiles: readonly [CoordV7, CoordV7];
+    }
+  | {
+      /**
+       * Ice Folk Freeze (`pulp_wars-w49.37`, RULESET_7_CURRENT.md section
+       * 21.6): an Ice Witch freezes one hostile unit within 2 tiles (the
+       * Frost Bolt; she uses it or Cold Snap, one a turn).
+       */
+      readonly kind: "FROST_BOLT";
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+    }
+  | {
+      /**
+       * Ice Folk Freeze (section 21.18): an unmoved Mammoth charges in a
+       * straight line toward `at`, 1 to 3 tiles away, shoving and hurting
+       * the hostile units in its way.
+       */
+      readonly kind: "STAMPEDE";
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
     }
   | {
       /** Revision 19: a Dinosaur city lays an Egg of `role` on `at`. */
@@ -460,6 +480,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     kind === "MIND_CONTROL" ||
     kind === "TRACTOR_BEAM" ||
     kind === "THROW_BOLAS" ||
+    kind === "FROST_BOLT" ||
     kind === "SUGAR_TOSS" ||
     kind === "SWALLOW"
   ) {
@@ -531,7 +552,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: unit, targetUnitId: target, to } };
   }
-  if (kind === "FREEZE") {
+  if (kind === "FREEZE" || kind === "STAMPEDE") {
     if (!hasExactKeysV7(input, ["at", "kind", "unitId"])) return invalid(kind);
     const unit = parseUnitIdV7(candidate.unitId);
     const at = parseCoordV7(candidate.at);
@@ -839,6 +860,7 @@ function referencedOrdinal(command: CommandV7): number {
     command.kind === "MIND_CONTROL" ||
     command.kind === "TRACTOR_BEAM" ||
     command.kind === "THROW_BOLAS" ||
+    command.kind === "FROST_BOLT" ||
     command.kind === "SUGAR_TOSS" ||
     command.kind === "SWALLOW"
   )

@@ -7,7 +7,7 @@ import {
   WELL_OUTCOMES_V7,
   applyCommandV7,
   calculateCombatPreviewV7,
-  canBeChilledV7,
+  canBeFrozenV7,
   mindControlTargetBlockV7,
   monsterWanderV7,
   neutralBreedOfV7,
@@ -224,7 +224,7 @@ describe("the neutral registration by breed (sections 25.2, 29.1, 32.3)", () => 
     expect(neutralBreedOfV7({}, projector)).toBe("SHIELD_PROJECTOR");
   });
 
-  it("is immune to Mind Control, Chill, Push, and Knockback, per breed", () => {
+  it("is immune to Mind Control, Frozen, Push, and Knockback, per breed", () => {
     for (const breed of NEUTRAL_BREEDS_V7) {
       const home = breed === "BIGFOOT" ? at(15, 10) : SAUCER;
       const standOn =
@@ -245,7 +245,7 @@ describe("the neutral registration by breed (sections 25.2, 29.1, 32.3)", () => 
       const arena = round2ArenaV7(options);
       const neutral = neutralOf(arena, breed).unit;
       const juggernaut = round2UnitAtV7(arena, at(standOn.x - 1, standOn.y));
-      expect(canBeChilledV7(arena, P1, neutral), breed).toBe(false);
+      expect(canBeFrozenV7(arena, P1, neutral), breed).toBe(false);
       expect(
         mindControlTargetBlockV7(arena, { at: juggernaut.at }, neutral, {
           site: null,

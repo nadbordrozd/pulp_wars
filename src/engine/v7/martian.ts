@@ -23,7 +23,7 @@ import {
   type FactionRosterV7,
   type IceLookupV7,
   type MartianUnitFactsV7,
-  type SluggishLookupV7,
+  type FrozenLookupV7,
 } from "../rules/ruleset-v7";
 import { unitIsConstructV7 } from "./afflictions";
 import type { DomainEventV7 } from "./events";
@@ -760,7 +760,7 @@ export interface MartianActorV7 {
  * (it may have moved; a sluggish carrier that moved may not).
  */
 export function beamDownCarrierReadyV7(
-  lookup: SluggishLookupV7,
+  lookup: FrozenLookupV7,
   carrier: MartianActorV7,
 ): boolean {
   return (
@@ -945,7 +945,7 @@ export function tractorBeamRuleV7(
  * (`tractorUsedThisTurn`), and a sluggish puller that moved may not.
  */
 export function tractorBeamActorReadyV7(
-  lookup: SluggishLookupV7,
+  lookup: FrozenLookupV7,
   puller: MartianActorV7,
   rule: TractorBeamRuleV7,
   tractorUsedThisTurn: readonly UnitId[],

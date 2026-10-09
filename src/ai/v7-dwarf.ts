@@ -5,7 +5,7 @@ import {
   factionTreeV7,
   technologyCapabilitiesV7,
   unitCapabilitiesV7,
-  unitIsSluggishV7,
+  unitIsFrozenV7,
   unitMovementModeV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
@@ -294,7 +294,7 @@ export function dwarfFactsV7(
     )
       continue;
     const abilities = unitRoleRuleV7(view, unit).abilities;
-    if (abilities.includes("BOMB_RUN") && !unitIsSluggishV7(view, unit))
+    if (abilities.includes("BOMB_RUN") && !unitIsFrozenV7(view, unit))
       hostileGyrocopters.push(unit);
     if (abilities.includes("ASSEMBLE")) hostileEngineers.push(unit);
   }

@@ -136,7 +136,11 @@ describe("ruleset-7 late public query performance", () => {
       // The giants' signatures (`pulp_wars-w49.30`) insert SWALLOW, TOSS,
       // STOMP, and BREAK_OFF after RECOVER, moving every later command kind
       // forward by four (was 56f315…eaed).
-      "3ce945c681a0ea15a5ad0d70375d8c5a825b547f00fd609dd7016a62c67f244d",
+      // Map curiosities round 2 (`pulp_wars-737.14`) insert TOSS_COIN before
+      // RECOVER and Ice Folk Freeze (`pulp_wars-w49.37`) inserts FROST_BOLT
+      // and STAMPEDE after BREAK_OFF, moving the later command kinds forward
+      // (was 3ce945…244d); the revision-12-ordinal value is unchanged.
+      "dc4d3fae577deeb62a7e59bc76bd1eeb609f9f4520ec9e7d18cfb0158775a5c9",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

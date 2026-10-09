@@ -207,6 +207,8 @@ describe("Crumbs are left by a fallen Candy unit (section 6.1)", () => {
       "CRUSH",
       "STOMP",
       "TRAMPLE",
+      // Ice Folk Freeze (`pulp_wars-w49.37`): a Mammoth's Stampede.
+      "STAMPEDE",
     ]);
     for (const cause of CRUMBS_DEATH_CAUSES_V7)
       expect(deathLeavesCrumbsV7(state, dead("FIGHTER"), cause), cause).toBe(
@@ -903,16 +905,15 @@ describe("the Re-bake command (section 6.4)", () => {
     // Row 3: Crashed.
     const crashed = field({ rush: "CRASHED" });
     expect(rejectedV7(crashed, rebake(crashed)).code).toBe("UNIT_CRASHED");
-    // Row 4: a used primary action; a sluggish Confectioner that moved.
+    // Row 4: a used primary action. Ice Folk Freeze (`pulp_wars-w49.37`): a
+    // Frozen Confectioner is refused before it (`UNIT_FROZEN`).
     const acted = field({ activation: { attacked: true, attacksUsed: 1 } });
     expect(rejectedV7(acted, rebake(acted)).code).toBe("UNIT_ALREADY_ACTED");
     const sluggish = field(
-      { chill: { sluggish: true, turnsLeft: 2 }, activation: movedV7(1) },
+      { frozen: { turnsLeft: 1 }, activation: movedV7(1) },
       { factions: ["CANDY", "ICE_FOLK"] },
     );
-    expect(rejectedV7(sluggish, rebake(sluggish)).code).toBe(
-      "UNIT_ALREADY_ACTED",
-    );
+    expect(rejectedV7(sluggish, rebake(sluggish)).code).toBe("UNIT_FROZEN");
     // Row 6: an orphaned Confectioner.
     const orphan = patchUnitV7(field(), CONFECTIONER, { homeCityId: null });
     expect(rejectedV7(orphan, rebake(orphan))).toEqual({

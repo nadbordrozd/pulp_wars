@@ -33,6 +33,15 @@ The Gingerbread Men are the Gingerbread Giant's sprite drawn smaller (no
 new art). The general Help keeps no faction text, so the signatures are
 explained in the unit glossary and on the unit card.
 
+**Ice Folk Freeze** (`pulp_wars-w49.37`) replaced Chill and Sluggish with
+Frozen ([current rules section 21.2](RULESET_7_CURRENT.md#212-frozen)):
+Glacial Smash and its shards now read and apply Frozen
+([section 6.6](#66-ice-folk-frost-giant-glacial-smash)), the Frost Giant
+has 36 HP (40 before), and its Cold Aura freezes the units around it after
+its own Move or landing instead of at its owner's Start Turn; the tables
+and analyses below that say Chill, 40 HP, or Start Turn describe the
+giants before that change.
+
 **The user's ask.** 2026-10-08: "review the giant units of all factions and
 give them unique abilities; they are very samey now". Epic `w49` point 7:
 "Juggernaut-level creatures are samey in appearance and abilities (they do
@@ -301,7 +310,7 @@ and Plated caps it at 4, as for a blast
   Control, so no signature is ever used by a controller.
 - **G4. New primary actions** (`SWALLOW`, `TOSS`, `STOMP`, `BREAK_OFF`)
   join every list of primary actions: the sluggish table of
-  [section 21.3](RULESET_7_CURRENT.md#213-sluggish-move-or-act-not-both)
+  [section 21.3](RULESET_7_CURRENT.md#213-what-a-frozen-unit-cannot-do)
   (legal unmoved, `UNIT_ALREADY_ACTED` after a Move), the Crash
   ([section 23.2](RULESET_7_CURRENT.md#232-sugar-rush-and-the-crash)), a
   pending city reward blocking every command, and "no unit moves after a
@@ -574,26 +583,29 @@ kills the Catapult, and it can stride back out over the screen.
 Giant) attacks at distance 1, the Shatter test of
 [section 21.4](RULESET_7_CURRENT.md#214-shatter) uses
 `GLACIAL_SMASH_HP_V7` **8** instead of its owner's Shatter threshold (3, or
-4 with Brittle). Every other condition is unchanged: the defender is Chilled
-and in land form, its role is not `JUGGERNAUT`, and after the hit it would
+4 with Brittle). Every other condition is unchanged: the defender is Frozen
+(Chilled before `pulp_wars-w49.37`) and in land form, its role is not `JUGGERNAUT`, and after the hit it would
 have 1 to 8 HP. The preview carries `shatters` as today and
 `glacialSmash: true` when the threshold of 8 was the one that applied.
 
 **Shards.** When a Frost Giant's attack shatters a unit (by Glacial Smash or
 within the ordinary threshold), every other unit on the eight tiles around
-the shattered unit's tile that can be Chilled by the Giant's owner (hostile,
-land form, not an Egg; `JUGGERNAUT` roles included) is Chilled by the
-ordinary rule (a new freeze makes it sluggish), with one
-`UNITS_CHILLED { source: "SHARDS" }` after the death events.
+the shattered unit's tile that can be Frozen by the Giant's owner (hostile,
+land form, not an Egg; `JUGGERNAUT` roles included) is Frozen by the
+ordinary rule ([current rules section 21.2](RULESET_7_CURRENT.md#212-frozen)),
+with one `UNITS_FROZEN { source: "SHARDS" }` after the death events.
 
 **Never advances.** The Frost Giant's `advancesAfterKill` is false (as the
 Abomination's): after a shatter or any kill it stays.
 
 **Kept and changed.** Cold Aura, Mountain-born, Glide, Freeze kept; Push
-lost; never advances.
+lost; never advances. Since `pulp_wars-w49.37` the Cold Aura follows the
+Giant's own Move or landing
+([current rules section 21.12](RULESET_7_CURRENT.md#2112-prowl-and-the-cold-aura)),
+and the Giant has 36 HP.
 
-**Worked examples** (open Grass unless stated, the target Chilled by the
-Cold Aura at the Ice Folk Start Turn): a Guard (17) takes 10 and would keep
+**Worked examples** (open Grass unless stated, the target Frozen; they
+were written with the Cold Aura of the Ice Folk Start Turn): a Guard (17) takes 10 and would keep
 7: **shattered**. A Champion in a Forest takes 9 and would keep 6:
 shattered. A Mammoth (20) takes 12 and would keep 8: shattered. A Guard on
 a Field Defense takes 8 and would keep 9: not shattered (it is at 9; the

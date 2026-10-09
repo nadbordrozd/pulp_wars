@@ -11,9 +11,11 @@ import {
   WITCH_KILL_PRIORITY_V7,
   WITCH_MOVE_PRIORITY_V7,
   iceFolkArmyCountsV7,
+  iceFolkFactsV7,
   iceFolkMatchForPolicyV7,
   iceFolkProductionAdjustmentV7,
   iceFolkResearchV7,
+  shatterableNextTurnV7,
 } from "../../src/ai/v7-ice-folk";
 import { publicThreatenedTilesForPolicyV7 } from "../../src/ai/v7";
 import {
@@ -103,15 +105,20 @@ describe("Ice Folk Normal AI: the gate", () => {
 
 describe("Ice Folk Normal AI: the Witch", () => {
   it("casts Cold Snap first, from among her escort", () => {
+    // Ice Folk Freeze (`pulp_wars-w49.37`): Cold Snap reaches the units next
+    // to her (the Fighter stood 2 away before).
     const state = asIce([
       own("CAPTAIN", 6, 2),
       own("FIGHTER", 5, 2),
       own("FIGHTER", 7, 2),
-      foe("FIGHTER", 6, 0),
+      foe("FIGHTER", 6, 1),
     ]);
-    const witch = unitCandidatesV7(state, at(6, 2));
-    expect(witch[0]?.command.kind).toBe("COLD_SNAP");
-    expect(witch[0]?.score.priority).toBe(COLD_SNAP_PRIORITY_V7);
+    // (Her Move, rule 2, still ranks first and steps her off the adjacent
+    // enemy: an AI follow-up of Ice Folk Freeze; the Cold Snap keeps its
+    // tier.)
+    const snap = unitCandidatesV7(state, at(6, 2), "COLD_SNAP");
+    expect(snap[0]?.command.kind).toBe("COLD_SNAP");
+    expect(snap[0]?.score.priority).toBe(COLD_SNAP_PRIORITY_V7);
     // Above every attack of the turn.
     for (const candidate of candidatesV7(state))
       if (candidate.command.kind === "ATTACK")
@@ -175,7 +182,7 @@ describe("Ice Folk Normal AI: Chill, then Shatter", () => {
     const chilled = asIce([
       pieces[0] as IcePieceV7,
       pieces[1] as IcePieceV7,
-      foe("FIGHTER", 6, 0, { hp: 7, chill: { sluggish: false, turnsLeft: 2 } }),
+      foe("FIGHTER", 6, 0, { hp: 7, frozen: { turnsLeft: 1 } }),
     ]);
     expect(preview(chilled, at(5, 0), at(6, 0))?.shatters).toBe(true);
     const sled = unitCandidatesV7(state, at(6, 2));
@@ -188,14 +195,15 @@ describe("Ice Folk Normal AI: Chill, then Shatter", () => {
   });
 
   it("does not throw at a unit the Witch's Cold Snap covers this turn", () => {
+    // Ice Folk Freeze: the Fighter is next to the Witch (Cold Snap range 1).
     const state = asIce([
-      own("RAIDER", 6, 2),
+      own("RAIDER", 6, 3),
       own("CAPTAIN", 7, 2),
       own("FIGHTER", 5, 0),
-      foe("FIGHTER", 6, 0, { hp: 7 }),
+      foe("FIGHTER", 6, 1, { hp: 7 }),
     ]);
     expect(
-      unitCandidatesV7(state, at(6, 2), "THROW_BOLAS").map(
+      unitCandidatesV7(state, at(6, 3), "THROW_BOLAS").map(
         (candidate) => candidate.command,
       ),
     ).toEqual([]);
@@ -210,7 +218,7 @@ describe("Ice Folk Normal AI: Chill, then Shatter", () => {
       own("FIGHTER", 5, 0),
       foe("FIGHTER", 6, 0, {
         hp: 10,
-        chill: { sluggish: false, turnsLeft: 2 },
+        frozen: { turnsLeft: 1 },
       }),
     ]);
     const shot = preview(state, at(6, 2), at(6, 0));
@@ -344,18 +352,16 @@ describe("Ice Folk Normal AI: against the Ice Folk", () => {
     ).toBe(unitIdAtV7(state, at(5, 3)));
   });
 
-  it("pulls a Chilled unit at 7 HP out of a Yeti's Shatter reach", () => {
+  it("pulls a unit at 7 HP that a Sled could freeze out of a Yeti's Shatter reach", () => {
+    // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen unit cannot move, so the
+    // escape is for a unit that a visible Sled could freeze before the Yeti
+    // strikes (the Sled four tiles away: within its freeze reach, out of its
+    // attack reach).
     const state = againstIce([
-      own("FIGHTER", 5, 4, {
-        hp: 7,
-        chill: { sluggish: false, turnsLeft: 2 },
-      }),
+      own("FIGHTER", 5, 4, { hp: 7 }),
       foe("FIGHTER", 5, 2),
+      foe("RAIDER", 9, 4),
     ]);
-    // Step two of the Ice Folk pass (`pulp_wars-w49.27`): both seats play
-    // the army rules in this match, whose retreat outranks the escape
-    // value; the unit leaves the Yeti's reach either way, and it has no
-    // other Move.
     const best = unitCandidatesV7(state, at(5, 4))[0];
     expect(best?.command.kind).toBe("MOVE");
     expect(best?.score.priority).toBeGreaterThanOrEqual(
@@ -363,20 +369,53 @@ describe("Ice Folk Normal AI: against the Ice Folk", () => {
     );
     const end = best === undefined ? undefined : endOf(best.command);
     expect(end === undefined ? 0 : chebyshev(end, at(5, 2))).toBeGreaterThan(2);
-    expect(unitCandidatesV7(state, at(5, 4), "MOVE")).toHaveLength(1);
   });
 
-  it("holds a sluggish unit instead of walking into a Yeti's reach", () => {
+  it("counts a unit as shatterable next turn when a source can freeze it or it stays Frozen", () => {
+    const shatterable = (pieces: readonly IcePieceV7[]): boolean => {
+      const state = againstIce(pieces);
+      const view = viewerViewV7(state);
+      const facts = iceFolkFactsV7(
+        view,
+        (ownerId) => ownerId !== view.viewer.id,
+      );
+      return shatterableNextTurnV7(
+        view,
+        facts,
+        publicUnitAtV7(state, at(5, 4)),
+        at(5, 4),
+      );
+    };
+    const yeti = foe("FIGHTER", 5, 2);
+    expect(shatterable([own("FIGHTER", 5, 4), yeti])).toBe(false);
+    expect(shatterable([own("FIGHTER", 5, 4), yeti, foe("RAIDER", 9, 4)])).toBe(
+      true,
+    );
+    // A Frozen Sled freezes nothing.
+    expect(
+      shatterable([
+        own("FIGHTER", 5, 4),
+        yeti,
+        foe("RAIDER", 9, 4, { frozen: { turnsLeft: 1 } }),
+      ]),
+    ).toBe(false);
+    // Frozen during its own turn (Frostbite): still Frozen on the Ice Folk
+    // turn; frozen on the Ice Folk turn: thawed by then.
+    expect(
+      shatterable([own("FIGHTER", 5, 4, { frozen: { turnsLeft: 2 } }), yeti]),
+    ).toBe(true);
+    expect(
+      shatterable([own("FIGHTER", 5, 4, { frozen: { turnsLeft: 1 } }), yeti]),
+    ).toBe(false);
+  });
+
+  it("offers a Frozen unit no Move and no attack (Ice Folk Freeze, `pulp_wars-w49.37`)", () => {
     const state = againstIce([
-      own("RAIDER", 5, 5, { chill: { sluggish: true, turnsLeft: 2 } }),
+      own("RAIDER", 5, 3, { hp: 7, frozen: { turnsLeft: 1 } }),
       foe("FIGHTER", 5, 2),
     ]);
-    for (const candidate of unitCandidatesV7(state, at(5, 5), "MOVE")) {
-      const end = endOf(candidate.command);
-      expect(end === undefined ? 9 : chebyshev(end, at(5, 2))).toBeGreaterThan(
-        2,
-      );
-    }
+    expect(unitCandidatesV7(state, at(5, 3), "MOVE")).toEqual([]);
+    expect(unitCandidatesV7(state, at(5, 3), "ATTACK")).toEqual([]);
   });
 
   it("counts a Yeti's Glide on its own Snow in its reach", () => {

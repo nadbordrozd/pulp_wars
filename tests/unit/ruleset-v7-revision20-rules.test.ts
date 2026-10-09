@@ -91,16 +91,16 @@ class MemoryStorage {
 // save keys are obsolete, and the scripts perform no Stampede.
 describe("ruleset-7 revision-20 identity", () => {
   it("keeps 7r19 and 7r20 as prior identities after the later bumps", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r66");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r66");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r67");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r67");
     expect(RULESET_7.version).toBe(7);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r66.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-47, -45)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r67.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-48, -46)).toEqual([
       "pulp-wars-poc-7r19",
       "pulp-wars-poc-7r20",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-47, -45)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-48, -46)).toEqual([
       "pulpWars.save.v7r19.current",
       "pulpWars.save.v7r20.current",
     ]);
@@ -142,7 +142,7 @@ describe("ruleset-7 revision-20 identity", () => {
       const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
       const created = createPlayableGameV7(setup);
       if (!created.ok) throw new Error(created.error.code);
-      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r66");
+      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r67");
       const oldSetup = { ...setup, rulesetId: oldId };
       expect(parseMatchSetupV7(setup)).not.toBeNull();
       expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -216,7 +216,7 @@ describe("ruleset-7 revision-20 identity", () => {
 });
 
 describe("ruleset-7 revision-20 Stampede removal", () => {
-  it("has no STAMPEDE kind; KABOOM and HATCH stay adjacent (the Mind Control revision: 53 commands, 82 events)", () => {
+  it("has no revision-19 STAMPEDE kind; KABOOM and HATCH stay adjacent (the Mind Control revision: 53 commands, 82 events)", () => {
     // Revision 20 had 45 command kinds and 72 event kinds; the Martian
     // revision inserts three commands after HATCH and four events, the
     // Ice Folk revision two commands after TRACTOR_BEAM and one event, and
@@ -228,8 +228,14 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     // The giants' signatures (`pulp_wars-w49.30`) add SWALLOW, TOSS,
     // STOMP, and BREAK_OFF after RECOVER (66). Map curiosities round 2
     // (`pulp_wars-737.14`) add TOSS_COIN (67).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(67);
-    expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
+    // Ice Folk Freeze (`pulp_wars-w49.37`) adds FROST_BOLT and STAMPEDE
+    // after BREAK_OFF (69).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(69);
+    // The Mammoth's Stampede of Ice Folk Freeze is a new command with the
+    // old name, after BREAK_OFF; the Dinosaur's revision-19 slot is gone.
+    expect(COMMAND_KIND_ORDER_V7.indexOf("STAMPEDE")).toBe(
+      COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF") + 2,
+    );
     const kaboom = COMMAND_KIND_ORDER_V7.indexOf("KABOOM");
     expect(COMMAND_KIND_ORDER_V7.slice(kaboom, kaboom + 8)).toEqual([
       "KABOOM",
@@ -250,10 +256,12 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     // The giants' signatures (`pulp_wars-w49.30`) add ten event kinds in
     // one block after UNIT_SURFACED (115). Map curiosities round 2
     // (`pulp_wars-737.14`) add four (119).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(119);
+    // Ice Folk Freeze (`pulp_wars-w49.37`) renames UNITS_CHILLED to
+    // UNITS_FROZEN in place and adds MAMMOTH_STAMPEDED (120).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(120);
   });
 
-  it("fails to parse a STAMPEDE command, like any unknown kind", () => {
+  it("fails to parse a revision-19 STAMPEDE command", () => {
     const state = fieldV7([
       { seat: 0, role: "SWORDSMAN", at: at(3, 2) },
       { seat: 1, role: "GUARD", at: at(5, 2) },
@@ -263,10 +271,9 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
       unitId: unitAtV7(state, at(3, 2)).id,
       targetUnitId: unitAtV7(state, at(5, 2)).id,
     };
-    expect(parseCommandV7(stampede).ok).toBe(false);
-    expect(parseCommandV7({ kind: "NO_SUCH_COMMAND" })).toEqual(
-      parseCommandV7(stampede),
-    );
+    // Ice Folk Freeze (`pulp_wars-w49.37`): the Mammoth's STAMPEDE names a
+    // tile (`at`), so the revision-19 shape (a target unit) does not parse.
+    expect(parseCommandV7(stampede)).toEqual({ ok: false, field: "STAMPEDE" });
     const result = applyCommandV7(state, activeIdV7(state), stampede as never);
     expect(result).toMatchObject({
       accepted: false,
@@ -331,9 +338,12 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     ]);
   });
 
-  it("exports no Stampede query, error, preview field, or reason", () => {
+  it("exports no revision-19 Stampede query, preview field, or reason", () => {
+    // Ice Folk Freeze (`pulp_wars-w49.37`) reuses the name for the Mammoth's
+    // Stampede (`STAMPEDE`, `STAMPEDE_NOT_LEGAL`, `previewStampedeV7`); the
+    // Dinosaur's run-up bonus, preview field, and no-retaliation reason stay
+    // gone.
     for (const name of [
-      "previewStampedeV7",
       "queryStampedeLanesV7",
       "stampedeLaneV7",
       "viewStampedeFactsV7",
@@ -343,8 +353,8 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
       "growthHpGainV7",
     ])
       expect(name in engine, name).toBe(false);
-    // No engine, AI, headless, or persistence source names the command, its
-    // error code, its preview field, or its no-retaliation reason.
+    // No engine, AI, headless, or persistence source names its preview field
+    // or its run-up bonus.
     const root = join(import.meta.dirname, "..", "..");
     const sources = (directory: string): string[] =>
       readdirSync(join(root, directory), { withFileTypes: true }).flatMap(
@@ -364,9 +374,7 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
       ...sources("src/persistence"),
     ]) {
       const text = readFileSync(join(root, file), "utf8");
-      expect(text, file).not.toMatch(
-        /STAMPEDE_NOT_LEGAL|"STAMPEDE"|stampede:|stampedeRunBonus|StampedePreview/,
-      );
+      expect(text, file).not.toMatch(/\bstampede:|stampedeRunBonus/);
     }
     // A combat preview carries `runUp` and `fortificationIgnored` instead of
     // `stampede`, and an event with `stampede` or the old reason is refused.

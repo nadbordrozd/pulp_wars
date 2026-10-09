@@ -35,7 +35,11 @@ import { isUnitVisibleToPlayerV7 } from "../engine/v7/observation";
  * the accepted command log and reads the same events.
  */
 export interface IceFolkMetricsV7 {
-  /** `UNITS_CHILLED` events and the units they chilled, by source. */
+  /**
+   * `UNITS_FROZEN` events and the units they froze, by source (Ice Folk
+   * Freeze, `pulp_wars-w49.37`; the metric names keep the Ice Folk
+   * revision's "chill" so the balance reports stay comparable).
+   */
   readonly chillEvents: Record<ChillSourceV7, number>;
   readonly chillApplications: Record<ChillSourceV7, number>;
   /** Applications that were a new freeze (no prior entry) or a re-application. */
@@ -43,10 +47,13 @@ export interface IceFolkMetricsV7 {
   reapplications: number;
   readonly chillTargetsByFaction: Record<FactionIdV7, number>;
   readonly chillTargetsByRole: Record<UnitRoleIdV7, number>;
-  /** Owner turns that ended with a unit sluggish, and those without a primary action. */
+  /**
+   * Owner turns that ended with a unit Frozen, and those without a primary
+   * action (since Ice Folk Freeze, every Frozen turn).
+   */
   sluggishTurns: number;
   sluggishTurnsWithoutAction: number;
-  /** Tend Wounded cures of Chill. */
+  /** Tend Wounded thaws of a Frozen unit. */
   tendCures: number;
   shatters: number;
   readonly shattersByAttackerRole: Record<UnitRoleIdV7, number>;
@@ -112,6 +119,8 @@ export interface IceFolkMetricsV7 {
 export type ChillSourceV7 =
   | "BOLAS"
   | "COLD_SNAP"
+  // Ice Folk Freeze (`pulp_wars-w49.37`): the Ice Witch's Frost Bolt.
+  | "FROST_BOLT"
   | "COLD_AURA"
   | "BLACK_ICE"
   | "FROSTBITE"
@@ -129,6 +138,7 @@ export type ShatterSetupV7 =
 const CHILL_SOURCES_V7: readonly ChillSourceV7[] = [
   "BOLAS",
   "COLD_SNAP",
+  "FROST_BOLT",
   "COLD_AURA",
   // The frozen sea (naval branch section 8.8).
   "BLACK_ICE",
@@ -300,7 +310,7 @@ export function recordIceFolkV7(
   }
 
   for (const event of events) {
-    if (event.kind === "UNITS_CHILLED") {
+    if (event.kind === "UNITS_FROZEN") {
       metrics.chillEvents[event.source] += 1;
       metrics.chillApplications[event.source] += event.results.length;
       if (event.source === "BOLAS") metrics.bolasThrows += 1;
@@ -310,7 +320,7 @@ export function recordIceFolkV7(
       }
       for (const result of event.results) {
         const target = unitById(before, result.unitId);
-        const prior = before.chilled.some(
+        const prior = before.frozen.some(
           (entry) => entry.unitId === result.unitId,
         );
         if (prior) metrics.reapplications += 1;
@@ -331,7 +341,7 @@ export function recordIceFolkV7(
     }
     if (event.kind === "WOUNDED_TENDED")
       metrics.tendCures += event.results.filter(
-        (result) => result.curedChill,
+        (result) => result.curedFrozen,
       ).length;
     if (event.kind === "FIELD_DEFENSE_DESTROYED" && event.reason === "TRAMPLE")
       metrics.trampledFieldDefense += 1;
@@ -361,10 +371,15 @@ export function recordIceFolkV7(
   }
 
   if (command.kind === "END_TURN") {
-    // Sluggish turns (the countdown runs at this End Turn).
-    for (const entry of before.chilled) {
+    // Frozen turns (the countdown runs at this End Turn; an entry with two
+    // turns left was frozen during this turn, by Frostbite).
+    for (const entry of before.frozen) {
       const unit = unitById(before, entry.unitId);
-      if (unit === undefined || unit.ownerId !== actorId || !entry.sluggish)
+      if (
+        unit === undefined ||
+        unit.ownerId !== actorId ||
+        entry.turnsLeft !== 1
+      )
         continue;
       metrics.sluggishTurns += 1;
       if (

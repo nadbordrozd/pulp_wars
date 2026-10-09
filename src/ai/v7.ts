@@ -34,7 +34,6 @@ import {
   unitIsIceboundV7,
   unitCapacitySlotsV7,
   unitIsMountainBornV7,
-  unitIsSluggishV7,
   unitMayActAfterMoveV7,
   unitMayEnterMountainV7,
   unitRoleMechanicsV7,
@@ -78,6 +77,7 @@ import {
   previewBombRunV7,
   previewEconomicV7,
   previewWhirlV7,
+  previewStampedeV7,
   previewKaboomV7,
   previewBlastMountainV7,
   previewMonumentV7,
@@ -476,7 +476,7 @@ import {
   WITCH_KILL_PRIORITY_V7,
   WITCH_MOVE_PRIORITY_V7,
   bolasScoreV7,
-  chilledForPolicyV7,
+  frozenForPolicyV7,
   coldSnapScoreV7,
   compareKeysV7,
   fragileOnSnowV7,
@@ -12796,6 +12796,34 @@ function scoreCommandWithContext(
     immediateValue = snap.immediate;
   }
 
+  // Ice Folk Freeze (`pulp_wars-w49.37`): basic scoring of the two new
+  // actions, not tuned. A Frost Bolt is scored as a Bolas; a Stampede by its
+  // previewed hits, a kill at the kill tier and a chip at the chip tier.
+  if (command.kind === "FROST_BOLT" && context.iceFolk) {
+    const bolt = bolasScoreV7(iceFolkCacheV7(context).tools, command, false);
+    priority = bolt.priority;
+    strategicValue = bolt.strategic;
+    immediateValue = bolt.immediate;
+  }
+  if (command.kind === "STAMPEDE") {
+    const stampede = previewStampedeV7(view, command.unitId, command.at);
+    if (stampede !== null && stampede.hits.length > 0) {
+      const kills = stampede.hits.filter((hit) => hit.dies).length;
+      priority = kills > 0 ? 1180 : 900;
+      immediateValue = stampede.hits.reduce(
+        (value, hit) => value + 10 * hit.damage + 20 * Number(hit.dies),
+        0,
+      );
+      strategicValue = stampede.hits.reduce(
+        (value, hit) =>
+          hit.dies
+            ? value + targetStrategicValue(view, hit.unitId, context.lookup)
+            : value,
+        0,
+      );
+    }
+  }
+
   if (command.kind === "THROW_BOLAS" && context.iceFolk) {
     const bolas = bolasScoreV7(
       iceFolkCacheV7(context).tools,
@@ -15138,7 +15166,7 @@ function iceFolkShatterHuntV7(
     );
   });
   const source =
-    snapped || chilledForPolicyV7(facts, target.id)
+    snapped || frozenForPolicyV7(facts, target.id)
       ? null
       : iceFolkBolasSourceV7(context, target, taken);
   const kill = (
@@ -15250,7 +15278,7 @@ function iceFolkShatterWaitsV7(
   const bolas = plan.bolas;
   if (
     bolas !== undefined &&
-    !chilledForPolicyV7(iceFolkFactsForViewV7(view), target.id)
+    !frozenForPolicyV7(iceFolkFactsForViewV7(view), target.id)
   )
     for (const offered of context.commands) {
       if (
@@ -19940,7 +19968,7 @@ function iceFolkCacheV7(context: PolicyContextV7): IceFolkContextCacheV7 {
               command.targetUnitId === targetId &&
               !found.has(command.unitId) &&
               queryCombatPreviewV7(view, command.unitId, targetId, {
-                assumeTargetChilled: true,
+                assumeTargetFrozen: true,
               })?.shatters === true
             )
               found.add(command.unitId);
@@ -20130,7 +20158,7 @@ function iceFolkAttackAdjustmentV7(
       !preview.attackerDies &&
       next < SHATTER_SETUP_PRIORITY_V7 &&
       isHostile(view, target.ownerId) &&
-      chilledForPolicyV7(facts, target.id) &&
+      frozenForPolicyV7(facts, target.id) &&
       target.hp - preview.damageToDefender <= threshold &&
       !iceFolkAttacksOnTargetV7(context, target.id).some(
         (other) => other.attackerId !== actor.id && other.defenderDies,
@@ -20151,7 +20179,7 @@ function iceFolkAttackAdjustmentV7(
         if (
           victim === undefined ||
           entry.dies ||
-          !chilledForPolicyV7(facts, victim.id) ||
+          !frozenForPolicyV7(facts, victim.id) ||
           victim.hp - entry.damage > threshold
         )
           continue;
@@ -20295,11 +20323,7 @@ function iceFolkWitchDestinationV7(
 /**
  * Ice Folk Move adjustments.
  *
- * Against the Ice Folk (any seat's own units): a sluggish unit with an
- * offered attack makes no routine Move (it attacks from where it stands);
- * without one it moves only when the Move ends outside the melee reach of
- * visible Ice Folk units, makes route progress with no visible hostile unit
- * within three tiles, or leaves a visible Witch's two tiles. A unit of
+ * Against the Ice Folk (any seat's own units): a unit of
  * another faction makes no routine Move without route progress into a
  * visible Witch's Cold Snap reach next turn, and a fragile one (ranged,
  * siege, support, or below half HP) pays 3 for ending on hostile Snow.
@@ -20343,25 +20367,9 @@ function iceFolkMoveValueV7(
     routine &&
     (facts.hostileWitches.length > 0 || facts.hostileMelee.length > 0)
   ) {
-    if (unitIsSluggishV7(view, actor)) {
-      if (cache.attackers.has(actor.id)) return reject;
-      const outside = !facts.hostileMelee.some((hostile) =>
-        iceFolkMeleeReachesV7(view, hostile, to, context),
-      );
-      const quiet =
-        progress() > 0 &&
-        !context.lookup.visibleHostiles.some(
-          (hostile) => hostile.form === "LAND" && distance(hostile.at, to) <= 3,
-        );
-      const leavesWitch =
-        facts.hostileWitches.some(
-          (witch) => distance(witch.at, actor.at) <= COLD_SNAP_RANGE_V7,
-        ) &&
-        !facts.hostileWitches.some(
-          (witch) => distance(witch.at, to) <= COLD_SNAP_RANGE_V7,
-        );
-      if (!outside && !quiet && !leavesWitch) return reject;
-    } else if (
+    // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen unit is offered no
+    // Move, so the sluggish rule of the Ice Folk revision is gone.
+    if (
       !iceUnit &&
       facts.hostileWitches.some(
         (witch) => distance(witch.at, to) <= WITCH_CHILL_REACH_V7,
@@ -22799,7 +22807,7 @@ function iceFolkBlowV7(
   const facts = iceFolkFactsForViewV7(view);
   const chilled =
     defender.form === "LAND" &&
-    (chilledAssumed || chilledForPolicyV7(facts, defender.id));
+    (chilledAssumed || frozenForPolicyV7(facts, defender.id));
   const gap = distance(attacker.at, defenderAt);
   let bonus2 = chilled ? mechanics.coldBloodBonus2 : 0;
   if (mechanics.plantedBonus2 > 0) {

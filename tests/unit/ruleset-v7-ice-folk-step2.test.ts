@@ -46,7 +46,7 @@ import { iceFieldV7, type IcePieceV7 } from "../fixtures/v7-ice-folk";
 // Humans against the Ice Folk AI and as the Ice Folk. One rule changed (an
 // Ice Folk city's Survey grants a free Sled, Scouts, as the other five
 // factions of the army policy have), so the identity is
-// `pulp-wars-poc-7r66`. An Ice Folk seat of the Normal AI plays the army
+// `pulp-wars-poc-7r67`. An Ice Folk seat of the Normal AI plays the army
 // rules in a match of Humans, Undead, Goblins, Martians, Dinosaurs, and Ice
 // Folk: it researches toward its own units in its own order, trains before
 // it researches while it is short of capturers, caps its Musk Oxen, counts
@@ -158,14 +158,14 @@ describe("step two of the Ice Folk pass: the identity", () => {
   it("was 7r59 after 7r58, with both save keys obsolete now", () => {
     // (Dwarf crowd control, `pulp_wars-w49.33`, took 7r60, and Goblin
     // explosions and Berserk, `pulp_wars-w49.35`, 7r61.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r66");
-    expect(PRIOR_RULESET_7_IDS.slice(-8, -6)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r67");
+    expect(PRIOR_RULESET_7_IDS.slice(-9, -7)).toEqual([
       "pulp-wars-poc-7r58",
       "pulp-wars-poc-7r59",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r66.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-8, -6)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r67.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-9, -7)).toEqual([
       "pulpWars.save.v7r58.current",
       "pulpWars.save.v7r59.current",
     ]);
@@ -448,7 +448,7 @@ describe("step two of the Ice Folk pass: what the policy counts for its own blow
       [
         own("FIGHTER", 5, 4),
         own("FIGHTER", 8, 8),
-        foe("FIGHTER", 5, 3, { hp, chill: { sluggish: false, turnsLeft: 2 } }),
+        foe("FIGHTER", 5, 3, { hp, frozen: { turnsLeft: 1 } }),
       ],
       { techs },
     );
@@ -636,7 +636,8 @@ describe("step two of the Ice Folk pass: the lab", () => {
     const lab = missionByIdV7("LAB_ICE_FOLK_MID");
     expect(lab).toMatchObject({
       id: "LAB_ICE_FOLK_MID",
-      revision: 1,
+      // Revision 2: Ice Folk Freeze (`pulp_wars-w49.37`) numbers.
+      revision: 2,
       hidden: true,
     });
   });

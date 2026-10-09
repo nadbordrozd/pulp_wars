@@ -21,12 +21,20 @@ import {
   type FrozenIceV7,
 } from "../fixtures/v7-frozen-sea";
 import {
+  NAVAL_TECHS_V7,
   acceptV7,
   navalUnitAtV7,
   navalUnitV7,
   rejectV7,
   seatV7,
 } from "../fixtures/v7-naval-branch";
+
+/**
+ * Ice Folk Freeze (`pulp_wars-w49.37`): Glacier (Submersibles) adds 1 Move
+ * to an Ice Folk Move whose path touches ice; the slide examples are read
+ * without it (frozen-sea-ground tests the bonus).
+ */
+const NO_GLACIER = NAVAL_TECHS_V7.filter((tech) => tech !== "SUBMERSIBLES");
 
 // The naval branch, engine step II (`pulp_wars-5ti.3`,
 // docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.3, 8.6, and 8.7): ice is
@@ -84,6 +92,7 @@ const destinations = (state: GameStateV7, from: CoordV7, seat: 0 | 1 = 0) =>
 describe("Slide (section 8.6)", () => {
   it("slides straight on in all eight directions, at the cost of one step", () => {
     const state = frozenArenaV7({
+      technologies: [NO_GLACIER, NO_GLACIER],
       units: [{ seat: 0, role: "FIGHTER", at: CENTER }],
       ice: STAR,
     });
@@ -354,6 +363,7 @@ describe("Slide (section 8.6)", () => {
 
   it("the Sabretooth never slides: it walks the ice at the ordinary cost", () => {
     const state = frozenArenaV7({
+      technologies: [NO_GLACIER, NO_GLACIER],
       units: [{ seat: 0, role: "KNIGHT", at: { x: 2, y: 2 } }],
       ice: bridge(2),
     });
@@ -371,6 +381,18 @@ describe("Slide (section 8.6)", () => {
     expect(destinations(state, from)).toEqual(
       expect.arrayContaining(lineV7(from, 0, 1, 3) as CoordV7[]),
     );
+    // With Glacier its Move on the ice has one more point: 4 tiles, not 5.
+    const glacier = frozenArenaV7({
+      units: [{ seat: 0, role: "KNIGHT", at: { x: 2, y: 2 } }],
+      ice: bridge(2),
+    });
+    const iceCat = navalUnitAtV7(glacier, from);
+    expect(
+      validateMovementPathV7(glacier, iceCat, lineV7(from, 0, 1, 4)),
+    ).toMatchObject({ legal: true, spentPoints2: 8 });
+    expect(
+      validateMovementPathV7(glacier, iceCat, lineV7(from, 0, 1, 5)),
+    ).toEqual({ legal: false, reason: "BUDGET_EXCEEDED" });
   });
 
   it("every offered Move of an Ice Folk unit on and around ice is accepted as offered", () => {

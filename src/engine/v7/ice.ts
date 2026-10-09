@@ -13,9 +13,9 @@ import {
 } from "../rules/ruleset-v7";
 import type { DomainEventV7 } from "./events";
 import {
-  canBeChilledV7,
-  unitsChilledEventV7,
-  withChillAppliedV7,
+  canBeFrozenV7,
+  unitsFrozenEventV7,
+  withFrozenAppliedV7,
 } from "./ice-folk";
 import { absorbHitV7, shieldOfV7, withShieldDamageV7 } from "./martian";
 import { compareCoordsV7, sameCoordV7 } from "./schema";
@@ -247,7 +247,7 @@ export function iceIsPermanentV7(
 }
 
 /**
- * Section 8.5 the thaw at the End Turn of `playerId`, after the Chill
+ * Section 8.5 the thaw at the End Turn of `playerId`, after the Frozen
  * countdown: every entry owned by that player, or by an eliminated player,
  * outside its owner's territory loses one turn (never below 0); then each of
  * those entries at 0 with no land-form unit on its tile melts. An icebound
@@ -308,10 +308,11 @@ export function resolveThawV7(
 }
 
 /**
- * Section 8.8 Black Ice at the Start Turn of `playerId`, after the Cold
- * Aura: with the seat capability `blackIce`, every land-form unit hostile to
- * that player standing on that player's ice is Chilled. One `UNITS_CHILLED`
- * (source `BLACK_ICE`, no source unit), dropped when empty.
+ * Section 8.8 Black Ice at the Start Turn of `playerId`: with the seat
+ * capability `blackIce`, every land-form unit hostile to that player
+ * standing on that player's ice is Frozen (Ice Folk Freeze,
+ * `pulp_wars-w49.37`). One `UNITS_FROZEN` (source `BLACK_ICE`, no source
+ * unit), dropped when empty.
  */
 export function resolveBlackIceV7(
   state: GameStateV7,
@@ -329,14 +330,14 @@ export function resolveBlackIceV7(
     .filter(
       (unit) =>
         own.some((entry) => sameCoordV7(entry.at, unit.at)) &&
-        canBeChilledV7(state, playerId, unit),
+        canBeFrozenV7(state, playerId, unit),
     )
     .map((unit) => unit.id);
   if (targets.length === 0) return { state, events: [] };
-  const applied = withChillAppliedV7(state.chilled, targets);
+  const applied = withFrozenAppliedV7(state, state.frozen, targets);
   return {
-    state: { ...state, chilled: applied.chilled },
-    events: [unitsChilledEventV7(playerId, null, "BLACK_ICE", applied.results)],
+    state: { ...state, frozen: applied.frozen },
+    events: [unitsFrozenEventV7(playerId, null, "BLACK_ICE", applied.results)],
   };
 }
 

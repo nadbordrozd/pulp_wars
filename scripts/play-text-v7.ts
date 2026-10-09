@@ -88,6 +88,8 @@ import {
   previewBombRunV7,
   previewBuildBarricadeV7,
   previewColdSnapV7,
+  previewFrostBoltV7,
+  previewStampedeV7,
   previewDevourV7,
   previewEconomicV7,
   previewFreezeV7,
@@ -983,6 +985,11 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.tractor.u${command.targetUnitId}`;
     case "THROW_BOLAS":
       return `u${command.unitId}.bolas.u${command.targetUnitId}`;
+    // Ice Folk Freeze (`pulp_wars-w49.37`).
+    case "FROST_BOLT":
+      return `u${command.unitId}.frostbolt.u${command.targetUnitId}`;
+    case "STAMPEDE":
+      return `u${command.unitId}.stampede.${xyV7(command.at)}`;
     case "SUGAR_TOSS":
       return `u${command.unitId}.toss.u${command.targetUnitId}`;
     // The giants' signatures (`pulp_wars-w49.30`).
@@ -1847,7 +1854,21 @@ function describeCommandV7(
     case "THROW_BOLAS":
       return `bolas ${context.memory.tag(command.targetUnitId)}${generic(previewBolasV7(view, command.unitId, command.targetUnitId))}`;
     case "COLD_SNAP":
-      return `cold snap${generic(previewColdSnapV7(view, command.unitId))}`;
+      return `cold snap: freeze every enemy next to her${generic(previewColdSnapV7(view, command.unitId))}`;
+    // Ice Folk Freeze (`pulp_wars-w49.37`).
+    case "FROST_BOLT":
+      return `frost bolt ${context.memory.tag(command.targetUnitId)}${generic(previewFrostBoltV7(view, command.unitId, command.targetUnitId))}`;
+    case "STAMPEDE": {
+      const preview = previewStampedeV7(view, command.unitId, command.at);
+      const hits =
+        preview === null
+          ? []
+          : preview.hits.map(
+              (entry) =>
+                `${context.memory.tag(entry.unitId)} -${entry.damage}${entry.shieldDamage > 0 ? ` (shield -${entry.shieldDamage})` : ""}${entry.dies ? " KILLS" : ""}`,
+            );
+      return `stampede to ${xyV7(command.at)}: ${hits.length === 0 ? "hits no visible unit" : hits.join(", ")} | each survivor is shoved aside; a unit that cannot be shoved stops it | no retaliation; it does not attack this turn`;
+    }
     case "FREEZE":
       return `freeze from ${xyV7(command.at)}${generic(previewFreezeV7(view, command.unitId, command.at))}`;
     case "BOARD":
@@ -3035,11 +3056,8 @@ function unitStatusV7(view: PlayerViewV7, unit: PublicUnitV7): string {
   if (plague !== undefined) parts.push(`plagued ${plague.turnsRemaining}`);
   if (view.bitten.some((entry) => entry.unitId === unit.id))
     parts.push("bitten");
-  const chill = view.chilled.find((entry) => entry.unitId === unit.id);
-  if (chill !== undefined)
-    parts.push(
-      `chilled ${chill.turnsLeft}${chill.sluggish ? " sluggish" : ""}`,
-    );
+  const frozen = view.frozen.find((entry) => entry.unitId === unit.id);
+  if (frozen !== undefined) parts.push(`frozen ${frozen.turnsLeft}`);
   if (view.mindControlled.some((entry) => entry.unitId === unit.id))
     parts.push("mind-controlled");
   const rush = view.sugarRush.find((entry) => entry.unitId === unit.id);

@@ -64,7 +64,7 @@ interface LookPiece {
 }
 
 const PIECES: readonly LookPiece[] = [
-  // Seat 0 (the viewer): ready, one spent, two damaged, one chilled.
+  // Seat 0 (the viewer): ready, one spent, two damaged, one frozen.
   { seat: 0, role: "CATAPULT", at: { x: 7, y: 7 } },
   { seat: 0, role: "FIGHTER", at: { x: 8, y: 8 } },
   { seat: 0, role: "KNIGHT", at: { x: 9, y: 8 } },

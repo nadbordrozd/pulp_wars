@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r66" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r67" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -77,8 +77,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r63",
   "pulp-wars-poc-7r64",
   "pulp-wars-poc-7r65",
+  "pulp-wars-poc-7r66",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r66.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r67.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -267,6 +268,11 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "TOSS",
   "STOMP",
   "BREAK_OFF",
+  // Ice Folk Freeze (`pulp_wars-w49.37`): the Ice Witch's Frost Bolt and the
+  // Mammoth's Stampede (after the giants' block, so no pinned neighbour of
+  // the earlier revisions moves).
+  "FROST_BOLT",
+  "STAMPEDE",
   "CAPTURE",
   "PROMOTE",
   "PILLAGE",
@@ -399,8 +405,10 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_REWARD_GRANTED",
   "UNIT_SPAWN_DISPLACED",
   "UNITS_RALLIED",
-  // The Ice Folk revision: a Bolas, a Cold Snap, or a Cold Aura chilled units.
-  "UNITS_CHILLED",
+  // Ice Folk Freeze (`pulp_wars-w49.37`): a Bolas, a Cold Snap, a Frost
+  // Bolt, a Frost Giant, Black Ice, Frostbite, or shards froze units (the
+  // Ice Folk revision's `UNITS_CHILLED`, in its place).
+  "UNITS_FROZEN",
   // The naval branch (sections 8.4, 8.5, and 8.9): a Freeze made ice; ice
   // melted at an End Turn; icebound units were crushed at a Start Turn.
   "WATER_FROZEN",
@@ -433,6 +441,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_REGURGITATED",
   "SWALLOWED_UNIT_RELEASED",
   "GIANT_BROKE_OFF",
+  // Ice Folk Freeze (`pulp_wars-w49.37`): a Mammoth's Stampede.
+  "MAMMOTH_STAMPEDED",
   "UNIT_MOVED",
   // Map curiosities round 2 (section 28.4): a Dimensional Gate displaced an
   // occupant, carried a unit to its partner, or was blocked.
@@ -1047,12 +1057,13 @@ export interface GameStateV7 {
    */
   readonly mindControlCooldowns: readonly MindControlCooldownV7[];
   /**
-   * The Ice Folk revision (section 5.1): one Chill entry per frosted or
-   * thawing unit, sorted by `unitId`. Always empty in a match whose setup
-   * has no ICE_FOLK seat. It is the only stored Ice Folk state: Snow and the
-   * Blizzard are derived on every read.
+   * Ice Folk Freeze (`pulp_wars-w49.37`, docs/product/RULESET_7_CURRENT.md
+   * section 21.2): one entry per Frozen unit, sorted by `unitId`. Always
+   * empty in a match whose setup has no ICE_FOLK seat. It replaced the Ice
+   * Folk revision's `chilled` list; Snow and the Blizzard are derived on
+   * every read.
    */
-  readonly chilled: readonly ChillStatusV7[];
+  readonly frozen: readonly FrozenStatusV7[];
   /**
    * The Dwarf revision (section 5.2): the burrowed Steam Moles and their
    * riders, sorted by `unit.id`. A burrowed unit is off the board: it is not
@@ -1271,16 +1282,15 @@ export interface BurrowedEntryV7 {
 }
 
 /**
- * The Ice Folk revision (section 5.1): the Chill entry of `unitId`. The unit
- * is Chilled while `turnsLeft` is at least 1 and thawing at 0; it is
- * sluggish while `sluggish` is true (only with `turnsLeft` 2). The legal
- * combinations are `{ true, 2 }`, `{ false, 2 }`, `{ false, 1 }`, and
- * `{ false, 0 }`.
+ * Ice Folk Freeze (`pulp_wars-w49.37`, RULESET_7_CURRENT.md section 21.2):
+ * the unit `unitId` is Frozen. `turnsLeft` is the number of its owner's End
+ * Turns until it thaws: 1 for a unit frozen outside its owner's turn (it
+ * stays Frozen through that owner's next turn), 2 for one frozen during its
+ * owner's own turn (Frostbite), which becomes 1 at that End Turn.
  */
-export interface ChillStatusV7 {
+export interface FrozenStatusV7 {
   readonly unitId: UnitId;
-  readonly sluggish: boolean;
-  readonly turnsLeft: 0 | 1 | 2;
+  readonly turnsLeft: 1 | 2;
 }
 
 /** The Martian revision: the current Shield (at least 1) of `unitId`. */

@@ -255,7 +255,7 @@ export type TechnologyUnlockV7 =
   | { readonly kind: "ICEBOUND" }
   /**
    * The frozen sea (section 8.8): Black Ice (the Ice Folk `SEAMANSHIP`),
-   * hostile land units on the owner's ice are Chilled at its Start Turn.
+   * hostile land units on the owner's ice are Frozen at its Start Turn.
    */
   | { readonly kind: "BLACK_ICE" }
   /**
@@ -335,6 +335,10 @@ export type UnitRoleAbilityV7 =
   | "BOULDERS"
   | "PROWL"
   | "COLD_AURA"
+  // Ice Folk Freeze (`pulp_wars-w49.37`): the Ice Witch's Frost Bolt and
+  // the Mammoth's Stampede.
+  | "FROST_BOLT"
+  | "STAMPEDE"
   // The Dwarf revision (section 3): the Hammerer rides the tunnel and digs
   // in; the Gyrocopter's bombing run; clockwork and the Gunner's two shots;
   // the Steam Mole's Tunnel and eruption; the Engineer's Assemble; the Steam
@@ -676,7 +680,7 @@ export interface RoleMechanicsV7 {
   readonly cracksArmour: boolean;
   /**
    * The ninth unit: Frostbite. A unit that attacks a land-form unit of the
-   * role from the next tile and survives is Chilled (the Ice Folk Musk Ox).
+   * role from the next tile and survives is Frozen (the Ice Folk Musk Ox).
    */
   readonly frostbite: boolean;
   /**
@@ -2843,7 +2847,8 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     role: "RAIDER",
     label: "Sled",
     tacticalRole: "SKIRMISHER",
-    cost: 3,
+    // Ice Folk Freeze (`pulp_wars-w49.37`): 3 Coins before.
+    cost: 4,
     maxHp: 10,
     attack2: 4,
     defense2: 2,
@@ -2881,7 +2886,8 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     cost: 4,
     maxHp: 16,
     attack2: 3,
-    defense2: 5,
+    // Ice Folk Freeze (`pulp_wars-w49.37`): Defense 2 (2.5 before).
+    defense2: 4,
     move: 1,
     range: 1,
     minimumRange: 1,
@@ -2894,8 +2900,10 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     role: "CAPTAIN",
     label: "Ice Witch",
     tacticalRole: "SUPPORT",
-    cost: 5,
-    maxHp: 12,
+    // Ice Folk Freeze (`pulp_wars-w49.37`): 6 Coins and 10 HP (5 and 12
+    // before).
+    cost: 6,
+    maxHp: 10,
     attack2: 2,
     defense2: 2,
     move: 1,
@@ -2904,14 +2912,25 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "BLIZZARD", "COLD_SNAP", "FREEZE"],
+    // Ice Folk Freeze: Cold Snap freezes every adjacent hostile unit and the
+    // Frost Bolt one unit within 2 (one of the two a turn).
+    abilities: [
+      "ATTACK",
+      "CAPTURE",
+      "BLIZZARD",
+      "COLD_SNAP",
+      "FROST_BOLT",
+      "FREEZE",
+    ],
   }),
   CATAPULT: role({
     role: "CATAPULT",
     label: "Boulder Yeti",
     tacticalRole: "SIEGE",
-    cost: 8,
-    maxHp: 12,
+    // Ice Folk Freeze (`pulp_wars-w49.37`): 9 Coins and 10 HP (8 and 12
+    // before).
+    cost: 9,
+    maxHp: 10,
     attack2: 4,
     defense2: 3,
     move: 2,
@@ -2943,7 +2962,8 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     label: "Frost Giant",
     tacticalRole: "MYTHIC",
     cost: null,
-    maxHp: 40,
+    // Ice Folk Freeze (`pulp_wars-w49.37`): 36 HP (40 before).
+    maxHp: 36,
     attack2: 8,
     defense2: 8,
     move: 1,
@@ -2968,12 +2988,12 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Mammoth is the Ice
   // Folk heavy line unit (Metallurgy; it was the `GUARD` role at Drill).
-  // Its numbers and rules are unchanged.
+  // Ice Folk Freeze (`pulp_wars-w49.37`): 7 Coins (6 before) and Stampede.
   SWORDSMAN: role({
     role: "SWORDSMAN",
     label: "Mammoth",
     tacticalRole: "LINE",
-    cost: 6,
+    cost: 7,
     maxHp: 20,
     attack2: 5,
     defense2: 4,
@@ -2983,7 +3003,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "METALLURGY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "SWEEP", "TRAMPLE", "FREEZE"],
+    abilities: ["ATTACK", "CAPTURE", "SWEEP", "TRAMPLE", "STAMPEDE", "FREEZE"],
   }),
 });
 
@@ -4193,7 +4213,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r66`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r67`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the
@@ -4605,40 +4625,40 @@ export function seatRoleMechanicsV7(
 }
 
 /**
- * The Chill facts the sluggish helpers read (canonical state and public view
- * alike): the roster and the Ice Folk `chilled` side list.
+ * The Frozen facts the Frozen helpers read (canonical state and public view
+ * alike): the roster and the Ice Folk `frozen` side list.
  */
-export interface SluggishLookupV7 extends FactionRosterV7 {
-  readonly chilled?: readonly {
+export interface FrozenLookupV7 extends FactionRosterV7 {
+  readonly frozen?: readonly {
     readonly unitId: number;
-    readonly sluggish: boolean;
   }[];
 }
 
 /**
- * The Ice Folk revision (docs/product/RULESET_7_ICE_FOLK.md section 5.3):
- * whether the unit is sluggish (its Chill entry has `sluggish: true`). It is
+ * Ice Folk Freeze (`pulp_wars-w49.37`, docs/product/RULESET_7_CURRENT.md
+ * section 21.2): whether the unit is Frozen (it has a `frozen` entry). A
+ * Frozen unit cannot move or use any action and does not retaliate. It is
  * false for every unit of a match without an Ice Folk seat.
  */
-export function unitIsSluggishV7(
-  lookup: SluggishLookupV7,
+export function unitIsFrozenV7(
+  lookup: FrozenLookupV7,
   unit: { readonly id: number },
 ): boolean {
-  const chilled = lookup.chilled;
-  if (chilled === undefined || chilled.length === 0) return false;
-  return chilled.some((entry) => entry.unitId === unit.id && entry.sluggish);
+  const frozen = lookup.frozen;
+  if (frozen === undefined || frozen.length === 0) return false;
+  return frozen.some((entry) => entry.unitId === unit.id);
 }
 
 /**
  * THE single "may this unit use a primary action after moving" rule (the
- * Ice Folk revision, section 5.3): its role rule's
- * `mayUsePrimaryActionAfterMove`, and it is not sluggish. Every read of the
+ * Ice Folk revision, section 21.3): its role rule's
+ * `mayUsePrimaryActionAfterMove`, and it is not Frozen. Every read of the
  * role flag for a concrete unit goes through this helper; role-level reads
  * (production values, role tables) keep the role flag. A source audit in
  * `tests/unit/ruleset-v7-ice-folk-helpers.test.ts` pins the call sites.
  */
 export function unitMayActAfterMoveV7(
-  lookup: SluggishLookupV7,
+  lookup: FrozenLookupV7,
   unit: {
     readonly id: number;
     readonly ownerId: PlayerId;
@@ -4647,7 +4667,7 @@ export function unitMayActAfterMoveV7(
 ): boolean {
   return (
     unitRoleRuleV7(lookup, unit).mayUsePrimaryActionAfterMove &&
-    !unitIsSluggishV7(lookup, unit)
+    !unitIsFrozenV7(lookup, unit)
   );
 }
 
@@ -4657,7 +4677,7 @@ export function unitMayActAfterMoveV7(
  * after moving ({@link unitMayActAfterMoveV7}).
  */
 export function primaryActionBlockedAfterMoveV7(
-  lookup: SluggishLookupV7,
+  lookup: FrozenLookupV7,
   unit: {
     readonly id: number;
     readonly ownerId: PlayerId;
@@ -4666,21 +4686,6 @@ export function primaryActionBlockedAfterMoveV7(
   },
 ): boolean {
   return unit.activation.moved && !unitMayActAfterMoveV7(lookup, unit);
-}
-
-/**
- * The plain sluggish gate (section 5.3) of the actions that do not read the
- * role flag (Kaboom and Pillage, which every unit may use after moving): a
- * sluggish unit that has moved may not use them.
- */
-export function sluggishUnitMovedV7(
-  lookup: SluggishLookupV7,
-  unit: {
-    readonly id: number;
-    readonly activation: { readonly moved: boolean };
-  },
-): boolean {
-  return unit.activation.moved && unitIsSluggishV7(lookup, unit);
 }
 
 /** Kills a unit needs before it may be promoted (once). */
@@ -5119,12 +5124,24 @@ export function terrainGivesCoverV7(
 export const SHATTER_HP_V7 = 3;
 /** The Ice Folk revision (section 5.5): the Shatter threshold with Brittle. */
 export const BRITTLE_SHATTER_HP_V7 = 4;
-/** The Ice Folk revision (section 5.2): `turnsLeft` of an applied Chill. */
-export const CHILL_TURNS_V7 = 2;
 /** The Ice Folk revision (section 7.3): the Bolas reach (Chebyshev). */
 export const BOLAS_RANGE_V7 = 2;
-/** The Ice Folk revision (section 6.4): the Cold Snap reach (Chebyshev). */
-export const COLD_SNAP_RANGE_V7 = 2;
+/**
+ * Ice Folk Freeze (`pulp_wars-w49.37`): the Cold Snap reach (Chebyshev):
+ * every adjacent unit (2 before).
+ */
+export const COLD_SNAP_RANGE_V7 = 1;
+/** Ice Folk Freeze: the Ice Witch's Frost Bolt reach (Chebyshev). */
+export const FROST_BOLT_RANGE_V7 = 2;
+/** Ice Folk Freeze: the farthest a Mammoth's Stampede goes (tiles). */
+export const STAMPEDE_RANGE_V7 = 3;
+/** Ice Folk Freeze: the fixed damage a Stampede deals each unit in its path. */
+export const STAMPEDE_DAMAGE_V7 = 3;
+/**
+ * Ice Folk Freeze: the Move points Glacier adds to an Ice Folk land unit's
+ * `MOVE` whose path includes an ice tile.
+ */
+export const GLACIER_ICE_MOVE_BONUS_V7 = 1;
 /** The Ice Folk revision (section 6.3): the Blizzard radius (Chebyshev). */
 export const BLIZZARD_RADIUS_V7 = 1;
 /** The Ice Folk revision (section 6.6): the Deep Winter radius (Chebyshev). */

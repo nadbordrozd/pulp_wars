@@ -565,7 +565,7 @@ four ranged shots, so none is safe without a screen.
   attack after moving, captures. Needs Drill.
 - **Mechanic: Frostbite.** **A unit that attacks it from the next tile and
   survives is Chilled.** (Chill as in
-  [current rules, section 21.2](RULESET_7_CURRENT.md#212-chill): sluggish
+  [current rules, section 21.2](RULESET_7_CURRENT.md#212-frozen): sluggish
   on its next turn, and open to Shatter.) It applies whether or not the Ox
   survives.
 - **Why it is not a reskin.** Every other defender punishes an attacker

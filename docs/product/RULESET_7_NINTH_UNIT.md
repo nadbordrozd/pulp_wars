@@ -19,6 +19,10 @@ This is the record of what was built from Parts A and B of
 the plain readings chosen where that design was silent, and the questions
 left for the faction-by-faction hand play.
 [The current rules](RULESET_7_CURRENT.md) hold the rules themselves.
+Since Ice Folk Freeze (`pulp_wars-w49.37`) Frostbite **freezes** the
+attacker (Frozen, [current rules section 21.2](RULESET_7_CURRENT.md#212-frozen);
+it stays Frozen through its next turn), the Musk Ox has Defense 2 (2.5
+below), and the Mammoth costs 7 Coins (6 below).
 
 **It is a quick pass, by the user's direction:** "Do a quick pass over all
 the factions to add the new unit without too much testing. THEN later do

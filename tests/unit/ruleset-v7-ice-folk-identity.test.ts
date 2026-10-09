@@ -42,7 +42,7 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // pins follow the current identity.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 66;
+const REVISION = 67;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -124,11 +124,11 @@ describe("the Ice Folk revision identity", () => {
         setup: oldSetup,
       }),
     ).toBeNull();
-    // A previous-identity state never had a `chilled` list; it is not
-    // migrated either.
-    const { chilled: _chilled, ...withoutChill } = created.state;
-    void _chilled;
-    expect(parseGameStateV7(withoutChill)).toBeNull();
+    // A previous-identity state never had a `chilled` list (Ice Folk
+    // Freeze, `pulp_wars-w49.37`: now `frozen`); it is not migrated either.
+    const { frozen: _frozen, ...withoutFrozen } = created.state;
+    void _frozen;
+    expect(parseGameStateV7(withoutFrozen)).toBeNull();
     expect(
       parseReplayFileV7({
         format: "pulp-wars-replay",

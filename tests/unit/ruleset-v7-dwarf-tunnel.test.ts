@@ -81,17 +81,22 @@ function surfacedEvent(
   return event;
 }
 
+/** `state` with the unit `unitId` Frozen (one turn). */
+function parseFrozenV7(state: GameStateV7, unitId: number): GameStateV7 {
+  const parsed = parseGameStateV7({
+    ...state,
+    frozen: [{ unitId, turnsLeft: 1 }],
+  });
+  if (parsed === null) throw new Error("the Frozen state is invalid");
+  return parsed;
+}
+
 describe("the Tunnel command (section 5.1)", () => {
   it("burrows the Mole and its rider: records, activation, statuses, event, and the offered forecast", () => {
     const state = dwarfFieldV7(
       [
         { seat: 0, role: "GUARD", at: at(5, 2), hp: 11 },
-        {
-          seat: 0,
-          role: "FIGHTER",
-          at: at(4, 2),
-          chill: { sluggish: true, turnsLeft: 2 },
-        },
+        { seat: 0, role: "FIGHTER", at: at(4, 2) },
         { seat: 1, role: "CATAPULT", at: at(6, 5) },
         ENEMY,
       ],
@@ -160,11 +165,19 @@ describe("the Tunnel command (section 5.1)", () => {
         },
       ].sort((left, right) => left.unit.id - right.unit.id),
     );
-    // The rider's Chill entry stays on the burrowed unit; a sluggish
-    // Hammerer may ride (the tunnel is a Move).
-    expect(result.state.chilled.map((entry) => entry.unitId)).toEqual([
-      rider.id,
-    ]);
+    // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen Hammerer may not ride
+    // (the tunnel is a Move), nor may a Frozen Mole tunnel.
+    expect(result.state.frozen).toEqual([]);
+    for (const unitId of [rider.id, mole.id]) {
+      const cold = applyCommandV7(
+        parseFrozenV7(state, unitId),
+        activeIdV7(state),
+        command,
+      );
+      expect(cold.accepted).toBe(false);
+      if (!cold.accepted)
+        expect(cold.error).toEqual({ code: "UNIT_FROZEN", params: { unitId } });
+    }
     // Capacity counts burrowed units: they keep their slot and home.
     const capital = cityOfV7(state, 0);
     expect(assignedUnitCountV7(result.state, capital.id)).toBe(
@@ -718,7 +731,7 @@ describe("the mound (section 5.3)", () => {
     ).toEqual(expect.arrayContaining([at(5, 2), at(5, 3)]));
   });
 
-  it("keeps the Chill entry of a burrowed unit counting down at its owner's End Turn", () => {
+  it("keeps the Frozen entry of a burrowed unit counting down at its owner's End Turn", () => {
     const state = withBurrowedV7(
       dwarfFieldV7(
         [
@@ -726,7 +739,7 @@ describe("the mound (section 5.3)", () => {
             seat: 0,
             role: "GUARD",
             at: at(5, 3),
-            chill: { sluggish: false, turnsLeft: 2 },
+            frozen: { turnsLeft: 2 },
           },
           ENEMY,
         ],
@@ -738,10 +751,9 @@ describe("the mound (section 5.3)", () => {
       kind: "END_TURN",
     });
     if (!ended.accepted) throw new Error(ended.error.code);
-    expect(ended.state.chilled).toEqual([
+    expect(ended.state.frozen).toEqual([
       {
         unitId: moundAtTileV7(state, at(5, 3)).unit.id,
-        sluggish: false,
         turnsLeft: 1,
       },
     ]);

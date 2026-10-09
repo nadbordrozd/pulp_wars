@@ -1,8 +1,8 @@
 {
   "schemaVersion": 7,
-  "rulesetId": "pulp-wars-poc-7r66",
+  "rulesetId": "pulp-wars-poc-7r67",
   "setup": {
-    "rulesetId": "pulp-wars-poc-7r66",
+    "rulesetId": "pulp-wars-poc-7r67",
     "seed": 9,
     "width": 14,
     "height": 14,
@@ -3479,7 +3479,7 @@
   "cooling": [],
   "mindControlled": [],
   "mindControlCooldowns": [],
-  "chilled": [],
+  "frozen": [],
   "burrowed": [],
   "surfacedThisTurn": [],
   "bombedThisTurn": [],

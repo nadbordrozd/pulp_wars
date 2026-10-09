@@ -319,7 +319,7 @@ describe("the other factions' displacements and placements (sections 12.1 to 12.
           role: "FIGHTER",
           at: at(5, 3),
           hp: 7,
-          chill: { sluggish: false, turnsLeft: 1 },
+          frozen: { turnsLeft: 1 },
         },
       ],
       {

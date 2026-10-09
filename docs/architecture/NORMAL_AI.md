@@ -4296,6 +4296,19 @@ without a Martian seat decides as before.
 
 ## Ice Folk play (`pulp_wars-7g3.4`)
 
+**Ice Folk Freeze (`pulp_wars-w49.37`).** Chill and Sluggish became one
+status, Frozen ([current rules section 21.2](../product/RULESET_7_CURRENT.md#212-frozen)).
+The policy reads `view.frozen` where this section says Chill (the option
+`assumeTargetChilled` is `assumeTargetFrozen`), a Frozen unit of either side
+is offered nothing and threatens nothing, and the "Sluggish units" rule
+below is gone. Cold Snap's 6 and 3 now count a target that becomes Frozen
+and one already Frozen, within its new range of 1. The new commands get
+basic scores only, untuned: a Frost Bolt is scored by the Bolas rule, and a
+Stampede by `previewStampedeV7` (1180 when a hit kills, else 900, valued by
+its damage). The Witch's "Cold Snap reach" and the shatter set-ups use the
+longer of Cold Snap's and Frost Bolt's reach. The rest of this section is
+the design as built in `7g3.4`.
+
 Every Ice Folk heuristic lives behind one gate: the match has an Ice Folk
 seat (`src/ai/v7-ice-folk.ts`, `iceFolkMatchForPolicyV7`), or reads a fact
 that only such a match has (a Chill entry, a Snow or Blizzard tile flag, an

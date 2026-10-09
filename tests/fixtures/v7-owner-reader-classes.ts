@@ -74,6 +74,10 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/movement.ts::reachableMovementPathsV7": "PLAYER_ONLY",
   "src/engine/v7/movement.ts::revealFromV7": "PLAYER_ONLY",
   "src/engine/v7/movement.ts::validateMovementPathWithOptionsV7": "PLAYER_ONLY",
+  "src/engine/v7/movement.ts::validateMovementPathCoreV7": "PLAYER_ONLY",
+  // Ice Folk Freeze (`pulp_wars-w49.37`): the Stampede of a seat's Mammoth
+  // (the Spider never has the role).
+  "src/engine/v7/stampede.ts::stampedePathLegalV7": "PLAYER_ONLY",
   // The viewer seat's city commands and previews; a chain preview's risings
   // belong to the biter's or killer's seat, releases to an original owner.
   "src/engine/v7/query.ts::appendPublicCityCommandsV7": "PLAYER_ONLY",

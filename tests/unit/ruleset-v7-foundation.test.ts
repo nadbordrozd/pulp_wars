@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r66");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r67");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -113,7 +113,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // Revision 20 removes STAMPEDE (46 -> 45 command kinds). The Martian
     // revision adds BEAM_DOWN, MIND_CONTROL, and TRACTOR_BEAM (48) and four
     // event kinds (72 -> 76); the Ice Folk revision THROW_BOLAS and
-    // COLD_SNAP (50) and UNITS_CHILLED (77); the Dwarf revision TUNNEL,
+    // COLD_SNAP (50) and UNITS_FROZEN (77); the Dwarf revision TUNNEL,
     // BOMB_RUN, and ASSEMBLE (53) and four event kinds (81); the Candy
     // revision three more commands (56); the naval branch BOARD (57).
     // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL (59), and
@@ -124,8 +124,14 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // The giants' signatures (`pulp_wars-w49.30`) add SWALLOW, TOSS,
     // STOMP, and BREAK_OFF after RECOVER (66). Map curiosities round 2
     // (`pulp_wars-737.14`) add TOSS_COIN before RECOVER (67).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(67);
-    expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
+    // Ice Folk Freeze (`pulp_wars-w49.37`) adds FROST_BOLT and STAMPEDE
+    // after BREAK_OFF (69).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(69);
+    // The revision-19 Dinosaur STAMPEDE stays gone; Ice Folk Freeze's
+    // Mammoth STAMPEDE is a new command after BREAK_OFF.
+    expect(COMMAND_KIND_ORDER_V7.indexOf("STAMPEDE")).toBe(
+      COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF") + 2,
+    );
     // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
@@ -137,8 +143,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // The giants' signatures (`pulp_wars-w49.30`) add ten event kinds in
     // one block after UNIT_SURFACED (115). Map curiosities round 2
     // (`pulp_wars-737.14`) add GATE_DISPLACED, GATE_TRAVERSED, GATE_BLOCKED,
-    // and COIN_TOSSED (119).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(119);
+    // and COIN_TOSSED (119). Ice Folk Freeze (`pulp_wars-w49.37`) renames
+    // UNITS_CHILLED to UNITS_FROZEN in place and adds MAMMOTH_STAMPEDED (120).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(120);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after

@@ -457,7 +457,7 @@ export function tendPreviewPresentationV7(
 export function tendTargetLabelV7(
   result: TendWoundedPreviewV7["results"][number],
 ): string {
-  const cure = result.curedPlague || result.curedBitten || result.curedChill;
+  const cure = result.curedPlague || result.curedBitten || result.curedFrozen;
   if (result.amount > 0 && cure) return `+${result.amount} · Cure`;
   return cure ? "Cure" : `+${result.amount} HP`;
 }

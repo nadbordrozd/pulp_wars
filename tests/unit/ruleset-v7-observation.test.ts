@@ -818,7 +818,7 @@ describe("ruleset-7 observation safety and Concealment", () => {
               hpAfter: enemy.hp - 1,
               curedPlague: false,
               curedBitten: false,
-              curedChill: false,
+              curedFrozen: false,
             },
           ],
         },

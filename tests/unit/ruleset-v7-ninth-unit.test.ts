@@ -286,7 +286,8 @@ const HEAVY: Readonly<Record<FactionIdV7, Numbers>> = {
   // The three moved units keep their numbers. Every land unit captures
   // since `pulp_wars-ke95` (the Triceratops and the Steam Tank did not).
   DINOSAUR: num(8, 20, 6, 4, 2),
-  ICE_FOLK: num(6, 20, 5, 4, 1),
+  // Ice Folk Freeze (`pulp_wars-w49.37`): the Mammoth costs 7 (6 before).
+  ICE_FOLK: num(7, 20, 5, 4, 1),
   DWARF: num(9, 16, 6, 4, 2),
   CANDY: num(6, 16, 6, 5, 1),
 };
@@ -374,11 +375,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r66");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r66.current");
-    expect(PRIOR_RULESET_7_IDS.at(-12)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r67");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r67.current");
+    expect(PRIOR_RULESET_7_IDS.at(-13)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-12)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-13)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -408,7 +409,9 @@ describe("the ninth unit: identity", () => {
     // The giants' signatures (`pulp_wars-w49.30`) add ten event kinds in
     // one block after UNIT_SURFACED (115). Map curiosities round 2
     // (`pulp_wars-737.14`) add four (119).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(119);
+    // Ice Folk Freeze (`pulp_wars-w49.37`) renames UNITS_CHILLED to
+    // UNITS_FROZEN in place and adds MAMMOTH_STAMPEDED (120).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(120);
   });
 });
 
@@ -503,7 +506,8 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
       cost: 4,
       maxHp: 16,
       attack2: 3,
-      defense2: 5,
+      // Ice Folk Freeze (`pulp_wars-w49.37`): Defense 2 (2.5 before).
+      defense2: 4,
       move: 1,
       range: [1, 1],
       afterMove: false,
@@ -593,12 +597,14 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
       demolishesFieldDefense: true,
       rallyExcluded: false,
     });
-    // The Mammoth: Sweep, Trample, Glide, Freeze, attacks after moving.
+    // The Mammoth: Sweep, Trample, Glide, Freeze, attacks after moving;
+    // Ice Folk Freeze (`pulp_wars-w49.37`) adds its Stampede.
     expect(effectiveRoleRuleV7("SWORDSMAN", "ICE_FOLK").abilities).toEqual([
       "ATTACK",
       "CAPTURE",
       "SWEEP",
       "TRAMPLE",
+      "STAMPEDE",
       "FREEZE",
     ]);
     expect(roleMechanicsV7("SWORDSMAN", "ICE_FOLK")).toMatchObject({
@@ -1868,7 +1874,7 @@ describe("the Musk Ox: Frostbite", () => {
   const iceFolk = (pieces: readonly CandyPieceV7[], activeSeat = 1) =>
     candyFieldV7(pieces, { factions: ["ICE_FOLK", "ORIGINAL"], activeSeat });
 
-  it("Chills a unit that attacks it from the next tile and survives", () => {
+  it("Freezes a unit that attacks it from the next tile and survives", () => {
     const state = iceFolk([
       { seat: 0, role: "GUARD", at: OX },
       { seat: 1, role: "KNIGHT", at: at(4, 2) },
@@ -1881,28 +1887,28 @@ describe("the Musk Ox: Frostbite", () => {
       attackerDies: false,
       defenderDies: false,
     });
-    expect(hit.state.chilled).toEqual([
-      { unitId: knight.id, sluggish: true, turnsLeft: 2 },
-    ]);
-    expect(eventsOf(hit.events, "UNITS_CHILLED")).toEqual([
+    // Ice Folk Freeze (`pulp_wars-w49.37`): Frozen during its own turn, so
+    // through its owner's next turn (two End Turns).
+    expect(hit.state.frozen).toEqual([{ unitId: knight.id, turnsLeft: 2 }]);
+    expect(eventsOf(hit.events, "UNITS_FROZEN")).toEqual([
       {
-        kind: "UNITS_CHILLED",
+        kind: "UNITS_FROZEN",
         playerId: seatIdV7(state, 0),
         sourceUnitId: ox.id,
         source: "FROSTBITE",
-        results: [{ unitId: knight.id, sluggish: true, turnsLeft: 2 }],
+        results: [{ unitId: knight.id, turnsLeft: 2 }],
       },
     ]);
   });
 
-  it("does not Chill a ranged attacker, and Chills the unit that kills it", () => {
+  it("does not Freeze a ranged attacker, and Freezes the unit that kills it", () => {
     const ranged = iceFolk([
       { seat: 0, role: "GUARD", at: OX },
       { seat: 1, role: "MARKSMAN", at: at(5, 4) },
     ]);
     const shot = attackV7(ranged, at(5, 4), OX);
     expect(shot.combat.frostbiteApplied).toBe(false);
-    expect(shot.state.chilled).toEqual([]);
+    expect(shot.state.frozen).toEqual([]);
     const dying = iceFolk([
       { seat: 0, role: "GUARD", at: OX, hp: 1 },
       { seat: 1, role: "FIGHTER", at: at(4, 2) },
@@ -1913,12 +1919,12 @@ describe("the Musk Ox: Frostbite", () => {
       defenderDies: true,
       frostbiteApplied: true,
     });
-    expect(killed.state.chilled.map((entry) => entry.unitId)).toEqual([
+    expect(killed.state.frozen.map((entry) => entry.unitId)).toEqual([
       fighter.id,
     ]);
   });
 
-  it("does not Chill an attacker that dies of the strike back", () => {
+  it("does not Freeze an attacker that dies of the strike back", () => {
     const state = iceFolk([
       { seat: 0, role: "GUARD", at: OX },
       { seat: 1, role: "FIGHTER", at: at(4, 2), hp: 1 },
@@ -1928,7 +1934,7 @@ describe("the Musk Ox: Frostbite", () => {
       attackerDies: true,
       frostbiteApplied: false,
     });
-    expect(lost.state.chilled).toEqual([]);
+    expect(lost.state.frozen).toEqual([]);
   });
 
   it("holds a tile: it cannot attack after moving, and it captures", () => {

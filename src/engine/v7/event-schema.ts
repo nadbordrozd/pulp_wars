@@ -35,6 +35,8 @@ import {
   CRUSH_DAMAGE_V7,
   DIGEST_DAMAGE_V7,
   STOMP_DAMAGE_V7,
+  STAMPEDE_DAMAGE_V7,
+  STAMPEDE_RANGE_V7,
   SWALLOW_MAX_HP_V7,
   TRAMPLE_DAMAGE_V7,
   CITY_REWARD_COINS_V7,
@@ -339,7 +341,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "to",
   ],
   UNITS_RALLIED: ["kind", "captainId", "unitIds"],
-  UNITS_CHILLED: ["kind", "playerId", "sourceUnitId", "source", "results"],
+  UNITS_FROZEN: ["kind", "playerId", "sourceUnitId", "source", "results"],
   // The naval branch, the frozen sea (sections 8.4, 8.5, and 8.9).
   WATER_FROZEN: ["kind", "playerId", "unitId", "tiles", "icebound"],
   ICE_MELTED: ["kind", "tiles", "freed"],
@@ -509,6 +511,15 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "tiles",
     "cityId",
     "hp",
+  ],
+  MAMMOTH_STAMPEDED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "from",
+    "to",
+    "path",
+    "results",
   ],
   UNIT_INFECTED: [
     "kind",
@@ -698,9 +709,9 @@ export function parsePlayerEventEnvelopeV7(
       events.push(projectedRaise);
       continue;
     }
-    const projectedChill = parseProjectedUnitsChilled(candidate);
-    if (projectedChill !== null) {
-      events.push(projectedChill);
+    const projectedFrozen = parseProjectedUnitsFrozen(candidate);
+    if (projectedFrozen !== null) {
+      events.push(projectedFrozen);
       continue;
     }
     // The frozen sea: a Freeze by a unit the viewer cannot see.
@@ -1362,9 +1373,9 @@ function validPayload(
       );
     case "UNITS_RALLIED":
       return id(e.captainId) && orderedIds(e.unitIds);
-    case "UNITS_CHILLED":
-      // The Ice Folk revision (section 11): the source is never a target and
-      // every result is an applied Chill (`turnsLeft` 2).
+    case "UNITS_FROZEN":
+      // Ice Folk Freeze (`pulp_wars-w49.37`): the source is never a target
+      // and every result is a Frozen entry (`turnsLeft` 1 or 2).
       // The frozen sea (naval branch section 8.8): Black Ice has no source
       // unit, and every other source has one.
       return (
@@ -1372,8 +1383,8 @@ function validPayload(
         (e.source === "BLACK_ICE"
           ? e.sourceUnitId === null
           : id(e.sourceUnitId)) &&
-        chillSource(e.source) &&
-        chillResults(e.results, e.sourceUnitId)
+        frozenSource(e.source) &&
+        frozenResults(e.results, e.sourceUnitId)
       );
     case "WATER_FROZEN":
       // The frozen sea (section 8.4): at least one tile, in (y, x) order;
@@ -1667,6 +1678,8 @@ function validPayload(
           "STOMP",
           "TRAMPLE",
           "DIGESTED",
+          // Ice Folk Freeze (`pulp_wars-w49.37`): a Mammoth's Stampede.
+          "STAMPEDE",
         ].includes(e.cause as string)
       );
     // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8).
@@ -1774,6 +1787,20 @@ function validPayload(
       return id(e.playerId) && id(e.unitId) && trampleResults(e);
     case "WALLS_DESTROYED":
       return id(e.cityId) && id(e.byUnitId);
+    case "MAMMOTH_STAMPEDED":
+      // Ice Folk Freeze (`pulp_wars-w49.37`): at most `STAMPEDE_RANGE_V7`
+      // tiles entered; each hit at most the Stampede damage, never on the
+      // Mammoth.
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        parseCoordV7(e.from) !== null &&
+        parseCoordV7(e.to) !== null &&
+        isDenseArrayV7(e.path) &&
+        e.path.length <= STAMPEDE_RANGE_V7 &&
+        e.path.every((at) => parseCoordV7(at) !== null) &&
+        stampedeResults(e)
+      );
     case "GIANT_BROKE_OFF": {
       // The user's change of 2026-10-09: two Gingerbread Men, with new
       // ascending IDs, on two distinct tiles in (y, x) order, each with a
@@ -2123,7 +2150,11 @@ function combat(input: unknown): boolean {
         "UNANSWERED",
         "SPLATTED",
         "ICEBOUND",
+        // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen defender.
+        "FROZEN",
       ].includes(input.noRetaliationReason as string)) &&
+    (input.noRetaliationReason !== "FROZEN" ||
+      (input.retaliation === false && input.defenderDies === false)) &&
     // The Candy revision (section 13): a Splatted defender survives and
     // does not retaliate; the Rush bonus is on a first attack and never
     // with Charge or Inspired; a Splat needs a surviving target; a Bounce
@@ -2157,7 +2188,8 @@ function combat(input: unknown): boolean {
         input.attackerDies === false &&
         input.noRetaliationReason !== "OUT_OF_RANGE" &&
         input.noRetaliationReason !== "SPLATTED" &&
-        input.noRetaliationReason !== "ICEBOUND")) &&
+        input.noRetaliationReason !== "ICEBOUND" &&
+        input.noRetaliationReason !== "FROZEN")) &&
     // The frozen sea (naval branch sections 8.9 and 8.10): an icebound
     // defender never retaliates and is never rammed or pushed; ice cover is
     // a cover, so the defense bonus is not 1.
@@ -2239,6 +2271,43 @@ function trampleResults(e: Record<string, unknown>): boolean {
       seen.has(entry.unitId as number) ||
       parseCoordV7(entry.at) === null ||
       !fixedHit(entry.damage, entry.shieldDamage, entry.dies, TRAMPLE_DAMAGE_V7)
+    )
+      return false;
+    seen.add(entry.unitId as number);
+  }
+  return true;
+}
+/**
+ * Ice Folk Freeze (`pulp_wars-w49.37`) `MAMMOTH_STAMPEDED` results: units
+ * other than the Mammoth, each once, each a fixed hit of at most the
+ * Stampede damage; a shoved unit survived.
+ */
+function stampedeResults(e: Record<string, unknown>): boolean {
+  const results = e.results;
+  if (!isDenseArrayV7(results)) return false;
+  const seen = new Set<number>();
+  for (const entry of results) {
+    if (
+      !hasExactKeysV7(entry, [
+        "at",
+        "damage",
+        "dies",
+        "shieldDamage",
+        "shovedTo",
+        "unitId",
+      ]) ||
+      !id(entry.unitId) ||
+      entry.unitId === e.unitId ||
+      seen.has(entry.unitId as number) ||
+      parseCoordV7(entry.at) === null ||
+      !fixedHit(
+        entry.damage,
+        entry.shieldDamage,
+        entry.dies,
+        STAMPEDE_DAMAGE_V7,
+      ) ||
+      (entry.shovedTo !== null &&
+        (parseCoordV7(entry.shovedTo) === null || entry.dies === true))
     )
       return false;
     seen.add(entry.unitId as number);
@@ -2570,11 +2639,12 @@ function crushResults(input: unknown): boolean {
   }
   return true;
 }
-/** The Ice Folk revision: the source of a `UNITS_CHILLED`. */
-function chillSource(input: unknown): boolean {
+/** Ice Folk Freeze (`pulp_wars-w49.37`): the source of a `UNITS_FROZEN`. */
+function frozenSource(input: unknown): boolean {
   return (
     input === "BOLAS" ||
     input === "COLD_SNAP" ||
+    input === "FROST_BOLT" ||
     input === "COLD_AURA" ||
     // The frozen sea (naval branch section 8.8): Black Ice.
     input === "BLACK_ICE" ||
@@ -2585,20 +2655,18 @@ function chillSource(input: unknown): boolean {
   );
 }
 /**
- * The Ice Folk revision `UNITS_CHILLED` results: non-empty, in strictly
- * increasing unit-ID order, never the source, each an applied Chill entry
- * (`turnsLeft` 2, `sluggish` a boolean).
+ * Ice Folk Freeze `UNITS_FROZEN` results: non-empty, in strictly increasing
+ * unit-ID order, never the source, each a Frozen entry (`turnsLeft` 1 or 2).
  */
-function chillResults(input: unknown, sourceUnitId: unknown): boolean {
+function frozenResults(input: unknown, sourceUnitId: unknown): boolean {
   if (!isDenseArrayV7(input) || input.length === 0) return false;
   let prior = 0;
   for (const result of input) {
     if (
-      !hasExactKeysV7(result, ["sluggish", "turnsLeft", "unitId"]) ||
+      !hasExactKeysV7(result, ["turnsLeft", "unitId"]) ||
       !id(result.unitId) ||
       result.unitId === sourceUnitId ||
-      typeof result.sluggish !== "boolean" ||
-      result.turnsLeft !== 2 ||
+      (result.turnsLeft !== 1 && result.turnsLeft !== 2) ||
       Number(result.unitId) <= prior
     )
       return false;
@@ -2607,16 +2675,16 @@ function chillResults(input: unknown, sourceUnitId: unknown): boolean {
   return true;
 }
 /**
- * The Ice Folk revision (section 6.5): `UNITS_CHILLED` projected to a viewer
- * that owns a target but cannot see the source (`sourceUnitId` null).
+ * Ice Folk Freeze: `UNITS_FROZEN` projected to a viewer that owns a target
+ * but cannot see the source (`sourceUnitId` null).
  */
-function parseProjectedUnitsChilled(input: unknown): PlayerEventV7 | null {
-  return hasExactKeysV7(input, FIELDS.UNITS_CHILLED) &&
-    input.kind === "UNITS_CHILLED" &&
+function parseProjectedUnitsFrozen(input: unknown): PlayerEventV7 | null {
+  return hasExactKeysV7(input, FIELDS.UNITS_FROZEN) &&
+    input.kind === "UNITS_FROZEN" &&
     input.sourceUnitId === null &&
     id(input.playerId) &&
-    chillSource(input.source) &&
-    chillResults(input.results, null)
+    frozenSource(input.source) &&
+    frozenResults(input.results, null)
     ? (input as unknown as PlayerEventV7)
     : null;
 }
@@ -2638,7 +2706,7 @@ function parseProjectedWaterFrozen(input: unknown): PlayerEventV7 | null {
 }
 /**
  * Tend results: revision 14 may tend a full-HP unit (amount 0) only when it
- * cures Plague or Bitten (and the Ice Folk revision: Chill).
+ * cures Plague or Bitten (and Ice Folk Freeze: Frozen).
  */
 function tendResults(input: unknown): boolean {
   if (!isDenseArrayV7(input) || input.length === 0) return false;
@@ -2648,7 +2716,7 @@ function tendResults(input: unknown): boolean {
       !hasExactKeysV7(result, [
         "amount",
         "curedBitten",
-        "curedChill",
+        "curedFrozen",
         "curedPlague",
         "hpAfter",
         "unitId",
@@ -2659,12 +2727,12 @@ function tendResults(input: unknown): boolean {
       Number(result.amount) > REPAIR_MACHINE_V7 ||
       typeof result.curedPlague !== "boolean" ||
       typeof result.curedBitten !== "boolean" ||
-      // The Ice Folk revision section 10.5: Tend Wounded cures Chill.
-      typeof result.curedChill !== "boolean" ||
+      // Ice Folk Freeze (`pulp_wars-w49.37`): Tend Wounded thaws a unit.
+      typeof result.curedFrozen !== "boolean" ||
       (result.amount === 0 &&
         !result.curedPlague &&
         !result.curedBitten &&
-        !result.curedChill) ||
+        !result.curedFrozen) ||
       !pos(result.hpAfter) ||
       Number(result.unitId) <= prior
     )

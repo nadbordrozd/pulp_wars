@@ -254,6 +254,9 @@ function normalizedInitialState(state: GameStateV7): string {
     // Score and modes (`pulp_wars-kaw6.2`) adds the `scoreLedger` (the
     // initial ledger in an initial state, checked by the callers).
     scoreLedger: _scoreLedger,
+    // Ice Folk Freeze (`pulp_wars-w49.37`) renamed the `chilled` list
+    // `frozen`; the pins hash it under the name they were taken with.
+    frozen,
     rulesetId: _rulesetId,
     setup,
     ...rest
@@ -295,6 +298,7 @@ function normalizedInitialState(state: GameStateV7): string {
   // setup names; the pins hash the name they were taken with.
   return canonicalHash({
     ...rest,
+    chilled: frozen,
     players: rest.players.map((player) => ({
       ...player,
       coins: player.coins + 2,

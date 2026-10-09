@@ -429,6 +429,63 @@ describe("Glacier (section 8.10)", () => {
       preview?.damageToDefender ?? 0,
     );
   });
+
+  it("gives an Ice Folk land unit +1 Move for a Move whose path includes ice (Ice Folk Freeze, `pulp_wars-w49.37`)", () => {
+    // Seat 0 is the Ice Folk: a Yeti (Move 1) on (1, 1); (1, 2) is land
+    // outside its territory, (1, 3) is its ice, and (1, 4) open Deep Water,
+    // so it stops there. The land step and the ice step cost a point each.
+    const build = (technologies: readonly TechnologyIdV7[]) =>
+      frozenArenaV7({
+        technologies: [technologies, ALL],
+        units: [
+          { seat: 0, role: "FIGHTER", at: { x: 1, y: 1 } },
+          { seat: 1, role: "FIGHTER", at: { x: 9, y: 9 } },
+        ],
+        ice: [{ at: { x: 1, y: 3 } }],
+      });
+    const move = (state: GameStateV7, path: readonly CoordV7[]): CommandV7 => ({
+      kind: "MOVE",
+      unitId: navalUnitAtV7(state, { x: 1, y: 1 }).id,
+      path: [...path],
+    });
+    const ontoIce = [
+      { x: 1, y: 2 },
+      { x: 1, y: 3 },
+    ];
+    const endsOnIce = (state: GameStateV7): boolean =>
+      commandsOf(state, { x: 1, y: 1 }).some(
+        (command) =>
+          command.kind === "MOVE" &&
+          command.path.length === 2 &&
+          command.path[1]?.x === 1 &&
+          command.path[1]?.y === 3,
+      );
+    const glacier = build(ALL);
+    expect(endsOnIce(glacier)).toBe(true);
+    const moved = acceptV7(glacier, 0, move(glacier, ontoIce));
+    expect(navalUnitAtV7(moved.state, { x: 1, y: 3 }).role).toBe("FIGHTER");
+    // A path on land only keeps the ordinary budget.
+    expect(
+      rejectV7(
+        glacier,
+        0,
+        move(glacier, [
+          { x: 1, y: 2 },
+          { x: 2, y: 2 },
+        ]),
+      ),
+    ).toEqual({
+      code: "MOVEMENT_ILLEGAL",
+      params: { reason: "BUDGET_EXCEEDED" },
+    });
+    // Without Glacier the ice path is over the budget too.
+    const bare = build(NO_GLACIER);
+    expect(endsOnIce(bare)).toBe(false);
+    expect(rejectV7(bare, 0, move(bare, ontoIce))).toEqual({
+      code: "MOVEMENT_ILLEGAL",
+      params: { reason: "BUDGET_EXCEEDED" },
+    });
+  });
 });
 
 describe("no ships, Sea Dog (section 8.11)", () => {

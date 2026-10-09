@@ -151,16 +151,17 @@ describe("the giants' signatures: the identity", () => {
   // The reward ladder rework (`pulp_wars-zypi`) took 7r63 after it, and
   // any unit can capture (`pulp_wars-ke95`) 7r64, and score and modes
   // (`pulp_wars-kaw6.2`) 7r65, and map curiosities round 2
-  // (`pulp_wars-737.14`) 7r66.
+  // (`pulp_wars-737.14`) 7r66, and Ice Folk Freeze (`pulp_wars-w49.37`)
+  // 7r67.
   it("was 7r62 after 7r61, whose save keys are obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r66");
-    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r67");
+    expect(PRIOR_RULESET_7_IDS.slice(-6, -4)).toEqual([
       "pulp-wars-poc-7r61",
       "pulp-wars-poc-7r62",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r66.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-5, -3)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r67.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -4)).toEqual([
       "pulpWars.save.v7r61.current",
       "pulpWars.save.v7r62.current",
     ]);
@@ -1300,7 +1301,7 @@ describe("Goblin Toss (section 6.3)", () => {
     });
   });
 
-  it("lets a Goblin that acted be thrown; a sluggish one cannot act", () => {
+  it("lets a Goblin that acted be thrown; a Frozen one is not thrown", () => {
     // A Goblin that attacked is thrown, to block; it cannot act after.
     const acted = troll([], "ORIGINAL", {
       activation: { attacked: true, attacksUsed: 1 },
@@ -1320,54 +1321,29 @@ describe("Goblin Toss (section 6.3)", () => {
         (command) => command.kind === "KABOOM" && command.unitId === goblin.id,
       ),
     ).toBe(false);
-    // A sluggish Goblin (an Ice Folk Chill) that is thrown has moved.
+    // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen Goblin is not thrown,
+    // and a Frozen Troll does not throw (`UNIT_FROZEN`, never offered).
+    const base = troll([], "ICE_FOLK");
     const cold = checkedV7({
-      ...troll([], "ICE_FOLK"),
-      chilled: [
-        {
-          unitId: idAt(troll([], "ICE_FOLK"), 4, 3),
-          sluggish: true,
-          turnsLeft: 2,
-        },
-      ],
+      ...base,
+      frozen: [{ unitId: idAt(base, 4, 3), turnsLeft: 1 }],
     });
-    const preview = previewTossV7(
-      viewForV7(cold, activeIdV7(cold)),
-      idAt(cold, 5, 3),
-      idAt(cold, 4, 3),
-      at(7, 3),
-    );
-    expect(preview?.passengerMayAct).toBe(false);
-    const sluggish = apply(cold, toss(cold, at(7, 3))).state;
     expect(
-      queryPlayerCommandsV7(viewForV7(sluggish, activeIdV7(sluggish))).some(
-        (command) =>
-          command.kind === "KABOOM" && command.unitId === idAt(cold, 4, 3),
+      queryPlayerCommandsV7(viewForV7(cold, activeIdV7(cold))).some(
+        (command) => command.kind === "TOSS",
       ),
     ).toBe(false);
-    // A sluggish Troll that moved may not throw (G4); unmoved it may.
+    expect(reject(cold, toss(cold, at(7, 3)))).toMatchObject({
+      code: "UNIT_FROZEN",
+      params: { unitId: idAt(cold, 4, 3) },
+    });
     const slowTroll = checkedV7({
-      ...troll([], "ICE_FOLK"),
-      chilled: [
-        {
-          unitId: idAt(troll([], "ICE_FOLK"), 5, 3),
-          sluggish: true,
-          turnsLeft: 2,
-        },
-      ],
+      ...base,
+      frozen: [{ unitId: idAt(base, 5, 3), turnsLeft: 1 }],
     });
-    expect(
-      queryPlayerCommandsV7(viewForV7(slowTroll, activeIdV7(slowTroll))),
-    ).toContainEqual(toss(slowTroll, at(7, 3)));
-    const movedTroll = patchUnitV7(slowTroll, at(5, 3), {
-      activation: {
-        ...unitAtV7(slowTroll, at(5, 3)).activation,
-        moved: true,
-        movedPathLength: 1,
-      },
-    });
-    expect(reject(movedTroll, toss(movedTroll, at(7, 3)))).toMatchObject({
-      code: "UNIT_ALREADY_ACTED",
+    expect(reject(slowTroll, toss(slowTroll, at(7, 3)))).toMatchObject({
+      code: "UNIT_FROZEN",
+      params: { unitId: idAt(slowTroll, 5, 3) },
     });
   });
 
@@ -1784,7 +1760,7 @@ describe("Overstride (section 6.5)", () => {
 });
 
 describe("Glacial Smash (section 6.6)", () => {
-  /** The Ice Folk seat 0's Frost Giant at (4, 3), a Chilled target at (5, 3). */
+  /** The Ice Folk seat 0's Frost Giant at (4, 3), a Frozen target at (5, 3). */
   const frost = (
     hp: number,
     role: UnitStateV7["role"] = "GUARD",
@@ -1800,7 +1776,7 @@ describe("Glacial Smash (section 6.6)", () => {
           role,
           at: at(5, 3),
           hp,
-          chill: { sluggish: false, turnsLeft: 1 },
+          frozen: { turnsLeft: 1 },
         },
         ...pieces,
       ],
@@ -1873,14 +1849,14 @@ describe("Glacial Smash (section 6.6)", () => {
     expect(run.combat).toMatchObject({ shatters: false, glacialSmash: false });
   });
 
-  it("chills the units around a shattered unit with its shards", () => {
+  it("freezes the units around a shattered unit with its shards", () => {
     const pieces: Parameters<typeof iceFieldV7>[0] = [
       { seat: 1, role: "FIGHTER", at: at(6, 3) },
       {
         seat: 1,
         role: "KNIGHT",
         at: at(6, 4),
-        chill: { sluggish: false, turnsLeft: 1 },
+        frozen: { turnsLeft: 1 },
       },
       { seat: 1, role: "JUGGERNAUT", at: at(6, 2) },
       { seat: 0, role: "FIGHTER", at: at(5, 4) },
@@ -1890,16 +1866,19 @@ describe("Glacial Smash (section 6.6)", () => {
     const run = attackV7(state, at(4, 3), at(5, 3));
     expect(run.combat.shatters).toBe(true);
     const shards = run.events.find(
-      (event) => event.kind === "UNITS_CHILLED" && event.source === "SHARDS",
+      (event) => event.kind === "UNITS_FROZEN" && event.source === "SHARDS",
     );
-    if (shards?.kind !== "UNITS_CHILLED") throw new Error("no shards");
+    if (shards?.kind !== "UNITS_FROZEN") throw new Error("no shards");
     expect(shards.sourceUnitId).toBe(idAt(state, 4, 3));
     const byId = new Map(shards.results.map((entry) => [entry.unitId, entry]));
-    // A new freeze makes the Fighter (and the giant) sluggish; the Knight
-    // was Chilled already and is not.
-    expect(byId.get(idAt(state, 6, 3))).toMatchObject({ sluggish: true });
-    expect(byId.get(idAt(state, 6, 2))).toMatchObject({ sluggish: true });
-    expect(byId.get(idAt(state, 6, 4))).toMatchObject({ sluggish: false });
+    // Ice Folk Freeze (`pulp_wars-w49.37`): the Fighter and the giant are
+    // Frozen; the Knight was Frozen already and is renewed.
+    expect(byId.get(idAt(state, 6, 3))).toEqual({
+      unitId: idAt(state, 6, 3),
+      turnsLeft: 1,
+    });
+    expect(byId.get(idAt(state, 6, 2))).toMatchObject({ turnsLeft: 1 });
+    expect(byId.get(idAt(state, 6, 4))).toMatchObject({ turnsLeft: 1 });
     expect(byId.has(idAt(state, 5, 4))).toBe(false);
     const kinds = kindsV7(run.events);
     expect(kinds.lastIndexOf("UNIT_DIED")).toBeLessThan(
@@ -2389,36 +2368,30 @@ describe("Break Off (section 6.8, as the user changed it on 2026-10-09)", () => 
 });
 
 describe("the new primary actions and death causes (G4, G5)", () => {
-  it("refuses a sluggish giant's action after a Move, and every command while a reward is pending", () => {
+  it("refuses a Frozen giant's action and every command while a reward is pending", () => {
     const base = field(
       ["CANDY", "ICE_FOLK"],
       [{ seat: 0, role: "JUGGERNAUT", at: at(5, 3) }],
     );
-    const sluggish = checkedV7({
-      ...base,
-      chilled: [{ unitId: idAt(base, 5, 3), sluggish: true, turnsLeft: 2 }],
-    });
     expect(
-      queryPlayerCommandsV7(viewForV7(sluggish, activeIdV7(sluggish))),
+      queryPlayerCommandsV7(viewForV7(base, activeIdV7(base))),
     ).toContainEqual({
       kind: "BREAK_OFF",
       unitId: idAt(base, 5, 3),
       tiles: [at(4, 3), at(4, 4)],
     });
-    const moved = patchUnitV7(sluggish, at(5, 3), {
-      activation: {
-        ...unitAtV7(sluggish, at(5, 3)).activation,
-        moved: true,
-        movedPathLength: 1,
-      },
+    // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen giant does nothing.
+    const frozen = checkedV7({
+      ...base,
+      frozen: [{ unitId: idAt(base, 5, 3), turnsLeft: 1 }],
     });
     expect(
-      reject(moved, {
+      reject(frozen, {
         kind: "BREAK_OFF",
         unitId: idAt(base, 5, 3),
         tiles: [at(4, 3), at(4, 4)],
       }),
-    ).toMatchObject({ code: "UNIT_ALREADY_ACTED" });
+    ).toMatchObject({ code: "UNIT_FROZEN" });
     // A pending city reward blocks a Stomp.
     const pending = rewardStateV7("JUGGERNAUT", "DINOSAUR", [
       { role: "JUGGERNAUT", at: at(5, 3) },
@@ -2429,7 +2402,14 @@ describe("the new primary actions and death causes (G4, G5)", () => {
   });
 
   it("parses the new causes and refuses a digest with a Grave", () => {
-    for (const cause of ["CRUSH", "STOMP", "TRAMPLE", "DIGESTED"] as const)
+    for (const cause of [
+      "CRUSH",
+      "STOMP",
+      "TRAMPLE",
+      "DIGESTED",
+      // Ice Folk Freeze (`pulp_wars-w49.37`): a Mammoth's Stampede.
+      "STAMPEDE",
+    ] as const)
       expect(
         parseEventV7({ kind: "UNIT_DIED", unitId: 7, cause }).ok,
         cause,

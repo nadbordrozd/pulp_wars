@@ -162,7 +162,7 @@ const ENTRIES = {
   ],
   GLACIAL_SMASH: [
     "Glacial Smash",
-    "Its hit shatters a Chilled enemy that it leaves badly hurt, and the flying shards Chill the enemies around it. It never advances.",
+    "Its hit shatters a Frozen enemy that it leaves badly hurt, and the flying shards freeze the enemies around it. It never advances.",
   ],
   SIEGE_HAMMER: [
     "Siege Hammer",
@@ -363,13 +363,23 @@ const ENTRIES = {
     "Freeze",
     "Turns the water next to it to ice, which your units slide across. Unlocked by a technology.",
   ],
-  BOLAS: ["Bolas", "Chills an enemy within 2 tiles. It does no damage."],
-  COLD_BLOOD: ["Cold Blood", "Hits a Chilled unit harder."],
+  BOLAS: ["Bolas", "Freezes an enemy within 2 tiles. It does no damage."],
+  COLD_BLOOD: ["Cold Blood", "Hits a Frozen unit harder."],
   BLIZZARD: [
     "Blizzard",
     "Snow follows her: your units next to her take less damage from ranged attacks.",
   ],
-  COLD_SNAP: ["Cold Snap", "Chills every enemy within 2 tiles."],
+  COLD_SNAP: ["Cold Snap", "Freezes every enemy next to her."],
+  // Ice Folk Freeze (`pulp_wars-w49.37`): the Witch's Frost Bolt and the
+  // Mammoth's Stampede.
+  FROST_BOLT: [
+    "Frost Bolt",
+    "Freezes one enemy within 2 tiles instead of a Cold Snap. It does no damage.",
+  ],
+  STAMPEDE: [
+    "Stampede",
+    "If it has not moved, it charges up to three tiles in a straight line, hitting each enemy in its way for 3 and shoving it aside.",
+  ],
   BOULDERS: [
     "Boulders",
     "Its throw ignores Walls and Field Defense, and hits harder when it has not moved.",
@@ -377,7 +387,7 @@ const ENTRIES = {
   PROWL: ["Prowl", "Enemies next to its path do not stop it."],
   COLD_AURA: [
     "Cold Aura",
-    "Chills every enemy next to it at the start of your turn.",
+    "Freezes every enemy next to it when it ends its own move.",
   ],
   SWEEP: [
     "Sweep",
@@ -389,7 +399,7 @@ const ENTRIES = {
   ],
   FROSTBITE: [
     "Frostbite",
-    "An enemy that attacks it from the next tile and survives is Chilled.",
+    "An enemy that attacks it from the next tile and survives is Frozen.",
   ],
 
   // ----------------------------------------------------------------- Dwarves
@@ -563,12 +573,12 @@ const ENTRIES = {
     "Ice Folk slide across ice. Every other unit stops when it steps onto it.",
   ],
   STATUS_CHILLED: [
-    "Chilled",
-    "Slowed on its next turn: it may move or act, not both. Ice Folk can shatter a weak Chilled unit.",
+    "Frozen",
+    "It cannot move or act until it thaws at the end of its next turn, and it does not strike back. Ice Folk can shatter a weak Frozen unit.",
   ],
   STATUS_FROZEN: [
     "Frozen",
-    "Chilled and slowed: this turn it may move or act, not both.",
+    "It cannot move or act this turn, and it does not strike back.",
   ],
   STATUS_FROSTED: [
     "Frosted",

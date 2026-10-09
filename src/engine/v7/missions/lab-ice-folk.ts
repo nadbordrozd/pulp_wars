@@ -35,6 +35,12 @@ import type { MissionDefinitionV7 } from "./types";
  * are four tiles apart; two neutral villages lie between the lines. The AI
  * has no directive: it plays the ordinary Normal policy.
  *
+ * Revision 2 (Ice Folk Freeze, `pulp_wars-w49.37`): the same board and
+ * units under the new numbers (the Sled 4 Coins, the Ice Witch 6 and 10 HP,
+ * the Boulder Yeti 9 and 10 HP, the Mammoth 7, the Musk Ox Defense 2): the
+ * Ice Folk units are worth 70 Coins now. The numbers quoted above are
+ * revision 1's.
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  1   .Ge.....v....eG.      v: a neutral village
@@ -101,7 +107,7 @@ const ICE_FOLK_MID_RESOURCES_V7 = [
 
 export const LAB_ICE_FOLK_MID_V7: MissionDefinitionV7 = {
   id: "LAB_ICE_FOLK_MID",
-  revision: 1,
+  revision: 2,
   hidden: true,
   size: 16,
   seed: 20262701,

@@ -1,5 +1,17 @@
 # Ruleset 7: Ice Folk faction
 
+> **Superseded by Ice Folk Freeze** (`pulp_wars-w49.37`, user requests of
+> 2026-10-09): Chill and Sluggish are replaced by one status, **Frozen** (a
+> Frozen unit cannot move or act on its owner's next turn, does not
+> retaliate, and thaws at the end of that turn; no thaw immunity). Cold
+> Snap reaches the eight tiles around the Witch, who also has Frost Bolt;
+> the Cold Aura follows the Frost Giant's own Move; the Mammoth has
+> Stampede; and the Sled, Musk Ox, Ice Witch, Boulder Yeti, Mammoth, and
+> Frost Giant have new numbers. Every Chill, sluggish, and Start Turn Cold
+> Aura rule below is history; the
+> [current rules, section 21](RULESET_7_CURRENT.md#21-ice-folk-faction-rules)
+> state the game.
+
 **Any unit can capture** (`pulp_wars-ke95`, user direction 2026-10-09):
 every land unit of every faction now has `CAPTURE`, so wherever this
 document says a unit has no capture, cannot capture, or lists the

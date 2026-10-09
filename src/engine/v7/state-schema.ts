@@ -52,7 +52,7 @@ import {
   type BarricadeV7,
   type BittenStatusV7,
   type BurrowedEntryV7,
-  type ChillStatusV7,
+  type FrozenStatusV7,
   type CityRewardRecordV7,
   type CityStateV7,
   type CoolingStatusV7,
@@ -138,13 +138,13 @@ const STATE_KEYS = [
   "board",
   "bombedThisTurn",
   "burrowed",
-  "chilled",
   "cities",
   "commandIndex",
   "cooling",
   "crumbs",
   "curiosities",
   "eggs",
+  "frozen",
   "giants",
   "graves",
   "humanPlayerId",
@@ -266,7 +266,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const mindControlCooldowns = parseMindControlCooldowns(
     input.mindControlCooldowns,
   );
-  const chilled = parseChilled(input.chilled);
+  const frozen = parseFrozen(input.frozen);
   // The Dwarf revision (section 5.2): the burrowed units and the two
   // per-turn lists; the cross references are checked below.
   const burrowed =
@@ -334,7 +334,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     cooling === null ||
     mindControlled === null ||
     mindControlCooldowns === null ||
-    chilled === null ||
+    frozen === null ||
     burrowed === null ||
     surfacedThisTurn === null ||
     bombedThisTurn === null ||
@@ -397,7 +397,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       cooling,
       mindControlled,
       mindControlCooldowns,
-      chilled,
+      frozen,
       burrowed,
       surfacedThisTurn,
       bombedThisTurn,
@@ -452,7 +452,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     cooling,
     mindControlled,
     mindControlCooldowns,
-    chilled,
+    frozen,
     burrowed,
     surfacedThisTurn,
     bombedThisTurn,
@@ -1556,27 +1556,24 @@ function parseMindControlCooldowns(
 }
 
 /**
- * The Ice Folk revision `chilled` entries (section 5.1), sorted by unit ID:
- * `turnsLeft` 0, 1, or 2, and `sluggish` only with `turnsLeft` 2. The unit
- * checks are cross references.
+ * Ice Folk Freeze (`pulp_wars-w49.37`): the `frozen` entries (section 21.2),
+ * sorted by unit ID, `turnsLeft` 1 or 2. The unit checks are cross
+ * references.
  */
-function parseChilled(input: unknown): readonly ChillStatusV7[] | null {
+function parseFrozen(input: unknown): readonly FrozenStatusV7[] | null {
   if (!isDenseArrayV7(input)) return null;
-  const values: ChillStatusV7[] = [];
+  const values: FrozenStatusV7[] = [];
   for (const candidate of input) {
-    if (!hasExactKeysV7(candidate, ["sluggish", "turnsLeft", "unitId"]))
-      return null;
+    if (!hasExactKeysV7(candidate, ["turnsLeft", "unitId"])) return null;
     const unitId = parseUnitIdV7(candidate.unitId);
     const turnsLeft = candidate.turnsLeft;
     if (
       unitId === null ||
-      typeof candidate.sluggish !== "boolean" ||
-      (turnsLeft !== 0 && turnsLeft !== 1 && turnsLeft !== 2) ||
-      (candidate.sluggish && turnsLeft !== 2) ||
-      (values.length > 0 && (values.at(-1) as ChillStatusV7).unitId >= unitId)
+      (turnsLeft !== 1 && turnsLeft !== 2) ||
+      (values.length > 0 && (values.at(-1) as FrozenStatusV7).unitId >= unitId)
     )
       return null;
-    values.push({ unitId, sluggish: candidate.sluggish, turnsLeft });
+    values.push({ unitId, turnsLeft });
   }
   return values;
 }
@@ -2240,7 +2237,7 @@ interface CrossInput {
   cooling: readonly CoolingStatusV7[];
   mindControlled: readonly MindControlledStatusV7[];
   mindControlCooldowns: readonly MindControlCooldownV7[];
-  chilled: readonly ChillStatusV7[];
+  frozen: readonly FrozenStatusV7[];
   burrowed: readonly BurrowedEntryV7[];
   surfacedThisTurn: readonly UnitId[];
   bombedThisTurn: readonly UnitId[];
@@ -2282,7 +2279,7 @@ function validateCrossReferences(value: CrossInput): boolean {
     cooling,
     mindControlled,
     mindControlCooldowns,
-    chilled,
+    frozen,
     burrowed,
     surfacedThisTurn,
     bombedThisTurn,
@@ -2748,12 +2745,12 @@ function validateCrossReferences(value: CrossInput): boolean {
     )
       return false;
   }
-  // The Ice Folk revision section 5.1: every Chill entry needs a living unit
+  // Ice Folk Freeze (section 21.2): every Frozen entry needs a living unit
   // that is neither naval nor an Egg, and only a match with an Ice Folk seat
   // has entries.
-  if (chilled.length > 0 && !value.setup.factions.includes("ICE_FOLK"))
+  if (frozen.length > 0 && !value.setup.factions.includes("ICE_FOLK"))
     return false;
-  for (const entry of chilled) {
+  for (const entry of frozen) {
     const unit = unitById.get(entry.unitId);
     if (
       unit === undefined ||

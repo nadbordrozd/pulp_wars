@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { isSnowV7 } from "../../src/engine/index";
 import { checkedV7 } from "../fixtures/v7-builders";
 import { unitAtV7 } from "../fixtures/v7-goblin-arena";
-import { chillAtV7, iceFieldV7 } from "../fixtures/v7-ice-folk";
+import { frozenAtV7, iceFieldV7 } from "../fixtures/v7-ice-folk";
 import { playV7 } from "../fixtures/v7-martian";
 import { at, attackV7, kindsV7, walledV7 } from "../fixtures/v7-revision20";
 
@@ -117,7 +117,7 @@ describe("Martians (section 10.4)", () => {
           seat: 0,
           role: "FIGHTER",
           at: at(6, 3),
-          chill: { sluggish: false, turnsLeft: 1 },
+          frozen: { turnsLeft: 1 },
         },
       ],
       { factions: ["ICE_FOLK", "MARTIAN"], activeSeat: 1, techs: { 0: [] } },
@@ -127,7 +127,7 @@ describe("Martians (section 10.4)", () => {
       unitId: unitAtV7(pull, at(4, 3)).id,
       targetUnitId: unitAtV7(pull, at(6, 3)).id,
     });
-    expect(chillAtV7(pulled.state, at(5, 3))).toMatchObject({ turnsLeft: 1 });
+    expect(frozenAtV7(pulled.state, at(5, 3))).toMatchObject({ turnsLeft: 1 });
     const control = iceFieldV7(
       [
         { seat: 1, role: "CAPTAIN", at: at(4, 3) },
@@ -177,6 +177,6 @@ describe("Humans (section 10.5)", () => {
     expect(attackV7(state, at(5, 6), at(5, 3)).combat.blizzardHalved).toBe(
       true,
     );
-    expect(checkedV7(state).chilled).toEqual([]);
+    expect(checkedV7(state).frozen).toEqual([]);
   });
 });

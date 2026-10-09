@@ -52,6 +52,8 @@ export interface CombatPreviewV7 {
     | "SPLATTED"
     // The frozen sea (naval branch section 8.9): an icebound defender.
     | "ICEBOUND"
+    // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen defender.
+    | "FROZEN"
     | null;
   readonly advances: boolean;
   readonly push: "WILL_PUSH" | "BLOCKED" | "UNKNOWN_BEHIND_FOG";
@@ -221,8 +223,8 @@ export interface CombatPreviewV7 {
    */
   readonly crackApplied: boolean;
   /**
-   * The ninth unit: Frostbite. The surviving attacker is Chilled for having
-   * attacked a Musk Ox from the next tile.
+   * The ninth unit: Frostbite. The surviving attacker is Frozen for having
+   * attacked a Musk Ox from the next tile (Ice Folk Freeze, w49.37).
    */
   readonly frostbiteApplied: boolean;
   /**
@@ -250,6 +252,18 @@ export interface CombatPreviewV7 {
    */
   readonly glacialSmash: boolean;
 }
+/** One unit in a Stampede's way (`MAMMOTH_STAMPEDED`). */
+export interface StampedeResultV7 {
+  readonly unitId: UnitId;
+  /** The unit's tile when the Mammoth reached it. */
+  readonly at: CoordV7;
+  readonly damage: number;
+  readonly shieldDamage: number;
+  readonly dies: boolean;
+  /** The side tile it was shoved to; null when it died or stayed. */
+  readonly shovedTo: CoordV7 | null;
+}
+
 export interface CombatSplashEntryV7 {
   readonly unitId: UnitId;
   readonly at: CoordV7;
@@ -817,33 +831,30 @@ export type DomainEventV7 =
     }
   | {
       /**
-       * The Ice Folk revision (section 11): `sourceUnitId` of `playerId`
-       * (a Sled's Bolas, an Ice Witch's Cold Snap, or a Frost Giant's Cold
-       * Aura) chilled every listed unit; each result is its Chill entry
-       * after the application, in unit-ID order. A projection keeps the
-       * results the viewer can see (and a target owner's own entries, with
-       * `sourceUnitId` null when the source is hidden).
+       * Ice Folk Freeze (`pulp_wars-w49.37`, RULESET_7_CURRENT.md section
+       * 21.15): `sourceUnitId` of `playerId` (a Sled's Bolas, an Ice
+       * Witch's Cold Snap or Frost Bolt, a Frost Giant's Cold Aura at the
+       * end of its Move, a Musk Ox's Frostbite, or the shards of a unit a
+       * Frost Giant shattered; null for Black Ice) froze every listed unit;
+       * each result is its Frozen entry after the application, in unit-ID
+       * order. A projection keeps the results the viewer can see (and a
+       * target owner's own entries, with `sourceUnitId` null when the source
+       * is hidden).
        */
-      readonly kind: "UNITS_CHILLED";
+      readonly kind: "UNITS_FROZEN";
       readonly playerId: PlayerId;
       readonly sourceUnitId: UnitId | null;
-      // The frozen sea (naval branch section 8.8): Black Ice at a Start
-      // Turn, with no source unit.
-      // The ninth unit (`pulp_wars-w49.17`, 7r55): Frostbite, a Musk Ox
-      // (`sourceUnitId`, of `playerId`) chilled the unit that attacked it.
-      // The giants' signatures (RULESET_7_GIANTS.md section 6.6): the shards
-      // of a unit a Frost Giant (`sourceUnitId`) shattered.
       readonly source:
         | "BOLAS"
         | "COLD_SNAP"
+        | "FROST_BOLT"
         | "COLD_AURA"
         | "BLACK_ICE"
         | "FROSTBITE"
         | "SHARDS";
       readonly results: readonly {
         readonly unitId: UnitId;
-        readonly sluggish: boolean;
-        readonly turnsLeft: 0 | 1 | 2;
+        readonly turnsLeft: 1 | 2;
       }[];
     }
   | {
@@ -901,10 +912,10 @@ export type DomainEventV7 =
         /** Revision 14: the tended unit was bitten and is cured. */
         readonly curedBitten: boolean;
         /**
-         * The Ice Folk revision (section 10.5): the tended unit was Chilled
-         * and its entry is now thawing.
+         * Ice Folk Freeze (`pulp_wars-w49.37`): the tended unit was Frozen
+         * and thawed.
          */
-        readonly curedChill: boolean;
+        readonly curedFrozen: boolean;
       }[];
     }
   | {
@@ -1310,7 +1321,12 @@ export type DomainEventV7 =
         | "CRUSH"
         | "STOMP"
         | "TRAMPLE"
-        | "DIGESTED";
+        | "DIGESTED"
+        /**
+         * Ice Folk Freeze (`pulp_wars-w49.37`): a Mammoth's Stampede (like
+         * a splash death).
+         */
+        | "STAMPEDE";
     }
   | {
       /**
@@ -1444,6 +1460,26 @@ export type DomainEventV7 =
       readonly tiles: readonly [CoordV7, CoordV7];
       readonly cityId: CityId;
       readonly hp: number;
+    }
+  | {
+      /**
+       * Ice Folk Freeze (`pulp_wars-w49.37`, RULESET_7_CURRENT.md section
+       * 21.18): the Mammoth `unitId` of `playerId` stampeded from `from`
+       * along `path` (the tiles it entered, in order; empty when the first
+       * tile was blocked) and stands on `to`. Each hostile unit in its way
+       * is a result in path order: the fixed hit (`damage` HP, `shieldDamage`
+       * absorbed, `dies`) and the tile it was shoved to (`shovedTo`, null
+       * when it died or could not be shoved, which stopped the Mammoth). The
+       * deaths follow as `UNIT_DIED` with the cause `STAMPEDE`. A projection
+       * keeps the results the viewer can see.
+       */
+      readonly kind: "MAMMOTH_STAMPEDED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly from: CoordV7;
+      readonly to: CoordV7;
+      readonly path: readonly CoordV7[];
+      readonly results: readonly StampedeResultV7[];
     }
   | {
       /** Revision 13: a Zombie's land-form victim rose as a Zombie. */

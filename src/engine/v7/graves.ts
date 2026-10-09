@@ -29,7 +29,9 @@ export type GraveDeathCauseV7 =
   // or collision, a Thunder Stomp, and a trample, each like a splash.
   | "CRUSH"
   | "STOMP"
-  | "TRAMPLE";
+  | "TRAMPLE"
+  // Ice Folk Freeze (`pulp_wars-w49.37`): a Mammoth's Stampede.
+  | "STAMPEDE";
 
 /**
  * The canonical state a Grave decision reads. The Dwarf revision: with the

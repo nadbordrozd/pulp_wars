@@ -10,7 +10,7 @@ import {
   arePlayersAlliedV7,
   arePlayersHostileV7,
   calculateCombatPreviewV7,
-  canBeChilledV7,
+  canBeFrozenV7,
   canonicalHash,
   createPlayableGameV7,
   createReplayV7,
@@ -468,8 +468,8 @@ describe("provocation, damage, death, and the bounty (sections 8.4, 8.6, 8.7)", 
     expect(calculateCombatPreviewV7(state, juggernaut.id, spider.id).push).toBe(
       "BLOCKED",
     );
-    // Chill and Mind Control never apply.
-    expect(canBeChilledV7(state, P1, spider)).toBe(false);
+    // Frozen and Mind Control never apply.
+    expect(canBeFrozenV7(state, P1, spider)).toBe(false);
     expect(
       mindControlTargetBlockV7(state, { at: at(8, 7) }, spider, {
         site: null,

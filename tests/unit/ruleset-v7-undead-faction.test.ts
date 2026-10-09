@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r66");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r66.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r67");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r67.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -143,10 +143,10 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
   });
 
   it("cleans obsolete keys through v7r65 and preserves the r66 save", () => {
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-2)).toBe(
       "pulpWars.save.v7r65.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(65);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(66);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -1693,7 +1693,7 @@ describe("ruleset-7 all-Human parity digests", () => {
   // unchanged as well: its only all-Human differences are the empty
   // `chilled` list of the state and the view, the tile flags `snow: false`
   // and `blizzard: false` of every explored view tile, the `chill: null`
-  // unit stat, `curedChill: false` in Tend results, and the eight neutral
+  // unit stat, `curedFrozen: false` in Tend results, and the eight neutral
   // combat-preview fields (`shatters`, `coldBloodApplied`,
   // `rockfallApplied`, `plantedApplied`, `blizzardHalved`, `snowCover`,
   // `sweep`, `hiddenBlizzardPossible`, all false), removed before hashing.
@@ -1908,11 +1908,11 @@ describe("ruleset-7 all-Human parity digests", () => {
           return {
             ...event,
             results: event.results.map(
-              ({ curedPlague, curedBitten, curedChill, ...rest }) => {
-                expect({ curedPlague, curedBitten, curedChill }).toEqual({
+              ({ curedPlague, curedBitten, curedFrozen, ...rest }) => {
+                expect({ curedPlague, curedBitten, curedFrozen }).toEqual({
                   curedPlague: false,
                   curedBitten: false,
-                  curedChill: false,
+                  curedFrozen: false,
                 });
                 return rest;
               },
@@ -2076,7 +2076,7 @@ describe("ruleset-7 all-Human parity digests", () => {
           cooling,
           mindControlled,
           mindControlCooldowns,
-          chilled,
+          frozen,
           burrowed,
           surfacedThisTurn,
           bombedThisTurn,
@@ -2090,7 +2090,7 @@ describe("ruleset-7 all-Human parity digests", () => {
           cooling: unknown;
           mindControlled: unknown;
           mindControlCooldowns: unknown;
-          chilled: unknown;
+          frozen: unknown;
           burrowed: unknown;
           surfacedThisTurn: unknown;
           bombedThisTurn: unknown;
@@ -2111,9 +2111,10 @@ describe("ruleset-7 all-Human parity digests", () => {
           mindControlled: [],
           mindControlCooldowns: [],
         });
-        // The Ice Folk revision: the empty Chill list, and the neutral tile
-        // flags and unit stat, removed (any other value fails the match).
-        expect(chilled).toEqual([]);
+        // The Ice Folk revision: the empty Chill list (`frozen` since Ice
+        // Folk Freeze, `pulp_wars-w49.37`), and the neutral tile flags and
+        // unit stat, removed (any other value fails the match).
+        expect(frozen).toEqual([]);
         // The Dwarf revision (pulp_wars-78i.3): three empty lists.
         expect([burrowed, surfacedThisTurn, bombedThisTurn]).toEqual([
           [],
@@ -2126,7 +2127,7 @@ describe("ruleset-7 all-Human parity digests", () => {
           function (key, item: unknown) {
             if ((key === "snow" || key === "blizzard") && item === false)
               return undefined;
-            if (key === "chill" && item === null) return undefined;
+            if (key === "frozen" && item === null) return undefined;
             // pulp_wars-5ti.2: the two naval-branch unit facts of a view, at
             // their neutral values (no seat ever holds Submersibles or
             // Seamanship here, so nothing is submerged; the boarding

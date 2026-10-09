@@ -52,6 +52,9 @@ const captured = (commandIndex: 300 | 425): PlayerViewV7 => ({
   ice: [],
   // The giants' signatures (`pulp_wars-w49.30`): no held victim.
   giants: { swallowed: [] },
+  // Map curiosities round 2 (`pulp_wars-737.14`) read the view's
+  // curiosities for a gate on a Move's path: none here.
+  curiosities: [],
 });
 
 describe("ruleset-7 exact public-planning performance", () => {

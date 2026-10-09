@@ -588,7 +588,7 @@ export function buildMissionStateV7(
     cooling: [],
     mindControlled: [],
     mindControlCooldowns: [],
-    chilled: [],
+    frozen: [],
     burrowed: [],
     surfacedThisTurn: [],
     bombedThisTurn: [],

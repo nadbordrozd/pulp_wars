@@ -17,7 +17,7 @@ import {
   primaryActionUsedV7,
   roleMechanicsV7,
   seatRoleRuleV7,
-  sluggishUnitMovedV7,
+  unitIsFrozenV7,
   tractorBeamRuleV7,
   unitFactionV7,
   unitRoleMechanicsV7,
@@ -983,7 +983,7 @@ export function beamDownUnavailableTextV7(
     activationIsExhaustedV7(saucer.activation)
   )
     return null;
-  if (sluggishUnitMovedV7(view, saucer)) return MARTIAN_FROZEN_MOVED_V7;
+  if (unitIsFrozenV7(view, saucer)) return MARTIAN_FROZEN_MOVED_V7;
   if (primaryActionUsedV7(saucer.activation)) return MARTIAN_ACTED_V7;
   // `pulp_wars-1wy.3`: a carrier that moved may still Beam Down (a moved
   // carrier is handled, so `handled` no longer hides the reason); the
@@ -1016,7 +1016,7 @@ export function tractorBeamUnavailableTextV7(
   if (puller === undefined || !ownActorNow(view, puller)) return null;
   const rule = tractorBeamRuleV7(view, puller);
   if (rule === null || activationIsExhaustedV7(puller.activation)) return null;
-  if (sluggishUnitMovedV7(view, puller)) return MARTIAN_FROZEN_MOVED_V7;
+  if (unitIsFrozenV7(view, puller)) return MARTIAN_FROZEN_MOVED_V7;
   if (rule.free) {
     if (view.tractorUsedThisTurn.includes(puller.id)) return TRACTOR_USED_V7;
   } else if (primaryActionUsedV7(puller.activation)) return MARTIAN_ACTED_V7;

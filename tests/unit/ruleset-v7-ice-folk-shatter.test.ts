@@ -12,9 +12,10 @@ import { checkedV7 } from "../fixtures/v7-builders";
 import { seatIdV7, unitAtV7 } from "../fixtures/v7-goblin-arena";
 import {
   iceFieldV7,
-  withChillV7,
+  withFrozenUnitsV7,
   type IcePieceV7,
 } from "../fixtures/v7-ice-folk";
+import { offeredV7 } from "../fixtures/v7-martian";
 import {
   activeIdV7,
   at,
@@ -31,7 +32,7 @@ import {
 // (docs/product/RULESET_7_ICE_FOLK.md sections 5.5, 5.6, and 8, with the
 // rulings of section 10).
 
-const CHILLED = { sluggish: false, turnsLeft: 1 } as const;
+const FROZEN = { turnsLeft: 1 } as const;
 
 /**
  * Ice Folk (seat 0, active) pieces against a Chilled target on (5, 3). The
@@ -46,7 +47,7 @@ const against = (
   options: Parameters<typeof iceFieldV7>[1] = {},
 ): GameStateV7 =>
   iceFieldV7(
-    [...attackers, { seat: 1, role, at: at(5, 3), chill: CHILLED, ...target }],
+    [...attackers, { seat: 1, role, at: at(5, 3), frozen: FROZEN, ...target }],
     {
       factions: ["ICE_FOLK", faction],
       techs: { 0: ["SCOUTING", "RAIDING"] },
@@ -82,9 +83,12 @@ describe("Shatter worked examples (section 5.6)", () => {
       { seat: 0, role: "FIGHTER", at: at(4, 4) },
     ]);
     const [first, second] = hits(state, [at(4, 3), at(4, 4)]);
+    // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen defender does not
+    // retaliate (the Chilled Fighter dealt 5 back).
     expect(first?.combat).toMatchObject({
       damageToDefender: 5,
-      damageToAttacker: 5,
+      damageToAttacker: 0,
+      noRetaliationReason: "FROZEN",
       shatters: false,
     });
     expect(second?.combat).toMatchObject({
@@ -95,8 +99,8 @@ describe("Shatter worked examples (section 5.6)", () => {
       noRetaliationReason: "DEFENDER_DIED",
       damageToAttacker: 0,
     });
-    // Unchilled it survives two hits and deals 3 more.
-    const warm = checkedV7({ ...state, chilled: [] });
+    // Not Frozen it survives two hits and deals 3 more.
+    const warm = checkedV7({ ...state, frozen: [] });
     const [, plain] = hits(warm, [at(4, 3), at(4, 4)]);
     expect(plain?.combat).toMatchObject({
       shatters: false,
@@ -148,7 +152,7 @@ describe("Shatter worked examples (section 5.6)", () => {
       [
         { seat: 0, role: "FIGHTER", at: at(4, 7) },
         { seat: 0, role: "FIGHTER", at: at(4, 6) },
-        { seat: 1, role: "FIGHTER", at: at(3, 7), chill: CHILLED },
+        { seat: 1, role: "FIGHTER", at: at(3, 7), frozen: FROZEN },
       ],
       { techs: { 0: [] } },
     );
@@ -157,7 +161,8 @@ describe("Shatter worked examples (section 5.6)", () => {
     expect(first?.combat).toMatchObject({
       fortificationLevel: 2,
       damageToDefender: 3,
-      damageToAttacker: 5,
+      // Ice Folk Freeze: no retaliation from a Frozen defender (5 before).
+      damageToAttacker: 0,
     });
     expect(second?.combat).toMatchObject({
       shatters: false,
@@ -192,14 +197,14 @@ describe("Shatter worked examples (section 5.6)", () => {
     // The section's 15-HP Guard is a 17-HP Guard at 15 HP since revision 20
     // section 6.3.
     const guardId = unitAtV7(walled, at(8, 8)).id;
-    let state = withChillV7(
+    let state = withFrozenUnitsV7(
       checkedV7({
         ...walled,
         units: walled.units.map((unit) =>
           unit.id === guardId ? { ...unit, hp: 15 } : unit,
         ),
       }),
-      [{ at: at(8, 8), sluggish: false, turnsLeft: 1 }],
+      [{ at: at(8, 8), turnsLeft: 1 }],
     );
     const runs = [];
     for (const [from, to] of [
@@ -213,22 +218,24 @@ describe("Shatter worked examples (section 5.6)", () => {
       state = run.state;
     }
     const [first, second, third] = runs;
+    // Ice Folk Freeze: no retaliation from a Frozen defender (7 and 6
+    // before).
     expect(first?.combat).toMatchObject({
       damageToDefender: 4,
-      damageToAttacker: 7,
+      damageToAttacker: 0,
     });
     expect(second?.combat).toMatchObject({
       damageToDefender: 5,
-      damageToAttacker: 6,
+      damageToAttacker: 0,
     });
     expect(third?.combat).toMatchObject({
       shatters: true,
       damageToDefender: 6,
     });
-    // Unchilled the Yeti takes the wounded Guard's open-ground 5 and lives
+    // Not Frozen, the Guard strikes back: the Yeti takes its open-ground 5 and lives
     // (tuning 1, 7r46; with the Walls in the retaliation it took 10, capped
     // at its 9 HP, and died).
-    const warm = checkedV7({ ...(second?.state as GameStateV7), chilled: [] });
+    const warm = checkedV7({ ...(second?.state as GameStateV7), frozen: [] });
     const walked = moveV7(warm, at(6, 9), [at(7, 9)]).state;
     expect(attackV7(walked, at(7, 9), at(8, 8)).combat).toMatchObject({
       shatters: false,
@@ -315,7 +322,8 @@ describe("Shatter worked examples (section 5.6)", () => {
     expect(first?.combat).toMatchObject({
       defenderShieldDamage: 2,
       damageToDefender: 3,
-      damageToAttacker: 3,
+      // Ice Folk Freeze: no retaliation from a Frozen defender (3 before).
+      damageToAttacker: 0,
     });
     expect(second?.combat).toMatchObject({
       shatters: false,
@@ -365,7 +373,7 @@ describe("Shatter worked examples (section 5.6)", () => {
           [{ seat: 0, role: "FIGHTER", at: at(4, 3) }],
           { hp: 1 },
         ),
-        chilled: [],
+        frozen: [],
       });
       expect(kindsV7(hits(warm, [at(4, 3)])[0]?.events ?? [])).toContain(
         "EXPLOSION_RESOLVED",
@@ -380,14 +388,14 @@ describe("Shatter worked examples (section 5.6)", () => {
       // Tuning 1 (7r46): without Brittle, whose Breach ignores the Walls.
       attackerTechs: withoutTechsV7("ICE_FOLK", "EXPLOSIVES"),
     });
-    const state = withChillV7(
+    const state = withFrozenUnitsV7(
       checkedV7({
         ...walled,
         units: walled.units.map((unit) =>
           unit.at.x === 8 && unit.at.y === 8 ? { ...unit, hp: 3 } : unit,
         ),
       }),
-      [{ at: at(8, 8), sluggish: false, turnsLeft: 1 }],
+      [{ at: at(8, 8), turnsLeft: 1 }],
     );
     expect(attackV7(state, at(8, 7), at(8, 8)).combat).toMatchObject({
       shatters: true,
@@ -450,12 +458,14 @@ describe("Shatter exact points (section 5.5)", () => {
   });
 
   it("only attacks: an Ice Folk unit's retaliation never shatters", () => {
-    // A Chilled Human Fighter at 7 HP attacks a Yeti; the Yeti's
-    // retaliation (4 at Defense 1.5, `pulp_wars-7g3.7`) leaves it inside the
-    // window but it does not shatter.
+    // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen unit cannot attack, so
+    // only an unfrozen attacker meets a retaliation, and the Shatter test
+    // needs a Frozen defender. A Human Fighter at 7 HP attacks a Yeti; the
+    // Yeti's retaliation (4 at Defense 1.5) leaves it at 3 and it does not
+    // shatter.
     const state = iceFieldV7(
       [
-        { seat: 1, role: "FIGHTER", at: at(4, 3), hp: 7, chill: CHILLED },
+        { seat: 1, role: "FIGHTER", at: at(4, 3), hp: 7 },
         { seat: 0, role: "FIGHTER", at: at(5, 3) },
       ],
       { activeSeat: 1 },
@@ -468,6 +478,18 @@ describe("Shatter exact points (section 5.5)", () => {
       attackerDies: false,
     });
     expect(run.attacker?.hp).toBe(3);
+    // The same Fighter Frozen is offered no attack at all.
+    const frozen = checkedV7({
+      ...state,
+      frozen: [{ unitId: unitAtV7(state, at(4, 3)).id, turnsLeft: 1 }],
+    });
+    expect(
+      offeredV7(frozen, "ATTACK").filter(
+        (command) =>
+          "unitId" in command &&
+          command.unitId === unitAtV7(state, at(4, 3)).id,
+      ),
+    ).toEqual([]);
   });
 
   it("the threshold is the attacker's owner's: 3, or 4 with Brittle", () => {
@@ -515,7 +537,7 @@ describe("Shatter exact points (section 5.5)", () => {
           at: at(5, 3),
           form: "EMBARKED",
           hp: 6,
-          chill: CHILLED,
+          frozen: FROZEN,
         },
       ],
       { water: [at(5, 3)] },
@@ -536,7 +558,7 @@ describe("Shatter exact points (section 5.5)", () => {
     const bitten = iceFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(4, 3) },
-        { seat: 1, role: "FIGHTER", at: at(5, 3), hp: 8, chill: CHILLED },
+        { seat: 1, role: "FIGHTER", at: at(5, 3), hp: 8, frozen: FROZEN },
         { seat: 2, role: "GUARD", at: at(9, 1) },
       ],
       { factions: ["ICE_FOLK", "ORIGINAL", "UNDEAD"] },
@@ -568,7 +590,7 @@ describe("Shatter exact points (section 5.5)", () => {
       cause: "SHATTER",
     });
     expect(unitAtV7(rose.state, at(5, 3)).role).toBe("GUARD");
-    expect(rose.state.chilled).toEqual([]);
+    expect(rose.state.frozen).toEqual([]);
   });
 
   it("follows the event order of section 8: combat, deaths (Shatter without a Grave), then the advance", () => {
@@ -586,7 +608,7 @@ describe("Shatter exact points (section 5.5)", () => {
     ]);
   });
 
-  it("assumeTargetChilled previews the attack as if the target were Chilled", () => {
+  it("assumeTargetFrozen previews the attack as if the target were Chilled", () => {
     const state = iceFieldV7([
       { seat: 0, role: "SWORDSMAN", at: at(4, 3) },
       { seat: 1, role: "MARKSMAN", at: at(5, 3) },
@@ -597,12 +619,12 @@ describe("Shatter exact points (section 5.5)", () => {
     expect(queryCombatPreviewV7(view, attacker, target)?.shatters).toBe(false);
     expect(
       queryCombatPreviewV7(view, attacker, target, {
-        assumeTargetChilled: true,
+        assumeTargetFrozen: true,
       })?.shatters,
     ).toBe(true);
     expect(
       queryCombatPreviewV7(state, activeIdV7(state), attacker, target, {
-        assumeTargetChilled: true,
+        assumeTargetFrozen: true,
       })?.shatters,
     ).toBe(true);
     // The command itself is unaffected.

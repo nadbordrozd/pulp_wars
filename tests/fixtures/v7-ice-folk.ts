@@ -17,7 +17,8 @@ import {
 import { activeIdV7 } from "./v7-revision20";
 
 /**
- * Ice Folk rule fixtures (docs/product/RULESET_7_ICE_FOLK.md) on top of the
+ * Ice Folk rule fixtures (docs/product/RULESET_7_ICE_FOLK.md, and Ice Folk
+ * Freeze, RULESET_7_CURRENT.md section 21) on top of the
  * revision-20 field (through the Martian field, so Martian pieces get their
  * Shields): a two-seat 11 x 11 board, seat 0 capital (8, 8) with territory
  * x 7-9, y 7-9; seat 1 capital (2, 8) with territory x 1-3, y 7-9; villages
@@ -26,11 +27,8 @@ import { activeIdV7 } from "./v7-revision20";
  */
 
 export interface IcePieceV7 extends MartianPieceV7 {
-  /** A Chill entry for the unit. */
-  readonly chill?: {
-    readonly sluggish: boolean;
-    readonly turnsLeft: 0 | 1 | 2;
-  };
+  /** A Frozen entry for the unit (Ice Folk Freeze, `pulp_wars-w49.37`). */
+  readonly frozen?: { readonly turnsLeft: 1 | 2 };
 }
 
 export interface IceFieldOptionsV7 extends MartianFieldOptionsV7 {
@@ -47,41 +45,39 @@ export function iceFieldV7(
   });
   return checkedV7({
     ...state,
-    chilled: pieces
-      .filter((piece) => piece.chill !== undefined)
+    frozen: pieces
+      .filter((piece) => piece.frozen !== undefined)
       .map((piece) => ({
         unitId: unitAtV7(state, piece.at).id,
-        sluggish: piece.chill?.sluggish ?? false,
-        turnsLeft: piece.chill?.turnsLeft ?? 2,
+        turnsLeft: piece.frozen?.turnsLeft ?? 1,
       }))
       .sort((left, right) => left.unitId - right.unitId),
   });
 }
 
-/** The Chill entry of the unit on `where`, or undefined. */
-export function chillAtV7(
+/** The Frozen entry of the unit on `where`, or undefined. */
+export function frozenAtV7(
   state: GameStateV7,
   where: CoordV7,
-): GameStateV7["chilled"][number] | undefined {
+): GameStateV7["frozen"][number] | undefined {
   const unit = unitAtV7(state, where);
-  return state.chilled.find((entry) => entry.unitId === unit.id);
+  return state.frozen.find((entry) => entry.unitId === unit.id);
 }
 
-/** The Chill entry of a unit by ID, or undefined. */
-export function chillOfUnitV7(
+/** The Frozen entry of a unit by ID, or undefined. */
+export function frozenOfUnitV7(
   state: GameStateV7,
   unit: Pick<UnitStateV7, "id">,
-): GameStateV7["chilled"][number] | undefined {
-  return state.chilled.find((entry) => entry.unitId === unit.id);
+): GameStateV7["frozen"][number] | undefined {
+  return state.frozen.find((entry) => entry.unitId === unit.id);
 }
 
-/** Sets the Chill entries of the units on the given tiles. */
-export function withChillV7(
+/** Sets the Frozen entries of the units on the given tiles. */
+export function withFrozenUnitsV7(
   state: GameStateV7,
   entries: readonly {
     readonly at: CoordV7;
-    readonly sluggish: boolean;
-    readonly turnsLeft: 0 | 1 | 2;
+    readonly turnsLeft: 1 | 2;
   }[],
 ): GameStateV7 {
   const ids = new Map(
@@ -89,11 +85,10 @@ export function withChillV7(
   );
   return checkedV7({
     ...state,
-    chilled: [
-      ...state.chilled.filter((entry) => !ids.has(entry.unitId)),
+    frozen: [
+      ...state.frozen.filter((entry) => !ids.has(entry.unitId)),
       ...[...ids].map(([unitId, entry]) => ({
         unitId,
-        sluggish: entry.sluggish,
         turnsLeft: entry.turnsLeft,
       })),
     ].sort((left, right) => left.unitId - right.unitId),

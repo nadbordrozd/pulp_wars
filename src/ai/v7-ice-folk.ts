@@ -2,11 +2,12 @@ import type { PlayerId, UnitId } from "../engine/model/ids";
 import {
   BOLAS_RANGE_V7,
   COLD_SNAP_RANGE_V7,
+  FROST_BOLT_RANGE_V7,
   SHATTER_HP_V7,
   effectiveRoleRuleV7,
   factionTreeV7,
   technologyCapabilitiesV7,
-  unitIsSluggishV7,
+  unitIsFrozenV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
@@ -23,7 +24,7 @@ import { policyUnitFactionV7 } from "./v7-martian";
  * from the PRNG, reads authoritative state, or depends on elapsed time. The
  * policy calls these helpers only in a match with an Ice Folk seat
  * (`iceFolkMatchForPolicyV7`), or through facts only such a match has (a
- * Chill entry, a Snow or Blizzard tile flag, an Ice Folk unit's ability),
+ * Frozen entry, a Snow or Blizzard tile flag, an Ice Folk unit's ability),
  * so decisions in every other match stay byte-identical.
  *
  * Values are in the policy's usual units: a unit is worth its cost x 4 plus
@@ -43,7 +44,7 @@ export const COLD_SNAP_PRIORITY_V7 = 1295;
 export const BOLAS_SHATTER_PRIORITY_V7 = 1293;
 /** A Bolas on a hostile unit that can reach an own unit next turn. */
 export const BOLAS_SLOW_PRIORITY_V7 = 1186;
-/** A non-lethal hit that leaves a Chilled unit for another unit's Shatter. */
+/** A non-lethal hit that leaves a Frozen unit for another unit's Shatter. */
 export const SHATTER_SETUP_PRIORITY_V7 = 1179;
 /**
  * The order of the chips (900): Snow Hunters first, then Mammoths, then the
@@ -81,14 +82,14 @@ export const ICE_SIGNATURE_RESEARCH_CITIES_V7 = 2;
 
 // --- Values ---------------------------------------------------------------
 
-/** Cold Snap: per target that becomes sluggish, and per refreshed target. */
+/** Cold Snap: per target newly Frozen, and per renewed target. */
 export const COLD_SNAP_FREEZE_VALUE_V7 = 6;
 export const COLD_SNAP_REFRESH_VALUE_V7 = 3;
 /** A Shatter kill: no Grave, no death blast. */
 export const SHATTER_KILL_VALUE_V7 = 4;
 /** A Mammoth attack that tramples Field Defense. */
 export const TRAMPLE_VALUE_V7 = 8;
-/** A Sweep flank hit that leaves a Chilled unit inside the window. */
+/** A Sweep flank hit that leaves a Frozen unit inside the window. */
 export const FLANK_SETUP_VALUE_V7 = 6;
 /** A Boulder Yeti hit: per fortification level ignored. */
 export const BOULDER_FORTIFICATION_VALUE_V7 = 3;
@@ -145,11 +146,13 @@ export const MAMMOTH_TARGET_BONUS_V7 = 6;
 /** Against the Ice Folk: a fragile unit ending a Move on hostile Snow. */
 export const FRAGILE_SNOW_COST_V7 = 3;
 /**
- * Against the Ice Folk: a visible Witch reaches this far with Cold Snap next
- * turn (her Glide inside her own Blizzard, then range 2); a Sled with Bolas
- * after its Move.
+ * Against the Ice Folk: a visible Witch reaches this far with Cold Snap or
+ * a Frost Bolt next turn (her Glide inside her own Blizzard, then the
+ * Frost Bolt's range 2; Ice Folk Freeze, `pulp_wars-w49.37`); a Sled with
+ * Bolas after its Move.
  */
-export const WITCH_CHILL_REACH_V7 = COLD_SNAP_RANGE_V7 + 2;
+export const WITCH_CHILL_REACH_V7 =
+  Math.max(COLD_SNAP_RANGE_V7, FROST_BOLT_RANGE_V7) + 2;
 export const SLED_CHILL_REACH_V7 = BOLAS_RANGE_V7 + 2;
 
 // --- Gate and facts -------------------------------------------------------
@@ -162,11 +165,8 @@ export function iceFolkMatchForPolicyV7(view: PlayerViewV7): boolean {
 /** Per-view public Ice Folk facts. */
 export interface IceFolkFactsV7 {
   readonly viewerIceFolk: boolean;
-  /** Public Chill entries of the visible units. */
-  readonly chill: ReadonlyMap<
-    UnitId,
-    { readonly sluggish: boolean; readonly turnsLeft: number }
-  >;
+  /** Public Frozen entries of the visible units (Ice Folk Freeze). */
+  readonly frozen: ReadonlyMap<UnitId, { readonly turnsLeft: number }>;
   readonly iceOwners: ReadonlySet<PlayerId>;
   /**
    * The Mind Control revision (section 8): visible land-form units of the
@@ -190,11 +190,8 @@ export function iceFolkFactsV7(
   view: PlayerViewV7,
   isHostile: (ownerId: PlayerId) => boolean,
 ): IceFolkFactsV7 {
-  const chill = new Map<
-    UnitId,
-    { readonly sluggish: boolean; readonly turnsLeft: number }
-  >();
-  for (const entry of view.chilled) chill.set(entry.unitId, entry);
+  const frozen = new Map<UnitId, { readonly turnsLeft: number }>();
+  for (const entry of view.frozen) frozen.set(entry.unitId, entry);
   const iceOwners = new Set<PlayerId>(
     view.players
       .filter((player) => player.faction === "ICE_FOLK")
@@ -249,7 +246,7 @@ export function iceFolkFactsV7(
   }
   return {
     viewerIceFolk: view.viewer.faction === "ICE_FOLK",
-    chill,
+    frozen,
     iceOwners,
     iceUnitIds,
     visibleWitches,
@@ -291,18 +288,19 @@ export function shatterThresholdForPolicyV7(
   return facts.thresholdByOwner.get(ownerId) ?? SHATTER_HP_V7;
 }
 
-/** Chilled now (an entry with at least one turn left). */
-export function chilledForPolicyV7(
+/** Frozen now (Ice Folk Freeze: the unit has an entry). */
+export function frozenForPolicyV7(
   facts: IceFolkFactsV7,
   unitId: UnitId,
 ): boolean {
-  return (facts.chill.get(unitId)?.turnsLeft ?? 0) >= 1;
+  return facts.frozen.has(unitId);
 }
 
 /**
  * Whether the viewer's unit can be shattered during the next enemy turn:
- * Chilled through its own End Turn (two turns left), or within the reach of
- * a visible hostile Witch's Cold Snap or Sled's Bolas next turn. Never a
+ * Frozen through its own End Turn (two turns left), or within the reach of
+ * a visible hostile Witch's Cold Snap or Frost Bolt or Sled's Bolas next
+ * turn (a Frozen Witch or Sled reaches nothing). Never a
  * `JUGGERNAUT`-role unit, and only in land form.
  */
 export function shatterableNextTurnV7(
@@ -312,16 +310,15 @@ export function shatterableNextTurnV7(
   at: CoordV7,
 ): boolean {
   if (unit.form !== "LAND" || unit.role === "JUGGERNAUT") return false;
-  if ((facts.chill.get(unit.id)?.turnsLeft ?? 0) >= 2) return true;
+  if ((facts.frozen.get(unit.id)?.turnsLeft ?? 0) >= 2) return true;
   const reach = (source: PublicUnitV7, range: number, extra: number): boolean =>
-    chebyshev(source.at, at) <=
-    range + (unitIsSluggishV7(view, source) ? 0 : extra);
+    !unitIsFrozenV7(view, source) && chebyshev(source.at, at) <= range + extra;
   return (
     facts.hostileWitches.some((witch) =>
       reach(
         witch,
-        COLD_SNAP_RANGE_V7,
-        WITCH_CHILL_REACH_V7 - COLD_SNAP_RANGE_V7,
+        FROST_BOLT_RANGE_V7,
+        WITCH_CHILL_REACH_V7 - FROST_BOLT_RANGE_V7,
       ),
     ) ||
     facts.hostileSleds.some((sled) =>
@@ -585,7 +582,7 @@ export function iceFolkResearchV7(
     (ownedCities >= ICE_SIGNATURE_RESEARCH_CITIES_V7 || woundedAtHome)
   )
     return towards("DEEP_WINTER", ICE_RESEARCH_PRIORITY_V7, 12);
-  const chillSource = view.units.some(
+  const freezeSource = view.units.some(
     (unit) =>
       unit.ownerId === view.viewer.id &&
       unit.form === "LAND" &&
@@ -593,10 +590,11 @@ export function iceFolkResearchV7(
         (ability) =>
           ability === "BOLAS" ||
           ability === "COLD_SNAP" ||
+          ability === "FROST_BOLT" ||
           ability === "COLD_AURA",
       ),
   );
-  if (deepWinter && chillSource) {
+  if (deepWinter && freezeSource) {
     const brittle = towards("BRITTLE", ICE_RESEARCH_PRIORITY_V7, 10);
     if (brittle !== null) return brittle;
   }
@@ -640,14 +638,14 @@ export interface IceFolkPolicyToolsV7 {
   threatens(hostile: PublicUnitV7, at: CoordV7): boolean;
   /**
    * Own units other than `throwerId` whose offered attack on `targetId`
-   * shatters it once Chilled (`previewBolasV7.shatterSetups`).
+   * shatters it once Frozen (`previewBolasV7.shatterSetups`).
    */
   shatterSetups(targetId: UnitId, throwerId: UnitId): readonly UnitId[];
 }
 
 /**
  * `COLD_SNAP` (rule 3): whenever it is offered, first in the turn; worth
- * each target, a new freeze (sluggish) more than a refresh.
+ * each target, a new freeze more than a renewal.
  */
 export function coldSnapScoreV7(
   tools: IceFolkPolicyToolsV7,
@@ -667,7 +665,7 @@ export function coldSnapScoreV7(
     )
       continue;
     targets += 1;
-    strategic += tools.facts.chill.has(unit.id)
+    strategic += tools.facts.frozen.has(unit.id)
       ? COLD_SNAP_REFRESH_VALUE_V7
       : COLD_SNAP_FREEZE_VALUE_V7;
   }
@@ -676,25 +674,28 @@ export function coldSnapScoreV7(
 }
 
 /**
- * `THROW_BOLAS` (section 12, the Bolas rule): on the visible hostile unit
- * that some own unit's offered attack would shatter once Chilled, the most
- * valuable first (1293); else on the hostile unit not yet Chilled that can
- * reach and attack an own unit next turn, the highest projected damage first
- * (1186), unless the Sled can kill something itself; else none. Never on a
- * unit that is Chilled already or that an own Witch's offered Cold Snap
- * covers this turn.
+ * `THROW_BOLAS` (section 12, the Bolas rule), and, with the same rule, Ice
+ * Folk Freeze's `FROST_BOLT` (`pulp_wars-w49.37`; basic scoring, not tuned):
+ * on the visible hostile unit that some own unit's offered attack would
+ * shatter once Frozen, the most valuable first (1293); else on the hostile
+ * unit not yet Frozen that can reach and attack an own unit next turn, the
+ * highest projected damage first (1186), unless the thrower can kill
+ * something itself; else none. Never on a unit that is Frozen already or
+ * that an own Witch's offered Cold Snap covers this turn (a Frost Bolt is
+ * never covered by its own Witch's Cold Snap: she uses one of the two).
  */
 export function bolasScoreV7(
   tools: IceFolkPolicyToolsV7,
-  command: Extract<CommandV7, { kind: "THROW_BOLAS" }>,
+  command: Extract<CommandV7, { kind: "THROW_BOLAS" | "FROST_BOLT" }>,
   sledKills: boolean,
 ): IceFolkScoreV7 {
   const { view, facts } = tools;
   const target = tools.unit(command.targetUnitId);
-  if (target === undefined || chilledForPolicyV7(facts, target.id))
+  if (target === undefined || frozenForPolicyV7(facts, target.id))
     return NOT_A_CANDIDATE_V7;
   const covered = tools.commands.some((offered) => {
-    if (offered.kind !== "COLD_SNAP") return false;
+    if (offered.kind !== "COLD_SNAP" || offered.unitId === command.unitId)
+      return false;
     const witch = tools.unit(offered.unitId);
     return (
       witch !== undefined &&

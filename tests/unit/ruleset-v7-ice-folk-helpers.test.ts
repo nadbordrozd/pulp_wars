@@ -8,10 +8,9 @@ import {
   effectiveRoleRuleV7,
   primaryActionBlockedAfterMoveV7,
   roleMechanicsV7,
-  sluggishUnitMovedV7,
   terrainStopsMoveV7,
   unitIsMountainBornV7,
-  unitIsSluggishV7,
+  unitIsFrozenV7,
   unitMayActAfterMoveV7,
   unitMayEnterMountainV7,
   type FactionIdV7,
@@ -41,8 +40,8 @@ const unitOf = (role: UnitRoleIdV7, moved = false) => ({
   activation: { moved },
 });
 
-describe("unitMayActAfterMoveV7 (section 5.3)", () => {
-  it("equals the role flag for every role of every faction without a Chill entry", () => {
+describe("unitMayActAfterMoveV7 (section 21.3)", () => {
+  it("equals the role flag for every role of every faction without a Frozen entry", () => {
     for (const faction of FACTION_IDS_V7)
       for (const role of UNIT_ROLE_IDS_V7) {
         const roster = rosterOf(faction);
@@ -50,10 +49,10 @@ describe("unitMayActAfterMoveV7 (section 5.3)", () => {
           role,
           faction,
         ).mayUsePrimaryActionAfterMove;
-        expect(unitIsSluggishV7(roster, unitOf(role)), role).toBe(false);
+        expect(unitIsFrozenV7(roster, unitOf(role)), role).toBe(false);
         expect(unitMayActAfterMoveV7(roster, unitOf(role)), role).toBe(flag);
         expect(
-          unitMayActAfterMoveV7({ ...roster, chilled: [] }, unitOf(role)),
+          unitMayActAfterMoveV7({ ...roster, frozen: [] }, unitOf(role)),
         ).toBe(flag);
         expect(
           primaryActionBlockedAfterMoveV7(roster, unitOf(role, true)),
@@ -61,42 +60,29 @@ describe("unitMayActAfterMoveV7 (section 5.3)", () => {
         expect(primaryActionBlockedAfterMoveV7(roster, unitOf(role))).toBe(
           false,
         );
-        expect(sluggishUnitMovedV7(roster, unitOf(role, true))).toBe(false);
       }
   });
 
-  it("a sluggish entry forbids acting after a Move; a non-sluggish entry does not", () => {
+  it("a Frozen entry (Ice Folk Freeze, `pulp_wars-w49.37`) forbids acting after a Move; another unit's entry does not", () => {
     for (const faction of FACTION_IDS_V7) {
-      const sluggish = {
+      const frozen = {
         ...rosterOf(faction),
-        chilled: [{ unitId: 7, sluggish: true }],
-      };
-      const frosted = {
-        ...rosterOf(faction),
-        chilled: [{ unitId: 7, sluggish: false }],
+        frozen: [{ unitId: 7 }],
       };
       for (const role of UNIT_ROLE_IDS_V7) {
         const flag = effectiveRoleRuleV7(
           role,
           faction,
         ).mayUsePrimaryActionAfterMove;
-        expect(unitIsSluggishV7(sluggish, unitOf(role))).toBe(true);
-        expect(unitMayActAfterMoveV7(sluggish, unitOf(role))).toBe(false);
+        expect(unitIsFrozenV7(frozen, unitOf(role))).toBe(true);
+        expect(unitMayActAfterMoveV7(frozen, unitOf(role))).toBe(false);
         expect(
-          primaryActionBlockedAfterMoveV7(sluggish, unitOf(role, true)),
+          primaryActionBlockedAfterMoveV7(frozen, unitOf(role, true)),
         ).toBe(true);
-        // A sluggish unit that has not moved acts as usual.
-        expect(primaryActionBlockedAfterMoveV7(sluggish, unitOf(role))).toBe(
-          false,
+        expect(unitIsFrozenV7(frozen, { ...unitOf(role), id: 8 })).toBe(false);
+        expect(unitMayActAfterMoveV7(frozen, { ...unitOf(role), id: 8 })).toBe(
+          flag,
         );
-        expect(sluggishUnitMovedV7(sluggish, unitOf(role, true))).toBe(true);
-        expect(sluggishUnitMovedV7(sluggish, unitOf(role))).toBe(false);
-        expect(unitMayActAfterMoveV7(frosted, unitOf(role))).toBe(flag);
-        expect(sluggishUnitMovedV7(frosted, unitOf(role, true))).toBe(false);
-        // Another unit's entry does not matter.
-        expect(
-          unitMayActAfterMoveV7(sluggish, { ...unitOf(role), id: 8 }),
-        ).toBe(flag);
       }
     }
   });
@@ -233,8 +219,8 @@ describe("source audits", () => {
   // role-level tables, which describe a role, not a unit: the recruitment
   // table of the DOM ("Can't attack after moving.") and the unit glossary's
   // "Slow to strike" trait (bead pulp_wars-2yc.39: `roleTraitGlossaryIdsV7`
-  // takes a role and a faction and no unit; a sluggish unit is explained by
-  // its Chill status line, not by a trait).
+  // takes a role and a faction and no unit; a Frozen unit is explained by
+  // its Frozen status line, not by a trait).
   it("reads the role flag only in the helper and in the role-level tables", () => {
     const reads: Record<string, number> = {};
     for (const path of RUNTIME_V7_SOURCES) {

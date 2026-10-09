@@ -52,14 +52,14 @@ import {
   unitCapabilitiesV7,
   unitCapacitySlotsV7,
   unitFactionV7,
-  CHILL_TURNS_V7,
   unitFliesV7,
   unitGrowsV7,
   unitIsMountainBornV7,
-  unitIsSluggishV7,
+  unitIsFrozenV7,
+  STAMPEDE_DAMAGE_V7,
+  STAMPEDE_RANGE_V7,
   unitMayEnterMountainV7,
   primaryActionBlockedAfterMoveV7,
-  sluggishUnitMovedV7,
   kaboomReadyV7,
   unitMovementModeV7,
   unitRoleMechanicsV7,
@@ -177,16 +177,18 @@ import {
   unitAvoidsForeignSitesV7,
   blizzardHalvedDamageV7,
   blizzardProtectsV7,
-  canBeChilledV7,
-  chillOfV7,
+  canBeFrozenV7,
   coldSnapTargetsV7,
+  frozenTurnsForV7,
+  frozenUnitNamedV7,
   hiddenBlizzardPossibleV7,
-  isChilledV7,
+  isFrozenV7,
   isIceFolkLandUnitV7,
   matchHasIceFolkV7,
   sweepFlankTilesV7,
   unitOwnerIsIceFolkV7,
   withinBolasRangeV7,
+  withinFrostBoltRangeV7,
 } from "./ice-folk";
 import { freezeSetV7, unitFreezesRingV7, type FreezeSetV7 } from "./ice";
 import {
@@ -260,6 +262,13 @@ import {
   type GiantTileFactsV7,
 } from "./giants";
 import { laidEggHpV7, laidEggTurnsV7, publicNestTilesV7 } from "./eggs";
+import {
+  stampedeActorRejectionV7,
+  stampedeLineV7,
+  stampedePathLegalV7,
+  stampedeTilesV7,
+  type StampedeTileFactsV7,
+} from "./stampede";
 import type {
   CombatPreviewV7,
   CombatSplashEntryV7,
@@ -302,6 +311,7 @@ import {
   allOwnedUnitsV7,
   barricadeAtV7,
   barricadesOfV7,
+  moundAtV7,
   publicUnitHasTerrainCoverV7,
   tileOccupiedV7,
 } from "./units";
@@ -546,7 +556,7 @@ class IncrementalPublicCommandWorkV7 implements PublicCommandWorkV7 {
           this.finish(this.candidates);
           continue;
         }
-        appendPublicUnitCommandsV7(this.view, unit, this.candidates);
+        appendOfferedUnitCommandsV7(this.view, unit, this.candidates);
       }
       this.index += 1;
       operations += 1;
@@ -939,6 +949,30 @@ export function queryLandingPreviewV7(
   };
 }
 
+/**
+ * The unit commands of `unit`. Ice Folk Freeze (`pulp_wars-w49.37`, section
+ * 21.3): every command that names an own Frozen unit (other than Promote,
+ * Disband, and Wait), or tosses or carries one, is withheld, exactly as
+ * the reducer refuses it (`UNIT_FROZEN`).
+ */
+function appendOfferedUnitCommandsV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+  candidates: CommandV7[],
+): void {
+  const start = candidates.length;
+  appendPublicUnitCommandsV7(view, unit, candidates);
+  // A retained view captured before Ice Folk Freeze has no `frozen` list.
+  const lookup: { readonly frozen?: readonly unknown[] } = view;
+  if ((lookup.frozen?.length ?? 0) === 0 || candidates.length === start) return;
+  const kept = candidates
+    .splice(start)
+    .filter(
+      (command) => frozenUnitNamedV7(view, view.viewer.id, command) === null,
+    );
+  candidates.push(...kept);
+}
+
 function appendPublicUnitCommandsV7(
   view: PlayerViewV7,
   unit: PlayerViewV7["units"][number],
@@ -1077,10 +1111,16 @@ function appendPublicUnitCommandsV7(
         });
   }
   // The Ice Folk revision: the Sled's Bolas (every legal target, in
-  // target-ID order) and the Ice Witch's Cold Snap (with a target).
+  // target-ID order) and the Ice Witch's Cold Snap (with a target). Ice
+  // Folk Freeze (`pulp_wars-w49.37`): her Frost Bolt (every legal target)
+  // and the unmoved Mammoth's Stampede (every open path end).
   if (!overrun && primaryReady && unit.form === "LAND") {
     if (rule.abilities.includes("BOLAS"))
-      for (const target of publicBolasTargetsV7(view, unit))
+      for (const target of publicSingleFreezeTargetsV7(
+        view,
+        unit,
+        withinBolasRangeV7,
+      ))
         candidates.push({
           kind: "THROW_BOLAS",
           unitId: unit.id,
@@ -1091,6 +1131,20 @@ function appendPublicUnitCommandsV7(
       coldSnapTargetsV7(view, unit, view.units).length > 0
     )
       candidates.push({ kind: "COLD_SNAP", unitId: unit.id });
+    if (rule.abilities.includes("FROST_BOLT"))
+      for (const target of publicSingleFreezeTargetsV7(
+        view,
+        unit,
+        withinFrostBoltRangeV7,
+      ))
+        candidates.push({
+          kind: "FROST_BOLT",
+          unitId: unit.id,
+          targetUnitId: target.id,
+        });
+    if (stampedeActorRejectionV7(view, unit) === null)
+      for (const at of publicStampedeTargetsV7(view, unit))
+        candidates.push({ kind: "STAMPEDE", unitId: unit.id, at });
     // The frozen sea (naval branch section 8.4): Freeze, for every `at`
     // with a non-empty freeze set (one for the Ice Witch: her own tile).
     if (rule.abilities.includes("FREEZE"))
@@ -1111,7 +1165,7 @@ function appendPublicUnitCommandsV7(
       rule.abilities.includes("BOMB_RUN") &&
       !unit.activation.moved &&
       !primaryUsedForQuery(unit) &&
-      !unitIsSluggishV7(view, unit)
+      !unitIsFrozenV7(view, unit)
     )
       for (const target of publicBombTargetsV7(view, unit))
         for (const to of publicBombLandingsV7(view, unit, target))
@@ -1184,7 +1238,7 @@ function appendPublicUnitCommandsV7(
       unit.activation,
       unitRoleMechanicsV7(view, unit).kaboomAfterAttack,
     ) &&
-    !sluggishUnitMovedV7(view, unit) &&
+    !unitIsFrozenV7(view, unit) &&
     unit.form === "LAND" &&
     rule.abilities.includes("KABOOM")
   )
@@ -1276,7 +1330,7 @@ function appendPublicUnitCommandsV7(
     !unitFliesV7(view, unit) &&
     !crashed &&
     !primaryUsedForQuery(unit) &&
-    !sluggishUnitMovedV7(view, unit) &&
+    !unitIsFrozenV7(view, unit) &&
     tile?.explored === true &&
     tile.improvement !== null &&
     tile.territoryOwnerId !== null &&
@@ -3159,8 +3213,8 @@ function publicTendTargetsV7(
         (target.hp < target.maxHp ||
           plagued.has(target.id) ||
           bitten.has(target.id) ||
-          // The Ice Folk revision section 10.5: Tend Wounded cures Chill.
-          isChilledV7(view.chilled, target.id)) &&
+          // Ice Folk Freeze (`pulp_wars-w49.37`): Tend Wounded thaws.
+          isFrozenV7(view.frozen, target.id)) &&
         !target.activation.tendedThisTurn &&
         chebyshev(captain.at, target.at) === 1,
     )
@@ -3175,8 +3229,8 @@ export interface TendWoundedPreviewV7 {
     readonly hpAfter: number;
     readonly curedPlague: boolean;
     readonly curedBitten: boolean;
-    /** The Ice Folk revision: the target was Chilled and becomes thawing. */
-    readonly curedChill: boolean;
+    /** Ice Folk Freeze (`pulp_wars-w49.37`): the target was Frozen and thaws. */
+    readonly curedFrozen: boolean;
   }[];
   /**
    * Dwarf crowd control (`pulp_wars-w49.33`): an Engineer's Repair of the
@@ -3244,7 +3298,7 @@ export function previewTendWoundedV7(
         hpAfter: target.hp + amount,
         curedPlague: plagued.has(target.id),
         curedBitten: bitten.has(target.id),
-        curedChill: isChilledV7(view.chilled, target.id),
+        curedFrozen: isFrozenV7(view.frozen, target.id),
       };
     }),
     barricades: barricadeRepairsV7(view, barricadesOfV7(view), captain),
@@ -3252,37 +3306,45 @@ export function previewTendWoundedV7(
 }
 
 /**
- * The Ice Folk revision section 7.3: the legal Bolas targets of an own Sled
- * (land form, primary action ready): every visible hostile unit that can be
- * Chilled within Chebyshev 1 to 2, in unit-ID order.
+ * The Ice Folk revision section 21.9 (and Ice Folk Freeze, section 21.6):
+ * the legal targets of an own Sled's Bolas or Ice Witch's Frost Bolt (land
+ * form, primary action ready): every visible hostile unit that can be
+ * Frozen within the reach (Chebyshev 1 to 2), in unit-ID order.
  */
-function publicBolasTargetsV7(
+function publicSingleFreezeTargetsV7(
   view: PlayerViewV7,
-  sled: PlayerViewV7["units"][number],
+  source: PlayerViewV7["units"][number],
+  inRange: (from: CoordV7, to: CoordV7) => boolean,
 ): readonly PlayerViewV7["units"][number][] {
   return view.units
     .filter(
       (target) =>
-        target.id !== sled.id &&
-        canBeChilledV7(view, sled.ownerId, target) &&
-        withinBolasRangeV7(sled.at, target.at),
+        target.id !== source.id &&
+        canBeFrozenV7(view, source.ownerId, target) &&
+        inRange(source.at, target.at),
     )
     .sort((left, right) => left.id - right.id);
 }
 
-/** The Ice Folk revision section 11: the preview of an offered Bolas. */
+/**
+ * The preview of an offered Bolas or Frost Bolt (Ice Folk Freeze,
+ * `pulp_wars-w49.37`).
+ */
 export interface BolasPreviewV7 {
   readonly unitId: UnitId;
   readonly targetUnitId: UnitId;
-  /** The target has no Chill entry, so the Bolas is a new freeze. */
-  readonly becomesSluggish: boolean;
+  /** The target is already Frozen (the freeze is renewed). */
+  readonly alreadyFrozen: boolean;
+  /** The target's `turnsLeft` after the freeze. */
   readonly turnsLeft: number;
   /**
    * The viewer's own units whose currently offered attack on the target
-   * would shatter it once it is Chilled, in unit-ID order.
+   * would shatter it once it is Frozen, in unit-ID order.
    */
   readonly shatterSetups: readonly UnitId[];
 }
+/** The preview of an offered Frost Bolt (the Bolas preview's shape). */
+export type FrostBoltPreviewV7 = BolasPreviewV7;
 
 /** Null unless that `THROW_BOLAS` is offered; otherwise exact. */
 export function previewBolasV7(
@@ -3290,33 +3352,55 @@ export function previewBolasV7(
   unitId: UnitId,
   targetUnitId: UnitId,
 ): BolasPreviewV7 | null {
+  return previewSingleFreezeV7(view, "THROW_BOLAS", unitId, targetUnitId);
+}
+
+/** Null unless that `FROST_BOLT` is offered; otherwise exact. */
+export function previewFrostBoltV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  targetUnitId: UnitId,
+): FrostBoltPreviewV7 | null {
+  return previewSingleFreezeV7(view, "FROST_BOLT", unitId, targetUnitId);
+}
+
+function previewSingleFreezeV7(
+  view: PlayerViewV7,
+  kind: "THROW_BOLAS" | "FROST_BOLT",
+  unitId: UnitId,
+  targetUnitId: UnitId,
+): BolasPreviewV7 | null {
   const commands = queryPlayerCommandsV7(view);
   if (
     !commands.some(
       (command) =>
-        command.kind === "THROW_BOLAS" &&
+        command.kind === kind &&
         command.unitId === unitId &&
         command.targetUnitId === targetUnitId,
     )
   )
     return null;
+  const target = view.units.find((unit) => unit.id === targetUnitId);
+  if (target === undefined) return null;
   const shatterSetups = commands
     .flatMap((command) =>
       command.kind === "ATTACK" &&
       command.targetUnitId === targetUnitId &&
       command.unitId !== unitId &&
       queryCombatPreviewV7(view, command.unitId, targetUnitId, {
-        assumeTargetChilled: true,
+        assumeTargetFrozen: true,
       })?.shatters === true
         ? [command.unitId]
         : [],
     )
     .sort((left, right) => left - right);
+  const prior = view.frozen.find((entry) => entry.unitId === targetUnitId);
+  const turns = frozenTurnsForV7(view, target.ownerId);
   return {
     unitId,
     targetUnitId,
-    becomesSluggish: chillOfV7(view.chilled, targetUnitId) === undefined,
-    turnsLeft: CHILL_TURNS_V7,
+    alreadyFrozen: prior !== undefined,
+    turnsLeft: prior === undefined ? turns : Math.max(prior.turnsLeft, turns),
     shatterSetups: [...new Set(shatterSetups)],
   };
 }
@@ -3326,7 +3410,8 @@ export interface ColdSnapPreviewV7 {
   readonly unitId: UnitId;
   readonly targets: readonly {
     readonly unitId: UnitId;
-    readonly becomesSluggish: boolean;
+    /** Ice Folk Freeze: the target is already Frozen (renewed). */
+    readonly alreadyFrozen: boolean;
   }[];
 }
 
@@ -3347,9 +3432,112 @@ export function previewColdSnapV7(
     unitId,
     targets: coldSnapTargetsV7(view, witch, view.units).map((target) => ({
       unitId: target.id,
-      becomesSluggish: chillOfV7(view.chilled, target.id) === undefined,
+      alreadyFrozen: isFrozenV7(view.frozen, target.id),
     })),
   };
+}
+
+/**
+ * Ice Folk Freeze (`pulp_wars-w49.37`, section 21.18): the `at` of every
+ * offered Stampede of an own unmoved Mammoth: each tile 1 to 3 tiles away
+ * in the eight directions whose path is open as the viewer knows it, in
+ * (y, x) order.
+ */
+function publicStampedeTargetsV7(
+  view: PlayerViewV7,
+  mammoth: PlayerViewV7["units"][number],
+): readonly CoordV7[] {
+  const facts = publicStampedeFactsV7(view);
+  const targets: CoordV7[] = [];
+  for (let dy = -STAMPEDE_RANGE_V7; dy <= STAMPEDE_RANGE_V7; dy += 1)
+    for (let dx = -STAMPEDE_RANGE_V7; dx <= STAMPEDE_RANGE_V7; dx += 1) {
+      const at = { x: mammoth.at.x + dx, y: mammoth.at.y + dy };
+      if (
+        stampedeLineV7(mammoth.at, at) !== null &&
+        stampedePathLegalV7(
+          view,
+          facts,
+          mammoth,
+          view.viewer.researchedTechs,
+          at,
+        )
+      )
+        targets.push(at);
+    }
+  return targets.sort((left, right) => left.y - right.y || left.x - right.x);
+}
+
+/** The public path facts of the viewer (explored tiles, visible units). */
+function publicStampedeFactsV7(view: PlayerViewV7): StampedeTileFactsV7 {
+  return {
+    tile: (at) => {
+      const tile = tileAtView(view, at);
+      return tile === undefined || !tile.explored ? undefined : tile;
+    },
+    ice: (at) => isIceAtV7(view, at),
+    chest: (at) => view.treasureChests.some((chest) => same(chest, at)),
+    structure: (at) =>
+      moundAtV7(view, at) !== undefined ||
+      barricadeAtV7(view, at) !== undefined,
+    friendly: (at) =>
+      view.units.some(
+        (unit) =>
+          same(unit.at, at) &&
+          !publicHostile(view, view.viewer.id, unit.ownerId),
+      ),
+  };
+}
+
+/**
+ * Ice Folk Freeze (section 21.18): the preview of an offered Stampede, as
+ * the viewer knows it: the tiles up to `at`, and each visible hostile unit
+ * on them with the fixed hit it would take. The shoves and the stop are
+ * resolved on the canonical state (a unit that cannot be shoved stops the
+ * Mammoth before it), so the preview lists the hits of an unobstructed
+ * charge.
+ */
+export interface StampedePreviewV7 {
+  readonly unitId: UnitId;
+  readonly at: CoordV7;
+  readonly path: readonly CoordV7[];
+  readonly hits: readonly CombatSplashEntryV7[];
+}
+
+/** Null unless that `STAMPEDE` is offered. */
+export function previewStampedeV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  at: CoordV7,
+): StampedePreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "STAMPEDE" &&
+        command.unitId === unitId &&
+        same(command.at, at),
+    )
+  )
+    return null;
+  const mammoth = view.units.find((unit) => unit.id === unitId);
+  const line = mammoth === undefined ? null : stampedeLineV7(mammoth.at, at);
+  if (mammoth === undefined || line === null) return null;
+  const path = stampedeTilesV7(mammoth.at, line);
+  const hits: CombatSplashEntryV7[] = [];
+  for (const step of path)
+    for (const unit of view.units)
+      if (
+        same(unit.at, step) &&
+        publicHostile(view, view.viewer.id, unit.ownerId)
+      )
+        hits.push(
+          fixedSignatureHitV7(
+            view,
+            unit,
+            shieldOfV7(view.shields, unit.id),
+            STAMPEDE_DAMAGE_V7,
+          ),
+        );
+  return { unitId, at: { x: at.x, y: at.y }, path, hits };
 }
 
 /**
@@ -4925,6 +5113,9 @@ export function queryThreatenedTilesV7(
   // The frozen sea (naval branch section 8.9): an icebound unit cannot
   // move or attack, so it threatens nothing.
   if (unitIsIceboundV7(view, unit)) return [];
+  // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen unit cannot move or act
+  // on its owner's next turn, so it threatens nothing.
+  if (unitIsFrozenV7(view, unit)) return [];
   const rule = unitRoleRuleV7(view, unit);
   // The Candy revision section 13: a Crashed unit has no attack reach, nor
   // has a Rushed one (it will be Crashed on its next turn) unless Home Sweet
@@ -4941,16 +5132,13 @@ export function queryThreatenedTilesV7(
       ? viewWithRushV7(view, unit.id)
       : view;
   // The Dwarf revision section 14: a Gyrocopter's bombing reach (no
-  // ordinary attack): every tile within 2 of its tile, unless it is
-  // sluggish (it cannot bomb on its next turn).
+  // ordinary attack): every tile within 2 of its tile.
   if (
     unit.form === "LAND" &&
     rule.abilities.includes("BOMB_RUN") &&
     !rule.abilities.includes("ATTACK")
   )
-    return unitIsSluggishV7(view, unit)
-      ? []
-      : tilesWithinV7(view, unit.at, 1, BOMB_RANGE_V7);
+    return tilesWithinV7(view, unit.at, 1, BOMB_RANGE_V7);
   // Revision 13: a Banshee threatens Chebyshev 1-2 around each reachable tile.
   const wail = rule.abilities.includes("WAIL");
   // Revision 17: a goblin-crewed land unit may Kaboom after moving, so it
@@ -4966,26 +5154,21 @@ export function queryThreatenedTilesV7(
   // are not attack origins.
   const machine =
     unit.form === "LAND" && unitMovementModeV7(view, unit) !== "GROUND";
-  // The Ice Folk revision section 11: a sluggish unit threatens only from
-  // where it stands (it cannot act after a Move); the reach includes Glide
-  // on known Snow, Mountain-born paths, and Prowl (the public movement
-  // query), and a Yeti reaches 2 from every Mountain origin (Rockfall).
+  // The Ice Folk revision section 11: the reach includes Glide on known
+  // Snow, Mountain-born paths, and Prowl (the public movement query), and a
+  // Yeti reaches 2 from every Mountain origin (Rockfall).
   const origins = [
     unit.at,
-    ...(unitIsSluggishV7(view, unit)
-      ? []
-      : reachablePlayerMovementPathsV7(reachView, unit)
-          .map((path) => path.destination)
-          .filter((at) => {
-            if (!machine) return true;
-            const tile = tileAtView(view, at);
-            // The frozen sea: a machine that ends on ice stands there.
-            return (
-              tile?.explored !== true ||
-              tile.biome !== null ||
-              isIceAtV7(view, at)
-            );
-          })),
+    ...reachablePlayerMovementPathsV7(reachView, unit)
+      .map((path) => path.destination)
+      .filter((at) => {
+        if (!machine) return true;
+        const tile = tileAtView(view, at);
+        // The frozen sea: a machine that ends on ice stands there.
+        return (
+          tile?.explored !== true || tile.biome !== null || isIceAtV7(view, at)
+        );
+      }),
   ];
   const rangeFrom = (origin: CoordV7): number => {
     if (wail) return maximumRange;
@@ -8446,17 +8629,16 @@ function publicCombatPreviewCore(
   );
   // The Ice Folk revision (section 8, step 1): Planted is already in the
   // public Attack total (the `PLANTED` modifier); a Rockfall replaces the
-  // role Attack, and Cold Blood is added against a Chilled target.
+  // role Attack, and Cold Blood is added against a Frozen target.
   const attackerMechanics0 = unitRoleMechanicsV7(view, attacker);
   const attackerLand = attacker.form === "LAND";
-  const targetChilled =
+  const targetFrozen =
     target.form === "LAND" &&
-    (options.assumeTargetChilled === true ||
-      isChilledV7(view.chilled, target.id));
+    (options.assumeTargetFrozen === true || isFrozenV7(view.frozen, target.id));
   const rockfallApplied =
     attackerLand && attackerMechanics0.rockfallAttack2 > 0 && distance === 2;
   const coldBloodApplied =
-    attackerLand && attackerMechanics0.coldBloodBonus2 > 0 && targetChilled;
+    attackerLand && attackerMechanics0.coldBloodBonus2 > 0 && targetFrozen;
   const plantedApplied = attack.modifiers.some(
     (modifier) => modifier.source === "PLANTED",
   );
@@ -8656,7 +8838,7 @@ function publicCombatPreviewCore(
   const shatters = attackShattersV7({
     attackerIceFolk: isIceFolkLandUnitV7(view, attacker),
     distance,
-    defenderChilled: targetChilled,
+    defenderFrozen: targetFrozen,
     defender: target,
     hpAfterHit: target.hp - defenderHit.hpDamage,
     threshold:
@@ -8676,10 +8858,13 @@ function publicCombatPreviewCore(
   const unanswered = attackerRule.abilities.includes("UNANSWERED") || torpedo;
   // Revision 19: an Egg never retaliates. The Dwarf revision section 6.1:
   // a Gyrocopter retaliates too.
+  // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen defender never
+  // retaliates.
   const wouldRetaliate =
     !defenderDies &&
     !unanswered &&
     !defenderIcebound &&
+    !targetFrozen &&
     target.form !== "EMBARKED" &&
     target.form !== "EGG" &&
     roleRetaliatesV7(defenderRule) &&
@@ -8917,6 +9102,7 @@ function publicCombatPreviewCore(
       retaliates: retaliation,
       unanswered,
       icebound: defenderIcebound,
+      frozen: targetFrozen,
       splatted: wouldRetaliate && splatted,
     }),
     advances,
@@ -8930,11 +9116,13 @@ function publicCombatPreviewCore(
         : 0,
     overrunAdvance: overrunKind !== null && advances,
     overrunContinues,
-    // The Candy revision section 5.4: a Rushed Donut Racer has Escape.
+    // The Candy revision section 5.4: a Rushed Donut Racer has Escape. Ice
+    // Folk Freeze (`pulp_wars-w49.37`): an attacker Frozen by Frostbite is
+    // not.
     escapeAvailable:
       attackGrantsEscapeV7(view, attacker, attackerRule, assumeRushed) &&
       !attackerDies &&
-      !unitIsSluggishV7(view, attacker),
+      !attackIsFrostbittenV7(view, attacker, target, distance, attackerDies),
     splash,
     // Revision 13 Lifesteal and Infect from the visible attacker and target.
     // Map curiosities (section 8.6): a neutral Monster never rises either.

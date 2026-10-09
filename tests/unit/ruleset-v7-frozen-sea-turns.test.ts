@@ -236,36 +236,37 @@ describe("Black Ice (section 8.8)", () => {
       ],
     });
 
-  it("chills every hostile land unit on the seat's ice at its Start Turn", () => {
+  it("freezes every hostile land unit on the seat's ice at its Start Turn", () => {
     const state = scene(BLACK_ICE);
     const victim = navalUnitAtV7(state, FAR);
     const started = round(state);
     const chilled = started.events.filter(
-      (event) => event.kind === "UNITS_CHILLED",
+      (event) => event.kind === "UNITS_FROZEN",
     );
     expect(chilled).toEqual([
       {
-        kind: "UNITS_CHILLED",
+        kind: "UNITS_FROZEN",
         playerId: seatV7(state, 0).id,
         sourceUnitId: null,
         source: "BLACK_ICE",
-        results: [{ unitId: victim.id, sluggish: true, turnsLeft: 2 }],
+        results: [{ unitId: victim.id, turnsLeft: 1 }],
       },
     ]);
     expect(parseEventV7(chilled[0]).ok).toBe(true);
-    expect(started.state.chilled).toEqual([
-      { unitId: victim.id, sluggish: true, turnsLeft: 2 },
-    ]);
+    expect(started.state.frozen).toEqual([{ unitId: victim.id, turnsLeft: 1 }]);
     // After the Start Turn's first events and before the income.
     const order = kinds(started.events);
     expect(order.lastIndexOf("TURN_STARTED")).toBeLessThan(
-      order.indexOf("UNITS_CHILLED"),
+      order.indexOf("UNITS_FROZEN"),
     );
-    // A re-application refreshes the two turns without a new sluggish turn.
-    const again = round(started.state);
-    expect(again.state.chilled).toEqual([
-      { unitId: victim.id, sluggish: false, turnsLeft: 2 },
-    ]);
+    // Ice Folk Freeze (`pulp_wars-w49.37`): the victim thaws at the end of
+    // its own turn and, still on the ice, is Frozen again at the next Start
+    // Turn of the ice's owner (no thaw immunity).
+    const owners = endTurn(started.state, 0);
+    expect(owners.state.frozen).toEqual([{ unitId: victim.id, turnsLeft: 1 }]);
+    const thawed = endTurn(owners.state, 1);
+    expect(kinds(thawed.events)).toContain("UNITS_FROZEN");
+    expect(thawed.state.frozen).toEqual([{ unitId: victim.id, turnsLeft: 1 }]);
     // The victim's owner learns of it with no source unit.
     const envelope = projectEventsV7(
       state,
@@ -279,13 +280,13 @@ describe("Black Ice (section 8.8)", () => {
 
   it("needs the technology, and only works on the seat's own ice", () => {
     const without = round(scene(RIME));
-    expect(kinds(without.events)).not.toContain("UNITS_CHILLED");
-    expect(without.state.chilled).toEqual([]);
+    expect(kinds(without.events)).not.toContain("UNITS_FROZEN");
+    expect(without.state.frozen).toEqual([]);
     // Ice that belongs to the other seat does nothing for the Ice Folk.
     const foreign = frozenStateV7(scene(BLACK_ICE), [
       { at: FAR, seat: 1, turnsLeft: 3 },
     ]);
-    expect(round(foreign).state.chilled).toEqual([]);
+    expect(round(foreign).state.frozen).toEqual([]);
   });
 });
 
@@ -338,7 +339,7 @@ describe("the crush (section 8.9)", () => {
     expect(navalUnitV7(started.state, free.id).hp).toBe(free.hp);
     // Black Ice (the Fighter on the ice) comes first.
     const order = kinds(started.events);
-    expect(order.indexOf("UNITS_CHILLED")).toBeLessThan(
+    expect(order.indexOf("UNITS_FROZEN")).toBeLessThan(
       order.indexOf("UNITS_CRUSHED"),
     );
     // The other seat's Start Turn crushes nothing.

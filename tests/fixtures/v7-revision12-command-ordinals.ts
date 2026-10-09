@@ -57,6 +57,10 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   "TOSS",
   "STOMP",
   "BREAK_OFF",
+  // Ice Folk Freeze (`pulp_wars-w49.37`) inserts FROST_BOLT and STAMPEDE
+  // after BREAK_OFF.
+  "FROST_BOLT",
+  "STAMPEDE",
   "LAY_EGG",
   // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL.
   "HIRE",

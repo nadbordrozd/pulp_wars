@@ -416,7 +416,9 @@ describe("Chill markers on the board (section 13.1)", () => {
 
   it("marks Frozen and Frosted units of any owner, and never a thawing one", () => {
     expect(marker(AT.frozenEnemy)?.iceFolk?.chill).toBe("FROZEN");
-    expect(marker(AT.shatterTarget)?.iceFolk?.chill).toBe("FROSTED");
+    // Ice Folk Freeze (`pulp_wars-w49.37`): every entry is Frozen; Frosted
+    // no longer occurs.
+    expect(marker(AT.shatterTarget)?.iceFolk?.chill).toBe("FROZEN");
     expect(marker(AT.thawingEnemy)?.iceFolk).toBeUndefined();
     expect(marker(AT.sweepTarget)?.iceFolk).toBeUndefined();
     expect(marker(AT.witch)?.iceFolk).toEqual({
@@ -433,10 +435,14 @@ describe("Chill markers on the board (section 13.1)", () => {
     const log = draw(plan);
     const casings = drawIndexes(log, (image) => "casing" in image);
     const rimes = drawIndexes(log, (image) => image.caps === "RIME");
-    expect(casings).toHaveLength(1);
-    expect(rimes).toHaveLength(
-      plan.entries.filter((entry) => entry.iceFolk?.chill === "FROSTED").length,
+    // Ice Folk Freeze (`pulp_wars-w49.37`): every Frozen unit is cased
+    // (the Guard, the Fighter beside the Yeti, and the one beside the
+    // Witch); no unit is Frosted, so none is rimed.
+    expect(casings).toHaveLength(
+      plan.entries.filter((entry) => entry.iceFolk?.chill === "FROZEN").length,
     );
+    expect(casings).toHaveLength(3);
+    expect(rimes).toHaveLength(0);
     // A Shatter in progress cases its unit to the top, then it is gone.
     const target = unitAt(view, AT.shatterTarget);
     const shatter = draw(plan, {
@@ -491,9 +497,8 @@ describe("Ice Folk targets and previews on the board (section 13.1)", () => {
     );
     if (preview === null) throw new Error("no Bolas preview");
     const lines = bolasPreviewLinesV7(view, preview);
-    expect(target?.previewLabel).toBe(
-      preview.becomesSluggish ? "Frozen" : "Frosted",
-    );
+    // Ice Folk Freeze (`pulp_wars-w49.37`): every Bolas target is Frozen.
+    expect(target?.previewLabel).toBe("Frozen");
     expect(target?.previewNote).toBe(lines.slice(1).join(" · "));
   });
 

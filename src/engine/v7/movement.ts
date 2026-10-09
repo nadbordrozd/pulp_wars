@@ -1,6 +1,7 @@
 import type { PlayerId } from "../model/ids";
 import {
   EMBARKED_MOVE_V7,
+  GLACIER_ICE_MOVE_BONUS_V7,
   canCrossWaterV7,
   canEnterTerrainV7,
   flyerMayStandOnSiteV7,
@@ -120,6 +121,14 @@ export type MovementPathResultV7 =
        * enumerations returns it.
        */
       readonly slideContinues?: { readonly dx: number; readonly dy: number };
+      /**
+       * Ice Folk Freeze (`pulp_wars-w49.37`, Glacier), route searches only:
+       * the probe's path has entered ice (`iceTouched`), or it is over the
+       * budget it has without ice and has not (`glacierPending`: never a
+       * destination). Absent for a unit without the Glacier bonus.
+       */
+      readonly iceTouched?: boolean;
+      readonly glacierPending?: boolean;
       readonly explored: readonly CoordV7[];
       readonly revealed: readonly CoordV7[];
       readonly interruption: {
@@ -172,6 +181,68 @@ export function validateMovementPathV7(
 }
 
 /**
+ * The Move budget in half-points before Glacier: the role's Move (the
+ * Candy revision section 5.2: one more point for a Rushed unit's ordinary
+ * Move, never its Escape Move and never afloat; Goblin explosions and
+ * Berserk, `pulp_wars-w49.35`: so for a Berserk unit's), or the embarked
+ * budget.
+ */
+function baseMoveBudget2V7(
+  lookup: GameStateV7 | PlayerViewV7,
+  unit: UnitStateV7 | PublicUnitV7,
+): number {
+  return (
+    (unit.form === "EMBARKED"
+      ? EMBARKED_MOVE_V7
+      : unitRoleRuleV7(lookup, unit).move +
+        sugarRushMoveBonusV7(lookup, unit) +
+        berserkMoveBonusV7(lookup, unit)) * 2
+  );
+}
+
+/**
+ * Ice Folk Freeze (`pulp_wars-w49.37`, RULESET_7_CURRENT.md section 21.16,
+ * Glacier): the half-points Glacier adds to the `MOVE` of a land-form unit
+ * of the Ice Folk kind whose path includes an ice tile (0 for every other
+ * unit, and in a match without ice).
+ */
+function glacierBonus2V7(
+  lookup: GameStateV7 | PlayerViewV7,
+  unit: UnitStateV7 | PublicUnitV7,
+  capabilities: { readonly iceCover: boolean },
+  iceCount: number,
+): number {
+  return unit.form === "LAND" &&
+    iceCount > 0 &&
+    capabilities.iceCover &&
+    unitKindWalksIceV7(lookup, unit)
+    ? GLACIER_ICE_MOVE_BONUS_V7 * 2
+    : 0;
+}
+
+/**
+ * Route searches only (`passThroughProbe`): a probe is validated with the
+ * Glacier half-points whether or not its path has reached ice yet, so a
+ * search can extend it onto ice. `glacierPending` marks a probe that is
+ * over the base budget and has not touched ice (never a destination);
+ * `iceTouched` keys the search state.
+ */
+function withGlacierProbeV7(
+  result: MovementPathResultV7,
+  baseBudget2: number,
+  glacier2: number,
+  iceAt: (at: CoordV7) => boolean,
+): MovementPathResultV7 {
+  if (!result.legal || glacier2 === 0) return result;
+  const iceTouched = result.traversedPath.some(iceAt);
+  return {
+    ...result,
+    iceTouched,
+    glacierPending: result.spentPoints2 > baseBudget2 && !iceTouched,
+  };
+}
+
+/**
  * `passThroughProbe` treats the last step as an intermediate one for
  * occupancy only, so an enumeration can extend a path across an own unit.
  */
@@ -183,19 +254,37 @@ function validateMovementPathWithOptionsV7(
 ): MovementPathResultV7 {
   if (path.length === 0) return { legal: false, reason: "EMPTY_PATH" };
   const player = requirePlayer(state, unit.ownerId);
-  const rule = unitRoleRuleV7(state, unit);
   // The Mind Control revision section 5.2: movement unlocks are unit-level
   // (the controller's research through the unit's kind's tree).
   const capabilities = unitCapabilitiesV7(state, unit, player.researchedTechs);
-  // The Candy revision section 5.2: a Rushed unit's ordinary Move has one
-  // more point (never its Escape Move, and never afloat). Goblin explosions
-  // and Berserk (`pulp_wars-w49.35`): so has a Berserk unit's.
-  const budget2 =
-    (unit.form === "EMBARKED"
-      ? EMBARKED_MOVE_V7
-      : rule.move +
-        sugarRushMoveBonusV7(state, unit) +
-        berserkMoveBonusV7(state, unit)) * 2;
+  const baseBudget2 = baseMoveBudget2V7(state, unit);
+  const iceIndex = iceIndexSetV7(state, state.board.width);
+  const glacier2 = glacierBonus2V7(state, unit, capabilities, iceIndex.size);
+  const onIce = (at: CoordV7): boolean =>
+    iceIndex.has(at.y * state.board.width + at.x);
+  const result = validateMovementPathCoreV7(
+    state,
+    unit,
+    path,
+    passThroughProbe,
+    capabilities,
+    baseBudget2 +
+      (glacier2 > 0 && (passThroughProbe || path.some(onIce)) ? glacier2 : 0),
+  );
+  return passThroughProbe
+    ? withGlacierProbeV7(result, baseBudget2, glacier2, onIce)
+    : result;
+}
+
+function validateMovementPathCoreV7(
+  state: GameStateV7,
+  unit: UnitStateV7,
+  path: readonly CoordV7[],
+  passThroughProbe: boolean,
+  capabilities: ReturnType<typeof unitCapabilitiesV7>,
+  budget2: number,
+): MovementPathResultV7 {
+  const player = requirePlayer(state, unit.ownerId);
   // An embarked machine is an ordinary embarked unit (section 7.3).
   const mode: MovementModeV7 =
     unit.form === "LAND" ? unitMovementModeV7(state, unit) : "GROUND";
@@ -696,10 +785,13 @@ export function reachableMovementPathsV7(
       // a slide continues is a passing state of its own (the tile and the
       // direction), never a destination.
       const pending = validation.slideContinues;
+      // Ice Folk Freeze (Glacier): a path that has touched ice has more
+      // budget, so it is a search state of its own.
       const stateKey =
-        pending === undefined
+        (pending === undefined
           ? destinationKey
-          : `${destinationKey}>${pending.dx},${pending.dy}`;
+          : `${destinationKey}>${pending.dx},${pending.dy}`) +
+        (validation.iceTouched === true ? "~ice" : "");
       const prior = best.get(stateKey);
       if (prior !== undefined && prior <= validation.spentPoints2) continue;
       // An own-occupied tile is never a destination; it is only passed, and
@@ -726,7 +818,11 @@ export function reachableMovementPathsV7(
           ));
       if (ownOccupied && validation.stopped) continue;
       best.set(stateKey, validation.spentPoints2);
-      if (!ownOccupied && pending === undefined)
+      if (
+        !ownOccupied &&
+        pending === undefined &&
+        validation.glacierPending !== true
+      )
         results.set(destinationKey, {
           destination: validation.destination,
           path: candidate,
@@ -775,10 +871,13 @@ export function reachablePlayerMovementPathsV7(
       // a slide continues is a passing state of its own (the tile and the
       // direction), never a destination.
       const pending = validation.slideContinues;
+      // Ice Folk Freeze (Glacier): a path that has touched ice has more
+      // budget, so it is a search state of its own.
       const stateKey =
-        pending === undefined
+        (pending === undefined
           ? destinationKey
-          : `${destinationKey}>${pending.dx},${pending.dy}`;
+          : `${destinationKey}>${pending.dx},${pending.dy}`) +
+        (validation.iceTouched === true ? "~ice" : "");
       const prior = best.get(stateKey);
       if (prior !== undefined && prior <= validation.spentPoints2) continue;
       // An own-occupied tile is never a destination; it is only passed, and
@@ -795,7 +894,11 @@ export function reachablePlayerMovementPathsV7(
           !publicFlyerMayStandV7(view, unit, publicTileAt(view, destination)));
       if (ownOccupied && validation.stopped) continue;
       best.set(stateKey, validation.spentPoints2);
-      if (!ownOccupied && pending === undefined)
+      if (
+        !ownOccupied &&
+        pending === undefined &&
+        validation.glacierPending !== true
+      )
         results.set(destinationKey, {
           destination: validation.destination,
           path: candidate,
@@ -894,7 +997,6 @@ function validatePlayerMovementPathWithContextV7(
   passThroughProbe: boolean,
 ): MovementPathResultV7 {
   if (path.length === 0) return { legal: false, reason: "EMPTY_PATH" };
-  const role = unitRoleRuleV7(view, unit);
   // The Mind Control revision section 5.2: a controlled unit's movement
   // unlocks read the viewer's research through its kind's tree.
   const capabilities = isMindControlledV7(view, unit.id)
@@ -903,12 +1005,36 @@ function validatePlayerMovementPathWithContextV7(
   // The Candy revision section 5.2: the Rushed budget (the public
   // `sugarRush` list; the same helper as the canonical validation).
   // `pulp_wars-w49.35`: the Berserk budget (the public `berserkThisTurn`).
-  const budget2 =
-    (unit.form === "EMBARKED"
-      ? EMBARKED_MOVE_V7
-      : role.move +
-        sugarRushMoveBonusV7(view, unit) +
-        berserkMoveBonusV7(view, unit)) * 2;
+  // Ice Folk Freeze (`pulp_wars-w49.37`): Glacier, from the public ice.
+  const baseBudget2 = baseMoveBudget2V7(view, unit);
+  const glacier2 = glacierBonus2V7(view, unit, capabilities, context.ice.size);
+  const onIce = (at: CoordV7): boolean =>
+    publicTileAt(view, at)?.explored === true &&
+    context.ice.has(at.y * view.board.width + at.x);
+  const result = validatePlayerMovementPathCoreV7(
+    view,
+    unit,
+    path,
+    context,
+    passThroughProbe,
+    capabilities,
+    baseBudget2 +
+      (glacier2 > 0 && (passThroughProbe || path.some(onIce)) ? glacier2 : 0),
+  );
+  return passThroughProbe
+    ? withGlacierProbeV7(result, baseBudget2, glacier2, onIce)
+    : result;
+}
+
+function validatePlayerMovementPathCoreV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  path: readonly CoordV7[],
+  context: PublicMovementContextV7,
+  passThroughProbe: boolean,
+  capabilities: PublicMovementContextV7["capabilities"],
+  budget2: number,
+): MovementPathResultV7 {
   // The Martian revision section 7: the unit's own movement mode. The
   // technologies are the viewer's (exact for the viewer's own units).
   const mode: MovementModeV7 =
@@ -1104,11 +1230,18 @@ function validatePlayerMovementPathWithContextV7(
       const dy = step.y - current.y;
       const next = { x: step.x + dx, y: step.y + dy };
       const nextTile = publicTileAt(view, next);
+      // The mover's own start tile is free (the canonical occupancy
+      // predicate excludes the mover), and a Barricade stops a slide like a
+      // unit (Ice Folk Freeze, `pulp_wars-w49.37`: Glacier's extra point
+      // made a slide back over the start tile reachable).
       if (
         nextTile?.explored === true &&
         iceAt(next) &&
-        !context.unitsByPosition.has(key(next)) &&
-        moundAtV7(view, next) === undefined
+        context.unitsByPosition
+          .get(key(next))
+          ?.some((other) => other.id !== unit.id) !== true &&
+        moundAtV7(view, next) === undefined &&
+        barricadeAtV7(view, next) === undefined
       )
         slide = { dx, dy };
     }

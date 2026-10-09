@@ -2,9 +2,9 @@ import type { PlayerId, UnitId } from "../model/ids";
 import {
   BLIZZARD_RADIUS_V7,
   BOLAS_RANGE_V7,
-  CHILL_TURNS_V7,
   COLD_SNAP_RANGE_V7,
   DEEP_WINTER_RADIUS_V7,
+  FROST_BOLT_RANGE_V7,
   factionRulesV7,
   ownerResearchedTechsV7,
   technologyCapabilitiesV7,
@@ -16,13 +16,14 @@ import {
 } from "../rules/ruleset-v7";
 import { surfacedRiderV7 } from "./dwarf";
 import { arePlayersHostileV7 } from "./economy";
+import type { CommandV7 } from "./commands";
 import type { DomainEventV7 } from "./events";
 import { allOwnedUnitsV7 } from "./units";
 import type { PlayerViewV7 } from "./view";
 import type {
-  ChillStatusV7,
   CoordV7,
   FactionIdV7,
+  FrozenStatusV7,
   GameStateV7,
   UnitFormV7,
   UnitRoleIdV7,
@@ -31,11 +32,12 @@ import type {
 import { isNeutralOwnerV7 } from "./types";
 
 /**
- * The Ice Folk revision (docs/product/RULESET_7_ICE_FOLK.md): Chill
- * (section 5), derived Snow and the Blizzard (section 6), and the helpers of
- * the unit rules (section 7). `chilled` is the only stored state; Snow and
- * the Blizzard are derived from the state (or the view's tile flags) on
- * every read and never cached across commands. Every helper returns the
+ * The Ice Folk revision (docs/product/RULESET_7_ICE_FOLK.md), with Ice Folk
+ * Freeze (`pulp_wars-w49.37`, RULESET_7_CURRENT.md section 21): Frozen
+ * (section 21.2), derived Snow and the Blizzard, and the helpers of the
+ * unit rules. `frozen` is the stored status; Snow and the Blizzard are
+ * derived from the state (or the view's tile flags) on every read and
+ * never cached across commands. Every helper returns the
  * neutral answer in a match without an Ice Folk seat.
  */
 
@@ -73,36 +75,32 @@ export function isIceFolkLandUnitV7(
   return unit.form === "LAND" && unitOwnerIsIceFolkV7(roster, unit);
 }
 
-// ---------------------------------------------------------------- Chill ---
+// --------------------------------------------------------------- Frozen ---
 
-/** The Chill entry of `unitId`, if any. */
-export function chillOfV7(
-  chilled: readonly ChillStatusV7[],
+/** The Frozen entry of `unitId`, if any. */
+export function frozenEntryOfV7(
+  frozen: readonly FrozenStatusV7[],
   unitId: UnitId,
-): ChillStatusV7 | undefined {
-  if (chilled.length === 0) return undefined;
-  return chilled.find((entry) => entry.unitId === unitId);
+): FrozenStatusV7 | undefined {
+  if (frozen.length === 0) return undefined;
+  return frozen.find((entry) => entry.unitId === unitId);
 }
 
-/**
- * Section 5.1: whether the unit is Chilled (an entry with `turnsLeft` of at
- * least 1; a thawing entry does not count).
- */
-export function isChilledV7(
-  chilled: readonly ChillStatusV7[],
+/** Section 21.2: whether the unit is Frozen (it has an entry). */
+export function isFrozenV7(
+  frozen: readonly FrozenStatusV7[],
   unitId: UnitId,
 ): boolean {
-  const entry = chillOfV7(chilled, unitId);
-  return entry !== undefined && entry.turnsLeft >= 1;
+  return frozenEntryOfV7(frozen, unitId) !== undefined;
 }
 
 /**
- * Section 5.2: whether `target` can be Chilled by a source owned by
+ * Section 21.2: whether `target` can be Frozen by a source owned by
  * `sourceOwnerId`: a living land-form unit hostile to the source's owner
  * (never embarked, naval, an Egg, own, or allied). Map curiosities: the
  * neutral Monster is immune too.
  */
-export function canBeChilledV7(
+export function canBeFrozenV7(
   state: {
     readonly setup: GameStateV7["setup"];
     readonly humanPlayerId: PlayerId;
@@ -113,40 +111,67 @@ export function canBeChilledV7(
   return (
     target.hp > 0 &&
     target.form === "LAND" &&
-    // Map curiosities (section 8.6): the Monster is immune to Chill.
+    // Map curiosities (section 8.6): the Monster is immune to Frozen.
     !isNeutralOwnerV7(target.ownerId) &&
     arePlayersHostileV7(state, sourceOwnerId, target.ownerId)
   );
 }
 
 /**
- * Section 5.2: applying Chill to each of `unitIds`. Without an entry a unit
- * gets `{ sluggish: true, turnsLeft: 2 }` (a new freeze); with an entry,
- * thawing or not, `turnsLeft` goes back to 2 and `sluggish` is unchanged.
- * Returns the sorted list and the entries after the application in unit-ID
- * order (the `UNITS_CHILLED` results).
+ * Section 21.2: the `turnsLeft` a freeze gives a unit of `ownerId` now: 2
+ * during that owner's own turn (it stays Frozen through its next turn), 1
+ * otherwise (it thaws at the end of its owner's next turn).
  */
-export function withChillAppliedV7(
-  chilled: readonly ChillStatusV7[],
+export function frozenTurnsForV7(
+  state: {
+    readonly turnOrder: readonly PlayerId[];
+    readonly activeSeatIndex: number;
+  },
+  ownerId: PlayerId,
+): 1 | 2 {
+  return state.turnOrder[state.activeSeatIndex] === ownerId ? 2 : 1;
+}
+
+/**
+ * Section 21.2: freezing each of `unitIds` (units on the board of `state`).
+ * A unit without an entry gets `turnsLeft` from {@link frozenTurnsForV7}; a
+ * Frozen unit keeps the larger of its count and the new one. There is no
+ * thaw immunity. Returns the sorted list and the entries after the
+ * application in unit-ID order (the `UNITS_FROZEN` results).
+ */
+export function withFrozenAppliedV7(
+  state: {
+    readonly turnOrder: readonly PlayerId[];
+    readonly activeSeatIndex: number;
+    readonly units: readonly Pick<UnitStateV7, "id" | "ownerId">[];
+  },
+  frozen: readonly FrozenStatusV7[],
   unitIds: readonly UnitId[],
 ): {
-  readonly chilled: readonly ChillStatusV7[];
-  readonly results: readonly ChillStatusV7[];
+  readonly frozen: readonly FrozenStatusV7[];
+  readonly results: readonly FrozenStatusV7[];
 } {
-  const next = new Map(chilled.map((entry) => [entry.unitId, entry] as const));
-  const results: ChillStatusV7[] = [];
+  const next = new Map(frozen.map((entry) => [entry.unitId, entry] as const));
+  const results: FrozenStatusV7[] = [];
   for (const unitId of [...new Set(unitIds)].sort((a, b) => a - b)) {
+    const unit = state.units.find((candidate) => candidate.id === unitId);
+    if (unit === undefined) throw new RangeError("INVALID_STATE");
     const prior = next.get(unitId);
-    const entry: ChillStatusV7 = {
+    const turns = frozenTurnsForV7(state, unit.ownerId);
+    const entry: FrozenStatusV7 = {
       unitId,
-      sluggish: prior === undefined ? true : prior.sluggish,
-      turnsLeft: CHILL_TURNS_V7,
+      turnsLeft:
+        prior === undefined
+          ? turns
+          : prior.turnsLeft > turns
+            ? prior.turnsLeft
+            : turns,
     };
     next.set(unitId, entry);
     results.push(entry);
   }
   return {
-    chilled: [...next.values()].sort(
+    frozen: [...next.values()].sort(
       (left, right) => left.unitId - right.unitId,
     ),
     results,
@@ -154,101 +179,92 @@ export function withChillAppliedV7(
 }
 
 /**
- * Section 5.4: the countdown at the end of `playerId`'s turn. Every entry of
- * that player's units loses `sluggish`, and `turnsLeft` 0 is removed while
- * any other value loses 1. No event: the view list is the source.
+ * Section 21.2: the thaw at the end of `playerId`'s turn. Every entry of
+ * that player's units loses 1 from `turnsLeft`, and an entry at 0 is
+ * removed (the unit thaws). No event: the view list is the source.
  */
-export function chillCountdownV7(
+export function frozenCountdownV7(
   state: GameStateV7,
   playerId: PlayerId,
 ): GameStateV7 {
-  if (state.chilled.length === 0) return state;
+  if (state.frozen.length === 0) return state;
   // The Dwarf revision section 5.2: burrowed units keep counting down.
   const own = new Set(allOwnedUnitsV7(state, playerId).map((unit) => unit.id));
   let changed = false;
-  const chilled = state.chilled.flatMap((entry): ChillStatusV7[] => {
+  const frozen = state.frozen.flatMap((entry): FrozenStatusV7[] => {
     if (!own.has(entry.unitId)) return [entry];
     changed = true;
-    return entry.turnsLeft === 0
+    return entry.turnsLeft === 1
       ? []
-      : [
-          {
-            unitId: entry.unitId,
-            sluggish: false,
-            turnsLeft: (entry.turnsLeft - 1) as 0 | 1,
-          },
-        ];
+      : [{ unitId: entry.unitId, turnsLeft: 1 }];
   });
-  return changed ? { ...state, chilled } : state;
+  return changed ? { ...state, frozen } : state;
 }
 
 /**
- * Section 10.5 Tend Wounded: the entry of a Chilled unit becomes thawing
- * (`{ sluggish: false, turnsLeft: 0 }`). Returns the list unchanged for a
- * unit that is not Chilled.
+ * Section 10.5 Tend Wounded (and the Dwarf Engineer's Repair): a Frozen
+ * unit thaws at once (its entry is removed). Returns the list unchanged
+ * for a unit that is not Frozen.
  */
-export function withChillCuredV7(
-  chilled: readonly ChillStatusV7[],
+export function withFrozenCuredV7(
+  frozen: readonly FrozenStatusV7[],
   unitId: UnitId,
-): readonly ChillStatusV7[] {
-  if (!isChilledV7(chilled, unitId)) return chilled;
-  return chilled.map((entry) =>
-    entry.unitId === unitId
-      ? { unitId, sluggish: false, turnsLeft: 0 as const }
-      : entry,
-  );
+): readonly FrozenStatusV7[] {
+  if (!isFrozenV7(frozen, unitId)) return frozen;
+  return frozen.filter((entry) => entry.unitId !== unitId);
 }
 
 /**
- * Section 5.4 removal: the entries of units that left the board (death,
- * rising, Disband, Mind Control, displacement, elimination). Every reducer
- * output runs through this before validation.
+ * Section 21.2 removal: the entries of units that left the board (death,
+ * rising, Disband, displacement, elimination). Every reducer output runs
+ * through this before validation.
  */
 export function prunedIceFolkV7(state: GameStateV7): GameStateV7 {
-  if (state.chilled.length === 0) return state;
-  // The Dwarf revision section 5.2: a burrowed unit keeps its Chill entry.
+  if (state.frozen.length === 0) return state;
+  // The Dwarf revision section 5.2: a burrowed unit keeps its entry.
   const alive = new Set(
     allOwnedUnitsV7(state)
       .filter((unit) => unit.hp > 0)
       .map((unit) => unit.id),
   );
-  const chilled = state.chilled.filter((entry) => alive.has(entry.unitId));
-  return chilled.length === state.chilled.length
-    ? state
-    : { ...state, chilled };
+  const frozen = state.frozen.filter((entry) => alive.has(entry.unitId));
+  return frozen.length === state.frozen.length ? state : { ...state, frozen };
 }
 
-/** One `UNITS_CHILLED` event (section 11). */
-export function unitsChilledEventV7(
+/** The sources of a `UNITS_FROZEN` event (section 21.15). */
+export type FrozenSourceV7 =
+  | "BOLAS"
+  | "COLD_SNAP"
+  | "FROST_BOLT"
+  | "COLD_AURA"
+  | "BLACK_ICE"
+  | "FROSTBITE"
+  // The giants' signatures (RULESET_7_GIANTS.md section 6.6).
+  | "SHARDS";
+
+/** One `UNITS_FROZEN` event (section 21.15). */
+export function unitsFrozenEventV7(
   playerId: PlayerId,
   sourceUnitId: UnitId | null,
-  source:
-    | "BOLAS"
-    | "COLD_SNAP"
-    | "COLD_AURA"
-    | "BLACK_ICE"
-    | "FROSTBITE"
-    // The giants' signatures (RULESET_7_GIANTS.md section 6.6).
-    | "SHARDS",
-  results: readonly ChillStatusV7[],
-): Extract<DomainEventV7, { readonly kind: "UNITS_CHILLED" }> {
+  source: FrozenSourceV7,
+  results: readonly FrozenStatusV7[],
+): Extract<DomainEventV7, { readonly kind: "UNITS_FROZEN" }> {
   return {
-    kind: "UNITS_CHILLED",
+    kind: "UNITS_FROZEN",
     playerId,
     sourceUnitId,
     source,
     results: results.map((entry) => ({
       unitId: entry.unitId,
-      sluggish: entry.sluggish,
       turnsLeft: entry.turnsLeft,
     })),
   };
 }
 
 /**
- * Section 6.4: the Cold Snap targets of `witch` among `units` (the units the
- * Witch's owner can see): every unit that can be Chilled within Chebyshev
- * `COLD_SNAP_RANGE_V7`, in unit-ID order.
+ * Section 21.6: the Cold Snap targets of `witch` among `units` (the units
+ * the Witch's owner can see): every unit that can be Frozen on the eight
+ * tiles around her (`COLD_SNAP_RANGE_V7` 1), in unit-ID order.
  */
 export function coldSnapTargetsV7<
   U extends Pick<UnitStateV7, "id" | "ownerId" | "form" | "hp" | "at">,
@@ -265,59 +281,100 @@ export function coldSnapTargetsV7<
       (unit) =>
         unit.id !== witch.id &&
         chebyshev(unit.at, witch.at) <= COLD_SNAP_RANGE_V7 &&
-        canBeChilledV7(state, witch.ownerId, unit),
+        canBeFrozenV7(state, witch.ownerId, unit),
     )
     .sort((left, right) => left.id - right.id);
 }
 
-/** Section 7.3: the Bolas reach check (Chebyshev 1 or 2). */
+/** Section 21.9: the Bolas reach check (Chebyshev 1 or 2). */
 export function withinBolasRangeV7(from: CoordV7, to: CoordV7): boolean {
   const distance = chebyshev(from, to);
   return distance >= 1 && distance <= BOLAS_RANGE_V7;
 }
 
+/** Section 21.6: the Frost Bolt reach check (Chebyshev 1 or 2). */
+export function withinFrostBoltRangeV7(from: CoordV7, to: CoordV7): boolean {
+  const distance = chebyshev(from, to);
+  return distance >= 1 && distance <= FROST_BOLT_RANGE_V7;
+}
+
 /**
- * Section 7.8: the Cold Aura of `playerId`'s Start Turn: each land-form
- * Frost Giant (role ability `COLD_AURA`) in unit-ID order applies Chill to
- * every unit that can be Chilled on the eight tiles around it; one
- * `UNITS_CHILLED` event (source `COLD_AURA`) per Giant with a target.
+ * Section 21.12: the Frost Giant's Cold Aura. When a land-form unit whose
+ * role has `COLD_AURA` ends its own `MOVE` or `DISEMBARK` (and nothing
+ * else: an advance, a push, a pull, or a placement does not count), every
+ * unit that can be Frozen by its owner on the eight tiles around it is
+ * Frozen, with one `UNITS_FROZEN` (source `COLD_AURA`) when there is at
+ * least one. Returns the state unchanged for every other unit.
  */
 export function resolveColdAuraV7(
   state: GameStateV7,
-  playerId: PlayerId,
+  giantId: UnitId,
 ): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
   if (!matchHasIceFolkV7(state)) return { state, events: [] };
-  const giants = state.units
+  const giant = state.units.find((unit) => unit.id === giantId && unit.hp > 0);
+  if (
+    giant === undefined ||
+    giant.form !== "LAND" ||
+    !unitRoleRuleV7(state, giant).abilities.includes("COLD_AURA")
+  )
+    return { state, events: [] };
+  const targets = state.units
     .filter(
       (unit) =>
-        unit.ownerId === playerId &&
-        unit.hp > 0 &&
-        unit.form === "LAND" &&
-        unitRoleRuleV7(state, unit).abilities.includes("COLD_AURA"),
+        unit.id !== giant.id &&
+        chebyshev(unit.at, giant.at) === 1 &&
+        canBeFrozenV7(state, giant.ownerId, unit),
     )
-    .sort((left, right) => left.id - right.id);
-  if (giants.length === 0) return { state, events: [] };
-  let chilled = state.chilled;
-  const events: DomainEventV7[] = [];
-  for (const giant of giants) {
-    const targets = state.units
-      .filter(
-        (unit) =>
-          unit.id !== giant.id &&
-          chebyshev(unit.at, giant.at) === 1 &&
-          canBeChilledV7(state, giant.ownerId, unit),
+    .map((unit) => unit.id);
+  if (targets.length === 0) return { state, events: [] };
+  const applied = withFrozenAppliedV7(state, state.frozen, targets);
+  return {
+    state: { ...state, frozen: applied.frozen },
+    events: [
+      unitsFrozenEventV7(giant.ownerId, giant.id, "COLD_AURA", applied.results),
+    ],
+  };
+}
+
+/** Commands a Frozen unit may still give (section 21.3). */
+const FROZEN_ALLOWED_KINDS_V7: ReadonlySet<CommandV7["kind"]> = new Set([
+  "PROMOTE",
+  "DISBAND",
+  "WAIT",
+]);
+
+/**
+ * Ice Folk Freeze (`pulp_wars-w49.37`, section 21.3): the ID of the own
+ * Frozen unit a command would use (its `unitId` unless the kind is Promote,
+ * Disband, or Wait; a Goblin Toss's passenger; a Tunnel's rider), or null.
+ */
+export function frozenUnitNamedV7(
+  state: {
+    // A retained public view captured before Ice Folk Freeze has no list;
+    // it reads as empty.
+    readonly frozen?: GameStateV7["frozen"];
+    readonly units: readonly Pick<UnitStateV7, "id" | "ownerId" | "hp">[];
+  },
+  actor: PlayerId,
+  command: CommandV7,
+): UnitId | null {
+  const frozen = state.frozen ?? [];
+  if (frozen.length === 0) return null;
+  const named: UnitId[] = [];
+  if ("unitId" in command && !FROZEN_ALLOWED_KINDS_V7.has(command.kind))
+    named.push(command.unitId);
+  if (command.kind === "TOSS") named.push(command.passengerUnitId);
+  if (command.kind === "TUNNEL" && command.rider !== null)
+    named.push(command.rider.unitId);
+  for (const unitId of named)
+    if (
+      isFrozenV7(frozen, unitId) &&
+      state.units.some(
+        (unit) => unit.id === unitId && unit.ownerId === actor && unit.hp > 0,
       )
-      .map((unit) => unit.id);
-    if (targets.length === 0) continue;
-    const applied = withChillAppliedV7(chilled, targets);
-    chilled = applied.chilled;
-    events.push(
-      unitsChilledEventV7(playerId, giant.id, "COLD_AURA", applied.results),
-    );
-  }
-  return events.length === 0
-    ? { state, events }
-    : { state: { ...state, chilled }, events };
+    )
+      return unitId;
+  return null;
 }
 
 // ------------------------------------------------------- Snow, Blizzard ---
@@ -709,13 +766,13 @@ export function shatterThresholdV7(
 /**
  * Section 5.5: whether an attack shatters its defender: the attacker is a
  * land-form unit of an Ice Folk seat attacking from distance 1; the defender
- * is Chilled (or assumed Chilled), in land form, and not of the `JUGGERNAUT`
+ * is Frozen (or assumed Frozen), in land form, and not of the `JUGGERNAUT`
  * role; and the HP the hit leaves is from 1 to the threshold.
  */
 export function attackShattersV7(input: {
   readonly attackerIceFolk: boolean;
   readonly distance: number;
-  readonly defenderChilled: boolean;
+  readonly defenderFrozen: boolean;
   readonly defender: Pick<UnitStateV7, "form" | "role">;
   readonly hpAfterHit: number;
   readonly threshold: number;
@@ -723,7 +780,7 @@ export function attackShattersV7(input: {
   return (
     input.attackerIceFolk &&
     input.distance === 1 &&
-    input.defenderChilled &&
+    input.defenderFrozen &&
     input.defender.form === "LAND" &&
     input.defender.role !== "JUGGERNAUT" &&
     input.hpAfterHit >= 1 &&

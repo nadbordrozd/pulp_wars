@@ -19,7 +19,7 @@ import {
   unitRoleRuleV7,
   type EffectiveRoleRuleV7,
   type FactionRosterV7,
-  type SluggishLookupV7,
+  type FrozenLookupV7,
 } from "../rules/ruleset-v7";
 import type {
   CoordV7,
@@ -386,6 +386,8 @@ export const CRUMBS_DEATH_CAUSES_V7: readonly string[] = Object.freeze([
   "CRUSH",
   "STOMP",
   "TRAMPLE",
+  // Ice Folk Freeze (`pulp_wars-w49.37`): a Mammoth's Stampede.
+  "STAMPEDE",
 ]);
 
 /** The canonical facts a Crumbs decision reads. */
@@ -628,7 +630,7 @@ type PrimaryReadyUnitV7 = CandyUnitFactsV7 & {
  * and a sluggish unit's Move included), then the land form.
  */
 export function candyActionRejectionV7(
-  lookup: SluggishLookupV7 & SugarRushLookupV7,
+  lookup: FrozenLookupV7 & SugarRushLookupV7,
   unit: PrimaryReadyUnitV7,
   ability: "REBAKE" | "SUGAR_TOSS",
 ): "ROLE" | "CRASHED" | "ACTED" | "EMBARKED" | null {

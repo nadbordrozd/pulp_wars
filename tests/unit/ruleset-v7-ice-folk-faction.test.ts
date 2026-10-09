@@ -4,10 +4,13 @@ import {
   BLIZZARD_RADIUS_V7,
   BOLAS_RANGE_V7,
   BRITTLE_SHATTER_HP_V7,
-  CHILL_TURNS_V7,
   COLD_BLOOD_BONUS2_V7,
   COLD_SNAP_RANGE_V7,
   COMMAND_KIND_ORDER_V7,
+  FROST_BOLT_RANGE_V7,
+  GLACIER_ICE_MOVE_BONUS_V7,
+  STAMPEDE_DAMAGE_V7,
+  STAMPEDE_RANGE_V7,
   DEEP_WINTER_RADIUS_V7,
   DEEP_WINTER_RECOVER_V7,
   DOMAIN_EVENT_KIND_ORDER_V7,
@@ -147,7 +150,6 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     expect([
       SHATTER_HP_V7,
       BRITTLE_SHATTER_HP_V7,
-      CHILL_TURNS_V7,
       BOLAS_RANGE_V7,
       COLD_SNAP_RANGE_V7,
       BLIZZARD_RADIUS_V7,
@@ -157,7 +159,16 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       ROCKFALL_ATTACK2_V7,
       PLANTED_BONUS2_V7,
       COLD_BLOOD_BONUS2_V7,
-    ]).toEqual([3, 4, 2, 2, 2, 1, 2, 6, 2, 3, 2, 1]);
+    ]).toEqual([3, 4, 2, 1, 1, 2, 6, 2, 3, 2, 1]);
+    // Ice Folk Freeze (`pulp_wars-w49.37`): Cold Snap reaches the eight
+    // tiles around the Witch (2 before), the Frost Bolt 2; the Stampede goes
+    // 3 tiles and hits for 3; Glacier adds 1 Move on an ice path.
+    expect([
+      FROST_BOLT_RANGE_V7,
+      STAMPEDE_RANGE_V7,
+      STAMPEDE_DAMAGE_V7,
+      GLACIER_ICE_MOVE_BONUS_V7,
+    ]).toEqual([2, 3, 3, 1]);
   });
 
   // The Dwarf revision (`pulp_wars-78i.3`) adds three command kinds after
@@ -169,8 +180,16 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // Dwarf crowd control (`pulp_wars-w49.33`): three more commands (62).
     // The giants' signatures (`pulp_wars-w49.30`) add SWALLOW, TOSS,
     // STOMP, and BREAK_OFF after RECOVER (66). Map curiosities round 2
-    // (`pulp_wars-737.14`) add TOSS_COIN (67).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(67);
+    // (`pulp_wars-737.14`) add TOSS_COIN (67). Ice Folk Freeze
+    // (`pulp_wars-w49.37`) adds FROST_BOLT and STAMPEDE after BREAK_OFF (69).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(69);
+    const breakOff = COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF");
+    expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 4)).toEqual([
+      "BREAK_OFF",
+      "FROST_BOLT",
+      "STAMPEDE",
+      "CAPTURE",
+    ]);
     const tractor = COMMAND_KIND_ORDER_V7.indexOf("TRACTOR_BEAM");
     expect(COMMAND_KIND_ORDER_V7.slice(tractor, tractor + 4)).toEqual([
       "TRACTOR_BEAM",
@@ -187,26 +206,31 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // Dwarf crowd control (`pulp_wars-w49.33`): four more events (105).
     // The giants' signatures (`pulp_wars-w49.30`) add ten event kinds in
     // one block after UNIT_SURFACED (115). Map curiosities round 2
-    // (`pulp_wars-737.14`) add four (119).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(119);
+    // (`pulp_wars-737.14`) add four (119). Ice Folk Freeze
+    // (`pulp_wars-w49.37`) renames UNITS_CHILLED to UNITS_FROZEN in place
+    // and adds MAMMOTH_STAMPEDED after GIANT_BROKE_OFF (120).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(120);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(
-      "UNITS_CHILLED",
+      "UNITS_FROZEN",
     );
-    // The Candy revision inserts UNIT_SUGAR_RUSHED after UNITS_CHILLED.
+    // The Candy revision inserts UNIT_SUGAR_RUSHED after UNITS_FROZEN.
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNIT_SUGAR_RUSHED")).toBe(
       "WOUNDED_TENDED",
     );
     expect(after(PLAYER_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(
-      "UNITS_CHILLED",
+      "UNITS_FROZEN",
     );
   });
 
-  it("parses the two commands and the new event and literals strictly", () => {
+  it("parses the commands and the new events and literals strictly", () => {
     const commands: readonly CommandV7[] = [
       { kind: "THROW_BOLAS", unitId: 5 as never, targetUnitId: 7 as never },
       { kind: "COLD_SNAP", unitId: 5 as never },
+      // Ice Folk Freeze (`pulp_wars-w49.37`).
+      { kind: "FROST_BOLT", unitId: 5 as never, targetUnitId: 7 as never },
+      { kind: "STAMPEDE", unitId: 5 as never, at: at(3, 3) },
     ];
     for (const command of commands) {
       expect(parseCommandV7(command), command.kind).toEqual({
@@ -221,20 +245,40 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     expect(
       parseCommandV7({ kind: "COLD_SNAP", unitId: 5, targetUnitId: 7 }).ok,
     ).toBe(false);
-    const chilled = {
-      kind: "UNITS_CHILLED",
+    const frozen = {
+      kind: "UNITS_FROZEN",
       playerId: 1,
       sourceUnitId: 5,
       source: "COLD_SNAP",
       results: [
-        { unitId: 7, sluggish: true, turnsLeft: 2 },
-        { unitId: 9, sluggish: false, turnsLeft: 2 },
+        { unitId: 7, turnsLeft: 1 },
+        { unitId: 9, turnsLeft: 2 },
       ],
     };
     const valid: readonly unknown[] = [
-      chilled,
-      { ...chilled, source: "BOLAS", results: [chilled.results[0]] },
-      { ...chilled, source: "COLD_AURA" },
+      frozen,
+      { ...frozen, source: "BOLAS", results: [frozen.results[0]] },
+      { ...frozen, source: "FROST_BOLT", results: [frozen.results[0]] },
+      { ...frozen, source: "COLD_AURA" },
+      {
+        kind: "MAMMOTH_STAMPEDED",
+        playerId: 1,
+        unitId: 5,
+        from: at(2, 2),
+        to: at(4, 2),
+        path: [at(3, 2), at(4, 2)],
+        results: [
+          {
+            unitId: 7,
+            at: at(3, 2),
+            damage: 3,
+            shieldDamage: 0,
+            dies: false,
+            shovedTo: at(3, 3),
+          },
+        ],
+      },
+      { kind: "UNIT_DIED", unitId: 5, cause: "STAMPEDE" },
       { kind: "UNIT_DIED", unitId: 5, cause: "SHATTER" },
       { kind: "FIELD_DEFENSE_DESTROYED", at: at(3, 3), reason: "TRAMPLE" },
       {
@@ -253,7 +297,7 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
             hpAfter: 10,
             curedPlague: false,
             curedBitten: false,
-            curedChill: true,
+            curedFrozen: true,
           },
         ],
       },
@@ -261,21 +305,44 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     for (const event of valid)
       expect(parseEventV7(event).ok, JSON.stringify(event)).toBe(true);
     const invalid: readonly unknown[] = [
-      { ...chilled, extra: 1 },
-      { ...chilled, source: "WAIL" },
-      { ...chilled, results: [] },
+      { ...frozen, extra: 1 },
+      { ...frozen, source: "WAIL" },
+      { ...frozen, results: [] },
       // Unsorted, duplicated, the source itself, a thawing result.
-      { ...chilled, results: [...chilled.results].reverse() },
-      { ...chilled, results: [chilled.results[0], chilled.results[0]] },
+      { ...frozen, results: [...frozen.results].reverse() },
+      { ...frozen, results: [frozen.results[0], frozen.results[0]] },
       {
-        ...chilled,
-        results: [{ unitId: 5, sluggish: true, turnsLeft: 2 }],
+        ...frozen,
+        results: [{ unitId: 5, turnsLeft: 1 }],
       },
       {
-        ...chilled,
-        results: [{ unitId: 7, sluggish: false, turnsLeft: 1 }],
+        ...frozen,
+        results: [{ unitId: 7, turnsLeft: 0 }],
       },
-      { ...chilled, sourceUnitId: null },
+      // The Ice Folk revision's Chill shape is gone.
+      {
+        ...frozen,
+        results: [{ unitId: 7, sluggish: true, turnsLeft: 2 }],
+      },
+      {
+        kind: "MAMMOTH_STAMPEDED",
+        playerId: 1,
+        unitId: 5,
+        from: at(2, 2),
+        to: at(4, 2),
+        path: [at(3, 2), at(4, 2)],
+        results: [
+          {
+            unitId: 7,
+            at: at(3, 2),
+            damage: 4,
+            shieldDamage: 0,
+            dies: false,
+            shovedTo: null,
+          },
+        ],
+      },
+      { ...frozen, sourceUnitId: null },
       {
         kind: "WOUNDED_TENDED",
         captainId: 5,
@@ -299,7 +366,7 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
             hpAfter: 10,
             curedPlague: false,
             curedBitten: false,
-            curedChill: false,
+            curedFrozen: false,
           },
         ],
       },
@@ -357,7 +424,7 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       "ICE_FOLK",
       "ORIGINAL",
     ]);
-    expect(view.chilled).toEqual([]);
+    expect(view.frozen).toEqual([]);
   });
 
   it("generates identical boards, turn orders, treasure, and PRNG with Ice Folk seats", () => {
@@ -388,7 +455,7 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
         return created.state;
       };
       const reference = create(humans);
-      expect(reference.chilled).toEqual([]);
+      expect(reference.frozen).toEqual([]);
       for (const factions of [ice, mixed]) {
         const other = create(factions);
         expect(other.board).toEqual(reference.board);
@@ -396,7 +463,7 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
         expect(other.treasureChests).toEqual(reference.treasureChests);
         expect(other.random).toEqual(reference.random);
         expect(other.cities).toEqual(reference.cities);
-        expect(other.chilled).toEqual([]);
+        expect(other.frozen).toEqual([]);
         expect(
           other.units.map((unit) => [
             unit.id,
@@ -453,7 +520,8 @@ const ROSTER = [
     "Sled",
     "RAIDER",
     "SCOUTING",
-    3,
+    // Ice Folk Freeze (`pulp_wars-w49.37`): 4 Coins (3 before).
+    4,
     10,
     4,
     2,
@@ -492,7 +560,8 @@ const ROSTER = [
     4,
     16,
     3,
-    5,
+    // Ice Folk Freeze: Defense 2 (2.5 before).
+    4,
     1,
     1,
     1,
@@ -505,8 +574,9 @@ const ROSTER = [
     "Ice Witch",
     "CAPTAIN",
     "ADMINISTRATION",
-    5,
-    12,
+    // Ice Folk Freeze: 6 Coins and 10 HP (5 and 12 before).
+    6,
+    10,
     2,
     2,
     1,
@@ -514,15 +584,16 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "CAPTURE", "BLIZZARD", "COLD_SNAP"],
+    ["ATTACK", "CAPTURE", "BLIZZARD", "COLD_SNAP", "FROST_BOLT"],
     true,
   ],
   [
     "Boulder Yeti",
     "CATAPULT",
     "SAWMILLING",
-    8,
-    12,
+    // Ice Folk Freeze: 9 Coins and 10 HP (8 and 12 before).
+    9,
+    10,
     4,
     3,
     2,
@@ -554,7 +625,8 @@ const ROSTER = [
     "JUGGERNAUT",
     null,
     null,
-    40,
+    // Ice Folk Freeze: 36 HP (40 before).
+    36,
     8,
     8,
     1,
@@ -625,7 +697,8 @@ describe("Ice Folk roster (section 3)", () => {
       role: "SWORDSMAN",
       label: "Mammoth",
       tacticalRole: "LINE",
-      cost: 6,
+      // Ice Folk Freeze: 7 Coins (6 before) and Stampede.
+      cost: 7,
       maxHp: 20,
       attack2: 5,
       defense2: 4,
@@ -635,7 +708,14 @@ describe("Ice Folk roster (section 3)", () => {
       sightRadius: 1,
       technology: "METALLURGY",
       mayUsePrimaryActionAfterMove: true,
-      abilities: ["ATTACK", "CAPTURE", "SWEEP", "TRAMPLE", "FREEZE"],
+      abilities: [
+        "ATTACK",
+        "CAPTURE",
+        "SWEEP",
+        "TRAMPLE",
+        "STAMPEDE",
+        "FREEZE",
+      ],
     });
     // The role mechanics of section 11.
     const mechanics = (role: UnitRoleIdV7) => roleMechanicsV7(role, "ICE_FOLK");
@@ -766,7 +846,7 @@ describe("Ice Folk roster (section 3)", () => {
         (state.players[0]?.coins ?? 0) - (result.state.players[0]?.coins ?? 0),
         role,
       ).toBe(cost);
-      expect(result.state.chilled).toEqual([]);
+      expect(result.state.frozen).toEqual([]);
     }
   });
 
@@ -826,11 +906,13 @@ describe("Ice Folk roster (section 3)", () => {
   it("refunds half the printed cost on Disband and never disbands a Frost Giant", () => {
     for (const [role, refund] of [
       ["FIGHTER", 1],
-      ["RAIDER", 1],
+      // Ice Folk Freeze (`pulp_wars-w49.37`): half of the Sled's 4, the
+      // Witch's 6, the Boulder Yeti's 9, and the Mammoth's 7.
+      ["RAIDER", 2],
       ["MARKSMAN", 1],
-      // (7r55: the Musk Ox, half of 4; the Mammoth, half of 6.)
+      // (7r55: the Musk Ox, half of 4.)
       ["GUARD", 2],
-      ["CAPTAIN", 2],
+      ["CAPTAIN", 3],
       ["CATAPULT", 4],
       ["KNIGHT", 4],
       ["SWORDSMAN", 3],
@@ -840,11 +922,11 @@ describe("Ice Folk roster (section 3)", () => {
           seat: 0,
           role,
           at: at(4, 3),
-          chill: { sluggish: false, turnsLeft: 1 },
+          frozen: { turnsLeft: 1 },
         },
         { seat: 1, role: "FIGHTER", at: at(1, 1) },
       ]);
-      // A Chilled unit may Disband (section 10.11); the entry goes with it.
+      // A Frozen unit may Disband (section 10.11); the entry goes with it.
       const result = playV7(state, {
         kind: "DISBAND",
         unitId: unitAtV7(state, at(4, 3)).id,
@@ -854,7 +936,7 @@ describe("Ice Folk roster (section 3)", () => {
         role,
         coinDelta: refund,
       });
-      expect(result.state.chilled).toEqual([]);
+      expect(result.state.frozen).toEqual([]);
     }
     const state = iceFieldV7([
       { seat: 0, role: "JUGGERNAUT", at: at(4, 3) },
@@ -1112,7 +1194,7 @@ describe("Ice Folk starting units and substitutions (section 10.12)", () => {
         });
         expect(unitRoleRuleV7(state, must(own[0])).label).toBe("Yeti");
       });
-      expect(state.chilled).toEqual([]);
+      expect(state.frozen).toEqual([]);
     }
   });
 
@@ -1140,7 +1222,7 @@ describe("Ice Folk starting units and substitutions (section 10.12)", () => {
     );
     const created = newUnitsV7(giant.state, giantResult.state);
     expect(created).toHaveLength(1);
-    expect(created[0]).toMatchObject({ role: "JUGGERNAUT", hp: 40, maxHp: 40 });
+    expect(created[0]).toMatchObject({ role: "JUGGERNAUT", hp: 36, maxHp: 36 });
     expect(unitRoleRuleV7(giantResult.state, must(created[0])).label).toBe(
       "Frost Giant",
     );
@@ -1265,7 +1347,7 @@ describe("Ice Folk Showcase (section 2.4)", () => {
     for (const unit of own)
       expect(unit.hp).toBe(effectiveRoleRuleV7(unit.role, "ICE_FOLK").maxHp);
     // No unit is Chilled at setup; every technology is researched.
-    expect(state.chilled).toEqual([]);
+    expect(state.frozen).toEqual([]);
     expect(
       state.players.find((player) => player.id === iceId)?.researchedTechs,
     ).toEqual(TECHNOLOGY_IDS_V7);
@@ -1332,7 +1414,7 @@ describe("Ice Folk Showcase (section 2.4)", () => {
 });
 
 describe("Ice Folk public unit stats (section 11)", () => {
-  it("carries chill for every unit and the iceFolk block for units of an Ice Folk seat", () => {
+  it("carries frozen for every unit and the iceFolk block for units of an Ice Folk seat", () => {
     const state = iceFieldV7([
       { seat: 0, role: "FIGHTER", at: at(8, 7) },
       { seat: 0, role: "CATAPULT", at: at(4, 3) },
@@ -1342,14 +1424,14 @@ describe("Ice Folk public unit stats (section 11)", () => {
         seat: 1,
         role: "FIGHTER",
         at: at(5, 2),
-        chill: { sluggish: true, turnsLeft: 2 },
+        frozen: { turnsLeft: 1 },
       },
       { seat: 1, role: "MARKSMAN", at: at(1, 1) },
     ]);
     const stats = (where: CoordV7) =>
       publicUnitStatsV7(state, unitAtV7(state, where));
-    expect(stats(at(5, 2)).chill).toEqual({ sluggish: true, turnsLeft: 2 });
-    expect(stats(at(1, 1)).chill).toBeNull();
+    expect(stats(at(5, 2)).frozen).toEqual({ turnsLeft: 1 });
+    expect(stats(at(1, 1)).frozen).toBeNull();
     expect(stats(at(1, 1))).not.toHaveProperty("iceFolk");
     expect(stats(at(8, 7)).iceFolk).toEqual({
       onSnow: true,

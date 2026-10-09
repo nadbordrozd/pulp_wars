@@ -301,8 +301,10 @@ describe("moving on ice", () => {
     expect(destination.slide).toEqual([
       { from: FROZEN_UI_V7.bridgeHead, tiles: FROZEN_UI_V7.bridge },
     ]);
-    // No tile along the slide is offered.
-    for (const tile of FROZEN_UI_V7.bridge.slice(0, -1))
+    // No tile along the slide is offered (Ice Folk Freeze,
+    // `pulp_wars-w49.37`: but Glacier's extra point reaches the first bridge
+    // tile by a diagonal step, which starts no slide).
+    for (const tile of FROZEN_UI_V7.bridge.slice(1, -1))
       expect(
         boardPlan(host).targets.some((target) => at(target.at) === at(tile)),
       ).toBe(false);

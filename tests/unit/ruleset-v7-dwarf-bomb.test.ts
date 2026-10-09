@@ -273,15 +273,16 @@ describe("the Bomb Run command (section 6.2)", () => {
     expect(
       refusalV7(afloat, bombV7(afloat, at(5, 2), at(5, 4), at(4, 5))),
     ).toEqual({ code: "BOMB_RUN_NOT_LEGAL", params: { reason: "EMBARKED" } });
-    // Row 5: a sluggish Gyrocopter may Move but cannot bomb.
+    // Row 5: Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen Gyrocopter
+    // neither moves nor bombs (the old `SLUGGISH` reason is gone).
     const sluggish = checkedV7({
       ...state,
-      chilled: [{ unitId: gyro.id, sluggish: true, turnsLeft: 2 }],
+      frozen: [{ unitId: gyro.id, turnsLeft: 1 }],
     });
     expect(
       refusalV7(sluggish, bombV7(sluggish, at(5, 2), at(5, 4), at(4, 5))),
-    ).toEqual({ code: "BOMB_RUN_NOT_LEGAL", params: { reason: "SLUGGISH" } });
-    expect(offeredOfV7(sluggish, at(5, 2), "MOVE").length).toBeGreaterThan(0);
+    ).toEqual({ code: "UNIT_FROZEN", params: { unitId: gyro.id } });
+    expect(offeredOfV7(sluggish, at(5, 2), "MOVE")).toEqual([]);
     // Rows 6 and 7: a target, hostile.
     expect(
       refusalV7(state, {

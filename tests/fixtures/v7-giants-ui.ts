@@ -206,7 +206,7 @@ export function giantsOverstrideFixtureV7(): GameStateV7 {
   );
 }
 
-/** Glacial Smash: the Frost Giant, a Chilled Guard, two Humans round it. */
+/** Glacial Smash: the Frost Giant, a Frozen Guard, two Humans round it. */
 export function giantsGlacialFixtureV7(): GameStateV7 {
   const at = GIANTS_UI_V7.glacial;
   return unlockedV7(
@@ -218,7 +218,7 @@ export function giantsGlacialFixtureV7(): GameStateV7 {
           role: "GUARD",
           at: at.target,
           hp: 14,
-          chill: { sluggish: false, turnsLeft: 1 },
+          frozen: { turnsLeft: 1 },
         },
         { seat: 1, role: "FIGHTER", at: at.shardFighter },
         { seat: 1, role: "KNIGHT", at: at.shardKnight },

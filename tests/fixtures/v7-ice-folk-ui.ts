@@ -18,7 +18,12 @@ import { martianUiFieldV7, type MartianUiPieceV7 } from "./v7-martian-ui";
  * the dev server.
  */
 export interface IceFolkUiPieceV7 extends MartianUiPieceV7 {
-  /** A Chill entry: FROZEN (sluggish), FROSTED, or THAWING (turnsLeft 0). */
+  /**
+   * The Ice Folk revision's Chill markers. Ice Folk Freeze
+   * (`pulp_wars-w49.37`): FROZEN and FROSTED both become a Frozen entry
+   * (`turnsLeft` 1), and THAWING no entry; the interface bead
+   * (`pulp_wars-w49.38`) reworks this fixture.
+   */
   readonly chill?: "FROZEN" | "FROSTED" | "THAWING";
 }
 
@@ -70,12 +75,11 @@ export function iceFolkUiFieldV7(
   });
   return checkedV7({
     ...terrained,
-    chilled: pieces
-      .filter((piece) => piece.chill !== undefined)
+    frozen: pieces
+      .filter((piece) => piece.chill !== undefined && piece.chill !== "THAWING")
       .map((piece) => ({
         unitId: unitAtV7(terrained, piece.at).id,
-        sluggish: piece.chill === "FROZEN",
-        turnsLeft: (piece.chill === "THAWING" ? 0 : 2) as 0 | 1 | 2,
+        turnsLeft: 1 as const,
       }))
       .sort((left, right) => left.unitId - right.unitId),
   });
@@ -88,10 +92,14 @@ export const ICE_FOLK_UI_V7 = {
   sled: { x: 6, y: 2 },
   bolasTarget: { x: 4, y: 2 },
   bolasPartner: { x: 3, y: 2 },
-  /** Witch (her Blizzard on Snow) with an unchilled and a Frosted enemy. */
+  /**
+   * Witch (her Blizzard on Snow) with an unchilled and a Frosted enemy.
+   * Ice Folk Freeze (`pulp_wars-w49.37`): both next to her, inside the
+   * Cold Snap's new reach of 1 (they stood two tiles away before).
+   */
   witch: { x: 6, y: 6 },
-  snapFrozen: { x: 4, y: 6 },
-  snapFrosted: { x: 6, y: 4 },
+  snapFrozen: { x: 5, y: 6 },
+  snapFrosted: { x: 6, y: 5 },
   /** Mammoth: a target on Field Defense with an enemy on each flank. */
   mammoth: { x: 9, y: 3 },
   sweepTarget: { x: 9, y: 2 },

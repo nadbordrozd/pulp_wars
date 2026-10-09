@@ -10216,10 +10216,7 @@ export class Ruleset7DomAppView {
       // Each target is labelled Frozen or Frosted on the board; the cast
       // button names them for assistive technology.
       const targets = preview.targets
-        .map(
-          (target) =>
-            `${nameOf(target.unitId)}: ${target.becomesSluggish ? "Will be Frozen" : "Will be Frosted"}`,
-        )
+        .map((target) => `${nameOf(target.unitId)}: Will be Frozen`)
         .join(". ");
       const cast = button(
         this.#document,
@@ -12109,7 +12106,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r66",
+    rulesetId: "pulp-wars-poc-7r67",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),

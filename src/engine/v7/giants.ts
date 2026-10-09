@@ -18,7 +18,7 @@ import {
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type FactionRosterV7,
-  type SluggishLookupV7,
+  type FrozenLookupV7,
   type UnitRoleAbilityV7,
 } from "../rules/ruleset-v7";
 import {
@@ -356,7 +356,7 @@ interface PrimaryReadyFactsV7 {
  * (or may not act after moving).
  */
 export function giantPrimaryUsedV7(
-  lookup: SluggishLookupV7,
+  lookup: FrozenLookupV7,
   unit: PrimaryReadyFactsV7,
 ): boolean {
   return (
@@ -490,7 +490,7 @@ export type SwallowRejectionV7 =
  */
 export function swallowRejectionV7(
   lookup: FactionRosterV7 &
-    SluggishLookupV7 & {
+    FrozenLookupV7 & {
       readonly setup: GameStateV7["setup"];
       readonly humanPlayerId: PlayerId;
       readonly ice: readonly { readonly at: CoordV7 }[];
@@ -569,7 +569,7 @@ export function unitLandedThisTurnV7(activation: UnitActivationV7): boolean {
  * the first reason the Troll may not throw at all, or null.
  */
 export function tossActorRejectionV7(
-  lookup: FactionRosterV7 & SluggishLookupV7,
+  lookup: FactionRosterV7 & FrozenLookupV7,
   troll: GiantUnitFactsV7 & { readonly activation: UnitActivationV7 },
 ): TossRejectionV7 | null {
   if (!unitRoleRuleV7(lookup, troll).abilities.includes("TOSS"))
@@ -669,7 +669,7 @@ export type StompRejectionV7 =
 
 /** Section 6.4: the Stomp legality after the ordinary unit errors. */
 export function stompRejectionV7(
-  lookup: FactionRosterV7 & SluggishLookupV7,
+  lookup: FactionRosterV7 & FrozenLookupV7,
   unit: GiantUnitFactsV7 & { readonly activation: UnitActivationV7 },
 ): StompRejectionV7 | null {
   if (!unitRoleRuleV7(lookup, unit).abilities.includes("STOMP"))
@@ -770,7 +770,7 @@ export type BreakOffRejectionV7 =
  * when the home city is full, and count against it afterwards.
  */
 export function breakOffActorRejectionV7(
-  lookup: FactionRosterV7 & SluggishLookupV7 & SugarRushLookupV7,
+  lookup: FactionRosterV7 & FrozenLookupV7 & SugarRushLookupV7,
   giant: GiantUnitFactsV7 & {
     readonly activation: UnitActivationV7;
     readonly homeCityId: number | null;
@@ -1277,7 +1277,7 @@ export function resolveFixedHitsV7(
   state: GameStateV7,
   creditUnitId: UnitId,
   results: readonly CombatSplashEntryV7[],
-  cause: "CRUSH" | "STOMP" | "TRAMPLE",
+  cause: "CRUSH" | "STOMP" | "TRAMPLE" | "STAMPEDE",
   events: DomainEventV7[],
 ): GameStateV7 {
   if (results.length === 0) return state;

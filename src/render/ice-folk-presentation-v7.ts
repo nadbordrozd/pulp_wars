@@ -3,7 +3,6 @@ import {
   BOLAS_RANGE_V7,
   BRITTLE_SHATTER_HP_V7,
   COLD_BLOOD_BONUS2_V7,
-  COLD_SNAP_RANGE_V7,
   DEEP_WINTER_RADIUS_V7,
   DEEP_WINTER_RECOVER_V7,
   PLANTED_BONUS2_V7,
@@ -14,7 +13,7 @@ import {
   effectiveRoleRuleV7,
   unitFactionV7,
   roleMechanicsV7,
-  sluggishUnitMovedV7,
+  unitIsFrozenV7,
   technologyCapabilitiesV7,
   unitRoleRuleV7,
   type BolasPreviewV7,
@@ -110,7 +109,10 @@ function pluralLabel(label: string): string {
 export const FROZEN_LABEL_V7 = "Frozen";
 export const FROSTED_LABEL_V7 = "Frosted";
 export const THAWING_LABEL_V7 = "Thawing";
-export const FROZEN_STATUS_V7 = "Frozen: move or act, not both";
+// Ice Folk Freeze (`pulp_wars-w49.37`): the minimal text of the new rule;
+// the interface bead (`pulp_wars-w49.38`) rewrites the Ice Folk texts.
+export const FROZEN_STATUS_V7 =
+  "Frozen: it cannot move or act until it thaws, and does not strike back";
 /** "Frosted: an Ice Folk blow that leaves it at {n} HP or less shatters it". */
 export function frostedStatusTextV7(threshold: number): string {
   return `Frosted: an Ice Folk blow that leaves it at ${threshold} HP or less shatters it`;
@@ -141,8 +143,8 @@ export const SNOW_TOOLTIP_OTHERS_V7 =
 export const BLIZZARD_TOOLTIP_V7 =
   "Blizzard: Snow, and Ice Folk units here take half damage from ranged attacks";
 export const BOLAS_LABEL_V7 = "Bolas";
-export const BOLAS_TOOLTIP_V7 = `Chill a hostile unit within ${BOLAS_RANGE_V7} tiles. No damage.`;
-export const BOLAS_PICK_V7 = "Choose a unit to chill";
+export const BOLAS_TOOLTIP_V7 = `Freeze a hostile unit within ${BOLAS_RANGE_V7} tiles. No damage.`;
+export const BOLAS_PICK_V7 = "Choose a unit to freeze";
 export const WILL_BE_FROZEN_V7 = "Will be Frozen";
 export const WILL_BE_FROSTED_V7 = "Will be Frosted";
 /** "{unit} can then shatter it". */
@@ -152,8 +154,8 @@ export function canThenShatterTextV7(units: readonly string[]): string {
 export const BOLAS_NO_TARGET_V7 = `No enemy within ${BOLAS_RANGE_V7} tiles`;
 export const FROZEN_IT_MOVED_V7 = "Frozen: it moved";
 export const COLD_SNAP_LABEL_V7 = "Cold Snap";
-export const COLD_SNAP_TOOLTIP_V7 = `Chill every hostile unit within ${COLD_SNAP_RANGE_V7} tiles.`;
-export const COLD_SNAP_NO_TARGET_V7 = `No enemy within ${COLD_SNAP_RANGE_V7} tiles`;
+export const COLD_SNAP_TOOLTIP_V7 = "Freeze every hostile unit next to her.";
+export const COLD_SNAP_NO_TARGET_V7 = "No enemy next to her";
 export const COLD_SNAP_CAST_V7 = "Cast Cold Snap";
 export const SABRETOOTH_INFO_V7 = "Prowl: zones of control do not stop it";
 export const MOUNTAIN_BORN_INFO_V7 =
@@ -182,18 +184,18 @@ export function boulderThrowTextV7(planted: boolean): string {
 export type ChillStateV7 = "FROZEN" | "FROSTED" | "THAWING";
 
 /**
- * Section 13.1 "Chill markers": Frozen (`sluggish`), Frosted (Chilled, not
- * sluggish), Thawing (`turnsLeft` 0), or null without an entry.
+ * Section 13.1 markers. Ice Folk Freeze (`pulp_wars-w49.37`): a unit with a
+ * `frozen` entry is Frozen; Frosted and Thawing no longer occur (the
+ * interface bead `pulp_wars-w49.38` replaces these markers).
  */
 export function chillStateV7(
-  view: Pick<PlayerViewV7, "chilled">,
+  view: Pick<PlayerViewV7, "frozen">,
   unitId: number,
 ): ChillStateV7 | null {
-  if (view.chilled.length === 0) return null;
-  const entry = view.chilled.find((candidate) => candidate.unitId === unitId);
-  if (entry === undefined) return null;
-  if (entry.sluggish) return "FROZEN";
-  return entry.turnsLeft >= 1 ? "FROSTED" : "THAWING";
+  if (view.frozen.length === 0) return null;
+  return view.frozen.some((candidate) => candidate.unitId === unitId)
+    ? "FROZEN"
+    : null;
 }
 
 /** The public Ice Folk mechanics of a visible unit, or undefined. */
@@ -297,7 +299,7 @@ export function frozenAfterMoveV7(
   return (
     unit.ownerId === view.viewer.id &&
     unit.form === "LAND" &&
-    sluggishUnitMovedV7(view, unit) &&
+    unitIsFrozenV7(view, unit) &&
     !unit.activation.attacked &&
     !unit.activation.specialActed
   );
@@ -326,12 +328,12 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
   const giants = iceFolkRolesWith("COLD_AURA").map(label);
   return [
     [
-      "Chill",
-      `a ${BOLAS_LABEL_V7}, a ${COLD_SNAP_LABEL_V7}, or a ${joinOr(giants)}'s aura frosts a unit; on its first frozen turn it may move or act, not both, and frost that is kept up does not slow it again.`,
+      "Frozen",
+      `a ${BOLAS_LABEL_V7}, a ${COLD_SNAP_LABEL_V7}, a Frost Bolt, or a ${joinOr(giants)}'s aura freezes a unit: on its owner's next turn it cannot move or act, it does not strike back while Frozen, and it thaws at the end of that turn.`,
     ],
     [
       "Shatter",
-      `an Ice Folk blow from an adjacent tile that leaves a frosted unit at ${SHATTER_HP_V7} HP or less kills it, with no blow back, no Grave, and no explosion.`,
+      `an Ice Folk blow from an adjacent tile that leaves a Frozen unit at ${SHATTER_HP_V7} HP or less kills it, with no blow back, no Grave, and no explosion.`,
     ],
     [
       "Brittle",
@@ -347,15 +349,15 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       COLD_SNAP_LABEL_V7,
-      `an ${joinOr(witches)} chills every hostile unit within ${COLD_SNAP_RANGE_V7} tiles.`,
+      `an ${joinOr(witches)} freezes every hostile unit next to her, or one with a Frost Bolt up to two tiles away; one of the two a turn.`,
     ],
     [
       BOLAS_LABEL_V7,
-      `a ${joinOr(sledders)} chills one hostile unit within ${BOLAS_RANGE_V7} tiles, without damage.`,
+      `a ${joinOr(sledders)} freezes one hostile unit within ${BOLAS_RANGE_V7} tiles, without damage.`,
     ],
     [
       "Cold Blood",
-      `a ${joinOr(hunters)} has +${half(COLD_BLOOD_BONUS2_V7)} Attack against a frosted unit.`,
+      `a ${joinOr(hunters)} has +${half(COLD_BLOOD_BONUS2_V7)} Attack against a Frozen unit.`,
     ],
     [
       "Sweep and Trample",
@@ -376,7 +378,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
     ["Prowl", `zones of control do not stop a ${joinOr(prowlers)}.`],
     [
       "Cold Aura",
-      `a ${joinOr(giants)} frosts every hostile unit next to it at the start of its owner's turn.`,
+      `a ${joinOr(giants)} freezes every hostile unit next to it when it ends its own Move.`,
     ],
     [
       "Deep Winter",
@@ -415,6 +417,10 @@ export function iceFolkAbilityNameV7(
       return BLIZZARD_LABEL_V7;
     case "COLD_SNAP":
       return COLD_SNAP_LABEL_V7;
+    case "FROST_BOLT":
+      return "Frost Bolt";
+    case "STAMPEDE":
+      return "Stampede";
     case "BOULDERS":
       return "Boulders";
     case "PROWL":
@@ -440,7 +446,7 @@ export function iceFolkAbilityDescriptionV7(
     case "BOLAS":
       return BOLAS_TOOLTIP_V7;
     case "COLD_BLOOD":
-      return `+${half(COLD_BLOOD_BONUS2_V7)} Attack against a frosted unit.`;
+      return `+${half(COLD_BLOOD_BONUS2_V7)} Attack against a Frozen unit.`;
     case "SWEEP":
       return `Its attack also deals ${SWEEP_DAMAGE_V7} to the hostile units on both sides of its target.`;
     case "TRAMPLE":
@@ -506,7 +512,7 @@ export function iceFolkRoleUnlockTextV7(role: UnitRoleIdV7): string {
 }
 
 /** The Ice Folk technology unlock texts of section 4. */
-export const WITCH_SUPPORT_UNLOCK_TEXT_V7 = `${pluralLabel(iceFolkLabelV7("CAPTAIN"))} cast ${COLD_SNAP_LABEL_V7} on enemies within ${COLD_SNAP_RANGE_V7} tiles`;
+export const WITCH_SUPPORT_UNLOCK_TEXT_V7 = `${pluralLabel(iceFolkLabelV7("CAPTAIN"))} cast ${COLD_SNAP_LABEL_V7} on adjacent enemies, or a Frost Bolt`;
 export const DEEP_WINTER_UNLOCK_TEXT_V7 = `Snow spreads ${numberWord(DEEP_WINTER_RADIUS_V7)} tiles from your city centers; Recover heals ${DEEP_WINTER_RECOVER_V7} in your territory`;
 export const BRITTLE_UNLOCK_TEXT_V7 = `Shatter at ${BRITTLE_SHATTER_HP_V7} HP or less`;
 
@@ -723,7 +729,8 @@ export function bolasPreviewLinesV7(
     return unit === undefined ? [] : [unitName(view, unit)];
   });
   return [
-    preview.becomesSluggish ? WILL_BE_FROZEN_V7 : WILL_BE_FROSTED_V7,
+    // Ice Folk Freeze: every Bolas target is Frozen (renewed or new).
+    WILL_BE_FROZEN_V7,
     ...(setups.length === 0 ? [] : [canThenShatterTextV7(setups)]),
   ];
 }
@@ -733,15 +740,12 @@ export function chillTargetLabelV7(becomesSluggish: boolean): string {
   return becomesSluggish ? FROZEN_LABEL_V7 : FROSTED_LABEL_V7;
 }
 
-/** The Cold Snap summary: "Chills 3 units: 2 Frozen, 1 Frosted". */
+/**
+ * The Cold Snap summary. Ice Folk Freeze (`pulp_wars-w49.37`): "Freezes 3
+ * units" (every target is Frozen; the interface bead revisits the text).
+ */
 export function coldSnapSummaryV7(preview: ColdSnapPreviewV7): string {
-  const frozen = preview.targets.filter((target) => target.becomesSluggish);
-  const frosted = preview.targets.length - frozen.length;
-  const parts = [
-    ...(frozen.length > 0 ? [`${frozen.length} Frozen`] : []),
-    ...(frosted > 0 ? [`${frosted} Frosted`] : []),
-  ];
-  return `Chills ${plural(preview.targets.length, "unit")}: ${parts.join(", ")}`;
+  return `Freezes ${plural(preview.targets.length, "unit")}`;
 }
 
 /**
@@ -765,7 +769,7 @@ export function iceFolkAbilityUnavailableTextV7(
     unit.activation.captured
   )
     return null;
-  if (sluggishUnitMovedV7(view, unit)) return FROZEN_IT_MOVED_V7;
+  if (unitIsFrozenV7(view, unit)) return FROZEN_IT_MOVED_V7;
   if (unit.activation.handled) return null;
   return kind === "THROW_BOLAS" ? BOLAS_NO_TARGET_V7 : COLD_SNAP_NO_TARGET_V7;
 }
@@ -793,7 +797,7 @@ export function iceFolkBoundaryNoticeV7(
     capitalized(possessive(after, playerId));
   let sweeper: PublicUnitV7 | undefined;
   for (const event of events) {
-    if (event.kind === "UNITS_CHILLED") {
+    if (event.kind === "UNITS_FROZEN") {
       if (event.results.length === 0) continue;
       const targetsViewer = event.results.some(
         (result) => unitById(result.unitId)?.ownerId === viewerId,
@@ -802,11 +806,11 @@ export function iceFolkBoundaryNoticeV7(
       if (event.source === "BOLAS") {
         const target = unitById(event.results[0]?.unitId ?? -1);
         parts.push(
-          `${owner(event.playerId)} ${iceFolkLabelV7("RAIDER")} chilled a ${target === undefined ? "unit" : unitName(after, target)}`,
+          `${owner(event.playerId)} ${iceFolkLabelV7("RAIDER")} froze a ${target === undefined ? "unit" : unitName(after, target)}`,
         );
       } else
         parts.push(
-          `${owner(event.playerId)} ${iceFolkLabelV7(event.source === "COLD_SNAP" ? "CAPTAIN" : "JUGGERNAUT")} chilled ${event.results.length} unit${event.results.length === 1 ? "" : "s"}`,
+          `${owner(event.playerId)} ${iceFolkLabelV7(event.source === "COLD_SNAP" || event.source === "FROST_BOLT" ? "CAPTAIN" : "JUGGERNAUT")} froze ${event.results.length} unit${event.results.length === 1 ? "" : "s"}`,
         );
     } else if (event.kind === "COMBAT_RESOLVED") {
       const attacker = unitById(event.preview.attackerId);

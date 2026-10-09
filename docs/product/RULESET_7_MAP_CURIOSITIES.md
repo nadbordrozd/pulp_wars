@@ -1596,7 +1596,7 @@ Spider. In addition:
 | Goblin                 | Gang Up, Kaboom, and death blasts work on neutral units; Plunder and the bounty both pay the credited Goblin seat.                                                                                                                                               |
 | Dinosaur               | A neutral kill grows a dinosaur. Charge! damages a guard but never pushes it. Eggs are never on or next to a gate (Eggs lie within 1 of a centre).                                                                                                               |
 | Martian                | No Downed Saucer in a Martian match. Mind Control and the Tractor Beam never take a neutral unit. A Saucer or Mothership that flies onto a gate stops and traverses; a Tractor Beam pull or Beam Down onto a gate does not traverse.                             |
-| Ice Folk               | Chill, Bolas, Cold Snap, and the Cold Aura skip neutral units. A Glide onto a gate stops there; gates are land, so no slide reaches one.                                                                                                                         |
+| Ice Folk               | Frozen never applies to a neutral unit: Bolas, Frost Bolt, Cold Snap, the Cold Aura, Black Ice, Frostbite, and the shards skip it (Chill until `pulp_wars-w49.37`). A Glide onto a gate stops there; gates are land, so no slide reaches one.                    |
 | Dwarf                  | A gate is never a tunnel or rider destination (a tunnel may pass under it). A Gyrocopter stops on a gate and traverses. Knockback never moves a neutral unit; Knockback onto a gate does not traverse. Constructs gain nothing from the Well's `HEAL`.           |
 | Candy                  | Splat and every Candy status skip neutral units (the round-1 "no status sticks" rule). A neutral step is not a `MOVE`: it never eats Crumbs. A unit that traverses eats Crumbs on the entry gate only. A Rushed unit's extra point never carries it past a gate. |
 | Naval                  | A boat or embarked unit within a saucer's perimeter or next to a guard provokes it, and a Graveyard Zombie attacks one it can reach from the shore. Afloat units never traverse or toss.                                                                         |
@@ -1957,7 +1957,8 @@ follows:
 - **The giants' signatures** (`pulp_wars-w49.30`). No neutral breed has a
   signature (their abilities are `ATTACK` and the Ray Gunner's
   `HEAT_RAY`). Swallow refuses every neutral unit (`IMMUNE`), a Crushing
-  Shove never pushes one, and the Glacial Smash shards never Chill one. A
+  Shove never pushes one, and the Glacial Smash shards never freeze one
+  (Ice Folk Freeze, `pulp_wars-w49.37`: Frozen, Chill before). A
   Goblin Toss, a Break Off, and a regurgitation never place a unit on a
   curiosity tile, so never on a gate; an Overstride is a `MOVE`, so it
   stops on a gate and traverses, and tramples a guard or Bigfoot it steps

@@ -319,9 +319,7 @@ describe("Gallery animation preview scenes", () => {
       "UNIT_MIND_CONTROLLED",
     );
     expect(kinds("MARTIAN", "KNIGHT", "TRACTOR_BEAM")).toContain("UNIT_PULLED");
-    expect(kinds("ICE_FOLK", "CAPTAIN", "COLD_SNAP")).toContain(
-      "UNITS_CHILLED",
-    );
+    expect(kinds("ICE_FOLK", "CAPTAIN", "COLD_SNAP")).toContain("UNITS_FROZEN");
     expect(kinds("UNDEAD", "MARKSMAN", "WAIL")).toContain("WAIL_RESOLVED");
     expect(galleryDemoCuesV7("UNDEAD", "MARKSMAN")).toEqual(["WAIL"]);
     expect(galleryDemoCuesV7("DWARF", "RAIDER")).toEqual(["BOMB_RUN"]);

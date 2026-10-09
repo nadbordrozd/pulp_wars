@@ -13,7 +13,6 @@ import {
   technologyCapabilitiesV7,
   unitCapabilitiesV7,
   unitIsMountainBornV7,
-  unitIsSluggishV7,
   unitMovementModeV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
@@ -789,8 +788,8 @@ export function applyBombRunV7(
     return kit.rejected(original, "UNIT_ALREADY_ACTED", { unitId: gyro.id });
   if (gyro.form !== "LAND")
     return kit.rejected(original, "BOMB_RUN_NOT_LEGAL", { reason: "EMBARKED" });
-  if (unitIsSluggishV7(state, gyro))
-    return kit.rejected(original, "BOMB_RUN_NOT_LEGAL", { reason: "SLUGGISH" });
+  // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen Gyrocopter is refused
+  // before this (`UNIT_FROZEN`); the old `SLUGGISH` reason is gone.
   const target = state.units.find(
     (unit) => unit.id === command.targetUnitId && unit.hp > 0,
   );

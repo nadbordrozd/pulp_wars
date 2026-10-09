@@ -574,6 +574,13 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // hit leaves its rising only for a land-form unit (as a splash death),
     // and an embarked holder's victim is digested, never released afloat.
     "src/engine/v7/giants.ts": 7,
+    // Ice Folk Freeze (`pulp_wars-w49.37`): the Frost Giant's Cold Aura
+    // freezes only when the Giant ends its Move in land form (an embarked
+    // Giant, an Egg, and a boat freeze nothing), and a Stampede needs the
+    // Mammoth in land form (an embarked one is refused `EMBARKED`; an Egg
+    // never reaches it).
+    "src/engine/v7/ice-folk.ts": 1,
+    "src/engine/v7/stampede.ts": 1,
     "src/engine/v7/dwarf-reducer.ts": 5,
     // The ninth unit (`pulp_wars-w49.17`, 7r55): the attacks a unit has in
     // a turn (`attackAllowanceV7`: an Egg and an embarked unit have the one

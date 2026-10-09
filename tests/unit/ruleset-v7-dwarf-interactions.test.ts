@@ -101,7 +101,7 @@ describe("abilities never find a mound (sections 5.3 and 13)", () => {
       kind: "COLD_SNAP",
       unitId: unitAtV7(ice.state, at(5, 4)).id,
     });
-    expect(snap.state.chilled.map((entry) => entry.unitId)).not.toContain(
+    expect(snap.state.frozen.map((entry) => entry.unitId)).not.toContain(
       ice.moleId,
     );
     const goblin = moundAgainst("GOBLIN", [

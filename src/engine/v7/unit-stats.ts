@@ -49,7 +49,7 @@ import {
 import { attackAllowanceV7, matchHasDwarvesV7, unitIsDugInV7 } from "./dwarf";
 import { crackedDefense2V7, unitIsCrackedV7 } from "./ninth-unit";
 import {
-  chillOfV7,
+  frozenEntryOfV7,
   isBlizzardV7,
   matchHasIceFolkV7,
   isSnowV7,
@@ -311,11 +311,10 @@ export interface PublicUnitStatsV7 {
    */
   readonly mindControl?: PublicMindControlV7 | null;
   /**
-   * The Ice Folk revision: the unit's Chill entry (`null` without one);
-   * present for every unit.
+   * Ice Folk Freeze (`pulp_wars-w49.37`): the unit's Frozen entry (`null`
+   * without one); present for every unit.
    */
-  readonly chill: {
-    readonly sluggish: boolean;
+  readonly frozen: {
     readonly turnsLeft: number;
   } | null;
   /**
@@ -414,11 +413,9 @@ export function publicUnitStatsV7(
   // Map curiosities (section 10.5): the controller's research, empty for
   // the neutral owner (it throws for any other unknown owner).
   const research = ownerResearchedTechsV7(state, unit.ownerId);
-  const chillEntry = chillOfV7(state.chilled, unit.id);
-  const chill =
-    chillEntry === undefined
-      ? null
-      : { sluggish: chillEntry.sluggish, turnsLeft: chillEntry.turnsLeft };
+  const frozenEntry = frozenEntryOfV7(state.frozen, unit.id);
+  const frozen =
+    frozenEntry === undefined ? null : { turnsLeft: frozenEntry.turnsLeft };
   if (unit.form === "EGG") return eggStats(state, unit, role.label);
   // The Mind Control revision (section 2): the labels, stats, and faction
   // blocks follow the unit's kind; unit-level technology is the
@@ -813,7 +810,7 @@ export function publicUnitStatsV7(
         ? ["Risen: will not rise again"]
         : []),
     ],
-    chill,
+    frozen,
     submerged: unitIsSubmergedV7(state, unit),
     boardableAt: unit.form === "NAVAL" ? boardableAtV7(unit.maxHp) : null,
     ...(matchHasIceFolkV7(state)
@@ -1040,7 +1037,7 @@ function eggStats(
     ],
     abilities: [],
     statuses: [],
-    chill: null,
+    frozen: null,
     submerged: false,
     boardableAt: null,
     // The frozen sea: an Egg is never afloat.

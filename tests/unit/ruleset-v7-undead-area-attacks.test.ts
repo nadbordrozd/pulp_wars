@@ -644,8 +644,12 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // immediately after COMBAT_RESOLVED, before WAIL_RESOLVED. Was 86
     // (COMBAT_RESOLVED + 2): Dwarf crowd control (`pulp_wars-w49.33`, 7r60)
     // inserted WHIRL_RESOLVED and BARRICADE_ATTACKED after UNIT_BOMBED, so
-    // WAIL_RESOLVED is at 88 (COMBAT_RESOLVED + 4).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(88);
+    // WAIL_RESOLVED is at 88 (COMBAT_RESOLVED + 4). Map curiosities round 2
+    // (`pulp_wars-737.14`) insert GATE_DISPLACED, GATE_TRAVERSED, and
+    // GATE_BLOCKED after UNIT_MOVED, and Ice Folk Freeze (`pulp_wars-w49.37`)
+    // MAMMOTH_STAMPEDED after GIANT_BROKE_OFF, both before COMBAT_RESOLVED:
+    // 92 (was 88).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(92);
     expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(
       DOMAIN_EVENT_KIND_ORDER_V7.indexOf("COMBAT_RESOLVED") + 4,
     );

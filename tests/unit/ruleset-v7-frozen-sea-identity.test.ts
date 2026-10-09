@@ -72,17 +72,17 @@ const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
 // identities of tunings 5 and 6).
 describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix, then 7r46 and 7r47 for tunings 1 and 2)", () => {
   it("is 7r47 with 7r44 to 7r46 last in the gap-free prior list and their save keys obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r66");
-    expect(PRIOR_RULESET_7_IDS.slice(-23, -19)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r67");
+    expect(PRIOR_RULESET_7_IDS.slice(-24, -20)).toEqual([
       "pulp-wars-poc-7r43",
       "pulp-wars-poc-7r44",
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(65);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(66);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r66.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-22, -19)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r67.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-23, -20)).toEqual([
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
       "pulpWars.save.v7r46.current",
@@ -95,7 +95,7 @@ describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r66");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r67");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r44" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(
@@ -143,7 +143,7 @@ describe("the frozen sea shapes", () => {
       order[order.indexOf(kind) + 1];
     expect(after(COMMAND_KIND_ORDER_V7, "COLD_SNAP")).toBe("FREEZE");
     expect(after(COMMAND_KIND_ORDER_V7, "FREEZE")).toBe("TUNNEL");
-    expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_CHILLED")).toBe(
+    expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_FROZEN")).toBe(
       "WATER_FROZEN",
     );
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "WATER_FROZEN")).toBe(

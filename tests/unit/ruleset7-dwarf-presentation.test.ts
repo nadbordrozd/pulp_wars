@@ -530,7 +530,7 @@ describe("Dwarf previews (section 16.1)", () => {
       dwarfAbilityUnavailableTextV7(
         {
           ...view,
-          chilled: [{ unitId: gyro.id, sluggish: true, turnsLeft: 1 }],
+          frozen: [{ unitId: gyro.id, turnsLeft: 1 }],
         },
         gyro,
         "BOMB_RUN",

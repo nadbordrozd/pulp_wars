@@ -42,7 +42,7 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // tier 3 technology base cost 9) 7r41.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 66;
+const REVISION = 67;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -214,7 +214,7 @@ describe("the Candy revision identity (section 2.2)", () => {
     expect(after("CRUMBS_STALE")).toBe("INCOME_PREVIEWED");
     expect(after("UNIT_ASSEMBLED")).toBe("UNIT_REBAKED");
     // The frozen sea (pulp_wars-5ti.3) puts its three events in between.
-    expect(after("UNITS_CHILLED")).toBe("WATER_FROZEN");
+    expect(after("UNITS_FROZEN")).toBe("WATER_FROZEN");
     expect(after("UNITS_CRUSHED")).toBe("UNIT_SUGAR_RUSHED");
     expect(after("WOUNDED_TENDED")).toBe("SUGAR_TOSSED");
     expect(after("UNIT_MOVE_INTERRUPTED")).toBe("CRUMBS_EATEN");

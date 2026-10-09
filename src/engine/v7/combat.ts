@@ -29,7 +29,6 @@ import {
   unitAlphaAttack2V7,
   unitCapacitySlotsV7,
   unitIsMountainBornV7,
-  unitIsSluggishV7,
   unitMovementModeV7,
   unitRoleMechanicsV7,
   isRangedRoleRuleV7,
@@ -69,7 +68,7 @@ import {
   attackShattersV7,
   blizzardHalvedDamageV7,
   blizzardProtectsV7,
-  isChilledV7,
+  isFrozenV7,
   isIceFolkLandUnitV7,
   isSnowV7,
   shatterThresholdV7,
@@ -427,12 +426,13 @@ export function calculateCombatPreviewV7(
   // HP for its own force (Unflinching, on attack only).
   const unflinching = attackIsUnflinchingV7(state, attacker);
   // The Ice Folk revision (section 8, step 1): Rockfall, Planted, and Cold
-  // Blood. A Chill entry has no effect on an embarked unit (section 10.8).
+  // Blood. Ice Folk Freeze (`pulp_wars-w49.37`): only a land-form unit is
+  // Frozen.
   const attackerLand = attacker.form === "LAND";
-  const defenderChilled =
+  const defenderFrozen =
     defender.form === "LAND" &&
-    (options.assumeTargetChilled === true ||
-      isChilledV7(state.chilled, defender.id));
+    (options.assumeTargetFrozen === true ||
+      isFrozenV7(state.frozen, defender.id));
   const rockfallApplied =
     attackerLand && attackerMechanics.rockfallAttack2 > 0 && distance === 2;
   const plantedApplied =
@@ -441,7 +441,7 @@ export function calculateCombatPreviewV7(
     !attacker.activation.moved &&
     (plannedPathLength ?? 0) === 0;
   const coldBloodApplied =
-    attackerLand && attackerMechanics.coldBloodBonus2 > 0 && defenderChilled;
+    attackerLand && attackerMechanics.coldBloodBonus2 > 0 && defenderFrozen;
   // The Undead pass, correction (`pulp_wars-w49.13`): Carrion, a Ghoul's
   // attack on a Bitten or Plagued unit.
   const carrionApplied =
@@ -677,7 +677,7 @@ export function calculateCombatPreviewV7(
     attackShattersV7({
       attackerIceFolk: isIceFolkLandUnitV7(state, attacker),
       distance,
-      defenderChilled,
+      defenderFrozen,
       defender,
       hpAfterHit: defender.hp - defenderHit.hpDamage,
       threshold: glacialThreshold ?? shatterThresholdV7(state, attacker),
@@ -697,10 +697,13 @@ export function calculateCombatPreviewV7(
   const unanswered = attackerRule.abilities.includes("UNANSWERED") || torpedo;
   // Revision 19: an Egg never retaliates. The Dwarf revision section 6.1:
   // a Gyrocopter (`BOMB_RUN`, no `ATTACK`) retaliates too.
+  // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen defender never
+  // retaliates.
   const wouldRetaliate =
     !defenderDies &&
     !unanswered &&
     !defenderIcebound &&
+    !defenderFrozen &&
     defender.form !== "EMBARKED" &&
     defender.form !== "EGG" &&
     roleRetaliatesV7(defenderRule) &&
@@ -945,6 +948,7 @@ export function calculateCombatPreviewV7(
       retaliates,
       unanswered,
       icebound: defenderIcebound,
+      frozen: defenderFrozen,
       splatted: wouldRetaliate && splatted,
     }),
     advances,
@@ -957,12 +961,12 @@ export function calculateCombatPreviewV7(
       overrunKindV7(state, attacker, attackerRule, assumeRushed) !== null &&
       advances,
     overrunContinues: false,
-    // The Ice Folk revision section 5.3: a sluggish unit is never granted
-    // Escape. The Candy revision section 5.4: a Rushed Donut Racer has it.
+    // The Candy revision section 5.4: a Rushed Donut Racer has it. Ice Folk
+    // Freeze (`pulp_wars-w49.37`): an attacker Frozen by Frostbite is not.
     escapeAvailable:
       attackGrantsEscapeV7(state, attacker, attackerRule, assumeRushed) &&
       !attackerDies &&
-      !unitIsSluggishV7(state, attacker),
+      !attackIsFrostbittenV7(state, attacker, defender, distance, attackerDies),
     splash,
     ...undead,
     ...afflictions,
@@ -1208,6 +1212,8 @@ export function noRetaliationReasonV7(facts: {
   readonly unanswered: boolean;
   /** The frozen sea (naval branch section 8.9): the defender is icebound. */
   readonly icebound: boolean;
+  /** Ice Folk Freeze (`pulp_wars-w49.37`): the defender is Frozen. */
+  readonly frozen: boolean;
   readonly splatted: boolean;
 }): CombatPreviewV7["noRetaliationReason"] {
   return facts.defenderDies
@@ -1218,9 +1224,11 @@ export function noRetaliationReasonV7(facts: {
         ? "UNANSWERED"
         : facts.icebound
           ? "ICEBOUND"
-          : facts.splatted
-            ? "SPLATTED"
-            : "OUT_OF_RANGE";
+          : facts.frozen
+            ? "FROZEN"
+            : facts.splatted
+              ? "SPLATTED"
+              : "OUT_OF_RANGE";
 }
 
 /**
@@ -1278,10 +1286,10 @@ export function bounceStateV7(
 /** Options of a combat preview or estimate (the Ice Folk revision). */
 export interface CombatOptionsV7 {
   /**
-   * Evaluates the attack as if the target had a Chill entry (section 11;
-   * the Normal AI's Bolas rule).
+   * Evaluates the attack as if the target were Frozen (Ice Folk Freeze,
+   * `pulp_wars-w49.37`; the Normal AI's Bolas rule).
    */
-  readonly assumeTargetChilled?: boolean;
+  readonly assumeTargetFrozen?: boolean;
   /**
    * Telemetry only (section 16.2): the same exchange without the Blizzard's
    * halving, without Snow cover, or without Shatter, to measure what each

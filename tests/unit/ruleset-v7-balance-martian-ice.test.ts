@@ -452,22 +452,22 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
     ).toBe("UNIT_ALREADY_ACTED");
   });
 
-  it("a sluggish carrier that moved cannot beam or pull; an unmoved one can", () => {
-    const build = (moved: boolean) =>
+  it("a Frozen carrier cannot beam or pull, moved or not; a thawed one can (Ice Folk Freeze, `pulp_wars-w49.37`)", () => {
+    const build = (moved: boolean, frozen = true) =>
       iceFieldV7(
         [
           {
             seat: 0,
             role: "RAIDER",
             at: at(4, 3),
-            chill: { sluggish: true, turnsLeft: 2 },
+            ...(frozen ? { frozen: { turnsLeft: 1 as const } } : {}),
             ...(moved ? { activation: movedV7(1) } : {}),
           },
           {
             seat: 0,
             role: "KNIGHT",
             at: at(4, 6),
-            chill: { sluggish: true, turnsLeft: 2 },
+            ...(frozen ? { frozen: { turnsLeft: 1 as const } } : {}),
             ...(moved ? { activation: movedV7(1) } : {}),
           },
           { seat: 0, role: "FIGHTER", at: CAPITAL },
@@ -477,21 +477,23 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
         ],
         { factions: ["MARTIAN", "ICE_FOLK"] },
       );
-    const moved = build(true);
-    expect(offeredV7(moved, "BEAM_DOWN", "TRACTOR_BEAM")).toEqual([]);
-    expect(
-      rejectedV7(moved, beam(moved, at(4, 3), CAPITAL, at(5, 3))).code,
-    ).toBe("UNIT_ALREADY_ACTED");
-    expect(rejectedV7(moved, pull(moved, at(4, 3), at(6, 3))).code).toBe(
-      "UNIT_ALREADY_ACTED",
-    );
-    expect(rejectedV7(moved, pull(moved, at(4, 6), at(7, 6))).code).toBe(
-      "UNIT_ALREADY_ACTED",
-    );
-    const still = build(false);
-    playV7(still, beam(still, at(4, 3), CAPITAL, at(5, 3)));
-    playV7(still, pull(still, at(4, 3), at(6, 3)));
-    playV7(still, pull(still, at(4, 6), at(7, 6)));
+    for (const moved of [build(true), build(false)]) {
+      expect(offeredV7(moved, "BEAM_DOWN", "TRACTOR_BEAM")).toEqual([]);
+      expect(
+        rejectedV7(moved, beam(moved, at(4, 3), CAPITAL, at(5, 3))).code,
+      ).toBe("UNIT_FROZEN");
+      expect(rejectedV7(moved, pull(moved, at(4, 3), at(6, 3))).code).toBe(
+        "UNIT_FROZEN",
+      );
+      expect(rejectedV7(moved, pull(moved, at(4, 6), at(7, 6))).code).toBe(
+        "UNIT_FROZEN",
+      );
+    }
+    // Not Frozen, a carrier that moved still beams and pulls.
+    const warm = build(true, false);
+    playV7(warm, beam(warm, at(4, 3), CAPITAL, at(5, 3)));
+    playV7(warm, pull(warm, at(4, 3), at(6, 3)));
+    playV7(warm, pull(warm, at(4, 6), at(7, 6)));
   });
 
   it("Mind Control: a controlled unit with a pending Escape is a passenger and cannot Move again", () => {
@@ -1265,7 +1267,7 @@ describe("M4: the Grunt's gun and body (sections 5.4 and 5.7)", () => {
             role: "FIGHTER",
             at: at(5, 2),
             shield,
-            chill: { sluggish: false, turnsLeft: 2 },
+            frozen: { turnsLeft: 1 },
           },
           { seat: 1, role: "FIGHTER", at: at(5, 3) },
           { seat: 1, role: "FIGHTER", at: at(4, 3) },

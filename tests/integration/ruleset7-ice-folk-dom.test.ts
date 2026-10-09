@@ -121,7 +121,9 @@ describe("Ice Folk unit dock", () => {
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     const view = required(controller.snapshot().view);
-    for (const at of [AT.frozenEnemy, AT.shatterTarget, AT.thawingEnemy]) {
+    // Ice Folk Freeze (`pulp_wars-w49.37`): Frosted and Thawing no longer
+    // occur; both Frozen units carry the chip, the thawed one none.
+    for (const at of [AT.frozenEnemy, AT.shatterTarget]) {
       const unit = selectUnitAt(controller, host, at);
       const chip = required(chillChipV7(view, unit));
       const cue = requiredElement<HTMLElement>(
@@ -132,6 +134,8 @@ describe("Ice Folk unit dock", () => {
     }
     // An unchilled enemy has no chill chip.
     selectUnitAt(controller, host, AT.sweepTarget);
+    expect(chipText("chill")).toBeNull();
+    selectUnitAt(controller, host, AT.thawingEnemy);
     expect(chipText("chill")).toBeNull();
     app.destroy();
   });
@@ -171,7 +175,15 @@ describe("Ice Folk unit dock", () => {
     );
     expect(
       roleGlossaryV7("CAPTAIN", "ICE_FOLK").map((entry) => entry.name),
-    ).toEqual(["Capture", "Blizzard", "Cold Snap", "Freeze", "Glide"]);
+    ).toEqual([
+      "Capture",
+      "Blizzard",
+      "Cold Snap",
+      // Ice Folk Freeze (`pulp_wars-w49.37`).
+      "Frost Bolt",
+      "Freeze",
+      "Glide",
+    ]);
     expect(
       document.querySelector(
         '.v7-unit-help-dialog [data-tactical-state="blizzard"]',
@@ -191,7 +203,7 @@ describe("Ice Folk unit dock", () => {
     // The unit information explains its Frozen chip in plain words.
     requiredButton("unit-help").click();
     expect(requiredElement('[data-tactical-state="chill"]').textContent).toBe(
-      "FrozenChilled and slowed: this turn it may move or act, not both.",
+      "FrozenIt cannot move or act this turn, and it does not strike back.",
     );
     // The engine offers it no primary action.
     expect(
@@ -339,7 +351,7 @@ describe("Ice Folk abilities", () => {
     });
     await waitUntil(() =>
       (document.querySelector("#v7-live")?.textContent ?? "").includes(
-        `Your ${label("RAIDER")} chilled a Fighter`,
+        `Your ${label("RAIDER")} froze a Fighter`,
       ),
     );
     expect(host.lastModel?.interaction.iceFolkPick ?? null).toBe(null);
@@ -377,7 +389,7 @@ describe("Ice Folk abilities", () => {
     });
     await waitUntil(() =>
       (document.querySelector("#v7-live")?.textContent ?? "").includes(
-        `Your ${label("CAPTAIN")} chilled ${preview.targets.length} units`,
+        `Your ${label("CAPTAIN")} froze ${preview.targets.length} units`,
       ),
     );
     app.destroy();

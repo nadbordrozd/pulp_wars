@@ -154,11 +154,11 @@ export function iceFolkPickTargetsV7(
           at: target.at,
           command,
           family: "THROW_BOLAS",
-          previewLabel: chillTargetLabelV7(preview.becomesSluggish),
+          previewLabel: chillTargetLabelV7(true),
           ...(lines.length > 1
             ? { previewNote: lines.slice(1).join(" · ") }
             : {}),
-          semanticLabel: `Bolas: chills this ${name}. ${lines.join(". ")}. ${BOLAS_PICK_V7}.`,
+          semanticLabel: `Bolas: freezes this ${name}. ${lines.join(". ")}. ${BOLAS_PICK_V7}.`,
         },
       ];
     });
@@ -178,8 +178,8 @@ export function iceFolkPickTargetsV7(
         at: target.at,
         command,
         family: "COLD_SNAP",
-        previewLabel: chillTargetLabelV7(entry.becomesSluggish),
-        semanticLabel: `${COLD_SNAP_LABEL_V7}: chills this ${name} with every other highlighted unit. ${entry.becomesSluggish ? "Will be Frozen" : "Will be Frosted"}. Choose any highlighted unit to cast.`,
+        previewLabel: chillTargetLabelV7(true),
+        semanticLabel: `${COLD_SNAP_LABEL_V7}: freezes this ${name} with every other highlighted unit. Will be Frozen. Choose any highlighted unit to cast.`,
       },
     ];
   });

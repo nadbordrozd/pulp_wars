@@ -144,7 +144,11 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // The giants' signatures (`pulp_wars-w49.30`) insert SWALLOW, TOSS,
     // STOMP, and BREAK_OFF after RECOVER, moving every later command kind
     // forward by four (was 054981…efe7).
-    "6bcb0280a60f8adab02ba5b3490d13b17edefae19c5240bf23acd345c6862921",
+    // Map curiosities round 2 (`pulp_wars-737.14`) insert TOSS_COIN before
+    // RECOVER and Ice Folk Freeze (`pulp_wars-w49.37`) inserts FROST_BOLT
+    // and STAMPEDE after BREAK_OFF, moving the later command kinds forward
+    // (was 6bcb02…2921); the revision-12-ordinal value is unchanged.
+    "ec779fd117cc773ced3eea17e72f89fd63cedb2a3604bc32e258c158471bfb5d",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
@@ -233,10 +237,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r66",
+    rulesetId: "pulp-wars-poc-7r67",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r66",
+      rulesetId: "pulp-wars-poc-7r67",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
@@ -337,8 +341,8 @@ export function upgradeRetainedPublicViewV7(
     cooling: [],
     mindControlled: [],
     mindControlCooldowns: [],
-    // The Ice Folk revision: nor any Chill.
-    chilled: [],
+    // The Ice Folk revision: nor any Frozen unit (Ice Folk Freeze).
+    frozen: [],
     // The Dwarf revision: nor any mound, surfacing, or bomb.
     burrowed: [],
     surfacedThisTurn: [],

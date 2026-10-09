@@ -33,7 +33,7 @@ import type {
   BoardSizeV7,
   BiomeIdV7,
   AchievementIdV7,
-  ChillStatusV7,
+  FrozenStatusV7,
   CoolingStatusV7,
   CoordV7,
   CrumbsV7,
@@ -355,10 +355,11 @@ export interface PlayerViewV7 {
   /** The Martian revision: the Mind Control cooldowns of visible Brains. */
   readonly mindControlCooldowns: readonly MindControlCooldownV7[];
   /**
-   * The Ice Folk revision (section 5.1): the Chill entries of every unit in
-   * `units`, sorted by unit ID (Chill is public on a visible unit).
+   * Ice Folk Freeze (`pulp_wars-w49.37`, section 21.2): the Frozen entries
+   * of every unit in `units`, sorted by unit ID (Frozen is public on a
+   * visible unit).
    */
-  readonly chilled: readonly ChillStatusV7[];
+  readonly frozen: readonly FrozenStatusV7[];
   /**
    * The Dwarf revision (section 5.2): every mound on a tile the viewer has
    * explored (every own mound is), sorted by unit ID, with the public
@@ -1004,12 +1005,11 @@ export function viewForV7(
         unitId: entry.unitId,
         turnsRemaining: entry.turnsRemaining,
       })),
-    // The Ice Folk revision: Chill is public on every visible unit.
-    chilled: state.chilled
+    // Ice Folk Freeze: Frozen is public on every visible unit.
+    frozen: state.frozen
       .filter((entry) => visibleUnitIds.has(entry.unitId))
       .map((entry) => ({
         unitId: entry.unitId,
-        sluggish: entry.sluggish,
         turnsLeft: entry.turnsLeft,
       })),
     // The Dwarf revision (sections 5.2, 5.4, and 6.3): the mounds the viewer

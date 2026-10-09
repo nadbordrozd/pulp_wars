@@ -195,10 +195,10 @@ export function projectEventsV7(
       }
       continue;
     }
-    // The Ice Folk revision section 6.5: UNITS_CHILLED keeps the results
+    // Ice Folk Freeze (`pulp_wars-w49.37`): UNITS_FROZEN keeps the results
     // the viewer can see (or owns); a viewer that cannot see the source gets
     // its entries with `sourceUnitId` null; none left drops the event.
-    if (event.kind === "UNITS_CHILLED") {
+    if (event.kind === "UNITS_FROZEN") {
       const seen = (unitId: UnitId): boolean =>
         beforeVisible.has(unitId) || afterVisible.has(unitId);
       const results = event.results.filter(
@@ -1184,6 +1184,23 @@ function projectGiantEventV7(
         : null;
     case "GIANT_BROKE_OFF":
       return event.playerId === viewerId ? event : null;
+    // Ice Folk Freeze (`pulp_wars-w49.37`): a Stampede is projected like a
+    // Stomp, to a viewer that owns or sees the Mammoth, with the hits it
+    // owns or could see and the path tiles it has explored; otherwise its
+    // own hits as `COMBAT_SPLASH_DAMAGE`.
+    case "MAMMOTH_STAMPEDED": {
+      if (event.playerId === viewerId || seen(event.unitId))
+        return {
+          ...event,
+          path: event.path.filter((at) =>
+            coordVisible(before, after, viewerId, at),
+          ),
+          results: event.results.filter(
+            (entry) => owned(entry.unitId) || seen(entry.unitId),
+          ),
+        };
+      return ownSplash(event.results);
+    }
     default:
       return undefined;
   }

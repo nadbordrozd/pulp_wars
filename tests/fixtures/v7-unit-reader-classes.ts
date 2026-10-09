@@ -7,7 +7,7 @@
  * Normal AI, which reads mounds only through the view's `burrowed` list).
  * `ALL`: the reader means everything a player owns, burrowed units included
  * (capacity and used slots, orphaning and elimination on a capture, the
- * status lists and their pruning, the Chill countdown, the leaderboard and
+ * status lists and their pruning, the Frozen countdown, the leaderboard and
  * headless metrics, state parsing and entity IDs); such a function reads the
  * `burrowed` list or `allOwnedUnitsV7`.
  * `tests/unit/ruleset-v7-dwarf-unit-readers.test.ts` fails when a reader
@@ -346,6 +346,19 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/explosions.ts::resolveExplosionChainV7": "BOARD",
     "src/engine/v7/explosions.ts::resolveStateExplosionChainV7": "BOARD",
     "src/engine/v7/ice-folk.ts::resolveColdAuraV7": "BOARD",
+    // Ice Folk Freeze (`pulp_wars-w49.37`): Frozen holds a unit standing on
+    // the board (a Freeze, Bolas, Frost Bolt, Cold Snap, Frostbite, Black
+    // Ice, or a shard of Glacial Smash takes a target there), and the
+    // Frozen gate refuses commands naming such a unit. The Stampede reads
+    // the Mammoth's line and the side tiles it shoves into.
+    "src/engine/v7/ice-folk.ts::frozenUnitNamedV7": "BOARD",
+    "src/engine/v7/ice-folk.ts::withFrozenAppliedV7": "BOARD",
+    "src/engine/v7/query.ts::previewSingleFreezeV7": "BOARD",
+    "src/engine/v7/query.ts::publicStampedeFactsV7": "BOARD",
+    "src/engine/v7/query.ts::previewStampedeV7": "BOARD",
+    "src/engine/v7/stampede.ts::canonicalStampedeFactsV7": "BOARD",
+    "src/engine/v7/stampede.ts::planStampedeV7": "BOARD",
+    "src/engine/v7/stampede.ts::applyStampedeV7": "BOARD",
     "src/engine/v7/ice-folk.ts::winterV7": "BOARD",
     "src/engine/v7/map.ts::initialMapStateFromV7": "BOARD",
     "src/engine/v7/map.ts::showcaseInitialStateV7": "BOARD",
@@ -367,7 +380,7 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/movement.ts::publicHostileZoc": "BOARD",
     "src/engine/v7/movement.ts::publicMovementContextV7": "BOARD",
     "src/engine/v7/movement.ts::reachableMovementPathsV7": "BOARD",
-    "src/engine/v7/movement.ts::validateMovementPathWithOptionsV7": "BOARD",
+    "src/engine/v7/movement.ts::validateMovementPathCoreV7": "BOARD",
     "src/engine/v7/observation.ts::detectionCoversCoordV7": "BOARD",
     "src/engine/v7/observation.ts::visibleUnitIdsV7": "BOARD",
     "src/engine/v7/observation.ts::withUnitAtForObservationV7": "BOARD",
@@ -412,7 +425,7 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::publicActiveOwnedPort": "BOARD",
     "src/engine/v7/query.ts::publicAttackChainV7": "BOARD",
     "src/engine/v7/query.ts::publicBeamDownPassengersV7": "BOARD",
-    "src/engine/v7/query.ts::publicBolasTargetsV7": "BOARD",
+    "src/engine/v7/query.ts::publicSingleFreezeTargetsV7": "BOARD",
     "src/engine/v7/query.ts::publicBombTargetsV7": "BOARD",
     "src/engine/v7/query.ts::publicCaptureTarget": "BOARD",
     "src/engine/v7/query.ts::publicCityBesieged": "BOARD",
@@ -467,7 +480,7 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::applyRecover": "BOARD",
     "src/engine/v7/reducer.ts::applyReward": "BOARD",
     "src/engine/v7/reducer.ts::applyTendWounded": "BOARD",
-    "src/engine/v7/reducer.ts::applyThrowBolas": "BOARD",
+    "src/engine/v7/reducer.ts::applySingleFreeze": "BOARD",
     "src/engine/v7/reducer.ts::applyTractorBeam": "BOARD",
     "src/engine/v7/reducer.ts::applyTrain": "BOARD",
     "src/engine/v7/reducer.ts::applyTrainNaval": "BOARD",

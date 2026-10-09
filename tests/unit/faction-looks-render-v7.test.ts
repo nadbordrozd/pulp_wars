@@ -105,9 +105,11 @@ describe("faction looks without plates on real states (pulp_wars-w5j.3)", () => 
           `${name} seat ${player.seat} damaged`,
         ).toBe(true);
       }
-      // The viewer's units are ready but one; nobody else's is.
+      // The viewer's units are ready but one; nobody else's is. Ice Folk
+      // Freeze (`pulp_wars-w49.37`): in mix A the viewer's chilled Raider is
+      // Frozen, and a Frozen unit is not ready.
       const ready = entries.filter((entry) => entry.ready === true);
-      expect(ready.length, name).toBe(5);
+      expect(ready.length, name).toBe(name === "A" ? 4 : 5);
       expect(
         ready.every((entry) => entry.ownerId === state.humanPlayerId),
         name,
@@ -131,9 +133,12 @@ describe("faction looks without plates on real states (pulp_wars-w5j.3)", () => 
           entry.martian.shield < entry.martian.shieldSegments,
       ),
     ).toBe(true);
-    expect(a.map((entry) => entry.iceFolk?.chill ?? null)).toEqual(
-      expect.arrayContaining(["FROSTED", "FROZEN"]),
+    // Ice Folk Freeze (`pulp_wars-w49.37`): Frosted no longer occurs; the
+    // three chilled units are Frozen.
+    expect(a.filter((entry) => entry.iceFolk?.chill === "FROZEN")).toHaveLength(
+      3,
     );
+    expect(a.some((entry) => entry.iceFolk?.chill === "FROSTED")).toBe(false);
   });
 
   it("draws every unit with no player colour under it in the live look: a neutral shadow, and the ready ring on the viewer's ready units", () => {

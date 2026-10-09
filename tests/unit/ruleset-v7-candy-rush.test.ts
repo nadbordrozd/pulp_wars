@@ -188,32 +188,22 @@ describe("the Sugar Rush command (section 5.1)", () => {
     ).toBeDefined();
   });
 
-  it("a sluggish unit may Rush, and then either moves or acts", () => {
+  it("a Frozen unit may not Rush (Ice Folk Freeze, `pulp_wars-w49.37`)", () => {
     const state = candyFieldV7(
       [
         {
           seat: 0,
           role: "FIGHTER",
           at: at(5, 3),
-          chill: { sluggish: true, turnsLeft: 2 },
+          frozen: { turnsLeft: 1 },
         },
         { seat: 1, role: "FIGHTER", at: at(5, 5) },
       ],
       { factions: ["CANDY", "ICE_FOLK"] },
     );
-    const rushed = playV7(state, rushCommand(state, at(5, 3))).state;
-    const moved = playV7(rushed, {
-      kind: "MOVE",
-      unitId: unitAtV7(rushed, at(5, 3)).id,
-      path: [at(5, 4)],
-    }).state;
-    expect(
-      offeredV7(moved, "ATTACK").filter(
-        (command) =>
-          "unitId" in command &&
-          command.unitId === unitAtV7(moved, at(5, 4)).id,
-      ),
-    ).toEqual([]);
+    expect(rejectedV7(state, rushCommand(state, at(5, 3)))).toMatchObject({
+      code: "UNIT_FROZEN",
+    });
   });
 
   it("offers exactly the accepted Rushes and previews the Rushed reach", () => {
@@ -792,7 +782,9 @@ describe("Rush perks (section 5.4)", () => {
             ...(rush ? { rush: "RUSHED" } : {}),
             ...extra,
           },
-          { seat: 1, role: "GUARD", at: at(5, 2) },
+          // A Mammoth (a Musk Ox's Frostbite would freeze the attacker,
+          // which then has no Escape: Ice Folk Freeze, `pulp_wars-w49.37`).
+          { seat: 1, role: "SWORDSMAN", at: at(5, 2) },
         ],
         { factions: ["CANDY", "ICE_FOLK"] },
       );
@@ -806,14 +798,18 @@ describe("Rush perks (section 5.4)", () => {
     expect(escapes.length).toBeGreaterThan(0);
     expect(farthest(escapes, at(5, 3))).toBe(2);
     expectOfferedAcceptedV7(rushed.state, "MOVE");
-    // Never for a sluggish Donut Racer.
-    const sluggish = attackV7(
-      field(true, { chill: { sluggish: true, turnsLeft: 2 } }),
-      at(5, 3),
-      at(5, 2),
+    // Never after a Musk Ox's Frostbite froze it.
+    const bitten = candyFieldV7(
+      [
+        { seat: 0, role: "RAIDER", at: at(5, 3), rush: "RUSHED" },
+        { seat: 1, role: "GUARD", at: at(5, 2) },
+      ],
+      { factions: ["CANDY", "ICE_FOLK"] },
     );
-    expect(sluggish.combat.escapeAvailable).toBe(false);
-    expect(reach(sluggish.state, at(5, 3))).toEqual([]);
+    const frostbitten = attackV7(bitten, at(5, 3), at(5, 2));
+    expect(frostbitten.combat.frostbiteApplied).toBe(true);
+    expect(frostbitten.combat.escapeAvailable).toBe(false);
+    expect(reach(frostbitten.state, at(5, 3))).toEqual([]);
   });
 
   it("gives a Rushed Chocolate Bunny Sugar Frenzy with at most two continuations", () => {

@@ -18,7 +18,7 @@ import {
   knockbackDestinationV7,
   unitFactionV7,
   roleMechanicsV7,
-  sluggishUnitMovedV7,
+  unitIsFrozenV7,
   technologyCapabilitiesV7,
   unitRoleRuleV7,
   type AssemblePreviewV7,
@@ -1072,11 +1072,9 @@ export function dwarfAbilityUnavailableTextV7(
     return TUNNEL_NO_TILE_V7;
   }
   if (kind === "BOMB_RUN") {
-    // A bombing run is a Move and an action at once: a Frozen (sluggish)
-    // Gyrocopter cannot make one, nor one that has moved.
-    const chilled = view.chilled.find((entry) => entry.unitId === unit.id);
-    if (chilled?.sluggish === true || sluggishUnitMovedV7(view, unit))
-      return BOMB_FROZEN_V7;
+    // A bombing run is a Move and an action at once: a Frozen Gyrocopter
+    // cannot make one, nor one that has moved.
+    if (unitIsFrozenV7(view, unit)) return BOMB_FROZEN_V7;
     if (unit.activation.moved) return BOMB_MOVED_V7;
     return BOMB_NO_TARGET_V7;
   }

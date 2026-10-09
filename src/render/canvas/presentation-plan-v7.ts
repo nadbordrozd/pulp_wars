@@ -1036,13 +1036,14 @@ export function corePresentationPlanV7(
           cells: event.tiles.filter(isExplored),
           unitIds: [...event.newUnitIds],
         });
-    } else if (event.kind === "UNITS_CHILLED" && event.source === "SHARDS") {
-      // The giants' signatures: the shards' Chill is part of the Glacial
+    } else if (event.kind === "UNITS_FROZEN" && event.source === "SHARDS") {
+      // The giants' signatures: the shards' freeze is part of the Glacial
       // Smash cue, planned with the Frost Giant's attack.
-    } else if (event.kind === "UNITS_CHILLED") {
+    } else if (event.kind === "UNITS_FROZEN") {
       // The Ice Folk revision: a Bolas flies from the Sled, a Cold Snap
       // rings out from the Witch, a Cold Aura pulses round the Giant; frost
-      // forms on each chilled unit.
+      // forms on each Frozen unit. Ice Folk Freeze (`pulp_wars-w49.37`): a
+      // Frost Bolt uses the Bolas cue until the interface bead gives it one.
       const cells = event.results.flatMap((result) => {
         const unit = unitAnywhere(result.unitId);
         return unit === undefined || !isExplored(unit.at) ? [] : [unit.at];
@@ -1054,7 +1055,7 @@ export function corePresentationPlanV7(
       if (cells.length > 0)
         pushIceFolk({
           effect:
-            event.source === "BOLAS"
+            event.source === "BOLAS" || event.source === "FROST_BOLT"
               ? "BOLAS"
               : event.source === "COLD_SNAP"
                 ? "COLD_SNAP"
@@ -1451,7 +1452,7 @@ export function corePresentationPlanV7(
         });
       // The giants' signatures (section 6.6): a Frost Giant's shatter
       // bursts bigger, its shards flying to the eight tiles around and
-      // Chilling the units there.
+      // freezing the units there.
       if (
         shatters &&
         (
@@ -1460,7 +1461,7 @@ export function corePresentationPlanV7(
       ) {
         const shards = envelope.events.find(
           (candidate) =>
-            candidate.kind === "UNITS_CHILLED" &&
+            candidate.kind === "UNITS_FROZEN" &&
             candidate.source === "SHARDS" &&
             candidate.sourceUnitId === attacker.id,
         );
@@ -1483,7 +1484,7 @@ export function corePresentationPlanV7(
           cells: ring,
           unitIds: [],
           marks:
-            shards?.kind === "UNITS_CHILLED"
+            shards?.kind === "UNITS_FROZEN"
               ? shards.results.flatMap((result) => {
                   const unit = unitAnywhere(result.unitId);
                   return unit === undefined || !isExplored(unit.at)

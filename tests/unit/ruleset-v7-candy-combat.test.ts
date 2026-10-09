@@ -846,20 +846,21 @@ describe("Sugar Toss (section 9)", () => {
     expect(rejectedV7(crashed, toss(crashed, at(5, 5))).code).toBe(
       "UNIT_CRASHED",
     );
-    // Row 4: the action is spent; a sluggish Gunner that moved.
+    // Row 4: the action is spent. Ice Folk Freeze (`pulp_wars-w49.37`): a
+    // Frozen Gunner is refused before it (`UNIT_FROZEN`).
     const acted = field({ activation: { attacked: true, attacksUsed: 1 } });
     expect(rejectedV7(acted, toss(acted, at(5, 5))).code).toBe(
       "UNIT_ALREADY_ACTED",
     );
     const sluggish = field(
-      { chill: { sluggish: true, turnsLeft: 2 }, activation: movedV7(1) },
+      { frozen: { turnsLeft: 1 }, activation: movedV7(1) },
       undefined,
       { factions: ["CANDY", "ICE_FOLK"] },
     );
     expect(rejectedV7(sluggish, toss(sluggish, at(5, 5))).code).toBe(
-      "UNIT_ALREADY_ACTED",
+      "UNIT_FROZEN",
     );
-    // A Gunner that moved (not sluggish) may still toss.
+    // A Gunner that moved (not Frozen) may still toss.
     const moved = field({ activation: movedV7(1) });
     expect(playV7(moved, toss(moved, at(5, 5))).events).toHaveLength(1);
     // Row 5: an embarked Gunner.
@@ -944,7 +945,7 @@ describe("Frosting (section 9)", () => {
           at: at(5, 4),
           hp: 4,
           rush: "CRASHED",
-          chill: { sluggish: true, turnsLeft: 2 },
+          frozen: { turnsLeft: 1 },
         },
         { seat: 0, role: "GUARD", at: at(4, 3), hp: 17 },
         { seat: 0, role: "KNIGHT", at: at(6, 3) },
@@ -974,12 +975,12 @@ describe("Frosting (section 9)", () => {
     expect(unitAtV7(result.state, at(4, 3)).hp).toBe(18);
     // Two tiles away: not reached. A full unit is not listed.
     expect(unitAtV7(result.state, at(5, 5)).hp).toBe(4);
-    // The Chill thaws; the Crash stays.
+    // The Frozen unit thaws (Ice Folk Freeze); the Crash stays.
     expect(
-      result.state.chilled.find(
+      result.state.frozen.find(
         (entry) => entry.unitId === idAt(state, at(5, 4)),
       ),
-    ).toMatchObject({ sluggish: false });
+    ).toBeUndefined();
     expect(result.state.sugarRush).toEqual([
       { unitId: idAt(state, at(5, 4)), phase: "CRASHED" },
     ]);

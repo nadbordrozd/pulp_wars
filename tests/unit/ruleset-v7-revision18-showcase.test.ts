@@ -179,7 +179,7 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         cooling,
         mindControlled,
         mindControlCooldowns,
-        chilled,
+        frozen,
         // The Dwarf revision (`pulp_wars-78i.3`): three empty lists.
         burrowed,
         surfacedThisTurn,
@@ -196,7 +196,7 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         cooling,
         mindControlled,
         mindControlCooldowns,
-        chilled,
+        frozen,
         burrowed,
         surfacedThisTurn,
         bombedThisTurn,

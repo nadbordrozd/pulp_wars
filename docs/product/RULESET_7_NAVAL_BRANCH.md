@@ -10,7 +10,12 @@ the game as built: the shared branch in their
 [section 14](RULESET_7_CURRENT.md#14-naval-rules) and the frozen sea in
 their [section 21.16](RULESET_7_CURRENT.md#2116-the-frozen-sea). Where this
 document and the current rules disagree, the current rules are right;
-[section 24](#24-fold-notes-pulp_wars-5ti9) lists where.
+[section 24](#24-fold-notes-pulp_wars-5ti9) lists where. **Ice Folk Freeze**
+(`pulp_wars-w49.37`) replaced Chill and Sluggish with Frozen: Black Ice
+now freezes ([section 8.8](#88-black-ice)), Glacier also gives +1 Move
+across ice ([section 8.10](#810-glacier)), and every other Chill below
+reads as Frozen in the current rules
+([section 21.2](RULESET_7_CURRENT.md#212-frozen)).
 
 | Step                                                              | Bead               | State                                                                                                                                         |
 | ----------------------------------------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -122,13 +127,13 @@ Same IDs, tiers, prerequisites, and costs; different names and unlocks
 (the `TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7` precedent of Plunder, Nesting,
 Deep Winter, and the others):
 
-| Tier | ID                  | Ice Folk name | Requires  | Ice Folk unlocks                                                                             | One sentence                                                             |
-| ---: | ------------------- | ------------- | --------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-|    1 | `SHORECRAFT`        | Rime          | —         | Harvest Fish; Build Port; **Freeze** Shallow Water                                           | Your units turn the shallows to ice and slide across it.                 |
-|    2 | `NAVIGATION`        | Pack Ice      | Rime      | **Freeze** Deep Water; Gather Pearls; sea trade                                              | The deep sea freezes too.                                                |
-|    3 | `NAVAL_ENGINEERING` | Icebound      | Pack Ice  | **Freeze locks enemy ships in the ice**, where it crushes them; Shipyard (+2 population)     | Freeze a ship in place: it cannot sail or shoot, and the ice crushes it. |
-|    2 | `SEAMANSHIP`        | Black Ice     | Rime      | **Black Ice:** hostile land units on your ice are Chilled at the start of your turn          | Whoever stands on your ice is frosted.                                   |
-|    3 | `SUBMERSIBLES`      | Glacier       | Black Ice | your ice lasts 5 of your turns instead of 3; your units on ice have Snow cover; **Harbours** | Your ice lasts and shelters your people; your harbours feed the town.    |
+| Tier | ID                  | Ice Folk name | Requires  | Ice Folk unlocks                                                                                                   | One sentence                                                             |
+| ---: | ------------------- | ------------- | --------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+|    1 | `SHORECRAFT`        | Rime          | —         | Harvest Fish; Build Port; **Freeze** Shallow Water                                                                 | Your units turn the shallows to ice and slide across it.                 |
+|    2 | `NAVIGATION`        | Pack Ice      | Rime      | **Freeze** Deep Water; Gather Pearls; sea trade                                                                    | The deep sea freezes too.                                                |
+|    3 | `NAVAL_ENGINEERING` | Icebound      | Pack Ice  | **Freeze locks enemy ships in the ice**, where it crushes them; Shipyard (+2 population)                           | Freeze a ship in place: it cannot sail or shoot, and the ice crushes it. |
+|    2 | `SEAMANSHIP`        | Black Ice     | Rime      | **Black Ice:** hostile land units on your ice are Frozen at the start of your turn                                 | Whoever stands on your ice is frozen.                                    |
+|    3 | `SUBMERSIBLES`      | Glacier       | Black Ice | your ice lasts 5 of your turns instead of 3; your units on ice have Snow cover and +1 Move across it; **Harbours** | Your ice lasts and shelters your people; your harbours feed the town.    |
 
 Every land unit of an Ice Folk seat slides on ice (all but the Sabretooth,
 which never Glides either), and **no Ice Folk seat ever has a ship or an
@@ -604,13 +609,16 @@ Folk bridge, one tile per turn.
 ### 8.8 Black Ice
 
 At the Start Turn of a player with the capability `blackIce` (the Ice Folk
-`SEAMANSHIP`), after the Cold Aura, every land-form unit **hostile to that
-player standing on that player's ice** is Chilled
-([current rules section 21.2](RULESET_7_CURRENT.md#212-chill): a new freeze
-is sluggish once; a re-application refreshes the two turns without a new
-sluggish turn). One `UNITS_CHILLED` (source `BLACK_ICE`, `sourceUnitId`
-null) with every result, dropped when empty. So an enemy that lands on, or
-walks onto, the ice is Shatter-eligible on the Ice Folk turn that follows.
+`SEAMANSHIP`), every land-form unit **hostile to that player standing on
+that player's ice** is Frozen
+([current rules section 21.2](RULESET_7_CURRENT.md#212-frozen); Ice Folk
+Freeze, `pulp_wars-w49.37`: until then it was Chilled, after the Cold
+Aura). One `UNITS_FROZEN` (source `BLACK_ICE`, `sourceUnitId` null) with
+every result, dropped when empty. So an enemy that lands on, or walks onto,
+the ice is Shatter-eligible on the Ice Folk turn that follows and cannot
+move or act on its owner's next turn; there is no thaw immunity, so a unit
+that stays on the ice is Frozen again at every Start Turn of the ice's
+owner.
 
 ### 8.9 Icebound and the crush
 
@@ -650,7 +658,11 @@ whose own fortification level is 0 has cover × 1.5 (the Snow cover, not added
 to anything else; the preview's `iceCover` is true; **as built × 1.25**, the
 Snow cover since `pulp-wars-poc-7r37`,
 [section 22](#22-engine-step-ii-as-built-pulp_wars-5ti3) item 2). Glacier also grants
-Harbours ([section 5.4](#54-harbours)).
+Harbours ([section 5.4](#54-harbours)). Since Ice Folk Freeze
+(`pulp_wars-w49.37`) a `MOVE` of a land-form Ice Folk unit of a seat with
+Glacier gets +1 Move (`GLACIER_ICE_MOVE_BONUS_V7`) when its path includes
+an ice tile
+([current rules section 21.16](RULESET_7_CURRENT.md#2116-the-frozen-sea)).
 
 ### 8.11 No ships, no embarking
 
@@ -928,7 +940,7 @@ the same two hits leave it at 1 and take 8 from the two Yetis. A charging
 Sled leaves a Chilled fresh Fighter at 4 (a Shatter only with Brittle); a
 Mammoth leaves a Chilled Knight at 2 (a Shatter). Re-applied Chill never
 makes a unit sluggish twice in a row
-([current rules section 21.2](RULESET_7_CURRENT.md#212-chill)), so a unit
+([current rules section 21.2](RULESET_7_CURRENT.md#212-frozen)), so a unit
 that stays on the ice is frosted, not locked.
 
 - **Counter.** Do not stand on their ice: land beside it (on open coast) or

@@ -304,13 +304,22 @@ describe("the Dwarf Tunnel and eruption at ice (section 21.16)", () => {
 describe("Dinosaur Eggs at ice (section 21.16)", () => {
   it("no Egg is laid on ice, and a Shaman standing on ice hatches an Egg ashore", () => {
     const shaman = roleWith("DINOSAUR", "HATCH");
-    const state = scene(
-      "DINOSAUR",
-      [{ seat: 0, role: shaman, at: HOME_ICE }],
-      [HOME_ICE, { x: 6, y: 3 }],
+    // Ice Folk Freeze (`pulp_wars-w49.37`): the Ice Folk seat has no Black
+    // Ice here, which would leave the Shaman Frozen on its next turn.
+    const state = frozenArenaV7({
+      factions: ["DINOSAUR", "ICE_FOLK"],
       // Without Nesting, which would hatch the Egg within the round.
-      ALL.filter((tech) => tech !== "FORTIFICATION" && tech !== "EXPLOSIVES"),
-    );
+      technologies: [
+        ALL.filter((tech) => tech !== "FORTIFICATION" && tech !== "EXPLOSIVES"),
+        ALL.filter((tech) => tech !== "SEAMANSHIP" && tech !== "SUBMERSIBLES"),
+      ],
+      units: [{ seat: 0, role: shaman, at: HOME_ICE }],
+      ice: [HOME_ICE, { x: 6, y: 3 }].map((at): FrozenIceV7 => ({
+        at,
+        seat: 1,
+        turnsLeft: 3,
+      })),
+    });
     const lays = offered(state, 0).flatMap((command) =>
       command.kind === "LAY_EGG" ? [command] : [],
     );
@@ -543,7 +552,7 @@ describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
     // The Ice Folk Start Turn: its Black Ice chills the Grunt.
     expect(mine.events).toContainEqual(
       expect.objectContaining({
-        kind: "UNITS_CHILLED",
+        kind: "UNITS_FROZEN",
         source: "BLACK_ICE",
         results: [expect.objectContaining({ unitId: grunt.id })],
       }),
@@ -553,7 +562,7 @@ describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
     expect(
       theirs.events.some(
         (event) =>
-          event.kind === "UNITS_CHILLED" && event.source === "BLACK_ICE",
+          event.kind === "UNITS_FROZEN" && event.source === "BLACK_ICE",
       ),
     ).toBe(false);
   });

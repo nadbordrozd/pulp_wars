@@ -975,7 +975,7 @@ describe("Mind Control revision: release when the Brain is lost (section 4.2)", 
       const weak = weaken(base, hp);
       const state = checkedV7({
         ...weak,
-        chilled: [{ unitId: idAt(weak, BRAIN), sluggish: false, turnsLeft: 2 }],
+        frozen: [{ unitId: idAt(weak, BRAIN), turnsLeft: 1 }],
       });
       const preview = attackV7(state, at(4, 4), BRAIN);
       if (!preview.combat.shatters) continue;

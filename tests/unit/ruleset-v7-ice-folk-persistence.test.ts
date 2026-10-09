@@ -21,8 +21,8 @@ import { seatIdV7 } from "../fixtures/v7-goblin-arena";
 import { iceFieldV7 } from "../fixtures/v7-ice-folk";
 import { at } from "../fixtures/v7-revision20";
 
-// The Ice Folk revision (`pulp_wars-7g3.3`): persistence of the `chilled`
-// list (docs/product/RULESET_7_ICE_FOLK.md sections 5.1, 11, and 15).
+// The Ice Folk revision (`pulp_wars-7g3.3`): persistence of the `frozen`
+// list (Ice Folk Freeze, `pulp_wars-w49.37`; it replaced `chilled`).
 
 const showcase: MatchSetupV7 = {
   rulesetId: RULESET_7_ID,
@@ -40,35 +40,35 @@ const showcase: MatchSetupV7 = {
 };
 
 describe("Ice Folk persistence (section 15)", () => {
-  it("round-trips every legal Chill entry through state parsing and hashing", () => {
+  it("round-trips every legal Frozen entry through state parsing and hashing", () => {
     const state = iceFieldV7([
       { seat: 0, role: "FIGHTER", at: at(4, 3) },
       {
         seat: 1,
         role: "FIGHTER",
         at: at(5, 3),
-        chill: { sluggish: true, turnsLeft: 2 },
+        frozen: { turnsLeft: 1 },
       },
       {
         seat: 1,
         role: "FIGHTER",
         at: at(6, 3),
-        chill: { sluggish: false, turnsLeft: 2 },
+        frozen: { turnsLeft: 2 },
       },
       {
         seat: 1,
         role: "FIGHTER",
         at: at(7, 3),
-        chill: { sluggish: false, turnsLeft: 1 },
+        frozen: { turnsLeft: 1 },
       },
       {
         seat: 1,
         role: "FIGHTER",
         at: at(8, 3),
-        chill: { sluggish: false, turnsLeft: 0 },
+        frozen: { turnsLeft: 1 },
       },
     ]);
-    expect(state.chilled).toHaveLength(4);
+    expect(state.frozen).toHaveLength(4);
     const parsed = parseGameStateV7(JSON.parse(JSON.stringify(state)));
     expect(parsed).toEqual(state);
     expect(canonicalHash(parsed)).toBe(canonicalHash(state));
@@ -76,16 +76,15 @@ describe("Ice Folk persistence (section 15)", () => {
     expect(
       canonicalHash({
         ...state,
-        chilled: state.chilled.map((entry) => ({
+        frozen: state.frozen.map((entry) => ({
           ...entry,
-          turnsLeft: 2 as const,
-          sluggish: false,
+          turnsLeft: entry.turnsLeft === 1 ? (2 as const) : (1 as const),
         })),
       }),
     ).not.toBe(canonicalHash(state));
   });
 
-  it("round-trips a Showcase match with a non-empty Chill list through replay, save, and hashes", () => {
+  it("round-trips a Showcase match with a non-empty Frozen list through replay, save, and hashes", () => {
     const created = createPlayableGameV7(showcase);
     if (!created.ok) throw new Error(created.error.code);
     let state: GameStateV7 = created.state;
@@ -109,9 +108,10 @@ describe("Ice Folk persistence (section 15)", () => {
       replay = appendReplayCommandV7(replay, command, state);
     };
     // The Sled and the Witch walk toward the neighbouring strip and throw
-    // the Bolas and cast Cold Snap after their Move (the first Move after
-    // which the command is offered).
-    for (const kind of ["THROW_BOLAS", "COLD_SNAP"] as const) {
+    // the Bolas and the Frost Bolt after their Move (the first Move after
+    // which the command is offered). Ice Folk Freeze (`pulp_wars-w49.37`):
+    // the Frost Bolt reaches 2 tiles, as Cold Snap did before.
+    for (const kind of ["THROW_BOLAS", "FROST_BOLT"] as const) {
       const role = kind === "THROW_BOLAS" ? "RAIDER" : "CAPTAIN";
       const unit = state.units.find(
         (candidate) => candidate.ownerId === iceId && candidate.role === role,
@@ -138,8 +138,8 @@ describe("Ice Folk persistence (section 15)", () => {
     }
     for (let seat = 0; seat < 4; seat += 1) play({ kind: "END_TURN" });
     expect(state.turnOrder[state.activeSeatIndex]).toBe(iceId);
-    expect(state.chilled.length).toBeGreaterThan(0);
-    expect(kinds.has("UNITS_CHILLED")).toBe(true);
+    expect(state.frozen.length).toBeGreaterThan(0);
+    expect(kinds.has("UNITS_FROZEN")).toBe(true);
     // State, replay, and save round trips.
     expect(parseGameStateV7(JSON.parse(JSON.stringify(state)))).toEqual(state);
     const stateHash = canonicalHash(state);
@@ -152,11 +152,11 @@ describe("Ice Folk persistence (section 15)", () => {
       "2026-10-03T12:00:00.000Z",
     );
     expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
-    // A save whose Chill list was tampered with is not valid.
+    // A save whose Frozen list was tampered with is not valid.
     const tampered = JSON.parse(JSON.stringify(save)) as {
       state: Record<string, unknown>;
     };
-    tampered.state.chilled = [];
+    tampered.state.frozen = [];
     expect(parseSaveV7(JSON.stringify(tampered)).kind).not.toBe("VALID");
   });
 });

@@ -38,9 +38,7 @@ import {
   PLANTED_PREVIEW_V7,
   ROCKFALL_PREVIEW_V7,
   SNOW_COVER_PREVIEW_V7,
-  THAWING_STATUS_V7,
   TRAMPLE_PREVIEW_V7,
-  WILL_BE_FROSTED_V7,
   WILL_BE_FROZEN_V7,
   bolasPreviewLinesV7,
   boulderThrowTextV7,
@@ -123,9 +121,10 @@ describe("Ice Folk texts (section 13.2)", () => {
     expect(COLD_BLOOD_PREVIEW_V7).toBe(
       `Cold Blood: +${half(COLD_BLOOD_BONUS2_V7)} Attack`,
     );
-    expect(COLD_SNAP_NO_TARGET_V7).toBe(
-      `No enemy within ${COLD_SNAP_RANGE_V7} tiles`,
-    );
+    // Ice Folk Freeze (`pulp_wars-w49.37`): Cold Snap reaches the eight
+    // tiles around the Witch.
+    expect(COLD_SNAP_RANGE_V7).toBe(1);
+    expect(COLD_SNAP_NO_TARGET_V7).toBe("No enemy next to her");
     const boulder = effectiveRoleRuleV7("CATAPULT", "ICE_FOLK").attack2;
     expect(boulderThrowTextV7(true)).toBe(
       `Planted: Attack ${half(boulder + PLANTED_BONUS2_V7)}`,
@@ -174,19 +173,17 @@ describe("Chill markers and the Shatter window (section 13.1)", () => {
   it("reads Frozen, Frosted and Thawing from the view's Chill entries", () => {
     const view = humanView(iceFolkUiFixtureV7());
     expect(chillStateV7(view, unitAt(view, AT.frozenEnemy).id)).toBe("FROZEN");
+    // Ice Folk Freeze (`pulp_wars-w49.37`): every entry is Frozen, and a
+    // unit that thawed has none.
     expect(chillStateV7(view, unitAt(view, AT.shatterTarget).id)).toBe(
-      "FROSTED",
+      "FROZEN",
     );
-    expect(chillStateV7(view, unitAt(view, AT.thawingEnemy).id)).toBe(
-      "THAWING",
-    );
+    expect(chillStateV7(view, unitAt(view, AT.thawingEnemy).id)).toBeNull();
     expect(chillStateV7(view, unitAt(view, AT.sweepTarget).id)).toBeNull();
     expect(chillChipV7(view, unitAt(view, AT.frozenEnemy))?.status).toBe(
       FROZEN_STATUS_V7,
     );
-    expect(chillChipV7(view, unitAt(view, AT.thawingEnemy))?.status).toBe(
-      THAWING_STATUS_V7,
-    );
+    expect(chillChipV7(view, unitAt(view, AT.thawingEnemy))).toBeNull();
   });
 
   it("uses the threshold of the hostile Ice Folk seat, Brittle included", () => {
@@ -197,9 +194,7 @@ describe("Chill markers and the Shatter window (section 13.1)", () => {
       BRITTLE_SHATTER_HP_V7,
     );
     expect(shatterWindowV7(own, frosted)).toBe(BRITTLE_SHATTER_HP_V7);
-    expect(chillChipV7(own, frosted)?.status).toBe(
-      frostedStatusTextV7(BRITTLE_SHATTER_HP_V7),
-    );
+    expect(chillChipV7(own, frosted)?.status).toBe(FROZEN_STATUS_V7);
     // Thawing units have no window; an own unit has no hostile Ice Folk.
     expect(shatterWindowV7(own, unitAt(own, AT.thawingEnemy))).toBeNull();
     expect(shatterThresholdAgainstV7(own, own.viewer.id)).toBeNull();
@@ -321,7 +316,7 @@ describe("Bolas and Cold Snap previews (sections 13.1 and 13.2)", () => {
     const bolas = previewBolasV7(view, sled.id, target.id);
     if (bolas === null) throw new Error("no Bolas preview");
     expect(bolasPreviewLinesV7(view, bolas)).toEqual([
-      bolas.becomesSluggish ? WILL_BE_FROZEN_V7 : WILL_BE_FROSTED_V7,
+      WILL_BE_FROZEN_V7,
       ...(bolas.shatterSetups.length === 0
         ? []
         : [
@@ -334,9 +329,9 @@ describe("Bolas and Cold Snap previews (sections 13.1 and 13.2)", () => {
   it("summarises a Cold Snap from its preview", () => {
     const snap = previewColdSnapV7(view, unitAt(view, AT.witch).id);
     if (snap === null) throw new Error("no Cold Snap preview");
-    const frozen = snap.targets.filter((target) => target.becomesSluggish);
+    // Ice Folk Freeze (`pulp_wars-w49.37`): every target is Frozen.
     expect(coldSnapSummaryV7(snap)).toBe(
-      `Chills ${snap.targets.length} units: ${frozen.length} Frozen, ${snap.targets.length - frozen.length} Frosted`,
+      `Freezes ${snap.targets.length} unit${snap.targets.length === 1 ? "" : "s"}`,
     );
   });
 
@@ -382,7 +377,8 @@ describe("Bolas and Cold Snap previews (sections 13.1 and 13.2)", () => {
 describe("Ice Folk Help (section 13.3)", () => {
   it("states fifteen rules in the spec's sentences", () => {
     expect(ICE_FOLK_HELP_RULES_V7.map(([name]) => name)).toEqual([
-      "Chill",
+      // Ice Folk Freeze (`pulp_wars-w49.37`): Frozen replaces Chill.
+      "Frozen",
       "Shatter",
       "Brittle",
       "Snow",
@@ -403,7 +399,7 @@ describe("Ice Folk Help (section 13.3)", () => {
     const rule = (name: string): string =>
       ICE_FOLK_HELP_RULES_V7.find(([entry]) => entry === name)?.[1] ?? "";
     expect(rule("Shatter")).toBe(
-      `an Ice Folk blow from an adjacent tile that leaves a frosted unit at ${SHATTER_HP_V7} HP or less kills it, with no blow back, no Grave, and no explosion.`,
+      `an Ice Folk blow from an adjacent tile that leaves a Frozen unit at ${SHATTER_HP_V7} HP or less kills it, with no blow back, no Grave, and no explosion.`,
     );
     expect(rule("Mountain-born")).toBe(
       `${label("FIGHTER")}s, ${label("CATAPULT")}s, and ${label("JUGGERNAUT")}s cross Mountains without Engineering and without stopping.`,
@@ -464,10 +460,10 @@ describe("Ice Folk log lines (section 13.2)", () => {
     const view = humanView(state);
     expect(
       apply(state, find(view, "THROW_BOLAS", AT.sled, AT.bolasTarget)).text,
-    ).toBe(`Your ${label("RAIDER")} chilled a Fighter`);
+    ).toBe(`Your ${label("RAIDER")} froze a Fighter`);
     const snap = previewColdSnapV7(view, unitAt(view, AT.witch).id);
     expect(apply(state, find(view, "COLD_SNAP", AT.witch)).text).toBe(
-      `Your ${label("CAPTAIN")} chilled ${snap?.targets.length ?? 0} units`,
+      `Your ${label("CAPTAIN")} froze ${snap?.targets.length ?? 0} units`,
     );
     expect(
       apply(state, find(view, "ATTACK", AT.yeti, AT.shatterTarget)).text,

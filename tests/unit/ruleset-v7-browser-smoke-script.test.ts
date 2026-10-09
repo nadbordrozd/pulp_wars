@@ -471,9 +471,11 @@ describe("Ruleset 7 browser smoke script", () => {
       bolasTab,
     );
     expect(probe).toContain("/Will be (Frozen|Frosted)/.test(hint)");
-    expect(probe).toContain("includes('Sled chilled a')");
-    expect(probe).toContain("!chilled.entry.sluggish");
-    // Save and resume on a fresh load with the Ice Folk seat and the Chill.
+    expect(probe).toContain("includes('Sled froze a')");
+    expect(probe).toContain("chilled.entry.turnsLeft < 1");
+    expect(probe).toContain("view.frozen.find(");
+    // Save and resume on a fresh load with the Ice Folk seat and the Frozen
+    // unit.
     expect(bolas).toBeLessThan(
       probe.indexOf(`await touchClick(connection, '[data-action="resume"]')`),
     );
@@ -896,7 +898,7 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     expect(end).toContain("snapshot?.phase === 'EMPTY'");
     expect(end).toContain(
-      "localStorage.getItem('pulpWars.save.v7r66.current') === null",
+      "localStorage.getItem('pulpWars.save.v7r67.current') === null",
     );
     expect(end).toContain(
       "document.querySelector('[data-action=\"resume\"]') === null",
@@ -1175,7 +1177,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
       fastForwardObserved: true,
       hostTicks: 2,
     },
-    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r66", commandIndex: 3 },
+    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r67", commandIndex: 3 },
     ordinaryBoundary: {
       controllerOwnProperties: [],
       snapshotHasStateHash: false,

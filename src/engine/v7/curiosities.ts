@@ -1592,9 +1592,11 @@ export function monsterDamageSourcesV7(
           add(entry.unitId, event.unitId);
     } else if (
       // The giants' signatures (RULESET_7_GIANTS.md sections 6.4 and 6.5):
-      // a Thunder Stomp and an Overstride's trample provoke like an attack.
+      // a Thunder Stomp and an Overstride's trample provoke like an attack;
+      // so does the Mammoth's Stampede (Ice Folk Freeze, `pulp_wars-w49.37`).
       event.kind === "THUNDER_STOMP" ||
-      event.kind === "UNITS_TRAMPLED"
+      event.kind === "UNITS_TRAMPLED" ||
+      event.kind === "MAMMOTH_STAMPEDED"
     ) {
       for (const entry of event.results)
         if (entry.damage + entry.shieldDamage > 0)

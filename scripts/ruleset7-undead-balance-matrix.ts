@@ -2315,12 +2315,16 @@ function iceFolkTelemetry(
           seat.firstWitchRound ??= round;
         }
       }
-      if (event.kind === "UNITS_CHILLED") {
+      // Ice Folk Freeze (`pulp_wars-w49.37`): a new freeze is a unit that
+      // was not Frozen before the command.
+      if (event.kind === "UNITS_FROZEN") {
         const seat = seats.get(event.playerId);
         if (seat === undefined) continue;
         bump(seat.chills, event.source, event.results.length);
         for (const entry of event.results)
-          seat.newFreezes += Number(entry.sluggish);
+          seat.newFreezes += Number(
+            !before.frozen.some((prior) => prior.unitId === entry.unitId),
+          );
       }
       if (event.kind === "COMBAT_RESOLVED") {
         const preview = event.preview;
@@ -3030,7 +3034,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r66",
+    rulesetId: "pulp-wars-poc-7r67",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
     seed: cell.seed,
@@ -3704,7 +3708,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r66",
+          rulesetId: "pulp-wars-poc-7r67",
           parameters,
           summary,
           games: ordered.map(compactEntry),

@@ -3,7 +3,7 @@ import {
   ICE_SEA_DOG_UNITS_V7,
   isAfloatFormV7,
   seatRoleRuleV7,
-  sluggishUnitMovedV7,
+  unitIsFrozenV7,
   technologyCapabilitiesV7,
   unitCapabilitiesV7,
   unitRoleRuleV7,
@@ -169,7 +169,7 @@ export function freezeUnavailableTextV7(
     view.viewer.researchedTechs,
   ).freezeWater;
   if (depth === "NONE") return FREEZE_NEEDS_RIME_V7;
-  if (sluggishUnitMovedV7(view, unit)) return FREEZE_FROZEN_MOVED_V7;
+  if (unitIsFrozenV7(view, unit)) return FREEZE_FROZEN_MOVED_V7;
   if (
     unit.activation.handled ||
     unit.activation.attacked ||

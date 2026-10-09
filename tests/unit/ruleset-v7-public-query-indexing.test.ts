@@ -54,6 +54,11 @@ const captured300: PlayerViewV7 = {
   ice: [],
   // The giants' signatures (`pulp_wars-w49.30`): no held victim.
   giants: { swallowed: [] },
+  // Ice Folk Freeze (`pulp_wars-w49.37`): no Frozen unit.
+  frozen: [],
+  // Map curiosities round 2 (`pulp_wars-737.14`) read the view's
+  // curiosities for a gate on a Move's path: none here.
+  curiosities: [],
 };
 
 describe("ruleset-7 exact public query indexing", () => {
@@ -86,7 +91,10 @@ describe("ruleset-7 exact public query indexing", () => {
       // `TREASURY_8`, the same view otherwise).
       // The giants' signatures (`pulp_wars-w49.30`) add the empty `giants`
       // block (was 5baf10…11be, the same view otherwise).
-      "5aa9c726e2c9d90073c1efb92f8a781ec4f9b7f9f6da56017aa6e59816e23388",
+      // Ice Folk Freeze (`pulp_wars-w49.37`) adds the empty `frozen` list
+      // (was 5aa9c7…3388, the same view otherwise), and the empty
+      // `curiosities` list the round-2 gate rule reads (was e88ae8…1325).
+      "c35bcdde78b4cfbb1b5795137eed988d27b6c163314c26aed200bf38ecd77ffb",
     );
 
     const planned = drain(measured.view, commands, 113);

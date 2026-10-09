@@ -380,10 +380,10 @@ describe("Candy battle analysis, re-run by the engine (section 11)", () => {
       ["Hammerer", "12, kill", "8 / 4"],
       ["Skeleton", "10, kill", "8 / 4"],
       ["Caveman", "10, kill", "8 / 4"],
-      // The contract read the Ice Witch as 9 / 2; the engine gives 10 / 1
-      // (12 HP, Defense 1, like a Marksman). The verdict stands: the
-      // continuation stops on her.
-      ["Ice Witch", "12, kill", "10 / 1"],
+      // The contract read the Ice Witch as 9 / 2; the engine gave 10 / 1
+      // (12 HP, Defense 1, like a Marksman). Ice Folk Freeze
+      // (`pulp_wars-w49.37`): she has 10 HP, so the continuation kills her.
+      ["Ice Witch", "10, kill", "10, kill"],
       ["Orc Warboss", "12, kill", "10 / 1"],
       // 8 HP since `pulp_wars-1wy.6` (the kill takes all the HP it has).
       ["Grunt", "8 +2 sh, kill", "7 +2 sh / 2"],
