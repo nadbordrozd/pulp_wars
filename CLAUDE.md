@@ -45,6 +45,17 @@ user instead of inventing a lasting direction.
 
 ## Risk-Based Validation
 
+**Standing user rule (overrides the profile table below): no whole-game
+simulations unless the user asks.** Validate every normal change with focused
+unit tests of the changed code plus `npm run format:check`, `npm run lint`,
+`npm run typecheck` and `npm run build`. Run nothing that plays AI matches
+unless the user explicitly asks for a full simulation run: no `npm run check`,
+no full `npm test`, no `npm run validate:ruleset6-release`, no browser smokes
+that play a match, no `play-text` runs, and no tests that call `runAiMatchV7`
+or other `src/headless` match runners. Do not add new whole-match simulation
+tests; prove behaviour with small hand-built states. Where the table below
+names one of those gates, skip it and record the skip in the bead.
+
 Assign one profile in the bead before delegation. Record the exact focused
 tests expected from the worker and any conditional gates that apply. The
 profiles below are ordered from lower to higher risk; mixed-scope work uses the
